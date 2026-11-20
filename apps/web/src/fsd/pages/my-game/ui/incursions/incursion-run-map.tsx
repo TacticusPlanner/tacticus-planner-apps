@@ -70,7 +70,8 @@ export function IncursionRunMap({
       nodes.find(
         (node) =>
           node.kind === "battle" &&
-          node.battleId &&
+          node.battleId !== null &&
+          node.battleId !== "" &&
           (stars?.(tier.index, node.battleId) ?? 0) < 3
       )?.index
   )

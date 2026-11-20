@@ -1,6 +1,7 @@
 import type { DailyRaidsViewModel } from "@/features/daily-raids"
 
 import { questDropNeed } from "./quest-drop-need"
+import { firstDifference } from "@/shared/lib"
 
 /** A quest drop the player's goals still need, with every battle that drops it. */
 type QuestGoalDrop<TId extends string = string> = {
@@ -62,8 +63,8 @@ export function questGoalDrops<TId extends string>(
     status: "ready",
     drops: [...byUpgrade.values()].map((drop) => ({
       ...drop,
-      battles: drop.battles.toSorted(
-        (a, b) => odds(b) - odds(a) || a.number - b.number
+      battles: drop.battles.toSorted((a, b) =>
+        firstDifference(odds(b) - odds(a), a.number - b.number)
       ),
     })),
   }

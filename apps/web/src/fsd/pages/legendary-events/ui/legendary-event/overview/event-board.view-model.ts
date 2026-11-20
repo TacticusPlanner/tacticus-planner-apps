@@ -17,6 +17,7 @@ import type {
   EventUnitChipData,
 } from "@/entities/legendary-event"
 import type { UnitPowerContext } from "@/shared/unit-power"
+import { firstDifference } from "@/shared/lib"
 
 /** One lane objective on the Event board: its synced cleared count and how many saved teams on
  *  the lane cover it (0 marks a gap in the plan). */
@@ -132,11 +133,12 @@ export function buildEventBoardTable(
         name: nameOf(unit.id),
       }
     })
-    .toSorted(
-      (a, b) =>
-        Number(b.owned) - Number(a.owned) ||
-        b.power - a.power ||
+    .toSorted((a, b) =>
+      firstDifference(
+        Number(b.owned) - Number(a.owned),
+        b.power - a.power,
         a.name.localeCompare(b.name)
+      )
     )
   const ordered = [...lane.unitsRestrictions]
     .map((objective) => objective.index)

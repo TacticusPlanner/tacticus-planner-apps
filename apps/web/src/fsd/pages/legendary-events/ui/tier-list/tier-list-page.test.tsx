@@ -98,7 +98,7 @@ let reads: ReturnType<typeof spyOnIndexedDbReads>
 const seedCatalog = (tiers: unknown = hordeModeTiers) =>
   seedGameCatalog({
     characters: legendaryEventCharacters,
-    ...(tiers ? { "horde-mode-tiers": [tiers] } : {}),
+    ...(tiers === null ? {} : { "horde-mode-tiers": [tiers] }),
   })
 const seedRoster = (roster: unknown[]) => seedPlayerData({ characters: roster })
 

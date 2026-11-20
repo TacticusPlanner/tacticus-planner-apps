@@ -2,6 +2,7 @@ import { useId } from "react"
 import type { ReactNode } from "react"
 import { Card } from "@workspace/ui/components/card"
 import { cn } from "@workspace/ui/lib/utils"
+import { hasNode } from "@/shared/lib"
 
 /**
  * The shell every Today dashboard card shares: a named region with its own h2, an optional meta
@@ -44,10 +45,10 @@ export function TodayCard({
         >
           {title}
         </h2>
-        {meta ? (
+        {hasNode(meta) ? (
           <span className="text-xs text-muted-foreground">{meta}</span>
         ) : null}
-        {action ? <span className="ms-auto">{action}</span> : null}
+        {hasNode(action) ? <span className="ms-auto">{action}</span> : null}
       </div>
       {children}
     </Card>

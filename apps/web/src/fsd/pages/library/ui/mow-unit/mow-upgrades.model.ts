@@ -8,6 +8,7 @@ import {
   aggregateOwnedBaseUpgrades,
 } from "@/entities/rank-lookup"
 import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
+import { firstDifference } from "@/shared/lib"
 
 export type MowAbility = "primary" | "secondary"
 
@@ -168,11 +169,12 @@ export function calculateMowUpgrades({
         remaining: count - have,
       }
     })
-    .toSorted(
-      (a, b) =>
-        rarityOf(b) - rarityOf(a) ||
-        b.needed - a.needed ||
+    .toSorted((a, b) =>
+      firstDifference(
+        rarityOf(b) - rarityOf(a),
+        b.needed - a.needed,
         a.label.localeCompare(b.label)
+      )
     )
 
   return { steps, needed, remaining, materials }
@@ -209,16 +211,20 @@ export function ownedMowStock(
   inventoryUpgrades: PlayerDataChunkDto<"inventory-upgrades">,
   alliance: Alliance
 ): MowOwnedStock {
-  const key = alliance.toLowerCase() as "imperial" | "xenos" | "chaos"
+  // A Neutral unit has no badge or component pool.
+  const key =
+    alliance === "Neutral"
+      ? null
+      : (alliance.toLowerCase() as "imperial" | "xenos" | "chaos")
   const byRarity = (entries: readonly RarityAmount[] | undefined) => {
     const result: Partial<Record<Rarity, number>> = {}
     for (const entry of entries ?? []) addRarity(result, entry)
     return result
   }
   return {
-    badges: byRarity(inventory.abilityBadges[key]),
+    badges: byRarity(key === null ? undefined : inventory.abilityBadges[key]),
     forgeBadges: byRarity(inventory.forgeBadges),
-    components: inventory.components[key]?.amount ?? 0,
+    components: key === null ? 0 : inventory.components[key].amount,
     upgrades: inventoryUpgrades.map((entry) => ({
       id: entry.upgradeId,
       amount: entry.amount,

@@ -40,7 +40,7 @@ export function GoalCheckpoints({
   const dateLocale = useDateLocale()
   const view = goalCheckpointsView(estimate, goalType)
   if (!view) return null
-  const number = new Intl.NumberFormat(i18n?.resolvedLanguage)
+  const number = new Intl.NumberFormat(i18n.resolvedLanguage)
 
   return (
     <Popover>

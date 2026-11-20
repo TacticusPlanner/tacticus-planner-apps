@@ -25,6 +25,7 @@ import {
 } from "./character-details-sections"
 import type { StatsFigure } from "./character-unit.view-model"
 import { StatRadarCard } from "./stat-radar-card"
+import { hasNode } from "@/shared/lib"
 
 /**
  * The Details tab. Desktop: cards in rows (At a glance | Traits; Active | Passive; Compared |
@@ -86,10 +87,10 @@ export function CharacterUnitDetails({
     requestAnimationFrame(() => {
       const anchor = document.getElementById(relicAnchorId)
       if (!anchor) return
-      const reduced = window.matchMedia?.(
+      const reduced = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
       ).matches
-      anchor.scrollIntoView?.({
+      anchor.scrollIntoView({
         behavior: reduced ? "auto" : "smooth",
         block: "start",
       })
@@ -194,7 +195,7 @@ export function CharacterUnitDetails({
                 traits
               )
             : null}
-          {activePanel
+          {hasNode(activePanel)
             ? section(
                 "active",
                 t("characterUnit.abilities.active"),
@@ -203,7 +204,7 @@ export function CharacterUnitDetails({
                 activePanel
               )
             : null}
-          {passivePanel
+          {hasNode(passivePanel)
             ? section(
                 "passive",
                 t("characterUnit.abilities.passive"),
@@ -240,7 +241,7 @@ export function CharacterUnitDetails({
               : t("characterUnit.relic.noneShort"),
             relicPanel
           )}
-          {mythicQuests
+          {hasNode(mythicQuests)
             ? section(
                 "mythic",
                 t("characterUnit.mythic.kind"),
@@ -269,7 +270,7 @@ export function CharacterUnitDetails({
           </DetailsCard>
         ) : null}
       </div>
-      {activePanel || passivePanel ? (
+      {hasNode(activePanel) || hasNode(passivePanel) ? (
         <section
           className="flex flex-col gap-3"
           aria-labelledby="unit-abilities-title"
@@ -325,7 +326,7 @@ export function CharacterUnitDetails({
         >
           {relicPanel}
         </div>
-        {mythicQuests ? (
+        {hasNode(mythicQuests) ? (
           <DetailsCard
             title={t("characterUnit.mythic.title")}
             aside={t("characterUnit.mythic.count", {

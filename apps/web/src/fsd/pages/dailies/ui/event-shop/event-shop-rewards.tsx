@@ -27,6 +27,7 @@ import {
 import type { LadderTile } from "../../model/event-mission-text"
 import type { EventShopController } from "./use-event-shop-controller"
 import type { EventShopFormat } from "./use-event-shop-format"
+import { hasNode } from "@/shared/lib"
 
 type Reward = Pick<GameCatalogEventShopRewardRange, "type" | "min" | "max">
 
@@ -117,7 +118,7 @@ function Panel({
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h3 className="text-xs font-semibold text-muted-foreground">{label}</h3>
-        {note ? (
+        {hasNode(note) ? (
           <span className="inline-flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
             {note}
           </span>

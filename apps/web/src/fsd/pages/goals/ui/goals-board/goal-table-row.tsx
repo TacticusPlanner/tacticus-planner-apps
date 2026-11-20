@@ -120,7 +120,7 @@ export const GoalRowCells = memo(function GoalRowCells({
       reachedByGoalId,
     },
     t,
-    i18n?.resolvedLanguage
+    i18n.resolvedLanguage
   )
 
   return (

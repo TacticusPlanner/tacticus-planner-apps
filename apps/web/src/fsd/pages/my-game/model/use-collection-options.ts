@@ -8,6 +8,7 @@ import { useCatalogDataset } from "@/shared/local-data"
 
 import { collectionShardSources } from "./collection-query"
 import { damageTypesOf, shardSourcesOf } from "./collection-view"
+import { firstDifference } from "@/shared/lib"
 
 interface CollectionFactionOption {
   id: string
@@ -76,10 +77,11 @@ export function useCollectionOptions(): CollectionOptions | undefined {
     return {
       factions: factionOptions([...characters, ...mows], (id) =>
         t(`factions:${id}`, { defaultValue: id })
-      ).toSorted(
-        (a, b) =>
-          allianceRank(a.alliance) - allianceRank(b.alliance) ||
+      ).toSorted((a, b) =>
+        firstDifference(
+          allianceRank(a.alliance) - allianceRank(b.alliance),
           compare(a.name, b.name)
+        )
       ),
       ...combatOptions(characters),
       damageTypes: named("damageTypes", characters.flatMap(damageTypesOf)),
@@ -98,12 +100,16 @@ function combatOptions(characters: readonly OptionCharacter[]) {
   return {
     hits: ascending(
       characters.flatMap((c) =>
-        c.rangedHits ? [c.meleeHits, c.rangedHits] : [c.meleeHits]
+        c.rangedHits !== null && c.rangedHits > 0
+          ? [c.meleeHits, c.rangedHits]
+          : [c.meleeHits]
       )
     ),
     movements: ascending(characters.map((c) => c.movement)),
     ranges: ascending(
-      characters.flatMap((c) => (c.rangeDistance ? [c.rangeDistance] : []))
+      characters.flatMap((c) =>
+        c.rangeDistance !== null && c.rangeDistance > 0 ? [c.rangeDistance] : []
+      )
     ),
     shardSources: collectionShardSources.filter((source) =>
       sources.has(source)

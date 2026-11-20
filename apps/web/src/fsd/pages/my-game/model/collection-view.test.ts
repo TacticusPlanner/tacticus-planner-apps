@@ -28,7 +28,7 @@ const characters = legendaryEventCharacters.map((character) => ({
   alliance: character.alliance as Alliance,
   initialRarity: initialRarity[character.id] ?? "Epic",
   // Not in the fixture; the combat-filter tests build their own characters.
-  rangeDistance: character.rangedHits ? 2 : null,
+  rangeDistance: (character.rangedHits ?? 0) > 0 ? 2 : null,
   movement: 3,
   shardLocations: [],
   equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],

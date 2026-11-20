@@ -15,6 +15,7 @@ import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
 import { LevelStepper } from "./level-stepper"
 import { RulesTextNote } from "./rules-text-note"
+import { hasNode } from "@/shared/lib"
 
 /** Labelled x ticks: levels 1, 10, 20 … for abilities; 1, 5, 10 for a 10-level relic. */
 function levelTicks(maxLevel: number): number[] {
@@ -134,7 +135,7 @@ export function AbilityPanel({
           >
             {name}
           </Heading>
-          {note ? (
+          {hasNode(note) ? (
             <p
               className="text-xs text-muted-foreground"
               data-testid={`${testId}-note`}
@@ -143,7 +144,7 @@ export function AbilityPanel({
             </p>
           ) : null}
         </div>
-        {levelControl ? (
+        {hasNode(levelControl) ? (
           levelControl
         ) : text ? (
           <LevelStepper
@@ -207,7 +208,7 @@ export function AbilityPanel({
                     fromZero={chartFromZero}
                     markerIndex={level - 1}
                     onSelect={
-                      levelControl
+                      hasNode(levelControl)
                         ? undefined
                         : (index) => onLevelChange(index + 1)
                     }

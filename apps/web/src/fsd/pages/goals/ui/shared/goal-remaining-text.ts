@@ -20,7 +20,7 @@ export function formatGenericRemainingText(
     0
   )
   const orbCount = Object.values(remaining.orbsByType).reduce(
-    (sum, count) => sum + (count ?? 0),
+    (sum, count) => sum + count,
     0
   )
   const parts = [
@@ -79,7 +79,7 @@ export function formatGoalRemainingText(
     if (remaining?.coveredByEarlierGoal)
       return t("goals.overview.remainingText.coveredByEarlierGoal")
     // No upgrade-slot count: the slots are not a resource, energy is the readable cost.
-    return energy
+    return energy !== undefined && energy > 0
       ? t("goals.overview.remainingText.rankEnergy", { energy: fmt(energy) })
       : null
   }

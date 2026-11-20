@@ -78,7 +78,9 @@ function RewardChip({
   const format = new Intl.NumberFormat(i18n.language)
   return (
     <li className="inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold">
-      {icon ? <EntityIcon src={icon} alt="" className="size-4" /> : null}
+      {icon === undefined ? null : (
+        <EntityIcon src={icon} alt="" className="size-4" />
+      )}
       {`${format.format(reward.quantity)} × ${label}`}
     </li>
   )

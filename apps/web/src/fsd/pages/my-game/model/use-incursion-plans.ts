@@ -115,7 +115,7 @@ export function useIncursionPlans(
       units.flatMap((unit): IncursionCandidate[] => {
         const character = catalog.get(unit.unitId)
         const power = powerOf(unit)
-        return character && power
+        return character && power !== null && power > 0
           ? [
               {
                 id: unit.unitId,

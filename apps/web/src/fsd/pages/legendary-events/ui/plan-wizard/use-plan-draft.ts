@@ -247,7 +247,7 @@ function useDraftTeamNames(
 
 function initialEconomy(source: ReadySource): PlanEconomy {
   return {
-    runs: source.inputs.plan.runs ?? [],
+    runs: source.inputs.plan.runs,
     showPaidOptions: source.inputs.plan.showPaidOptions,
   }
 }

@@ -298,7 +298,7 @@ export function GoalTargetDisplay({
         target: progress.target,
       })}
     </span>
-  ) : progress.kind === "Upgrade" && progress.materials.length > 0 ? (
+  ) : progress.materials.length > 0 ? (
     <UpgradeTargetMaterials materials={progress.materials} />
   ) : progress.ratio !== null ? (
     // An "Upgrade" goal with no materials: the percentage is the only readout left.
@@ -374,7 +374,7 @@ export function GoalProgressDisplay({
 
   const remainingText = formatGoalRemainingText(
     t,
-    i18n?.resolvedLanguage,
+    i18n.resolvedLanguage,
     progress,
     remaining,
     energy
@@ -446,7 +446,9 @@ export function GoalProgressDisplay({
             {t("goals.overview.actualProgress")} {actualPct}%
           </span>
           : {t("goals.overview.actualProgressDescription")}
-          {progress.kind === "Rank" && remaining?.upgradeSlotsRemaining ? (
+          {progress.kind === "Rank" &&
+          remaining &&
+          (remaining.upgradeSlotsRemaining ?? 0) > 0 ? (
             <>
               {" "}
               {t("goals.overview.actualSlotsRemaining", {
@@ -476,15 +478,15 @@ export function GoalProgressDisplay({
             <>
               {" "}
               {t("goals.overview.potentialEnergyRemaining", {
-                energy: formatNumber(i18n?.resolvedLanguage, energy),
+                energy: formatNumber(i18n.resolvedLanguage, energy),
               })}
             </>
           ) : null}
-          {progress.kind === "LevelRequirement" && progress.remainingXp ? (
+          {progress.kind === "LevelRequirement" && progress.remainingXp > 0 ? (
             <>
               {" "}
               {t("goals.overview.potentialXpRemaining", {
-                xp: formatNumber(i18n?.resolvedLanguage, progress.remainingXp),
+                xp: formatNumber(i18n.resolvedLanguage, progress.remainingXp),
               })}
             </>
           ) : null}

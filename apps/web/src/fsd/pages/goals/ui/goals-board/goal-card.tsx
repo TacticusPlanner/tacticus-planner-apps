@@ -130,7 +130,7 @@ export const GoalCard = memo(
       row,
       { ...sources, estimates },
       t,
-      i18n?.resolvedLanguage
+      i18n.resolvedLanguage
     )
     const estimate = estimates?.get(row.goalId)
     const hasLevelRow = !data.reached && !!data.levelRequirement

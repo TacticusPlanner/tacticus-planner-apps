@@ -244,7 +244,7 @@ function serialize<K extends keyof CollectionQuery>(
   key: K,
   value: CollectionQuery[K]
 ): string | null {
-  if (key === "hideUnowned") return value ? HIDE_UNOWNED_VALUE : null
+  if (key === "hideUnowned") return value === true ? HIDE_UNOWNED_VALUE : null
   if (key === "sort")
     return value === defaultCollectionSort ? null : (value as string)
   if (key === "view")

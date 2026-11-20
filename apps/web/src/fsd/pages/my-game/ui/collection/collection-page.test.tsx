@@ -170,6 +170,7 @@ const catalog = {
     {
       ...combat,
       id: "ultraTitus",
+      name: "Titus",
       faction: "Ultramarines",
       alliance: "Imperial",
       initialRarity: "Epic",
@@ -177,6 +178,7 @@ const catalog = {
     {
       ...combat,
       id: "ultraCalgar",
+      name: "Marneus Calgar",
       faction: "Ultramarines",
       alliance: "Imperial",
       initialRarity: "Legendary",
@@ -185,13 +187,19 @@ const catalog = {
       ...combat,
       traits: ["Psyker"],
       id: "blackHaarken",
+      name: "Haarken Worldclaimer",
       faction: "BlackLegion",
       alliance: "Chaos",
       initialRarity: "Epic",
     },
   ],
   mows: [
-    { id: "ultraDreadnought", faction: "Ultramarines", alliance: "Imperial" },
+    {
+      id: "ultraDreadnought",
+      name: "Dreadnought",
+      faction: "Ultramarines",
+      alliance: "Imperial",
+    },
   ],
   unlockShardCosts: [
     { rarity: "Epic" as Rarity, shards: 250 },
@@ -1045,7 +1053,8 @@ describe("CollectionPage snapshots and compare", () => {
       unlocked: false,
       changed: delta !== 0,
       progression: null,
-      rank: delta ? { from: "Gold1" as const, to: "Gold2" as const } : null,
+      rank:
+        delta === 0 ? null : { from: "Gold1" as const, to: "Gold2" as const },
       upgrades: null,
       xpLevel: null,
       xpGained: null,

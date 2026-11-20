@@ -6,6 +6,7 @@ import type {
   LeaderboardFigure,
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
+import { firstDifference } from "@/shared/lib"
 
 /** What the cross-lane leaderboard is ordered by: its default order (the lanes' sum), a unit's
  *  progression or rank, or one lane's figure. */
@@ -47,7 +48,7 @@ export function sortCrossLaneRows(
     .toSorted((a, b) => {
       if (a.value === -1 || b.value === -1)
         return a.value === b.value ? a.index - b.index : a.value === -1 ? 1 : -1
-      return sign * (a.value - b.value) || a.index - b.index
+      return firstDifference(sign * (a.value - b.value), a.index - b.index)
     })
     .map((entry) => entry.row)
 }

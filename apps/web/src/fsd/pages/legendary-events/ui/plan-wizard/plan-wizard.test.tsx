@@ -445,11 +445,9 @@ describe("PlanWizard", () => {
     const checked = screen
       .getAllByTestId("plan-wizard-target-option")
       .find((option) => option.getAttribute("aria-checked") === "true")!
-    const best = screen.getByTestId("plan-wizard-best-step").textContent ?? ""
+    const best = screen.getByTestId("plan-wizard-best-step").textContent
     if (best.includes("is the highest step within reach")) {
-      expect(best).toContain(
-        within(checked).getAllByText(/\S/)[0]!.textContent ?? ""
-      )
+      expect(best).toContain(within(checked).getAllByText(/\S/)[0]!.textContent)
     } else {
       expect(checked).toHaveAttribute("data-step", "unlock")
     }
@@ -645,7 +643,7 @@ describe("PlanWizard", () => {
       )
     )
     const shown = screen.getByTestId("plan-wizard-removed-team").textContent
-    const name = shown?.replace("Undo", "").trim()
+    const name = shown.replace("Undo", "").trim()
     expect(name).toBeTruthy()
     expect(name).not.toBe("alpha")
     await next()

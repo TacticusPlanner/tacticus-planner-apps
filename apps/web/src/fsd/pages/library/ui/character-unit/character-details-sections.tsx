@@ -27,6 +27,7 @@ import { RulesTextNote } from "../unit/rules-text-note"
 import { ladderRanks } from "./character-unit.view-model"
 import type { StatsFigure } from "./character-unit.view-model"
 import { EquipmentSlots } from "./equipment-slots"
+import { hasNode } from "@/shared/lib"
 
 /** The cards every Details section sits in on desktop. */
 export function DetailsCard({
@@ -53,7 +54,7 @@ export function DetailsCard({
       {title ? (
         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
           <h2 className="font-heading text-lg font-bold">{title}</h2>
-          {aside ? (
+          {hasNode(aside) ? (
             <span className="text-xs text-muted-foreground">{aside}</span>
           ) : null}
         </div>

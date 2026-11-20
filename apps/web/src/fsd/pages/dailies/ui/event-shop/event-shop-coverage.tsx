@@ -55,7 +55,8 @@ function amountIn(
 ) {
   const perBook =
     row.resource === "xp" && xpBookRarity ? xpPerBook[xpBookRarity] : undefined
-  return (value: number) => (perBook ? Math.ceil(value / perBook) : value)
+  return (value: number) =>
+    perBook !== undefined && perBook > 0 ? Math.ceil(value / perBook) : value
 }
 
 /**

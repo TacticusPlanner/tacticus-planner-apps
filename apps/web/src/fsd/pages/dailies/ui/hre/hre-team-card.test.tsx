@@ -84,10 +84,10 @@ describe("HreTeamCard", () => {
   })
 
   it("says an ability-use pool has spares only beyond 5 units", () => {
-    const abilities = (size: number): HreTeam => {
-      const team = ready(size)
-      return team.status === "ready" ? { ...team, rule: "abilities" } : team
-    }
+    const abilities = (size: number): HreTeam => ({
+      ...ready(size),
+      rule: "abilities",
+    })
     const { unmount } = renderCard(abilities(8))
     expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
       "hre:teams.abilitiesTrack|size=8"
@@ -134,10 +134,7 @@ describe("HreTeamCard", () => {
   })
 
   it("notes how many units also score for a running HSE", () => {
-    const withHse = (hseUnits: number): HreTeam => {
-      const team = ready(8)
-      return team.status === "ready" ? { ...team, hseUnits } : team
-    }
+    const withHse = (hseUnits: number): HreTeam => ({ ...ready(8), hseUnits })
     const { unmount } = renderCard(withHse(3), null, "Psyker Boost")
     expect(screen.getByTestId("hre-team-hse")).toHaveTextContent(
       "hre:teams.hse|count=3,event=Psyker Boost"

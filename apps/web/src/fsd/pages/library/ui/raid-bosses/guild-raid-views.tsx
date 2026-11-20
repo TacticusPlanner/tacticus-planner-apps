@@ -178,7 +178,8 @@ export function GuildRaidMetaView({
       </p>
     )
   }
-  if (catalog.status === "failed") {
+  // Only "failed" is left; `!== "ready"` also narrows `catalog` to the ready variant below.
+  if (catalog.status !== "ready") {
     return (
       <div
         className="flex flex-col items-start gap-3"
@@ -191,8 +192,6 @@ export function GuildRaidMetaView({
       </div>
     )
   }
-
-  if (catalog.status !== "ready") return null
 
   const { meta, presentation } = catalog
   const source = presentation.resolveSource(meta.sourceId)

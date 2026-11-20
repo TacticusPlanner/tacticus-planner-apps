@@ -17,7 +17,7 @@ export function ShardProgressBars({
   const isMobile = useIsMobile()
   if (!shardProgress) return null
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n?.resolvedLanguage).format(value)
+    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
   const bars = [
     { key: "shards" as const, ...shardProgress.shards },
     { key: "mythicShards" as const, ...shardProgress.mythicShards },

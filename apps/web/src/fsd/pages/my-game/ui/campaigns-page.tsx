@@ -226,7 +226,7 @@ const completionOfTracks = (tracks: readonly BuiltTrack[]) =>
   )
 
 const percent = ({ done, total }: { done: number; total: number }) =>
-  total ? (done / total) * 100 : 0
+  total > 0 ? (done / total) * 100 : 0
 
 type BuiltTrack = {
   definition: CampaignDefinitionStorageModel

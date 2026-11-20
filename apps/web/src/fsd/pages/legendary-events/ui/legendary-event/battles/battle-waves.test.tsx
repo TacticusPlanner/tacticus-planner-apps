@@ -69,7 +69,7 @@ describe("BattleWaves", () => {
     renderBattle(beta[12]!)
     const round3 = screen
       .getAllByTestId("battle-wave")
-      .find((wave) => wave.textContent?.includes("Round 3"))!
+      .find((wave) => wave.textContent.includes("Round 3"))!
     const helbrecht = within(round3)
       .getAllByTestId("battle-enemy-tile")
       .find((tile) => tile.dataset.npc === "templBossHelbrecht")!

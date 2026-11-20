@@ -519,7 +519,7 @@ export function QuestPage() {
                   {t("quest:entry.title")}
                 </SheetDescription>
               </SheetHeader>
-              {selected && quest ? (
+              {selected ? (
                 <div className="flex flex-col gap-4 overflow-y-auto px-4 pb-4">
                   {scoreEntry(selected, quest.scorePoints)}
                   {team}
@@ -543,7 +543,7 @@ export function QuestPage() {
           {list}
         </div>
         <div className="space-y-5">
-          {selected && quest ? (
+          {selected ? (
             <div className="space-y-4" data-testid="quest-selected">
               {scoreEntry(selected, quest.scorePoints)}
               {detail(selected, quest.scorePoints)}

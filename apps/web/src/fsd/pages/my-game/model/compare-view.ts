@@ -7,6 +7,7 @@ import type {
 import type { UnitTileUnit } from "@/entities/unit"
 
 import type { CompareOrder } from "./compare-query"
+import { firstDifference } from "@/shared/lib"
 
 /** The fields setting (design D7): which changes the chips and details show. */
 export const compareFields = [
@@ -68,10 +69,11 @@ export function buildCompareView(
       (options.metric === null || contributesTo(item.diff, options.metric))
   )
   if (options.order === "gain") {
-    changed.sort(
-      (a, b) =>
-        (b.diff.power?.delta ?? 0) - (a.diff.power?.delta ?? 0) ||
+    changed.sort((a, b) =>
+      firstDifference(
+        (b.diff.power?.delta ?? 0) - (a.diff.power?.delta ?? 0),
         a.unit.name.localeCompare(b.unit.name, options.locale)
+      )
     )
   }
   return {

@@ -3,6 +3,7 @@ import type { Progression, Rank } from "@workspace/game-domain"
 import { withSupport } from "@/entities/legendary-event"
 
 import type { IncursionBattle, IncursionTier } from "./incursions.model"
+import { firstDifference } from "@/shared/lib"
 
 /** Heroes a run brings (the MoW comes on top). */
 const INCURSION_TEAM_SIZE = 5
@@ -212,7 +213,9 @@ export function eligibleCandidates(
   const allowed = new Set(allowedFactions)
   return candidates
     .filter((unit) => allowed.has(unit.faction) && unit.power > 0)
-    .toSorted((a, b) => b.power - a.power || a.id.localeCompare(b.id))
+    .toSorted((a, b) =>
+      firstDifference(b.power - a.power, a.id.localeCompare(b.id))
+    )
 }
 
 /**

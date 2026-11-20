@@ -114,7 +114,7 @@ describe("useCollectionTutorial", () => {
       )
     }
     expect(
-      (tour.desktop ?? []).find((step) =>
+      tour.desktop.find((step) =>
         (step.target as string).includes("roster-section")
       )?.content
     ).toContain("Each section")

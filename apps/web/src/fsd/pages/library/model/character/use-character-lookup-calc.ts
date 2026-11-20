@@ -24,7 +24,11 @@ import type {
   RecipeIngredient,
   UpgradeWithFarmLocations,
 } from "@/entities/rank-lookup"
-import { characterDamageTypes, useCampaignDisplay } from "@/shared/lib"
+import {
+  characterDamageTypes,
+  useCampaignDisplay,
+  firstDifference,
+} from "@/shared/lib"
 import type { Battle } from "@/shared/lib"
 import { computeCampaignInsights } from "@/entities/campaign-insight"
 import { characterStatsAt } from "@/shared/unit-power"
@@ -314,9 +318,11 @@ export function useCharacterLookupCalc({
             .map(({ id, label, icon }) => ({ id, label, icon })),
         }
       })
-      .toSorted(
-        (a, b) =>
-          rarityRank(b.rarity) - rarityRank(a.rarity) || b.missing - a.missing
+      .toSorted((a, b) =>
+        firstDifference(
+          rarityRank(b.rarity) - rarityRank(a.rarity),
+          b.missing - a.missing
+        )
       )
   }, [
     needs,

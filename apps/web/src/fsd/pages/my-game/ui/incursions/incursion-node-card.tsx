@@ -122,7 +122,8 @@ function BattleBody({
             {t("battle.difficulty", { value: battle.difficultyMultiplier })}
           </span>
         ) : null}
-        {battle.lightningVictoryTurns ? (
+        {battle.lightningVictoryTurns !== null &&
+        battle.lightningVictoryTurns > 0 ? (
           <span>
             {t("battle.lightningVictory", {
               turns: battle.lightningVictoryTurns,

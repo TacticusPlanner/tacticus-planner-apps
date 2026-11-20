@@ -187,7 +187,10 @@ export function nextMasterTableParams(
   >
 ): URLSearchParams {
   const next = new URLSearchParams(params)
-  for (const [key, value] of Object.entries(changes)) {
+  // A caller can pass an explicit undefined, which removes the parameter like null.
+  for (const [key, value] of Object.entries<string | null | undefined>(
+    changes
+  )) {
     if (value === null || value === undefined || value === "") {
       // An empty selection must survive: it is the "pick at least one event" state.
       if (key === "events" && value === "") next.set(key, "")

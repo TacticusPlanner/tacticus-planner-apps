@@ -84,7 +84,7 @@ export function useGoalResourceChips({
   shopSpend,
 }: GoalResourceChipsInput): GoalResourceChip[] {
   const { t, i18n } = useTranslation(["common", "shops", "progression"])
-  const format = new Intl.NumberFormat(i18n?.resolvedLanguage)
+  const format = new Intl.NumberFormat(i18n.resolvedLanguage)
   const fmt = (value: number) => format.format(value)
   const rarityName = (rarity: Rarity) => t(`progression:rarities.${rarity}`)
   const chips: GoalResourceChip[] = []
@@ -96,7 +96,7 @@ export function useGoalResourceChips({
     quantity: number | undefined,
     overlay?: string
   ) => {
-    if (quantity && quantity > 0) {
+    if (quantity !== undefined && quantity > 0) {
       chips.push({
         key,
         kind,
@@ -117,7 +117,7 @@ export function useGoalResourceChips({
     available: number | undefined,
     overlay?: string
   ) => {
-    if (!needed || needed <= 0) return
+    if (needed === undefined || needed <= 0) return
     const pool = { available: available ?? 0, needed }
     chips.push({
       key,
@@ -229,7 +229,7 @@ export function useGoalResourceChips({
   }
   // V1 parity (numberToThousandsString): below 1,000 as is, otherwise floor(value / 1000) + "k".
   const addGold = (gold: number | undefined) => {
-    if (!gold || gold <= 0) return
+    if (gold === undefined || gold <= 0) return
     chips.push({
       key: "gold",
       kind: "gold",
@@ -310,7 +310,7 @@ export function useGoalResourceChips({
     }
     addGold(materials?.gold)
     addEnergy()
-  } else if (goalType === "Upgrade") {
+  } else {
     addEnergy()
   }
 

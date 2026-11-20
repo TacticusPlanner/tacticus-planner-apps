@@ -95,7 +95,6 @@ describe("buildClearEstimates", () => {
   })
 
   it("estimates nothing, with no inputs, when power data is unavailable", () => {
-    if (config.status !== "ready") throw new Error("not ready")
     const result = build({
       config: {
         status: "ready",

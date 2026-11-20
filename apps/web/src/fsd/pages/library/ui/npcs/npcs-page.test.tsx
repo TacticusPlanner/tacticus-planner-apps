@@ -370,7 +370,7 @@ describe("NpcsPage", () => {
     const options = await screen.findAllByRole("option")
     expect(options).toHaveLength(5)
     await user.click(
-      options.find((o) => o.textContent?.includes("necroBossWardenLEG"))!
+      options.find((o) => o.textContent.includes("necroBossWardenLEG"))!
     )
 
     await waitFor(() =>
@@ -743,7 +743,7 @@ describe("NpcsPage desktop layout and filters", () => {
     await openFilters(user)
     await user.click(screen.getByTestId("npcs-damage-type-filter"))
     const options = await screen.findAllByRole("option")
-    expect(options.every((o) => o.textContent?.trim() !== "")).toBe(true)
+    expect(options.every((o) => o.textContent.trim() !== "")).toBe(true)
   })
 
   it("narrows by faction and by damage type, and the clear button reports the active count", async () => {
@@ -938,7 +938,7 @@ describe("NpcsPage encounters", () => {
   ) {
     await seedGameCatalog({
       ...(encounters ? { "npc-encounters": encounters } : {}),
-      ...(calendar ? { "events-calendar": calendar } : {}),
+      ...(calendar === null ? {} : { "events-calendar": calendar }),
     })
     const view = await renderPage(entry)
     await screen.findByTestId("npc-name")
@@ -1124,9 +1124,7 @@ describe("NpcsPage encounters", () => {
     const [any, ...locations] = await screen.findAllByRole("option")
     expect(any).toHaveTextContent("Any location")
     expect(locations).toHaveLength(2)
-    const elite = locations.find((option) =>
-      /elite/i.test(option.textContent ?? "")
-    )
+    const elite = locations.find((option) => /elite/i.test(option.textContent))
     await user.click(elite as HTMLElement)
 
     expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
@@ -1299,9 +1297,7 @@ describe("NpcsPage encounters", () => {
     await user.click(await screen.findByRole("option", { name: "Campaign" }))
     await user.click(screen.getByTestId("npcs-location-filter"))
     const options = await screen.findAllByRole("option")
-    const elite = options.find((option) =>
-      /elite/i.test(option.textContent ?? "")
-    )
+    const elite = options.find((option) => /elite/i.test(option.textContent))
     await user.click(elite as HTMLElement)
     expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
       "Filters (2)"

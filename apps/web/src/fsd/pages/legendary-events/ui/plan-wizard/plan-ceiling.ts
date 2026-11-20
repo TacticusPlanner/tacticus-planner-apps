@@ -42,7 +42,7 @@ function draftPlan(
         objectiveIndexes: team.objectiveIndexes,
         runDepths: Object.entries(team.depthByRun).map(([run, depth]) => ({
           run: Number(run) as LegendaryEventRun,
-          expectedBattleClears: depth ?? 0,
+          expectedBattleClears: depth,
           expectedBattleClearsSource: "estimate",
           recordedAt: "",
         })),

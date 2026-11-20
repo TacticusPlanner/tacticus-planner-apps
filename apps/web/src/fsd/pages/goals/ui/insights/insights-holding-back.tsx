@@ -91,7 +91,7 @@ export function InsightsHoldingBack({
                   data-testid="insights-blocker"
                   key={blocker.key}
                 >
-                  {blocker.resourceId ? (
+                  {blocker.resourceId !== null ? (
                     <GoalResourceIcon
                       className="size-10"
                       resourceId={blocker.resourceId}
@@ -121,7 +121,7 @@ export function InsightsHoldingBack({
                       )}
                     </div>
                     {blocker.reason === "NoFarmLocation" &&
-                    blocker.resourceId ? (
+                    blocker.resourceId !== null ? (
                       <div className="text-xs">
                         <FarmUnlockPaths
                           resourceId={blocker.resourceId}

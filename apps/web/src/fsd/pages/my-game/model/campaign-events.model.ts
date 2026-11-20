@@ -227,7 +227,7 @@ const addCompletion = (parts: readonly Completion[]): Completion =>
   )
 
 const percentOf = ({ done, total }: Completion) =>
-  total ? (done / total) * 100 : 0
+  total > 0 ? (done / total) * 100 : 0
 
 const isTrackCompleted = (track: TrackView) =>
   track.progress.completedBattleCount >= track.battles.regular.length &&

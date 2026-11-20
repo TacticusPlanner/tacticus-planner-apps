@@ -113,7 +113,7 @@ export function IncursionRewards({
             aria-label={label}
             data-reward={reward.id}
           >
-            {display.iconUrl ? (
+            {display.iconUrl !== undefined ? (
               <RewardIcon
                 id={reward.id}
                 kind={display.kind}
