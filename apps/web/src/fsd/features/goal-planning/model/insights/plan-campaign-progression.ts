@@ -13,6 +13,7 @@ import { campaignTrackGate } from "../unlock-paths/campaign-track-gate"
 import type { GateCampaignDefinition } from "../unlock-paths/campaign-track-gate"
 import { netGoalNeeds } from "./plan-bottlenecks"
 import type { PlanCampaignProgression } from "./use-plan-insights.domain"
+import { firstDifference } from "@/shared/lib"
 
 const TOP_CAMPAIGNS = 5
 
@@ -86,7 +87,7 @@ export function computeCampaignProgression(params: {
       if (!estimate.blockers) continue
     }
     // A goal pinned to its own nodes keeps farming there whatever opens up.
-    if (goal.farmingLocationIds?.length) continue
+    if ((goal.farmingLocationIds?.length ?? 0) > 0) continue
     const net = netGoalNeeds(
       goal,
       params.allocations.get(goal.goalId),
@@ -209,9 +210,11 @@ export function computeCampaignProgression(params: {
   }
 
   return results
-    .toSorted(
-      (a, b) =>
-        b.unblocks.length - a.unblocks.length || b.energySaved - a.energySaved
+    .toSorted((a, b) =>
+      firstDifference(
+        b.unblocks.length - a.unblocks.length,
+        b.energySaved - a.energySaved
+      )
     )
     .slice(0, TOP_CAMPAIGNS)
 }

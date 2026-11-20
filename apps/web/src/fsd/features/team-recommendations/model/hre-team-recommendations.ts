@@ -241,7 +241,7 @@ function hsePoolsFor(
   units: readonly TeamRosterCharacter[]
 ): TeamPoolSpec[] {
   const mode = HSE_MODE[input.plan.mode]
-  if (!mode || !input.hseTrackers?.length) return []
+  if (!mode || !input.hseTrackers || input.hseTrackers.length === 0) return []
   const catalog = new Map<
     UnitId,
     { traits: readonly string[]; alliance: Alliance; faction: string }

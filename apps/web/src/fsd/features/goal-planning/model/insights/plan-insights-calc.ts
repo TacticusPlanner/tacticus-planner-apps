@@ -64,6 +64,7 @@ import type {
   PlanInsightsResult,
   PlanInsightsTotals,
 } from "./use-plan-insights.domain"
+import { firstDifference } from "@/shared/lib"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
@@ -450,9 +451,8 @@ export function computePlanInsights(params: {
     }
   }
   // Latest first: the head of the list is what sets the plan's date.
-  goalOutlook.sort(
-    (left, right) =>
-      right.date.localeCompare(left.date) || right.days - left.days
+  goalOutlook.sort((left, right) =>
+    firstDifference(right.date.localeCompare(left.date), right.days - left.days)
   )
   // Counted against the project's own goals, not `goalNeeds`: that array is already filtered above
   // (needs-or-stages plus a resolved priority), and an orb-only Ascension goal goes to

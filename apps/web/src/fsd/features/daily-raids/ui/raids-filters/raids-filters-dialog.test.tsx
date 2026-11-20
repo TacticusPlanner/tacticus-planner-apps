@@ -40,8 +40,7 @@ function renderTrigger() {
     </>
   )
 }
-const applied = () =>
-  JSON.parse(screen.getByTestId("applied").textContent ?? "{}")
+const applied = () => JSON.parse(screen.getByTestId("applied").textContent)
 const optionIds = () =>
   screen
     .getAllByRole("option")

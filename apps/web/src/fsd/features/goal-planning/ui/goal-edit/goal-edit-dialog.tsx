@@ -205,7 +205,7 @@ function GoalEditDialogContent({
           if (blocked) {
             settle(() => {
               closing.current = true
-              blocker.proceed?.()
+              blocker.proceed()
             })
           } else close()
         }}

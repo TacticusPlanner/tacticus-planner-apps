@@ -21,13 +21,14 @@ export function useObjectiveWording() {
 function objectiveWording(t: ObjectiveT) {
   const values = (objective: Objective) => {
     const target = objective.target ?? ""
+    const count = Number(target)
     return {
       trait: t(`traits:${objectiveTraitId(target)}` as never, {
         defaultValue: target,
       }),
       faction: t(`factions:${target}` as never, { defaultValue: target }),
       damageType: t(`damageTypes:${target}` as never, { defaultValue: target }),
-      count: Number(target) || 0,
+      count: Number.isNaN(count) ? 0 : count,
     }
   }
   const word = (objective: Objective): string =>

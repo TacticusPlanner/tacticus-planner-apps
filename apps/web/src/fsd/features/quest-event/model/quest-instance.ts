@@ -1,4 +1,4 @@
-import { compareCodeUnits } from "@/shared/lib"
+import { compareCodeUnits, firstDifference } from "@/shared/lib"
 /** What the Quest selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type QuestCalendarEntry = {
   occurrenceId?: string | null
@@ -48,8 +48,10 @@ function claimWindowHours(definition: QuestDefinition | undefined) {
 
 /** Latest start first, then the lowest occurrence key. */
 const latestFirst = (a: QuestCalendarEntry, b: QuestCalendarEntry) =>
-  Date.parse(b.startUtc) - Date.parse(a.startUtc) ||
-  compareCodeUnits(instanceKey(a), instanceKey(b))
+  firstDifference(
+    Date.parse(b.startUtc) - Date.parse(a.startUtc),
+    compareCodeUnits(instanceKey(a), instanceKey(b))
+  )
 
 /**
  * The quest the tab shows (UTC, start inclusive, end exclusive): the running one, else the one in
@@ -97,10 +99,11 @@ export function selectQuestInstance<TEntry extends QuestCalendarEntry>(
   if (claim) return toInstance(claim, "claim")
   const next = quests
     .filter((entry) => Date.parse(entry.startUtc) > nowMs)
-    .toSorted(
-      (a, b) =>
-        Date.parse(a.startUtc) - Date.parse(b.startUtc) ||
+    .toSorted((a, b) =>
+      firstDifference(
+        Date.parse(a.startUtc) - Date.parse(b.startUtc),
         compareCodeUnits(instanceKey(a), instanceKey(b))
+      )
     )[0]
   return next ? toInstance(next, "preview") : null
 }

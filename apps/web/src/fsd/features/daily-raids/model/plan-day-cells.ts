@@ -6,6 +6,7 @@ import type {
   DailyRaidsReadyViewModel,
 } from "./daily-raids.domain"
 import type { RaidDaySchedule } from "@/entities/goal-farming"
+import { firstDifference } from "@/shared/lib"
 
 export type PlanCell = {
   resourceId: string
@@ -88,9 +89,11 @@ function buildShopPurchases(
     if (unit.priority < purchase.unit.priority) purchase.unit = unit
     byKey.set(key, purchase)
   }
-  return [...byKey.values()].toSorted(
-    (a, b) =>
-      a.unit.priority - b.unit.priority || a.offerId.localeCompare(b.offerId)
+  return [...byKey.values()].toSorted((a, b) =>
+    firstDifference(
+      a.unit.priority - b.unit.priority,
+      a.offerId.localeCompare(b.offerId)
+    )
   )
 }
 
@@ -175,7 +178,9 @@ export function buildPlanDayCells(
     }
   )
   // `index` keeps the engine's own emission order for cells serving the same priority.
-  cells.sort((a, b) => a.priority - b.priority || a.index - b.index)
+  cells.sort((a, b) =>
+    firstDifference(a.priority - b.priority, a.index - b.index)
+  )
 
   const actionable: PlanCell[] = []
   const raided: PlanCell[] = []

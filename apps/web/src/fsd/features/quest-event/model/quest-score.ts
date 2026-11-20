@@ -1,5 +1,6 @@
 import type { QuestEventStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
+import { firstDifference } from "@/shared/lib"
 
 /** A battle awards at most three medals (stars); the points per medal and the Lightning Victory's
  *  maximum are served per quest (design D3). */
@@ -130,6 +131,8 @@ export function scoreQuest(
       : null,
     pointsLeft: scores
       .filter((score) => score.left > 0)
-      .toSorted((a, b) => b.left - a.left || a.number - b.number),
+      .toSorted((a, b) =>
+        firstDifference(b.left - a.left, a.number - b.number)
+      ),
   }
 }

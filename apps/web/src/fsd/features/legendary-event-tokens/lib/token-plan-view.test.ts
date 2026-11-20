@@ -320,7 +320,7 @@ describe("buildTokenPlanView", () => {
     const view = ready(
       buildTokenPlanView({
         ...base,
-        event: { ...base.event, rewards: undefined! },
+        event: { ...base.event, rewards: undefined },
       })
     )
 

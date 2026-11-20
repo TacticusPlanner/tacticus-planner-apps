@@ -94,7 +94,8 @@ export function useMythicMaterialSelection(params: {
   // shows the selected offers' currency spend*) — the materials have no campaign source here, so the
   // shops cover the whole need, split by the same day-by-day attribution the plan uses.
   const currencySpend = useMemo(() => {
-    if (!offers?.length || mythicNeeds.length === 0) return []
+    if (offers === undefined || offers.length === 0 || mythicNeeds.length === 0)
+      return []
     const used = selectMythicMaterialOffers(acquisitionSources, offers)
     if (used.length === 0) return []
     const referenceDate = params.referenceDate ?? new Date()

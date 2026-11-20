@@ -7,6 +7,7 @@ import type {
   CampaignGateContext,
   CampaignLockReason,
 } from "./campaign-track-gate"
+import { firstDifference } from "@/shared/lib"
 
 /** A node that drops a resource but that the player can't farm yet, and how far away it is. */
 export type FarmUnlockPath =
@@ -77,9 +78,11 @@ export function farmUnlockPaths(params: {
       started: progress !== undefined,
     })
   }
-  campaign.sort(
-    (a, b) =>
-      lockRank(a) - lockRank(b) || totalBattlesToGo(a) - totalBattlesToGo(b)
+  campaign.sort((a, b) =>
+    firstDifference(
+      lockRank(a) - lockRank(b),
+      totalBattlesToGo(a) - totalBattlesToGo(b)
+    )
   )
   return [...campaign, ...event]
 }

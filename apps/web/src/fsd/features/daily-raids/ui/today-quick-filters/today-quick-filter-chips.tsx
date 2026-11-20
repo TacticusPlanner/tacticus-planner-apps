@@ -13,6 +13,7 @@ import {
   isTodayQuickFilter,
 } from "../../model/today-quick-filters/today-quick-filters"
 import type { TodayQuickFilter } from "../../model/today-quick-filters/today-quick-filters"
+import { hasNode } from "@/shared/lib"
 
 /**
  * Today's quick filters as a multi-select chip row (Collection's chip style). Each chip's tooltip
@@ -79,7 +80,7 @@ export function TodayQuickFilterChips({
       )}
     </ToggleGroup>
   )
-  const chips = extra ? (
+  const chips = hasNode(extra) ? (
     <div className="flex flex-wrap items-center gap-1">
       {group}
       {extra}

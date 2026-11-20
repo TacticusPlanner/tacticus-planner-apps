@@ -93,8 +93,8 @@ export function computeCreationPreview(params: {
     rankIndex(params.rankStart) < rankIndex(params.rankEnd) ||
     (params.rankStart === params.rankEnd &&
       (params.rankEndPointFive ||
-        (params.rankEndAppliedUpgrades ?? 0) > 0 ||
-        (params.rankEndTopRowCount ?? 0) > 0))
+        params.rankEndAppliedUpgrades > 0 ||
+        params.rankEndTopRowCount > 0))
 
   const estimatePreview =
     previewEnabled && hasEntity && rankRangeValid

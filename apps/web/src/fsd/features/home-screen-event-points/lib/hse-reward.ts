@@ -37,6 +37,7 @@ export function hseRewardDisplay(
   const token = SUMMONING_TOKENS[rewardId]
   if (token) return { iconUrl: token.iconUrl, label: translate(token.labelKey) }
   const display = shopRewardDisplay(rewardId, undefined, context)
-  if (display.kind === "other" && !display.iconUrl) return { label: rewardId }
+  if (display.kind === "other" && display.iconUrl === undefined)
+    return { label: rewardId }
   return { iconUrl: display.iconUrl, label: display.label }
 }

@@ -92,7 +92,8 @@ export function usePerProjectEstimates({
     battlesReady &&
     !!charactersById &&
     !!mowsById &&
-    !!onslaughtRewards?.length &&
+    onslaughtRewards !== undefined &&
+    onslaughtRewards.length > 0 &&
     onslaughtRunsPerDay !== undefined &&
     !!ascensionCostsById &&
     !!unlockShardCostsById

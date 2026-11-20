@@ -10,6 +10,7 @@ import { CompactStars, EntityIcon, RarityIcon } from "@/shared/ui"
 
 import type { BulkPlannedGoal } from "../../model/bulk-create/bulk-goal-plan"
 import { plannedAbilityTracks } from "../../model/bulk-create/planned-ability-tracks"
+import { hasNode } from "@/shared/lib"
 
 type TFunction = ReturnType<typeof useTranslation>["t"]
 
@@ -95,7 +96,7 @@ function PlannedRow({
       <span className="sr-only">{label}</span>
       <span aria-hidden className="flex flex-wrap items-center gap-2">
         <span className="min-w-16">{type}</span>
-        {start && end ? (
+        {hasNode(start) && hasNode(end) ? (
           <>
             {start}
             <ArrowRight className="size-3.5 shrink-0" />

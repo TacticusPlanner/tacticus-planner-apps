@@ -4,6 +4,7 @@ import type { Rarity } from "@workspace/game-domain"
 import type { DraftAlliance } from "@/entities/shops/event-plan"
 
 import type { ClassifiedEntry } from "./classify"
+import { firstDifference } from "@/shared/lib"
 
 // Coverage of goal needs (spec event-shop-planner: Coverage of goal needs). One row per resource the
 // event sells that the goals still need: need, planned (to-buy packs only), still needed, the most
@@ -76,7 +77,9 @@ export function rewardResources(
     ))
   ) {
     const xp = xpPerBook[match[1] as Rarity]
-    return xp ? [{ resource: "xp", group: "xp", unitsPerQty: xp }] : []
+    return xp !== undefined && xp > 0
+      ? [{ resource: "xp", group: "xp", unitsPerQty: xp }]
+      : []
   }
   if (
     (match = /^abilityToken(\w+?)_(Imperial|Xenos|Chaos)$/.exec(rewardType))
@@ -256,10 +259,11 @@ export function buildCoverage({
         best && stillNeeded > 0 ? { packs, cost: packs * best.cost } : null,
     })
   }
-  return rows.toSorted(
-    (a, b) =>
-      GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group) ||
+  return rows.toSorted((a, b) =>
+    firstDifference(
+      GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group),
       a.resource.localeCompare(b.resource)
+    )
   )
 }
 
@@ -278,7 +282,7 @@ export function toCoverageNeeds(
 ): CoverageNeeds {
   const needs = new Map<CoverageResource, number>()
   const add = (resource: string, amount: number | undefined) => {
-    if (amount && amount > 0)
+    if (amount !== undefined && amount > 0)
       needs.set(resource, (needs.get(resource) ?? 0) + amount)
   }
   for (const [rewardType, need] of shopNeeds) {

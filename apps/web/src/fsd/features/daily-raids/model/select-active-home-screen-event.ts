@@ -1,7 +1,7 @@
 // Type-only: the rule lookup parses `config.hse` with zod, which must stay out of the app shell's
 // startup graph (it reads the active event too), so callers that need rules pass the lookup in.
 import type { HseRaidRule } from "./home-screen-event-rules"
-import { compareCodeUnits } from "@/shared/lib"
+import { compareCodeUnits, firstDifference } from "@/shared/lib"
 
 /** What the selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type HomeScreenEventEntry = {
@@ -64,18 +64,20 @@ export function selectActiveHomeScreenEvent<
       (entry) =>
         Date.parse(entry.startUtc) <= nowMs && nowMs < Date.parse(entry.endUtc)
     )
-    .toSorted(
-      (a, b) =>
-        hasRule(b) - hasRule(a) ||
-        Date.parse(b.startUtc) - Date.parse(a.startUtc) ||
+    .toSorted((a, b) =>
+      firstDifference(
+        hasRule(b) - hasRule(a),
+        Date.parse(b.startUtc) - Date.parse(a.startUtc),
         compareCodeUnits(a.definitionId, b.definitionId)
+      )
     )[0]
   const upcoming = events
     .filter((entry) => Date.parse(entry.startUtc) > nowMs)
-    .toSorted(
-      (a, b) =>
-        Date.parse(a.startUtc) - Date.parse(b.startUtc) ||
+    .toSorted((a, b) =>
+      firstDifference(
+        Date.parse(a.startUtc) - Date.parse(b.startUtc),
         compareCodeUnits(a.definitionId, b.definitionId)
+      )
     )
   return { active: active ?? null, next: upcoming[0] ?? null, upcoming }
 }
@@ -134,10 +136,11 @@ export function listHomeScreenEventInstances<
         raidRule: ruleOf(entry, definitionsById),
       })
   }
-  return [...byKey.values()].toSorted(
-    (a, b) =>
-      Date.parse(a.entry.startUtc) - Date.parse(b.entry.startUtc) ||
+  return [...byKey.values()].toSorted((a, b) =>
+    firstDifference(
+      Date.parse(a.entry.startUtc) - Date.parse(b.entry.startUtc),
       compareCodeUnits(a.entry.definitionId, b.entry.definitionId)
+    )
   )
 }
 

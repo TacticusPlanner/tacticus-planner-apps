@@ -9,6 +9,7 @@ import { RankBadge, UpgradeIcon } from "@/shared/ui"
 
 import { PreviewSection } from "../shared/preview-section"
 import type { PreviewState } from "../shared/preview-section"
+import { hasNode } from "@/shared/lib"
 
 type MissingUpgrade = { id: string; label: string; missing: number }
 
@@ -78,7 +79,7 @@ export function ResourcePreviewSection({
   return (
     <PreviewSection emptyText={emptyText} state={preview.state} testId={testId}>
       <ResourcesNeededList missingUpgrades={preview.missingUpgrades} />
-      {preview.days ? (
+      {hasNode(preview.days) ? (
         <p className="font-medium" data-testid="goal-card-estimate-days">
           {preview.days}
         </p>

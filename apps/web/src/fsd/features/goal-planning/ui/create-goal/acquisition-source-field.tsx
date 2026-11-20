@@ -14,6 +14,7 @@ import { shopOfferPerDay } from "@/entities/goal-farming"
 import type { Battle, FarmLocation } from "@/entities/goal-farming"
 import { GoalShardLocationsField } from "./goal-shard-locations-field"
 import { shardIcon } from "@workspace/game-catalog"
+import { hasNode } from "@/shared/lib"
 
 const SHARD_ICON = shardIcon("Regular")
 
@@ -289,10 +290,10 @@ function SourceGroup({
           <Chevron className="size-4 shrink-0" />
         </button>
       </div>
-      {headerNote ? (
+      {hasNode(headerNote) ? (
         <div className="pl-6 text-xs text-muted-foreground">{headerNote}</div>
       ) : null}
-      {note ? <div className="pl-6">{note}</div> : null}
+      {hasNode(note) ? <div className="pl-6">{note}</div> : null}
       {expanded ? <div className="grid gap-2 pl-6">{children}</div> : null}
     </div>
   )

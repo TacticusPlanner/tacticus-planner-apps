@@ -77,7 +77,7 @@ export function baselineGoalEditDraft(
       ? goalTargetDraftFromDetail(detail)
       : null,
     notes: detail.notes ?? "",
-    farmingStrategy: detail.config.farmingStrategy ?? "TotalUpgrades",
+    farmingStrategy: detail.config.farmingStrategy,
     farmingLocationIds: detail.config.farmingLocationIds ?? [],
     acquisitionSources: extras.acquisitionSources,
     projectIds: detail.projectIds,

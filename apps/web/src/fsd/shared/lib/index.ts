@@ -59,6 +59,7 @@ export {
   matchesSearch,
   normalizeSearchText,
 } from "./search-text"
-export { compareCodeUnits } from "./compare"
+export { compareCodeUnits, firstDifference } from "./compare"
 export { runCatching, runWithCleanup } from "./async"
 export { useStableByKey } from "./use-stable-by-key"
+export { hasNode } from "./has-node"

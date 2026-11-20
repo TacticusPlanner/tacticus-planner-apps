@@ -111,7 +111,8 @@ describe("TeamSuggestionsDialog", () => {
   it("shows a Healer that would lower the depth as the reserve", async () => {
     // Incisus at Stone 1 gives way to the stronger Inceptor Sgt and is offered as the reserve.
     const estimates = source.estimates
-    if (!estimates || estimates === "pending") throw new Error("fixture")
+    if (estimates === undefined || estimates === "pending")
+      throw new Error("fixture")
     const roster = new Map([
       ...estimates.roster,
       [

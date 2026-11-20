@@ -31,7 +31,7 @@ import type {
   BattleProgressOverrides,
 } from "@/entities/player-data-override"
 import { useRevisionedDraft } from "@/shared/api"
-import { combineReadStates, useCampaignDisplay } from "@/shared/lib"
+import { combineReadStates, useCampaignDisplay, hasNode } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
   EntityIcon,
@@ -574,7 +574,7 @@ function Shell({
         <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody className="pb-3">{children}</ResponsiveDialogBody>
-      {footer ? (
+      {hasNode(footer) ? (
         <ResponsiveDialogFooter>{footer}</ResponsiveDialogFooter>
       ) : null}
     </>

@@ -163,7 +163,8 @@ export function useProgressionPreview(params: {
     if (
       params.ascensionEnabled &&
       onslaughtProgress &&
-      rewards?.length &&
+      rewards !== undefined &&
+      rewards.length > 0 &&
       onslaughtRunsPerDay !== undefined
     ) {
       // No row for this sector/tier → Onslaught is unavailable for the preview (0 shards/run).

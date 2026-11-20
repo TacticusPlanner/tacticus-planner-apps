@@ -837,7 +837,7 @@ describe("daily raid derivation", () => {
     })
 
     expect(result?.status).toBe("ready")
-    if (!result || result.status !== "ready") return
+    if (!result) return
     expect(result.today.entries[0]?.resourceId).toBe("shard:hero1")
     expect(result.resourceLabels.get("shard:hero1")).toBe("Hero One shards")
     expect(result.resourceVisuals.get("shard:hero1")).toEqual({
@@ -910,7 +910,7 @@ describe("daily raid derivation", () => {
     })
 
     expect(result?.status).toBe("ready")
-    if (!result || result.status !== "ready") return
+    if (!result) return
     expect(result.blockedGoals.map((goal) => goal.goalId)).toEqual([
       "shop-only",
     ])
@@ -1104,12 +1104,7 @@ describe("daily raid derivation", () => {
 
     expect(campaignOnly?.status).toBe("ready")
     expect(withShop?.status).toBe("ready")
-    if (
-      !campaignOnly ||
-      campaignOnly.status !== "ready" ||
-      !withShop ||
-      withShop.status !== "ready"
-    ) {
+    if (!campaignOnly || !withShop) {
       return
     }
     expect(withShop.planSummary.totalDays).toBeLessThan(
@@ -1259,7 +1254,7 @@ describe("daily raid derivation", () => {
     })
 
     expect(result?.status).toBe("ready")
-    if (!result || result.status !== "ready") return
+    if (!result) return
     expect(result.today).toEqual(result.planDays[0])
     expect(result.today.entries).toEqual([
       expect.objectContaining({ goalId: "ahriman", itemsFarmed: 2 }),
@@ -1364,7 +1359,7 @@ describe("daily raid derivation", () => {
     })
 
     expect(result?.status).toBe("ready")
-    if (!result || result.status !== "ready") return
+    if (!result) return
     const farmed = (goalId: string) =>
       result.today.entries
         .filter((entry) => entry.goalId === goalId)

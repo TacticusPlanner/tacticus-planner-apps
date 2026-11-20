@@ -76,8 +76,8 @@ function narrowsPlayers(filter: GameCatalogHseUnitFilter | null): boolean {
     !!filter.tags?.allowed ||
     disallowedTags.length > 0 ||
     !!filter.factionIds?.allowed ||
-    !!filter.factionIds?.disallowed?.length ||
-    !!filter.unitIds?.length
+    (filter.factionIds?.disallowed?.length ?? 0) > 0 ||
+    (filter.unitIds?.length ?? 0) > 0
   )
 }
 
@@ -95,7 +95,11 @@ function passesFilter(
   )
     return false
   if (!hseRestrictionPasses(filter.factionIds, unit.faction)) return false
-  if (filter.unitIds?.length && !filter.unitIds.includes(unit.unitId))
+  if (
+    filter.unitIds &&
+    filter.unitIds.length > 0 &&
+    !filter.unitIds.includes(unit.unitId)
+  )
     return false
   return true
 }

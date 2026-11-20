@@ -53,7 +53,7 @@ export function withRunInputs(
   values: LegendaryEventRunInputValues,
   updatedAt: string
 ): LegendaryEventPlan {
-  const others = (plan.runs ?? []).filter((entry) => entry.run !== run)
+  const others = plan.runs.filter((entry) => entry.run !== run)
   return {
     ...plan,
     runs: [...others, { run, ...values, updatedAt }].toSorted(

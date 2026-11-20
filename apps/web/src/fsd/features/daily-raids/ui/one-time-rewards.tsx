@@ -58,7 +58,7 @@ export function OneTimeRewards({
             aria-label={label}
             data-testid={`one-time-reward-${reward.id}`}
           >
-            {display.iconUrl ? (
+            {display.iconUrl !== undefined ? (
               <EntityIcon alt="" src={display.iconUrl} className="size-5" />
             ) : (
               <span aria-hidden>{display.label}</span>

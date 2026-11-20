@@ -59,7 +59,9 @@ export function useEntityShardSummary(
     isOwned,
     hasEntityId: !!entityId,
     campaignLocationCount:
-      (entityId && charactersById?.get(entityId)?.shardLocations?.length) || 0,
+      (entityId
+        ? charactersById?.get(entityId)?.shardLocations?.length
+        : undefined) ?? 0,
     shopOffers,
   })
 

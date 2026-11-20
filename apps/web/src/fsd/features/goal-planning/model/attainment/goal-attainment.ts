@@ -41,7 +41,7 @@ function fromBoolean(value: boolean): GoalAttainment {
 export function isPlayerDataUnavailable(params: {
   attainment: GoalAttainment
   rosterLoaded: boolean
-  playerUnit: unknown
+  playerUnit: object | null | undefined
 }): boolean {
   if (params.attainment.status !== "unknown") return false
   const unitAbsentFromLoadedRoster = params.rosterLoaded && !params.playerUnit
@@ -53,11 +53,13 @@ export function isPlayerDataUnavailable(params: {
  *  to a Character or a MoW record since both share `playerUnitBaseSchema`. Defaults to `1`
  *  (unowned/base) so an as-yet-unsynced ability never reads as ahead of its actual level. */
 export function abilityTrackLevel(
-  owned: { abilities: readonly { level: number }[] } | undefined,
+  /** `abilities` is optional: a partial roster record (test fixtures, older caches) can lack it. */
+  owned: { abilities?: readonly { level: number }[] } | undefined,
   track: "primary" | "secondary"
 ): number {
   const index = track === "primary" ? 0 : 1
-  return owned?.abilities[index]?.level ?? 1
+  const ability: { level: number } | undefined = owned?.abilities?.[index]
+  return ability?.level ?? 1
 }
 
 export type GoalAttainmentParams = {

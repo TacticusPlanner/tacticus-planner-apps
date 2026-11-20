@@ -104,8 +104,12 @@ export function CampaignGroupedList<Row>({
       {groups.map((group) => (
         <CampaignGroup
           key={group.key}
-          location={group.items[0] ? locationOf(group.items[0]) : undefined}
-          testId={`campaign-group-${group.items[0] ? battleIdOf(group.items[0]) : group.key}`}
+          location={
+            group.items[0] === undefined
+              ? undefined
+              : locationOf(group.items[0])
+          }
+          testId={`campaign-group-${group.items[0] === undefined ? group.key : battleIdOf(group.items[0])}`}
         >
           {group.items.map((row) => renderRow(row))}
         </CampaignGroup>

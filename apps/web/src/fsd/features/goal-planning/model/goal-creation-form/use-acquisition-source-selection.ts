@@ -270,7 +270,7 @@ export function useAcquisitionSourceSelection(params: {
     const totalShards = rarity
       ? params.unlockShardCostsById?.get(rarity)?.shards
       : 0
-    if (!rarity || !totalShards) return null
+    if (!rarity || totalShards === undefined || totalShards === 0) return null
 
     const ownedShards = params.lockedShards ?? 0
     const remainingShards = Math.max(0, totalShards - ownedShards)

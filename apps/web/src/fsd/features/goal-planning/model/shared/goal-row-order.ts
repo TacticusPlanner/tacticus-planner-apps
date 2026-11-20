@@ -1,6 +1,7 @@
 import { holdsGlobalPosition } from "@/entities/goal"
 
 import type { GoalRow } from "./types"
+import { firstDifference } from "@/shared/lib"
 
 /**
  * The Goals page's one order (spec: `goals-navigation`): goals that hold a position in the global
@@ -39,7 +40,7 @@ export function orderRowsByFinishDate(
         if (left.days !== right.days) return left.days === undefined ? 1 : -1
         return left.index - right.index
       }
-      return left.days - right.days || left.index - right.index
+      return firstDifference(left.days - right.days, left.index - right.index)
     })
     .map((entry) => entry.row)
 }

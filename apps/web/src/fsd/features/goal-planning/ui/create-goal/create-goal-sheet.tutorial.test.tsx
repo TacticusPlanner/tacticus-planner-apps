@@ -21,7 +21,7 @@ describe("useCreateGoalSheetTutorial", () => {
   it("desktop steps target the status, ladder, milestones, sources, projects and problem count", () => {
     const { result } = renderHook(() => useCreateGoalSheetTutorial())
 
-    expect(result.current.desktop?.map((step) => step.target)).toEqual([
+    expect(result.current.desktop.map((step) => step.target)).toEqual([
       testId("create-goal-unit-info"),
       ladder,
       milestones,
@@ -30,13 +30,13 @@ describe("useCreateGoalSheetTutorial", () => {
       testId("create-goal-projects"),
       testId("create-goal-issue-summary"),
     ])
-    const [status, ladderStep, milestoneStep] = result.current.desktop ?? []
+    const [status, ladderStep, milestoneStep] = result.current.desktop
     expect(status?.title).toBe("Current status")
     expect(ladderStep?.title).toBe("Target ladder")
     expect(milestoneStep?.content).toBe(
       "Add milestone to plan several targets for this unit at once, such as Gold 1, then Diamond 1, then Diamond 3. Each becomes its own goal, after the one before it."
     )
-    expect(result.current.desktop?.some((step) => step.before)).toBe(false)
+    expect(result.current.desktop.some((step) => step.before)).toBe(false)
   })
 
   it("mobile steps start with the step indicator and walk the composer steps", async () => {

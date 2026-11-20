@@ -5,9 +5,9 @@ import type { OutcomeBucketKey } from "./outcome-buckets"
 // No roster snapshot outcome asks the user for a manual step.
 export type RosterSnapshotBucketKey = Exclude<OutcomeBucketKey, "needsAction">
 
-const STATUS_BUCKETS: Record<
-  V1RosterSnapshotOutcome["status"],
-  RosterSnapshotBucketKey
+// Partial: a status a newer API adds has no bucket here yet.
+const STATUS_BUCKETS: Partial<
+  Record<V1RosterSnapshotOutcome["status"], RosterSnapshotBucketKey>
 > = {
   imported: "imported",
   skippedDuplicate: "needsNoImport",

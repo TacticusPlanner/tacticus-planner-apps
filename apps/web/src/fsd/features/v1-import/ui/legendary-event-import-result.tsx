@@ -122,10 +122,10 @@ function ImportedCounts({
     teams > 0
       ? t("goals.v1Import.legendaryEvents.teams", { count: teams })
       : null,
-    runs && runs > 0
+    runs !== undefined && runs > 0
       ? t("goals.v1Import.legendaryEvents.runs", { count: runs })
       : null,
-    marks && marks > 0
+    marks !== undefined && marks > 0
       ? t("goals.v1Import.legendaryEvents.marks", { count: marks })
       : null,
   ].filter((part) => part !== null)

@@ -38,7 +38,7 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
           {stats.lightningVictories}/{stats.maxLightningVictories}
         </span>
       ) : null}
-      {stats.maxGoldMilestones ? (
+      {(stats.maxGoldMilestones ?? 0) > 0 ? (
         <span
           className="inline-flex items-center gap-1 whitespace-nowrap"
           title={t("battleProgress.goldMilestones")}

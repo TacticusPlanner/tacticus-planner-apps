@@ -104,10 +104,12 @@ export interface TokenPlanMissionsSource {
 }
 
 export interface TokenPlanViewInput {
+  /** `rewards` is missing on a record cached before rewards were served. */
   event: Pick<
     LegendaryEvent,
-    "alpha" | "beta" | "gamma" | "rewards" | "tokens" | "ohSoCloseOffer"
-  >
+    "alpha" | "beta" | "gamma" | "tokens" | "ohSoCloseOffer"
+  > &
+    Partial<Pick<LegendaryEvent, "rewards">>
   lifecycle: LegendaryEventLifecycle
   nowMs: number
   /** The event's synced entry, `undefined` without one, or the read's pending / failed status. */
@@ -519,7 +521,9 @@ function emptyReason(
       laneId: withPoints[0]?.laneId ?? LEGENDARY_EVENT_LANE_IDS[0]!,
     }
   }
-  if (lanes.every((lane) => lane.teams.every((team) => !team.depth))) {
+  if (
+    lanes.every((lane) => lane.teams.every((team) => (team.depth ?? 0) === 0))
+  ) {
     for (const lane of lanes) {
       const team = lane.teams[0]
       if (team) {

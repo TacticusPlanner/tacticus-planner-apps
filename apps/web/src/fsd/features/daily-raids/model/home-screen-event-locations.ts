@@ -3,6 +3,7 @@ import type { BattleId } from "@workspace/game-domain"
 import { collectFarmNodes } from "@/entities/goal-farming"
 import type { EstimateUpgrade } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
+import { firstDifference } from "@/shared/lib"
 
 import { dropEfficiency } from "./home-screen-event-farm"
 import type { EventFarmOrder } from "./home-screen-event-farm"
@@ -76,16 +77,19 @@ export function selectEventLocations({
   }
   const efficiency = (location: EventLocation) =>
     dropByBattleId.get(location.battleId)?.efficiency ?? Infinity
-  return ranked.toSorted(
-    (a, b) =>
-      (order === "energy"
-        ? compareEfficiency(efficiency(a), efficiency(b)) ||
-          (fewerRaids ? b.energyCost - a.energyCost : 0)
-        : 0) ||
-      b.pointsPerEnergy - a.pointsPerEnergy ||
-      b.pointsPerRaid - a.pointsPerRaid ||
-      a.energyCost - b.energyCost ||
+  return ranked.toSorted((a, b) =>
+    firstDifference(
+      ...(order === "energy"
+        ? [
+            compareEfficiency(efficiency(a), efficiency(b)),
+            fewerRaids ? b.energyCost - a.energyCost : 0,
+          ]
+        : []),
+      b.pointsPerEnergy - a.pointsPerEnergy,
+      b.pointsPerRaid - a.pointsPerRaid,
+      a.energyCost - b.energyCost,
       a.battleId.localeCompare(b.battleId)
+    )
   )
 }
 
