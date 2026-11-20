@@ -113,7 +113,7 @@ export function AddToAnotherProjectDialog({
           onClick={() => void saver.save({ projectIds: selected })}
         >
           {saver.isSaving ? <Spinner /> : null}
-          {t("goals.edit.save")}
+          {t("goals.project.saveProjects")}
         </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>

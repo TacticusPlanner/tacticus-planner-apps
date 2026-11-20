@@ -609,7 +609,7 @@
             "I_Defensive": "Objet défensif"
           }
         },
-        "closeOptions": "Fermer",
+        "optionsDone": "Terminé",
         "menuItem": "Comparer avec un instantané"
       },
       "snapshots": {
@@ -1232,7 +1232,7 @@
       "moveToPriorityTitle": "Déplacer à la priorité",
       "moveToPriorityLabel": "Priorité (1–{{total}})",
       "moveToPriorityDescription": "Saisissez la priorité que cet objectif doit prendre, de 1 à {{total}}.",
-      "moveToPriorityConfirm": "Déplacer",
+      "moveToPriorityConfirm": "Déplacer l'objectif",
       "moveToPriorityCancel": "Annuler",
       "movedTo": "Déplacé en priorité {{position}} sur {{total}}.",
       "edit": "Modifier"
@@ -1377,7 +1377,8 @@
       "projectsSaveFailed": "Impossible d'enregistrer les projets. Vérifiez votre connexion et réessayez.",
       "addToProjectsDescription": "Choisissez un ou plusieurs projets auxquels ajouter les objectifs sélectionnés, ou créez-en un nouveau.",
       "addToProjectsConfirm": "Ajouter aux projets",
-      "addToProjectsConfirmCount": "Ajouter à {{count}} projets"
+      "addToProjectsConfirmCount": "Ajouter à {{count}} projets",
+      "saveProjects": "Enregistrer les projets"
     },
     "toasts": {
       "statusConflict": "{{goal}} n'a pas pu être modifié : {{reason}}",
@@ -2000,7 +2001,7 @@
         "projectLabel": "Projet",
         "projectPlaceholder": "Choisir un projet",
         "noReference": "Aucun autre projet par rapport auquel placer",
-        "confirm": "Déplacer",
+        "confirm": "Déplacer les objectifs",
         "cancel": "Annuler"
       },
       "sortBlocksReorder": "Les objectifs sont triés par date de fin, vous ne pouvez donc pas les faire glisser pour changer leur priorité.",
@@ -2008,7 +2009,7 @@
     },
     "edit": {
       "title": "Modifier l'objectif",
-      "save": "Enregistrer",
+      "save": "Enregistrer l'objectif",
       "cancel": "Annuler",
       "close": "Fermer",
       "loadError": "Impossible de charger cet objectif. Il n'existe peut-être plus.",

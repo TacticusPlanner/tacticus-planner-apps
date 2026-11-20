@@ -125,7 +125,7 @@
     "boughtSome": {
       "title": "How many did you buy?",
       "value": "Packs bought",
-      "confirm": "Save"
+      "confirm": "Save purchases"
     },
     "clearWeek": {
       "title": "Clear week {{week}}?",

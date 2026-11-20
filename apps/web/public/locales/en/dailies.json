@@ -592,7 +592,7 @@
     },
     "slotsOption": "{{count}} slots",
     "actions": {
-      "close": "Close",
+      "cancel": "Cancel",
       "reset": "Reset filters",
       "apply": "Apply filters"
     },

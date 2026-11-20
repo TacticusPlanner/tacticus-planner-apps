@@ -43,12 +43,12 @@ Dailies > Raids (Today) SHALL provide a keyboard-operable "Raids Filters" action
 
 ### Requirement: Raids Filters dialog
 
-Activating the action SHALL open a dialog titled "Raids Filters" with sections, in order: Allies (Alliances, Factions), Enemies (Alliances, Factions, Enemy Traits, Min Enemy, Max Enemy, Enemy Types), Locations (Types, Slots), Upgrades (Rarity). Alliance, faction, enemy trait, enemy type, campaign type, slot and rarity fields SHALL be multi-selects whose empty state reads as "all" (for example "All alliances"). Min Enemy and Max Enemy SHALL be single searchable selects over the distinct enemy totals present in the catalog (descending), clearable to "no limit". Faction options SHALL be limited to factions of the selected alliances in the same group (all factions when no alliance is selected). Options SHALL show id-based icons (alliance, faction, rarity) with localized labels. Slots options SHALL be 3, 4 and 5; campaign type options SHALL be Elite, Extremis, Standard, Mirror, Normal and Early; upgrade rarity options SHALL be Common through Mythic and SHALL NOT include Shard or Mythic Shard. The footer SHALL offer Close, Reset and Apply.
+Activating the action SHALL open a dialog titled "Raids Filters" with sections, in order: Allies (Alliances, Factions), Enemies (Alliances, Factions, Enemy Traits, Min Enemy, Max Enemy, Enemy Types), Locations (Types, Slots), Upgrades (Rarity). Alliance, faction, enemy trait, enemy type, campaign type, slot and rarity fields SHALL be multi-selects whose empty state reads as "all" (for example "All alliances"). Min Enemy and Max Enemy SHALL be single searchable selects over the distinct enemy totals present in the catalog (descending), clearable to "no limit". Faction options SHALL be limited to factions of the selected alliances in the same group (all factions when no alliance is selected). Options SHALL show id-based icons (alliance, faction, rarity) with localized labels. Slots options SHALL be 3, 4 and 5; campaign type options SHALL be Elite, Extremis, Standard, Mirror, Normal and Early; upgrade rarity options SHALL be Common through Mythic and SHALL NOT include Shard or Mythic Shard. The footer SHALL offer Reset, Cancel and Apply.
 
 #### Scenario: Draft until Apply
 
 - **GIVEN** the dialog is open with changes made
-- **WHEN** the user chooses Close or the dismiss control
+- **WHEN** the user chooses Cancel or the dismiss control
 - **THEN** the dialog closes, the applied filter and plan are unchanged, and reopening shows the applied values
 
 #### Scenario: Apply

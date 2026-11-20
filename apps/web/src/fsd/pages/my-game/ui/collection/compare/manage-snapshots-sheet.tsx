@@ -59,7 +59,10 @@ export function ManageSnapshotsSheet({
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent data-testid="manage-snapshots-sheet">
+        <SheetContent
+          className="sm:data-[side=right]:max-w-md"
+          data-testid="manage-snapshots-sheet"
+        >
           <SheetHeader>
             <SheetTitle>
               {t("myGame.collection.snapshots.manageTitle")}

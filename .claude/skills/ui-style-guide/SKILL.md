@@ -18,8 +18,8 @@ Status: `PageHeader` and `PageToolbar` (`@/shared/ui`) are on every page.
 The icon sizes in rule 6 are the `size` prop of `EntityIcon` and `RarityIcon`
 and the `UnitPortrait` component (`@/entities/unit`). Every call site uses
 them, and `entity-icon-sizes.test.ts` fails on a fixed size class in an
-`EntityIcon` or `RarityIcon` `className`. Rule 8 (overlays) is new: older
-overlays are being moved onto it. Nothing adds a new page-specific variant of
+`EntityIcon` or `RarityIcon` `className`. Every dialog, sheet and
+confirm follows rule 8 (overlays). Nothing adds a new page-specific variant of
 anything below.
 
 Lint enforces two rules in `apps/web` (`no-restricted-syntax`): a hand-written

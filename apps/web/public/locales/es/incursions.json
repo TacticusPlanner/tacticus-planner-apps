@@ -166,7 +166,7 @@
     "selected_one": "{{count}} héroe · poder {{power}}",
     "selected_other": "{{count}} héroes · poder {{power}}",
     "reset": "Volver a la sugerencia",
-    "close": "Cerrar"
+    "done": "Listo"
   },
   "estimate": {
     "clears_one": "Se completa en 1 intento",

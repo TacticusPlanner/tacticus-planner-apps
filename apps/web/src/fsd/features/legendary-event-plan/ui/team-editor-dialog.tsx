@@ -351,6 +351,20 @@ export function TeamEditorDialog({
             className="flex shrink-0 flex-wrap justify-end gap-2"
             data-testid="team-editor-actions"
           >
+            {/* A secondary action is ghost and comes first (ui-style-guide rule 8). */}
+            {team ? null : (
+              <Button
+                aria-describedby={needsMembers ? needsMembersId : undefined}
+                className={actionClassName}
+                data-testid="team-editor-save-another"
+                disabled={!canSave}
+                onClick={() => void save(true)}
+                type="button"
+                variant="ghost"
+              >
+                {t("teams.editor.saveAndAddAnother")}
+              </Button>
+            )}
             <Button
               className={actionClassName}
               disabled={saving}
@@ -360,19 +374,6 @@ export function TeamEditorDialog({
             >
               {t("teams.editor.cancel")}
             </Button>
-            {team ? null : (
-              <Button
-                aria-describedby={needsMembers ? needsMembersId : undefined}
-                className={actionClassName}
-                data-testid="team-editor-save-another"
-                disabled={!canSave}
-                onClick={() => void save(true)}
-                type="button"
-                variant="secondary"
-              >
-                {t("teams.editor.saveAndAddAnother")}
-              </Button>
-            )}
             <Button
               aria-describedby={needsMembers ? needsMembersId : undefined}
               className={actionClassName}

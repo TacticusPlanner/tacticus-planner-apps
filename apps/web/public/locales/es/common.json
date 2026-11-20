@@ -609,7 +609,7 @@
             "I_Defensive": "Objeto defensivo"
           }
         },
-        "closeOptions": "Cerrar",
+        "optionsDone": "Listo",
         "menuItem": "Comparar con una instantánea"
       },
       "snapshots": {
@@ -1232,7 +1232,7 @@
       "moveToPriorityTitle": "Mover a prioridad",
       "moveToPriorityLabel": "Prioridad (1–{{total}})",
       "moveToPriorityDescription": "Introduce la prioridad que debe tener este objetivo, de 1 a {{total}}.",
-      "moveToPriorityConfirm": "Mover",
+      "moveToPriorityConfirm": "Mover objetivo",
       "moveToPriorityCancel": "Cancelar",
       "movedTo": "Movido a la prioridad {{position}} de {{total}}.",
       "edit": "Editar"
@@ -1377,7 +1377,8 @@
       "projectsSaveFailed": "No se pudieron guardar los proyectos. Revisa tu conexión e inténtalo de nuevo.",
       "addToProjectsDescription": "Elige uno o varios proyectos para añadir los objetivos seleccionados, o crea uno nuevo.",
       "addToProjectsConfirm": "Añadir a proyectos",
-      "addToProjectsConfirmCount": "Añadir a {{count}} proyectos"
+      "addToProjectsConfirmCount": "Añadir a {{count}} proyectos",
+      "saveProjects": "Guardar proyectos"
     },
     "toasts": {
       "statusConflict": "No se pudo cambiar {{goal}}: {{reason}}",
@@ -2000,7 +2001,7 @@
         "projectLabel": "Proyecto",
         "projectPlaceholder": "Elige un proyecto",
         "noReference": "No hay otro proyecto con el que ordenarlos",
-        "confirm": "Mover",
+        "confirm": "Mover objetivos",
         "cancel": "Cancelar"
       },
       "sortBlocksReorder": "Los objetivos están ordenados por fecha de fin, así que no puedes arrastrarlos para cambiar su prioridad.",
@@ -2008,7 +2009,7 @@
     },
     "edit": {
       "title": "Editar objetivo",
-      "save": "Guardar",
+      "save": "Guardar objetivo",
       "cancel": "Cancelar",
       "close": "Cerrar",
       "loadError": "No se pudo cargar este objetivo. Puede que ya no exista.",

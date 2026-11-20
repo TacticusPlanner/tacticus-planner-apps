@@ -609,7 +609,7 @@
             "I_Defensive": "Defensive item"
           }
         },
-        "closeOptions": "Close",
+        "optionsDone": "Done",
         "menuItem": "Compare with a snapshot"
       },
       "snapshots": {
@@ -1232,7 +1232,7 @@
       "moveToPriorityTitle": "Move to priority",
       "moveToPriorityLabel": "Priority (1–{{total}})",
       "moveToPriorityDescription": "Enter the priority this goal should take, from 1 to {{total}}.",
-      "moveToPriorityConfirm": "Move",
+      "moveToPriorityConfirm": "Move goal",
       "moveToPriorityCancel": "Cancel",
       "movedTo": "Moved to priority {{position}} of {{total}}.",
       "edit": "Edit"
@@ -1377,7 +1377,8 @@
       "projectsSaveFailed": "Couldn't save the projects. Check your connection and try again.",
       "addToProjectsDescription": "Choose one or more projects to add the selected goals to, or create a new one.",
       "addToProjectsConfirm": "Add to projects",
-      "addToProjectsConfirmCount": "Add to {{count}} projects"
+      "addToProjectsConfirmCount": "Add to {{count}} projects",
+      "saveProjects": "Save projects"
     },
     "toasts": {
       "statusConflict": "{{goal}} could not change: {{reason}}",
@@ -2000,7 +2001,7 @@
         "projectLabel": "Project",
         "projectPlaceholder": "Choose a project",
         "noReference": "No other project to place against",
-        "confirm": "Move",
+        "confirm": "Move goals",
         "cancel": "Cancel"
       },
       "sortBlocksReorder": "Goals are sorted by finish date, so you can't drag them to change their priority.",
@@ -2008,7 +2009,7 @@
     },
     "edit": {
       "title": "Edit goal",
-      "save": "Save",
+      "save": "Save goal",
       "cancel": "Cancel",
       "close": "Close",
       "loadError": "Couldn't load this goal. It may no longer exist.",
