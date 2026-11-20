@@ -235,12 +235,17 @@ export default defineConfig([
     // Effect"). Warn while the existing hits are refactored one by one; raise to error at zero.
     files: ["**/*.{ts,tsx}"],
     plugins: { "react-you-might-not-need-an-effect": noUseEffect },
-    rules: Object.fromEntries(
-      Object.keys(noUseEffect.configs.recommended.rules).map((rule) => [
-        rule,
-        "warn",
-      ])
-    ),
+    rules: {
+      ...Object.fromEntries(
+        Object.keys(noUseEffect.configs.recommended.rules).map((rule) => [
+          rule,
+          "warn",
+        ])
+      ),
+      // Flags any guarded effect, so most hits were real DOM, URL or storage syncs kept with a
+      // disable. Off, like no-array-index-key, rather than disabled at every call site.
+      "react-you-might-not-need-an-effect/no-event-handler": "off",
+    },
   },
   tailwindSizingConfig,
 ])

@@ -1,5 +1,3 @@
-import { useEffect } from "react"
-
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
 
 import type { CreateGoalPrefill } from "./create-goal-launcher-context"
@@ -30,10 +28,9 @@ export function useDefaultUnitPreselect({
     .flatMap((group) => group.members)
     .find((member) => isCharacter(member.id))?.id
 
-  useEffect(() => {
-    if (!open || entityId || prefillsUnit || !firstCharacterId) return
+  // While rendering, not in an effect: picking the unit is this form's own state, and the guards
+  // stop once `entityId` is set, so the dialog never paints with no unit chosen.
+  if (open && !entityId && !prefillsUnit && firstCharacterId) {
     handleEntityChange(firstCharacterId)
-    // handleEntityChange is recreated each render; the guards above make this run once per need.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, entityId, prefillsUnit, firstCharacterId])
+  }
 }

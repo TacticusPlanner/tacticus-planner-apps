@@ -28,6 +28,7 @@ export function useGoalsProjectScope(
       (project) => project.projectId === raw && project.status !== "Archived"
     )
 
+  // Rewrites the URL, which can't happen while rendering, once the loaded list rejects the id.
   useEffect(() => {
     if (!raw || !projectsReady || valid) return
     setParams(
