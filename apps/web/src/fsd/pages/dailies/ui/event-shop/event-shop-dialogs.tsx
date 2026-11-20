@@ -2,18 +2,19 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { eventDay } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
 
 import { DRAFT_ALLIANCES } from "@/entities/shops/event-plan"
 import { clearWeekSummary } from "@/features/shops/event-planner"
-import { ConfirmationDialog, NumberStepper } from "@/shared/ui"
+import {
+  ConfirmationDialog,
+  NumberStepper,
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/shared/ui"
 
 import type {
   EventShopController,
@@ -78,16 +79,23 @@ function AllianceDialog({
 }) {
   const { t } = useTranslation("eventShops")
   return (
-    <Dialog open onOpenChange={(open) => !open && controller.closeDialog()}>
-      <DialogContent data-testid="event-shop-alliance-dialog">
-        <DialogHeader>
-          <DialogTitle>{t("dialogs.alliance.title")}</DialogTitle>
-          <DialogDescription>
-            {t("dialogs.alliance.description", {
-              reward: format.reward(dialog.rewardType).label,
-            })}
-          </DialogDescription>
-        </DialogHeader>
+    <ResponsiveDialog
+      data-testid="event-shop-alliance-dialog"
+      desktopClassName="sm:max-w-md"
+      onOpenChange={(open) => !open && controller.closeDialog()}
+      open
+    >
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>
+          {t("dialogs.alliance.title")}
+        </ResponsiveDialogTitle>
+        <ResponsiveDialogDescription>
+          {t("dialogs.alliance.description", {
+            reward: format.reward(dialog.rewardType).label,
+          })}
+        </ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
+      <ResponsiveDialogBody className="py-4">
         <div className="grid grid-cols-3 gap-2">
           {DRAFT_ALLIANCES.map((alliance) => (
             <Button
@@ -112,13 +120,13 @@ function AllianceDialog({
             </Button>
           ))}
         </div>
-        <DialogFooter>
-          <Button onClick={controller.closeDialog} variant="outline">
-            {t("dialogs.cancel")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogBody>
+      <ResponsiveDialogFooter>
+        <Button onClick={controller.closeDialog} variant="outline">
+          {t("dialogs.cancel")}
+        </Button>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialog>
   )
 }
 
@@ -194,14 +202,21 @@ function BoughtSomeDialog({
     eventDay(controller.event, dialog.entry.dayIndex).date
   )
   return (
-    <Dialog open onOpenChange={(open) => !open && controller.closeDialog()}>
-      <DialogContent data-testid="event-shop-bought-some-dialog">
-        <DialogHeader>
-          <DialogTitle>{t("dialogs.boughtSome.title")}</DialogTitle>
-          <DialogDescription>
-            {format.reward(entry.rewardType).label} · {date}
-          </DialogDescription>
-        </DialogHeader>
+    <ResponsiveDialog
+      data-testid="event-shop-bought-some-dialog"
+      desktopClassName="sm:max-w-md"
+      onOpenChange={(open) => !open && controller.closeDialog()}
+      open
+    >
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>
+          {t("dialogs.boughtSome.title")}
+        </ResponsiveDialogTitle>
+        <ResponsiveDialogDescription>
+          {format.reward(entry.rewardType).label} · {date}
+        </ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
+      <ResponsiveDialogBody className="py-4">
         <NumberStepper
           data-testid="event-shop-bought-some-value"
           labels={{
@@ -214,21 +229,21 @@ function BoughtSomeDialog({
           onChange={(value) => setBought(value ?? 0)}
           value={bought}
         />
-        <DialogFooter>
-          <Button onClick={controller.closeDialog} variant="outline">
-            {t("dialogs.cancel")}
-          </Button>
-          <Button
-            onClick={() => {
-              controller.closeDialog()
-              controller.setBought(entry, bought)
-            }}
-          >
-            {t("dialogs.boughtSome.confirm")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogBody>
+      <ResponsiveDialogFooter>
+        <Button onClick={controller.closeDialog} variant="outline">
+          {t("dialogs.cancel")}
+        </Button>
+        <Button
+          onClick={() => {
+            controller.closeDialog()
+            controller.setBought(entry, bought)
+          }}
+        >
+          {t("dialogs.boughtSome.confirm")}
+        </Button>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialog>
   )
 }
 

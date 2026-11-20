@@ -38,6 +38,7 @@ export {
 export {
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,

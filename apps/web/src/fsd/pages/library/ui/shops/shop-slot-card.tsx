@@ -1,17 +1,17 @@
+import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@workspace/ui/components/dialog"
 import { chanceIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/entities/shops/reward"
-import { EntityIcon } from "@/shared/ui"
+import {
+  EntityIcon,
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogDescription,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/shared/ui"
 import type {
   LibraryShopRewardView,
   LibraryShopSlotView,
@@ -57,6 +57,8 @@ export function ShopSlotCard({
 }) {
   const { t } = useTranslation(["library", "shops"])
   const currencyLabel = useCurrencyLabel()
+  const [open, setOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const [first] = slot.rewards
   if (!first) return null
 
@@ -85,68 +87,79 @@ export function ShopSlotCard({
   const overflow = slot.rewards.length - preview.length
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button
-          type="button"
-          className="flex w-full flex-col gap-2 rounded-lg border bg-card p-3 text-left text-card-foreground shadow-sm transition-colors hover:border-primary"
-          data-testid={`shop-slot-${index}`}
-          data-random="true"
-        >
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-xs font-medium text-muted-foreground">
-              {t("shops.randomSlot", { count: slot.rewards.length })}
-            </span>
-            <Badge className="shrink-0 gap-1" variant="outline">
-              <EntityIcon size="inline" src={chanceIcon()} alt="" />
-              {t("shops.randomBadge")}
-            </Badge>
-          </div>
-
-          <ul className="flex flex-col gap-1">
-            {preview.map((reward) => (
-              <li key={reward.rewardType} className="flex items-center gap-1.5">
-                <EntityIcon
-                  size="inline"
-                  alt=""
-                  className="shrink-0"
-                  src={reward.iconUrl}
-                />
-                <span className="truncate text-xs">{reward.label}</span>
-              </li>
-            ))}
-            {overflow > 0 ? (
-              <li className="text-xs text-muted-foreground">
-                {t("shops.andMore", { count: overflow })}
-              </li>
-            ) : null}
-          </ul>
-
-          <span className="text-xs text-muted-foreground">
-            {slot.uniformCost && slot.costAmount !== undefined ? (
-              <>
-                <CurrencyAmount
-                  currencyId={first.cost.currency}
-                  amount={slot.costAmount}
-                  label={currencyLabel(first.cost.currency)}
-                />{" "}
-                {t("shops.costEachSuffix")}
-              </>
-            ) : (
-              t("shops.costVaries")
-            )}
-          </span>
-        </button>
-      </DialogTrigger>
-
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
+    <>
+      <button
+        aria-haspopup="dialog"
+        ref={triggerRef}
+        onClick={() => setOpen(true)}
+        type="button"
+        className="flex w-full flex-col gap-2 rounded-lg border bg-card p-3 text-left text-card-foreground shadow-sm transition-colors hover:border-primary"
+        data-testid={`shop-slot-${index}`}
+        data-random="true"
+      >
+        <div className="flex items-center justify-between gap-1">
+          <span className="text-xs font-medium text-muted-foreground">
             {t("shops.randomSlot", { count: slot.rewards.length })}
-          </DialogTitle>
-          <DialogDescription>{t("shops.randomSlotHint")}</DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-2">
+          </span>
+          <Badge className="shrink-0 gap-1" variant="outline">
+            <EntityIcon size="inline" src={chanceIcon()} alt="" />
+            {t("shops.randomBadge")}
+          </Badge>
+        </div>
+
+        <ul className="flex flex-col gap-1">
+          {preview.map((reward) => (
+            <li key={reward.rewardType} className="flex items-center gap-1.5">
+              <EntityIcon
+                size="inline"
+                alt=""
+                className="shrink-0"
+                src={reward.iconUrl}
+              />
+              <span className="truncate text-xs">{reward.label}</span>
+            </li>
+          ))}
+          {overflow > 0 ? (
+            <li className="text-xs text-muted-foreground">
+              {t("shops.andMore", { count: overflow })}
+            </li>
+          ) : null}
+        </ul>
+
+        <span className="text-xs text-muted-foreground">
+          {slot.uniformCost && slot.costAmount !== undefined ? (
+            <>
+              <CurrencyAmount
+                currencyId={first.cost.currency}
+                amount={slot.costAmount}
+                label={currencyLabel(first.cost.currency)}
+              />{" "}
+              {t("shops.costEachSuffix")}
+            </>
+          ) : (
+            t("shops.costVaries")
+          )}
+        </span>
+      </button>
+
+      <ResponsiveDialog
+        desktopClassName="sm:max-w-md"
+        onCloseAutoFocus={(event) => {
+          event.preventDefault()
+          triggerRef.current?.focus()
+        }}
+        onOpenChange={setOpen}
+        open={open}
+      >
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>
+            {t("shops.randomSlot", { count: slot.rewards.length })}
+          </ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
+            {t("shops.randomSlotHint")}
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody className="gap-2 pt-2 pb-6">
           {slot.rewards.map((reward) => (
             <div
               key={reward.rewardType}
@@ -166,9 +179,9 @@ export function ShopSlotCard({
               <RewardMeta reward={reward} currencyLabel={currencyLabel} />
             </div>
           ))}
-        </div>
-      </DialogContent>
-    </Dialog>
+        </ResponsiveDialogBody>
+      </ResponsiveDialog>
+    </>
   )
 }
 
