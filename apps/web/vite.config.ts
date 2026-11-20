@@ -26,7 +26,9 @@ function chunkPackages(): Plugin {
           )
           if (match?.[1]) names.add(match[1])
         }
-        packages[chunk.fileName] = [...names].sort()
+        packages[chunk.fileName] = [...names].toSorted((a, b) =>
+          a < b ? -1 : Number(a > b)
+        )
       }
       this.emitFile({
         type: "asset",
@@ -63,7 +65,7 @@ function capModulePreloads(): Plugin {
         const keep = new Set(
           links
             .map((link) => link[1] ?? "")
-            .sort((a, b) => sizeOf(b) - sizeOf(a))
+            .toSorted((a, b) => sizeOf(b) - sizeOf(a))
             .slice(0, MAX_MODULE_PRELOADS)
         )
         return links.reduce(
