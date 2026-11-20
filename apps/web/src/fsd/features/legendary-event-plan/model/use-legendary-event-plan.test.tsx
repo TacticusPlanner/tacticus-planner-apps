@@ -387,7 +387,7 @@ describe("useLegendaryEventPlan", () => {
                 expectedBattleClearsSource: "manual" as const,
                 recordedAt: "2026-10-16T00:00:00Z",
               },
-            ].sort((a, b) => a.run - b.run),
+            ].toSorted((a, b) => a.run - b.run),
           },
         ])
       )

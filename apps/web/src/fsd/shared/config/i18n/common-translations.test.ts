@@ -6,6 +6,7 @@ import de from "../../../../../public/locales/de/common.json"
 import en from "../../../../../public/locales/en/common.json"
 import es from "../../../../../public/locales/es/common.json"
 import fr from "../../../../../public/locales/fr/common.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 /** Every leaf key path of a nested translation object, e.g. `goals.edit.title`. */
 function keyPaths(node: unknown, prefix = ""): string[] {
@@ -16,7 +17,7 @@ function keyPaths(node: unknown, prefix = ""): string[] {
     : [prefix]
 }
 
-const enKeys = keyPaths(en).sort()
+const enKeys = keyPaths(en).toSorted(compareCodeUnits)
 
 describe("common namespace locale parity", () => {
   it.each([
@@ -24,7 +25,7 @@ describe("common namespace locale parity", () => {
     ["es", es],
     ["fr", fr],
   ])("%s has exactly the English keys", (_, locale) => {
-    expect(keyPaths(locale).sort()).toEqual(enKeys)
+    expect(keyPaths(locale).toSorted(compareCodeUnits)).toEqual(enKeys)
   })
 
   it.each([

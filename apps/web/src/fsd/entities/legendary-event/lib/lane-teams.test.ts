@@ -9,6 +9,7 @@ import {
   rosterOf,
 } from "./clear-estimate.fixtures"
 import { impactTeams, teamReaches, teamUnitIdsByLane } from "./lane-teams"
+import { compareCodeUnits } from "@/shared/lib"
 
 const team = {
   id: "melee",
@@ -100,7 +101,7 @@ describe("teamUnitIdsByLane", () => {
         reserveUnitId: "ultraTigurius",
       },
     ])
-    expect([...byLane.alpha].sort()).toEqual([
+    expect([...byLane.alpha].toSorted(compareCodeUnits)).toEqual([
       "ultraApothecary",
       "ultraCalgar",
       "ultraTigurius",

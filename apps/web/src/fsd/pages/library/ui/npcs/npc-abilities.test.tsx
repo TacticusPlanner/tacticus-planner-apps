@@ -38,6 +38,7 @@ vi.mock("@/entities/npc", () => ({
 }))
 
 import { NpcAbilities } from "./npc-abilities"
+import { compareCodeUnits } from "@/shared/lib"
 
 describe("NpcAbilities", () => {
   beforeEach(() => {
@@ -56,7 +57,7 @@ describe("NpcAbilities", () => {
         passiveAbilities={["RelentlessMarch"]}
       />
     )
-    expect([...new Set(rules.requested)].sort()).toEqual([
+    expect([...new Set(rules.requested)].toSorted(compareCodeUnits)).toEqual([
       "AdaptiveStrategy",
       "RelentlessMarch",
     ])

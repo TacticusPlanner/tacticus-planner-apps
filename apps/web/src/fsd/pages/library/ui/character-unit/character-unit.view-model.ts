@@ -220,7 +220,7 @@ export function equippableItems(
       slot,
       usable
         .filter((item) => item.type === slot)
-        .sort(
+        .toSorted(
           (a, b) =>
             rarityRank(b.rarity) - rarityRank(a.rarity) ||
             a.name.localeCompare(b.name)

@@ -95,8 +95,8 @@ export function objectivesSatisfied(
   lane: Pick<LegendaryEventLane, "allowedUnitsFilter" | "unitsRestrictions">
 ): number[] {
   if (!isUnitAllowedOnLane(unit, lane)) return []
-  return [...lane.unitsRestrictions]
-    .sort((a, b) => a.index - b.index)
+  return lane.unitsRestrictions
+    .toSorted((a, b) => a.index - b.index)
     .filter((objective) => matchesObjectiveFilter(unit, objective.filter))
     .map((objective) => objective.index)
 }

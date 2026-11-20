@@ -187,22 +187,24 @@ export function NpcsPage() {
         ? undefined
         : locationsByMode.get(filters.gameMode)
     return {
-      factions: [...factions].map(([id, name]) => ({ id, name })).sort(byName),
+      factions: [...factions]
+        .map(([id, name]) => ({ id, name }))
+        .toSorted(byName),
       alliances: [...alliances]
         .map((id) => ({
           id,
           name: t(`library:npcs.alliances.${id}`, { defaultValue: id }),
         }))
-        .sort(byName),
+        .toSorted(byName),
       damageTypes: [...damageTypes]
         .map((id) => ({
           id,
           name: t(`damageTypes:${id}`, { defaultValue: id }),
         }))
-        .sort(byName),
+        .toSorted(byName),
       traits: [...traits]
         .map((id) => ({ id, name: t(`traits:${id}`, { defaultValue: id }) }))
-        .sort(byName),
+        .toSorted(byName),
       // Fixed source order, not alphabetical: the same order as the encounters section.
       gameModes: NPC_ENCOUNTER_SOURCES.filter((source) =>
         locationsByMode.has(source)
@@ -212,7 +214,7 @@ export function NpcsPage() {
       })),
       locations: [...(locations ?? [])]
         .map(([id, encounter]) => ({ id, name: encounterGroupName(encounter) }))
-        .sort(byName),
+        .toSorted(byName),
       canFilterRunning,
     }
   }, [

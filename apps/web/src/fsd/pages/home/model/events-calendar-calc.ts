@@ -356,7 +356,7 @@ function collectVisibleEntries(
   return entries
     .filter((entry) => entryOccupiesWindow(entry, rangeStartMs, rangeEndMs))
     .map((entry) => toViewModel(entry, definitionsById, nowMs))
-    .sort((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
+    .toSorted((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
 }
 
 /**
@@ -387,7 +387,7 @@ export function buildEventsCalendarDays(
     const dayEntries = visible
       .filter((entry) => entryOccupiesWindow(entry, dayStartMs, dayEndMs))
       .map((entry) => toDayEntry(entry, dayStartMs, dayEndMs))
-      .sort((a, b) => compareMobileDayEntries(a, b, definitionsById))
+      .toSorted((a, b) => compareMobileDayEntries(a, b, definitionsById))
 
     return { date: toIsoDate(date), entries: dayEntries }
   })
@@ -414,7 +414,7 @@ export function buildEventsAgenda(
   }
 
   return {
-    ongoing: [...ongoing.values()].sort(
+    ongoing: [...ongoing.values()].toSorted(
       (a, b) =>
         Date.parse(a.endUtc) - Date.parse(b.endUtc) ||
         a.key.localeCompare(b.key)
@@ -515,10 +515,10 @@ export function buildEventsCalendarLanes(
   // break and the next season meet mid-day, so day columns alone would stack them on separate rows.
   const raidTrack = positioned
     .filter((entry) => RAID_TRACK_TYPES.has(entry.definitionType ?? ""))
-    .sort((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
+    .toSorted((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
   const sortedForPacking = positioned
     .filter((entry) => !RAID_TRACK_TYPES.has(entry.definitionType ?? ""))
-    .sort((a, b) => a.startColumn - b.startColumn || b.span - a.span)
+    .toSorted((a, b) => a.startColumn - b.startColumn || b.span - a.span)
 
   const lanes: {
     entries: PositionedEventEntry[]

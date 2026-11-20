@@ -23,7 +23,7 @@ export function questDropNeed(
   const totals = raids.resourceTotals.get(upgradeId)
   if (!totals || totals.target <= totals.owned) return { status: "none" }
   const units: string[] = []
-  const goals = [...raids.goalsById.values()].sort(
+  const goals = [...raids.goalsById.values()].toSorted(
     (a, b) => a.priority - b.priority
   )
   for (const goal of goals) {

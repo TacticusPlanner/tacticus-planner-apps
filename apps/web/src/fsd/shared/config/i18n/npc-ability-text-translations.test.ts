@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import npcGaps from "../../../../../public/locales/en/npcAbilityTextGaps.json"
 import raidBossGaps from "../../../../../public/locales/en/raidBossAbilityTextGaps.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 type Entry = {
   description: string
@@ -71,9 +72,14 @@ describe("Ability rules text", () => {
   })
 
   it("covers the same abilities in every locale", () => {
-    const enKeys = Object.keys(en).sort()
+    const enKeys = Object.keys(en).toSorted(compareCodeUnits)
     expect(enKeys.length).toBeGreaterThan(50)
-    expect(Object.keys(locales).sort()).toEqual(["de", "en", "es", "fr"])
+    expect(Object.keys(locales).toSorted(compareCodeUnits)).toEqual([
+      "de",
+      "en",
+      "es",
+      "fr",
+    ])
 
     for (const [code, locale] of Object.entries(locales)) {
       const missing = enKeys.filter((id) => !locale[id])
@@ -174,11 +180,18 @@ describe("Raid-boss ability rules text", () => {
   const tables = tablesOf(raidBossFiles)
 
   it("covers the same abilities in every locale, with no file for a listed gap", () => {
-    expect(Object.keys(tables).sort()).toEqual(["de", "en", "es", "fr"])
-    const enKeys = Object.keys(tables.en ?? {}).sort()
+    expect(Object.keys(tables).toSorted(compareCodeUnits)).toEqual([
+      "de",
+      "en",
+      "es",
+      "fr",
+    ])
+    const enKeys = Object.keys(tables.en ?? {}).toSorted(compareCodeUnits)
     expect(enKeys.length).toBe(153)
     for (const [code, locale] of Object.entries(tables)) {
-      expect(Object.keys(locale).sort(), code).toEqual(enKeys)
+      expect(Object.keys(locale).toSorted(compareCodeUnits), code).toEqual(
+        enKeys
+      )
       expect(
         raidBossGaps.filter((id) => locale[id]),
         code

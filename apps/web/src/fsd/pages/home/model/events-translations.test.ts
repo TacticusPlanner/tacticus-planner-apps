@@ -4,6 +4,7 @@ import de from "../../../../../public/locales/de/events.json"
 import en from "../../../../../public/locales/en/events.json"
 import es from "../../../../../public/locales/es/events.json"
 import fr from "../../../../../public/locales/fr/events.json"
+import { compareCodeUnits } from "@/shared/lib"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -18,7 +19,9 @@ describe("Events translations", () => {
     ["es", es],
     ["fr", fr],
   ])("keeps the %s namespace aligned with English", (_locale, resource) => {
-    expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
+    expect(leafKeys(resource).toSorted(compareCodeUnits)).toEqual(
+      leafKeys(en).toSorted(compareCodeUnits)
+    )
   })
 
   it.each([

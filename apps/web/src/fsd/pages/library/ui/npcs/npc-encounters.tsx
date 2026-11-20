@@ -84,7 +84,7 @@ function byTrack(battles: readonly NpcEncounterBattle[]) {
     tracks.set(track, [...(tracks.get(track) ?? []), battle])
   }
   return [...tracks]
-    .sort(([a], [b]) => TRACK_ORDER.indexOf(a) - TRACK_ORDER.indexOf(b))
+    .toSorted(([a], [b]) => TRACK_ORDER.indexOf(a) - TRACK_ORDER.indexOf(b))
     .map(([track, list]) => ({
       track,
       regular: numbersOf(list.filter((battle) => !battle.challenge)),
@@ -107,7 +107,7 @@ function incursionTiers(battles: readonly NpcEncounterBattle[]) {
     ])
   }
   const bySet = new Map<string, number[]>()
-  for (const [tier, ids] of [...byTier].sort(([a], [b]) => a - b)) {
+  for (const [tier, ids] of [...byTier].toSorted(([a], [b]) => a - b)) {
     const key = formatNumberList(ids)
     bySet.set(key, [...(bySet.get(key) ?? []), tier + 1])
   }
@@ -291,7 +291,9 @@ function useEncounterText() {
         case "campaignEvent":
         case "legendaryEvent":
           return groupPlaces(places, ({ battle }) => battle.track ?? "")
-            .sort(([a], [b]) => TRACK_ORDER.indexOf(a) - TRACK_ORDER.indexOf(b))
+            .toSorted(
+              ([a], [b]) => TRACK_ORDER.indexOf(a) - TRACK_ORDER.indexOf(b)
+            )
             .map(([key, group]) => ({
               key,
               label: t(`npcs.encounters.tracks.${key}`, { defaultValue: key }),

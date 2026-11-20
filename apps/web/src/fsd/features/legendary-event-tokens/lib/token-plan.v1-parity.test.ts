@@ -412,7 +412,7 @@ describe("V1 parity: Fabius Bile plan", () => {
     for (const token of secondPass) {
       counts.set(token.points, (counts.get(token.points) ?? 0) + 1)
     }
-    expect([...counts].sort(([a], [b]) => b - a)).toEqual([
+    expect([...counts].toSorted(([a], [b]) => b - a)).toEqual([
       [140, 5],
       [125, 9],
       [100, 9],

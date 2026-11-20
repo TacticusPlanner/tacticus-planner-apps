@@ -34,6 +34,7 @@ import type { SearchProgressStore } from "./search-progress"
 import type { PlanSource } from "./use-plan-source"
 import { useDebouncedValue } from "./use-debounced-value"
 import { useUpgradeFarmingDays } from "./use-upgrade-farming-days"
+import { compareCodeUnits } from "@/shared/lib"
 
 type ReadySource = Extract<PlanSource, { status: "ready" }>
 
@@ -134,7 +135,9 @@ function useRecommendations(
         if (step.kind !== "round") return
         setProgress({
           job,
-          missingOnslaughtAlliances: [...job.missingOnslaught].toSorted(),
+          missingOnslaughtAlliances: [...job.missingOnslaught].toSorted(
+            compareCodeUnits
+          ),
           state: {
             status: "running",
             recommendations: step.recommendations,
@@ -147,7 +150,9 @@ function useRecommendations(
         tracker.stop()
         setProgress({
           job,
-          missingOnslaughtAlliances: [...job.missingOnslaught].toSorted(),
+          missingOnslaughtAlliances: [...job.missingOnslaught].toSorted(
+            compareCodeUnits
+          ),
           state: {
             status: "done",
             recommendations: result.recommendations,
@@ -611,7 +616,7 @@ export function usePlanDraft(
           runs: [
             ...current.runs.filter((entry) => entry.run !== run),
             { run, ...values, updatedAt: "" },
-          ].sort((a, b) => a.run - b.run),
+          ].toSorted((a, b) => a.run - b.run),
         }
       })
       markDirty()

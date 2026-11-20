@@ -5,6 +5,7 @@ import en from "../../../../../public/locales/en/abilities.json"
 import es from "../../../../../public/locales/es/abilities.json"
 import fr from "../../../../../public/locales/fr/abilities.json"
 import npcAbilityIds from "@/test/fixtures/npc-ability-ids.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 const locales = { de, en, es, fr }
 
@@ -19,11 +20,13 @@ const unnamedByDesign = [
 
 describe("ability name translations", () => {
   it("covers the same ability ids in every locale with no empty names", () => {
-    const enKeys = Object.keys(en).sort()
+    const enKeys = Object.keys(en).toSorted(compareCodeUnits)
     expect(enKeys.length).toBeGreaterThan(400)
 
     for (const [code, locale] of Object.entries(locales)) {
-      expect(Object.keys(locale).sort(), code).toEqual(enKeys)
+      expect(Object.keys(locale).toSorted(compareCodeUnits), code).toEqual(
+        enKeys
+      )
       for (const [id, name] of Object.entries(locale)) {
         expect(name.trim(), `${code}:${id}`).not.toBe("")
       }
@@ -33,7 +36,7 @@ describe("ability name translations", () => {
   it("names every NPC ability except the known internal markers", () => {
     const missing = npcAbilityIds.filter((id) => !(id in en))
 
-    expect(missing.sort()).toEqual(unnamedByDesign)
+    expect(missing.toSorted(compareCodeUnits)).toEqual(unnamedByDesign)
     expect(npcAbilityIds.length - missing.length).toBe(303)
   })
 

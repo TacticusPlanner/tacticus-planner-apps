@@ -196,7 +196,7 @@ function pointsToNextStep(
   const milestones = input.forecast.rewards.pointsMilestones
     .map((entry) => entry.cumulativePoints)
     .filter((points) => points > run.endingPoints)
-    .sort((a, b) => a - b)
+    .toSorted((a, b) => a - b)
   for (const target of milestones) {
     const extra = target - run.endingPoints
     const tokens = base.map((token, index) =>
@@ -275,10 +275,10 @@ export function milestoneGap(input: MilestoneGapInput): MilestoneGap | null {
       if (!played) return []
       const dropped = baseRunTokens
         .filter((token) => !keys.has(tokenKey(token)))
-        .sort((a, b) => a.points - b.points)
+        .toSorted((a, b) => a.points - b.points)
       const weakest = runTokens
         .filter((token) => token !== played)
-        .sort((a, b) => a.points - b.points)[0]
+        .toSorted((a, b) => a.points - b.points)[0]
       return [
         {
           candidate,
@@ -297,7 +297,7 @@ export function milestoneGap(input: MilestoneGapInput): MilestoneGap | null {
   )
   // One push per battle and team: two Stop here cells of one battle play the same token.
   const unique = new Map<string, (typeof pushes)[number]>()
-  for (const push of pushes.sort((a, b) => b.gain - a.gain)) {
+  for (const push of pushes.toSorted((a, b) => b.gain - a.gain)) {
     const key = tokenKey(push.token)
     if (!unique.has(key)) unique.set(key, push)
   }

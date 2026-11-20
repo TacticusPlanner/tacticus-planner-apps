@@ -136,7 +136,7 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
   })
   if (input.goals.length === 0) return done([], "no-goals")
 
-  const goals = [...input.goals].sort((a, b) => a.priority - b.priority)
+  const goals = input.goals.toSorted((a, b) => a.priority - b.priority)
   const priorityByGoal = new Map(
     goals.map((goal) => [goal.goalId, goal.priority])
   )
@@ -228,7 +228,7 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
     )
   const candidates = all
     .filter((candidate) => candidate.drops.some((drop) => drop.allowed))
-    .sort(
+    .toSorted(
       (a, b) =>
         (energyOrder
           ? efficiency(a) - efficiency(b) ||
@@ -281,10 +281,12 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
       )
     }
     budget -= raids * candidate.energyCost
-    const goalIds = [...new Set(useful.flatMap((drop) => drop.goalIds))].sort(
+    const goalIds = [
+      ...new Set(useful.flatMap((drop) => drop.goalIds)),
+    ].toSorted(
       (a, b) => (priorityByGoal.get(a) ?? 0) - (priorityByGoal.get(b) ?? 0)
     )
-    const shown = [...useful].sort(
+    const shown = useful.toSorted(
       (a, b) =>
         Math.min(...a.goalIds.map((id) => priorityByGoal.get(id) ?? Infinity)) -
         Math.min(...b.goalIds.map((id) => priorityByGoal.get(id) ?? Infinity))

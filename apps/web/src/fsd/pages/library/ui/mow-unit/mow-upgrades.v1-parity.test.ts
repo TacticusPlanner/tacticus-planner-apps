@@ -59,7 +59,7 @@ describe("Ability upgrades matches V1's MoW Lookup", () => {
       Object.fromEntries(
         result.materials
           .map((line) => [line.id, line.needed] as const)
-          .sort(([a], [b]) => a.localeCompare(b))
+          .toSorted(([a], [b]) => a.localeCompare(b))
       )
     ).toEqual(entry.expected.materials)
   })

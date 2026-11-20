@@ -188,7 +188,7 @@ export function computePlanInsights(params: {
   // A canonical goal that belongs to several projects is one piece of work: listed once, then ordered.
   const orderedDetails = params.details
     .filter((d, i, all) => all.findIndex((o) => o.goalId === d.goalId) === i)
-    .sort(
+    .toSorted(
       (left, right) =>
         (params.priorityByGoalId.get(left.goalId) ?? Number.MAX_SAFE_INTEGER) -
         (params.priorityByGoalId.get(right.goalId) ?? Number.MAX_SAFE_INTEGER)

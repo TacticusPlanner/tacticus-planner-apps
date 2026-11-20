@@ -23,11 +23,15 @@ import type {
   FarmNode,
   GoalNeed,
 } from "../model/estimate.domain"
+import { compareCodeUnits } from "@/shared/lib"
 
 const upgradeId = upgradeIdSchema.parse
 const battleId = battleIdSchema.parse
 
 const REFERENCE_DATE = new Date("2026-01-01T00:00:00.000Z")
+/** Orders `[key, value]` entries the way the default `Array#sort()` does. */
+const byEntry = (x: readonly unknown[], y: readonly unknown[]) =>
+  compareCodeUnits(String(x), String(y))
 
 const location = (
   battle: string,
@@ -921,8 +925,8 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
     if (a?.status !== "Estimated" || b?.status !== "Estimated") {
       throw new Error("expected estimates")
     }
-    expect([...(a.flatSupplyBySupplier ?? [])].sort()).toEqual(
-      [...(b.flatSupplyBySupplier ?? [])].sort()
+    expect([...(a.flatSupplyBySupplier ?? [])].toSorted(byEntry)).toEqual(
+      [...(b.flatSupplyBySupplier ?? [])].toSorted(byEntry)
     )
     expect(a.days).toBe(b.days)
   })

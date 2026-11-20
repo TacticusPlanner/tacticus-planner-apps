@@ -4,6 +4,7 @@ import type { UnitId } from "@workspace/game-domain"
 import summonerList from "../../../../../public/locales/en/npcAbilitySummoners.json"
 import { enNpcAbilityText } from "@/test/rules-text"
 import { abilitySummons, buildSummonerIds } from "./summoners"
+import { compareCodeUnits } from "@/shared/lib"
 
 const descriptionOf = (id: string) => enNpcAbilityText[id]?.description
 const listed = new Set<string>(summonerList)
@@ -14,11 +15,11 @@ describe("summoners", () => {
     // the summon patterns; it must match them over the committed descriptions.
     const expected = Object.keys(enNpcAbilityText)
       .filter((id) => abilitySummons(descriptionOf(id) ?? ""))
-      .sort()
+      .toSorted(compareCodeUnits)
     const unlisted = expected.filter((id) => !listed.has(id))
     const extra = summonerList.filter((id) => !expected.includes(id))
     expect({ unlisted, extra }).toEqual({ unlisted: [], extra: [] })
-    expect(summonerList).toEqual([...summonerList].sort())
+    expect(summonerList).toEqual(summonerList.toSorted(compareCodeUnits))
   })
 
   it("finds the abilities that bring a unit onto the battlefield", () => {
@@ -66,7 +67,7 @@ describe("summoners", () => {
       ],
       (id) => listed.has(id)
     )
-    expect([...summoners].sort()).toEqual([
+    expect([...summoners].toSorted(compareCodeUnits)).toEqual([
       "genesBiophagus",
       "ultraInceptorSgt",
     ])

@@ -36,7 +36,7 @@ export type ShopRecommendationsViewModel =
 const SHOP_ORDER = ["guild", "war", "rogue-trader", "crusade"]
 
 const toOrderedShops = (shops: ShopStorageModel[]) =>
-  [...shops].sort(
+  shops.toSorted(
     (left, right) => SHOP_ORDER.indexOf(left.id) - SHOP_ORDER.indexOf(right.id)
   )
 

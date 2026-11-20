@@ -18,6 +18,7 @@ import { toOnslaughtRunsPerDay } from "@/entities/goal-farming"
 import type { EstimateOutcome } from "@/entities/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { readyData } from "../shared/read-data"
+import { compareCodeUnits } from "@/shared/lib"
 
 export type PerProjectEstimate =
   | { status: "loading" }
@@ -109,7 +110,7 @@ export function usePerProjectEstimates({
     .join(",")
   // Which nodes are farmable: progress and event changes alter it without touching the goals.
   const eligibleBattlesKey = useMemo(
-    () => [...battlesById.keys()].sort().join(","),
+    () => [...battlesById.keys()].toSorted(compareCodeUnits).join(","),
     [battlesById]
   )
   // The Onslaught cadence too, so a catalog refresh that changes it re-estimates.

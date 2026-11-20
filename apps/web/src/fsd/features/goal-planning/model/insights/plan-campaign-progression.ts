@@ -209,7 +209,7 @@ export function computeCampaignProgression(params: {
   }
 
   return results
-    .sort(
+    .toSorted(
       (a, b) =>
         b.unblocks.length - a.unblocks.length || b.energySaved - a.energySaved
     )

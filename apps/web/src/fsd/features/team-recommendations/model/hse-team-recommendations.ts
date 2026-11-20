@@ -216,8 +216,8 @@ function strongestFaction(
   let best: { faction: string; full: boolean; power: number } | null = null
   for (const [faction, powers] of powersByFaction) {
     const full = powers.length >= HSE_TEAM_SIZE
-    const power = [...powers]
-      .sort((a, b) => b - a)
+    const power = powers
+      .toSorted((a, b) => b - a)
       .slice(0, HSE_TEAM_SIZE)
       .reduce((sum, value) => sum + value, 0)
     const better =

@@ -7,6 +7,7 @@ vi.mock("./project.api", () => ({
 }))
 
 import { projectQueries } from "./project.queries"
+import { compareCodeUnits } from "@/shared/lib"
 
 describe("project queries", () => {
   it("builds the list key and delegates its query", async () => {
@@ -21,6 +22,9 @@ describe("project queries", () => {
   })
 
   it("has no per-project member read (membership comes from the list)", () => {
-    expect(Object.keys(projectQueries).sort()).toEqual(["all", "list"])
+    expect(Object.keys(projectQueries).toSorted(compareCodeUnits)).toEqual([
+      "all",
+      "list",
+    ])
   })
 })

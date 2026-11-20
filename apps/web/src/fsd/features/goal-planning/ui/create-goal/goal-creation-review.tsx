@@ -53,7 +53,7 @@ export function GoalCreationReview({ form }: { form: GoalForm }) {
   const kinds = goalKindsForEntity(form.entityType)
   const specs = buildCombinedGoalSpecs(form.combinedSpecParams)
     .map((spec, index) => ({ spec, index }))
-    .sort(
+    .toSorted(
       (a, b) =>
         kinds.indexOf(a.spec.goalType) - kinds.indexOf(b.spec.goalType) ||
         a.index - b.index

@@ -191,7 +191,7 @@ function LaneObjectivesLine({
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
   const number = new Intl.NumberFormat(i18n.language)
-  const ordered = [...objectives].sort((a, b) => a.index - b.index)
+  const ordered = objectives.toSorted((a, b) => a.index - b.index)
   const counts = objectiveClearedCounts(progress, ordered.length)
   const total = progress.battles.length
   return (

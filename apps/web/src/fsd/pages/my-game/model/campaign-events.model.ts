@@ -20,6 +20,7 @@ import {
   sumMedalStats,
 } from "@/features/daily-raids"
 import type { TrackMedalStats } from "@/features/daily-raids"
+import { compareCodeUnits } from "@/shared/lib"
 
 export const eventTypes = ["Standard", "Extremis"] as const
 export type EventType = (typeof eventTypes)[number]
@@ -60,7 +61,7 @@ export function buildEvents(data: {
             ),
             challenges: groupBattles
               .filter((battle) => battle.type === type && battle.challenge)
-              .sort((a, b) => a.nodeNumber - b.nodeNumber),
+              .toSorted((a, b) => a.nodeNumber - b.nodeNumber),
           },
         ])
       ) as EventModel["tracks"]
@@ -97,10 +98,10 @@ export function normalizeOverrides(
     .map((item) => ({
       ...item,
       completedChallengeBattlesIds: item.completedChallengeBattlesIds
-        ? [...item.completedChallengeBattlesIds].sort()
+        ? item.completedChallengeBattlesIds.toSorted(compareCodeUnits)
         : null,
     }))
-    .sort((a, b) =>
+    .toSorted((a, b) =>
       campaignEventTrackKey(a.campaignGroupId, a.type).localeCompare(
         campaignEventTrackKey(b.campaignGroupId, b.type)
       )

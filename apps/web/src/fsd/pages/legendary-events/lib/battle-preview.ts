@@ -39,7 +39,7 @@ export function orderLaneBattles(
 export function sortedWaves(
   battle: Pick<LegendaryEventBattle, "waves">
 ): LegendaryEventBattle["waves"] {
-  return [...battle.waves].sort((a, b) => a.round - b.round)
+  return battle.waves.toSorted((a, b) => a.round - b.round)
 }
 
 /** Every enemy the battle spawns: Σ `count` over every enemy of every wave. */

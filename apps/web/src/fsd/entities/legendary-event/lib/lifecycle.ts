@@ -47,7 +47,7 @@ export function deriveLegendaryEventLifecycle(
   const starts = event.eventStageStartDatesUtc
     .map((value) => Date.parse(value))
     .filter((value) => !Number.isNaN(value))
-    .sort((a, b) => a - b)
+    .toSorted((a, b) => a - b)
 
   const activeStart = starts.find(
     (start) => start <= nowMs && nowMs < start + LEGENDARY_EVENT_RUN_DURATION_MS

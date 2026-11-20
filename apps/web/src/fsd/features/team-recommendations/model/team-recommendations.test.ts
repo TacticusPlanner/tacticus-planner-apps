@@ -11,6 +11,7 @@ import type {
   TeamPoolSpec,
   TeamRosterCharacter,
 } from "./team-recommendations.types"
+import { compareCodeUnits } from "@/shared/lib"
 
 const id = (value: string): UnitId => unitIdSchema.parse(value)
 
@@ -332,12 +333,9 @@ describe("buildTeamRecommendations — preferences", () => {
       })
     )
     expect(plan.broadened).toBe(true)
-    expect(plan.members.map((m) => m.unitId).sort()).toEqual([
-      "u0",
-      "u1",
-      "u2",
-      "u3",
-    ])
+    expect(
+      plan.members.map((m) => m.unitId).toSorted(compareCodeUnits)
+    ).toEqual(["u0", "u1", "u2", "u3"])
   })
 
   it("tops up from non-matching characters so a preference never shrinks the team", () => {
@@ -350,7 +348,7 @@ describe("buildTeamRecommendations — preferences", () => {
       plan.members
         .slice(0, 2)
         .map((m) => m.unitId)
-        .sort()
+        .toSorted(compareCodeUnits)
     ).toEqual(["u0", "u1"])
   })
 

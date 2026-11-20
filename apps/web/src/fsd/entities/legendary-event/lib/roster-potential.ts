@@ -64,7 +64,7 @@ export function laneRosterPotential(
             },
           ]
     })
-    .sort((a, b) => b.power - a.power || a.id.localeCompare(b.id))
+    .toSorted((a, b) => b.power - a.power || a.id.localeCompare(b.id))
 
   const depthOf = (candidates: typeof owned) => {
     if (candidates.length < MIN_TEAM_MEMBERS) return 0

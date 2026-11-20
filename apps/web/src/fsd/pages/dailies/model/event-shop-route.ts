@@ -16,7 +16,7 @@ export function defaultEventId(
 ): string | null {
   const running = events.find((event) => eventStatus(event, now) === "running")
   if (running) return running.id
-  const byStart = [...events].sort(
+  const byStart = events.toSorted(
     (a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc)
   )
   const upcoming = byStart.find(

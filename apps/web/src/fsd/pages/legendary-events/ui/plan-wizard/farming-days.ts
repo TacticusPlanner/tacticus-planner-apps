@@ -40,6 +40,7 @@ import type {
   GoalNeed,
   UpgradeNeed,
 } from "@/entities/goal-farming"
+import { compareCodeUnits } from "@/shared/lib"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
@@ -266,7 +267,7 @@ function sharedEstimateInputs(inputs: FarmingDaysInputs): SharedEstimateInputs {
   return {
     upgradesWith: (shardEntries) => {
       if (shardEntries.size === 0) return base
-      const key = [...shardEntries.keys()].toSorted().join("|")
+      const key = [...shardEntries.keys()].toSorted(compareCodeUnits).join("|")
       const cached = withShards.get(key)
       if (cached) return cached
       const map = new Map([...base, ...shardEntries])

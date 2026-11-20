@@ -35,7 +35,7 @@ export function questGoalDrops<TId extends string>(
 ): QuestGoalDrops<TId> {
   if (raids.status !== "ready") return { status: "hidden" }
   const byUpgrade = new Map<TId, QuestGoalDrop<TId>>()
-  for (const battle of [...battles].sort((a, b) => a.number - b.number)) {
+  for (const battle of battles.toSorted((a, b) => a.number - b.number)) {
     const { upgradeId, chanceNumerator, chanceDenominator } = battle.loot
     let drop = byUpgrade.get(upgradeId)
     if (!drop) {
@@ -62,7 +62,7 @@ export function questGoalDrops<TId extends string>(
     status: "ready",
     drops: [...byUpgrade.values()].map((drop) => ({
       ...drop,
-      battles: [...drop.battles].sort(
+      battles: drop.battles.toSorted(
         (a, b) => odds(b) - odds(a) || a.number - b.number
       ),
     })),

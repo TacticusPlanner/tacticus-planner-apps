@@ -165,7 +165,7 @@ export function estimateQuestBattle(input: {
             ? [{ unitId: member.unitId, gain }]
             : []
         })
-        .sort((a, b) => b.gain - a.gain)
+        .toSorted((a, b) => b.gain - a.gain)
         .slice(0, CAP_GAINS_SHOWN)
     : []
   return {
@@ -251,13 +251,13 @@ export function calibrateQuestPowerRatio(
 ): number | null {
   const usable = samples.filter((sample) => sample.B > 0)
   if (usable.length < MIN_CALIBRATION_SAMPLES) return null
-  const ratios = [...new Set(usable.map((sample) => sample.E / sample.B))].sort(
-    (a, b) => a - b
-  )
+  const ratios = [
+    ...new Set(usable.map((sample) => sample.E / sample.B)),
+  ].toSorted((a, b) => a - b)
   // Contradictions only change at a sample's E ÷ B, so test each and just past it.
   const candidates = [
     ...new Set(ratios.flatMap((ratio) => [ratio, ratio * (1 + 1e-9)])),
-  ].sort((a, b) => a - b)
+  ].toSorted((a, b) => a - b)
   const contradictions = (ratio: number) =>
     usable.filter((sample) =>
       sample.cleared

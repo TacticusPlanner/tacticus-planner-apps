@@ -51,7 +51,7 @@ const errorText = (error: unknown) =>
   error instanceof ApiError || error instanceof Error ? error.message : ""
 
 const sortedObjectives = (indexes: readonly number[]) =>
-  [...indexes].sort((a, b) => a - b)
+  indexes.toSorted((a, b) => a - b)
 
 /** The first plan run's depth fields of a team write: the depth the user set, else none. */
 function firstRunDepth(team: DraftTeam, runs: readonly LegendaryEventRun[]) {

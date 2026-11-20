@@ -18,7 +18,7 @@ export function orderLevels(variation: NpcVariation): NpcLevelOption[] {
       row,
       tie: (keyCounts.get(`${row.rank}/${row.stars}`) ?? 0) > 1,
     }))
-    .sort(
+    .toSorted(
       (a, b) =>
         a.row.rank - b.row.rank ||
         a.row.stars - b.row.stars ||

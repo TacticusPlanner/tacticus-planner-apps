@@ -70,7 +70,7 @@ export function milestoneSiblings(
         sibling.globalPriority !== null &&
         sibling.globalPriority < priority
     )
-    .sort(
+    .toSorted(
       (left, right) => (left.globalPriority ?? 0) - (right.globalPriority ?? 0)
     )
 

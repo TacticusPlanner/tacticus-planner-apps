@@ -13,6 +13,7 @@ import {
 } from "./clear-estimate.fixtures"
 import { suggestLaneTeams } from "./team-suggestions"
 import type { TeamSuggestion, TeamSuggestionsInput } from "./team-suggestions"
+import { compareCodeUnits } from "@/shared/lib"
 
 const ULTRAMARINES = 0
 const MAX_2_HITS = 2
@@ -131,7 +132,7 @@ describe("suggestLaneTeams (spec worked examples)", () => {
 
   it("merges subsets with the same members into one proposal", () => {
     const keys = suggest().map((suggestion) =>
-      [...suggestion.memberUnitIds].sort().join("|")
+      suggestion.memberUnitIds.toSorted(compareCodeUnits).join("|")
     )
     expect(new Set(keys).size).toBe(keys.length)
   })
@@ -227,8 +228,10 @@ describe("suggestLaneTeams (spec worked examples)", () => {
       // Incisus at Stone 1 would drop the team from ~6 to ~5 (UserJot: LRE team picks favour
       // weaker healers).
       expect(
-        ultramarinesTeam({ roster: heldWithHealerAt("Stone1") })?.toSorted()
-      ).toEqual(plain.toSorted())
+        ultramarinesTeam({ roster: heldWithHealerAt("Stone1") })?.toSorted(
+          compareCodeUnits
+        )
+      ).toEqual(plain.toSorted(compareCodeUnits))
     })
 
     it("does not swap in a Healer the player does not hold", () => {

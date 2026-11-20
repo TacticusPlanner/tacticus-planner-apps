@@ -40,12 +40,12 @@ export function buildRaidBossSeasonBoard(
 
   return {
     seasonId,
-    tiers: [...season.tiers]
-      .sort((a, b) => b.tier - a.tier)
+    tiers: season.tiers
+      .toSorted((a, b) => b.tier - a.tier)
       .map((tier) => ({
         tier: tier.tier,
-        sets: [...tier.sets]
-          .sort((a, b) => b.set - a.set)
+        sets: tier.sets
+          .toSorted((a, b) => b.set - a.set)
           .map((set) => ({
             set: set.set,
             encounters: set.encounters.map((encounter) => ({

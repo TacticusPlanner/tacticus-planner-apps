@@ -20,6 +20,7 @@ import {
   parseVisibleLanes,
   serializeVisibleLanes,
 } from "./event-board.view-model"
+import { compareCodeUnits } from "@/shared/lib"
 
 // Each test team's member ids name the objectives its members derive ("d0-d2" derives 0 and 2).
 vi.mock("@/entities/legendary-event", async (importOriginal) => ({
@@ -56,9 +57,7 @@ describe("buildEventBoardLane", () => {
       [],
       undefined
     )
-    const ordered = [...lane.unitsRestrictions].sort(
-      (a, b) => a.index - b.index
-    )
+    const ordered = lane.unitsRestrictions.toSorted((a, b) => a.index - b.index)
     expect(board.objectives.map((entry) => entry.objective.index)).toEqual(
       ordered.map((objective) => objective.index)
     )
@@ -147,7 +146,7 @@ describe("buildEventBoardTable", () => {
     )
   // Two units named so that name order puts the weaker one first, both reading Calgar's power
   // data (the fixture holds only Ultramarines).
-  const [strong, weak] = byIndex(0).sort((a, b) => b.id.localeCompare(a.id))
+  const [strong, weak] = byIndex(0).toSorted((a, b) => b.id.localeCompare(a.id))
   const fixture = unitPowerContextFixture()
   const calgar = fixture.characters.get("ultraCalgar")!
   const powerContext = {
@@ -175,13 +174,15 @@ describe("buildEventBoardTable", () => {
     expect(columns.map((column) => column.objectiveIndexes)).toEqual(
       [...lane.unitsRestrictions]
         .map((objective) => [objective.index])
-        .sort((a, b) => a[0]! - b[0]!)
+        .toSorted((a, b) => a[0]! - b[0]!)
     )
     const first = columns[0]!
-    expect(first.units.map((unit) => unit.unitId).sort()).toEqual(
+    expect(
+      first.units.map((unit) => unit.unitId).toSorted(compareCodeUnits)
+    ).toEqual(
       byIndex(0)
         .map((unit) => unit.id)
-        .sort()
+        .toSorted(compareCodeUnits)
     )
     expect(first.ownedCount).toBe(2)
     expect(first.units.slice(0, 2).map((unit) => unit.unitId)).toEqual([
@@ -226,7 +227,7 @@ describe("buildEventBoardTable", () => {
       nameOf
     )
     const ids = first!.units.map((unit) => unit.unitId)
-    expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b)))
+    expect(ids).toEqual(ids.toSorted((a, b) => a.localeCompare(b)))
     expect(first!.units.every((unit) => unit.owned === undefined)).toBe(true)
     expect(first!.ownedCount).toBe(0)
   })

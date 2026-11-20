@@ -8,6 +8,7 @@ import {
   maxKnownProgressionIndex,
 } from "./encounters"
 import type { RaidBoss, RaidBossesPayload } from "../model/types"
+import { compareCodeUnits } from "@/shared/lib"
 
 function encounter(
   unitSetId: string,
@@ -302,11 +303,9 @@ describe("buildAdjustedView", () => {
       "1": 200, // both prime-a (encounterIndex 1) modifiers active (thresholds 100 & 200)
       "2": 400, // prime-b (encounterIndex 2) modifier active
     })!
-    expect(view.activeModifiers.map((m) => m.modifierId).sort()).toEqual([
-      "a1",
-      "a2",
-      "b1",
-    ])
+    expect(
+      view.activeModifiers.map((m) => m.modifierId).toSorted(compareCodeUnits)
+    ).toEqual(["a1", "a2", "b1"])
     expect(view.statAdjustments).toEqual({
       pctByStat: { dmg: -30 },
       flatByStat: { movement: -1 },

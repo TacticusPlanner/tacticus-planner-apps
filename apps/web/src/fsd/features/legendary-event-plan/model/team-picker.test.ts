@@ -62,7 +62,7 @@ describe("buildPickerTiles with objective chips", () => {
 
   it("keeps today's order and dims nothing without a chip", () => {
     expect(plain.every((tile) => tile.matches)).toBe(true)
-    const sorted = [...plain].sort(
+    const sorted = plain.toSorted(
       (a, b) =>
         b.remainingPoints - a.remainingPoints ||
         b.satisfied.length - a.satisfied.length ||
@@ -172,7 +172,7 @@ describe("buildPickerTiles remaining points and sort", () => {
     })
     const dante = tiles.find((tile) => tile.unit.id === "bloodDante")
     expect(dante?.remainingPoints).toBe(1800)
-    const sorted = [...tiles].sort(
+    const sorted = tiles.toSorted(
       (a, b) =>
         b.remainingPoints - a.remainingPoints ||
         b.satisfied.length - a.satisfied.length ||

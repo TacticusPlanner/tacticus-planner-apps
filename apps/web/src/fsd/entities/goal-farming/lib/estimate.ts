@@ -118,7 +118,7 @@ export function applyFlatSuppliers(
   // otherwise make each source's attributed total depend on selection order.
   // Mythic Onslaught runs come after regular ones: a run yields regular shards until the unit
   // reaches Mythic, so the shared run pool goes to the regular need first.
-  const ordered = [...suppliers].sort(
+  const ordered = suppliers.toSorted(
     (a, b) =>
       Number(a.key === MYTHIC_ONSLAUGHT_KEY) -
         Number(b.key === MYTHIC_ONSLAUGHT_KEY) ||
@@ -229,7 +229,7 @@ export function spendDay(
       id,
       days: daysToFinish(count, nodesById.get(id) ?? [], dailyEnergy),
     }))
-    .sort((a, b) => b.days - a.days)
+    .toSorted((a, b) => b.days - a.days)
     .flatMap(({ id }) =>
       (nodesById.get(id) ?? []).map((node) => ({ id, node }))
     )
@@ -426,7 +426,7 @@ export function allocateInventory<TId extends string>(
   )
   const allocations = new Map<string, GoalInventoryAllocation<TId>>()
 
-  for (const goal of [...goals].sort((a, b) => a.priority - b.priority)) {
+  for (const goal of goals.toSorted((a, b) => a.priority - b.priority)) {
     const sourceStages = goal.stages?.length
       ? goal.stages
       : [{ target: "final", needs: goal.needs }]

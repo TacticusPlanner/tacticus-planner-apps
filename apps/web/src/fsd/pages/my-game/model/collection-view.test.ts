@@ -14,6 +14,7 @@ import type {
   CollectionRoster,
   CollectionLabels,
 } from "./collection-view"
+import { compareCodeUnits } from "@/shared/lib"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
@@ -316,7 +317,7 @@ describe("buildCollectionView", () => {
       .filter((group) => group.alliance === "Imperial")
       .map((group) => group.factionName)
     expect(imperial).toEqual(
-      [...imperial].sort((a, b) => a.localeCompare(b, "en"))
+      imperial.toSorted((a, b) => a.localeCompare(b, "en"))
     )
   })
 
@@ -517,7 +518,7 @@ describe("buildCollectionView with a query", () => {
     ).toBe(true)
     // No shard data: every unit ties on progress, so the order is by name.
     const names = view.units.map((entry) => entry.unit.name)
-    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b, "en")))
+    expect(names).toEqual(names.toSorted((a, b) => a.localeCompare(b, "en")))
   })
 
   it("sorts by ability sum, breaking ties by progression", () => {
@@ -950,7 +951,7 @@ describe("buildCollectionView combat filters", () => {
       .groups.flatMap((group) => group.units)
       .filter((tile) => tile.kind === "character")
       .map((tile) => tile.unitId)
-      .sort()
+      .toSorted(compareCodeUnits)
 
   it("reads hits per the attack type, either count without one", () => {
     const units = [

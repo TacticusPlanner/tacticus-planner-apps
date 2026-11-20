@@ -4,6 +4,7 @@ import teamRecsDe from "../../../../../public/locales/de/teamRecs.json"
 import teamRecsEn from "../../../../../public/locales/en/teamRecs.json"
 import teamRecsEs from "../../../../../public/locales/es/teamRecs.json"
 import teamRecsFr from "../../../../../public/locales/fr/teamRecs.json"
+import { compareCodeUnits } from "@/shared/lib"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -23,7 +24,9 @@ describe("Dailies team-recommendation translations", () => {
     "keeps every locale of %s aligned with English",
     (_ns, en, rest) => {
       for (const resource of Object.values(rest)) {
-        expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
+        expect(leafKeys(resource).toSorted(compareCodeUnits)).toEqual(
+          leafKeys(en).toSorted(compareCodeUnits)
+        )
       }
     }
   )

@@ -1,6 +1,7 @@
 import type { BattleId } from "@workspace/game-domain"
 
 import type { MissionDeploy } from "./mission-raids"
+import { compareCodeUnits } from "@/shared/lib"
 
 /** The by-hand battles that one team can fight: the nodes whose campaigns allow the same factions. */
 export type MissionDeployGroup = {
@@ -25,7 +26,7 @@ export function missionDeployGroups(
   const groups = new Map<string, MissionDeployGroup>()
   for (const row of rows) {
     if (!row.deploy) continue
-    const factions = [...row.deploy.factions].sort()
+    const factions = row.deploy.factions.toSorted(compareCodeUnits)
     const key = factions.join("|")
     const group = groups.get(key) ?? {
       factions,

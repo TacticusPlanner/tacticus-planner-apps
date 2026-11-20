@@ -21,6 +21,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
 import { RaidBossesPage } from "./raid-bosses-page"
+import { compareCodeUnits } from "@/shared/lib"
 
 function at<T>(xs: readonly T[] | undefined, index: number): T {
   const value = xs?.[index]
@@ -776,7 +777,7 @@ describe("RaidBossesPage", () => {
           )
         ).not.toBeInTheDocument()
       )
-      expect(requestedNamespaces.sort()).toEqual([
+      expect(requestedNamespaces.toSorted(compareCodeUnits)).toEqual([
         "en/raidBossAbilityText/ATemptingTrap",
         "en/raidBossAbilityText/AbilityGone",
       ])

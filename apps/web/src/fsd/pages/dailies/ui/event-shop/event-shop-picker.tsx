@@ -38,7 +38,7 @@ export function EventShopPicker({
 }) {
   const { t } = useTranslation("eventShops")
   const eventName = useEventShopName({ short: compact })
-  const newestFirst = [...events].sort((a, b) => compareEventShopsByStart(b, a))
+  const newestFirst = events.toSorted((a, b) => compareEventShopsByStart(b, a))
   const details = (shop: GameCatalogEventShopRecord) =>
     isDatedEventShop(shop)
       ? `${t("header.dates", {

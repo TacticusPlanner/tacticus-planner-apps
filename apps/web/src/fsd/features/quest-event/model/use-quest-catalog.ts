@@ -12,7 +12,7 @@ const byFeaturedHero = (records: QuestEventStorageModel[]) =>
   )
 
 const byNumber = (records: QuestCrateStorageModel[]) =>
-  [...records].sort((a, b) => a.number - b.number)
+  records.toSorted((a, b) => a.number - b.number)
 
 /** Every catalog quest by featured hero id, and the shared crate track in crate order. Each read
  *  keeps its own loading and error state: a crate failure only blanks the crate line. */

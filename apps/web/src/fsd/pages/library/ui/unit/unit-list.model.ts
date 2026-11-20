@@ -18,7 +18,7 @@ export function orderUnits<Item extends UnitListItem>(
   items: readonly Item[],
   locale?: string
 ): Item[] {
-  return [...items].sort(
+  return items.toSorted(
     (a, b) =>
       allianceRank(a.alliance) - allianceRank(b.alliance) ||
       factionRank(a.factionId) - factionRank(b.factionId) ||

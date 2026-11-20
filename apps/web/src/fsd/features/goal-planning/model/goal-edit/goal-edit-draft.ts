@@ -12,6 +12,7 @@ import {
   isGoalTargetEditable,
 } from "../target-edit/goal-target-edit"
 import type { GoalTargetDraft } from "../target-edit/goal-target-edit"
+import { compareCodeUnits } from "@/shared/lib"
 
 /** Everything the Edit goal dialog lets the owner change, held as one draft. `null` means the goal has
  * no such field (an Unlock goal has no target, a Completed goal no position, only Unlock/Ascension have
@@ -45,8 +46,11 @@ export function normalizeAcquisitionSources(
 ): string {
   return JSON.stringify(
     [...(sources ?? [])]
-      .map((source) => ({ kind: source.kind, ids: [...source.ids].sort() }))
-      .sort((a, b) => a.kind.localeCompare(b.kind))
+      .map((source) => ({
+        kind: source.kind,
+        ids: source.ids.toSorted(compareCodeUnits),
+      }))
+      .toSorted((a, b) => a.kind.localeCompare(b.kind))
   )
 }
 

@@ -136,7 +136,9 @@ export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
         }))
       ),
     ]
-    return list.sort((a, b) => Date.parse(b.takenAt) - Date.parse(a.takenAt))
+    return list.toSorted(
+      (a, b) => Date.parse(b.takenAt) - Date.parse(a.takenAt)
+    )
     // recordPages is summarized by recordsKey.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [personalData, plans, recordsReady, recordsKey, eventNames])

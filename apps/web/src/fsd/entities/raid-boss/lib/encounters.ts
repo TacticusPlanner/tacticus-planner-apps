@@ -94,7 +94,9 @@ function pickSlot(
   if (exact) return exact
   const atOrBelow = slots
     .filter((slot) => slot.encounter.progressionIndex <= progressionIndex)
-    .sort((a, b) => b.encounter.progressionIndex - a.encounter.progressionIndex)
+    .toSorted(
+      (a, b) => b.encounter.progressionIndex - a.encounter.progressionIndex
+    )
   return atOrBelow[0] ?? slots[0]
 }
 
@@ -121,7 +123,7 @@ export function buildModifierContext(
 
   const primes = slot.setEncounters
     .filter((encounter) => encounter.encounterType === "Crystal")
-    .sort((a, b) => a.encounterIndex - b.encounterIndex)
+    .toSorted((a, b) => a.encounterIndex - b.encounterIndex)
     .map((encounter) => ({
       unitSetId: encounter.unitSetId,
       name: primeName(encounter.unitSetId),
@@ -176,7 +178,7 @@ export function buildAdjustedView(
   const primeById = new Map(raidBosses.primes.map((p) => [p.unitSetId, p]))
   const crystalEncounters = slot.setEncounters
     .filter((encounter) => encounter.encounterType === "Crystal")
-    .sort((a, b) => a.encounterIndex - b.encounterIndex)
+    .toSorted((a, b) => a.encounterIndex - b.encounterIndex)
 
   const primes = crystalEncounters.map((encounter) => {
     const prime = primeById.get(encounter.unitSetId)

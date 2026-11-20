@@ -62,7 +62,7 @@ function upgradeKey(upgrade: NonNullable<TargetConfig["upgrade"]>): string {
   // Ordinal (UTF-16 code unit) order, as the server's StringComparer.Ordinal.
   const materials = [...upgrade.targets]
     .map((target) => ({ id: target.upgradeId.trim(), qty: target.quantity }))
-    .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : a.qty - b.qty))
+    .toSorted((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : a.qty - b.qty))
     .map((target) => `${target.id}x${target.qty}`)
     .join(",")
   const range = (group: string, value: Range) =>

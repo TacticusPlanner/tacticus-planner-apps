@@ -226,7 +226,7 @@ export function buildTokenPlanView(input: TokenPlanViewInput): TokenPlanView {
   // teams reads as having no team.
   const teams = plan.data.teams
     .filter(isCompleteTeam)
-    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .toSorted((a, b) => a.sortOrder - b.sortOrder)
 
   const estimateByTeam = new Map<
     string,

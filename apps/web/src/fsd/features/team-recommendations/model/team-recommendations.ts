@@ -240,7 +240,7 @@ function orderCandidates(
   ctx: BuildContext
 ): UnitId[] {
   const power = (id: UnitId) => ctx.combatPowerById.get(id) ?? 0
-  return [...candidateIds].sort((left, right) => {
+  return candidateIds.toSorted((left, right) => {
     const leftEligible = isEligible(left, ctx) ? 1 : 0
     const rightEligible = isEligible(right, ctx) ? 1 : 0
     if (leftEligible !== rightEligible) return rightEligible - leftEligible

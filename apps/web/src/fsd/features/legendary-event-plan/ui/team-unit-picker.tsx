@@ -180,7 +180,7 @@ export function TeamUnitPicker({
   const untiledMembers = memberUnitIds.filter((unitId) => !tiled.has(unitId))
   const untiledReserve =
     reserveUnitId && !tiled.has(reserveUnitId) ? reserveUnitId : null
-  const objectives = [...lane.unitsRestrictions].sort(
+  const objectives = lane.unitsRestrictions.toSorted(
     (a, b) => a.index - b.index
   )
   const chipCounts = objectiveChipCounts(

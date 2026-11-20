@@ -327,7 +327,7 @@ function groupEntries(
             resourceId,
             entries: resourceEntries,
           }))
-          .sort((left, right) => {
+          .toSorted((left, right) => {
             const leftUrgency = resourceUrgencyByGoalAndResource.get(
               dailyRaidResourceKey(goalId, left.resourceId)
             )
@@ -350,5 +350,5 @@ function groupEntries(
           )?.energyTotal
       ),
     }))
-    .sort((left, right) => left.goal.priority - right.goal.priority)
+    .toSorted((left, right) => left.goal.priority - right.goal.priority)
 }

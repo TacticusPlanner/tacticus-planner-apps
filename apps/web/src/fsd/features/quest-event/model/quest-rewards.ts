@@ -35,8 +35,8 @@ export function crateTrack<TCrate extends { number: number; points: number }>(
   crates: readonly TCrate[],
   score: Pick<QuestScore, "total" | "nextCrate">
 ): QuestCrateView<TCrate>[] {
-  return [...crates]
-    .sort((a, b) => a.number - b.number)
+  return crates
+    .toSorted((a, b) => a.number - b.number)
     .map((crate) => ({
       crate,
       opened: crate.points <= score.total,

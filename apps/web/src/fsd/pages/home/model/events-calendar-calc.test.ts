@@ -10,6 +10,7 @@ import {
   toIsoDate,
   withGuildRaidBreaks,
 } from "./events-calendar-calc"
+import { compareCodeUnits } from "@/shared/lib"
 
 const noneRecurrence = {
   kind: "None" as const,
@@ -904,9 +905,9 @@ describe("buildEventsCalendarLanes", () => {
     expect(
       lanes
         .flatMap((lane) => lane.entries)
-        .map((entry) => entry.occurrenceId)
-        .sort()
-    ).toEqual(["occ-lucius", "occ-warp"].sort())
+        .map((entry) => entry.occurrenceId ?? "")
+        .toSorted(compareCodeUnits)
+    ).toEqual(["occ-lucius", "occ-warp"].toSorted(compareCodeUnits))
   })
 })
 

@@ -87,8 +87,8 @@ function toCheckpoints(
   referenceDate: Date
 ): GoalCheckpointEstimate[] {
   let energyBefore = 0
-  return [...reached]
-    .sort((a, b) => a.index - b.index)
+  return reached
+    .toSorted((a, b) => a.index - b.index)
     .map((checkpoint) => {
       const energy = Math.max(0, checkpoint.cumulativeEnergy - energyBefore)
       energyBefore = Math.max(energyBefore, checkpoint.cumulativeEnergy)
@@ -203,7 +203,7 @@ function runPlanSchedule(
   }: EstimatePlanParams,
   maxDays: number
 ): RaidPlanSchedule & { filteredOut: FilteredOutNeed[] } {
-  const ordered = [...goals].sort((a, b) => a.priority - b.priority)
+  const ordered = goals.toSorted((a, b) => a.priority - b.priority)
   const allocations = allocatePlanInventory(ordered, inventory)
   const stagesByGoal = new Map<string, StageState[]>()
   const results = new Map<string, EstimateOutcome>()

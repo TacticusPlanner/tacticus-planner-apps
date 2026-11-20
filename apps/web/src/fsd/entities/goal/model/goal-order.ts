@@ -15,7 +15,7 @@ export function inFlightInGlobalOrder<
   return goals
     .filter(holdsGlobalPosition)
     .map((goal, index) => ({ goal, index }))
-    .sort(
+    .toSorted(
       (left, right) =>
         (left.goal.globalPriority ?? Number.MAX_SAFE_INTEGER) -
           (right.goal.globalPriority ?? Number.MAX_SAFE_INTEGER) ||
@@ -112,5 +112,5 @@ export function globalPriorityOf(member: GoalPlanEntry) {
 export function activeProjectMembers<T extends GoalPlanEntry>(members: T[]) {
   return members
     .filter((member) => member.goal.status === "Active")
-    .sort((left, right) => globalPriorityOf(left) - globalPriorityOf(right))
+    .toSorted((left, right) => globalPriorityOf(left) - globalPriorityOf(right))
 }

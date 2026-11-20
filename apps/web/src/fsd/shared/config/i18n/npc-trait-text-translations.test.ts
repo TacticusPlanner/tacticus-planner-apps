@@ -8,13 +8,16 @@ import deProgression from "../../../../../public/locales/de/progression.json"
 import enProgression from "../../../../../public/locales/en/progression.json"
 import esProgression from "../../../../../public/locales/es/progression.json"
 import frProgression from "../../../../../public/locales/fr/progression.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 describe("NPC trait text translations", () => {
   it("covers the same traits in every locale, each with a description", () => {
-    const enKeys = Object.keys(en).sort()
+    const enKeys = Object.keys(en).toSorted(compareCodeUnits)
     expect(enKeys.length).toBeGreaterThan(40)
     for (const [code, locale] of Object.entries({ de, en, es, fr })) {
-      expect(Object.keys(locale).sort(), code).toEqual(enKeys)
+      expect(Object.keys(locale).toSorted(compareCodeUnits), code).toEqual(
+        enKeys
+      )
       for (const [id, entry] of Object.entries(locale)) {
         expect(entry.description.trim(), `${code}:${id}`).not.toBe("")
       }

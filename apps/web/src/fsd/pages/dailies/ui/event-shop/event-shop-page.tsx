@@ -38,7 +38,7 @@ import { useEventShopForm } from "./use-event-shop-form"
 const BASE = "/plan/event-shop"
 
 const byStart = (events: GameCatalogEventShopRecord[]) =>
-  [...events].sort(compareEventShopsByStart)
+  events.toSorted(compareEventShopsByStart)
 
 /** Router state carried by the redirect from an unknown event id. */
 type RedirectState = { notFound?: boolean } | null

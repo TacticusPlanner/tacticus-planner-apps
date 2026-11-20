@@ -295,7 +295,7 @@ describe("LeaderboardSection", () => {
       figure(entry),
       objectivesCount(entry),
     ])
-    const sorted = [...values].sort((a, b) => b[0]! - a[0]! || b[1]! - a[1]!)
+    const sorted = values.toSorted((a, b) => b[0]! - a[0]! || b[1]! - a[1]!)
     expect(values).toEqual(sorted)
     expect(screen.queryByTestId("leaderboard-sort")).toBeNull()
     expect(screen.queryByRole("button", { name: /sort/i })).toBeNull()
@@ -371,7 +371,7 @@ describe("LeaderboardSection", () => {
     )
     expect(figure(row("bloodDante"))).toBe(152)
     const values = rows().map((entry) => figure(entry))
-    expect(values).toEqual([...values].sort((a, b) => b - a))
+    expect(values).toEqual(values.toSorted((a, b) => b - a))
   })
 
   it("re-orders by remaining points on a partly cleared lane", () => {

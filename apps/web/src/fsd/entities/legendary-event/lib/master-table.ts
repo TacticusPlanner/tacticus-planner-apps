@@ -359,7 +359,7 @@ export function buildMasterTable(input: MasterTableInput): MasterTable {
   })
   return {
     eventIds: input.events.map((entry) => entry.event.id),
-    rows: rows.sort(
+    rows: rows.toSorted(
       (a, b) => b.total - a.total || a.unitId.localeCompare(b.unitId)
     ),
   }
@@ -395,7 +395,7 @@ export function sortMasterTable(
 ): MasterTableRow[] {
   const key = (row: MasterTableRow) =>
     sortEventId === null ? row.total : (row.cells[sortEventId]?.points ?? 0)
-  return [...rows].sort(
+  return rows.toSorted(
     (a, b) =>
       key(b) - key(a) ||
       b.total - a.total ||

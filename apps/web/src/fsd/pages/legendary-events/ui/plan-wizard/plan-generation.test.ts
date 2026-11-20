@@ -279,7 +279,7 @@ describe("upgrade recommendations", () => {
     expect(result.recommendations.length).toBeGreaterThan(0)
     expect(result.recommendations.length).toBeLessThanOrEqual(4)
     const ceilings = result.recommendations.map((entry) => entry.ceilingAfter)
-    expect(ceilings).toEqual([...ceilings].sort((a, b) => a - b))
+    expect(ceilings).toEqual(ceilings.toSorted((a, b) => a - b))
     expect(result.final.ceiling).toBeGreaterThan(result.baseline.ceiling!)
     expect(result.recommendations.every((entry) => entry.firstRun === 3)).toBe(
       true

@@ -9,6 +9,7 @@ import type { Battle, FarmLocation } from "@/shared/lib"
 
 import { computeCampaignInsights, dropRate } from "./campaign-insights"
 import type { CampaignInsightUpgrade } from "./campaign-insights"
+import { compareCodeUnits } from "@/shared/lib"
 
 type RawBattle = Omit<Battle, "campaignGroupId"> & { campaignGroupId: string }
 type RawUpgrade = Omit<CampaignInsightUpgrade, "id"> & { id: string }
@@ -325,10 +326,11 @@ describe("computeCampaignInsights", () => {
       score: 8 / 13,
     })
     expect(eventInsights[0]?.contributions).toHaveLength(2)
-    expect(eventInsights[0]?.contributions.map((c) => c.type).sort()).toEqual([
-      "Extremis",
-      "Standard",
-    ])
+    expect(
+      eventInsights[0]?.contributions
+        .map((c) => c.type)
+        .toSorted(compareCodeUnits)
+    ).toEqual(["Extremis", "Standard"])
     // Each tier keeps its own value-per-energy score: Standard = 4/5, Extremis = 4/8, independent
     // of the combined chip score above.
     expect(eventInsights[0]?.tierScores).toEqual([

@@ -99,6 +99,7 @@ import {
   InteractionRequiredAuthError,
   LogLevel,
 } from "@azure/msal-browser"
+import { compareCodeUnits } from "../lib/compare"
 
 let auth: typeof import("./authentication")
 
@@ -433,7 +434,7 @@ describe("authentication", () => {
       await auth.initializeAuthentication()
 
       // The auth journal (steps and outcomes only) is the one other key written.
-      expect(Object.keys(localStorage).sort()).toEqual([
+      expect(Object.keys(localStorage).toSorted(compareCodeUnits)).toEqual([
         "tp.auth.accountHint",
         "tp.auth.journal",
       ])

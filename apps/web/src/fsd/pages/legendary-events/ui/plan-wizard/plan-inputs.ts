@@ -22,6 +22,7 @@ import type {
   UpgradeStep,
   LegendaryEventRunStart,
 } from "@/entities/legendary-event"
+import { compareCodeUnits } from "@/shared/lib"
 
 // The 1-click plan's generation model (change add-legendary-event-one-click-plan): everything the
 // target verdicts, team generation and upgrade recommendations read, gathered once by the wizard.
@@ -98,7 +99,7 @@ export function rosterKey(
       `${unitId}:${unit.progressionIndex}:${unit.rank}:${unit.appliedUpgradeSlots?.length ?? 0}`
     )
   }
-  return changed.sort().join(ID_SEPARATOR)
+  return changed.toSorted(compareCodeUnits).join(ID_SEPARATOR)
 }
 
 /**

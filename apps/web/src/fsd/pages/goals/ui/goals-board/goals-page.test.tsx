@@ -275,6 +275,7 @@ import { MemoryRouter, useLocation, useNavigate } from "react-router"
 
 import { GoalsPage } from ".//goals-page"
 import { CreateGoalLauncherProvider } from "@/features/goal-planning"
+import { compareCodeUnits } from "@/shared/lib"
 
 const onLaunch = vi.fn()
 
@@ -1326,7 +1327,10 @@ describe("GoalsPage", () => {
       const labels = screen
         .getAllByTestId("goal-season-fit")
         .map((label) => label.textContent)
-      expect(labels.toSorted()).toEqual(["Next season", "This season"])
+      expect(labels.toSorted(compareCodeUnits)).toEqual([
+        "Next season",
+        "This season",
+      ])
       const cutoff = screen.getByTestId("goals-season-cutoff")
       expect(cutoff).toHaveTextContent(
         "Battle Pass season 42 ends Nov 15. The next goal finishes later."

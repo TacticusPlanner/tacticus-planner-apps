@@ -144,7 +144,7 @@ export function buildUnitPlan(
   const withUnlock = (indexes: (number | null)[]) =>
     [...new Set([unlockIndex, ...indexes])]
       .filter((index): index is number => index !== null)
-      .sort((a, b) => a - b)
+      .toSorted((a, b) => a - b)
 
   // What each later target needs, computed before any spec so one added Ascension covers all.
   const rankEnd =
@@ -226,7 +226,7 @@ export function buildUnitPlan(
       goalId: goal.goalId,
       end: goal.config.progression!.end,
     }))
-    .sort((a, b) => progressionIndex(a.end) - progressionIndex(b.end))
+    .toSorted((a, b) => progressionIndex(a.end) - progressionIndex(b.end))
   // Where a target needing `need` gets it: this request's lowest Ascension that reaches it, the
   // lowest in-flight one that does, else an Ascension added to the highest need of this plan.
   const dependencyFor = (

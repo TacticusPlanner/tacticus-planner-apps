@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import curated from "../../../../../datamine/curated-names.json"
+import { compareCodeUnits } from "../../lib/compare"
 
 // The namespaces `scripts/generate-game-names-i18n.mjs` writes from the pinned datamine.
 const files = import.meta.glob<Record<string, string>>(
@@ -18,7 +19,7 @@ for (const [path, table] of Object.entries(files)) {
 
 describe("game name translations", () => {
   it("covers the same ids in every locale with no empty terms", () => {
-    expect(Object.keys(tables).sort()).toEqual([
+    expect(Object.keys(tables).toSorted(compareCodeUnits)).toEqual([
       "abilities",
       "characters",
       "equipmentItems",
@@ -29,18 +30,17 @@ describe("game name translations", () => {
       "upgrades",
     ])
     for (const [namespace, locales] of Object.entries(tables)) {
-      expect(Object.keys(locales).sort(), namespace).toEqual([
-        "de",
-        "en",
-        "es",
-        "fr",
-      ])
-      const enKeys = Object.keys(locales.en ?? {}).sort()
+      expect(
+        Object.keys(locales).toSorted(compareCodeUnits),
+        namespace
+      ).toEqual(["de", "en", "es", "fr"])
+      const enKeys = Object.keys(locales.en ?? {}).toSorted(compareCodeUnits)
       expect(enKeys.length, namespace).toBeGreaterThan(10)
       for (const [code, table] of Object.entries(locales)) {
-        expect(Object.keys(table).sort(), `${namespace}/${code}`).toEqual(
-          enKeys
-        )
+        expect(
+          Object.keys(table).toSorted(compareCodeUnits),
+          `${namespace}/${code}`
+        ).toEqual(enKeys)
         for (const [id, term] of Object.entries(table)) {
           expect(term.trim(), `${namespace}/${code}:${id}`).not.toBe("")
         }
@@ -77,14 +77,22 @@ describe("game name translations", () => {
         table,
       ])
     )
-    expect(Object.keys(byLocale).sort()).toEqual(["de", "en", "es", "fr"])
+    expect(Object.keys(byLocale).toSorted(compareCodeUnits)).toEqual([
+      "de",
+      "en",
+      "es",
+      "fr",
+    ])
     for (const group of ["tasks", "chains", "gameModes"] as const) {
-      const enKeys = Object.keys(byLocale.en?.[group] ?? {}).sort()
+      const enKeys = Object.keys(byLocale.en?.[group] ?? {}).toSorted(
+        compareCodeUnits
+      )
       expect(enKeys.length, group).toBeGreaterThan(0)
       for (const [code, table] of Object.entries(byLocale)) {
-        expect(Object.keys(table[group]).sort(), `${group}/${code}`).toEqual(
-          enKeys
-        )
+        expect(
+          Object.keys(table[group]).toSorted(compareCodeUnits),
+          `${group}/${code}`
+        ).toEqual(enKeys)
       }
     }
     expect(byLocale.en?.tasks.TraverseHexes).toBe(

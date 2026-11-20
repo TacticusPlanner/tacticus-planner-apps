@@ -83,7 +83,7 @@ export function allocateLevelXp(
   const coveredLevelByUnit = new Map<string, number>()
   const result = new Map<string, LevelXpAllocation>()
 
-  for (const need of [...needs].sort((a, b) => a.priority - b.priority)) {
+  for (const need of needs.toSorted((a, b) => a.priority - b.priority)) {
     const xpToRequired = xpNeededForLevelRange(
       need.currentLevel,
       need.currentXp,

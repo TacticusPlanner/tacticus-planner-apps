@@ -57,7 +57,7 @@ export function campaignOutlook(
   const days = Math.max(1, Math.ceil(daysLeft))
   const sorted = [...nodes]
     .filter((node) => node.energyCost > 0)
-    .sort((a, b) => a.energyCost - b.energyCost)
+    .toSorted((a, b) => a.energyCost - b.energyCost)
   const energy = dailyEnergy > 0 ? dailyEnergy : Infinity
   const perDay = Math.ceil(battles / days)
   const maxPerDay = fillDay(sorted, Infinity, energy).battles

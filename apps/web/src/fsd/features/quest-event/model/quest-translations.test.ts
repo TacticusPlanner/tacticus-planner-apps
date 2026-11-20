@@ -5,6 +5,7 @@ import en from "../../../../../public/locales/en/quest.json"
 import es from "../../../../../public/locales/es/quest.json"
 import fr from "../../../../../public/locales/fr/quest.json"
 import { QUEST_OBJECTIVE_TYPES } from "./quest-objectives"
+import { compareCodeUnits } from "@/shared/lib"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
   if (typeof value !== "object" || value === null) return [prefix]
@@ -19,7 +20,9 @@ describe("Quest translations", () => {
     ["es", es],
     ["fr", fr],
   ])("keeps the %s namespace aligned with English", (_locale, resource) => {
-    expect(leafKeys(resource).sort()).toEqual(leafKeys(en).sort())
+    expect(leafKeys(resource).toSorted(compareCodeUnits)).toEqual(
+      leafKeys(en).toSorted(compareCodeUnits)
+    )
   })
 
   it("words every objective type the tab knows", () => {

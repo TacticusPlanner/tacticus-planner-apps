@@ -41,8 +41,8 @@ export function sameRunInputValues(
 
 function sameIndexes(a: readonly number[], b: readonly number[]): boolean {
   if (a.length !== b.length) return false
-  const sorted = [...b].sort((x, y) => x - y)
-  return [...a].sort((x, y) => x - y).every((value, i) => value === sorted[i])
+  const sorted = b.toSorted((x, y) => x - y)
+  return a.toSorted((x, y) => x - y).every((value, i) => value === sorted[i])
 }
 
 /** The plan with `run`'s inputs replaced (or added, keeping `runs` ascending), the way the server
@@ -56,7 +56,7 @@ export function withRunInputs(
   const others = (plan.runs ?? []).filter((entry) => entry.run !== run)
   return {
     ...plan,
-    runs: [...others, { run, ...values, updatedAt }].sort(
+    runs: [...others, { run, ...values, updatedAt }].toSorted(
       (a, b) => a.run - b.run
     ),
   }

@@ -197,7 +197,7 @@ export function buildHordeTierList(
           relics: hordeRelics(tierList, character.id),
         }
       })
-      .sort((a, b) => b.multiplier - a.multiplier || byName(a, b)),
+      .toSorted((a, b) => b.multiplier - a.multiplier || byName(a, b)),
   }))
   const untiered = characters
     .filter((character) => !tierOf.get(character.id)?.tier && keep(character))
@@ -212,6 +212,6 @@ export function buildHordeTierList(
         relics: [],
       }
     })
-    .sort(byName)
+    .toSorted(byName)
   return { rows, untiered }
 }

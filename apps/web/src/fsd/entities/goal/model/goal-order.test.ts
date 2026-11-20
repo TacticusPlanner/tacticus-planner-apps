@@ -99,8 +99,8 @@ describe("applyPositionMove", () => {
     const moved = applyPositionMove(all, "e", "c")
 
     expect(
-      [...moved]
-        .sort((left, right) => left.globalPriority! - right.globalPriority!)
+      moved
+        .toSorted((left, right) => left.globalPriority! - right.globalPriority!)
         .map((entry) => entry.goalId)
     ).toEqual(moveOntoDisplaced(["a", "b", "c", "d", "e"], "e", "c"))
   })
