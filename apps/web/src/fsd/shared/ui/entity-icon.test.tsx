@@ -51,4 +51,24 @@ describe("EntityIcon", () => {
     expect(placeholder).toHaveAttribute("data-icon-placeholder", "ability")
     expect(placeholder).toHaveAttribute("aria-hidden", "true")
   })
+
+  it("sizes the icon by its role", () => {
+    render(<EntityIcon alt="Upgrade" size="row" src="/upgrade.webp" />)
+    expect(screen.getByRole("img", { name: "Upgrade" })).toHaveClass("size-8")
+  })
+
+  it("keeps the role size on the placeholder of a missing icon", () => {
+    render(
+      <EntityIcon
+        alt="Faction"
+        size="inline"
+        src="/game_catalog/datamines/factions/ui_icon_faction_X.webp"
+      />
+    )
+    fireEvent.error(screen.getByRole("img", { name: "Faction" }))
+    expect(screen.getByRole("img", { name: "Faction" })).toHaveClass(
+      "size-4",
+      "pointer-coarse:size-5"
+    )
+  })
 })
