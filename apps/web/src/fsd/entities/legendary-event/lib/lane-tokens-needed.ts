@@ -2,6 +2,7 @@ import type { LanePointsModel } from "./lane-points-model"
 import { laneReachablePoints } from "./reachable-points"
 import type { LaneReach } from "./reachable-points"
 import type { LaneProgressView } from "./synced-lane-progress"
+import { required } from "@/shared/lib"
 
 /** Fewest of `masks` whose union includes `target` (an exact cover over a few bits). */
 function fewestCovering(masks: readonly number[], target: number): number {
@@ -9,14 +10,14 @@ function fewestCovering(masks: readonly number[], target: number): number {
   const fewest = Array.from({ length: target + 1 }, () => Infinity)
   fewest[0] = 0
   for (let mask = 0; mask <= target; mask++) {
-    const count = fewest[mask]!
+    const count = fewest[mask] ?? Infinity
     if (count === Infinity || (mask & target) !== mask) continue
     for (const team of masks) {
       const next = (mask | team) & target
-      if (count + 1 < fewest[next]!) fewest[next] = count + 1
+      if (count + 1 < (fewest[next] ?? Infinity)) fewest[next] = count + 1
     }
   }
-  return fewest[target]!
+  return required(fewest[target], "the target cover")
 }
 
 /**

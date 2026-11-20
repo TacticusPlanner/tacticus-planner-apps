@@ -55,13 +55,11 @@ function labelFor(tokens: Token[], first: number, last: number): string {
     before = token.text + before
   }
   if (before) {
-    const words = before
-      .split(/[.,;:\n)]/)
-      .at(-1)!
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-    while (words.length > 0 && LINKING_WORD.test(words.at(-1)!)) words.pop()
+    // `split` always returns at least one part: the clause after the last break.
+    const lastClause = before.split(/[.,;:\n)]/).at(-1) ?? ""
+    const words = lastClause.trim().split(/\s+/).filter(Boolean)
+    // An empty list reads "", which no linking word matches.
+    while (LINKING_WORD.test(words.at(-1) ?? "")) words.pop()
     if (words.length > 0) return capitalise(words.slice(-3).join(" "))
   }
   return ""

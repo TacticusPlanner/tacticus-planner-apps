@@ -6,6 +6,7 @@ import type {
 
 import { HSE_TOKEN_MODES, isHseManualTokenMode } from "./hse-token-supply"
 import type { HseTokenMode } from "./hse-token-supply"
+import { required } from "@/shared/lib"
 
 /** What one scoring unit is: a kill, a cleared wave, or a battle (one per token). */
 type HseScoringUnit = "kills" | "waves" | "battles"
@@ -174,7 +175,10 @@ export function projectHsePoints(
   const scoring = hseModeScoring(input.trackers)
   if (scoring.length === 0) return null
   const { milestones, repeat } = input.tier
-  const target = milestones.at(-1)!.requiredPoints
+  const target = required(
+    milestones.at(-1),
+    "the tier's last milestone"
+  ).requiredPoints
   const pointsSoFar = Math.max(0, input.pointsSoFar)
   const remaining = Math.max(0, target - pointsSoFar)
 

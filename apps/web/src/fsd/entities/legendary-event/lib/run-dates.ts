@@ -4,6 +4,7 @@ import {
   LEGENDARY_EVENT_RUN_DURATION_MS,
 } from "./lifecycle"
 import type { LegendaryEventSchedule } from "./lifecycle"
+import { required } from "@/shared/lib"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -121,7 +122,7 @@ export function legendaryEventRunDates(
           )
     starts.push({ run, startMs, guessMs, estimated: startMs !== null })
   }
-  const last = starts[LEGENDARY_EVENT_RUN_COUNT - 1]!
+  const last = required(starts.at(-1), "the last run's start")
   return {
     starts,
     deadlineMs:

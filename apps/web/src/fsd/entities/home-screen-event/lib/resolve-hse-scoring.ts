@@ -33,7 +33,8 @@ export type ResolvedHseScoring = {
 /**
  * Resolves an occurrence's scoring: its variant (`resolveHseVariant`) and the tier the player's
  * account earns, falling back to the variant's `Default` tier when it has no tier of that key (and to
- * its first tier when it has neither, or when the account is unknown). Null without a variant.
+ * its first tier when it has neither, or when the account is unknown). Null without a variant, or
+ * when the variant has no tiers.
  */
 export function resolveHseScoring(
   hse: GameCatalogHseConfig,
@@ -47,7 +48,8 @@ export function resolveHseScoring(
   const tier =
     (playerTier ? byKey(playerTier) : undefined) ??
     byKey("Default") ??
-    variant.tiers[0]!
+    variant.tiers[0]
+  if (!tier) return null
   return {
     variant,
     tier,

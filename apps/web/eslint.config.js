@@ -204,7 +204,9 @@ export default defineConfig([
     ignores: ["steiger.config.ts"],
     plugins: { sonarjs, "@eslint-react": eslintReact },
     rules: {
-      "@typescript-eslint/no-non-null-assertion": "warn",
+      // A lookup that can miss narrows or goes through `required()` (shared/lib), which names what
+      // is missing. Tests keep `!` (warn, below).
+      "@typescript-eslint/no-non-null-assertion": "error",
       "@typescript-eslint/strict-boolean-expressions": [
         "error",
         {
@@ -224,12 +226,16 @@ export default defineConfig([
     },
   },
   {
-    // Non-null assertions are burned down in features and pages; a lookup that can miss narrows or
-    // goes through `required()` (shared/lib), which names what is missing. Tests keep `!` (warn).
-    files: ["src/fsd/features/**/*.{ts,tsx}", "src/fsd/pages/**/*.{ts,tsx}"],
-    ignores: ["**/*.test.{ts,tsx}", "**/*.test-fixture.ts", "**/*.bench.ts"],
+    // Tests, fixtures and benches assert on known data, so `!` there stays a warning.
+    files: [
+      "**/*.test.{ts,tsx}",
+      "**/*.test-fixture.ts",
+      "**/*.bench.ts",
+      "src/test/**/*.{ts,tsx}",
+      "e2e/**/*.ts",
+    ],
     rules: {
-      "@typescript-eslint/no-non-null-assertion": "error",
+      "@typescript-eslint/no-non-null-assertion": "warn",
     },
   },
   {

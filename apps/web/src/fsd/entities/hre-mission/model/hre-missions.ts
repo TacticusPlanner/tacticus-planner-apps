@@ -1,3 +1,4 @@
+import { required } from "@/shared/lib"
 /**
  * The objective kinds an HRE mission can ask for. Kinds ending in `Alliance` or `Lineup` read the
  * featured hero's alliance and `*Featured` kinds the hero's name, both at render time (design D1).
@@ -64,5 +65,5 @@ export function hreMission(
   number: number
 ): HreMission {
   const index = Math.min(Math.max(Math.round(number), 1), missions.length)
-  return missions[index - 1]!
+  return required(missions[index - 1], `mission ${index}`)
 }

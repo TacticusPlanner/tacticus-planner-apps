@@ -10,6 +10,7 @@ import {
 import type { HordeModeTierList } from "./horde-tier-list"
 import { npcAdjustedBattlePower, npcTierMultipliers } from "./npc-tier-list"
 import type { NpcTierListRecord, NpcTieredBattle } from "./npc-tier-list"
+import { required } from "@/shared/lib"
 
 /**
  * The clear curve, refitted (Nov 2026) to about 2,300 Fabius Bile battle attempts logged by the
@@ -305,14 +306,10 @@ function depthAt(
   ratio: number,
   curve: ClearEstimateConfig["curve"]
 ): number {
-  let depth = 0
-  while (
-    depth < battlePowers.length &&
-    power >= requiredClearPower(battlePowers[depth]!, ratio, curve)
-  ) {
-    depth++
-  }
-  return depth
+  const missed = battlePowers.findIndex(
+    (battlePower) => power < requiredClearPower(battlePower, ratio, curve)
+  )
+  return missed === -1 ? battlePowers.length : missed
 }
 
 /**
@@ -329,7 +326,11 @@ export function estimateClearDepth(
   const { curve } = config
   const adjusted = power * balanceFactor
   const threshold = (index: number) =>
-    requiredClearPower(battlePowers[index]!, config.powerRatio, curve)
+    requiredClearPower(
+      required(battlePowers[index], `battle ${index + 1}'s power`),
+      config.powerRatio,
+      curve
+    )
   const depth = depthAt(adjusted, battlePowers, config.powerRatio, curve)
   return {
     depth,
@@ -407,7 +408,7 @@ export function balancedTeamPower(
       0
     )
     const restRaw = rest.reduce((sum, member) => sum + member.power, 0)
-    const high = top.at(-1)!.power
+    const high = required(top.at(-1), "the lowest capped member").power
     const low = rest[0]?.power ?? 0
     const valueAt = (cap: number) =>
       (restEffective + weight * cap) *
@@ -460,7 +461,7 @@ export function teamClearEstimate(
     return estimateClearDepth(power, battlePowers, config)
   }
   const members = memberUnitIds.map((unitId, index) => ({
-    power: powers[index]!,
+    power: required(powers[index], `${unitId}'s power`),
     multiplier: unitHordeMultiplier(config, unitId, roster.get(unitId)),
   }))
   const factor = balancedTeamPower(members, config.teamBalance) / power

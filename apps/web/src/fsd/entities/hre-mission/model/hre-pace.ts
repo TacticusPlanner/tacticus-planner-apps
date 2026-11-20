@@ -1,6 +1,7 @@
 import { HRE_DAILY_PAYOUTS, HRE_OH_SO_CLOSE_SHARDS } from "./hre-reward-tables"
 import type { HreRarityStepId } from "./hre-reward-tables"
 import type { HreBracket, HreRewardRules, HreStep } from "./hre-rules"
+import { required } from "@/shared/lib"
 
 const DAY_MS = 86_400_000
 
@@ -9,7 +10,7 @@ export function bracketForRank(
   rules: HreRewardRules,
   rank: number | null
 ): HreBracket {
-  const last = rules.brackets[rules.brackets.length - 1]!
+  const last = required(rules.brackets.at(-1), "the last reward bracket")
   if (rank === null) return last
   return rules.brackets.find((bracket) => rank <= bracket.upTo) ?? last
 }
@@ -23,7 +24,8 @@ export function bracketRange(
   to: number | null
 } {
   const index = rules.brackets.indexOf(bracket)
-  const from = index > 0 ? rules.brackets[index - 1]!.upTo + 1 : 1
+  // The first bracket (and an unknown one, index -1) has none before it.
+  const from = (rules.brackets[index - 1]?.upTo ?? 0) + 1
   return { from, to: Number.isFinite(bracket.upTo) ? bracket.upTo : null }
 }
 
@@ -40,9 +42,10 @@ function milestoneCurrency(rules: HreRewardRules, points: number): number {
 /** The next milestone above `points` and the currency it adds; null once every one is reached. */
 function nextMilestoneFor(rules: HreRewardRules, points: number) {
   const index = rules.milestones.findIndex((item) => item.points > points)
-  if (index < 0) return null
-  const previous = index > 0 ? rules.milestones[index - 1]!.cumulative : 0
-  const milestone = rules.milestones[index]!
+  const milestone = rules.milestones[index]
+  if (!milestone) return null
+  // The first milestone has none before it.
+  const previous = rules.milestones[index - 1]?.cumulative ?? 0
   return { points: milestone.points, reward: milestone.cumulative - previous }
 }
 

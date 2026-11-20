@@ -20,6 +20,7 @@ import {
 } from "@workspace/game-catalog"
 import type { GameIcon } from "@workspace/game-catalog"
 import { unitIdSchema } from "@workspace/game-domain"
+import { required } from "@/shared/lib"
 
 // The V2 equivalent of V1's `3-features/shops/rewards` `rewardInfo` / `summarizeSlotItems`: resolves a
 // shop reward-type string to a display label + best-effort icon, keyed entirely by id. Shared by the
@@ -302,7 +303,7 @@ export function shopRewardDisplay(
   )
   if (pool) {
     const rarity = pool[1] as RaritySuffix
-    const slotType = pool[2]!
+    const slotType = required(pool[2], "the pool's slot type")
     return {
       kind: "equipment",
       iconUrl:
@@ -335,7 +336,7 @@ export function shopRewardDisplay(
     `^items(Imperial|Chaos|Xenos)(${RARITY_SUFFIXES.join("|")})$`
   ).exec(rewardType)
   if (alliancePool) {
-    const alliance = alliancePool[1]!
+    const alliance = required(alliancePool[1], "the pool's alliance")
     const rarity = alliancePool[2] as RaritySuffix
     return {
       kind: "equipment",
@@ -350,7 +351,7 @@ export function shopRewardDisplay(
   if (allianceResource) {
     const resource = allianceResource[1]
     const rarity = allianceResource[2] as RaritySuffix
-    const alliance = allianceResource[3]!
+    const alliance = required(allianceResource[3], "the resource's alliance")
     const qualified = `${alliance} ${rarity}`
     return resource === "abilityToken"
       ? {

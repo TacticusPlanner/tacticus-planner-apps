@@ -30,8 +30,11 @@ import { RarityBadge } from "./rarity-badge"
 
 /** The chip's rank shading: the rank colour at 30% over the card, edged at 70% (lighter than the
  *  leaderboards' `rankTone`, so the name and the rarity badge stay the first thing read). */
-function chipRankTone(rank: EventUnitChipData["rank"]): CSSProperties {
-  const token = `var(--rank-${rank!.toLowerCase()})`
+function chipRankTone(
+  rank: EventUnitChipData["rank"]
+): CSSProperties | undefined {
+  if (rank === undefined) return undefined
+  const token = `var(--rank-${rank.toLowerCase()})`
   return {
     backgroundColor: `color-mix(in oklab, ${token} 30%, var(--card))`,
     borderColor: `color-mix(in oklab, ${token} 70%, var(--card))`,

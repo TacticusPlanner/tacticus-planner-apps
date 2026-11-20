@@ -38,8 +38,12 @@ export function describeRankTargetKey(
   key: string
 ): { rank: Rank; slots: number } | null {
   const [end, slots, ...rest] = key.split(":").map(Number)
-  return rest.length === 0 && Number.isInteger(end) && Number.isInteger(slots)
-    ? { rank: rankAt(end!), slots: slots! }
+  return rest.length === 0 &&
+    end !== undefined &&
+    slots !== undefined &&
+    Number.isInteger(end) &&
+    Number.isInteger(slots)
+    ? { rank: rankAt(end), slots }
     : null
 }
 

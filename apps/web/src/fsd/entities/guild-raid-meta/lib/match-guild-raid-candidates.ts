@@ -64,7 +64,8 @@ function search(
     totalFilled: number,
     readinessSum: number
   ) {
-    if (position === openSlots.length) {
+    const open = openSlots[position]
+    if (!open) {
       const outcome: SearchOutcome = {
         assignment,
         essentialFilled,
@@ -75,7 +76,7 @@ function search(
       return
     }
 
-    const { index, slot } = openSlots[position]!
+    const { index, slot } = open
 
     // Leave this slot unfilled.
     backtrack(

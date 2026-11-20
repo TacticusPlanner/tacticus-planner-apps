@@ -7,6 +7,7 @@ import type {
   RosterSnapshot,
 } from "./run-record.types"
 import type { ReadState } from "./use-read-state"
+import { required } from "@/shared/lib"
 
 /** Each record's roster at its last progress, read on demand: only for the `records` given (the
  *  previous run, and each earlier run the user expands) and only when the record has teams — a
@@ -25,7 +26,7 @@ export function useLegendaryEventRunRecordRosters(
   })
   return new Map(
     withTeams.map((record, index): [string, ReadState<RosterSnapshot>] => {
-      const query = queries[index]!
+      const query = required(queries[index], `record ${record.id}'s query`)
       const retry = () => void query.refetch()
       return [
         record.id,

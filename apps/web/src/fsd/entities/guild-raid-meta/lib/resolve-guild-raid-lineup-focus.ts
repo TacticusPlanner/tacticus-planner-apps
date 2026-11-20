@@ -17,15 +17,15 @@ function weakestIndex(
   slots: readonly GuildRaidFocusSlot[],
   include: (slot: GuildRaidFocusSlot) => boolean
 ): number | null {
-  let weakest: number | null = null
-  slots.forEach((slot, index) => {
-    if (!include(slot) || slot.picked === null) return
-    if (slot.readiness === undefined || slot.readiness >= 100) return
-    if (weakest === null || slot.readiness < slots[weakest]!.readiness!) {
-      weakest = index
+  let weakest: { index: number; readiness: number } | null = null
+  for (const [index, slot] of slots.entries()) {
+    if (!include(slot) || slot.picked === null) continue
+    if (slot.readiness === undefined || slot.readiness >= 100) continue
+    if (weakest === null || slot.readiness < weakest.readiness) {
+      weakest = { index, readiness: slot.readiness }
     }
-  })
-  return weakest
+  }
+  return weakest?.index ?? null
 }
 
 /**

@@ -1,4 +1,5 @@
 import type { GameCatalogHseTier } from "@workspace/game-catalog"
+import { required } from "@/shared/lib"
 
 export type HseMilestoneCell = {
   /** Points this cell adds: its cumulative points minus the previous milestone's, or the repeat step. */
@@ -19,7 +20,8 @@ export function hseMilestoneCells(
   const cells: HseMilestoneCell[] = tier.milestones.map((milestone, index) => ({
     points:
       milestone.requiredPoints -
-      (index === 0 ? 0 : tier.milestones[index - 1]!.requiredPoints),
+      // The first milestone has none before it.
+      (tier.milestones[index - 1]?.requiredPoints ?? 0),
     cumulativePoints: milestone.requiredPoints,
     rewardId: milestone.rewardId,
     quantity: milestone.quantity,
@@ -58,7 +60,8 @@ export const NO_HSE_MILESTONE_PROGRESS: HseMilestoneProgress = {
 export function hseMilestonesMax(
   cells: readonly HseMilestoneCell[]
 ): number | null {
-  const endless = cells.at(-1)?.endless ? cells.at(-1)! : null
+  const last = cells.at(-1)
+  const endless = last?.endless ? last : null
   const regular = endless ? cells.length - 1 : cells.length
   if (!endless) return regular
   return endless.cap === null ? null : regular + endless.cap
@@ -71,9 +74,12 @@ export function hseCurrentMilestoneCell(
 ): HseMilestoneCell | null {
   const max = hseMilestonesMax(cells)
   if (max !== null && milestonesDone >= max) return null
-  const endless = cells.at(-1)?.endless ? cells.at(-1)! : null
+  const last = cells.at(-1)
+  const endless = last?.endless ? last : null
   const regular = endless ? cells.length - 1 : cells.length
-  return milestonesDone < regular ? cells[milestonesDone]! : endless
+  return milestonesDone < regular
+    ? required(cells[milestonesDone], `milestone ${milestonesDone + 1}`)
+    : endless
 }
 
 /**

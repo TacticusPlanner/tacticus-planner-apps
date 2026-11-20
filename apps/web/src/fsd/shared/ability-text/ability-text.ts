@@ -3,6 +3,8 @@
 // per-token icon set, and the raid-boss spec accepts a plain-text rendering that still substitutes
 // the scaled values (see openspec/changes/add-raid-boss-ability-text).
 
+import { required } from "../lib"
+
 // ── Colors ───────────────────────────────────────────────────────────────────
 
 export const ABILITY_COLORS = {
@@ -284,7 +286,7 @@ const TOKEN_RE =
 function parseToken(
   raw: string
 ):
-  | { open?: string; isDynamic?: boolean }
+  | { open: string; isDynamic?: boolean }
   | { close: true }
   | { skip: true }
   | { variable: string } {
@@ -294,11 +296,11 @@ function parseToken(
   if (tag === "</link>" || tag.startsWith("<link=")) return { skip: true }
   if (tag === "<i>") return { open: "__italic__" }
   const openQuoted = /^<style="([^"<>]*)">\s*$/i.exec(raw)
-  if (openQuoted) return { open: openQuoted[1] }
+  if (openQuoted) return { open: openQuoted[1] ?? "" }
   const openDynamic = /^<style=\{([^}]+)\}>\s*$/i.exec(raw)
-  if (openDynamic) return { open: openDynamic[1], isDynamic: true }
+  if (openDynamic) return { open: openDynamic[1] ?? "", isDynamic: true }
   const openBare = /^<style="?([^"{}<>]+)"?>\s*$/i.exec(raw)
-  if (openBare) return { open: openBare[1] }
+  if (openBare) return { open: openBare[1] ?? "" }
   const variableMatch = /^\{([^}]+)\}$/.exec(raw)
   if (variableMatch) return { variable: variableMatch[1] ?? "" }
   return { variable: raw }
@@ -324,10 +326,12 @@ export function parseAbilityText(text: string): AstNode[] {
   const stack: AstNode[][] = [[]]
   const styleStack: Array<{ styleName: string; isDynamic: boolean }> = []
   let lastIndex = 0
+  // An unmatched close throws below, so the root run is never popped.
+  const top = () => required(stack.at(-1), "the open text run")
 
   for (const match of text.matchAll(TOKEN_RE)) {
     const before = text.slice(lastIndex, match.index)
-    if (before) stack.at(-1)!.push({ type: "text", value: before })
+    if (before) top().push({ type: "text", value: before })
     lastIndex = match.index + match[0].length
 
     const token = parseToken(match[0])
@@ -337,29 +341,28 @@ export function parseAbilityText(text: string): AstNode[] {
     }
 
     if ("close" in token) {
-      const children = stack.pop()!
+      const children = top()
+      stack.pop()
       const style = styleStack.pop()
       if (stack.length === 0 || !style) {
         throw new Error(
           `Unmatched </style> tag in "${text}" at index ${lastIndex}`
         )
       }
-      stack.at(-1)!.push({ type: "styled", ...style, children })
+      top().push({ type: "styled", ...style, children })
     } else if ("open" in token) {
       styleStack.push({
-        styleName: token.open!,
+        styleName: token.open,
         isDynamic: token.isDynamic ?? false,
       })
       stack.push([])
     } else {
-      stack
-        .at(-1)!
-        .push(parseVariableContent((token as { variable: string }).variable))
+      top().push(parseVariableContent(token.variable))
     }
   }
 
   const trailing = text.slice(lastIndex)
-  if (trailing) stack.at(-1)!.push({ type: "text", value: trailing })
+  if (trailing) top().push({ type: "text", value: trailing })
 
   return stack[0] ?? []
 }

@@ -215,17 +215,16 @@ export function tokenProgressesMission(
     }
     case "damageType":
     case "defeatWithDamageType": {
+      const { damageType } = mission
       return (
-        mission.damageType !== null &&
-        members.some((unit) =>
-          unitDealtDamageTypes(unit).includes(mission.damageType!)
-        )
+        damageType !== null &&
+        members.some((unit) => unitDealtDamageTypes(unit).includes(damageType))
       )
     }
     case "winWithoutTrait": {
+      const { trait } = mission
       return (
-        mission.trait !== null &&
-        members.every((unit) => !unit.traits.includes(mission.trait!))
+        trait !== null && members.every((unit) => !unit.traits.includes(trait))
       )
     }
     default: {
