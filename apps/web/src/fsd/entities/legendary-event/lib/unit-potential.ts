@@ -12,6 +12,7 @@ import type {
 } from "../model/types"
 import { isUnitAllowedOnLane, objectivesSatisfied } from "./objective-match"
 import type { LaneProgressView } from "./synced-lane-progress"
+import { firstDifference } from "@/shared/lib"
 
 type PotentialLane = Pick<
   LegendaryEventLane,
@@ -193,11 +194,12 @@ export function sortLeaderboard(
 ): LeaderboardRow[] {
   const figureOf = (row: LeaderboardRow) =>
     figure === "remaining" ? row.remainingPoints : row.pointsPerBattle
-  return rows.toSorted(
-    (a, b) =>
-      figureOf(b) - figureOf(a) ||
-      b.objectivesCount - a.objectivesCount ||
+  return rows.toSorted((a, b) =>
+    firstDifference(
+      figureOf(b) - figureOf(a),
+      b.objectivesCount - a.objectivesCount,
       nameOf(a).localeCompare(nameOf(b), locale)
+    )
   )
 }
 
@@ -302,9 +304,10 @@ export function sortCrossLaneLeaderboard(
   locale?: string,
   laneIds: readonly LegendaryEventLaneId[] = LEGENDARY_EVENT_LANE_IDS
 ): CrossLaneLeaderboardRow[] {
-  return rows.toSorted(
-    (a, b) =>
-      crossLaneTotal(b, figure, laneIds) - crossLaneTotal(a, figure, laneIds) ||
+  return rows.toSorted((a, b) =>
+    firstDifference(
+      crossLaneTotal(b, figure, laneIds) - crossLaneTotal(a, figure, laneIds),
       nameOf(a).localeCompare(nameOf(b), locale)
+    )
   )
 }

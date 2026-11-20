@@ -5,8 +5,9 @@ import { useQueryClient } from "@tanstack/react-query"
 import { QueryProvider } from "./query-provider"
 
 function Consumer() {
-  const client = useQueryClient()
-  return <span>{client ? "query client ready" : "missing"}</span>
+  // useQueryClient throws without a provider, so rendering at all is the check.
+  useQueryClient()
+  return <span>query client ready</span>
 }
 
 function Defaults() {

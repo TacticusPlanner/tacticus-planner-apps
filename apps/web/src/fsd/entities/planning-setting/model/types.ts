@@ -20,9 +20,14 @@ export const defaultPlanningSettings: PlanningSettings = {
  *  preference is off by default. */
 export type UserPreference = PlanningSettings["preferences"][number]
 
+/** A settings read cached before preferences were served has none. */
+type CachedPreferences = {
+  preferences?: PlanningSettings["preferences"] | null
+}
+
 /** Whether `flag` is on; a settings read without preferences reads as all off. */
 export function hasPreference(
-  settings: Pick<PlanningSettings, "preferences">,
+  settings: CachedPreferences,
   flag: UserPreference
 ): boolean {
   return (settings.preferences ?? []).includes(flag)
@@ -37,7 +42,7 @@ export function watchesDailyAds(
 
 /** `settings` with `flag` turned on or off (the other flags kept). */
 export function withPreference(
-  settings: PlanningSettings,
+  settings: Omit<PlanningSettings, "preferences"> & CachedPreferences,
   flag: UserPreference,
   on: boolean
 ): PlanningSettings {

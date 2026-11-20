@@ -18,6 +18,7 @@ import type {
 import { blocked, partiallyBlocked } from "./estimate-blocked"
 import { classifyNeed } from "./select-farm-nodes"
 import { onslaughtTokensFromSupply, shopSpendFromSupply } from "./shop-supply"
+import { firstDifference } from "@/shared/lib"
 
 // Day-by-day resource estimation engine — a "core scheduler" port of V1's
 // `UpgradesService.generateDailyRaidsList` (day loop budgeting energy against campaign nodes) and
@@ -59,7 +60,11 @@ function takeFromPool(
   pool: Map<string, number> | undefined
 ): number {
   const supply = Math.max(0, supplier.supplyOnDay(dayIndex))
-  if (pool && supplier.shardsPerRun) {
+  if (
+    pool &&
+    supplier.shardsPerRun !== undefined &&
+    supplier.shardsPerRun > 0
+  ) {
     const runsLeft = Math.max(
       0,
       supply / supplier.shardsPerRun - (pool.get(ONSLAUGHT_RUNS_POOL_KEY) ?? 0)
@@ -111,23 +116,25 @@ export function applyFlatSuppliers(
 } {
   const byResource = new Map<EstimateResourceId, number>()
   const bySupplier = new Map<string, number>()
-  if (!suppliers?.length) return { byResource, bySupplier }
+  if (suppliers === undefined || suppliers.length === 0)
+    return { byResource, bySupplier }
 
   // Allocate in a stable order (by key), not caller array order: on the day the shared need is
   // exhausted, whichever supplier is consulted first absorbs the remainder, so array order would
   // otherwise make each source's attributed total depend on selection order.
   // Mythic Onslaught runs come after regular ones: a run yields regular shards until the unit
   // reaches Mythic, so the shared run pool goes to the regular need first.
-  const ordered = suppliers.toSorted(
-    (a, b) =>
+  const ordered = suppliers.toSorted((a, b) =>
+    firstDifference(
       Number(a.key === MYTHIC_ONSLAUGHT_KEY) -
-        Number(b.key === MYTHIC_ONSLAUGHT_KEY) ||
-      (a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
+        Number(b.key === MYTHIC_ONSLAUGHT_KEY),
+      a.key < b.key ? -1 : a.key > b.key ? 1 : 0
+    )
   )
 
   for (const supplier of ordered) {
     const need = remaining.get(supplier.resourceId)
-    if (!need || need <= 0) continue
+    if (need === undefined || need <= 0) continue
 
     const amount = Math.min(
       takeFromPool(supplier, dayIndex, need, dailySupplyUsed),
@@ -236,7 +243,7 @@ export function spendDay(
 
   for (const { id, node } of spendable) {
     const remainingCount = remaining.get(id)
-    if (!remainingCount || remainingCount <= 0) continue
+    if (remainingCount === undefined || remainingCount <= 0) continue
     if (energy < node.energyCost) continue
 
     const attemptsUsed = attemptsUsedByBattle.get(node.battleId) ?? 0
@@ -427,9 +434,10 @@ export function allocateInventory<TId extends string>(
   const allocations = new Map<string, GoalInventoryAllocation<TId>>()
 
   for (const goal of goals.toSorted((a, b) => a.priority - b.priority)) {
-    const sourceStages = goal.stages?.length
-      ? goal.stages
-      : [{ target: "final", needs: goal.needs }]
+    const sourceStages =
+      goal.stages && goal.stages.length > 0
+        ? goal.stages
+        : [{ target: "final", needs: goal.needs }]
     const stages = sourceStages.map((sourceStage) => {
       const remaining: CountedResourceNeed<TId>[] = []
       for (const need of sourceStage.needs) {

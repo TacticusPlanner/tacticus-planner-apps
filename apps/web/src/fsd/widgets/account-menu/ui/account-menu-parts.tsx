@@ -22,6 +22,7 @@ import {
 import { DiscordIcon } from "./discord-icon"
 import { ThemeSwitcher } from "./theme-switcher"
 import { useLanguage } from "../model/use-language"
+import { hasNode } from "@/shared/lib"
 
 export type AccountMenuView = "main" | "language"
 
@@ -169,7 +170,7 @@ export function MenuRow({
     >
       {Icon ? <Icon className="size-4 shrink-0" /> : null}
       <span className="min-w-0 flex-1 truncate">{label}</span>
-      {trailing ? (
+      {hasNode(trailing) ? (
         <span className="shrink-0 text-xs text-muted-foreground">
           {trailing}
         </span>

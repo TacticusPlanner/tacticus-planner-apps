@@ -74,9 +74,10 @@ export function slotsBaseNeed(
   const wholeIds: UpgradeId[] = []
   const partial = new Map<UpgradeId, number>()
   for (const slot of slots) {
-    const components = claimed?.size
-      ? baseComponents(slot.id, upgradesById)
-      : undefined
+    const components =
+      claimed && claimed.size > 0
+        ? baseComponents(slot.id, upgradesById)
+        : undefined
     let anyClaimed = false
     const remaining: [UpgradeId, number][] = []
     for (const [id, count] of components ?? []) {

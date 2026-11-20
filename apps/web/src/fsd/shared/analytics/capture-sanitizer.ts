@@ -60,7 +60,7 @@ function redactUrls(properties: Properties | undefined, usePatterns: boolean) {
       properties[key] = pattern
         ? new URL(pattern, value).toString()
         : withoutQueryOrHash(value)
-    } else if (value && typeof value === "object") {
+    } else if (typeof value === "object" && value !== null) {
       redactUrls(value as Properties, usePatterns)
     }
   }
@@ -69,7 +69,7 @@ function redactUrls(properties: Properties | undefined, usePatterns: boolean) {
 const WEB_VITALS_METRICS = ["CLS", "INP", "LCP", "FCP"] as const
 
 function asRecord(value: unknown): Record<string, unknown> | null {
-  return value && typeof value === "object"
+  return typeof value === "object" && value !== null
     ? (value as Record<string, unknown>)
     : null
 }

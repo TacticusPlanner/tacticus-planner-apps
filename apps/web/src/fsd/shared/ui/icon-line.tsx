@@ -24,7 +24,7 @@ export function IconLine({
       className={cn("flex items-center gap-1.5", className)}
       data-testid={testId}
     >
-      {icon ? (
+      {icon !== undefined && icon !== "" ? (
         <EntityIcon
           alt=""
           className={cn("size-4 shrink-0", iconClassName)}

@@ -8,6 +8,7 @@ import { laneReachablePoints } from "./reachable-points"
 import type { LaneProgressView } from "./synced-lane-progress"
 import { nextUpgradeSteps } from "./upgrade-steps"
 import type { UpgradeStep } from "./upgrade-steps"
+import { firstDifference } from "@/shared/lib"
 
 /** One team of a lane as the impact reads it. */
 export interface ImpactTeam {
@@ -130,11 +131,12 @@ export function laneUpgradeImpact(input: UpgradeImpactInput): UpgradeImpact {
   const laneDepth = Math.max(0, ...before.map((entry) => entry.depth))
   const battlesGained = (row: UpgradeImpactRow) =>
     Math.max(laneDepth, ...row.teams.map((team) => team.depthAfter)) - laneDepth
-  rows.sort(
-    (a, b) =>
-      b.gainPoints - a.gainPoints ||
-      battlesGained(b) - battlesGained(a) ||
+  rows.sort((a, b) =>
+    firstDifference(
+      b.gainPoints - a.gainPoints,
+      battlesGained(b) - battlesGained(a),
       input.nameOf(a.unitId).localeCompare(input.nameOf(b.unitId))
+    )
   )
   return { baselinePoints, rows }
 }

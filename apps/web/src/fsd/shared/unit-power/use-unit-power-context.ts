@@ -44,7 +44,7 @@ export function useUnitPowerContext(): ReadState<UnitPowerContext | null> {
   // Keyed on each dataset (each referentially stable while unchanged), not on the combined tuple.
   const context = useMemo(() => {
     if (status !== "ready") return undefined
-    if (!unitPower && !synced) return undefined
+    if (unitPower == null && synced !== true) return undefined
     return buildUnitPowerContext({
       unitPower: unitPower as UnitPowerStorageModel | null,
       characters: characters as CharacterStorageModel[],

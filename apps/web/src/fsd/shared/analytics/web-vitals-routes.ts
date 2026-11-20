@@ -54,7 +54,8 @@ export function recordInteraction(
   durationMs: number,
   startMs: number
 ) {
-  if (!interactionId) return
+  // 0: an entry that is not part of an interaction.
+  if (interactionId === 0) return
   const known = interactions.get(interactionId)
   if (known && known.durationMs >= durationMs) return
   interactions.set(interactionId, {
@@ -81,7 +82,10 @@ export function recordInteraction(
  */
 export function startInteractionTracking() {
   if (observer || typeof PerformanceObserver === "undefined") return
-  if (!PerformanceObserver.supportedEntryTypes?.includes("event")) return
+  // Older Safari has no supportedEntryTypes.
+  const supported = PerformanceObserver.supportedEntryTypes as
+    readonly string[] | undefined
+  if (!supported?.includes("event")) return
   observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries() as PerformanceEventTiming[]) {
       recordInteraction(entry.interactionId, entry.duration, entry.startTime)

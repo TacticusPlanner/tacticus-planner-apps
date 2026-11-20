@@ -91,6 +91,7 @@ import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { filterVisibleNavItems, navItems } from "./nav-items"
 import type { QuickAction, QuickActionsController } from "./quick-actions"
+import { hasNode } from "@/shared/lib"
 
 const noQuickActions = { actions: [], select: () => false, flush: () => {} }
 
@@ -206,7 +207,7 @@ describe("MobileBottomNav actions", () => {
 
     const nav = screen.getByTestId("primary-nav")
     expect(
-      Array.from(nav.children).map((item) => item.textContent?.trim())
+      Array.from(nav.children).map((item) => item.textContent.trim())
     ).toEqual([
       "library:section.label",
       "auth.signUp",
@@ -229,7 +230,7 @@ describe("MobileBottomNav actions", () => {
 
     const nav = screen.getByTestId("primary-nav")
     expect(
-      Array.from(nav.children).map((item) => item.textContent?.trim())
+      Array.from(nav.children).map((item) => item.textContent.trim())
     ).toEqual([
       "nav.home",
       "nav.goals",
@@ -505,7 +506,7 @@ describe("MobileBottomNav quick actions in Menu search", () => {
     actions,
     select: vi.fn((id: QuickAction["id"]) => {
       const found = actions.find((action) => action.id === id)
-      return !!found && !found.disabledReason
+      return !!found && !hasNode(found.disabledReason)
     }),
     flush: vi.fn(),
   })

@@ -156,7 +156,7 @@ function spendPooledDay(
       if (farmed <= 0) break
       for (const stage of stagesByGoal.get(goal.goalId) ?? []) {
         const need = stage.remaining.get(id)
-        if (!need) continue
+        if (need === undefined || need === 0) continue
         const taken = Math.min(need, farmed)
         farmed -= taken
         if (need - taken <= 0) stage.remaining.delete(id)
@@ -438,7 +438,7 @@ function runPlanSchedule(
             const shardsPerRun = flatSuppliersByGoal
               .get(goal.goalId)
               ?.find((supplier) => supplier.key === key)?.shardsPerRun
-            if (!shardsPerRun) continue
+            if (shardsPerRun === undefined || shardsPerRun === 0) continue
             const existing = onslaughtEntries.find(
               (entry) => entry.goalId === goal.goalId
             )

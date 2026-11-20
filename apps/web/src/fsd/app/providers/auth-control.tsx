@@ -49,6 +49,7 @@ import {
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { useUserJot } from "./userjot-provider"
+import { hasNode } from "@/shared/lib"
 
 type AuthOperation = "api-access" | "sign-out"
 
@@ -186,7 +187,9 @@ export function AuthControl() {
       accountName={accountName}
       applicationAccountId={applicationAccountId}
       canEditName={currentUser !== null}
-      className={tourRow ? "**:data-[slot=menu-row]:min-h-11" : undefined}
+      className={
+        hasNode(tourRow) ? "**:data-[slot=menu-row]:min-h-11" : undefined
+      }
       onEditName={() => openManageAccount("profile")}
       onFeedback={() => {
         setMenuOpen(false)

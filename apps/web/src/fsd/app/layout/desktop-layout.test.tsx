@@ -45,6 +45,7 @@ import { filterVisibleNavItems, navItems } from "./nav-items"
 import type { QuickAction } from "./quick-actions"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
 import { useSectionEntryPath } from "./use-section-entry-path"
+import { hasNode } from "@/shared/lib"
 
 const noQuickActions = { actions: [], select: () => false, flush: () => {} }
 
@@ -1157,7 +1158,7 @@ describe("DesktopShell quick actions in navigation search", () => {
       actions,
       select: vi.fn((id: QuickAction["id"]) => {
         const found = actions.find((action) => action.id === id)
-        return !!found && !found.disabledReason
+        return !!found && !hasNode(found.disabledReason)
       }),
       flush: vi.fn(),
     }

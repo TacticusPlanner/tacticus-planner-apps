@@ -74,9 +74,9 @@ for (const section of sections) {
         const logged =
           errors.find((error) => error.startsWith("Route rendering failed")) ??
           errors.find((error) => /Error:/.test(error)) ??
-          errors[0]
+          errors.at(0)
         failures.push(
-          `${path}: ${problem} — ${logged?.split("\n", 1)[0] ?? "no error logged"}`
+          `${path}: ${problem} — ${logged?.split("\n", 1).at(0) ?? "no error logged"}`
         )
         // The next unit reloads, so a stuck page or the error page cannot carry over.
         previousName = ""

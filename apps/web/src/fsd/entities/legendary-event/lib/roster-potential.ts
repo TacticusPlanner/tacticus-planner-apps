@@ -8,6 +8,7 @@ import type { LaneReach } from "./reachable-points"
 import type { LaneProgressView } from "./synced-lane-progress"
 import { MIN_TEAM_MEMBERS } from "./team-size"
 import { SUGGESTION_TEAM_SIZE } from "./team-suggestions"
+import { firstDifference } from "@/shared/lib"
 
 export interface LaneRosterPotential {
   /** Estimated depth of the five strongest owned units the lane allows; 0 below three units. */
@@ -64,7 +65,9 @@ export function laneRosterPotential(
             },
           ]
     })
-    .toSorted((a, b) => b.power - a.power || a.id.localeCompare(b.id))
+    .toSorted((a, b) =>
+      firstDifference(b.power - a.power, a.id.localeCompare(b.id))
+    )
 
   const depthOf = (candidates: typeof owned) => {
     if (candidates.length < MIN_TEAM_MEMBERS) return 0

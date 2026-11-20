@@ -39,7 +39,9 @@ function waitForElementSettled(
     const check = () => {
       const element = document.querySelector(selector)
       const rect = element?.getBoundingClientRect()
-      const isAnimating = element
+      // jsdom has no Web Animations API.
+      const animatable: Partial<Pick<Element, "getAnimations">> | null = element
+      const isAnimating = animatable
         ?.getAnimations?.()
         .some(
           (animation) => animation.pending || animation.playState === "running"

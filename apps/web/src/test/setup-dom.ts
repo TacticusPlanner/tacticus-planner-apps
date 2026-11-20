@@ -18,7 +18,18 @@ if (!("ResizeObserver" in globalThis)) {
     disconnect() {}
   }
 }
-if (!window.matchMedia) {
+// jsdom lacks these, though the DOM types declare them.
+const jsdomWindow: Partial<Pick<Window, "matchMedia">> = window
+const jsdomElement: Partial<
+  Pick<
+    HTMLElement,
+    | "scrollIntoView"
+    | "hasPointerCapture"
+    | "releasePointerCapture"
+    | "setPointerCapture"
+  >
+> = window.HTMLElement.prototype
+if (jsdomWindow.matchMedia === undefined) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
@@ -30,12 +41,12 @@ if (!window.matchMedia) {
     dispatchEvent: vi.fn(),
   }))
 }
-window.HTMLElement.prototype.scrollIntoView ??= vi.fn()
+jsdomElement.scrollIntoView ??= vi.fn()
 // jsdom defines scrollTo but only logs "Not implemented".
 window.scrollTo = vi.fn()
-window.HTMLElement.prototype.hasPointerCapture ??= vi.fn()
-window.HTMLElement.prototype.releasePointerCapture ??= vi.fn()
-window.HTMLElement.prototype.setPointerCapture ??= vi.fn()
+jsdomElement.hasPointerCapture ??= vi.fn()
+jsdomElement.releasePointerCapture ??= vi.fn()
+jsdomElement.setPointerCapture ??= vi.fn()
 
 // Registered after setup.ts's hook, so it runs first (after-hooks run in reverse): unmount before
 // the databases are reset.

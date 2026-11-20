@@ -1,6 +1,10 @@
 import type { Progression, Rank } from "@workspace/game-domain"
 
-import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
+import {
+  anyNameIncludes,
+  normalizeSearchText,
+  firstDifference,
+} from "@/shared/lib"
 
 import type {
   LegendaryEventPlan,
@@ -359,8 +363,8 @@ export function buildMasterTable(input: MasterTableInput): MasterTable {
   })
   return {
     eventIds: input.events.map((entry) => entry.event.id),
-    rows: rows.toSorted(
-      (a, b) => b.total - a.total || a.unitId.localeCompare(b.unitId)
+    rows: rows.toSorted((a, b) =>
+      firstDifference(b.total - a.total, a.unitId.localeCompare(b.unitId))
     ),
   }
 }
@@ -395,10 +399,11 @@ export function sortMasterTable(
 ): MasterTableRow[] {
   const key = (row: MasterTableRow) =>
     sortEventId === null ? row.total : (row.cells[sortEventId]?.points ?? 0)
-  return rows.toSorted(
-    (a, b) =>
-      key(b) - key(a) ||
-      b.total - a.total ||
+  return rows.toSorted((a, b) =>
+    firstDifference(
+      key(b) - key(a),
+      b.total - a.total,
       nameOf(a.unitId).localeCompare(nameOf(b.unitId), locale)
+    )
   )
 }

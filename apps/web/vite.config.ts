@@ -54,7 +54,9 @@ function capModulePreloads(): Plugin {
       handler(html, { bundle }) {
         if (!bundle) return html
         const sizeOf = (href: string) => {
-          const chunk = bundle[href.replace(/^\//, "")]
+          // A preload can name a file outside the bundle.
+          const chunk = bundle[href.replace(/^\//, "")] as
+            (typeof bundle)[string] | undefined
           return chunk?.type === "chunk" ? chunk.code.length : 0
         }
         const links = [
@@ -64,13 +66,12 @@ function capModulePreloads(): Plugin {
         ]
         const keep = new Set(
           links
-            .map((link) => link[1] ?? "")
+            .map((link) => link[1])
             .toSorted((a, b) => sizeOf(b) - sizeOf(a))
             .slice(0, MAX_MODULE_PRELOADS)
         )
         return links.reduce(
-          (out, [tag, href]) =>
-            keep.has(href ?? "") ? out : out.replace(tag, ""),
+          (out, [tag, href]) => (keep.has(href) ? out : out.replace(tag, "")),
           html
         )
       },
@@ -143,12 +144,13 @@ export default defineConfig(({ command }) => {
       capModulePreloads(),
       ...posthogSourceMapUpload(),
     ],
-    server: aspirePort
-      ? {
-          port: aspirePort,
-          strictPort: true,
-        }
-      : undefined,
+    server:
+      aspirePort !== undefined && aspirePort > 0
+        ? {
+            port: aspirePort,
+            strictPort: true,
+          }
+        : undefined,
     build: {
       // Read by scripts/bundle-budget.mjs.
       manifest: true,

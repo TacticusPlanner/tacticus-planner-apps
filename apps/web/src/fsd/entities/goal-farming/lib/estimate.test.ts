@@ -885,7 +885,7 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
       ],
     })
 
-    if (result?.status !== "Estimated") throw new Error("expected an estimate")
+    if (result.status !== "Estimated") throw new Error("expected an estimate")
     const bySupplier = result.flatSupplyBySupplier
     expect(bySupplier?.get("onslaught:regular")).toBeGreaterThan(0)
     expect(bySupplier?.get("guild:shards_hero1")).toBeGreaterThan(0)
@@ -922,7 +922,7 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
 
     const a = run([onslaught, shop])
     const b = run([shop, onslaught])
-    if (a?.status !== "Estimated" || b?.status !== "Estimated") {
+    if (a.status !== "Estimated" || b.status !== "Estimated") {
       throw new Error("expected estimates")
     }
     expect([...(a.flatSupplyBySupplier ?? [])].toSorted(byEntry)).toEqual(
@@ -961,7 +961,7 @@ describe("estimateGoal with a farmable shard resource (plan §16 phase 7)", () =
 
     // Both share the same single node — one raid/day clears one unit of whichever is spendable
     // first, so it takes 2 days total to clear both.
-    expect(result?.days).toBe(2)
+    expect(result.days).toBe(2)
   })
 })
 
@@ -1085,7 +1085,7 @@ describe("spendDay ordering (align-raid-spend-order-with-v1)", () => {
       dailyEnergy: 538,
       referenceDate: REFERENCE_DATE,
     })
-    expect(result?.days).toBe(3)
+    expect(result.days).toBe(3)
   })
 
   it("raids two tied 6-raid nodes the same day, higher gold first, doubling day-1 yield", () => {
@@ -1161,8 +1161,8 @@ describe("spendDay ordering (align-raid-spend-order-with-v1)", () => {
       })
     const single = run(["M1"])
     const tied = run(["M1", "M2"])
-    expect(tied?.days).toBeLessThan(single?.days ?? Infinity)
-    expect(tied?.days).toBe(3)
-    expect(single?.days).toBe(6)
+    expect(tied.days).toBeLessThan(single.days ?? Infinity)
+    expect(tied.days).toBe(3)
+    expect(single.days).toBe(6)
   })
 })

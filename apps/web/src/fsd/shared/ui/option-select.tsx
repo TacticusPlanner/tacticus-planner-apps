@@ -4,6 +4,8 @@ import { ChevronsUpDown, X } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+
+import { hasNode } from "../lib"
 import {
   Command,
   CommandEmpty,
@@ -131,7 +133,7 @@ function SelectShell({
             <span
               className={cn(
                 "flex min-w-0 flex-1 items-center gap-1 overflow-hidden",
-                trailing && "pr-7"
+                hasNode(trailing) && "pr-7"
               )}
             >
               {summary}

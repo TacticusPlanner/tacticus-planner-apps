@@ -130,7 +130,7 @@ export function DesktopShell({
           data-slot="sidebar-inset"
         >
           <div className="flex min-h-0 flex-1">
-            {activeSection?.children?.length ? (
+            {activeSection?.children && activeSection.children.length > 0 ? (
               <DesktopSectionNavigation
                 expanded={sectionExpanded}
                 item={activeSection}

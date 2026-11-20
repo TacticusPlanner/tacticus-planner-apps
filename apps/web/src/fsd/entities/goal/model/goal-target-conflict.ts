@@ -7,7 +7,7 @@ export function goalRevisionConflict(
   error: unknown
 ): { current: GoalDetail } | null {
   const issue = apiIssue(error, "goalRevisionStale")
-  return issue?.current && typeof issue.current === "object"
+  return typeof issue?.current === "object" && issue.current !== null
     ? { current: issue.current as GoalDetail }
     : null
 }

@@ -114,10 +114,10 @@ function restrictsEnemies(
     (tag) => tag !== "Summon" && tag !== "Steppable"
   )
   return (
-    !!enemy.tags?.allowed?.length ||
+    (enemy.tags?.allowed?.length ?? 0) > 0 ||
     disallowed.length > 0 ||
     !!enemy.factionIds ||
-    !!enemy.unitIds?.length
+    (enemy.unitIds?.length ?? 0) > 0
   )
 }
 

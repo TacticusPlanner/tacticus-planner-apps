@@ -247,7 +247,7 @@ export function resolveI2p(
   const variableName = variableMatch[1] ?? ""
   const values = variables[variableName]
   const valueAtLevel = Number(
-    values?.[Math.min(level - 1, (values?.length ?? 1) - 1)] ?? 1
+    values?.[Math.min(level - 1, values.length - 1)] ?? 1
   )
   return prefix + (valueAtLevel === 1 ? oneContent : pluralContent)
 }

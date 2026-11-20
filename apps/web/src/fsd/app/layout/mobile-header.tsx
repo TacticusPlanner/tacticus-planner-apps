@@ -82,7 +82,7 @@ export function MobileHeader({
           )}
         </div>
       </div>
-      {activeSection?.children?.length ? (
+      {activeSection?.children && activeSection.children.length > 0 ? (
         <div className="border-t px-4 py-1.5">
           <SectionTabs item={activeSection} />
         </div>

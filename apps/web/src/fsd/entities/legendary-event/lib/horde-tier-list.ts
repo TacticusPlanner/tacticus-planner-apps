@@ -1,4 +1,8 @@
-import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
+import {
+  anyNameIncludes,
+  normalizeSearchText,
+  firstDifference,
+} from "@/shared/lib"
 
 import type {
   LegendaryEventRosterUnit,
@@ -197,7 +201,9 @@ export function buildHordeTierList(
           relics: hordeRelics(tierList, character.id),
         }
       })
-      .toSorted((a, b) => b.multiplier - a.multiplier || byName(a, b)),
+      .toSorted((a, b) =>
+        firstDifference(b.multiplier - a.multiplier, byName(a, b))
+      ),
   }))
   const untiered = characters
     .filter((character) => !tierOf.get(character.id)?.tier && keep(character))

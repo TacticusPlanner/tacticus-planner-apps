@@ -21,7 +21,11 @@ import { unavailableReason } from "./estimate-blocked"
 export function dropRate(location: FarmLocation): number {
   if (location.effectiveRate != null) return location.effectiveRate
   if (location.guaranteed) return 1
-  if (location.numerator != null && location.denominator) {
+  if (
+    location.numerator != null &&
+    location.denominator !== null &&
+    location.denominator > 0
+  ) {
     return location.numerator / location.denominator
   }
   return 0

@@ -58,7 +58,8 @@ export function mowAbilityTrackLevel(
   track: MowAbilityTrack
 ): number {
   const index = track === "primary" ? 0 : 1
-  return playerMow?.abilities[index]?.level ?? 1
+  const ability: { level: number } | undefined = playerMow?.abilities[index]
+  return ability?.level ?? 1
 }
 
 /**

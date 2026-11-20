@@ -65,7 +65,7 @@ export function useUnitTileLabel(
             required: data.unlockShards,
           })
     )
-    if (data.mythicShards) {
+    if (data.mythicShards !== undefined && data.mythicShards > 0) {
       parts.push(t("unitTile.mythicShards", { count: data.mythicShards }))
     }
   }
