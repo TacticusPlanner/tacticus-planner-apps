@@ -25,6 +25,11 @@ import { CSS } from "@dnd-kit/utilities"
 
 type SortableReturn = ReturnType<typeof useSortable>
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
 /** `vertical` for a single column (table rows, a card list); `grid` for a wrapping multi-column grid,
  *  where a move previews across rows in reading order. */
 export type SortableListStrategy = "vertical" | "grid"
@@ -80,8 +85,11 @@ function SortableItem<T>({
   return renderItem(item, {
     setNodeRef,
     // Translate only: the grid strategy also returns a scale, which would stretch a card moving
-    // into a row of another height.
-    style: { transform: CSS.Translate.toString(transform), transition },
+    // into a row of another height. With reduced motion, items jump instead of sliding.
+    style: {
+      transform: CSS.Translate.toString(transform),
+      transition: prefersReducedMotion() ? undefined : transition,
+    },
     dragHandle,
     isDragging,
   })
@@ -103,6 +111,7 @@ export function SortableList<T>({
   getLabel,
   disabled = false,
   strategy = "vertical",
+  accessibilityContainer,
 }: {
   items: T[]
   getId: (item: T) => string
@@ -116,6 +125,10 @@ export function SortableList<T>({
   disabled?: boolean
   /** How items shift while dragging; the committed `onReorder` order is the same either way. */
   strategy?: SortableListStrategy
+  /** Where the screen-reader instructions and live region render. Leave unset to render them next
+   *  to the items; pass `document.body` where an element there would break the markup, such as a
+   *  `<tbody>` (not inside a modal dialog, which hides the rest of the page from screen readers). */
+  accessibilityContainer?: Element
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -165,6 +178,7 @@ export function SortableList<T>({
     <DndContext
       accessibility={{
         announcements,
+        container: accessibilityContainer,
         screenReaderInstructions: { draggable: t("reorder.instructions") },
       }}
       collisionDetection={closestCenter}

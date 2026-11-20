@@ -37,10 +37,15 @@ import {
   groupRosterSnapshotOutcomes,
   reasonKeyForRosterSnapshotPart,
 } from "../model/roster-snapshot-outcome-buckets"
+import {
+  groupTeamOutcomes,
+  reasonKeyForTeamPart,
+} from "../model/team-outcome-buckets"
 import { useUpgradeName } from "../model/use-upgrade-name"
 import { LegendaryEventImportResult } from "./legendary-event-import-result"
 import { MaterialSteps } from "./material-steps"
 import { RosterSnapshotImportResult } from "./roster-snapshot-import-result"
+import { TeamImportResult } from "./team-import-result"
 
 // i18next's `t` only accepts keys it can statically verify exist in the locale resources, so a
 // status-derived key is built through this small literal-keyed lookup rather than a template
@@ -95,6 +100,10 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
     () => groupRosterSnapshotOutcomes(result.rosterSnapshotOutcomes ?? []),
     [result.rosterSnapshotOutcomes]
   )
+  const teamBuckets = useMemo(
+    () => groupTeamOutcomes(result.teamOutcomes ?? []),
+    [result.teamOutcomes]
+  )
   // "not_selected" (ImportPartResult.NotSelected — API contract) hides a part the user didn't ask
   // for, so a cleared part can't be mistaken for one that was attempted and skipped.
   // The Legendary Event part's own code is translated; the other parts keep the server's message.
@@ -109,7 +118,9 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
       const snapshotReason =
         key === "rosterSnapshots" && part.code
           ? reasonKeyForRosterSnapshotPart(part.code)
-          : undefined
+          : key === "teams" && part.code
+            ? reasonKeyForTeamPart(part.code)
+            : undefined
       return {
         key,
         label,
@@ -250,6 +261,10 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
 
       {(result.rosterSnapshotOutcomes?.length ?? 0) > 0 ? (
         <RosterSnapshotImportResult buckets={rosterSnapshotBuckets} />
+      ) : null}
+
+      {(result.teamOutcomes?.length ?? 0) > 0 ? (
+        <TeamImportResult buckets={teamBuckets} />
       ) : null}
     </div>
   )

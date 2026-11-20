@@ -70,13 +70,16 @@ export type V1LegendaryEventOutcome = S["V1LegendaryEventOutcome"]
 
 /** One V1 roster snapshot's outcome in the `rosterSnapshots` part. */
 export type V1RosterSnapshotOutcome = S["V1RosterSnapshotOutcome"]
+export type V1TeamOutcome = S["V1TeamOutcome"]
+export type V1TeamIssue = S["V1TeamIssue"]
 
-type LaterImportOutcomes = "legendaryEventOutcomes" | "rosterSnapshotOutcomes"
+type LaterImportOutcomes =
+  "legendaryEventOutcomes" | "rosterSnapshotOutcomes" | "teamOutcomes"
 
 /** `suggestedDisplayName` is the V1 login username as a private prefill for the name step — only while
  *  the account has no confirmed name. Never public identity, and not stored by the API.
- *  `legendaryEventOutcomes` and `rosterSnapshotOutcomes` are absent from a response of an API that
- *  predates those parts. */
+ *  `legendaryEventOutcomes`, `rosterSnapshotOutcomes` and `teamOutcomes` are absent from a response of
+ *  an API that predates those parts. */
 export type ImportV1ProfileResult = Omit<
   S["ImportV1ProfileResponse"],
   LaterImportOutcomes

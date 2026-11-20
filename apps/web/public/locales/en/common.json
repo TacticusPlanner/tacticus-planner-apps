@@ -373,7 +373,9 @@
       "campaign-events": "Campaign Events",
       "campaign-eventsDescription": "Your progress in each campaign event.",
       "incursions": "Incursions",
-      "incursionsDescription": "Each Machine of War's Incursion: tiers, battles, enemies and rewards."
+      "incursionsDescription": "Each Machine of War's Incursion: tiers, battles, enemies and rewards.",
+      "teams": "Teams",
+      "teamsDescription": "Your saved lineups for Guild War, Guild Raid, Tournament Arena and other modes."
     },
     "collection": {
       "loading": "Loading your collection…",
@@ -987,13 +989,15 @@
         "onslaughtProgress": "Onslaught progress",
         "campaignEventProgress": "Campaign event progress",
         "legendaryEventPlans": "Legendary Event teams",
-        "rosterSnapshots": "Roster snapshots"
+        "rosterSnapshots": "Roster snapshots",
+        "teams": "Teams"
       },
       "partDescriptions": {
         "userId": "Links your planner account to your in-game player, which guild features need.",
         "guildKey": "Used only if you're your guild's Leader or Co-Leader: it registers your guild in the planner so every member can use guild features.",
         "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported.",
-        "rosterSnapshots": "Your V1 roster snapshots, newest first, up to the snapshot limit. Total XP and applied upgrades were not recorded in V1, so comparisons leave them out."
+        "rosterSnapshots": "Your V1 roster snapshots, newest first, up to the snapshot limit. Total XP and applied upgrades were not recorded in V1, so comparisons leave them out.",
+        "teams": "Your teams from V1's Teams page, up to 20. Teams already in the planner are kept. V1's War Defense and War Offense plans are not imported."
       },
       "submit": "Import selected",
       "submitting": "Importing…",
@@ -1156,6 +1160,35 @@
           "no_roster_snapshot_imported": "No new roster snapshot came across.",
           "roster_snapshot_import_failed": "None of your V1 roster snapshots could be read.",
           "roster_snapshot_import_conflict": "Your snapshots changed during the import. Try again."
+        }
+      },
+      "teams": {
+        "title": "Teams",
+        "unnamed": "Unnamed team",
+        "fixOnTeamsPage": "You can fix it on the Teams page.",
+        "openTeams": "Open Teams",
+        "reasons": {
+          "imported": "Imported",
+          "already_imported": "Imported before, even if renamed since",
+          "duplicate_name": "A team in the planner already has this name",
+          "team_limit_reached": "You already have {{count}} teams, the most you can keep",
+          "no_units": "None of its units are in the planner's game data",
+          "invalid_team": "This team couldn't be read"
+        },
+        "issues": {
+          "unit_not_recognised": "Unit not recognised: {{value}}",
+          "campaign_not_recognised": "Campaign not recognised: {{value}}",
+          "duplicate_unit": "Listed twice, kept once: {{value}}",
+          "flex_dropped": "V1 had no core character before its flex section, so every character is core",
+          "name_shortened": "Name shortened to 40 characters",
+          "notes_shortened": "Notes shortened to 300 characters",
+          "unknown": "Something in this team was changed: {{value}}"
+        },
+        "partReasons": {
+          "missing_teams": "Your V1 profile has no teams.",
+          "invalid_teams": "Your V1 teams couldn't be read.",
+          "teams_skipped": "No new team was imported.",
+          "team_import_failed": "None of your V1 teams could be imported."
         }
       }
     },

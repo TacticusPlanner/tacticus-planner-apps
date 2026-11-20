@@ -90,6 +90,7 @@ const ALL_SELECTED: V1ImportSelection = {
   campaignEventProgress: true,
   legendaryEventPlans: true,
   rosterSnapshots: true,
+  teams: true,
 }
 
 const imported: ImportPartResult = {
@@ -182,6 +183,7 @@ describe("V1ImportPanel", () => {
             campaignEventProgress: true,
             legendaryEventPlans: true,
             rosterSnapshots: true,
+            teams: true,
             automaticPrerequisites: true,
           },
         },
@@ -200,6 +202,7 @@ describe("V1ImportPanel", () => {
       campaignEventProgress: false,
       legendaryEventPlans: false,
       rosterSnapshots: false,
+      teams: false,
     })
 
     for (const key of [
@@ -211,6 +214,7 @@ describe("V1ImportPanel", () => {
       "campaignEventProgress",
       "legendaryEventPlans",
       "rosterSnapshots",
+      "teams",
     ] as const) {
       expect(screen.getByTestId(`v1-import-${key}`)).toHaveAttribute(
         "data-state",
@@ -260,6 +264,45 @@ describe("V1ImportPanel", () => {
     expect(invalidateQueries).not.toHaveBeenCalledWith({
       queryKey: ["legendary-event-plans"],
     })
+    invalidateQueries.mockRestore()
+  })
+
+  it("lists Teams after Legendary Event teams, with its description", () => {
+    renderPanel()
+    const keys = V1_IMPORT_PARTS.map((part) => part.key as string)
+    expect(keys.indexOf("teams")).toBeGreaterThan(
+      keys.indexOf("legendaryEventPlans")
+    )
+    expect(screen.getByTestId("v1-import-teams")).toHaveAttribute(
+      "data-state",
+      "checked"
+    )
+    expect(screen.getByTestId("v1-import-teams-description")).toHaveTextContent(
+      "goals.v1Import.partDescriptions.teams"
+    )
+  })
+
+  it("refreshes the teams only when that part was selected", async () => {
+    const invalidateQueries = vi.spyOn(
+      QueryClient.prototype,
+      "invalidateQueries"
+    )
+    renderPanel()
+    await fillCredentials()
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+
+    await screen.findByTestId("v1-import-result")
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["teams"] })
+    invalidateQueries.mockClear()
+
+    fireEvent.change(screen.getByTestId("v1-import-password"), {
+      target: { value: "secret" },
+    })
+    fireEvent.click(screen.getByTestId("v1-import-teams"))
+    fireEvent.click(screen.getByTestId("v1-import-submit"))
+    await waitFor(() => expect(importV1Profile).toHaveBeenCalledTimes(2))
+    await screen.findByTestId("v1-import-rerun-hint")
+    expect(invalidateQueries).not.toHaveBeenCalledWith({ queryKey: ["teams"] })
     invalidateQueries.mockRestore()
   })
 
@@ -785,6 +828,7 @@ describe("V1ImportPanel", () => {
         "campaignEventProgress",
         "legendaryEventPlans",
         "rosterSnapshots",
+        "teams",
       ] as const) {
         fireEvent.click(screen.getByTestId(`v1-import-${key}`))
       }

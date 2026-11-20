@@ -20,6 +20,7 @@ const ALL_SELECTED: V1ImportSelection = {
   campaignEventProgress: true,
   legendaryEventPlans: true,
   rosterSnapshots: true,
+  teams: true,
 }
 
 // The whole point of this step is to obtain a key — a cleared checkbox here would strand the user

@@ -59,6 +59,7 @@ describe("V1ImportPage", () => {
       campaignEventProgress: false,
       legendaryEventPlans: false,
       rosterSnapshots: false,
+      teams: false,
     })
   })
 

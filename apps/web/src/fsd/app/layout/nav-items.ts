@@ -43,6 +43,7 @@ type NavLabelKey =
   | "myGame.tabs.campaigns"
   | "myGame.tabs.campaign-events"
   | "myGame.tabs.incursions"
+  | "myGame.tabs.teams"
   | "legendaryEvents.tabs.allEvents"
   | "legendaryEvents.tabs.masterTable"
   | "legendaryEvents.tabs.tierList"
@@ -205,6 +206,13 @@ export const navItems: NavItem[] = [
         artSrc: eventIcon("incursion", "Incursion"),
         labelKey: "myGame.tabs.incursions",
         descriptionKey: "myGame.tabs.incursionsDescription",
+        anonymousAllowed: false,
+      },
+      {
+        path: "/my-game/teams",
+        artSrc: gameMenuIcon("guildWar"),
+        labelKey: "myGame.tabs.teams",
+        descriptionKey: "myGame.tabs.teamsDescription",
         anonymousAllowed: false,
       },
     ],

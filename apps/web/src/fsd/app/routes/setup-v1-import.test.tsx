@@ -93,6 +93,8 @@ function fullResult(
     legendaryEventOutcomes: [],
     rosterSnapshots: okPart,
     rosterSnapshotOutcomes: [],
+    teams: okPart,
+    teamOutcomes: [],
     importProjectId: null,
     profileId: "profile-1",
     playerName: null,
@@ -140,6 +142,7 @@ describe("SetupV1Import", () => {
       campaignEventProgress: true,
       legendaryEventPlans: true,
       rosterSnapshots: true,
+      teams: true,
     })
   })
 
