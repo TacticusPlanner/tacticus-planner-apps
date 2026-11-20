@@ -88,7 +88,6 @@ export function CharacterRankUpTab({
 
   // An effect, not render-time: the prefill writes the URL-backed lookup selection.
   useEffect(() => {
-    /* eslint-disable react-you-might-not-need-an-effect/no-event-handler -- waits for the synced record, then writes the URL */
     if (
       !isAuthenticated ||
       !draftCharacterId ||
@@ -97,7 +96,6 @@ export function CharacterRankUpTab({
     ) {
       return
     }
-    /* eslint-enable react-you-might-not-need-an-effect/no-event-handler */
 
     prefilledCharacterIdRef.current = draftCharacterId
 

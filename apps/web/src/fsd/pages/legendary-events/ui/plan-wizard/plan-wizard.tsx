@@ -154,7 +154,6 @@ export function PlanWizard({
 
   // Navigate once the guard has re-rendered without the draft's changes.
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- navigates after the guard re-renders without the draft's changes
     if (created) void navigate(eventPath)
   }, [created, navigate, eventPath])
 

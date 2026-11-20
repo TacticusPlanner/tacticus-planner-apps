@@ -19,7 +19,6 @@ export function useMobileReorderMode() {
 
   // An effect, not `toggle`: the list is scrolled and focused once the mode's render has committed.
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- moves DOM focus after the mode renders
     if (!active) return
     const list = listRef.current
     if (!list) return
