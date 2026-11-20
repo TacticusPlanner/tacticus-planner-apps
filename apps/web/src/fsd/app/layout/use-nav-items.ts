@@ -17,7 +17,7 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { navItems } from "./nav-items"
 import type { DynamicNavSubItem, NavItem } from "./nav-items"
-import { formatShortDate, useDateLocale } from "@/shared/lib"
+import { formatShortDate, useDateLocale, useStableByKey } from "@/shared/lib"
 
 const DESCRIPTION_KEY = {
   active: "legendaryEvents.tabs.activeEventDescription",
@@ -68,7 +68,8 @@ export function useNavItems(): NavItem[] {
         )
       : { active: [], upcoming: [], archived: [] }
   // Re-derived on each render (a lifecycle flip, a language or name change) from the cached reads;
-  // keyed by the serialized children below so the items keep their identity while nothing changed.
+  // kept by their serialized form (`useStableByKey`) so the items keep their identity while nothing
+  // changed.
   const eventChildren: DynamicNavSubItem[] = [
     ...ordered.active,
     ...ordered.upcoming,
@@ -84,7 +85,10 @@ export function useNavItems(): NavItem[] {
       .join(" · "),
     iconSrc: characterIcon(event.id as UnitId),
   }))
-  const signature = JSON.stringify(eventChildren)
+  const stableEventChildren = useStableByKey(
+    JSON.stringify(eventChildren),
+    eventChildren
+  )
   const enabledFlags = useEnabledFeatureFlags()
 
   return useMemo(
@@ -96,12 +100,11 @@ export function useNavItems(): NavItem[] {
             enabledFlags.includes(child.featureFlag)
         )
         return item.dynamicChildren === "legendaryEvents"
-          ? { ...item, children: [...(children ?? []), ...eventChildren] }
+          ? { ...item, children: [...(children ?? []), ...stableEventChildren] }
           : children && children.length !== item.children?.length
             ? { ...item, children }
             : item
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by the serialized children
-    [signature, enabledFlags]
+    [stableEventChildren, enabledFlags]
   )
 }

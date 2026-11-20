@@ -243,7 +243,9 @@ function FittingChips({
   const boxRef = useRef<HTMLSpanElement>(null)
   const measureRef = useRef<HTMLSpanElement>(null)
   const [shown, setShown] = useState(options.length)
+  // The chips to measure: `options` is a new array on every render, its values are not.
   const key = options.map((option) => option.value).join("\u0000")
+  const optionCount = options.length
 
   useLayoutEffect(() => {
     const box = boxRef.current
@@ -252,7 +254,7 @@ function FittingChips({
     const fit = () => {
       const width = box.clientWidth
       if (width === 0) {
-        setShown(options.length)
+        setShown(optionCount)
         return
       }
       const chips = [...measure.children] as HTMLElement[]
@@ -272,9 +274,7 @@ function FittingChips({
     const observer = new ResizeObserver(fit)
     observer.observe(box)
     return () => observer.disconnect()
-    // `key` stands for `options`, whose array is new on every render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key])
+  }, [key, optionCount])
 
   const hidden = options.slice(shown)
   return (

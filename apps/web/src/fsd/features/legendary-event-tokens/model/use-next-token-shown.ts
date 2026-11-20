@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useEffectEvent } from "react"
 
 import { useAnalyticsActions } from "@/shared/analytics"
 
@@ -12,16 +12,18 @@ export function useNextTokenShown(eventId: string, view: TokenPlanView) {
   const planLength = view.kind === "ready" ? view.plan.tokens.length : 0
   const tokensLeftOver =
     view.kind === "ready" ? (view.leftover?.tokens ?? 0) : 0
-  useEffect(() => {
-    if (!state) return
+  // Reads the plan's length and leftover when it fires: they change with every mark and sync.
+  const reportShown = useEffectEvent((shown: NonNullable<typeof state>) => {
     captureEvent({
       type: "legendary_event_next_token_shown",
       eventId,
-      state,
+      state: shown,
       planLength,
       tokensLeftOver,
     })
-    // Once per state: the plan's length and leftover change with every mark and sync.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
+  // Once per page view, event and card state (and once the analytics client loads).
+  useEffect(() => {
+    if (state) reportShown(state)
   }, [eventId, state, captureEvent])
 }

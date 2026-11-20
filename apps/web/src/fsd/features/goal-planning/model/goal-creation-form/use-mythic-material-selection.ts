@@ -61,7 +61,11 @@ export function useMythicMaterialSelection(params: {
     [mythicNeeds]
   )
   const { offers: allOffers, failed } = useMythicMaterialShopOffers(materialIds)
-  const offers = materialIds.length > 0 ? allOffers : []
+  const hasMaterials = materialIds.length > 0
+  const offers = useMemo(
+    () => (hasMaterials ? allOffers : []),
+    [hasMaterials, allOffers]
+  )
 
   const [state, setState] = useState(() => ({
     resetKey: params.resetKey,
@@ -73,8 +77,10 @@ export function useMythicMaterialSelection(params: {
   const { selection } = state
   const listedIds = offers?.map((offer) => offer.offerId) ?? []
   const checkedIds = selection ?? listedIds
-  const acquisitionSources: AcquisitionSource[] | null =
-    selection === null ? null : [{ kind: "Shop", ids: selection }]
+  const acquisitionSources: AcquisitionSource[] | null = useMemo(
+    () => (selection === null ? null : [{ kind: "Shop", ids: selection }]),
+    [selection]
+  )
 
   const toggle = (offerId: string, checked: boolean) =>
     setState((current) => {
@@ -107,8 +113,7 @@ export function useMythicMaterialSelection(params: {
     })
     if (outcome.status === "Blocked" || !outcome.flatSupplyBySupplier) return []
     return summariseShopCurrencySpend(used, outcome.flatSupplyBySupplier)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [offers, mythicNeeds, selection])
+  }, [offers, mythicNeeds, acquisitionSources, params.referenceDate])
 
   return {
     materialIds,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useEffectEvent, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { AlertTriangle, ClockPlus, History } from "lucide-react"
 import {
@@ -134,13 +134,20 @@ function ReadyCompare({
     [units, state.diffs, state.teamUnitIds, metric, query.order, i18n.language]
   )
 
+  // One event per pair of sources compared (and again once the analytics client loads, when
+  // `captureEvent` changes), reading the kinds when it fires.
+  const reportOpened = useEffectEvent(() =>
+    captureEvent({
+      type: "roster_compare_opened",
+      fromKind: from.kind,
+      toKind: to?.kind ?? "current",
+    })
+  )
   const fromId = from.id
-  const toKind = to?.kind ?? "current"
+  const toId = to?.id
   useEffect(() => {
-    captureEvent({ type: "roster_compare_opened", fromKind: from.kind, toKind })
-    // One event per pair of sources compared; captureEvent changes once, when the client loads.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromId, to?.id, captureEvent])
+    reportOpened()
+  }, [fromId, toId, captureEvent])
 
   const label = (source: typeof from) =>
     sourceLabel(source, i18n.language, labels)

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useEffectEvent, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { unitIdSchema } from "@workspace/game-domain"
@@ -204,7 +204,10 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     !!ascensionCostsById &&
     !!unlockShardCostsById
 
-  useEffect(() => {
+  const currentOnslaughtTokens =
+    liveProgress?.gameModeTokens.onslaught?.current ?? 0
+  // Reads the latest inputs when it starts; restarts only when a key below changes.
+  const startPlanRun = useEffectEvent(() => {
     if (!hasQuery || !catalogReady || !serverDataReady) {
       return undefined
     }
@@ -298,8 +301,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             campaignFullLabel,
             dailyEnergy: planningSettings.dailyEnergy,
             onslaughtProgress,
-            currentOnslaughtTokens:
-              liveProgress?.gameModeTokens.onslaught?.current ?? 0,
+            currentOnslaughtTokens,
             onslaughtRewards: onslaughtRewards,
             onslaughtRunsPerDay,
             shops,
@@ -336,20 +338,23 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     return () => {
       active = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    hasQuery,
-    catalogReady,
-    serverDataReady,
-    serverDataVersion,
-    mowUpgradeCostsByLevel,
-    characterAbilityCostsByLevel,
-    isAuthenticated,
-    calculationKey,
-    planningSettings.dailyEnergy,
-    liveProgress?.gameModeTokens.onslaught?.current,
-    levelRules,
-  ])
+  })
+  useEffect(
+    () => startPlanRun(),
+    [
+      hasQuery,
+      catalogReady,
+      serverDataReady,
+      serverDataVersion,
+      mowUpgradeCostsByLevel,
+      characterAbilityCostsByLevel,
+      isAuthenticated,
+      calculationKey,
+      planningSettings.dailyEnergy,
+      currentOnslaughtTokens,
+      levelRules,
+    ]
+  )
 
   const isCurrent =
     fetchState.status === "success" && fetchState.key === calculationKey
