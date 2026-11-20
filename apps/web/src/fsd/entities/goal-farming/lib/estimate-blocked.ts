@@ -10,6 +10,7 @@ import type {
   FarmLocation,
   UpgradeNeed,
 } from "../model/estimate.domain"
+import { required } from "@/shared/lib"
 
 export function blocked(
   reason: EstimateBlockedReason,
@@ -36,7 +37,7 @@ export function partiallyBlocked(
   const list = [...merged.values()]
   return {
     status: "Blocked",
-    reason: list[0]!.reason,
+    reason: required(list[0], "a blocker").reason,
     resourceIds: list.map((blocker) => blocker.resourceId),
     blockers: list,
     actionableResourceIds: [...new Set(actionableResourceIds)],
@@ -65,7 +66,11 @@ export function unavailableReason(
   if (restricted.length === 0) return "FarmingOverrideUnavailable"
   if (
     restricted.every(
-      (location) => battlesById.get(location.battleId)!.energyCost > dailyEnergy
+      (location) =>
+        required(
+          battlesById.get(location.battleId),
+          `battle ${location.battleId}`
+        ).energyCost > dailyEnergy
     )
   ) {
     return "InsufficientDailyEnergy"

@@ -97,7 +97,8 @@ export function selectTeamPlans(
   if (state.mission >= hreAllDone(missions)) return []
   const objectives = hreMission(missions, state.mission).objectives
   const open = objectives.filter(
-    (objective, index) => state.progress[index]! < objective.target
+    // No stored progress for an objective reads as 0.
+    (objective, index) => (state.progress[index] ?? 0) < objective.target
   )
   const manual = open.filter((objective) => isManualObjective(objective.kind))
   const rule = ruleFor(manual)

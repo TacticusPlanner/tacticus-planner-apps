@@ -277,12 +277,11 @@ function futureRunNumbers(
   synced: boolean
 ): LegendaryEventRun[] {
   if (resolution.kind === "unknown") return []
-  if (resolution.currentRun === null && resolution.nextRun === null) return []
+  const { currentRun, nextRun } = resolution
+  if (currentRun === null && nextRun === null) return []
   if (!synced) return [...RUNS]
-  if (resolution.currentRun !== null) {
-    return RUNS.filter((run) => run > resolution.currentRun!)
-  }
-  return RUNS.filter((run) => run >= resolution.nextRun!)
+  if (currentRun !== null) return RUNS.filter((run) => run > currentRun)
+  return nextRun === null ? [] : RUNS.filter((run) => run >= nextRun)
 }
 
 export function projectRewards({

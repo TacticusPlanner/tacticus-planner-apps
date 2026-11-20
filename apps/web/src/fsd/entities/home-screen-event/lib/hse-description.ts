@@ -132,11 +132,12 @@ function filterParts(filter: GameCatalogHseUnitFilter | null): FilterParts {
     allowedTags.map(tagLabel),
     (filter?.factionIds?.allowed ?? []).map(factionLabel),
   ].filter((labels) => labels.length > 0)
-  const qualifiers = qualifierLists.map((labels) =>
-    labels.length === 1
-      ? labels[0]!
+  const qualifiers = qualifierLists.map((labels) => {
+    const [only] = labels
+    return labels.length === 1 && only
+      ? only
       : text("phrase.group", { items: { list: labels, join: "or" } })
-  )
+  })
   const excludesSummons = disallowedTags.some((tag) => SUMMON_TAGS.has(tag))
   const excluded = [
     ...disallowedTags
@@ -218,13 +219,10 @@ function rates(
   key: "rateXp" | "ratePoints"
 ): HseTextList {
   return {
-    list: Object.keys(byRarity)
-      .sort(byOrder(RARITY_ORDER))
-      .map((rarity) =>
-        text(`phrase.${key}`, {
-          rarity: rarityLabel(rarity),
-          value: byRarity[rarity]!,
-        })
+    list: Object.entries(byRarity)
+      .toSorted(([a], [b]) => byOrder(RARITY_ORDER)(a, b))
+      .map(([rarity, value]) =>
+        text(`phrase.${key}`, { rarity: rarityLabel(rarity), value })
       ),
     join: "and",
   }

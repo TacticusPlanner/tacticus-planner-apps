@@ -83,12 +83,12 @@ export function UnownedDetails({ data }: { data: UnownedUnitTileData }) {
           </span>
         ) : null}
       </span>
-      {percent === undefined ? null : (
+      {percent === undefined || unlockShards === undefined ? null : (
         <span
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={unlockShards}
-          aria-valuenow={Math.min(shards, unlockShards!)}
+          aria-valuenow={Math.min(shards, unlockShards)}
           aria-label={t("unitTile.unlockProgress")}
           className="h-1.5 overflow-hidden rounded-full bg-muted"
         >

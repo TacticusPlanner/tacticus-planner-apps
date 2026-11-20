@@ -2,6 +2,7 @@ import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { lockedMemberCount, teamPower } from "./clear-estimate"
 import type { ClearEstimateRoster } from "./clear-estimate"
+import { required } from "@/shared/lib"
 
 /** One team with a manual depth on a lane, with the roster its members are read from. */
 export interface CalibrationSample {
@@ -53,10 +54,13 @@ export function calibrationPoint(
   battlePowers: readonly number[],
   depth: number
 ): number | null {
-  if (depth < 1 || depth > battlePowers.length) return null
-  const upper = effectivePower / battlePowers[depth - 1]!
-  if (depth === battlePowers.length) return upper
-  const lower = effectivePower / battlePowers[depth]!
+  // The deepest cleared battle, and the first missed one (none past the lane's end).
+  const cleared = depth >= 1 ? battlePowers[depth - 1] : undefined
+  if (cleared === undefined) return null
+  const upper = effectivePower / cleared
+  const missed = battlePowers[depth]
+  if (missed === undefined) return upper
+  const lower = effectivePower / missed
   return Math.sqrt(lower * upper)
 }
 
@@ -84,5 +88,8 @@ function quantile(sorted: readonly number[], q: number): number {
   const lower = Math.floor(position)
   const upper = Math.ceil(position)
   const weight = position - lower
-  return sorted[lower]! * (1 - weight) + sorted[upper]! * weight
+  return (
+    required(sorted[lower], "the lower quantile value") * (1 - weight) +
+    required(sorted[upper], "the upper quantile value") * weight
+  )
 }

@@ -8,7 +8,7 @@ import type { LaneReach } from "./reachable-points"
 import type { LaneProgressView } from "./synced-lane-progress"
 import { MIN_TEAM_MEMBERS } from "./team-size"
 import { SUGGESTION_TEAM_SIZE } from "./team-suggestions"
-import { firstDifference } from "@/shared/lib"
+import { firstDifference, required } from "@/shared/lib"
 
 export interface LaneRosterPotential {
   /** Estimated depth of the five strongest owned units the lane allows; 0 below three units. */
@@ -84,7 +84,7 @@ export function laneRosterPotential(
   const reaches: LaneReach[] = [
     { depth: defeatAllDepth, coveredObjectiveIndexes: [] },
     ...model.objectives.map((objective, column) => ({
-      depth: objectiveDepths[column]!,
+      depth: required(objectiveDepths[column], `objective ${column}'s depth`),
       coveredObjectiveIndexes: [objective.index],
     })),
   ]

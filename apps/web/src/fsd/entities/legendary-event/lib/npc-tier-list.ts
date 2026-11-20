@@ -2,6 +2,7 @@ import {
   anyNameIncludes,
   normalizeSearchText,
   firstDifference,
+  required,
 } from "@/shared/lib"
 
 /** The catalog enemy NPC tier list (the `npc-tiers` record), as the client reads it. */
@@ -107,7 +108,9 @@ export function npcAdjustedBattlePower(
   let weighted = 0
   let total = 0
   enemies.forEach((enemy, index) => {
-    const weight = enemy.count * (byPower ? powers[index]! : 1)
+    const weight =
+      enemy.count *
+      (byPower ? required(powers[index], `${enemy.id}'s power`) : 1)
     weighted += weight * multiplierOf(enemy.id)
     total += weight
   })

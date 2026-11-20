@@ -29,6 +29,7 @@ import {
   spendDay,
 } from "./estimate"
 import { onslaughtTokensFromSupply } from "./shop-supply"
+import { required } from "@/shared/lib"
 
 const MAX_DAYS = 1000
 const UNUSED_ENERGY_THRESHOLD = 60
@@ -180,7 +181,10 @@ function spendPooledDay(
     doneStages,
     energySpent: spent.energySpent,
     entries: spent.breakdown.map((entry) => ({
-      goalId: ownerById.get(entry.resourceId)!,
+      goalId: required(
+        ownerById.get(entry.resourceId),
+        `owner of ${entry.resourceId}`
+      ),
       ...entry,
     })),
   }
@@ -343,7 +347,10 @@ function runPlanSchedule(
     return reached ? { checkpoints: toCheckpoints(reached, referenceDate) } : {}
   }
   const completeIfDone = (goal: GoalNeed) => {
-    const stages = stagesByGoal.get(goal.goalId)!
+    const stages = required(
+      stagesByGoal.get(goal.goalId),
+      `stages of goal ${goal.goalId}`
+    )
     if (stages.length === 0) {
       const goalBlockers = blockersByGoal.get(goal.goalId) ?? []
       // Obtainable work is done; a remaining blocker means the goal never completes.
@@ -396,7 +403,10 @@ function runPlanSchedule(
 
     for (const goal of ordered) {
       if (!pending.has(goal.goalId)) continue
-      const stages = stagesByGoal.get(goal.goalId)!
+      const stages = required(
+        stagesByGoal.get(goal.goalId),
+        `stages of goal ${goal.goalId}`
+      )
       let goalEnergySpent = 0
       let goalRaids = 0
 
@@ -404,9 +414,10 @@ function runPlanSchedule(
       // stage before spending the shared daily energy pool, and regardless of whether that pool is
       // already exhausted for the day (a lower-priority goal can still complete purely from its own
       // shop/Onslaught sources even with zero energy left).
-      if (stages.length > 0) {
+      const currentStage = stages[0]
+      if (currentStage) {
         const appliedToday = applyFlatSuppliers(
-          stages[0]!.remaining,
+          currentStage.remaining,
           flatSuppliersByGoal.get(goal.goalId),
           days - 1,
           dailySupplyUsed
@@ -455,17 +466,26 @@ function runPlanSchedule(
           }
           flatSupplyBySupplierByGoal.set(goal.goalId, goalBySupplier)
         }
-        while (stages.length > 0 && stages[0]!.remaining.size === 0) {
+        // Stages the free supply finished are reached without energy.
+        for (
+          let done = stages[0];
+          done?.remaining.size === 0;
+          done = stages[0]
+        ) {
+          stages.shift()
           reachCheckpoint(
             goal.goalId,
-            stages.shift()!,
+            done,
             energyTotalByGoal.get(goal.goalId) ?? 0
           )
         }
       }
 
-      while (!combineGoals && stages.length > 0 && energy > 0) {
-        const stage = stages[0]!
+      for (
+        let stage = stages[0];
+        !combineGoals && stage && energy > 0;
+        stage = stages[0]
+      ) {
         const spent = spendDay(
           stage.remaining,
           stage.nodesById,

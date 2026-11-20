@@ -1,3 +1,4 @@
+import { required } from "@/shared/lib"
 /** A unit's traits as the support rule reads them. */
 export interface SupportCandidate {
   id: string
@@ -45,7 +46,7 @@ function swapInSupport(
   // The last member that is neither Healer nor Mechanic goes first; an earlier one is tried when
   // that swap would leave no one to treat for the new support or for the support already there.
   for (let replaced = team.length - 1; replaced >= 0; replaced--) {
-    const member = team[replaced]!
+    const member = required(team[replaced], `member ${replaced}`)
     if (has(member, HEALER) || has(member, MECHANIC)) continue
     const swapped = team.filter((_, index) => index !== replaced)
     swapped.push(support)

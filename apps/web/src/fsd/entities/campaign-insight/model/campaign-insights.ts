@@ -9,6 +9,7 @@ import type {
 } from "@workspace/game-domain"
 
 import type { Battle, FarmLocation } from "@/shared/lib"
+import { required } from "@/shared/lib"
 
 // Promoted from pages/library (Character Lookup, its original single consumer) once the Goals
 // Insights view became a second. It lives in entities (rather than shared/lib alongside
@@ -233,7 +234,7 @@ export function computeCampaignInsights<
       ? tierOrder
           .filter((tier) => chip.tiers.has(tier))
           .map((tier) => {
-            const tierAcc = chip.tiers.get(tier)!
+            const tierAcc = required(chip.tiers.get(tier), `tier ${tier}`)
             return {
               tier,
               score: scoreOf(tierAcc.value, tierAcc.energyByBattle),

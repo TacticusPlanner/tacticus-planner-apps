@@ -7,6 +7,7 @@ import {
 } from "@workspace/game-domain"
 import type { Progression, Rank } from "@workspace/game-domain"
 import type { GameCatalogRaidBoss } from "@workspace/game-catalog"
+import { required } from "@/shared/lib"
 
 export type GuildRaidInvestmentThreshold = {
   progression: Progression
@@ -34,7 +35,7 @@ export function resolveGuildRaidInvestmentThreshold(
   if (steps.length === 0) return null
 
   const clampedIndex = Math.min(Math.max(liveProgressionIndex, 1), steps.length)
-  const step = steps[clampedIndex - 1]!
+  const step = required(steps[clampedIndex - 1], `stat step ${clampedIndex}`)
 
   const progression = progressionAt(step.progressionIndex)
   const requiredRank = maxRankForProgression(progression)

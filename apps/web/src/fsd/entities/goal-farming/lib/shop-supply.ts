@@ -10,6 +10,7 @@ import {
   shardResourceId,
 } from "../model/estimate.domain"
 import type { FlatSupplier } from "../model/estimate.domain"
+import { required } from "@/shared/lib"
 
 /**
  * A selected shop offer's flat per-day supply (spec: *A selected shop source supplies a bounded,
@@ -40,7 +41,10 @@ export function projectShopSupply(
       cost: offer.cost.amount,
     },
     supplyOnDay: (dayIndex) => {
-      const weekday = DOW_MAP[(referenceDate.getUTCDay() + dayIndex) % 7]!
+      const weekday = required(
+        DOW_MAP[(referenceDate.getUTCDay() + dayIndex) % 7],
+        "the weekday"
+      )
       const probability = offer.probabilityByDay[weekday] ?? 0
       if (probability <= 0) return 0
       return offer.rewardQty * offer.maxPerDay * probability

@@ -73,15 +73,17 @@ export function laneUpgradeImpact(input: UpgradeImpactInput): UpgradeImpact {
     )
     return { team, estimate, depth: team.manualDepth ?? estimate }
   })
-  const reachesOf = (depths: readonly number[]) =>
-    teams.map((team, index) => ({
-      depth: depths[index]!,
+  const reachesOf = (
+    depths: readonly { team: (typeof teams)[number]; depth: number }[]
+  ) =>
+    depths.map(({ team, depth }) => ({
+      depth,
       coveredObjectiveIndexes: team.coveredObjectiveIndexes,
     }))
   const baselinePoints = laneReachablePoints(
     model,
     progress,
-    reachesOf(before.map((entry) => entry.depth))
+    reachesOf(before)
   ).total
 
   const candidates = [...new Set(teams.flatMap((team) => team.memberUnitIds))]
@@ -96,14 +98,20 @@ export function laneUpgradeImpact(input: UpgradeImpactInput): UpgradeImpact {
       const stepped = new Map<string, LegendaryEventRosterUnit>(roster)
       stepped.set(unitId, step.unit)
       const after = before.map(({ team, estimate, depth }) => {
-        if (!team.memberUnitIds.includes(unitId)) return depth
+        if (!team.memberUnitIds.includes(unitId)) {
+          return { team, depth, depthBefore: depth }
+        }
         const next = estimatedDepth(
           team.memberUnitIds,
           battlePowers,
           stepped,
           config
         )
-        return Math.min(battleCount, depth + (next - estimate))
+        return {
+          team,
+          depth: Math.min(battleCount, depth + (next - estimate)),
+          depthBefore: depth,
+        }
       })
       const gainPoints =
         laneReachablePoints(model, progress, reachesOf(after)).total -
@@ -113,16 +121,10 @@ export function laneUpgradeImpact(input: UpgradeImpactInput): UpgradeImpact {
         unitId,
         step,
         gainPoints,
-        teams: before.flatMap(({ team, depth }, index) =>
-          after[index] === depth
+        teams: after.flatMap(({ team, depth, depthBefore }) =>
+          depth === depthBefore
             ? []
-            : [
-                {
-                  teamId: team.id,
-                  depthBefore: depth,
-                  depthAfter: after[index]!,
-                },
-              ]
+            : [{ teamId: team.id, depthBefore, depthAfter: depth }]
         ),
       })
     }

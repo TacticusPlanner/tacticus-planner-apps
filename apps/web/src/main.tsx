@@ -16,6 +16,7 @@ import {
 import {
   installGlobalErrorCapture,
   migrateLegacyAccountKeys,
+  required,
 } from "@/shared/lib"
 import { ThemeProvider } from "@/shared/theme"
 import { TourProvider } from "@/shared/tour"
@@ -39,7 +40,9 @@ async function bootstrap() {
   // and waits on it instead of racing a second hidden sign-in frame against it.
   startSilentSignInOnce(msalInstance)
 
-  createRoot(document.getElementById("root")!).render(
+  createRoot(
+    required(document.getElementById("root"), "the #root element")
+  ).render(
     <StrictMode>
       <I18nProvider>
         <AuthProvider instance={msalInstance}>
@@ -61,7 +64,7 @@ async function bootstrap() {
 void bootstrap().catch((error: unknown) => {
   console.error("Application startup failed", error)
 
-  const root = document.getElementById("root")!
+  const root = required(document.getElementById("root"), "the #root element")
   const message = document.createElement("p")
 
   message.className = "p-6 text-sm text-destructive"

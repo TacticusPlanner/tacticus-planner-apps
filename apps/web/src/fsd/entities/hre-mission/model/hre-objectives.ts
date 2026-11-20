@@ -98,11 +98,16 @@ export const isManualObjective = (kind: HreObjectiveKind) =>
   kind in MANUAL_YIELD
 
 /** The current mission's open objectives with what is left of each. */
+/** The current mission's progress on one objective; the stored pair covers both objectives a
+ *  mission has, so an index past it reads as no progress. */
+const progressOf = (state: HreProgress, index: number) =>
+  state.progress[index] ?? 0
+
 function openObjectives(state: HreProgress, missions: readonly HreMission[]) {
   return hreMission(missions, state.mission)
     .objectives.map((objective, index) => ({
       objective,
-      toGo: objective.target - state.progress[index]!,
+      toGo: objective.target - progressOf(state, index),
     }))
     .filter((item) => item.toGo > 0)
 }
@@ -180,8 +185,9 @@ export function campaignObjectiveState(
       CAMPAIGN_KINDS.has(objective.kind) ||
       objective.kind === "lightningVictories"
   )
-  if (index < 0) return "none"
-  return state.progress[index]! >= objectives[index]!.target ? "met" : "open"
+  const objective = objectives[index]
+  if (!objective) return "none"
+  return progressOf(state, index) >= objective.target ? "met" : "open"
 }
 
 /** The next mission after the current one that has a campaign objective, with that objective. */
@@ -209,7 +215,8 @@ export function remainingCampaignBattles(
     if (mission.number < state.mission) continue
     mission.objectives.forEach((objective, index) => {
       if (!CAMPAIGN_KINDS.has(objective.kind)) return
-      const done = mission.number === state.mission ? state.progress[index]! : 0
+      const done =
+        mission.number === state.mission ? progressOf(state, index) : 0
       total += Math.max(0, objective.target - done)
     })
   }
@@ -244,7 +251,8 @@ export function tokenNeeds(
         (item) => TOKEN_KIND[item] === objective.kind
       )
       if (!mode) return
-      const done = mission.number === state.mission ? state.progress[index]! : 0
+      const done =
+        mission.number === state.mission ? progressOf(state, index) : 0
       needs[mode] += Math.max(0, objective.target - done)
     })
   }
