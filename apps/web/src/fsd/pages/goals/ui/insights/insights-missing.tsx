@@ -327,7 +327,7 @@ function MissingRow({
                 title={label}
               >
                 <span className="relative inline-flex">
-                  <EntityIcon alt="" className="size-7" src={item.icon} />
+                  <EntityIcon size="row" alt="" src={item.icon} />
                   {item.overlay ? (
                     <img
                       alt=""

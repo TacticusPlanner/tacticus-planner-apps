@@ -65,8 +65,9 @@ export function BattleList({
           <span className="flex min-w-0 flex-1 items-baseline justify-between gap-2">
             <span className="flex items-center gap-1.5 font-semibold">
               <EntityIcon
+                size="inline"
                 alt=""
-                className="size-5 shrink-0"
+                className="shrink-0"
                 src={rarityIcon(group.tier)}
               />
               {tierName}
@@ -170,7 +171,7 @@ export function BattleList({
                             />
                           </span>
                           <UpgradeIcon
-                            className="size-7 shrink-0"
+                            className="shrink-0"
                             id={battle.loot.upgradeId}
                             rarity={upgrade?.rarity}
                           />
@@ -193,8 +194,9 @@ export function BattleList({
                                 {perfect ? (
                                   <>
                                     <EntityIcon
+                                      size="inline"
                                       alt=""
-                                      className="size-3.5"
+
                                       src={heroStarIcon()}
                                     />
                                     <span className="sr-only">

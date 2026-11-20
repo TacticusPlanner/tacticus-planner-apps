@@ -118,8 +118,9 @@ export function InsightsEvents({
                 })}
                 <span aria-hidden>·</span>
                 <EntityIcon
+                  size="inline"
                   alt={t("goals.insights.energy")}
-                  className="size-4 shrink-0"
+                  className="shrink-0"
                   src={energyIconUrl}
                 />
                 {t("goals.insights.perItem", {

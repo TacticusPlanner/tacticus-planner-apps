@@ -63,9 +63,10 @@ export function TrackShortfall({
                   className="flex items-center gap-3 rounded-lg border p-2"
                 >
                   <EntityIcon
+                    size="portrait-sm"
                     alt={name}
                     src={characterIcon(character.unitId)}
-                    className="size-10 shrink-0"
+                    className="shrink-0"
                   />
                   <p className="min-w-0 flex-1 truncate text-sm font-medium">
                     {name}

@@ -166,8 +166,9 @@ export function InsightsHoldingBack({
                       </span>
                       <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground tabular-nums">
                         <EntityIcon
+                          size="inline"
                           alt=""
-                          className="size-4 shrink-0"
+                          className="shrink-0"
                           src={energyIconUrl}
                         />
                         {fmt(bottleneck.energyToClear)}

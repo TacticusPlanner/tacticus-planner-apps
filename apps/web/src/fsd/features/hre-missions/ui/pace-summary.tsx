@@ -28,8 +28,9 @@ export function PaceSummary({
     >
       <p className="flex items-center gap-2 tabular-nums">
         <EntityIcon
+          size="inline"
           alt=""
-          className="size-5 shrink-0"
+          className="shrink-0"
           src={heroReleaseEventResourceIcon("points")}
         />
         {pace && points !== null

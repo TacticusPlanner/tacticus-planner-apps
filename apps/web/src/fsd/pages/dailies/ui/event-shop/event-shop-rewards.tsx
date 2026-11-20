@@ -151,7 +151,7 @@ function RewardText({
           <Fragment key={reward.type}>
             {index > 0 ? <span aria-hidden="true">+</span> : null}
             <span className="inline-flex items-center gap-1">
-              <EntityIcon alt="" className="size-4" src={text.iconUrl} />
+              <EntityIcon size="inline" alt="" src={text.iconUrl} />
               <span>
                 <span className="font-semibold text-foreground tabular-nums">
                   {amount}
@@ -213,8 +213,9 @@ function TierTile({
       {main ? (
         <span className="flex min-w-0 items-start gap-1 text-sm font-bold">
           <EntityIcon
+            size="inline"
             alt=""
-            className="size-4 shrink-0"
+            className="shrink-0"
             src={format.reward(main.reward.type).iconUrl}
           />
           <span className="line-clamp-2 wrap-break-word tabular-nums">
@@ -230,8 +231,9 @@ function TierTile({
           className="flex min-w-0 items-start gap-1 text-xs text-muted-foreground"
         >
           <EntityIcon
+            size="inline"
             alt=""
-            className="size-3.5 shrink-0"
+            className="shrink-0"
             src={format.reward(extra.reward.type).iconUrl}
           />
           <span className="line-clamp-2 wrap-break-word tabular-nums">

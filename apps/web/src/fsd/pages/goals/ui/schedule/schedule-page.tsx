@@ -112,9 +112,10 @@ function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
                 "plan.summary.energy",
                 raids.planSummary.totalEnergy,
                 <EntityIcon
+                  size="inline"
                   key="energy"
                   alt=""
-                  className="size-5"
+
                   src={energyIconUrl}
                 />,
               ],
@@ -122,9 +123,10 @@ function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
                 "plan.summary.raids",
                 raids.planSummary.totalRaids,
                 <EntityIcon
+                  size="inline"
                   key="raids"
                   alt=""
-                  className="size-5"
+
                   src={raidTicketIcon()}
                 />,
               ],

@@ -59,7 +59,12 @@ export function PointsProjection({
     >
       <h2 className="flex items-center gap-2 font-semibold">
         {pointsIcon ? (
-          <EntityIcon alt="" className="size-5 shrink-0" src={pointsIcon} />
+          <EntityIcon
+            size="inline"
+            alt=""
+            className="shrink-0"
+            src={pointsIcon}
+          />
         ) : null}
         {t("hse.projection.title")}
       </h2>
@@ -329,8 +334,9 @@ function ReadyProjectionBody({
               <div className="flex items-baseline justify-between gap-2">
                 <span className="flex items-center gap-2 font-medium">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                     src={hseModeIcon(mode.mode)}
                   />
                   {modeName(mode.mode)}
@@ -381,8 +387,9 @@ function ReadyProjectionBody({
                 <TableCell className="font-medium">
                   <span className="flex items-center gap-2">
                     <EntityIcon
+                      size="inline"
                       alt=""
-                      className="size-5 shrink-0"
+                      className="shrink-0"
                       src={hseModeIcon(mode.mode)}
                     />
                     {modeName(mode.mode)}

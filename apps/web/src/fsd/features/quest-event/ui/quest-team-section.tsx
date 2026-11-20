@@ -88,8 +88,9 @@ function TeamBody({
             key={member.unitId}
           >
             <EntityIcon
+              size="portrait-sm"
               alt=""
-              className="size-8 shrink-0 rounded-full bg-portrait"
+              className="shrink-0 rounded-full bg-portrait"
               src={characterIcon(member.unitId as UnitId)}
             />
             <span className="min-w-0 flex-1 truncate font-medium">

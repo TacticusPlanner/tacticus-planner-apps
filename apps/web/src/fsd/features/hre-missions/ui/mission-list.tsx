@@ -52,8 +52,9 @@ export function MissionList({
                       className="flex items-center gap-1.5"
                     >
                       <EntityIcon
+                        size="inline"
                         alt=""
-                        className="size-4 shrink-0"
+                        className="shrink-0"
                         src={objectiveIcon?.(objective)}
                       />
                       {objectiveText(objective)}
@@ -68,8 +69,9 @@ export function MissionList({
                   />
                 ) : status === "locked" ? (
                   <EntityIcon
+                    size="inline"
                     alt={t("tracker.locked")}
-                    className="size-4 shrink-0"
+                    className="shrink-0"
                     src={lockIcon()}
                   />
                 ) : null}

@@ -45,8 +45,9 @@ export function QuestSummary({
         data-testid="quest-summary-total"
       >
         <EntityIcon
+          size="row"
           alt=""
-          className="size-7 shrink-0"
+          className="shrink-0"
           src={questEventPointsIcon()}
         />
         {t("summary.total", {

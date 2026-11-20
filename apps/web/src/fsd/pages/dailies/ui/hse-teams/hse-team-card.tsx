@@ -78,8 +78,9 @@ export function HseTeamCard({
         <CardTitle className="flex items-center gap-2">
           {team.alliance ? (
             <EntityIcon
+              size="inline"
               alt=""
-              className="size-5 shrink-0"
+              className="shrink-0"
               src={onslaughtAllianceIcon(team.alliance)}
             />
           ) : null}

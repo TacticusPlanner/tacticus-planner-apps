@@ -43,8 +43,9 @@ export function TokensNeededCard({
             >
               <span className="flex items-center gap-1.5 font-medium">
                 <EntityIcon
+                  size="inline"
                   alt=""
-                  className="size-5 shrink-0"
+                  className="shrink-0"
                   src={gameModeTokenIcon(row.mode)}
                 />
                 {t(`tokens.modes.${row.mode}`)}
