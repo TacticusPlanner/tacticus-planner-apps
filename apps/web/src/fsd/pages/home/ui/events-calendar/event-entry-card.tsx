@@ -327,7 +327,7 @@ export function EventAgendaRow({
     <EventDetailsPopover entry={entry}>
       <button
         className={cn(
-          "flex w-full min-w-0 items-center gap-2 rounded-lg py-1 pr-2 pl-1 text-left text-sm",
+          "flex w-full min-w-0 items-center gap-2 rounded-lg py-1 pr-2 pl-1 text-left text-sm pointer-coarse:min-h-11",
           entrySurfaceClass(entry)
         )}
         data-active={entry.isActiveNow}

@@ -128,7 +128,7 @@ function Chip({
     <button
       aria-pressed={selected}
       className={cn(
-        "flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        "relative flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none pointer-coarse:min-h-10 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1",
         selected
           ? "border-primary bg-primary text-primary-foreground"
           : "hover:bg-accent/10"

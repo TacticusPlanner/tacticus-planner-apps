@@ -105,7 +105,7 @@ function AttackRow({
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className="ml-0.5 border-l pl-1.5 text-muted-foreground underline decoration-dotted underline-offset-2"
+                  className="relative ml-0.5 border-l pl-1.5 text-muted-foreground underline decoration-dotted underline-offset-2 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-3"
                   data-testid={`unit-attack-${kind}-pierce`}
                 >
                   {t("characterUnit.glance.pierce", {
