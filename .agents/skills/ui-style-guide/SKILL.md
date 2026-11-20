@@ -1,12 +1,12 @@
 ---
 name: ui-style-guide
-description: Style guide for the V2 web app — page header, page toolbar slots, which control to use for which option, tabs, density and touch sizes, game icon sizes, and UI copy. Use when adding or changing a page, a toolbar, a filter, a group-by/sort/view control, a game icon (unit portrait, upgrade, equipment, faction, trait…) or any user-facing string in apps/web or packages/ui.
+description: Style guide for the V2 web app — page header, page toolbar slots, which control to use for which option, tabs, density and touch sizes, game icon sizes, UI copy, and overlays (dialogs, sheets, popovers, tooltips, confirms). Use when adding or changing a page, a toolbar, a filter, a group-by/sort/view control, a game icon (unit portrait, upgrade, equipment, faction, trait…), a dialog, sheet, popover or confirm, or any user-facing string in apps/web or packages/ui.
 ---
 
 # UI style guide
 
 The same job looks the same and sits in the same place on every page. This
-guide covers layout, controls, game icons and copy; the `ui-sizing` skill is
+guide covers layout, controls, game icons, copy and overlays; the `ui-sizing` skill is
 its sizing chapter (type, icon, control and spacing scale, and the lint rule
 that bans hardcoded px) and still applies in full.
 
@@ -18,7 +18,9 @@ Status: `PageHeader` and `PageToolbar` (`@/shared/ui`) are on every page.
 The icon sizes in rule 6 are the `size` prop of `EntityIcon` and `RarityIcon`
 and the `UnitPortrait` component (`@/entities/unit`). Every call site uses
 them, and `entity-icon-sizes.test.ts` fails on a fixed size class in an
-`EntityIcon` or `RarityIcon` `className`. Nothing adds a new page-specific variant of anything below.
+`EntityIcon` or `RarityIcon` `className`. Rule 8 (overlays) is new: older
+overlays are being moved onto it. Nothing adds a new page-specific variant of
+anything below.
 
 ## 1. Page header
 
@@ -138,6 +140,76 @@ Short, true right now, written for players — not developers.
 Game terms follow the repo glossary (shards, orbs, promote, ascend, D3, A2…).
 Strings live in `apps/web/public/locales/en`; see the `react-i18next` skill.
 
+## 8. Overlays
+
+Pick the overlay by the job, then use its shared component. Mobile means below
+`md` (768px), as `useIsMobile` does.
+
+| Job                                                                 | Desktop               | Mobile                                                               | Use                                       |
+| ------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------- | ----------------------------------------- |
+| A task: fields to fill, a list to pick from, filters, an editor     | Centered dialog       | Bottom sheet                                                         | `ResponsiveDialog`                        |
+| Confirm one step that can't be undone (delete, discard, overwrite)  | Small centered dialog | Same                                                                 | `ConfirmationDialog`                      |
+| A panel the page keeps reacting to (run inputs, a shopping list)    | Right `Sheet`         | Bottom sheet                                                         | `Sheet side="right"` / `ResponsiveDialog` |
+| Details of one thing the player tapped (a unit, an enemy, a reward) | `Popover`             | `Popover`; bottom `Sheet` if it has actions or more than a few lines | `Popover` / `Sheet side="bottom"`         |
+| Name or explain one control or icon                                 | `Tooltip`             | No tooltip: the name must also be in visible text or `aria-label`    | `Tooltip`                                 |
+| Choose one of a few actions                                         | `DropdownMenu`        | Same                                                                 | `DropdownMenu`                            |
+
+- No raw `Dialog` for a task: on a phone it is a cramped box, not a sheet.
+  Raw `Dialog` is only for `ConfirmationDialog` and desktop-only chrome.
+- The vaul `Drawer` is for app chrome only (mobile navigation, account menu).
+  Content bottom sheets come from `ResponsiveDialog` or `Sheet side="bottom"`.
+- No overlay opens another overlay, except a confirm on top of the dialog it
+  guards (unsaved changes, delete).
+
+**Anatomy.** Every dialog and sheet has a title (`…Title`; `sr-only` only when
+the content's own heading says the same). An optional one-line description is
+`text-sm text-muted-foreground`. Header and footer stay put and only the body
+scrolls (`ResponsiveDialogBody`); nothing is taller than the viewport. A
+popover doesn't scroll, except an option list (a combobox, search results);
+other content that needs to is a sheet or dialog.
+
+**Footer.**
+
+- Buttons sit at the right on desktop. On mobile they are full width and
+  stacked, the primary on top (`flex-col-reverse`).
+- Source order is dismiss, then primary, so the primary is last (rightmost) on
+  desktop.
+- One primary (`default`) per footer. Dismiss is `outline`. A secondary action
+  such as "Clear filters" or "Reset to suggested" is `ghost` and sits at the
+  left (`md:mr-auto`).
+- Dismiss says "Cancel" when it throws input away and "Close" when there is
+  nothing to lose. Never both.
+- A dialog whose changes apply as they are made (filters, view options) ends
+  with one primary "Done" and no dismiss.
+- The primary is verb + object (copy rule 10): "Save goal", "Delete project",
+  "Apply filters", not "OK", "Yes" or "Submit".
+
+**Confirming.** Confirm only what can't be undone; an action the player can
+reverse in one tap doesn't ask. A confirm is `ConfirmationDialog`:
+
+- The title is the question: "Delete this project?"
+- The description says in one sentence what is lost.
+- Confirm repeats the verb + object ("Delete project") and is `destructive` when
+  something is lost. Cancel is "Cancel".
+- Escape and a click outside cancel.
+- A delete that reaches past the player's own data (a guild purge) also asks
+  them to type a word before the confirm button turns on.
+
+**Widths.** Desktop dialogs use one of three widths:
+
+| Width          | Class          | For                                                                    |
+| -------------- | -------------- | ---------------------------------------------------------------------- |
+| Narrow (448px) | `sm:max-w-md`  | Confirms, one choice, up to three fields                               |
+| Form (672px)   | `sm:max-w-2xl` | Forms, pickers, filters                                                |
+| Wide (1024px)  | `sm:max-w-5xl` | Tables, side-by-side panels, browsing (the `ResponsiveDialog` default) |
+
+Right sheets are `sm:max-w-md`. Popovers are `w-72`, or `w-80` for a unit or
+enemy card, and never wider than `calc(100vw-2rem)`.
+
+**Touch and focus.** Footer buttons and the close button follow rule 5 (48px hit
+area on touch). A dialog opened from state, not from its trigger, sends focus
+back to the control that opened it (`onCloseAutoFocus`).
+
 ## Review checklist
 
 - [ ] Page has the standard header; settings (if any) is the labelled button at its right.
@@ -146,5 +218,6 @@ Strings live in `apps/web/public/locales/en`; see the `react-i18next` skill.
 - [ ] No new tab, segmented or pill style; no hand-rolled `aria-pressed` toggles.
 - [ ] Controls meet 48px on touch; no `size="sm"` in toolbars.
 - [ ] Every game icon uses a size from rule 6.
+- [ ] Each overlay is the one rule 8 names for its job, with a title, a rule 8 footer and one of the three widths.
 - [ ] New or changed strings pass the copy rules.
 - [ ] PR has desktop and mobile before/after screenshots.
