@@ -28,6 +28,7 @@ import {
 
 import { legendaryEventPlanQueries } from "@/entities/legendary-event"
 import { rosterSnapshotQueries } from "@/entities/roster-snapshot"
+import { teamQueries } from "@/entities/team"
 
 import { materialSteps } from "../model/outcome-buckets"
 import { V1_IMPORT_PARTS } from "../model/parts"
@@ -146,6 +147,9 @@ export function V1ImportPanel({
       await queryClient.invalidateQueries({
         queryKey: legendaryEventPlanQueries.all(),
       })
+    }
+    if (selection.teams) {
+      await queryClient.invalidateQueries({ queryKey: teamQueries.all() })
     }
     // Unconditional: the import creates goals itself now (rewrite-v1-goal-import removed the
     // client-side creation path), so this no longer depends on this panel's own knowledge of

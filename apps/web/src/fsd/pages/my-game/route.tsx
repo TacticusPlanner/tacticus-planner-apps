@@ -47,6 +47,9 @@ const loadIncursionTierPage = () =>
     default: m.IncursionTierPage,
   }))
 const IncursionTierPage = lazy(loadIncursionTierPage)
+const loadTeamsPage = () =>
+  import("./ui/teams/teams-page").then((m) => ({ default: m.TeamsPage }))
+const TeamsPage = lazy(loadTeamsPage)
 
 // Nested under "/my-game" — see app/routes.tsx, which owns the top-level path and the layout
 // element. My Game mixes a public page with sign-in-only ones, so the routes come in two lists:
@@ -96,5 +99,10 @@ export const protectedRoutes: RouteObject[] = [
         loader: preloadOnMatch(loadIncursionTierPage),
       },
     ],
+  },
+  {
+    path: "teams",
+    element: <TeamsPage />,
+    loader: preloadOnMatch(loadTeamsPage),
   },
 ]

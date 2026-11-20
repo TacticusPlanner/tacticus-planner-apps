@@ -373,7 +373,9 @@
       "campaign-events": "Eventos de campaña",
       "campaign-eventsDescription": "Tu progreso en cada evento de campaña.",
       "incursions": "Incursiones",
-      "incursionsDescription": "La Incursión de cada Máquina de Guerra: niveles, batallas, enemigos y recompensas."
+      "incursionsDescription": "La Incursión de cada Máquina de Guerra: niveles, batallas, enemigos y recompensas.",
+      "teams": "Equipos",
+      "teamsDescription": "Tus alineaciones guardadas para la Guerra de gremios, la Incursión de gremio, el Torneo de arena y otros modos."
     },
     "collection": {
       "loading": "Cargando tu colección…",
@@ -987,13 +989,15 @@
         "onslaughtProgress": "Progreso de Onslaught",
         "campaignEventProgress": "Progreso de eventos de campaña",
         "legendaryEventPlans": "Equipos de Eventos Legendarios",
-        "rosterSnapshots": "Instantáneas de la plantilla"
+        "rosterSnapshots": "Instantáneas de la plantilla",
+        "teams": "Equipos"
       },
       "partDescriptions": {
         "userId": "Vincula tu cuenta del planificador con tu jugador del juego, algo que necesitan las funciones de gremio.",
         "guildKey": "Solo se usa si eres líder o colíder de tu gremio: registra tu gremio en el planificador para que todos los miembros puedan usar las funciones de gremio.",
         "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa.",
-        "rosterSnapshots": "Tus instantáneas de la plantilla de V1, de la más reciente a la más antigua, hasta el límite de instantáneas. V1 no guardaba la XP total ni las mejoras aplicadas, así que las comparaciones las omiten."
+        "rosterSnapshots": "Tus instantáneas de la plantilla de V1, de la más reciente a la más antigua, hasta el límite de instantáneas. V1 no guardaba la XP total ni las mejoras aplicadas, así que las comparaciones las omiten.",
+        "teams": "Tus equipos de la página Equipos de V1, hasta 20. Los equipos que ya tienes en el planificador se conservan. Los planes de defensa y ataque de la Guerra de gremios de V1 no se importan."
       },
       "submit": "Importar selección",
       "submitting": "Importando…",
@@ -1156,6 +1160,35 @@
           "no_roster_snapshot_imported": "No llegó ninguna instantánea nueva.",
           "roster_snapshot_import_failed": "No se pudo leer ninguna de tus instantáneas de V1.",
           "roster_snapshot_import_conflict": "Tus instantáneas cambiaron durante la importación. Inténtalo de nuevo."
+        }
+      },
+      "teams": {
+        "title": "Equipos",
+        "unnamed": "Equipo sin nombre",
+        "fixOnTeamsPage": "Puedes corregirlo en la página Equipos.",
+        "openTeams": "Abrir Equipos",
+        "reasons": {
+          "imported": "Importado",
+          "already_imported": "Importado antes, aunque se haya renombrado",
+          "duplicate_name": "Un equipo del planificador ya tiene este nombre",
+          "team_limit_reached": "Ya tienes {{count}} equipos, el máximo que puedes guardar",
+          "no_units": "Ninguna de sus unidades está en los datos del juego del planificador",
+          "invalid_team": "No se pudo leer este equipo"
+        },
+        "issues": {
+          "unit_not_recognised": "Unidad no reconocida: {{value}}",
+          "campaign_not_recognised": "Campaña no reconocida: {{value}}",
+          "duplicate_unit": "Aparecía dos veces, se conserva una: {{value}}",
+          "flex_dropped": "V1 no tenía ningún personaje principal antes de la sección flexible, así que todos son principales",
+          "name_shortened": "Nombre acortado a 40 caracteres",
+          "notes_shortened": "Notas acortadas a 300 caracteres",
+          "unknown": "Se cambió algo en este equipo: {{value}}"
+        },
+        "partReasons": {
+          "missing_teams": "Tu perfil de V1 no tiene equipos.",
+          "invalid_teams": "No se pudieron leer tus equipos de V1.",
+          "teams_skipped": "No se importó ningún equipo nuevo.",
+          "team_import_failed": "No se pudo importar ninguno de tus equipos de V1."
         }
       }
     },

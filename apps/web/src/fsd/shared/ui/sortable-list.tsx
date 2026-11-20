@@ -25,6 +25,11 @@ import { CSS } from "@dnd-kit/utilities"
 
 type SortableReturn = ReturnType<typeof useSortable>
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
 /** `vertical` for a single column (table rows, a card list); `grid` for a wrapping multi-column grid,
  *  where a move previews across rows in reading order. */
 export type SortableListStrategy = "vertical" | "grid"
@@ -80,8 +85,11 @@ function SortableItem<T>({
   return renderItem(item, {
     setNodeRef,
     // Translate only: the grid strategy also returns a scale, which would stretch a card moving
-    // into a row of another height.
-    style: { transform: CSS.Translate.toString(transform), transition },
+    // into a row of another height. With reduced motion, items jump instead of sliding.
+    style: {
+      transform: CSS.Translate.toString(transform),
+      transition: prefersReducedMotion() ? undefined : transition,
+    },
     dragHandle,
     isDragging,
   })

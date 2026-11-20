@@ -373,7 +373,9 @@
       "campaign-events": "Kampagnen-Events",
       "campaign-eventsDescription": "Dein Fortschritt in jedem Kampagnen-Event.",
       "incursions": "Incursions",
-      "incursionsDescription": "Die Incursion jeder Kriegsmaschine: Stufen, Kämpfe, Gegner und Belohnungen."
+      "incursionsDescription": "Die Incursion jeder Kriegsmaschine: Stufen, Kämpfe, Gegner und Belohnungen.",
+      "teams": "Teams",
+      "teamsDescription": "Deine gespeicherten Aufstellungen für Gildenkrieg, Gildenraid, Turnierarena und weitere Modi."
     },
     "collection": {
       "loading": "Deine Sammlung wird geladen …",
@@ -987,13 +989,15 @@
         "onslaughtProgress": "Onslaught-Fortschritt",
         "campaignEventProgress": "Kampagnen-Event-Fortschritt",
         "legendaryEventPlans": "Teams für Legendäre Events",
-        "rosterSnapshots": "Kader-Snapshots"
+        "rosterSnapshots": "Kader-Snapshots",
+        "teams": "Teams"
       },
       "partDescriptions": {
         "userId": "Verknüpft dein Planer-Konto mit deinem Spieler im Spiel. Gildenfunktionen benötigen das.",
         "guildKey": "Wird nur genutzt, wenn du Anführer oder Ko-Anführer deiner Gilde bist: Er registriert deine Gilde im Planer, damit alle Mitglieder die Gildenfunktionen nutzen können.",
         "legendaryEventPlans": "Selbst erstellte Teams, Notizen, Missions- und Paketeingaben pro Durchlauf sowie „Vielleicht schaffbar“-/„Hier aufhören“-Markierungen für die Events, die der Planer kennt. Der Event-Fortschritt wird nicht importiert.",
-        "rosterSnapshots": "Deine V1-Kader-Snapshots, die neuesten zuerst, bis zum Snapshot-Limit. Gesamt-EP und angewendete Upgrades wurden in V1 nicht gespeichert, daher lassen Vergleiche sie aus."
+        "rosterSnapshots": "Deine V1-Kader-Snapshots, die neuesten zuerst, bis zum Snapshot-Limit. Gesamt-EP und angewendete Upgrades wurden in V1 nicht gespeichert, daher lassen Vergleiche sie aus.",
+        "teams": "Deine Teams von der V1-Teamseite, bis zu 20. Teams, die bereits im Planner sind, bleiben erhalten. Die Gildenkrieg-Pläne für Verteidigung und Angriff aus V1 werden nicht importiert."
       },
       "submit": "Ausgewählte importieren",
       "submitting": "Wird importiert …",
@@ -1156,6 +1160,35 @@
           "no_roster_snapshot_imported": "Es kam kein neuer Kader-Snapshot herüber.",
           "roster_snapshot_import_failed": "Keiner deiner V1-Kader-Snapshots konnte gelesen werden.",
           "roster_snapshot_import_conflict": "Deine Snapshots haben sich während des Imports geändert. Versuche es erneut."
+        }
+      },
+      "teams": {
+        "title": "Teams",
+        "unnamed": "Unbenanntes Team",
+        "fixOnTeamsPage": "Du kannst es auf der Teamseite beheben.",
+        "openTeams": "Teams öffnen",
+        "reasons": {
+          "imported": "Importiert",
+          "already_imported": "Bereits importiert, auch wenn es inzwischen umbenannt wurde",
+          "duplicate_name": "Ein Team im Planner hat bereits diesen Namen",
+          "team_limit_reached": "Du hast bereits {{count}} Teams, mehr sind nicht möglich",
+          "no_units": "Keine seiner Einheiten ist in den Spieldaten des Planners",
+          "invalid_team": "Dieses Team konnte nicht gelesen werden"
+        },
+        "issues": {
+          "unit_not_recognised": "Einheit nicht erkannt: {{value}}",
+          "campaign_not_recognised": "Kampagne nicht erkannt: {{value}}",
+          "duplicate_unit": "Doppelt aufgeführt, einmal übernommen: {{value}}",
+          "flex_dropped": "V1 hatte vor dem Flex-Bereich keinen Kern-Charakter, daher sind alle Charaktere Kern",
+          "name_shortened": "Name auf 40 Zeichen gekürzt",
+          "notes_shortened": "Notizen auf 300 Zeichen gekürzt",
+          "unknown": "An diesem Team wurde etwas geändert: {{value}}"
+        },
+        "partReasons": {
+          "missing_teams": "Dein V1-Profil hat keine Teams.",
+          "invalid_teams": "Deine V1-Teams konnten nicht gelesen werden.",
+          "teams_skipped": "Es wurde kein neues Team importiert.",
+          "team_import_failed": "Keines deiner V1-Teams konnte importiert werden."
         }
       }
     },

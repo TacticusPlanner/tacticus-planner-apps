@@ -13,6 +13,8 @@ export type {
   V1LegendaryEventIssue,
   V1LegendaryEventOutcome,
   V1RosterSnapshotOutcome,
+  V1TeamIssue,
+  V1TeamOutcome,
 } from "./api/account.api"
 export { useCurrentUser, type CurrentUserState } from "./model/use-current-user"
 export { applyTacticusIntegrationResult } from "./model/apply-tacticus-integration-result"

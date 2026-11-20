@@ -90,6 +90,7 @@ describe("app routes", () => {
       "campaigns",
       "campaign-events",
       "incursions",
+      "teams",
       "onslaught",
     ])
     expect(findRoute(routes, "/progress")).toBeUndefined()
@@ -112,7 +113,7 @@ describe("app routes", () => {
     return entry
   }
 
-  it.each(["onslaught", "campaigns", "campaign-events"])(
+  it.each(["onslaught", "campaigns", "campaign-events", "teams"])(
     "bounces an anonymous visitor from /my-game/%s to sign-in",
     (childPath) => {
       const entry = renderMyGameChild(childPath)

@@ -15,6 +15,7 @@ import type enHre from "../../../../../public/locales/en/hre.json"
 import type enQuest from "../../../../../public/locales/en/quest.json"
 import type enIncursions from "../../../../../public/locales/en/incursions.json"
 import type enEventShops from "../../../../../public/locales/en/eventShops.json"
+import type enTeams from "../../../../../public/locales/en/teams.json"
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -38,6 +39,7 @@ declare module "i18next" {
       quest: typeof enQuest
       incursions: typeof enIncursions
       eventShops: typeof enEventShops
+      teams: typeof enTeams
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       mows: Record<string, string>

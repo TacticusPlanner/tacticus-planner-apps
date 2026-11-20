@@ -42,3 +42,13 @@ describe("goals.v1Import.legendaryEvents.issues.team_too_small copy", () => {
     expect(issues.team_too_small_one).toContain("{{count}} unit ")
   })
 })
+
+describe("goals.v1Import.partDescriptions.teams copy", () => {
+  it("names the limit, that existing teams are kept, and what is not imported", () => {
+    const description = en.goals.v1Import.partDescriptions.teams
+    expect(description).toMatch(/Teams page/)
+    expect(description).toMatch(/up to 20/)
+    expect(description).toMatch(/already in the planner are kept/i)
+    expect(description).toMatch(/War Defense and War Offense/)
+  })
+})
