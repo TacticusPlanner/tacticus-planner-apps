@@ -24,13 +24,19 @@ function sourceFiles(dir: string): string[] {
   })
 }
 
-/** Each `<EntityIcon …>` opening tag in the source, with its line. */
-function entityIconTags(source: string): { tag: string; line: number }[] {
+/** The icon components whose size is a role: `EntityIcon` and `RarityIcon`. */
+const ICON_COMPONENTS = ["<EntityIcon", "<RarityIcon"]
+
+/** Each opening tag of `component` (default `<EntityIcon`) in the source, with its line. */
+function entityIconTags(
+  source: string,
+  component = "<EntityIcon"
+): { tag: string; line: number }[] {
   const tags: { tag: string; line: number }[] = []
-  let start = source.indexOf("<EntityIcon")
+  let start = source.indexOf(component)
   while (start !== -1) {
     let depth = 0
-    let end = start + "<EntityIcon".length
+    let end = start + component.length
     for (; end < source.length; end++) {
       const char = source[end]
       if (char === "{") depth++
@@ -42,7 +48,7 @@ function entityIconTags(source: string): { tag: string; line: number }[] {
       tag: source.slice(start, end),
       line: source.slice(0, start).split("\n").length,
     })
-    start = source.indexOf("<EntityIcon", end)
+    start = source.indexOf(component, end)
   }
   return tags
 }
@@ -65,13 +71,13 @@ function offences(classes: string): boolean {
 }
 
 describe("game icon sizes (UI style guide, rule 6)", () => {
-  it("sizes every EntityIcon by its role, not by size classes", () => {
-    const tags = sourceFiles(SRC).flatMap((file) =>
-      entityIconTags(readFileSync(file, "utf8")).map((found) => ({
-        ...found,
-        file,
-      }))
-    )
+  it("sizes every EntityIcon and RarityIcon by its role, not by size classes", () => {
+    const tags = sourceFiles(SRC).flatMap((file) => {
+      const source = readFileSync(file, "utf8")
+      return ICON_COMPONENTS.flatMap((component) =>
+        entityIconTags(source, component).map((found) => ({ ...found, file }))
+      )
+    })
     const found = tags
       .filter(({ tag }) => classStrings(tag).some(offences))
       .map(({ file, line }) => `${relative(SRC, file)}:${line}`)

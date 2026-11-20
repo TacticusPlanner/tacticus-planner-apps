@@ -72,7 +72,7 @@ export function TrackShortfall({
                     {name}
                   </p>
                   <div className="flex shrink-0 items-center gap-2">
-                    <RarityIcon rarity={character.rarity} className="size-5" />
+                    <RarityIcon rarity={character.rarity} />
                     <RankBadge
                       rank={character.rank}
                       showLabel={false}

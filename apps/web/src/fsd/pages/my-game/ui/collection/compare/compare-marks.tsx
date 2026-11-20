@@ -43,11 +43,9 @@ export function FromToMarks({
  *  stars for promotions. */
 export function ProgressionMark({
   value,
-  large = false,
   emphasis,
 }: {
   value: Progression
-  large?: boolean
   emphasis?: ProgressionPart
 }) {
   return (
@@ -59,7 +57,6 @@ export function ProgressionMark({
             ? "stars"
             : undefined
       }
-      iconClassName={large ? "size-5" : "size-4"}
       value={value}
     />
   )

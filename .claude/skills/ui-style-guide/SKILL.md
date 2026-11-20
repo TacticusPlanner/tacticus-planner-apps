@@ -15,10 +15,10 @@ buttons, chips, top app bar, 48dp touch target), our shadcn tokens for colour
 and shape (`.design-sync/conventions.md`).
 
 Status: `PageHeader` and `PageToolbar` (`@/shared/ui`) are on every page.
-The icon sizes in rule 6 are `EntityIcon`'s `size` prop and the
-`UnitPortrait` component (`@/entities/unit`). Every call site uses them, and
-`entity-icon-sizes.test.ts` fails on a fixed size class in an `EntityIcon`
-`className`. Nothing adds a new page-specific variant of anything below.
+The icon sizes in rule 6 are the `size` prop of `EntityIcon` and `RarityIcon`
+and the `UnitPortrait` component (`@/entities/unit`). Every call site uses
+them, and `entity-icon-sizes.test.ts` fails on a fixed size class in an
+`EntityIcon` or `RarityIcon` `className`. Nothing adds a new page-specific variant of anything below.
 
 ## 1. Page header
 

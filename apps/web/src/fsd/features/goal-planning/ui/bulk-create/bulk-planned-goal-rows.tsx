@@ -112,7 +112,7 @@ function PlannedRow({
 function ProgressionIcons({ progression }: { progression: Progression }) {
   return (
     <span className="flex items-center gap-1">
-      <RarityIcon className="size-5" rarity={progressionRarity(progression)} />
+      <RarityIcon rarity={progressionRarity(progression)} />
       <CompactStars progression={progression} />
     </span>
   )
