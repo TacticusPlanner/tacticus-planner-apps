@@ -33,11 +33,24 @@ import {
   useTeamModeLabel,
 } from "@/entities/team"
 import type { TeamMode, TeamRuleFacts } from "@/entities/team"
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import { closestOverlayContent, FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { modeBlock } from "../model/team-draft"
 import type { ModeBlock, TeamDraft } from "../model/team-draft"
+
+/**
+ * Where a select inside the editor portals its list: the open Dialog or Sheet content around its
+ * trigger. A list portaled to the body can be impossible to open under the dialog's scroll lock.
+ */
+function useOverlayPortal() {
+  const [trigger, setTrigger] = useState<HTMLButtonElement | null>(null)
+  const [container, setContainer] = useState<HTMLElement>()
+  const onOpenChange = (open: boolean) => {
+    if (open) setContainer(closestOverlayContent(trigger))
+  }
+  return { triggerRef: setTrigger, container, onOpenChange }
+}
 import type { CampaignOption } from "../model/use-team-editor-data"
 
 /** The cap select's value for a team with no cap. */
@@ -96,7 +109,7 @@ export function TeamNameField({
         aria-invalid={nameError !== null}
         autoComplete="off"
         id={id}
-        maxLength={200}
+        maxLength={TEAM_LIMITS.maxNameLength}
         onChange={(event) => onNameChange(event.target.value)}
         value={name}
       />
@@ -351,12 +364,18 @@ export function TeamRarityCapField({
 }) {
   const { t } = useTranslation(["teams", "progression"])
   const labelId = useId()
+  const {
+    triggerRef: capTrigger,
+    container: capContainer,
+    onOpenChange: capOpenChange,
+  } = useOverlayPortal()
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-sm font-medium" id={labelId}>
         {t("rarityCap.label")}
       </span>
       <Select
+        onOpenChange={capOpenChange}
         onValueChange={(value) =>
           onRarityCapChange(value === NO_CAP ? null : (value as Rarity))
         }
@@ -366,11 +385,12 @@ export function TeamRarityCapField({
           aria-labelledby={labelId}
           className="w-36"
           data-testid="team-rarity-cap"
+          ref={capTrigger}
           size="sm"
         >
           <SelectValue />
         </SelectTrigger>
-        <SelectContent position="popper">
+        <SelectContent container={capContainer} position="popper">
           <SelectItem value={NO_CAP}>{t("rarityCap.none")}</SelectItem>
           {rarityOrder.map((rarity) => (
             <SelectItem key={rarity} value={rarity}>
@@ -423,6 +443,16 @@ export function TeamContextFields({
     return [...shared].some((faction) => factions?.has(faction))
   })
   const mowName = (mowId: string) => unitName("Mow", mowId)
+  const {
+    triggerRef: campaignTrigger,
+    container: campaignContainer,
+    onOpenChange: campaignOpenChange,
+  } = useOverlayPortal()
+  const {
+    triggerRef: incursionTrigger,
+    container: incursionContainer,
+    onOpenChange: incursionOpenChange,
+  } = useOverlayPortal()
   if (!campaignSelected && !incursionSelected) return null
   return (
     <div className="flex min-w-0 flex-col gap-4">
@@ -430,6 +460,7 @@ export function TeamContextFields({
         <div className="flex flex-col gap-1.5">
           <Label id={ids.campaign}>{t("campaign.label")}</Label>
           <Select
+            onOpenChange={campaignOpenChange}
             onValueChange={onChooseCampaign}
             value={draft.campaignGroupId ?? undefined}
           >
@@ -437,10 +468,11 @@ export function TeamContextFields({
               aria-labelledby={ids.campaign}
               className="w-full"
               data-testid="team-campaign-select"
+              ref={campaignTrigger}
             >
               <SelectValue placeholder={t("campaign.placeholder")} />
             </SelectTrigger>
-            <SelectContent position="popper">
+            <SelectContent container={campaignContainer} position="popper">
               {campaigns.map((campaign) => (
                 <SelectItem key={campaign.groupId} value={campaign.groupId}>
                   {campaign.label}
@@ -487,6 +519,7 @@ export function TeamContextFields({
             </ul>
           ) : null}
           <Select
+            onOpenChange={incursionOpenChange}
             onValueChange={(mowId) =>
               onSetIncursions([...draft.incursionMowIds, mowId])
             }
@@ -496,10 +529,11 @@ export function TeamContextFields({
               aria-labelledby={ids.incursion}
               className="w-full"
               data-testid="team-incursion-add"
+              ref={incursionTrigger}
             >
               <SelectValue placeholder={t("incursion.addPlaceholder")} />
             </SelectTrigger>
-            <SelectContent position="popper">
+            <SelectContent container={incursionContainer} position="popper">
               {incursionChoices.map((mowId) => (
                 <SelectItem key={mowId} value={mowId}>
                   {mowName(mowId)}

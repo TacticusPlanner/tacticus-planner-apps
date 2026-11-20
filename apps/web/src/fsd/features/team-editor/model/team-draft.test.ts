@@ -70,6 +70,19 @@ describe("core and flex", () => {
     expect(addCharacter(draft(), "A").flexStartIndex).toBeNull()
   })
 
+  it("moves the first flex character into core when the last core one is removed", () => {
+    const value = draft({ characterIds: ["A", "B", "C"], flexStartIndex: 1 })
+    const next = removeCharacter(value, "A")
+    expect(sections(next)).toEqual({ core: ["B"], flex: ["C"] })
+    expect(next.flexStartIndex).toBe(1)
+    const lastOne = removeCharacter(
+      draft({ characterIds: ["A", "B"], flexStartIndex: 1 }),
+      "A"
+    )
+    expect(sections(lastOne)).toEqual({ core: ["B"], flex: [] })
+    expect(lastOne.flexStartIndex).toBeNull()
+  })
+
   it("keeps at least one core character", () => {
     const value = draft({ characterIds: ["A", "B"], flexStartIndex: 1 })
     expect(canMakeFlex(value, "A")).toBe(false)

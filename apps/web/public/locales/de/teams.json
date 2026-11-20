@@ -40,7 +40,8 @@
     "sectionShared": "{{unit}} in {{count}} Teams",
     "sectionSharedMany_one": "{{count}} geteilte Einheit",
     "sectionSharedMany_other": "{{count}} geteilte Einheiten",
-    "quickFilters": "Schnellfilter"
+    "quickFilters": "Schnellfilter",
+    "noModeSection": "Kein Modus"
   },
   "card": {
     "core": "Kern",
@@ -280,7 +281,7 @@
         },
         "reorder": {
           "title": "Teams sortieren",
-          "content": "Ziehe ein Team am Griff neben seiner Nummer oder nutze „Nach oben“ und „Nach unten“ im Menü. Mit Filter oder in einem Modusabschnitt bewegen sich nur die angezeigten Teams."
+          "content": "Ziehe ein Team am Griff neben seiner Nummer. Mit Filter oder in einem Modusabschnitt bewegen sich nur die angezeigten Teams."
         }
       }
     }
@@ -303,7 +304,6 @@
     "rules": {
       "nameLength": "Namenslänge",
       "noMode": "Kein Modus",
-      "tooFewCharacters": "{{count}} Charaktere (min. {{min}})",
       "unknownUnit": "Unbekannte Einheit",
       "modeNotCombinable": "Modi nicht kombinierbar",
       "tooManyCoreCharacters": "{{count}} Kern (max. {{max}})",
@@ -315,7 +315,9 @@
       "factionNotAllowed": "Fraktion nicht erlaubt",
       "incursionRequired": "Incursion fehlt",
       "unknownIncursion": "Unbekannte Incursion",
-      "noSharedIncursionFaction": "Keine gemeinsame Fraktion"
+      "noSharedIncursionFaction": "Keine gemeinsame Fraktion",
+      "tooFewCharacters_one": "{{count}} Charakter (min. {{min}})",
+      "tooFewCharacters_other": "{{count}} Charaktere (min. {{min}})"
     }
   },
   "list": {

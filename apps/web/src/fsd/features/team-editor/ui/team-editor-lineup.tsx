@@ -1,18 +1,17 @@
 import { useTranslation } from "react-i18next"
 import { GripVertical, Lock, X } from "lucide-react"
-import { progressionRarity } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { TeamUnitPortrait, underCap } from "@/entities/team"
+import { TeamUnitPortrait } from "@/entities/team"
 import type { TeamRoster, TeamUnitView } from "@/entities/team"
 import { SortableList } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import { cappedRosterUnit, cappedView } from "../model/capped-view"
+import { cappedView, lineupUnitCap } from "../model/capped-view"
 import {
   FLEX_DIVIDER,
   canMakeFlex,
@@ -21,6 +20,7 @@ import {
 } from "../model/team-draft"
 import type { TeamDraft } from "../model/team-draft"
 import { useUnderCapText } from "../model/use-under-cap-text"
+import { useLineupMarks } from "./lineup-unit"
 import { RoleSwitch } from "./role-switch"
 import { UnitAbilities } from "./unit-abilities"
 
@@ -70,6 +70,7 @@ export function TeamEditorLineup({
   const { t } = useTranslation(["teams", "progression"])
   const unitName = useUnitName()
   const underCapText = useUnderCapText()
+  const marksOf = useLineupMarks({ knownUnit, notAllowed, missingCore })
   const { core, flex } = lineupSections(draft)
   const mows = mowSections(draft)
   const empty = draft.characterIds.length === 0 && draft.mowIds.length === 0
@@ -82,18 +83,8 @@ export function TeamEditorLineup({
     sortable: SortableRenderProps
   ) => {
     const name = unitName(kind === "mow" ? "Mow" : "Character", unitId)
-    const marks = [
-      notAllowed.has(unitId) ? t("lineup.notAllowed") : null,
-      missingCore.has(unitId) ? t("lineup.mustBeCore") : null,
-      knownUnit(kind, unitId) ? null : t("lineup.unknown"),
-    ].filter((mark): mark is string => mark !== null)
-    const owned = roster
-      ? (kind === "character" ? roster.characters : roster.mows).get(unitId)
-      : undefined
-    const capped = cappedRosterUnit(kind, unitId, roster, rarityCap)
-    const under = owned
-      ? underCap(owned, rarityCap, progressionRarity)
-      : undefined
+    const marks = marksOf(kind, unitId)
+    const { capped, under } = lineupUnitCap(kind, unitId, roster, rarityCap)
     return (
       <li
         className={cn(

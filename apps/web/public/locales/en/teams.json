@@ -40,7 +40,8 @@
     "sectionShared": "{{unit}} in {{count}} teams",
     "sectionSharedMany_one": "{{count}} unit shared",
     "sectionSharedMany_other": "{{count}} units shared",
-    "quickFilters": "Quick filters"
+    "quickFilters": "Quick filters",
+    "noModeSection": "No mode"
   },
   "card": {
     "core": "Core",
@@ -280,7 +281,7 @@
         },
         "reorder": {
           "title": "Order your teams",
-          "content": "Drag a team by the grip beside its number, or use Move up and Move down in its menu. Under a filter or a mode section, teams move only among the ones shown."
+          "content": "Drag a team by the grip beside its number. Under a filter or a mode section, teams move only among the ones shown."
         }
       }
     }
@@ -303,7 +304,6 @@
     "rules": {
       "nameLength": "Name length",
       "noMode": "No mode",
-      "tooFewCharacters": "{{count}} characters (min {{min}})",
       "unknownUnit": "Unknown unit",
       "modeNotCombinable": "Modes can't mix",
       "tooManyCoreCharacters": "{{count}} core (max {{max}})",
@@ -315,7 +315,9 @@
       "factionNotAllowed": "Faction not allowed",
       "incursionRequired": "Incursion missing",
       "unknownIncursion": "Unknown Incursion",
-      "noSharedIncursionFaction": "No shared faction"
+      "noSharedIncursionFaction": "No shared faction",
+      "tooFewCharacters_one": "{{count}} character (min {{min}})",
+      "tooFewCharacters_other": "{{count}} characters (min {{min}})"
     }
   },
   "list": {

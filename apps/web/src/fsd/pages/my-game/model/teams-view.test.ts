@@ -79,6 +79,15 @@ describe("layout and grouping", () => {
     expect(sections[0]?.teams.map((team) => team.id)).toEqual(["GR+H"])
     expect(sections[1]?.teams.map((team) => team.id)).toEqual(["H"])
   })
+
+  it("puts teams with no mode last, in a section of their own", () => {
+    const sections = groupTeamsByMode([
+      { id: "none", modes: [] as const },
+      { id: "H", modes: ["horde"] as const },
+    ])
+    expect(sections.map((section) => section.mode)).toEqual(["horde", null])
+    expect(sections[1]?.teams.map((team) => team.id)).toEqual(["none"])
+  })
 })
 
 describe("search", () => {

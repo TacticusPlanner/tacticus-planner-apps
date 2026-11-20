@@ -534,6 +534,21 @@ describe("TeamEditorDialog", () => {
       )
     })
 
+    it("goes back to the Lineup tab when the open Machines of War tab goes", async () => {
+      setViewportWidth(390)
+      const user = userEvent.setup()
+      render(<TeamEditorDialog onClose={onClose} team={null} teams={[]} />)
+      await user.click(
+        await screen.findByRole("tab", { name: /Machines of War/ })
+      )
+      await user.click(screen.getByTestId("team-modes-button"))
+      await user.click(await screen.findByRole("button", { name: "Campaign" }))
+      expect(screen.getByRole("tab", { name: /Lineup/ })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
+    })
+
     it("adds a character as core, makes it flex and back, and removes it", async () => {
       const user = await openEditor()
       await user.click(pickButton("ultraCalgar"))
@@ -688,6 +703,9 @@ describe("TeamEditorDialog", () => {
       await chooseMode(user, "War Offense")
       expect(tile("ultraCalgar")).toHaveAttribute("data-used", "true")
       expect(tile("ultraCalgar")).toHaveTextContent("Also in Offense")
+      expect(pickButton("ultraCalgar")).toHaveAccessibleDescription(
+        "Also in Offense"
+      )
       await user.click(pickButton("ultraCalgar"))
       expect(lineupIds("core")).toEqual(["ultraCalgar"])
     })
@@ -932,6 +950,19 @@ describe("TeamEditorDialog", () => {
       expect(lineupIds("mows")).toEqual(["ultraDreadnought"])
       expect(lineupIds("flex")).toEqual(["tauBroadside"])
       expect(save()).toBeEnabled()
+    })
+
+    it("shows an imported Campaign team's MoWs on desktop, so they can be removed", async () => {
+      const user = await openEditor(
+        savedTeam({
+          modes: ["campaign"],
+          mowIds: ["ultraDreadnought"],
+          issues: ["mowsNotAllowed"],
+        })
+      )
+      expect(lineupIds("mows")).toEqual(["ultraDreadnought"])
+      await user.click(screen.getByRole("button", { name: "Remove Galatian" }))
+      expect(lineupIds("mows")).toEqual([])
     })
 
     it("marks the Sisters of Battle character on a Rukkatrukk team, and removing it allows Save", async () => {

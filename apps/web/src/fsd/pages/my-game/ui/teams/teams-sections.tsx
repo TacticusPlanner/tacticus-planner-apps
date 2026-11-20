@@ -6,56 +6,70 @@ import { EXCLUSIVE_UNIT_MODES, useTeamModeLabel } from "@/entities/team"
 import type { Team, TeamMode } from "@/entities/team"
 import { useUnitName } from "@/shared/unit-name"
 
-/** The units two or more of the section's teams share, and how many teams have each. */
-function sharedUnits(teams: readonly Team[]) {
-  const counts = new Map<string, { kind: "Character" | "Mow"; teams: number }>()
-  for (const team of teams) {
-    for (const id of team.characterIds) {
-      counts.set(id, {
-        kind: "Character",
-        teams: (counts.get(id)?.teams ?? 0) + 1,
-      })
-    }
-    for (const id of team.mowIds) {
-      counts.set(id, { kind: "Mow", teams: (counts.get(id)?.teams ?? 0) + 1 })
-    }
+/**
+ * The section's units that two or more of all the teams with the mode have, and how many: the same
+ * sharing the team chips show, whatever the filter hides, for the units this section shows.
+ */
+function sharedUnits(
+  mode: TeamMode,
+  sectionTeams: readonly Team[],
+  allTeams: readonly Team[]
+) {
+  const inMode = allTeams.filter((team) => team.modes.includes(mode))
+  const units = new Map<string, "Character" | "Mow">()
+  for (const team of sectionTeams) {
+    for (const id of team.characterIds) units.set(id, "Character")
+    for (const id of team.mowIds) units.set(id, "Mow")
   }
-  return [...counts]
-    .filter(([, entry]) => entry.teams > 1)
-    .map(([id, entry]) => ({ id, ...entry }))
+  return [...units]
+    .map(([id, kind]) => ({
+      id,
+      kind,
+      teams: inMode.filter(
+        (team) => team.characterIds.includes(id) || team.mowIds.includes(id)
+      ).length,
+    }))
+    .filter((unit) => unit.teams > 1)
 }
 
 /**
  * A mode's section when the page is grouped by mode (handoff 5.5): the mode, its team count and,
- * when two of its teams share a unit, an amber note naming it.
+ * when one of its units is in two teams of a Guild War mode, an amber note naming it. A null mode
+ * is the section of teams with none.
  */
 export function TeamsModeSection({
   mode,
   teams,
+  allTeams,
   children,
 }: {
-  mode: TeamMode
+  mode: TeamMode | null
   teams: readonly Team[]
+  /** Every team, so a unit shared with a filtered-out team is still flagged, as on its chips. */
+  allTeams: readonly Team[]
   children: ReactNode
 }) {
   const { t } = useTranslation("teams")
   const modeLabel = useTeamModeLabel()
   const unitName = useUnitName()
   // Only Guild War sections: elsewhere a unit can be in any number of teams.
-  const shared = EXCLUSIVE_UNIT_MODES.includes(mode) ? sharedUnits(teams) : []
+  const shared =
+    mode !== null && EXCLUSIVE_UNIT_MODES.includes(mode)
+      ? sharedUnits(mode, teams, allTeams)
+      : []
   const [first] = shared
   const names = shared.map((unit) => unitName(unit.kind, unit.id)).join(", ")
-  const headingId = `teams-section-${mode}`
+  const headingId = `teams-section-${mode ?? "none"}`
   return (
     <section
       aria-labelledby={headingId}
       className="flex flex-col gap-3"
-      data-mode={mode}
+      data-mode={mode ?? "none"}
       data-testid="teams-section"
     >
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <h2 className="font-heading text-base font-semibold" id={headingId}>
-          {modeLabel(mode)}
+          {mode === null ? t("page.noModeSection") : modeLabel(mode)}
         </h2>
         <span className="text-xs text-muted-foreground">
           {t("page.sectionCount", { count: teams.length })}

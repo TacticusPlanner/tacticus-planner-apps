@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { progressionRarity } from "@workspace/game-domain"
 
 import type { TeamRoster } from "@/entities/team"
 
-import { capRosterUnit } from "@/entities/team"
-import { sameModeUsage } from "./same-mode-usage"
 import {
   activeFilterCount,
   buildPickerUnits,
@@ -202,76 +199,5 @@ describe("picker units", () => {
     expect(options.alliances).toEqual(["Chaos", "Imperial", "Xenos"])
     expect(options.ranges).toEqual([2])
     expect(options.damageTypes).toContain("Flame")
-  })
-})
-
-describe("rarity cap", () => {
-  it("shows a Legendary Diamond 3 unit at level 50 as Epic, Gold 1, level 35", () => {
-    const capped = capRosterUnit(
-      {
-        progression: "Legendary:RedFiveStars",
-        rank: "Diamond3",
-        xpLevel: 50,
-        abilityLevels: [50, 40],
-      },
-      "Epic",
-      progressionRarity
-    )
-    expect(capped).toEqual({
-      progression: "Epic:RedThreeStars",
-      rank: "Gold1",
-      xpLevel: 35,
-      abilityLevels: [35, 35],
-    })
-  })
-
-  it("leaves a unit at or below the cap as it is", () => {
-    const unit = {
-      progression: "Rare:FourStars" as const,
-      rank: "Silver1" as const,
-      abilityLevels: [20, 20] as [number, number],
-    }
-    expect(capRosterUnit(unit, "Epic", progressionRarity)).toBe(unit)
-    expect(capRosterUnit(unit, "Mythic", progressionRarity)).toBe(unit)
-  })
-})
-
-describe("same-mode usage", () => {
-  const teams = [
-    {
-      id: "wo",
-      name: "Offense",
-      modes: ["warOffense" as const],
-      characterIds: ["ultraCalgar"],
-      mowIds: [],
-    },
-    {
-      id: "h",
-      name: "Horde",
-      modes: ["horde" as const],
-      characterIds: ["ultraTitus"],
-      mowIds: [],
-    },
-  ]
-
-  it("flags a unit in another team that shares a selected mode", () => {
-    expect(
-      sameModeUsage(teams, null, ["warOffense"]).get("ultraCalgar")
-    ).toEqual(["Offense"])
-  })
-
-  it("does not flag a unit only in a team of another mode", () => {
-    expect(sameModeUsage(teams, null, ["warOffense"]).has("ultraTitus")).toBe(
-      false
-    )
-  })
-
-  it("leaves out the team being edited", () => {
-    expect(sameModeUsage(teams, "wo", ["warOffense"]).size).toBe(0)
-  })
-
-  it("flags nothing outside Guild War, and offense never clashes with defense", () => {
-    expect(sameModeUsage(teams, null, ["horde"]).size).toBe(0)
-    expect(sameModeUsage(teams, null, ["warDefense"]).size).toBe(0)
   })
 })

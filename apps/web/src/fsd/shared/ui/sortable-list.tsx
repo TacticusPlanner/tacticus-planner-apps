@@ -111,6 +111,7 @@ export function SortableList<T>({
   getLabel,
   disabled = false,
   strategy = "vertical",
+  accessibilityContainer,
 }: {
   items: T[]
   getId: (item: T) => string
@@ -124,6 +125,10 @@ export function SortableList<T>({
   disabled?: boolean
   /** How items shift while dragging; the committed `onReorder` order is the same either way. */
   strategy?: SortableListStrategy
+  /** Where the screen-reader instructions and live region render. Leave unset to render them next
+   *  to the items; pass `document.body` where an element there would break the markup, such as a
+   *  `<tbody>` (not inside a modal dialog, which hides the rest of the page from screen readers). */
+  accessibilityContainer?: Element
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -173,6 +178,7 @@ export function SortableList<T>({
     <DndContext
       accessibility={{
         announcements,
+        container: accessibilityContainer,
         screenReaderInstructions: { draggable: t("reorder.instructions") },
       }}
       collisionDetection={closestCenter}

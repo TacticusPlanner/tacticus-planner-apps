@@ -65,7 +65,7 @@ function TeamOutcomeRow({ outcome }: { outcome: V1TeamOutcome }) {
 export function TeamImportResult({ buckets }: { buckets: TeamBuckets }) {
   const { t } = useTranslation()
   return (
-    <section className="grid gap-2" data-testid="v1-import-teams">
+    <section className="grid gap-2" data-testid="v1-import-teams-result">
       <p className="font-medium">{t("goals.v1Import.teams.title")}</p>
       {BUCKET_ORDER.filter((bucket) => buckets[bucket].length > 0).map(
         (bucket) => (

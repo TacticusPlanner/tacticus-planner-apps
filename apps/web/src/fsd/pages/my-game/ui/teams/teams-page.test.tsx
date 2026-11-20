@@ -294,8 +294,10 @@ describe("TeamsPage", () => {
           .map((item) => item.getAttribute("data-unit"))
       ).toEqual(["f1", "f2", "tauBroadside"])
       expect(
-        within(card).getByRole("list", { name: "Machines of War" })
-      ).toHaveTextContent("")
+        within(within(card).getByRole("list", { name: "Machines of War" }))
+          .getAllByRole("listitem")
+          .map((item) => item.getAttribute("data-unit"))
+      ).toEqual(["ultraDreadnought"])
       expect(
         within(within(card).getByRole("list", { name: "Core" })).getAllByRole(
           "listitem"
@@ -641,9 +643,17 @@ describe("TeamsPage", () => {
       await act(async () => {
         fireEvent.keyDown(grip, { code: "Space", key: " " })
       })
+      // The pick-up really started, so Escape below is what cancels it.
+      // Grouped by mode, each section has its own drag list and live region.
+      expect(await screen.findByText(/^Picked up Team A\./)).toBeInTheDocument()
       await act(async () => {
         fireEvent.keyDown(document, { code: "Escape", key: "Escape" })
       })
+      expect(
+        await screen.findByText(
+          "Reordering cancelled. Team A returned to position 1 of 3."
+        )
+      ).toBeInTheDocument()
       expect(api.reorder).not.toHaveBeenCalled()
       expect(cardNames()).toEqual(["Team A", "Team B", "Team C"])
     })

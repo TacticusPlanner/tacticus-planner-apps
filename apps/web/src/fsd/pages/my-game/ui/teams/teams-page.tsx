@@ -291,7 +291,8 @@ export function TeamsPage() {
   const needsFixesCount = teams.filter((team) => team.issues.length > 0).length
   const atLimit = teams.length >= TEAM_LIMITS.maxTeams
   const loading = teamsQuery.isPending
-  const failed = teamsQuery.isError
+  // Only a load with nothing to show fails the page; a failed background refetch keeps the cached teams.
+  const failed = teamsQuery.isError && teamsQuery.data === undefined
 
   useTeamsTutorial({
     hasTeam: listed.length > 0,
@@ -432,11 +433,12 @@ export function TeamsPage() {
       <div className="flex flex-col gap-6">
         {groupTeamsByMode(listed).map((section) => (
           <TeamsModeSection
-            key={section.mode}
+            allTeams={teams}
+            key={section.mode ?? "none"}
             mode={section.mode}
             teams={section.teams}
           >
-            {body(section.teams, section.mode)}
+            {body(section.teams, section.mode ?? undefined)}
           </TeamsModeSection>
         ))}
       </div>

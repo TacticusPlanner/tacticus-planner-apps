@@ -49,6 +49,8 @@ describe("goals.v1Import.partDescriptions.teams copy", () => {
     expect(description).toMatch(/Teams page/)
     expect(description).toMatch(/up to 20/)
     expect(description).toMatch(/already in the planner are kept/i)
-    expect(description).toMatch(/War Defense and War Offense/)
+    expect(description).toMatch(
+      /War Defense and War Offense plans are not imported/
+    )
   })
 })

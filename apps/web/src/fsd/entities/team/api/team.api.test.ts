@@ -143,6 +143,38 @@ describe("teams API", () => {
     expect(staleTeam(error)).toBeNull()
   })
 
+  it("drops an incomplete team from a stale update or reorder, so the refetch recovers", async () => {
+    // JSON leaves out an undefined field, so the response has no notes.
+    const partial = { ...team("t1", 7), notes: undefined }
+    answer(
+      { status: 409, issueCode: "teamRevisionStale", current: partial },
+      409
+    )
+    expect(
+      staleTeam(await failure(() => updateTeam("t1", fields, 3)))
+    ).toBeNull()
+
+    vi.restoreAllMocks()
+    answer(
+      {
+        status: 409,
+        issueCode: "teamOrderStale",
+        current: { teams: [team("t1"), { id: "t3", revision: 1 }] },
+      },
+      409
+    )
+    expect(staleTeamOrder(await failure(() => reorderTeams(["t1"])))).toBeNull()
+
+    vi.restoreAllMocks()
+    answer(
+      { status: 409, issueCode: "teamOrderStale", current: { teams: [] } },
+      409
+    )
+    expect(staleTeamOrder(await failure(() => reorderTeams(["t1"])))).toEqual({
+      teams: [],
+    })
+  })
+
   it("reads the broken rules of a refused save in the API's order", async () => {
     answer(
       {

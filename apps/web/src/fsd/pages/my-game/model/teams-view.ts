@@ -47,22 +47,29 @@ export function isTeamsGroupBy(value: unknown): value is TeamsGroupBy {
   return value === "none" || value === "mode"
 }
 
-/** A mode's section when grouped: its teams, in play order. */
+/** A mode's section when grouped: its teams, in play order. `mode` is null for teams with none. */
 export interface TeamsModeSection<T> {
-  mode: TeamMode
+  mode: TeamMode | null
   teams: T[]
 }
 
 /**
  * The teams grouped by mode in the page's mode order, skipping modes with no team. A team appears
- * once, under the first of its modes in that order; its other modes stay on its badges.
+ * once, under the first of its modes in that order; its other modes stay on its badges. Teams with
+ * no mode (an imported team can have none) come last, in a section of their own.
  */
 export function groupTeamsByMode<T extends { modes: readonly TeamMode[] }>(
   teams: readonly T[]
 ): TeamsModeSection<T>[] {
-  const sections = TEAM_MODES.map((mode) => ({ mode, teams: [] as T[] }))
+  const sections: TeamsModeSection<T>[] = [
+    ...TEAM_MODES.map((mode) => ({ mode, teams: [] as T[] })),
+    { mode: null, teams: [] },
+  ]
   for (const team of teams) {
-    const section = sections.find((entry) => team.modes.includes(entry.mode))
+    const section =
+      sections.find(
+        (entry) => entry.mode !== null && team.modes.includes(entry.mode)
+      ) ?? sections.at(-1)
     section?.teams.push(team)
   }
   return sections.filter((section) => section.teams.length > 0)

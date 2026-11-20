@@ -82,7 +82,8 @@ describe("team queries", () => {
     api.createTeam.mockResolvedValue(team("d", 4))
     const { result } = setup(useCreateTeam)
     await waitFor(() => expect(result.current.teams.data).toBeDefined())
-    api.listTeams.mockResolvedValue(list("a", "b", "c", "d"))
+    // The refetch stays pending, so only the immediate cache write can show the new team.
+    api.listTeams.mockReturnValue(new Promise(() => {}))
     await act(() => result.current.action.mutateAsync(fields))
     expect(api.createTeam).toHaveBeenCalledWith(fields)
     await waitFor(() => expect(ids(result.current.teams.data)).toContain("4:d"))
@@ -93,9 +94,8 @@ describe("team queries", () => {
     await waitFor(() => expect(result.current.teams.data).toBeDefined())
     const renamed = { ...team("b", 2, 2), name: "Renamed" }
     api.updateTeam.mockResolvedValue(renamed)
-    api.listTeams.mockResolvedValue({
-      teams: [team("a", 1), renamed, team("c", 3)],
-    })
+    // The refetch stays pending, so only the immediate cache write can show the rename.
+    api.listTeams.mockReturnValue(new Promise(() => {}))
     await act(() =>
       result.current.action.mutateAsync({ teamId: "b", fields, revision: 1 })
     )

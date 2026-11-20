@@ -1,18 +1,16 @@
 import { useTranslation } from "react-i18next"
 import { GripVertical, Lock, X } from "lucide-react"
-import { progressionRarity } from "@workspace/game-domain"
-import type { Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { TEAM_LIMITS, TeamUnitPortrait, underCap } from "@/entities/team"
-import type { TeamRoster, TeamUnitView } from "@/entities/team"
+import { TEAM_LIMITS, TeamUnitPortrait } from "@/entities/team"
+import type { TeamUnitView } from "@/entities/team"
 import { SortableList } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import { cappedRosterUnit, cappedView } from "../model/capped-view"
+import { cappedView, lineupUnitCap } from "../model/capped-view"
 import {
   FLEX_DIVIDER,
   canMakeFlex,
@@ -21,36 +19,12 @@ import {
 } from "../model/team-draft"
 import type { TeamDraft } from "../model/team-draft"
 import { useUnderCapText } from "../model/use-under-cap-text"
+import { useLineupMarks } from "./lineup-unit"
+import type { LineupUnitProps } from "./lineup-unit"
 import { RoleSwitch } from "./role-switch"
 import { UnitAbilities } from "./unit-abilities"
 
 type Kind = TeamUnitView["kind"]
-
-/** What the band needs to mark and change one lineup unit. */
-export interface LineupUnitProps {
-  roster: TeamRoster | null
-  rarityCap: Rarity
-  knownUnit: (kind: Kind, unitId: string) => boolean
-  /** Characters that cannot be removed or made flex: the chosen campaign's core. */
-  lockedIds: ReadonlySet<string>
-  notAllowed: ReadonlySet<string>
-  missingCore: ReadonlySet<string>
-}
-
-/** The rule marks on a unit: not allowed (faction), must be core (campaign), unknown (catalog). */
-function useLineupMarks({
-  knownUnit,
-  notAllowed,
-  missingCore,
-}: Pick<LineupUnitProps, "knownUnit" | "notAllowed" | "missingCore">) {
-  const { t } = useTranslation("teams")
-  return (kind: Kind, unitId: string) =>
-    [
-      notAllowed.has(unitId) ? t("lineup.notAllowed") : null,
-      missingCore.has(unitId) ? t("lineup.mustBeCore") : null,
-      knownUnit(kind, unitId) ? null : t("lineup.unknown"),
-    ].filter((mark): mark is string => mark !== null)
-}
 
 /** One lineup slot: the portrait (the drag handle), name, ability levels, marks and actions. */
 function BandSlot({
@@ -85,13 +59,7 @@ function BandSlot({
   const { roster, rarityCap, lockedIds } = props
   const name = unitName(kind === "mow" ? "Mow" : "Character", unitId)
   const marks = marksOf(kind, unitId)
-  const owned = roster
-    ? (kind === "character" ? roster.characters : roster.mows).get(unitId)
-    : undefined
-  const capped = cappedRosterUnit(kind, unitId, roster, rarityCap)
-  const under = owned
-    ? underCap(owned, rarityCap, progressionRarity)
-    : undefined
+  const { capped, under } = lineupUnitCap(kind, unitId, roster, rarityCap)
   const locked = lockedIds.has(unitId)
   const isFlex = section === "flex"
   const { ref, attributes, listeners } = dragHandle
@@ -252,6 +220,7 @@ function BandRow({
   onToggleRole: (unitId: string, section: "core" | "flex") => void
   onRemove: (unitId: string) => void
 }) {
+  const { t } = useTranslation("teams")
   const unitName = useUnitName()
   const items = [...core, FLEX_DIVIDER, ...flex]
   const sectionOf = (id: string) => (flex.includes(id) ? "flex" : "core")
@@ -273,7 +242,7 @@ function BandRow({
           getId={(id) => id}
           getLabel={(id) =>
             id === FLEX_DIVIDER
-              ? id
+              ? t("lineup.flex")
               : unitName(kind === "mow" ? "Mow" : "Character", id)
           }
           items={items}
@@ -318,7 +287,6 @@ function BandRow({
  */
 export function TeamLineupBand({
   draft,
-  mows,
   sizeLimited,
   props,
   onArrangeCharacters,
@@ -331,8 +299,6 @@ export function TeamLineupBand({
   onRemoveMow,
 }: {
   draft: TeamDraft
-  /** Whether the team takes MoWs (not for Campaign or Incursion). */
-  mows: boolean
   /** Whether a selected mode caps the core, for the "5 of 5" count. */
   sizeLimited: boolean
   props: LineupUnitProps
@@ -381,7 +347,8 @@ export function TeamLineupBand({
               props={props}
             />
           ) : null}
-          {mows && draft.mowIds.length > 0 ? (
+          {/* Shown whenever there are MoWs, also an imported team's in a mode that takes none, so they can be removed. */}
+          {draft.mowIds.length > 0 ? (
             <BandRow
               canFlex={() => true}
               core={mowLineup.core}

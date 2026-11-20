@@ -90,6 +90,10 @@ export function TeamsTable({
         </thead>
         <tbody>
           <SortableList
+            // A live region inside <tbody> is invalid markup; the table is never inside a dialog.
+            accessibilityContainer={
+              typeof document === "undefined" ? undefined : document.body
+            }
             disabled={moveDisabled}
             getId={(team) => team.id}
             getLabel={(id) => teams.find((team) => team.id === id)?.name ?? id}

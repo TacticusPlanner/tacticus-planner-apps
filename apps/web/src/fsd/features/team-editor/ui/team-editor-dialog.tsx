@@ -78,7 +78,7 @@ import {
   TeamRarityCapField,
 } from "./team-editor-fields"
 import { TeamLineupBand } from "./team-lineup-band"
-import type { LineupUnitProps } from "./team-lineup-band"
+import type { LineupUnitProps } from "./lineup-unit"
 import { TeamUnitPicker } from "./team-unit-picker"
 
 /** Why the last save did not go through; a successful save closes the editor with a toast. */
@@ -302,7 +302,8 @@ function EditorBody({
         <Tabs
           className="flex min-h-0 flex-1 flex-col gap-3"
           onValueChange={(value) => setTab(value as PhoneTab)}
-          value={tab}
+          // The Machines of War tab goes when a mode takes none; its panel goes with it.
+          value={tab === "mow" && !mows ? "lineup" : tab}
         >
           <TabsList
             aria-label={t("editor.tabsLabel")}
@@ -373,7 +374,6 @@ function EditorBody({
       ) : null}
       <TeamLineupBand
         draft={draft}
-        mows={mows}
         onArrangeCharacters={(order) =>
           setDraft((current) => arrangeCharacters(current, order, campaignCore))
         }

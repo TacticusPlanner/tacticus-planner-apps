@@ -1,6 +1,6 @@
 import { apiIssue } from "@/shared/api"
 
-import { TEAM_RULE_CODES } from "./team-modes"
+import { isTeamMode, TEAM_RULE_CODES } from "./team-modes"
 import { teamIssues } from "./types"
 import type { Team, TeamList, TeamRuleCode } from "./types"
 
@@ -23,18 +23,54 @@ export function isTeamLimitReached(error: unknown) {
   return apiIssue(error, teamIssues.limitReached) !== null
 }
 
-/** The team as it stands when an update was stale (409 `teamRevisionStale`), else null. */
-export function staleTeam(error: unknown): Team | null {
-  const issue = apiIssue(error, teamIssues.revisionStale)
-  const current = issue?.current as Partial<Team> | undefined
-  return typeof current?.id === "string" && typeof current.revision === "number"
-    ? (current as Team)
-    : null
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null
+
+const isStringList = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === "string")
+
+const isNullableNumber = (value: unknown) =>
+  value === null || typeof value === "number"
+
+const isNullableString = (value: unknown) =>
+  value === null || typeof value === "string"
+
+/** Whether a 409's `current` is a whole team, so the editor and the cache can take it as one. */
+function isTeam(value: unknown): value is Team {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.revision === "number" &&
+    typeof value.name === "string" &&
+    typeof value.position === "number" &&
+    Array.isArray(value.modes) &&
+    value.modes.every(isTeamMode) &&
+    isStringList(value.characterIds) &&
+    isNullableNumber(value.flexStartIndex) &&
+    isStringList(value.mowIds) &&
+    isNullableNumber(value.mowFlexStartIndex) &&
+    isNullableString(value.campaignGroupId) &&
+    isStringList(value.incursionMowIds) &&
+    isNullableString(value.notes) &&
+    isNullableString(value.rarityCap) &&
+    isStringList(value.issues)
+  )
 }
 
-/** The current list when a reorder was stale (409 `teamOrderStale`), else null. */
+/** The team as it stands when an update was stale (409 `teamRevisionStale`), else null: an incomplete one is
+ *  dropped, and the normal refetch recovers. */
+export function staleTeam(error: unknown): Team | null {
+  const current = apiIssue(error, teamIssues.revisionStale)?.current
+  return isTeam(current) ? current : null
+}
+
+/** The current list when a reorder was stale (409 `teamOrderStale`), else null, also when any team in it is
+ *  incomplete. */
 export function staleTeamOrder(error: unknown): TeamList | null {
-  const issue = apiIssue(error, teamIssues.orderStale)
-  const current = issue?.current as Partial<TeamList> | undefined
-  return Array.isArray(current?.teams) ? (current as TeamList) : null
+  const current = apiIssue(error, teamIssues.orderStale)?.current
+  return isRecord(current) &&
+    Array.isArray(current.teams) &&
+    current.teams.every(isTeam)
+    ? (current as TeamList)
+    : null
 }

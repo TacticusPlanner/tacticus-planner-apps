@@ -131,13 +131,18 @@ export function addCharacter(draft: TeamDraft, unitId: string): TeamDraft {
     : withSections(draft, core, [unitId, ...flex])
 }
 
+/**
+ * Removes a character. Removing the last core character moves the first flex one into core, as a
+ * lineup always keeps at least one core character (an all-flex one is not a valid shape).
+ */
 export function removeCharacter(draft: TeamDraft, unitId: string): TeamDraft {
   const { core, flex } = lineupSections(draft)
-  return withSections(
-    draft,
-    core.filter((id) => id !== unitId),
-    flex.filter((id) => id !== unitId)
-  )
+  const nextCore = core.filter((id) => id !== unitId)
+  const nextFlex = flex.filter((id) => id !== unitId)
+  const [promoted, ...rest] = nextFlex
+  return nextCore.length === 0 && promoted !== undefined
+    ? withSections(draft, [promoted], rest)
+    : withSections(draft, nextCore, nextFlex)
 }
 
 /** Moves a core character to the front of the flex section. */

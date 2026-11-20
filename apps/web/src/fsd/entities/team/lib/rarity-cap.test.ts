@@ -3,7 +3,7 @@ import { progressionRarity } from "@workspace/game-domain"
 
 import type { TeamRosterUnit } from "../model/use-team-roster"
 
-import { underCap } from "./rarity-cap"
+import { capRosterUnit, underCap } from "./rarity-cap"
 
 const unit = (patch: Partial<TeamRosterUnit> = {}): TeamRosterUnit => ({
   progression: "Epic:RedThreeStars",
@@ -84,5 +84,50 @@ describe("underCap", () => {
     expect(result.rank).toBe(false)
     expect(result.level).toBe(false)
     expect(result.any).toBe(false)
+  })
+})
+
+describe("capRosterUnit", () => {
+  it("shows a Legendary Diamond 3 unit at level 50 as Epic, Gold 1, level 35", () => {
+    const capped = capRosterUnit(
+      {
+        progression: "Legendary:RedFiveStars",
+        rank: "Diamond3",
+        xpLevel: 50,
+        abilityLevels: [50, 40],
+      },
+      "Epic",
+      progressionRarity
+    )
+    expect(capped).toEqual({
+      progression: "Epic:RedThreeStars",
+      rank: "Gold1",
+      xpLevel: 35,
+      abilityLevels: [35, 35],
+    })
+  })
+
+  it("leaves a unit at or below the cap as it is", () => {
+    const unit = {
+      progression: "Rare:FourStars" as const,
+      rank: "Silver1" as const,
+      abilityLevels: [20, 20] as [number, number],
+    }
+    expect(capRosterUnit(unit, "Epic", progressionRarity)).toBe(unit)
+    expect(capRosterUnit(unit, "Mythic", progressionRarity)).toBe(unit)
+  })
+
+  it("caps a unit with no rank or XP level, and gives it neither", () => {
+    const capped = capRosterUnit(
+      { progression: "Legendary:RedFiveStars", abilityLevels: [50, 40] },
+      "Epic",
+      progressionRarity
+    )
+    expect(capped).toEqual({
+      progression: "Epic:RedThreeStars",
+      abilityLevels: [35, 35],
+    })
+    expect(capped.rank).toBeUndefined()
+    expect(capped.xpLevel).toBeUndefined()
   })
 })

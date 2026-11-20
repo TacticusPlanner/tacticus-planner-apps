@@ -792,7 +792,7 @@ describe("ImportResult — teams", () => {
       { route: "/account/v1-import" }
     )
 
-    expect(screen.getByTestId("v1-import-teams")).toHaveTextContent(
+    expect(screen.getByTestId("v1-import-teams-result")).toHaveTextContent(
       "Horde core"
     )
     expect(screen.getByTestId("v1-import-result")).toHaveTextContent(

@@ -1,4 +1,4 @@
-import { memo } from "react"
+import { memo, useId } from "react"
 import type { KeyboardEvent } from "react"
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
@@ -42,6 +42,8 @@ export const UnitTile = memo(function UnitTile({
   onToggle: (unit: PickerUnit) => void
 }) {
   const { t } = useTranslation(["teams", "progression"])
+  // The aria-label replaces the tile's text, so the "also in" note is its description instead.
+  const usedId = useId()
   // Rank and rarity show on the portrait; the tile adds the ability levels. What is under the
   // cap is said in the lineup only, for the units the team actually has.
   const capped = unit.roster
@@ -57,6 +59,7 @@ export const UnitTile = memo(function UnitTile({
       data-used={usedIn ? "true" : undefined}
     >
       <button
+        aria-describedby={usedIn ? usedId : undefined}
         aria-label={unit.name}
         aria-pressed={selected}
         className={cn(
@@ -90,6 +93,7 @@ export const UnitTile = memo(function UnitTile({
           <span
             className="line-clamp-2 w-full text-xs wrap-break-word text-amber-800 dark:text-amber-400"
             data-testid="team-picker-used"
+            id={usedId}
             title={t("picker.usedIn", { teams: usedIn.join(", ") })}
           >
             {t("picker.usedIn", { teams: usedIn.join(", ") })}

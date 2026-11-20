@@ -40,7 +40,8 @@
     "sectionShared": "{{unit}} dans {{count}} équipes",
     "sectionSharedMany_one": "{{count}} unité partagée",
     "sectionSharedMany_other": "{{count}} unités partagées",
-    "quickFilters": "Filtres rapides"
+    "quickFilters": "Filtres rapides",
+    "noModeSection": "Sans mode"
   },
   "card": {
     "core": "Principaux",
@@ -280,7 +281,7 @@
         },
         "reorder": {
           "title": "Ordonner vos équipes",
-          "content": "Faites glisser une équipe par la poignée à côté de son numéro, ou utilisez Monter et Descendre dans son menu. Avec un filtre ou dans une section de mode, seules les équipes affichées bougent."
+          "content": "Faites glisser une équipe par la poignée à côté de son numéro. Avec un filtre ou dans une section de mode, seules les équipes affichées bougent."
         }
       }
     }
@@ -303,7 +304,6 @@
     "rules": {
       "nameLength": "Longueur du nom",
       "noMode": "Aucun mode",
-      "tooFewCharacters": "{{count}} personnages (min. {{min}})",
       "unknownUnit": "Unité inconnue",
       "modeNotCombinable": "Modes incompatibles",
       "tooManyCoreCharacters": "{{count}} principaux (max {{max}})",
@@ -315,7 +315,9 @@
       "factionNotAllowed": "Faction non autorisée",
       "incursionRequired": "Incursion manquante",
       "unknownIncursion": "Incursion inconnue",
-      "noSharedIncursionFaction": "Aucune faction commune"
+      "noSharedIncursionFaction": "Aucune faction commune",
+      "tooFewCharacters_one": "{{count}} personnage (min. {{min}})",
+      "tooFewCharacters_other": "{{count}} personnages (min. {{min}})"
     }
   },
   "list": {

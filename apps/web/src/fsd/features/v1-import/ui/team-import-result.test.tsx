@@ -111,7 +111,9 @@ describe("TeamImportResult", () => {
       "no_units",
       "invalid_team",
     ]) {
-      expect(screen.getByTestId("v1-import-teams")).not.toHaveTextContent(code)
+      expect(
+        screen.getByTestId("v1-import-teams-result")
+      ).not.toHaveTextContent(code)
     }
   })
 })
