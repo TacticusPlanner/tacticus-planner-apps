@@ -6,8 +6,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { placeholderKindForIcon } from "./entity-icon-placeholder"
 import type { IconPlaceholderKind } from "./entity-icon-placeholder"
-import { itemIconClassName } from "./game-icon-size"
-import type { ItemIconSize } from "./game-icon-size"
+import { entityIconClassName } from "./game-icon-size"
+import type { EntityIconSize } from "./game-icon-size"
 
 /** An <img> that swaps to a fallback image, or else to a placeholder glyph sized like the icon, when
  *  the source asset is missing (a new unit the datamine ships no art for yet). No `src` at all still
@@ -28,7 +28,7 @@ export function EntityIcon({
   src?: GameIcon | null
   fallback?: string
   alt: string
-  size?: ItemIconSize
+  size?: EntityIconSize
   className?: string
   width?: number
   height?: number
@@ -38,7 +38,7 @@ export function EntityIcon({
   const className =
     size === undefined
       ? callerClassName
-      : cn(itemIconClassName(size), callerClassName)
+      : cn(entityIconClassName(size), callerClassName)
 
   if (typeof src === "object" && src !== null) {
     return <LayeredEntityIcon icon={src} alt={alt} className={className} />

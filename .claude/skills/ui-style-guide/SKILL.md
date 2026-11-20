@@ -103,8 +103,10 @@ sizes, chosen by its role, never by the page.
 | Portrait lg | Unit card, detail header (128px `size-32` only for the detail hero)                        | 96px `size-24`              | 96px          |
 
 - In code: `<EntityIcon size="inline" | "row" | "tile" | "badge-sm" … />`
-  (a badge names the portrait it sits on) and
-  `<UnitPortrait size="sm" | "md" | "lg" | "hero" />`. Keep size classes out of
+  (a badge names the portrait it sits on; `portrait-sm` … is a bare,
+  ringless portrait such as an NPC or a unit in a chip) and
+  `<UnitPortrait size="sm" | "md" | "lg" | "hero" />` for a unit with its
+  rarity ring. Keep size classes out of
   their `className`; it is for placement only.
 - No game icon below 16px.
 - Migrating an off-scale size: round to the nearest step, ties go up (17/18 →

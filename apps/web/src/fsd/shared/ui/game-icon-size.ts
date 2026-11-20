@@ -9,9 +9,23 @@
 
 export type PortraitSize = "sm" | "md" | "lg" | "hero"
 
-export type ItemIconSize = "inline" | "row" | "tile" | `badge-${PortraitSize}`
+/** An `EntityIcon` size: an item role, a badge on a portrait of that size, or a bare (ringless)
+ *  portrait of that size. A ringed unit portrait is `UnitPortrait`. */
+export type EntityIconSize =
+  | "inline"
+  | "row"
+  | "tile"
+  | `badge-${PortraitSize}`
+  | `portrait-${PortraitSize}`
 
-const ITEM_ICON_CLASS_NAMES: Record<ItemIconSize, string> = {
+const PORTRAIT_CLASS_NAMES: Record<PortraitSize, string> = {
+  sm: "size-10",
+  md: "size-16",
+  lg: "size-24",
+  hero: "size-32",
+}
+
+const ENTITY_ICON_CLASS_NAMES: Record<EntityIconSize, string> = {
   // Next to text or a number: 16px with a mouse, 20px on touch.
   inline: "size-4 pointer-coarse:size-5",
   // An item in a list or table row.
@@ -23,18 +37,15 @@ const ITEM_ICON_CLASS_NAMES: Record<ItemIconSize, string> = {
   "badge-md": "size-5",
   "badge-lg": "size-8",
   "badge-hero": "size-11",
+  "portrait-sm": PORTRAIT_CLASS_NAMES.sm,
+  "portrait-md": PORTRAIT_CLASS_NAMES.md,
+  "portrait-lg": PORTRAIT_CLASS_NAMES.lg,
+  "portrait-hero": PORTRAIT_CLASS_NAMES.hero,
 }
 
-const PORTRAIT_CLASS_NAMES: Record<PortraitSize, string> = {
-  sm: "size-10",
-  md: "size-16",
-  lg: "size-24",
-  hero: "size-32",
-}
-
-/** The Tailwind size classes for an item icon role. */
-export function itemIconClassName(size: ItemIconSize): string {
-  return ITEM_ICON_CLASS_NAMES[size]
+/** The Tailwind size classes for an `EntityIcon` size. */
+export function entityIconClassName(size: EntityIconSize): string {
+  return ENTITY_ICON_CLASS_NAMES[size]
 }
 
 /** The Tailwind size classes for a unit portrait. */
