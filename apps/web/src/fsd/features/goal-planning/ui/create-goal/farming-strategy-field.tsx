@@ -94,7 +94,6 @@ export function FarmingStrategyField({
   // An effect because the strategy is the parent's state, shared by the Rank and Ability cards.
   const selectionUnavailable = availability[farmingStrategy] !== null
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- corrects the parent's shared strategy for this card's range
     if (selectionUnavailable) onFarmingStrategyChange("TotalUpgrades")
   }, [selectionUnavailable, onFarmingStrategyChange])
 

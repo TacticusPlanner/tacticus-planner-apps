@@ -30,7 +30,6 @@ export function useGoalsProjectScope(
 
   // Rewrites the URL, which can't happen while rendering, once the loaded list rejects the id.
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- syncs the router's URL with the loaded project list
     if (!raw || !projectsReady || valid) return
     setParams(
       (previous) => {
