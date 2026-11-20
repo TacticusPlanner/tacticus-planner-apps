@@ -1,4 +1,5 @@
 import type { IncursionStorageModel } from "@workspace/game-catalog"
+import { firstDifference } from "@/shared/lib"
 
 export type Incursion = IncursionStorageModel
 export type IncursionTier = Incursion["tiers"][number]
@@ -168,10 +169,11 @@ export function tierSummary(mowId: string, tier: IncursionTier): TierSummary {
 
 /** Newest first: the latest debut or revamp leads, then by MoW id. */
 export function orderIncursions(incursions: readonly Incursion[]): Incursion[] {
-  return incursions.toSorted(
-    (a, b) =>
-      b.availableFromUtc.localeCompare(a.availableFromUtc) ||
+  return incursions.toSorted((a, b) =>
+    firstDifference(
+      b.availableFromUtc.localeCompare(a.availableFromUtc),
       a.mowId.localeCompare(b.mowId)
+    )
   )
 }
 

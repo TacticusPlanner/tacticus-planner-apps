@@ -52,7 +52,7 @@ vi.mock("@/entities/project", async (importOriginal) => {
       return {
         fetchState: query.isError
           ? { status: "error" as const, message: "error" }
-          : query.data
+          : query.data !== undefined
             ? { status: "success" as const, projects }
             : { status: "idle" as const },
         projects,

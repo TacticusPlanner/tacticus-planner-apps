@@ -63,7 +63,7 @@ export function tokenBattleSnapshot(
   return {
     battlePower,
     powerRatio:
-      battlePower && effectivePower !== null
+      battlePower !== null && battlePower > 0 && effectivePower !== null
         ? Math.round(battlePowerRatio(effectivePower, battlePower) * 1000) /
           1000
         : null,

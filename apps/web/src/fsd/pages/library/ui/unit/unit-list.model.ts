@@ -1,7 +1,11 @@
 import { allianceRank, factionRank } from "@workspace/game-domain"
 import type { Alliance, FactionId, UnitId } from "@workspace/game-domain"
 
-import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
+import {
+  anyNameIncludes,
+  normalizeSearchText,
+  firstDifference,
+} from "@/shared/lib"
 
 export type UnitListItem = {
   id: UnitId
@@ -18,11 +22,12 @@ export function orderUnits<Item extends UnitListItem>(
   items: readonly Item[],
   locale?: string
 ): Item[] {
-  return items.toSorted(
-    (a, b) =>
-      allianceRank(a.alliance) - allianceRank(b.alliance) ||
-      factionRank(a.factionId) - factionRank(b.factionId) ||
+  return items.toSorted((a, b) =>
+    firstDifference(
+      allianceRank(a.alliance) - allianceRank(b.alliance),
+      factionRank(a.factionId) - factionRank(b.factionId),
       a.name.localeCompare(b.name, locale)
+    )
   )
 }
 

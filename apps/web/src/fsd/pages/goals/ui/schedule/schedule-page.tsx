@@ -192,7 +192,7 @@ function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
           const firstDay = unitRanges.find(
             ({ unit }) => unit.unitId === unitId
           )?.firstDay
-          if (firstDay) setJumpTo({ day: firstDay })
+          if (firstDay !== undefined) setJumpTo({ day: firstDay })
         }}
         ranges={unitRanges}
         selectedUnitId={selectedUnitId}

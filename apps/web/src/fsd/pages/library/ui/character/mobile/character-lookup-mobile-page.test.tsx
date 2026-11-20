@@ -48,7 +48,7 @@ describe("CharacterLookupMobilePage", () => {
   beforeEach(() => {
     ;(
       window.HTMLElement.prototype.scrollIntoView as ReturnType<typeof vi.fn>
-    ).mockClear?.()
+    ).mockClear()
   })
 
   it("shows skeletons instead of content while loading", () => {

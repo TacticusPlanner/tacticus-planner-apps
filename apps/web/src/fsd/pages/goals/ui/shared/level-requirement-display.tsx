@@ -8,6 +8,7 @@ import { EntityIcon } from "@/shared/ui"
 
 import type { LevelRequirementProgress } from "@/features/goal-planning"
 import { GoalProgressDisplay, GoalTargetDisplay } from "./goal-progress-visuals"
+import { hasNode } from "@/shared/lib"
 
 export type XpBookFigure = {
   needed: number
@@ -41,7 +42,7 @@ export function LevelRequirementLine({
   const { t, i18n } = useTranslation(["common", "progression"])
   if (!levelRequirement) return null
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n?.resolvedLanguage).format(value)
+    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
   const book = xpBooks && xpBooks.needed > 0 ? xpBooks : undefined
   const bookText = book
     ? t("goals.resourceChips.xpBooksValue", {
@@ -89,7 +90,7 @@ export function LevelRequirementLine({
         potentialOnly
         // Paused goals have no plan potential; fall back to the actual ratio so the line keeps the
         // same compact potential-only layout (and height) as an Active goal's.
-        potentialRatio={potentialRatio ?? levelRequirement.ratio ?? undefined}
+        potentialRatio={potentialRatio ?? levelRequirement.ratio}
         progress={levelRequirement}
       />
     </div>
@@ -117,7 +118,7 @@ export function LevelRequirementLine({
           {bar}
         </>
       )}
-      {trailing ? <div className="shrink-0">{trailing}</div> : null}
+      {hasNode(trailing) ? <div className="shrink-0">{trailing}</div> : null}
     </div>
   )
 }

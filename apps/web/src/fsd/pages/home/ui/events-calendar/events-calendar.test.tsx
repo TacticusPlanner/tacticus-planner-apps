@@ -161,7 +161,7 @@ describe("EventsCalendar", () => {
     const cardFor = (name: string) =>
       screen
         .getAllByTestId("event-entry-card")
-        .find((card) => card.textContent?.includes(name))!
+        .find((card) => card.textContent.includes(name))!
 
     await user.click(cardFor("Legendary Event"))
     const wikiLink = await screen.findByRole("link", { name: "Wiki" })

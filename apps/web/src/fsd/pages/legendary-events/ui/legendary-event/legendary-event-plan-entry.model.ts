@@ -10,7 +10,7 @@ export function hasEventPlan(
   teams: readonly { laneId: LegendaryEventLaneId }[] | undefined,
   projectCount: number | undefined
 ): boolean {
-  if (!teams || !projectCount) return false
+  if (!teams || projectCount === undefined || projectCount === 0) return false
   return LEGENDARY_EVENT_LANE_IDS.every(
     (laneId) =>
       teams.filter((team) => team.laneId === laneId).length >=

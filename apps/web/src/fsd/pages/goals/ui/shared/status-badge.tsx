@@ -15,7 +15,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { GoalStatus } from "@/entities/goal"
-import { afterNextPaint } from "@/shared/lib"
+import { afterNextPaint, hasNode } from "@/shared/lib"
 import { resourceLabel } from "@/entities/goal-farming"
 import type {
   EstimateOutcome,
@@ -177,7 +177,7 @@ export function BlockedIndicator({
       {reasonLines.map((line) => (
         <div key={line}>{line}</div>
       ))}
-      {ceilingLabel ? <div>{ceilingLabel}</div> : null}
+      {hasNode(ceilingLabel) ? <div>{ceilingLabel}</div> : null}
       {estimate ? (
         <UnavailableMaterials estimate={estimate} reasonLines={reasonLines} />
       ) : null}
@@ -269,7 +269,12 @@ function UnavailableMaterials({
 }) {
   const { t } = useTranslation(["common", "upgrades", "characters", "dailies"])
   const { upgradesById, charactersById } = useGoalCatalog()
-  if (estimate.status !== "Blocked" || !estimate.blockers?.length) return null
+  if (
+    estimate.status !== "Blocked" ||
+    estimate.blockers === undefined ||
+    estimate.blockers.length === 0
+  )
+    return null
   const label = (id: EstimateResourceId) => {
     const fallback = resourceLabel(
       id,

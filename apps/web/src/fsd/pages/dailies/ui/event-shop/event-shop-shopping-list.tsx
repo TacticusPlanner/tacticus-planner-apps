@@ -24,6 +24,7 @@ import { DESTRUCTIVE_TEXT, TOUCH_ICON, TOUCH_SM } from "./day-state-style"
 import { Cost } from "./event-shop-slots"
 import type { EventShopController } from "./use-event-shop-controller"
 import type { EventShopFormat } from "./use-event-shop-format"
+import { hasNode } from "@/shared/lib"
 
 type View = "upcoming" | "all"
 
@@ -405,7 +406,7 @@ function Group({
             </span>
           ) : null}
         </h3>
-        {meta ? (
+        {hasNode(meta) ? (
           <span className="text-xs text-muted-foreground">{meta}</span>
         ) : null}
         {action}

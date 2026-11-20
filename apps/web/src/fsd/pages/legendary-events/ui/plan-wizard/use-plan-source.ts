@@ -265,14 +265,17 @@ export function usePlanSource(eventId: string): PlanSource {
   if (frozen && frozenSource) {
     const { inputs } = frozen
     const economy = {
-      runs: inputs.plan.runs ?? [],
+      runs: inputs.plan.runs,
       showPaidOptions: inputs.plan.showPaidOptions,
     }
     if (stepTargets(inputs, economy).length === 0) {
+      // A catalog record cached before rewards were served has no ladder.
+      const rewards = inputs.event.rewards as
+        LegendaryEvent["rewards"] | undefined
       return {
         status: "nothingToReach",
         event: frozen.event,
-        reason: inputs.event.rewards ? "fullyAscended" : "noLadder",
+        reason: rewards ? "fullyAscended" : "noLadder",
       }
     }
     return frozenSource
@@ -282,7 +285,7 @@ export function usePlanSource(eventId: string): PlanSource {
     return {
       status: "error",
       retry: () => {
-        event.retry?.()
+        event.retry()
         void plan.refetch()
         paid.retry()
       },

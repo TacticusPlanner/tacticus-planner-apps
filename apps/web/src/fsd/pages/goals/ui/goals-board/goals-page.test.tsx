@@ -1505,7 +1505,7 @@ describe("GoalsPage", () => {
       await user.click(await screen.findByRole("option", { name: /^Paused/ }))
       await user.click(screen.getByTestId("goals-type-filter"))
       await user.click(await screen.findByRole("option", { name: "Ability" }))
-      const params = new URLSearchParams(search() ?? "")
+      const params = new URLSearchParams(search())
       expect(params.get("status")).toBe("paused")
       expect(params.get("type")).toBe("Ability")
       view.unmount()

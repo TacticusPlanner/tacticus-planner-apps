@@ -193,7 +193,10 @@ export function DataTableShowcase() {
             table.getColumn("email")?.setFilterValue(event.target.value)
           }
           placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("email")?.getFilterValue() as
+              string | undefined) ?? ""
+          }
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

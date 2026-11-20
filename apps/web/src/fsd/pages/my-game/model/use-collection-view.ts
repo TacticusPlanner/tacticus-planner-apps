@@ -306,9 +306,7 @@ function availability(
   if (inventory.status === "error") return "needsInventory"
   if (catalogData.status === "loading" || inventory.status === "loading")
     return "loading"
-  return inventory.status === "ready" && inventory.data != null
-    ? "available"
-    : "needsInventory"
+  return inventory.data != null ? "available" : "needsInventory"
 }
 
 /** The owned characters below their rarity's maximum rank whose current rank the inventory can

@@ -15,6 +15,7 @@ import { ProgressionSelect, RankSelect, progressionText } from "@/shared/ui"
 import { UnitHeader } from "../unit/unit-header"
 import type { ValuesMode } from "../unit/unit-header"
 import type { ShownValues, UnitOwnership } from "./character-unit.view-model"
+import { hasNode } from "@/shared/lib"
 
 export type { ValuesMode }
 
@@ -89,7 +90,7 @@ export function CharacterUnitHeader({
       ownership={ownership}
       signedIn={signedIn}
       yourUnit={
-        yourUnitLine
+        hasNode(yourUnitLine)
           ? { label: t("characterUnit.header.yourUnit"), line: yourUnitLine }
           : undefined
       }

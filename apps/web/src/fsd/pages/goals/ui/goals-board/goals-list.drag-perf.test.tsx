@@ -87,9 +87,9 @@ const actions = {
 beforeEach(() => {
   Element.prototype.getBoundingClientRect = function () {
     const el = this as HTMLElement
-    const id = el.getAttribute?.("data-goal-id")
+    const id = el.getAttribute("data-goal-id")
     const card =
-      el.getAttribute?.("data-testid") === "goal-row-reorder-card"
+      el.getAttribute("data-testid") === "goal-row-reorder-card"
         ? String(Array.prototype.indexOf.call(el.parentElement!.children, el))
         : null
     const key = id ?? (card ? `goal-${card}` : null)
@@ -240,7 +240,7 @@ describe("GoalsList desktop Cards view drag performance", () => {
 
   beforeEach(() => {
     Element.prototype.getBoundingClientRect = function () {
-      const id = (this as HTMLElement).getAttribute?.("data-goal-id")
+      const id = (this as HTMLElement).getAttribute("data-goal-id")
       const index = id ? Number(id.split("-", 2)[1]) : null
       const left = index === null ? 0 : (index % PER_ROW) * 330
       const top = index === null ? 0 : Math.floor(index / PER_ROW) * 220

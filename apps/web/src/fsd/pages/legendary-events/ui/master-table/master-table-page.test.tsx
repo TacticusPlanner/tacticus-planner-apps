@@ -211,7 +211,7 @@ const rowOf = (unitId: string) =>
     ...screen.queryAllByTestId("master-table-row"),
   ].find((row) => row.dataset.unit === unitId)!
 const search = () =>
-  new URLSearchParams(screen.getByTestId("location").textContent ?? "")
+  new URLSearchParams(screen.getByTestId("location").textContent)
 const fullyCleared = (battles: number) =>
   Array.from({ length: battles }, () => ({
     objectivesCleared: [0, 1, 2, 3, 4, 5],

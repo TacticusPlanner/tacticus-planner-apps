@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { abilityIcon, equipmentSlotIcon } from "@workspace/game-catalog"
+import { abilityIcon } from "@workspace/game-catalog"
 import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
@@ -80,11 +80,10 @@ export function RelicPanel({
           : undefined
       }
       name={t(`equipmentItems:${relic.id}`, { defaultValue: relic.name })}
-      iconSrc={icon ?? equipmentSlotIcon(relic.type)}
-      // The relic's ability art is round, so its frame is too; the slot fallback is square.
+      iconSrc={icon}
+      // The relic's ability art is round, so its frame is too.
       iconClassName={cn(
-        "size-11 shrink-0 border-2",
-        icon ? "rounded-full" : "rounded-md",
+        "size-11 shrink-0 rounded-full border-2",
         RARITY_BORDER[relic.rarity]
       )}
       text={text}

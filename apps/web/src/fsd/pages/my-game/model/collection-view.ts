@@ -14,7 +14,11 @@ import type { Alliance, Rarity, UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { UnitKind, UnitTileUnit } from "@/entities/unit"
-import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
+import {
+  anyNameIncludes,
+  normalizeSearchText,
+  firstDifference,
+} from "@/shared/lib"
 
 import {
   collectionQuickFilters,
@@ -368,10 +372,11 @@ export function buildCollectionView(
     a.localeCompare(b, labels.locale)
   const compareOwned = ownedComparator(query.sort)
   const groups = [...groupsById.values()]
-    .toSorted(
-      (a, b) =>
-        allianceRank(a.alliance) - allianceRank(b.alliance) ||
+    .toSorted((a, b) =>
+      firstDifference(
+        allianceRank(a.alliance) - allianceRank(b.alliance),
         compareNames(a.factionName, b.factionName)
+      )
     )
     .map((group) => {
       const units = rowsByFaction
@@ -579,7 +584,7 @@ type OwnedComparator = (a: CollectionRow, b: CollectionRow) => number
 
 /** The Rarity order, which is also every other sort's tie-break. */
 const byRarity: OwnedComparator = (a, b) =>
-  b.progression - a.progression || b.rank - a.rank
+  firstDifference(b.progression - a.progression, b.rank - a.rank)
 
 function ownedComparator(sort: CollectionSort): OwnedComparator {
   switch (sort) {
@@ -587,16 +592,19 @@ function ownedComparator(sort: CollectionSort): OwnedComparator {
       return byRarity
     case "rank":
       // Machines of War carry rank -1, so they follow the group's characters.
-      return (a, b) => b.rank - a.rank || byRarity(a, b)
+      return (a, b) => firstDifference(b.rank - a.rank, byRarity(a, b))
     case "abilities":
-      return (a, b) => b.abilities - a.abilities || byRarity(a, b)
+      return (a, b) =>
+        firstDifference(b.abilities - a.abilities, byRarity(a, b))
     case "shards":
       return (a, b) =>
-        b.shardTier - a.shardTier ||
-        b.shardCount - a.shardCount ||
-        byRarity(a, b)
+        firstDifference(
+          b.shardTier - a.shardTier,
+          b.shardCount - a.shardCount,
+          byRarity(a, b)
+        )
     case "power":
-      return (a, b) => b.power - a.power || byRarity(a, b)
+      return (a, b) => firstDifference(b.power - a.power, byRarity(a, b))
   }
 }
 
@@ -652,7 +660,7 @@ function ownedCharacterRow(
     power,
     factionId: character.faction,
     alliance: character.alliance,
-    catalogName: character.name ?? "",
+    catalogName: character.name,
     rank: rankIndex(record.rank),
     quick: {
       kind: "character",
@@ -700,7 +708,7 @@ function ownedMowRow(
     power,
     factionId: mow.faction,
     alliance: mow.alliance,
-    catalogName: mow.name ?? "",
+    catalogName: mow.name,
     // Machines of War have no rank; they tie on it and fall through to name.
     rank: -1,
     quick: {
@@ -755,7 +763,10 @@ function unownedRow(
     shardTier: -1,
     shardCount: -1,
     // Nearest to unlock first; units with no unlock cost or no shard data go after those with one.
-    unlock: shards && unlockShards ? Math.min(1, held / unlockShards) : -1,
+    unlock:
+      shards && unlockShards !== undefined && unlockShards > 0
+        ? Math.min(1, held / unlockShards)
+        : -1,
     unit: {
       kind,
       unitId: unit.id,

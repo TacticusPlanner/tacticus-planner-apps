@@ -21,6 +21,7 @@ import type {
 
 import { powerFigure } from "../unit/unit-power.model"
 import type { PowerFigure } from "../unit/unit-power.model"
+import { firstDifference } from "@/shared/lib"
 
 export type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 
@@ -73,9 +74,7 @@ export function characterPowerValues({
     rank: shown.rank,
     progression: shown.progression,
     appliedUpgradeSlots:
-      player && player.rank === shown.rank
-        ? (player.appliedUpgradeSlots ?? [])
-        : [],
+      player && player.rank === shown.rank ? player.appliedUpgradeSlots : [],
     activeAbilityLevel: activeLevel,
     passiveAbilityLevel: passiveLevel,
     items: (player?.equippedItems ?? []).map(({ equipmentId, level }) => ({
@@ -220,10 +219,11 @@ export function equippableItems(
       slot,
       usable
         .filter((item) => item.type === slot)
-        .toSorted(
-          (a, b) =>
-            rarityRank(b.rarity) - rarityRank(a.rarity) ||
+        .toSorted((a, b) =>
+          firstDifference(
+            rarityRank(b.rarity) - rarityRank(a.rarity),
             a.name.localeCompare(b.name)
+          )
         ),
     ])
   )

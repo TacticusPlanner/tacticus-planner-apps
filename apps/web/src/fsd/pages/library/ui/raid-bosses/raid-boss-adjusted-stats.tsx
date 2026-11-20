@@ -186,7 +186,7 @@ export function RaidBossAdjustedStats({
         </p>
       ) : (
         <>
-          {rows.length > 0 || hitsDelta ? (
+          {rows.length > 0 || hitsDelta !== 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -224,7 +224,7 @@ export function RaidBossAdjustedStats({
                     ) : null}
                   </TableRow>
                 ))}
-                {hitsDelta ? (
+                {hitsDelta !== 0 ? (
                   <TableRow>
                     <TableCell className="text-muted-foreground">
                       {t("raidBosses.weaponHits")}

@@ -69,7 +69,7 @@ export function settleShownTokens(
   for (const token of tokens) {
     if (token.run !== run) continue
     const done = new Set(
-      progress?.[token.laneId]?.encounters?.[token.battleIndex]
+      progress?.[token.laneId]?.encounters[token.battleIndex]
         ?.objectivesCleared ?? []
     )
     if (

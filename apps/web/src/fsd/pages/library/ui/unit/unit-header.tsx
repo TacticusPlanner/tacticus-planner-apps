@@ -14,6 +14,7 @@ import { EntityIcon } from "@/shared/ui"
 
 import type { UnitOwnership } from "./unit-ownership"
 import { UnitPortrait } from "./unit-portrait"
+import { hasNode } from "@/shared/lib"
 
 export type ValuesMode = "base" | "custom"
 
@@ -148,7 +149,7 @@ export function UnitHeader({
               </span>
             </div>
           ) : null}
-          {action ? <div className="pt-1.5">{action}</div> : null}
+          {hasNode(action) ? <div className="pt-1.5">{action}</div> : null}
         </div>
         <div
           className={cn(

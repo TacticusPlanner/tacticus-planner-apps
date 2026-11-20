@@ -75,9 +75,7 @@ export function CharacterRankUpTab({
       ? playerCharacterRead.data
       : undefined
   const playerCharacterLoading =
-    isAuthenticated &&
-    !!draftCharacterId &&
-    playerCharacterRead.status === "loading"
+    isAuthenticated && playerCharacterRead.status === "loading"
 
   // Applies the synced rank/progression prefill once per character selection, as soon as it's
   // available — never on a later background refresh of the same character, so it can't clobber
@@ -90,7 +88,6 @@ export function CharacterRankUpTab({
   useEffect(() => {
     if (
       !isAuthenticated ||
-      !draftCharacterId ||
       playerCharacterLoading ||
       prefilledCharacterIdRef.current === draftCharacterId
     ) {
@@ -135,7 +132,7 @@ export function CharacterRankUpTab({
 
   const characterId = applied.characterId ?? unitId
 
-  const character = characterId ? charactersById?.get(characterId) : undefined
+  const character = charactersById?.get(characterId)
   const characterForCalc = character
     ? mapCharacterStorageToDomain(character)
     : undefined

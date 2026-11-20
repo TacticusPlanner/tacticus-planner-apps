@@ -11,6 +11,7 @@ import type {
   RawEventDefinition,
   RawEventsCalendarEntry,
 } from "./events-calendar.types"
+import { firstDifference } from "@/shared/lib"
 
 // Local-calendar-date formatting (not `.toISOString()`, which converts to UTC first and would mislabel
 // the date for any timezone ahead of UTC — e.g. local midnight Aug 9 in UTC+10 is Aug 8 in UTC).
@@ -151,12 +152,12 @@ function deriveOrdinalFromAnchor(
   definition: RawEventDefinition | undefined,
   configKey: string
 ): number | undefined {
-  if (!definition || definition.recurrence?.kind !== "Fixed") {
+  if (!definition || definition.recurrence.kind !== "Fixed") {
     return undefined
   }
 
   const { intervalDays, anchorUtc } = definition.recurrence
-  if (!intervalDays || !anchorUtc) {
+  if (intervalDays === null || intervalDays <= 0 || !anchorUtc) {
     return undefined
   }
 
@@ -169,7 +170,7 @@ function deriveOrdinalFromAnchor(
 
   const config = definition.config
   const numberAtAnchor =
-    config && typeof config === "object" && configKey in config
+    typeof config === "object" && config !== null && configKey in config
       ? (config as Record<string, unknown>)[configKey]
       : undefined
   if (typeof numberAtAnchor !== "number") {
@@ -190,7 +191,7 @@ function configNumber(
 ): number | undefined {
   const config = definition?.config
   const value =
-    config && typeof config === "object"
+    typeof config === "object" && config !== null
       ? (config as Record<string, unknown>)[key]
       : undefined
   return typeof value === "number" && value > 0 ? value : undefined
@@ -211,7 +212,15 @@ function deriveGuildWarPhases(
   const wars = configNumber(definition, "warsPerSeason")
   const preparationHours = configNumber(definition, "preparationPhaseHours")
   const warHours = configNumber(definition, "activeFightingPhaseHours")
-  if (!wars || !preparationHours || !warHours) return []
+  if (
+    wars === undefined ||
+    wars <= 0 ||
+    preparationHours === undefined ||
+    preparationHours <= 0 ||
+    warHours === undefined ||
+    warHours <= 0
+  )
+    return []
   const intervalHours =
     configNumber(definition, "warIntervalHours") ?? preparationHours + warHours
 
@@ -282,7 +291,7 @@ function isRecurringOneDayModifier(
   definition: RawEventDefinition | undefined
 ): boolean {
   return (
-    definition?.recurrence?.kind === "Fixed" &&
+    definition?.recurrence.kind === "Fixed" &&
     Date.parse(entry.endUtc) - Date.parse(entry.startUtc) <= ONE_DAY_MS
   )
 }
@@ -313,8 +322,8 @@ function compareMobileDayEntries(
     mobileDayEntryPriority(b, definitionsById)
   if (priorityDifference !== 0) return priorityDifference
 
-  return (
-    Date.parse(a.startUtc) - Date.parse(b.startUtc) ||
+  return firstDifference(
+    Date.parse(a.startUtc) - Date.parse(b.startUtc),
     a.key.localeCompare(b.key)
   )
 }
@@ -414,10 +423,11 @@ export function buildEventsAgenda(
   }
 
   return {
-    ongoing: [...ongoing.values()].toSorted(
-      (a, b) =>
-        Date.parse(a.endUtc) - Date.parse(b.endUtc) ||
+    ongoing: [...ongoing.values()].toSorted((a, b) =>
+      firstDifference(
+        Date.parse(a.endUtc) - Date.parse(b.endUtc),
         a.key.localeCompare(b.key)
+      )
     ),
     days: days
       .map((day) => ({
@@ -518,7 +528,9 @@ export function buildEventsCalendarLanes(
     .toSorted((a, b) => Date.parse(a.startUtc) - Date.parse(b.startUtc))
   const sortedForPacking = positioned
     .filter((entry) => !RAID_TRACK_TYPES.has(entry.definitionType ?? ""))
-    .toSorted((a, b) => a.startColumn - b.startColumn || b.span - a.span)
+    .toSorted((a, b) =>
+      firstDifference(a.startColumn - b.startColumn, b.span - a.span)
+    )
 
   const lanes: {
     entries: PositionedEventEntry[]
@@ -614,8 +626,9 @@ export function withGuildRaidBreaks(
     const definition = definitionsById.get(entry.definitionId)
     if (
       definition?.type !== "GuildRaidSeason" ||
-      definition.recurrence?.kind !== "Fixed" ||
-      !definition.recurrence.intervalDays
+      definition.recurrence.kind !== "Fixed" ||
+      definition.recurrence.intervalDays === null ||
+      definition.recurrence.intervalDays <= 0
     ) {
       continue
     }

@@ -12,6 +12,7 @@ import type {
   BattlePreviewViewModel,
   BattlesViewModel,
 } from "./battles.view-model"
+import { hasNode } from "@/shared/lib"
 
 /**
  * A lane's Battles section on Plan (spec: legendary-event-battle-preview): the lane picker and the
@@ -51,7 +52,7 @@ export function BattlesSection({
           ? t("battles.titleLane", { lane: t(`lanes.${laneId}`) })
           : t("battles.title")}
       </h2>
-      {lanePicker && state.kind !== "ready" ? (
+      {hasNode(lanePicker) && state.kind !== "ready" ? (
         <div className="flex">{lanePicker}</div>
       ) : null}
       {state.kind === "loading" ? (

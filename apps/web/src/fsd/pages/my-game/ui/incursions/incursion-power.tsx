@@ -30,7 +30,9 @@ export function IncursionPower({
   const { t, i18n } = useTranslation("incursions")
   const number = new Intl.NumberFormat(i18n.language)
   const standing =
-    teamPower && teamPower > 0 ? powerStanding(power, teamPower) : undefined
+    teamPower !== undefined && teamPower > 0
+      ? powerStanding(power, teamPower)
+      : undefined
   return (
     <span
       className={cn(
@@ -39,7 +41,7 @@ export function IncursionPower({
         className
       )}
       title={
-        standing && teamPower
+        standing && teamPower !== undefined
           ? t("power.vsTeam", {
               ratio: new Intl.NumberFormat(i18n.language, {
                 maximumFractionDigits: 1,

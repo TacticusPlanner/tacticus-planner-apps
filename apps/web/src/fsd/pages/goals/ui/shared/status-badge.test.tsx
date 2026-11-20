@@ -245,7 +245,7 @@ describe("BlockedIndicator", () => {
     await userEvent.click(screen.getByTestId("goal-blocked-indicator"))
     const popover = await screen.findByRole("dialog")
     expect(
-      popover.textContent?.match(
+      popover.textContent.match(
         /No accessible farming location provides a required resource\./g
       )
     ).toHaveLength(1)
@@ -270,7 +270,7 @@ describe("BlockedIndicator", () => {
     await userEvent.click(badge)
     const tooltip = await screen.findByTestId("goal-restricted-tooltip")
     const occurrences = (
-      tooltip.textContent?.match(
+      tooltip.textContent.match(
         /Waiting on a prerequisite goal to be reached first\./g
       ) ?? []
     ).length

@@ -28,6 +28,7 @@ import type {
   ProgressGridViewModel,
 } from "../legendary-event-page.view-model"
 import { LeaderboardSection } from "./leaderboard-section"
+import { firstDifference } from "@/shared/lib"
 
 let i18n: I18n
 
@@ -295,7 +296,9 @@ describe("LeaderboardSection", () => {
       figure(entry),
       objectivesCount(entry),
     ])
-    const sorted = values.toSorted((a, b) => b[0]! - a[0]! || b[1]! - a[1]!)
+    const sorted = values.toSorted((a, b) =>
+      firstDifference(b[0]! - a[0]!, b[1]! - a[1]!)
+    )
     expect(values).toEqual(sorted)
     expect(screen.queryByTestId("leaderboard-sort")).toBeNull()
     expect(screen.queryByRole("button", { name: /sort/i })).toBeNull()

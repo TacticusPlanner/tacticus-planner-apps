@@ -241,8 +241,8 @@ async function renderPage(
   await seedGameCatalog({
     characters,
     mows,
-    ...(raidBosses ? { "raid-bosses": raidBosses } : {}),
-    ...(meta ? { "guild-raid-meta": meta } : {}),
+    ...(raidBosses === null ? {} : { "raid-bosses": raidBosses }),
+    ...(meta === undefined || meta === null ? {} : { "guild-raid-meta": meta }),
   })
   return render(
     <>

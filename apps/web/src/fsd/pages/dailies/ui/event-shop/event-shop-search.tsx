@@ -10,7 +10,11 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { eventOfferGroups } from "@/features/shops/event-planner"
 import type { EventOfferGroup } from "@/features/shops/event-planner"
-import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
+import {
+  anyNameIncludes,
+  normalizeSearchText,
+  firstDifference,
+} from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 import { useUnitSearchNames } from "@/shared/unit-name"
 
@@ -52,9 +56,11 @@ function useOfferSearch(
       normalizeSearchText(label, i18n.language).startsWith(needle) ? 0 : 1
     return groups
       .filter((entry) => anyNameIncludes(entry.names, needle, i18n.language))
-      .toSorted(
-        (a, b) =>
-          starts(a.label) - starts(b.label) || a.label.localeCompare(b.label)
+      .toSorted((a, b) =>
+        firstDifference(
+          starts(a.label) - starts(b.label),
+          a.label.localeCompare(b.label)
+        )
       )
       .slice(0, MAX_RESULTS)
   }, [groups, needle, i18n.language])

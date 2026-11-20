@@ -235,14 +235,16 @@ export function TeamsSection({
     })
   const suggestButton = (testId: string) => (
     <Button
-      aria-describedby={estimateInputs ? undefined : suggestReasonId}
+      aria-describedby={
+        estimateInputs === undefined ? suggestReasonId : undefined
+      }
       aria-label={
         suggestionCount === null
           ? undefined
           : t("suggestions.buttonWithCount", { count: suggestionCount })
       }
       data-testid={testId}
-      disabled={!estimateInputs}
+      disabled={estimateInputs === undefined}
       onClick={openSuggestions}
       size="sm"
       variant="outline"
@@ -297,14 +299,14 @@ export function TeamsSection({
         </h4>
         {state.kind === "ready" ? (
           <div className="flex flex-wrap items-center gap-2">
-            {estimateInputs ? null : (
+            {estimateInputs === undefined ? (
               <span
                 className="text-xs text-muted-foreground"
                 id={suggestReasonId}
               >
                 {t("suggestions.needsEstimates")}
               </span>
-            )}
+            ) : null}
             {laneFull ? (
               <span
                 className="text-xs text-muted-foreground"
@@ -349,9 +351,9 @@ export function TeamsSection({
 
       {state.kind === "ready" && cards.length === 0 ? (
         <TeamsEmptyState laneId={laneId}>
-          {estimateInputs
-            ? suggestButton("legendary-event-suggest-teams-empty")
-            : null}
+          {estimateInputs === undefined
+            ? null
+            : suggestButton("legendary-event-suggest-teams-empty")}
         </TeamsEmptyState>
       ) : null}
 

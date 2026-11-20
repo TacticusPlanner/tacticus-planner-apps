@@ -133,7 +133,7 @@ describe("LaneOverviewFigures", () => {
     await renderFigures("alpha", { isMobile: true })
     const numbers = screen
       .getAllByTestId("roster-potential-column")
-      .map((column) => column.textContent?.trim())
+      .map((column) => column.textContent.trim())
 
     expect(numbers.slice(0, 4)).toEqual(["1", "", "", "4"])
   })

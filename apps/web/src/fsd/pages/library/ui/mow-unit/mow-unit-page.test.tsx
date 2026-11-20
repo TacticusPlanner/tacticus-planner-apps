@@ -62,7 +62,7 @@ vi.mock("@/shared/ability-text", async (importOriginal) => ({
         env.retries += 1
       },
       text: (id: string) =>
-        env.rules.ready || env.abilityText[id]
+        env.rules.ready || env.abilityText[id] !== undefined
           ? env.abilityText[id]
           : undefined,
     }
@@ -265,7 +265,7 @@ async function renderUnit(
       route: "/library/machines-of-war/:entityId",
       // The harness types entries as paths; the memory router also takes a location with state.
       initialEntries: [entry as unknown as string],
-      auth: player ? { authenticated: true } : undefined,
+      auth: player === undefined ? undefined : { authenticated: true },
     }
   )
   if (catalog?.costsSynced !== false) {
@@ -279,7 +279,7 @@ async function renderUnit(
     expect(queryClient.isFetching({ queryKey: ["local", "catalog"] })).toBe(0)
   )
   await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
-  if (player && player !== "pending") {
+  if (player !== undefined && player !== "pending") {
     // The player's reads have settled once the header states ownership either way.
     await waitFor(() =>
       expect(

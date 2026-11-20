@@ -225,7 +225,7 @@ export default defineConfig([
   },
   {
     // Tier 3 slices that reached zero, held at error until the last slice promotes the rules.
-    files: ["src/fsd/features/**/*.{ts,tsx}"],
+    files: ["src/fsd/features/**/*.{ts,tsx}", "src/fsd/pages/**/*.{ts,tsx}"],
     rules: {
       "@typescript-eslint/strict-boolean-expressions": [
         "error",

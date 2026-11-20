@@ -103,7 +103,7 @@ export function EventTrackEditor({
       {empty ? null : (
         <Progress
           value={
-            track.completion.total
+            track.completion.total > 0
               ? (track.completion.done / track.completion.total) * 100
               : 0
           }

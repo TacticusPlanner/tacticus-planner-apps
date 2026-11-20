@@ -369,7 +369,7 @@ export function HrePage() {
     running && isMobile ? (
       <PaceSummary
         onDetails={() => {
-          const reduced = window.matchMedia?.(
+          const reduced = window.matchMedia(
             "(prefers-reduced-motion: reduce)"
           ).matches
           paceRef.current?.scrollIntoView({

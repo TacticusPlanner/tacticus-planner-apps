@@ -70,7 +70,8 @@ export function slotViews(controller: EventShopController): SlotView[] {
     const freeQty =
       [...slot.variants, ...plannedVariants].find(
         (variant) =>
-          variant.reward.type === offer.rewardType && variant.freeOffer
+          variant.reward.type === offer.rewardType &&
+          variant.freeOffer !== undefined
       )?.freeOffer?.qty ?? 0
     const freebie = dailyFreebie(controller.event, slot, offer.rewardType)
     return [

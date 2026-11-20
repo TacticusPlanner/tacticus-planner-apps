@@ -288,7 +288,7 @@ export function RaidBossDetail({
         </div>
 
         <div className="flex flex-col gap-4">
-          {unit.weapons?.length ? (
+          {unit.weapons && unit.weapons.length > 0 ? (
             <div>
               <h3 className="mb-2 text-sm font-semibold">
                 {t("raidBosses.weapons")}
@@ -364,7 +364,9 @@ export function RaidBossDetail({
               {t("raidBosses.noModifiers")}
             </p>
           )
-        ) : modifierContext.primes.some((prime) => prime.modifiers.length) ? (
+        ) : modifierContext.primes.some(
+            (prime) => prime.modifiers.length > 0
+          ) ? (
           <ul className="flex flex-col gap-4">
             {modifierContext.primes.map((prime) => (
               <li

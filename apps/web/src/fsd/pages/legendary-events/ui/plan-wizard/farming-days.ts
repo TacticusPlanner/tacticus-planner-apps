@@ -311,7 +311,8 @@ function estimateChain(
   )
   const goals: GoalNeed[] = []
   const shardEntries = new Map<EstimateResourceId, EstimateUpgrade>()
-  let blocked = false
+  // Set inside the forEach below, which TypeScript's narrowing does not follow.
+  let blocked = false as boolean
 
   details.forEach((detail, priority) => {
     const needParams = {
@@ -368,7 +369,7 @@ function estimateChain(
       referenceDate,
     })
     if (mythicShards > 0 && !acquisition.mythicShardNeed) {
-      const alliance = characterView.alliance ?? "Imperial"
+      const alliance = characterView.alliance
       const progress =
         inputs.onslaughtProgress &&
         progressForAlliance(inputs.onslaughtProgress, alliance)
