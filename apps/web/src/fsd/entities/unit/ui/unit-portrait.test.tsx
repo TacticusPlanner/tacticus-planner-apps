@@ -37,7 +37,8 @@ describe("UnitPortrait", () => {
     const portrait = screen.getByTestId("unit-portrait")
     expect(portrait).toHaveAttribute("data-greyed", "true")
     expect(portrait).toHaveClass("border-dashed", "grayscale")
-    expect(portrait.style.borderColor).toBe("")
+    // The dashed ring keeps the rarity colour, so a locked unit still shows its rarity.
+    expect(portrait.style.borderColor).not.toBe("")
   })
 
   it("names the unit when given alt text", () => {
