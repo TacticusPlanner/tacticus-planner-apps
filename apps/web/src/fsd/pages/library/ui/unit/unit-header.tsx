@@ -86,14 +86,14 @@ export function UnitHeader({
           size={isMobile ? "lg" : "hero"}
         />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <h1
+          <h2
             className={cn(
               "font-heading leading-tight font-bold",
               isMobile ? "text-2xl" : "text-4xl"
             )}
           >
             {name}
-          </h1>
+          </h2>
           <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1 rounded-sm bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
               <EntityIcon size="inline" src={factionIcon(factionId)} alt="" />

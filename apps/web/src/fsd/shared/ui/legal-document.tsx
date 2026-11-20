@@ -38,6 +38,7 @@ export function LegalDocument({
   return (
     <article className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-12 md:px-6 md:py-16">
       <header className="flex flex-col gap-3">
+        {/* eslint-disable-next-line no-restricted-syntax -- Privacy and Terms run outside the app shell. */}
         <h1 className="font-heading text-3xl font-semibold tracking-tight md:text-4xl">
           {title}
         </h1>

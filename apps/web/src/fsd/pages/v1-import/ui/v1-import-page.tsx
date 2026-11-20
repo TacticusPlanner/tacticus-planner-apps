@@ -43,9 +43,9 @@ export function V1ImportPage() {
           <ArrowLeft />
         </Button>
         <div>
-          <h1 className="font-heading text-xl font-medium">
+          <h2 className="font-heading text-xl font-medium">
             {t("goals.v1Import.title")}
-          </h1>
+          </h2>
           <p className="text-sm text-muted-foreground">
             {t("goals.v1Import.description")}
           </p>

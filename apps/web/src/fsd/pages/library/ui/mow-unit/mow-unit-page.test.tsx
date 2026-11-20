@@ -318,9 +318,9 @@ describe("MowUnitPage", () => {
 
   it("shows the MoW's details, not the placeholder", async () => {
     await renderUnit("/library/machines-of-war/ultraDreadnought")
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Galatian"
-    )
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Galatian" })
+    ).toBeInTheDocument()
     expect(screen.getByTestId("unit-tab-details")).toHaveAttribute(
       "aria-selected",
       "true"
@@ -466,9 +466,9 @@ describe("MowUnitPage", () => {
     env.abilityText = {}
     env.rules = { ready: false, failed: false }
     await renderUnit("/library/machines-of-war/ultraDreadnought")
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Galatian"
-    )
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Galatian" })
+    ).toBeInTheDocument()
     expect(env.abilityIds).toEqual([
       "DutyEternal",
       "MacroPlasmaIncinerator",

@@ -32,9 +32,9 @@ export function UiKitPage({ headerAction }: UiKitPageProps) {
             {t("app.name")}
           </p>
           <div className="flex max-w-4xl flex-col gap-3">
-            <h1 className="text-3xl font-semibold tracking-tight">
+            <h2 className="text-3xl font-semibold tracking-tight">
               {t("uiKit.title")}
-            </h1>
+            </h2>
             <p className="text-muted-foreground">{t("uiKit.subtitle")}</p>
           </div>
         </div>

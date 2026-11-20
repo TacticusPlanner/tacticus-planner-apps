@@ -42,6 +42,7 @@ export function RouteErrorBoundary() {
       role="alert"
     >
       <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-lg border bg-card p-8 text-center shadow-lg">
+        {/* eslint-disable-next-line no-restricted-syntax -- The error screen replaces the app shell, so it has no shell title. */}
         <h1 className="text-lg font-semibold">{t("appError.title")}</h1>
         <p className="text-sm text-muted-foreground">
           {t("appError.description")}

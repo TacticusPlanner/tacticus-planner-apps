@@ -1132,9 +1132,9 @@ describe("CharacterUnitPage", () => {
     requestedNamespaces.length = 0
     const release = holdNamespaceLoads()
     await renderUnit("/library/characters/ultraTigurius")
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Tigurius"
-    )
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Tigurius" })
+    ).toBeInTheDocument()
     expect(
       screen.getByTestId("unit-ability-active-text-loading")
     ).toHaveTextContent("Loading rules text…")
