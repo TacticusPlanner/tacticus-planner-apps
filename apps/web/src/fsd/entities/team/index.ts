@@ -8,7 +8,6 @@ export {
 } from "./model/types"
 export {
   EXCLUSIVE_MODES,
-  EXCLUSIVE_UNIT_MODES,
   SIZE_LIMITED_MODES,
   TEAM_LIMITS,
   TEAM_MODES,
@@ -27,7 +26,7 @@ export {
 export {
   isTeamLimitReached,
   isTeamNameTaken,
-  staleTeam,
+  staleRevision,
   staleTeamOrder,
   teamRulesBroken,
 } from "./model/team-errors"

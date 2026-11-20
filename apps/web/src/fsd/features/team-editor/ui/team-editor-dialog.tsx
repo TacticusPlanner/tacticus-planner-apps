@@ -24,7 +24,7 @@ import {
   evaluateTeamRules,
   isTeamLimitReached,
   isTeamNameTaken,
-  staleTeam,
+  staleRevision,
   teamRulesBroken,
   useCreateTeam,
   useTeamModeLabel,
@@ -522,9 +522,9 @@ export function TeamEditorDialog({
       toast.success(t("editor.saved", { name: saved.name }))
       onClose()
     } catch (error) {
-      const current = staleTeam(error)
-      if (current) {
-        setRevision(current.revision)
+      const current = staleRevision(error)
+      if (current !== null) {
+        setRevision(current)
         setMessage({ kind: "stale" })
       } else if (isTeamNameTaken(error)) {
         setNameTaken(true)

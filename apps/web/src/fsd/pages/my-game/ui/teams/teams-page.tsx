@@ -433,7 +433,7 @@ export function TeamsPage() {
       <div className="flex flex-col gap-6">
         {groupTeamsByMode(listed).map((section) => (
           <TeamsModeSection
-            allTeams={teams}
+            shared={shared}
             key={section.mode ?? "none"}
             mode={section.mode}
             teams={section.teams}

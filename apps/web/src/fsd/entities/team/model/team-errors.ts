@@ -64,6 +64,15 @@ export function staleTeam(error: unknown): Team | null {
   return isTeam(current) ? current : null
 }
 
+/** The team's current revision from a stale update (409 `teamRevisionStale`), else null. Read even when the rest
+ *  of `current` is incomplete, so the editor's next save is based on it rather than failing as stale again. */
+export function staleRevision(error: unknown): number | null {
+  const current = apiIssue(error, teamIssues.revisionStale)?.current
+  return isRecord(current) && typeof current.revision === "number"
+    ? current.revision
+    : null
+}
+
 /** The current list when a reorder was stale (409 `teamOrderStale`), else null, also when any team in it is
  *  incomplete. */
 export function staleTeamOrder(error: unknown): TeamList | null {

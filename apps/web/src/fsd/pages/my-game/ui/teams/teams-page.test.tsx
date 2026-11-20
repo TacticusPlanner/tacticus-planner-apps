@@ -542,6 +542,30 @@ describe("TeamsPage", () => {
         "2 units shared"
       )
     })
+
+    it("notes a unit a section's team shares through another Guild War mode, as its chip does", async () => {
+      window.localStorage.removeItem(TEAMS_GROUP_BY_STORAGE_KEY)
+      api.list.mockResolvedValue(
+        list(
+          team("A", {
+            modes: ["warOffense", "warDefense"],
+            characterIds: ["ultraCalgar", "ultraTitus", "ultraApothecary"],
+          }),
+          team("B", {
+            modes: ["warDefense"],
+            characterIds: ["ultraCalgar", "bloodDante", "bloodMephiston"],
+          })
+        )
+      )
+      await renderPage()
+      const offense = (await screen.findAllByTestId("teams-section")).find(
+        (section) => section.dataset.mode === "warOffense"
+      )
+      expect(offense).toBeDefined()
+      expect(
+        within(offense!).getByTestId("teams-section-shared")
+      ).toHaveTextContent("Calgar in 2 teams")
+    })
   })
 
   describe("reorder", () => {

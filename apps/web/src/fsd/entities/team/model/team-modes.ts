@@ -58,10 +58,7 @@ export const SIZE_LIMITED_MODES: readonly TeamMode[] = [
  * Modes where a unit can be in only one team: Guild War offense and defense, each on its own. A
  * unit can be in an offense team and a defense team, and in any number of teams of other modes.
  */
-export const EXCLUSIVE_UNIT_MODES: readonly TeamMode[] = [
-  "warOffense",
-  "warDefense",
-]
+const EXCLUSIVE_UNIT_MODES: readonly TeamMode[] = ["warOffense", "warDefense"]
 
 /** Whether two teams' mode lists put a shared unit in conflict: a Guild War mode both have. */
 export function unitModesClash(

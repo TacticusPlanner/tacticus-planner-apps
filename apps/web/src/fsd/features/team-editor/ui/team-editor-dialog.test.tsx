@@ -901,6 +901,32 @@ describe("TeamEditorDialog", () => {
       )
     })
 
+    it("takes the revision from a stale save whose team is incomplete", async () => {
+      api.update
+        .mockRejectedValueOnce(
+          new ApiError(409, "stale", {
+            issueCode: "teamRevisionStale",
+            // No notes: not a whole team, but its revision still applies.
+            current: { ...savedTeam(), revision: 7, notes: undefined },
+          })
+        )
+        .mockResolvedValue({ ...savedTeam(), name: "Renamed", revision: 8 })
+      const user = await readyDraft()
+      await user.click(save())
+      expect(
+        await screen.findByTestId("team-editor-message")
+      ).toHaveTextContent(
+        "This team changed on another device, so your save wasn't applied."
+      )
+      await user.click(save())
+      await waitFor(() =>
+        expect(api.update).toHaveBeenLastCalledWith(
+          "t1",
+          expect.objectContaining({ revision: 7 })
+        )
+      )
+    })
+
     it("shows a taken name under the name field", async () => {
       api.update.mockRejectedValue(
         new ApiError(400, "taken", { issueCode: "teamNameTaken" })

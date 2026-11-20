@@ -2,61 +2,54 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { AlertTriangle } from "lucide-react"
 
-import { EXCLUSIVE_UNIT_MODES, useTeamModeLabel } from "@/entities/team"
+import { useTeamModeLabel } from "@/entities/team"
 import type { Team, TeamMode } from "@/entities/team"
 import { useUnitName } from "@/shared/unit-name"
 
 /**
- * The section's units that two or more of all the teams with the mode have, and how many: the same
- * sharing the team chips show, whatever the filter hides, for the units this section shows.
+ * The units of the section's teams that are shared, as the team chips say (`sharedUnitsByTeam` over every
+ * team), and how many teams have each on a chip: the note and the chips cannot disagree.
  */
 function sharedUnits(
-  mode: TeamMode,
   sectionTeams: readonly Team[],
-  allTeams: readonly Team[]
+  shared: ReadonlyMap<string, readonly string[]>
 ) {
-  const inMode = allTeams.filter((team) => team.modes.includes(mode))
   const units = new Map<string, "Character" | "Mow">()
   for (const team of sectionTeams) {
-    for (const id of team.characterIds) units.set(id, "Character")
-    for (const id of team.mowIds) units.set(id, "Mow")
+    for (const id of shared.get(team.id) ?? []) {
+      units.set(id, team.mowIds.includes(id) ? "Mow" : "Character")
+    }
   }
-  return [...units]
-    .map(([id, kind]) => ({
-      id,
-      kind,
-      teams: inMode.filter(
-        (team) => team.characterIds.includes(id) || team.mowIds.includes(id)
-      ).length,
-    }))
-    .filter((unit) => unit.teams > 1)
+  const flagged = [...shared.values()]
+  return [...units].map(([id, kind]) => ({
+    id,
+    kind,
+    teams: flagged.filter((ids) => ids.includes(id)).length,
+  }))
 }
 
 /**
  * A mode's section when the page is grouped by mode (handoff 5.5): the mode, its team count and,
- * when one of its units is in two teams of a Guild War mode, an amber note naming it. A null mode
- * is the section of teams with none.
+ * when one of its teams has a shared unit (a unit in another team of a Guild War mode it shares),
+ * an amber note naming it. A null mode is the section of teams with none.
  */
 export function TeamsModeSection({
   mode,
   teams,
-  allTeams,
+  shared: sharedByTeam,
   children,
 }: {
   mode: TeamMode | null
   teams: readonly Team[]
-  /** Every team, so a unit shared with a filtered-out team is still flagged, as on its chips. */
-  allTeams: readonly Team[]
+  /** Each team's shared units over every team (the chips' `sharedUnitsByTeam`), filtered out or not. */
+  shared: ReadonlyMap<string, readonly string[]>
   children: ReactNode
 }) {
   const { t } = useTranslation("teams")
   const modeLabel = useTeamModeLabel()
   const unitName = useUnitName()
   // Only Guild War sections: elsewhere a unit can be in any number of teams.
-  const shared =
-    mode !== null && EXCLUSIVE_UNIT_MODES.includes(mode)
-      ? sharedUnits(mode, teams, allTeams)
-      : []
+  const shared = sharedUnits(teams, sharedByTeam)
   const [first] = shared
   const names = shared.map((unit) => unitName(unit.kind, unit.id)).join(", ")
   const headingId = `teams-section-${mode ?? "none"}`
