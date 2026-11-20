@@ -21,11 +21,12 @@ export function createOrbGoalNeed(params: {
   alliance: string | undefined
   orbsByType: Partial<Record<Rarity, number>>
 }): OrbGoalNeed | null {
-  if (params.priority === undefined || !params.alliance) return null
+  const { alliance } = params
+  if (params.priority === undefined || !alliance) return null
   const needs = (Object.entries(params.orbsByType) as [Rarity, number][])
     .filter(([, count]) => count > 0)
     .map(([rarity, count]) => ({
-      id: orbResourceId(params.alliance!, rarity),
+      id: orbResourceId(alliance, rarity),
       count,
     }))
   return needs.length > 0

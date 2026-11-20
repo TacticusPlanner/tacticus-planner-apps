@@ -3,7 +3,7 @@ import type { Progression, Rank } from "@workspace/game-domain"
 import { withSupport } from "@/entities/legendary-event"
 
 import type { IncursionBattle, IncursionTier } from "./incursions.model"
-import { firstDifference } from "@/shared/lib"
+import { firstDifference, required } from "@/shared/lib"
 
 /** Heroes a run brings (the MoW comes on top). */
 const INCURSION_TEAM_SIZE = 5
@@ -158,7 +158,8 @@ export function estimateTierRuns(
     let hp = 1
     const start = at
     while (at < battles) {
-      const need = path[at]!.power / ENEMY_POWER_DIVISOR
+      const need =
+        required(path[at], `battle ${at}`).power / ENEMY_POWER_DIVISOR
       if (teamPower <= 0 || teamPower * hp < need) break
       const cost =
         ((HP_LOSS_SHARE * need) / teamPower) *

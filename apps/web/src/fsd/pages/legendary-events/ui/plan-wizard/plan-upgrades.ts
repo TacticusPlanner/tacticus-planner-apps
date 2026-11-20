@@ -13,6 +13,7 @@ import type {
 import type { PlanEvaluation, PlanEvaluator } from "./plan-evaluator"
 import { planRuns } from "./plan-inputs"
 import type { ChosenUpgrade, PlanInputs } from "./plan-inputs"
+import { required } from "@/shared/lib"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -22,6 +23,20 @@ const MAX_PLAN_UPGRADES = 12
 const MAX_CHAIN_STEPS = 3
 /** Steps all of a unit's recommendations hold at most. */
 const MAX_STEPS_PER_UNIT = 6
+
+/** A run's projected roster; empty when there is no run or no roster for it. */
+function rosterAt(
+  evaluation: PlanEvaluation,
+  run: LegendaryEventRun | undefined
+): ReadonlyMap<string, LegendaryEventRosterUnit> {
+  return (
+    (run === undefined ? undefined : evaluation.rosters.get(run)) ?? new Map()
+  )
+}
+
+/** A chain's final step: chains always hold at least one. */
+const lastStep = (steps: readonly UpgradeStep[]) =>
+  required(steps.at(-1), "an upgrade chain's last step")
 /** Owned and locked units per lane objective the candidates take beyond the team members. */
 const OWNED_PER_OBJECTIVE = 4
 const LOCKED_PER_OBJECTIVE = 2
@@ -161,13 +176,14 @@ export function* recommendUpgrades(
   const stepsByUnit = new Map<string, UpgradeStep[]>()
   let current = baseline
   let queueDays = 0
+  const lastRun = runs.at(-1)
 
   while (
     recommendations.length < cap &&
     current.ceiling !== null &&
     current.ceiling < input.targetPoints
   ) {
-    const lastRoster = current.rosters.get(runs.at(-1)!) ?? new Map()
+    const lastRoster = rosterAt(current, lastRun)
     const unitState = (unitId: string) =>
       stepsByUnit.get(unitId)?.at(-1)?.unit ??
       inputs.roster.find((unit) => unit.unitId === unitId)
@@ -211,7 +227,7 @@ export function* recommendUpgrades(
     if (!best) break
     chosen.push({
       unitId: best.unitId,
-      step: best.steps.at(-1)!,
+      step: lastStep(best.steps),
       readyMs: best.readyMs,
     })
     stepsByUnit.set(best.unitId, [
@@ -268,7 +284,7 @@ function scoreChain({
   if (!firstRun) return null
   const evaluation = input.evaluator.evaluate([
     ...chosen,
-    { unitId, step: steps.at(-1)!, readyMs },
+    { unitId, step: lastStep(steps), readyMs },
   ])
   const gain = (evaluation.ceiling ?? 0) - (current.ceiling ?? 0)
   if (gain <= 0) return null
@@ -305,7 +321,8 @@ function stepChains(
     )) {
       const next = [...path, step]
       const key = `${step.unit.progressionIndex}:${step.unit.rank}`
-      if (!chains.has(key) || chains.get(key)!.length > next.length) {
+      const existing = chains.get(key)
+      if (!existing || existing.length > next.length) {
         chains.set(key, next)
       }
       walk(step.unit, next)
@@ -358,7 +375,7 @@ export function chosenFrom(
     queueDays += recommendation.farmingDays
     return {
       unitId: recommendation.unitId,
-      step: recommendation.steps.at(-1)!,
+      step: lastStep(recommendation.steps),
       readyMs: nowMs + queueDays * DAY_MS,
     }
   })

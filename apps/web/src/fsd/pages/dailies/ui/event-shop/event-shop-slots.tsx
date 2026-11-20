@@ -249,12 +249,13 @@ function DraftAllianceLine({
 function CardCartRow({
   controller,
   view,
+  entry,
 }: {
   controller: EventShopController
   view: SlotView
+  entry: NonNullable<SlotView["entry"]>
 }) {
   const { t } = useTranslation("eventShops")
-  const entry = view.entry!
   const { quantity, purchasedQuantity } = entry.entry
   const allBought = purchasedQuantity >= quantity
   const disabled = !controller.cartReady
@@ -564,7 +565,7 @@ function SlotCard({
         </ul>
       ) : null}
       {entry ? (
-        <CardCartRow controller={controller} view={view} />
+        <CardCartRow controller={controller} view={view} entry={entry} />
       ) : view.freebie && !unsyncedOptions ? (
         // Nothing to plan: the freebie is claimed in game every day.
         <p className="mt-auto flex min-h-7 items-center justify-center text-center text-xs text-muted-foreground">

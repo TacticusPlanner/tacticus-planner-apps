@@ -1,4 +1,5 @@
 import {
+  lastProgression,
   minProgressionForRank,
   progressionIndex,
   progressionOrder,
@@ -18,13 +19,13 @@ type PlayerUnit = {
 }
 
 function minimumProgressionForAbilityLevel(level: number): Progression {
-  const rarity =
-    abilityLevelsByRarity.find((entry) => entry.level >= level)?.rarity ??
-    abilityLevelsByRarity.at(-1)!.rarity
+  const tier =
+    abilityLevelsByRarity.find((entry) => entry.level >= level) ??
+    abilityLevelsByRarity.at(-1)
   return (
     progressionOrder.find(
-      (progression) => progressionRarity(progression) === rarity
-    ) ?? progressionOrder.at(-1)!
+      (progression) => progressionRarity(progression) === tier?.rarity
+    ) ?? lastProgression
   )
 }
 

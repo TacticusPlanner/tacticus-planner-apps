@@ -127,9 +127,10 @@ export function buildEventBoardTable(
         traits: unit.traits,
         owned,
         satisfied: new Set(objectivesSatisfied(unit, lane)),
-        power: owned
-          ? (teamPower([unit.id], rosterById!, powerContext) ?? 0)
-          : 0,
+        power:
+          rosterById && owned
+            ? (teamPower([unit.id], rosterById, powerContext) ?? 0)
+            : 0,
         name: nameOf(unit.id),
       }
     })

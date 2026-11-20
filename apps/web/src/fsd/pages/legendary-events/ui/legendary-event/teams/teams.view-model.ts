@@ -286,16 +286,16 @@ export function moveTargets(
   id: string
 ): { up: string[] | null; down: string[] | null } {
   const index = ids.indexOf(id)
+  // Null past either end (and for an id not in the list).
   const swap = (other: number) => {
+    const otherId = ids[other]
+    if (index < 0 || otherId === undefined) return null
     const next = [...ids]
-    next[index] = ids[other]!
+    next[index] = otherId
     next[other] = id
     return next
   }
-  return {
-    up: index > 0 ? swap(index - 1) : null,
-    down: index >= 0 && index < ids.length - 1 ? swap(index + 1) : null,
-  }
+  return { up: swap(index - 1), down: swap(index + 1) }
 }
 
 /** The editor picker's Goals Preview for one lane (Stage 6): the page's switch value, the preview

@@ -6,6 +6,7 @@ import type { QuestBattle } from "./quest-battles"
 import { fullClearPoints, MAX_MEDALS, scoreQuest } from "./quest-score"
 import type { QuestBattleEntry, QuestScore, QuestScoring } from "./quest-score"
 import type { QuestObjectiveBadge, QuestTeam } from "./quest-team"
+import { required } from "@/shared/lib"
 
 /** A clear under this margin is "Close" (design D3); tune with calibration. */
 const MARGINAL_MARGIN = 0.15
@@ -267,7 +268,7 @@ export function calibrateQuestPowerRatio(
   const counts = candidates.map(contradictions)
   const fewest = Math.min(...counts)
   const best = candidates.filter((_, index) => counts[index] === fewest)
-  const low = best[0]!
-  const high = best.at(-1)!
+  const low = required(best[0], "the lowest best ratio")
+  const high = required(best.at(-1), "the highest best ratio")
   return (low + high) / 2
 }

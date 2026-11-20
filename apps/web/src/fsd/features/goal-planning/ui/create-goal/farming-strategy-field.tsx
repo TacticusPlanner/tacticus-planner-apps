@@ -174,10 +174,14 @@ function renderStageChain(
   context: "rank" | "ability",
   chain: number[]
 ): ReactNode[] {
+  const first = chain[0]
+  const last = chain.at(-1)
   const shown: (number | null)[] =
-    chain.length <= MAX_VISIBLE_STAGES
+    chain.length <= MAX_VISIBLE_STAGES ||
+    first === undefined ||
+    last === undefined
       ? chain
-      : [chain[0]!, null, chain[chain.length - 1]!]
+      : [first, null, last]
 
   return shown.flatMap((point, index) => {
     const nodes: ReactNode[] = []

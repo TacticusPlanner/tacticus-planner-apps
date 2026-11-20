@@ -149,8 +149,12 @@ export function useGoalActions() {
 
   /** One toast for a rejected transition, naming the acting goal: an occupied slot names the goal holding
    *  it (from `current`), a stale order offers a reload, anything else shows the server's text. */
-  const reportStatusFailure = (actingGoalId: string, error: unknown) => {
-    const acting = cachedGoal(actingGoalId)
+  const reportStatusFailure = (
+    actingGoalId: string | undefined,
+    error: unknown
+  ) => {
+    const acting =
+      actingGoalId === undefined ? undefined : cachedGoal(actingGoalId)
     const slot = goalSlotConflict(error)
     const order = goalOrderConflict(error)
     const reason = slot
@@ -254,7 +258,7 @@ export function useGoalActions() {
                 patchGoal(target.goalId, target.previousStatus)
               )
             }
-            reportStatusFailure(goalIds[0]!, error)
+            reportStatusFailure(goalIds[0], error)
           }
         )
       },
@@ -399,10 +403,11 @@ export function useGoalActions() {
       )
     if (failed.length === 0) {
       if (added.size === 0) return
+      const [onlyProject] = addedTo
       toast.success(
-        addedTo.length === 1
+        addedTo.length === 1 && onlyProject
           ? t("goals.toasts.goalsAddedToProject", {
-              project: addedTo[0]!.name,
+              project: onlyProject.name,
               count: added.size,
             })
           : t("goals.toasts.goalsAddedToProjects", {

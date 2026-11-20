@@ -7,6 +7,7 @@ import type {
   LegendaryEventLaneRecord,
   LegendaryEventRun,
 } from "@/entities/legendary-event"
+import { required } from "@/shared/lib"
 
 // Ported from V1 `TokenEstimationService` (`computeNextToken`, `computeAllTokenUsage`,
 // `computeNextBestTokenInTrack`, incremental restrictions and points) onto V2's lane cells (design
@@ -306,11 +307,18 @@ export function planTokens({
       slot = runSlot.end
       continue
     }
-    const state = states[chosen.laneOrder]!
+    const state = required(states[chosen.laneOrder], "the chosen lane")
+    const cleared = required(
+      state.cleared[chosen.battleIndex],
+      "the chosen battle's clears"
+    )
     for (const id of chosen.clearedIds) {
-      state.cleared[chosen.battleIndex]![id] = true
+      cleared[id] = true
     }
-    const battle = state.lane.model.battles[chosen.battleIndex]!
+    const battle = required(
+      state.lane.model.battles[chosen.battleIndex],
+      "the chosen battle"
+    )
     state.killScore[chosen.battleIndex] = battle.battlePoints
     state.highScore[chosen.battleIndex] = battle.battlePoints
     runningPoints += chosen.points
@@ -449,7 +457,7 @@ export function nextToken(
   if (tokens.length === 0) return null
   const found = tokens.findIndex((_, index) => playableNext(tokens, index))
   const index = found === -1 ? 0 : found
-  const token = tokens[index]!
+  const token = required(tokens[index], "the next token")
   return {
     token,
     index,

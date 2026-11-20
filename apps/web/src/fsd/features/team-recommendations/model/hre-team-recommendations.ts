@@ -2,7 +2,7 @@ import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 import type { Alliance, UnitId } from "@workspace/game-domain"
 
 import type { HreTeamPlan, HreTeamRule } from "@/entities/hre-mission"
-import { characterDamageTypes } from "@/shared/lib"
+import { characterDamageTypes, required } from "@/shared/lib"
 import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { mapRosterCharacter } from "./roster-character"
@@ -121,11 +121,10 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
   const allianceOf = (character: TeamRosterCharacter) =>
     input.catalog.get(character.unitId)?.alliance
   const featured = input.featuredCharacterId as UnitId | null
-  const deployable = plan.factions
+  const factions = plan.factions
+  const deployable = factions
     ? all.filter((character) =>
-        plan.factions!.includes(
-          input.catalog.get(character.unitId)?.faction ?? ""
-        )
+        factions.includes(input.catalog.get(character.unitId)?.faction ?? "")
       )
     : all
   let roster = deployable
@@ -217,9 +216,10 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     leadWithPools: pools.length > 0,
     unitPower: input.unitPower,
   })
-  const team = recommendations.categories.find(
-    (category) => category.id === "plan"
-  )!
+  const team = required(
+    recommendations.categories.find((category) => category.id === "plan"),
+    "the plan team"
+  )
   const hseIds = hseUnitIds(hse)
   return {
     status: "ready",
@@ -294,10 +294,11 @@ function largestAlliance(
     scores.set(alliance, (scores.get(alliance) ?? 0) + score)
   }
   let best: string | null = null
+  let bestScore = -1
   for (const [alliance, score] of scores) {
-    const bestScore = best === null ? -1 : scores.get(best)!
     if (score > bestScore || (score === bestScore && alliance === preferred)) {
       best = alliance
+      bestScore = score
     }
   }
   return best

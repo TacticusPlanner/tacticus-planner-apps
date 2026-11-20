@@ -84,7 +84,8 @@ export function EventShopPage() {
   }
 
   const events = read.data
-  if (events.length === 0) {
+  const [firstEvent] = events
+  if (!firstEvent) {
     return (
       <div
         className="flex flex-col gap-1 py-12 text-center"
@@ -101,7 +102,7 @@ export function EventShopPage() {
   const event = events.find((candidate) => candidate.id === eventId)
   if (!event) {
     const fallback =
-      defaultEventId(events.filter(isDatedEventShop), now) ?? events[0]!.id
+      defaultEventId(events.filter(isDatedEventShop), now) ?? firstEvent.id
     return (
       <Navigate
         replace

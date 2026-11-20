@@ -534,17 +534,19 @@ function TokenMarkerList({
       {text}
     </li>
   )
+  const first = milestones[0]
+  const last = milestones.at(-1)
   return (
     <ul
       className="flex flex-wrap gap-x-3 text-xs font-medium"
       data-testid="token-plan-marker"
     >
-      {milestones.length > 1
+      {milestones.length > 1 && first && last
         ? milestoneItem(
             "milestones",
             t("tokenPlan.plan.milestones", {
-              first: milestones[0]!.milestone,
-              last: milestones.at(-1)!.milestone,
+              first: first.milestone,
+              last: last.milestone,
               currency: number.format(
                 milestones.reduce((sum, entry) => sum + entry.payout, 0)
               ),

@@ -22,6 +22,7 @@ import type {
 import type { PlannedToken } from "./token-plan"
 import { splitPlanByRun } from "./token-runs"
 import type { RunSupply, RunSupplyState } from "./token-supply"
+import { required } from "@/shared/lib"
 
 // Ported from V1 `LeRoundOutcomeForecastService.computeLeRoundForecasts` and the per-token
 // milestone markers of `TokenEstimationService.getTokenDisplays` (design D6), reading the event's
@@ -226,7 +227,8 @@ export function forecastRuns({
       used = tokensByRun.get(runSupply.run) ?? 0
       for (let index = tokenIndex; index < tokenIndex + used; index++) {
         const before = points
-        points += tokens[index]!.points
+        const marker = required(markers[index], `token ${index}'s marker`)
+        points += required(tokens[index], `token ${index}`).points
         const crossed = milestones.filter(
           (entry) =>
             entry.cumulativePoints > before && entry.cumulativePoints <= points
@@ -234,12 +236,12 @@ export function forecastRuns({
         if (crossed.length === 0) continue
         for (const entry of crossed) {
           currency += entry.engramPayout + bonus
-          markers[index]!.milestones.push({
+          marker.milestones.push({
             milestone: entry.milestone,
             payout: entry.engramPayout + bonus,
           })
         }
-        markers[index]!.steps.push(...openChests().steps)
+        marker.steps.push(...openChests().steps)
       }
       tokenIndex += used
     }

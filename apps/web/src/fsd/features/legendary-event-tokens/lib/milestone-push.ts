@@ -9,6 +9,7 @@ import type { ForecastInput, RunForecast } from "./run-forecast"
 import { planTokens } from "./token-plan"
 import type { PlannedToken, TokenPlanInput, TokenPlanLane } from "./token-plan"
 import { splitPlanByRun } from "./token-runs"
+import { required } from "@/shared/lib"
 
 // "Close the gap": when the current run's forecast falls short of the next reward step, which of the
 // battles the plan leaves out could close it. Every push is one token, ranked by the points it adds
@@ -233,20 +234,19 @@ export function milestoneGap(input: MilestoneGapInput): MilestoneGap | null {
     return null
   }
   const runOf = (forecast: typeof base.forecast) =>
-    forecast.runs.find((entry) => entry.run === run.run)!
+    required(
+      forecast.runs.find((entry) => entry.run === run.run),
+      `run ${run.run}'s forecast`
+    )
   const baseRunTokens = nowRunTokens(
     base.tokens,
     input.forecast,
     run.run,
     perSlot
   )
-  const lastIndex = base.tokens.indexOf(baseRunTokens.at(-1)!)
-  const pointsNeeded = pointsToNextStep(
-    input,
-    base.tokens,
-    run,
-    baseRunTokens.length > 0 ? lastIndex : -1
-  )
+  const lastRunToken = baseRunTokens.at(-1)
+  const lastIndex = lastRunToken ? base.tokens.indexOf(lastRunToken) : -1
+  const pointsNeeded = pointsToNextStep(input, base.tokens, run, lastIndex)
   if (pointsNeeded === null) return null
   const threshold = run.next.threshold
 

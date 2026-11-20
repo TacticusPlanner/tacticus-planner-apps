@@ -267,7 +267,7 @@ export function TeamsSection({
   const lastRunOf = (teamId: string) =>
     teamLastRunClearedBattle(teams.lastRunClears, teamId, laneId)
   const cardActions = (card: TeamCardViewModel): TeamCardActions => {
-    const moves = moveTargets(ids, card.id)
+    const { up, down } = moveTargets(ids, card.id)
     return {
       onEdit: () => openEditor(card.team),
       onDelete: () => setDeleting(card.team),
@@ -276,13 +276,9 @@ export function TeamsSection({
       onUseEstimate: (estimate) =>
         void actions.restoreEstimate(card.team, estimate),
       onMoveUp:
-        isMobile && moves.up
-          ? () => void actions.reorderLane(laneId, moves.up!)
-          : null,
+        isMobile && up ? () => void actions.reorderLane(laneId, up) : null,
       onMoveDown:
-        isMobile && moves.down
-          ? () => void actions.reorderLane(laneId, moves.down!)
-          : null,
+        isMobile && down ? () => void actions.reorderLane(laneId, down) : null,
     }
   }
 

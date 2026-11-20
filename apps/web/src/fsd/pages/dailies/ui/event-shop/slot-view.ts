@@ -49,7 +49,8 @@ export function slotViews(controller: EventShopController): SlotView[] {
     roster.lockContext ?? undefined
   return slots.flatMap((slot) => {
     const options = slot.offers
-    if (options.length === 0) return []
+    const [firstOption] = options
+    if (!firstOption) return []
     const ref: EntryRef = {
       week: selectedDay.week,
       day: selectedDay.dow,
@@ -66,7 +67,7 @@ export function slotViews(controller: EventShopController): SlotView[] {
     const offer =
       options.find((option) => option.rewardType === entry?.entry.rewardType) ??
       offerOf(plannedVariants) ??
-      options[0]!
+      firstOption
     const freeQty =
       [...slot.variants, ...plannedVariants].find(
         (variant) =>

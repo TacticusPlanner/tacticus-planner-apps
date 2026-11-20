@@ -11,6 +11,7 @@ import type {
 import type { TokenMissionsInput } from "./token-missions"
 import type { PlannedToken } from "./token-plan"
 import type { RunTokenSection } from "./token-runs"
+import { required } from "@/shared/lib"
 
 /** What one token adds to one open mission of its run. */
 export interface TokenMissionStep {
@@ -102,7 +103,7 @@ function playToken(
 ): Step[] {
   const steps: Step[] = []
   for (const [t, sequence] of sequences.entries()) {
-    const cursor = cursors[t]!
+    const cursor = required(cursors[t], `cursor of track ${t}`)
     const entry = sequence[cursor.at]
     if (!entry) continue
     const amount = entry.untracked ? null : amounts[entry.slot]
@@ -186,16 +187,16 @@ export function missionOrder(input: MissionOrderInput): MissionOrder {
         const { entry } = step
         if (!entry.untracked) {
           reached[entry.slot] = step.total
-          estimate[entry.slot] = estimate[entry.slot]! || step.estimate
+          estimate[entry.slot] = estimate[entry.slot] === true || step.estimate
           if (step.completes) doneAt[entry.slot] = index
         }
-        steps[index]!.push({
+        required(steps[index], `steps of token ${index}`).push({
           ref: entry.ref,
           total: step.total,
           gained: step.gained,
           needed: entry.needed,
           completes: step.completes,
-          estimate: entry.untracked ? true : estimate[entry.slot]!,
+          estimate: entry.untracked || estimate[entry.slot] === true,
         })
       }
     }
@@ -204,9 +205,10 @@ export function missionOrder(input: MissionOrderInput): MissionOrder {
       missions: measured.map((ref, m) => ({
         ref,
         needed: Math.max(1, ref.mission.count),
-        reached: reached[m]!,
-        doneAt: doneAt[m]!,
-        estimate: estimate[m]!,
+        reached: required(reached[m], `reached of mission ${m}`),
+        // Null until a token completes the mission.
+        doneAt: doneAt[m] ?? null,
+        estimate: required(estimate[m], `estimate of mission ${m}`),
       })),
       untracked: open.filter((entry) =>
         UNTRACKED_MISSION_KINDS.has(entry.mission.kind)
@@ -276,7 +278,8 @@ function orderSection(
   while (result.length < tokens.length) {
     let best: { lane: string; rate: number; order: number } | null = null
     for (const [lane, queue] of queues) {
-      if (queue.length === 0) continue
+      const head = queue[0]
+      if (head === undefined) continue
       const state = copy(cursors)
       let sum = 0
       let rate = 0
@@ -284,7 +287,7 @@ function orderSection(
         sum += valueOf(entry.token, state)
         rate = Math.max(rate, sum / (k + 1))
       }
-      const order = queue[0]!.order
+      const { order } = head
       if (
         !best ||
         rate > best.rate + 1e-9 ||
@@ -293,8 +296,10 @@ function orderSection(
         best = { lane, rate, order }
       }
     }
-    const queue = queues.get(best!.lane)!
-    const { token } = queue.shift()!
+    // Some queue still holds a token while fewer than all are placed.
+    const { lane } = required(best, "a lane with a token left")
+    const queue = required(queues.get(lane), `queue of lane ${lane}`)
+    const { token } = required(queue.shift(), `next token of lane ${lane}`)
     valueOf(token, cursors)
     result.push(token)
   }

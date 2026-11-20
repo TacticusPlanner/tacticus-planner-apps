@@ -12,7 +12,7 @@ import type {
   GoalNeed,
 } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
-import { firstDifference } from "@/shared/lib"
+import { firstDifference, required } from "@/shared/lib"
 
 /** One location of the Dailies > HSE farm list. */
 type EventFarmRow = {
@@ -290,11 +290,16 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
     ].toSorted(
       (a, b) => (priorityByGoal.get(a) ?? 0) - (priorityByGoal.get(b) ?? 0)
     )
-    const shown = useful.toSorted(
-      (a, b) =>
-        Math.min(...a.goalIds.map((id) => priorityByGoal.get(id) ?? Infinity)) -
-        Math.min(...b.goalIds.map((id) => priorityByGoal.get(id) ?? Infinity))
-    )[0]!
+    const shown = required(
+      useful.toSorted(
+        (a, b) =>
+          Math.min(
+            ...a.goalIds.map((id) => priorityByGoal.get(id) ?? Infinity)
+          ) -
+          Math.min(...b.goalIds.map((id) => priorityByGoal.get(id) ?? Infinity))
+      )[0],
+      "a useful drop"
+    )
     rows.push({
       battleId: candidate.battleId,
       energyCost: candidate.energyCost,

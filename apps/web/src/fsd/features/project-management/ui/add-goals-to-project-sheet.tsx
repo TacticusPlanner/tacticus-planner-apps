@@ -226,15 +226,18 @@ export function AddGoalsToProjectSheet({
     group === "type" ? firstSeen.toSorted(compareGoalTypes) : firstSeen
   const groups = groupKeys.map((key) => {
     const rows = visibleGoals.filter((goal) => groupKey(goal) === key)
+    const [first] = rows
     return {
       key,
       rows,
       heading:
-        group === "unit"
-          ? goalLabel(rows[0]!)
-          : group === "type"
-            ? goalTypeLabel(rows[0]!)
-            : null,
+        first === undefined
+          ? null
+          : group === "unit"
+            ? goalLabel(first)
+            : group === "type"
+              ? goalTypeLabel(first)
+              : null,
     }
   })
 

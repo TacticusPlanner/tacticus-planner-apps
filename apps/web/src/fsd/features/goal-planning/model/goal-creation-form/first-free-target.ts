@@ -11,6 +11,7 @@ import type { Progression, Rank } from "@workspace/game-domain"
 
 import { goalTargetKeyOf, useGoalsById } from "@/entities/goal"
 import type { GoalDetail, GoalKind } from "@/entities/goal"
+import { required } from "@/shared/lib"
 
 /** The target keys (`goalTargetKey`) in-flight goals of one unit already hold, per goal type. */
 export type TakenTargets = ReadonlyMap<GoalKind, ReadonlySet<string>>
@@ -21,32 +22,38 @@ const NONE: ReadonlySet<string> = new Set()
 
 /** The key a Rank target at a clean boundary (no additional target) has. */
 export const rankEndKey = (rank: Rank) =>
-  goalTargetKeyOf({
-    goalType: "Rank",
-    config: {
-      rank: {
-        start: 0,
-        startPointFive: false,
-        startAppliedUpgrades: 0,
-        end: rankIndex(rank),
-        endPointFive: false,
-        endAppliedUpgrades: 0,
+  required(
+    goalTargetKeyOf({
+      goalType: "Rank",
+      config: {
+        rank: {
+          start: 0,
+          startPointFive: false,
+          startAppliedUpgrades: 0,
+          end: rankIndex(rank),
+          endPointFive: false,
+          endAppliedUpgrades: 0,
+        },
       },
-    },
-  })!
+    }),
+    "a Rank target key"
+  )
 
 const abilityPairKey = (start: AbilityTargetPair, end: AbilityTargetPair) =>
-  goalTargetKeyOf({
-    goalType: "Ability",
-    config: {
-      ability: {
-        activeStart: start.active,
-        activeEnd: end.active,
-        passiveStart: start.passive,
-        passiveEnd: end.passive,
+  required(
+    goalTargetKeyOf({
+      goalType: "Ability",
+      config: {
+        ability: {
+          activeStart: start.active,
+          activeEnd: end.active,
+          passiveStart: start.passive,
+          passiveEnd: end.passive,
+        },
       },
-    },
-  })!
+    }),
+    "an Ability target key"
+  )
 
 function firstFree<T>(
   candidates: readonly T[],

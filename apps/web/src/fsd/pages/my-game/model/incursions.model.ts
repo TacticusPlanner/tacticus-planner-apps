@@ -181,8 +181,9 @@ export function orderIncursions(incursions: readonly Incursion[]): Incursion[] {
 export function enhancementSubject(
   enhancement: IncursionEnhancement
 ): string | undefined {
-  const at = enhancement.abilityId?.indexOf(":") ?? -1
-  return at >= 0 ? enhancement.abilityId!.slice(at + 1) : undefined
+  const { abilityId } = enhancement
+  const at = abilityId?.indexOf(":") ?? -1
+  return abilityId && at >= 0 ? abilityId.slice(at + 1) : undefined
 }
 
 /**

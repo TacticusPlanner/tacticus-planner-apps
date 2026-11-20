@@ -140,8 +140,9 @@ export function computeCampaignProgression(params: {
 
   const results: PlanCampaignProgression[] = []
   for (const [key, battles] of tracks) {
-    if (isCleared(key)) continue
-    const { campaignGroupId, type } = battles[0]!.battle
+    const [first] = battles
+    if (isCleared(key) || !first) continue
+    const { campaignGroupId, type } = first.battle
     const frontier = frontierOf(key) ?? 0
     const locked = new Map(
       battles

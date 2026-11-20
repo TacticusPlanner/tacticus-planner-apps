@@ -117,16 +117,19 @@ export function PlanDayStrip({
           : undefined
       }
     >
-      {visibleDays.map((day, index) => (
-        <PlanDayCard
-          key={day.day}
-          cells={cellsByDay[index]!}
-          day={day}
-          mounted={!canObserveCards || mountedDays.has(day.day)}
-          raids={raids}
-          selectedUnitId={selectedUnitId}
-        />
-      ))}
+      {visibleDays.map((day, index) => {
+        const cells = cellsByDay[index]
+        return cells ? (
+          <PlanDayCard
+            key={day.day}
+            cells={cells}
+            day={day}
+            mounted={!canObserveCards || mountedDays.has(day.day)}
+            raids={raids}
+            selectedUnitId={selectedUnitId}
+          />
+        ) : null
+      })}
       {!showAllDays && raids.planDays.length > PLAN_DAY_LIMIT ? (
         <div className="flex shrink-0 items-start">
           <Button variant="outline" onClick={onShowAll}>

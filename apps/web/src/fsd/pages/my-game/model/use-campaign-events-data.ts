@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { combineReadStates } from "@/shared/lib"
+import { combineReadStates, required } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 /**
@@ -27,8 +27,8 @@ export function useCampaignEventsData() {
       status,
       retry,
       data: {
-        definitions: definitions!,
-        battles: battles!,
+        definitions: required(definitions, "campaign definitions"),
+        battles: required(battles, "campaign battles"),
         synced: synced ?? undefined,
         characters: characters ?? undefined,
         liveProgress: liveProgress ?? undefined,

@@ -18,6 +18,7 @@ import {
   anyNameIncludes,
   normalizeSearchText,
   firstDifference,
+  required,
 } from "@/shared/lib"
 
 import {
@@ -344,8 +345,10 @@ export function buildCollectionView(
     }
   }
 
-  const groupsById = new Map<string, CollectionFactionGroup>()
-  const rowsByFaction = new Map<string, CollectionRow[]>()
+  const factions = new Map<
+    string,
+    { group: CollectionFactionGroup; rows: CollectionRow[] }
+  >()
   const totals = new Map<string, number>()
   let total = 0
   for (const row of rows) {
@@ -354,51 +357,56 @@ export function buildCollectionView(
     totals.set(row.factionId, (totals.get(row.factionId) ?? 0) + 1)
     // Hide unowned only hides units: the counts above still include them.
     if (effective.hideUnowned && row.unit.data.state !== "owned") continue
-    if (!groupsById.has(row.factionId)) {
-      groupsById.set(row.factionId, {
-        factionId: row.factionId,
-        factionName: labels.factionName(row.factionId),
-        alliance: row.alliance,
-        units: [],
-        owned: 0,
-        total: 0,
-      })
-      rowsByFaction.set(row.factionId, [])
+    let faction = factions.get(row.factionId)
+    if (!faction) {
+      faction = {
+        group: {
+          factionId: row.factionId,
+          factionName: labels.factionName(row.factionId),
+          alliance: row.alliance,
+          units: [],
+          owned: 0,
+          total: 0,
+        },
+        rows: [],
+      }
+      factions.set(row.factionId, faction)
     }
-    rowsByFaction.get(row.factionId)!.push(row)
+    faction.rows.push(row)
   }
 
   const compareNames = (a: string, b: string) =>
     a.localeCompare(b, labels.locale)
   const compareOwned = ownedComparator(query.sort)
-  const groups = [...groupsById.values()]
+  const groups = [...factions.values()]
     .toSorted((a, b) =>
       firstDifference(
-        allianceRank(a.alliance) - allianceRank(b.alliance),
-        compareNames(a.factionName, b.factionName)
+        allianceRank(a.group.alliance) - allianceRank(b.group.alliance),
+        compareNames(a.group.factionName, b.group.factionName)
       )
     )
-    .map((group) => {
-      const units = rowsByFaction
-        .get(group.factionId)!
+    .map(({ group, rows: factionRows }) => {
+      const units = factionRows
         .toSorted((a, b) => compareRows(a, b, compareOwned, compareNames))
         .map((row) => row.unit)
       return {
         ...group,
         units,
         owned: units.filter((unit) => unit.data.state === "owned").length,
-        total: totals.get(group.factionId)!,
+        total: required(totals.get(group.factionId), "faction total"),
       }
     })
 
   // The ungrouped order: the same comparator as within a faction, across every listed faction.
-  const units = [...rowsByFaction.values()]
-    .flat()
-    .toSorted((a, b) => compareRows(a, b, compareOwned, compareNames))
-    .map((row) => ({
+  const units = [...factions.values()]
+    .flatMap(({ group, rows: factionRows }) =>
+      factionRows.map((row) => ({ row, factionName: group.factionName }))
+    )
+    .toSorted((a, b) => compareRows(a.row, b.row, compareOwned, compareNames))
+    .map(({ row, factionName }) => ({
       unit: row.unit,
       factionId: row.factionId,
-      factionName: groupsById.get(row.factionId)!.factionName,
+      factionName,
     }))
 
   const ownedCount = groups.reduce((count, group) => count + group.owned, 0)

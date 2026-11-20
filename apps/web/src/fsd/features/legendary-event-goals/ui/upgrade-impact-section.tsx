@@ -85,13 +85,15 @@ export function UpgradeImpactSection({
         return t("upgradeImpact.noTeams")
       case "needsEstimates":
         return t("upgradeImpact.needsEstimates")
-      case "ready":
-        return rows.length === 0
-          ? t("upgradeImpact.noRows")
-          : t("upgradeImpact.summary", {
+      case "ready": {
+        const [best] = rows
+        return best
+          ? t("upgradeImpact.summary", {
               count: rows.length,
-              best: number.format(rows[0]!.gainPoints),
+              best: number.format(best.gainPoints),
             })
+          : t("upgradeImpact.noRows")
+      }
     }
   })()
 

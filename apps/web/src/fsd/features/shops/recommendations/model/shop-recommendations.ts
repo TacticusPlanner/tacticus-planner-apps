@@ -155,8 +155,8 @@ function rogueTraderPenultimateOffers(
   now: number,
   upgradesById: BuildShopRecommendationsParams["upgradesById"]
 ): ResolvedShopOffer[] {
-  if (shop.slots.length <= 2) return []
-  const penultimate = shop.slots[shop.slots.length - 2]!
+  const penultimate = shop.slots.at(-2)
+  if (shop.slots.length <= 2 || !penultimate) return []
 
   const strippedShop: GameCatalogShop = {
     ...shop,

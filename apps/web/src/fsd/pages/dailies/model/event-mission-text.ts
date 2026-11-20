@@ -14,18 +14,20 @@ export function fillGameText(
 ): string {
   let text = template
   if (text.includes("[i2p_")) {
-    // "[i2p_Plural]A[i2p_One]B" splits into ["", "Plural", "A", "One", "B"].
-    const parts = text.split(/\[i2p_(\w+)\]/)
+    // "[i2p_Plural]A[i2p_One]B" splits into "" (the prefix) and ["Plural", "A", "One", "B"].
+    const [prefix = "", ...parts] = text.split(/\[i2p_(\w+)\]/)
     const forms = new Map<string, string>()
-    for (let index = 1; index + 1 < parts.length; index += 2) {
-      forms.set(parts[index]!, parts[index + 1]!)
+    for (let index = 0; index + 1 < parts.length; index += 2) {
+      const key = parts[index]
+      const value = parts[index + 1]
+      if (key !== undefined && value !== undefined) forms.set(key, value)
     }
     // Text before the first marker ("Daily: ") is kept, as `resolveI2p` in shared/ability-text does.
     // That helper is not reused because it reads the count from the template's first placeholder at an
     // ability level; mission text passes its count explicitly.
     const form =
-      (count === 1 ? forms.get("One") : forms.get("Plural")) ?? parts[2]
-    text = form === undefined ? text : parts[0]! + form
+      (count === 1 ? forms.get("One") : forms.get("Plural")) ?? parts[1]
+    text = form === undefined ? text : prefix + form
   }
   return text
     .replaceAll(/\{\[(\w+)\]\}/g, (placeholder, name: string) =>
@@ -105,9 +107,12 @@ export function ladderView(
       percents.set(reward.type, set)
     }
   }
-  const spreads = [...percents]
-    .filter(([, set]) => set.size === 1 && [...set][0]! > 0)
-    .map(([type, set]) => ({ type, percent: [...set][0]! }))
+  const spreads = [...percents].flatMap(([type, set]) => {
+    const [percent] = set
+    return set.size === 1 && percent !== undefined && percent > 0
+      ? [{ type, percent }]
+      : []
+  })
   const noted = new Set(spreads.map((spread) => spread.type))
 
   const currency = sumRewards(tiers).find((reward) =>

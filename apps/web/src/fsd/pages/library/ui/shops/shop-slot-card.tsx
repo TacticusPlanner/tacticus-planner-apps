@@ -56,9 +56,11 @@ export function ShopSlotCard({
 }) {
   const { t } = useTranslation(["library", "shops"])
   const currencyLabel = useCurrencyLabel()
+  const [first] = slot.rewards
+  if (!first) return null
 
   if (slot.kind === "single") {
-    const reward = slot.rewards[0]!
+    const reward = first
     return (
       <div
         className="flex flex-col gap-1.5 rounded-lg border bg-card p-3 text-card-foreground shadow-sm"
@@ -79,7 +81,6 @@ export function ShopSlotCard({
 
   const preview = slot.rewards.slice(0, PREVIEW_LIMIT)
   const overflow = slot.rewards.length - preview.length
-  const first = slot.rewards[0]!
 
   return (
     <Dialog>

@@ -91,7 +91,8 @@ export function MilestoneGapSection({ gap }: { gap: MilestoneGap }) {
   const retries = new Set(
     gap.pushes.map((push) => tokenKey(push.retry.displaces))
   )
-  const sharedRetry = retries.size === 1 ? gap.pushes[0]!.retry : null
+  const [firstPush] = gap.pushes
+  const sharedRetry = retries.size === 1 && firstPush ? firstPush.retry : null
   const footIcon = "size-3.5 shrink-0"
   return (
     <section

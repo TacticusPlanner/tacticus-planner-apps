@@ -83,9 +83,8 @@ function restrictionPassesAny(
   if (!restriction) return true
   if (values.some((value) => restriction.disallowed?.includes(value)))
     return false
-  return restriction.allowed
-    ? values.some((value) => restriction.allowed!.includes(value))
-    : true
+  const { allowed } = restriction
+  return allowed ? values.some((value) => allowed.includes(value)) : true
 }
 
 /** `tags` match the npc's traits or its alliance, `factionIds` its faction, `unitIds` its id. */

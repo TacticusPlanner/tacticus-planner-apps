@@ -1,6 +1,6 @@
 import type { QuestEventStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
-import { firstDifference } from "@/shared/lib"
+import { firstDifference, required } from "@/shared/lib"
 
 /** A battle awards at most three medals (stars); the points per medal and the Lightning Victory's
  *  maximum are served per quest (design D3). */
@@ -104,7 +104,7 @@ export function scoreQuest(
   })
   const tiers: QuestScore["tiers"] = []
   battles.forEach((battle, index) => {
-    const score = scores[index]!
+    const score = required(scores[index], `battle ${battle.number}'s score`)
     const tier = tiers.find((entry) => entry.tier === battle.tier)
     if (tier) {
       tier.points += score.points

@@ -224,6 +224,15 @@ export default defineConfig([
     },
   },
   {
+    // Non-null assertions are burned down in features and pages; a lookup that can miss narrows or
+    // goes through `required()` (shared/lib), which names what is missing. Tests keep `!` (warn).
+    files: ["src/fsd/features/**/*.{ts,tsx}", "src/fsd/pages/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}", "**/*.test-fixture.ts", "**/*.bench.ts"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "error",
+    },
+  },
+  {
     files: ["**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
     rules: {
       "testing-library/no-node-access": "warn",

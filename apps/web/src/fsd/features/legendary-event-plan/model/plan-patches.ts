@@ -73,11 +73,10 @@ export function withLaneOrder(
   return {
     ...plan,
     teams: sortPlanTeams(
-      plan.teams.map((team) =>
-        orderOf.has(team.id)
-          ? { ...team, sortOrder: orderOf.get(team.id)! }
-          : team
-      )
+      plan.teams.map((team) => {
+        const sortOrder = orderOf.get(team.id)
+        return sortOrder === undefined ? team : { ...team, sortOrder }
+      })
     ),
   }
 }

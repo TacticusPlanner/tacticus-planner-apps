@@ -88,11 +88,10 @@ export function adoptOrder(queryClient: QueryClient, order: GoalOrderResponse) {
     { queryKey: goalQueries.lists() },
     (list) => {
       if (!list) return list
-      const goals = list.goals.map((goal) =>
-        position.has(goal.goalId)
-          ? { ...goal, globalPriority: position.get(goal.goalId)! }
-          : goal
-      )
+      const goals = list.goals.map((goal) => {
+        const globalPriority = position.get(goal.goalId)
+        return globalPriority === undefined ? goal : { ...goal, globalPriority }
+      })
       return {
         ...list,
         orderRevision: order.revision,

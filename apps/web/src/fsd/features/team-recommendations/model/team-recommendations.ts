@@ -19,6 +19,7 @@ import type {
   TeamRecommendations,
   TeamRosterCharacter,
 } from "./team-recommendations.types"
+import { required } from "@/shared/lib"
 
 /** Deterministic PRNG (mulberry32) — a fixed `randomSeed` always yields the same random team. */
 function mulberry32(seed: number): () => number {
@@ -148,19 +149,15 @@ function narrowPreferences(
   preferences: TeamPreferences
 ): TeamPreferences {
   const kept: TeamPreferences = {}
-  if (
-    preferences.trait &&
-    roster.some((character) => character.traits.includes(preferences.trait!))
-  ) {
-    kept.trait = preferences.trait
+  const { trait, damageType } = preferences
+  if (trait && roster.some((character) => character.traits.includes(trait))) {
+    kept.trait = trait
   }
   if (
-    preferences.damageType &&
-    roster.some((character) =>
-      character.damageTypes.includes(preferences.damageType!)
-    )
+    damageType &&
+    roster.some((character) => character.damageTypes.includes(damageType))
   ) {
-    kept.damageType = preferences.damageType
+    kept.damageType = damageType
   }
   return kept
 }
@@ -206,7 +203,7 @@ function memberOf(
   ctx: BuildContext,
   locked: boolean
 ): TeamMember {
-  const character = ctx.characterById.get(id)!
+  const character = required(ctx.characterById.get(id), `character ${id}`)
   // `ctx.preferences` is already narrowed, so an unsatisfiable preference is absent here and never
   // produces a marker; an active one produces a marker on every row (match or miss).
   const { trait, damageType } = ctx.preferences
@@ -387,9 +384,10 @@ export function buildTeamRecommendations(
   const inPoolRankById = new Map<UnitId, number>()
   for (const id of rosterIds) {
     const index = pools.findIndex((pool) => pool.unitIds.has(id))
-    if (index !== -1) {
+    const pool = pools[index]
+    if (pool) {
       poolRankById.set(id, pools.length - index)
-      inPoolRankById.set(id, pools[index]!.rankOf?.(id) ?? 0)
+      inPoolRankById.set(id, pool.rankOf?.(id) ?? 0)
     }
   }
 
