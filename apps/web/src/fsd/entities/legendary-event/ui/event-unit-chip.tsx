@@ -149,7 +149,6 @@ export function EventUnitChip({
   // so the popover can't restore it); an outside click leaves focus where the user clicked.
   const refocusOnClose = useRef(false)
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- restores focus once the closed panel has committed
     if (detailsOpen || !refocusOnClose.current) return
     refocusOnClose.current = false
     anchorRef.current?.focus()

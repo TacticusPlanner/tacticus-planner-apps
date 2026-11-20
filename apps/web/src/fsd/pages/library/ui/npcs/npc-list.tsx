@@ -26,7 +26,6 @@ export function NpcList({
 
   // A direct link can land on an NPC far down the grid; bring its tile into view once, on selection.
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- scrolls the committed grid to the selected tile
     if (!selectedId) return
     listRef.current
       ?.querySelector<HTMLElement>(`[data-testid="npc-tile-${selectedId}"]`)

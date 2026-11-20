@@ -58,7 +58,6 @@ function LiveEvents({ events }: { events: HomeEventsState }) {
   )
   const liveCount = events.status === "ready" ? events.live.length : null
   useEffect(() => {
-    // eslint-disable-next-line react-you-might-not-need-an-effect/no-event-handler -- persists the count to storage, a side effect
     if (liveCount !== null) {
       rememberCount(homeRememberedCounts.liveEvents, liveCount)
     }
