@@ -22,7 +22,7 @@ export function useMobileReorderMode() {
     if (!active) return
     const list = listRef.current
     if (!list) return
-    list.scrollIntoView?.({
+    list.scrollIntoView({
       block: "start",
       behavior: prefersReducedMotion() ? "auto" : "smooth",
     })

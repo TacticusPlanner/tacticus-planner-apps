@@ -11,7 +11,7 @@ import type {
   GoalNeed,
 } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
-import { compareCodeUnits } from "@/shared/lib"
+import { compareCodeUnits, firstDifference } from "@/shared/lib"
 
 /** What one battle fought by hand counts toward a manual objective (see hre-campaign-raids). */
 type MissionBattleYield =
@@ -172,16 +172,16 @@ function compareCandidates(
     const goalA = goalNodes.get(a.id)
     const goalB = goalNodes.get(b.id)
     // Nodes that feed a goal come first of all (Severyn, 2026-10), then the cheapest.
-    return (
-      Number(!goalA) - Number(!goalB) ||
-      a.energyCost - b.energyCost ||
-      descending(points(a), points(b)) ||
+    return firstDifference(
+      Number(!goalA) - Number(!goalB),
+      a.energyCost - b.energyCost,
+      descending(points(a), points(b)),
       Number(a.lightningCondition === false) -
-        Number(b.lightningCondition === false) ||
-      descending(a.enemyPower ?? 0, b.enemyPower ?? 0) ||
-      descending(rate(a, goalA), rate(b, goalB)) ||
-      descending(a.expectedGold, b.expectedGold) ||
-      (combineGoals ? 0 : (goalA?.priority ?? 0) - (goalB?.priority ?? 0)) ||
+        Number(b.lightningCondition === false),
+      descending(a.enemyPower ?? 0, b.enemyPower ?? 0),
+      descending(rate(a, goalA), rate(b, goalB)),
+      descending(a.expectedGold, b.expectedGold),
+      combineGoals ? 0 : (goalA?.priority ?? 0) - (goalB?.priority ?? 0),
       compareCodeUnits(a.id, b.id)
     )
   }
@@ -315,16 +315,17 @@ function planMissionBattles(
         passes(battle.id) &&
         quantified.every((need) => yieldOf(battle.id, need.per) > 0)
     )
-    .toSorted(
-      (a, b) =>
-        (request.preferLightning
+    .toSorted((a, b) =>
+      firstDifference(
+        request.preferLightning
           ? Number(a.lightningCondition === false) -
-            Number(b.lightningCondition === false)
-          : 0) ||
+              Number(b.lightningCondition === false)
+          : 0,
         Number(!input.goalNodesByBattle.has(a.id)) -
-          Number(!input.goalNodesByBattle.has(b.id)) ||
-        efficiency(b) - efficiency(a) ||
+          Number(!input.goalNodesByBattle.has(b.id)),
+        efficiency(b) - efficiency(a),
         sort(a, b)
+      )
     )
   const plan = (
     rows: MissionRaidRow[],

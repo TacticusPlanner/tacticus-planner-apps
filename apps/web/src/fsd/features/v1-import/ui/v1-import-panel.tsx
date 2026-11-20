@@ -35,6 +35,7 @@ import type { V1ImportPartKey } from "../model/parts"
 import { savePendingMaterialSteps } from "../model/pending-material-steps"
 import { ImportResult } from "./import-v1-result"
 import { ImportSummaryCard } from "./import-summary-card"
+import { hasNode } from "@/shared/lib"
 
 export type V1ImportSelection = Record<V1ImportPartKey, boolean>
 
@@ -239,10 +240,10 @@ export function V1ImportPanel({
           </Button>
         </p>
         {summary}
-        {actions ? (
+        {hasNode(actions) ? (
           <div className="flex flex-wrap items-center gap-2">{actions}</div>
         ) : null}
-        {result ? <ImportResult result={result} /> : null}
+        <ImportResult result={result} />
       </div>
     )
   }

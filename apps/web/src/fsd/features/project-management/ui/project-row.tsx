@@ -133,7 +133,7 @@ export function ProjectRow({
                 })}
               </span>
             ) : null}
-            {summary.unestimatedGoalCount ? (
+            {(summary.unestimatedGoalCount ?? 0) > 0 ? (
               <span data-testid="project-row-completion-excluded">
                 {t("goals.insights.completionExcluded", {
                   count: summary.unestimatedGoalCount,

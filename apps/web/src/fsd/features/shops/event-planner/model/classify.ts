@@ -7,6 +7,7 @@ import type { EventShopCartEntry } from "@/entities/shops/event-plan"
 
 import { resolveEntry } from "./entry"
 import type { ResolvedEntry } from "./entry"
+import { firstDifference } from "@/shared/lib"
 
 type EntryState = "done" | "needsReview" | "upcoming"
 
@@ -64,8 +65,11 @@ export function classifyCart(
     if (resolved) classified.push(classifyEntry(resolved, todayIndex))
     else unresolvable.push(entry)
   }
-  classified.sort(
-    (a, b) => a.dayIndex - b.dayIndex || a.entry.slotIndex - b.entry.slotIndex
+  classified.sort((a, b) =>
+    firstDifference(
+      a.dayIndex - b.dayIndex,
+      a.entry.slotIndex - b.entry.slotIndex
+    )
   )
   return { entries: classified, unresolvable }
 }

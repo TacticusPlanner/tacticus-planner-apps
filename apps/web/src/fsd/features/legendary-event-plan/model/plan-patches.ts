@@ -8,6 +8,7 @@ import type {
   UpdateTeamRequestDto,
 } from "@/entities/legendary-event"
 import { ApiError } from "@/shared/api"
+import { firstDifference } from "@/shared/lib"
 
 /** What the team editor submits: everything a team carries except its lane, order and id. The
  *  depth is the current run's. */
@@ -136,9 +137,11 @@ const LANE_ORDER: Record<LegendaryEventLaneId, number> = {
 }
 
 function sortPlanTeams(teams: LegendaryEventTeam[]): LegendaryEventTeam[] {
-  return teams.toSorted(
-    (a, b) =>
-      LANE_ORDER[a.laneId] - LANE_ORDER[b.laneId] || a.sortOrder - b.sortOrder
+  return teams.toSorted((a, b) =>
+    firstDifference(
+      LANE_ORDER[a.laneId] - LANE_ORDER[b.laneId],
+      a.sortOrder - b.sortOrder
+    )
   )
 }
 

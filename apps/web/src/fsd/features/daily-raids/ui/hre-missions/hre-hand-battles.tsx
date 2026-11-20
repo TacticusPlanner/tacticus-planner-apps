@@ -40,7 +40,9 @@ export function HreHandBattles({
   const { t } = useTranslation("hre")
   // The hero's faction rule already implies the alliance rule, so only one of them is listed.
   const rules = [
-    notes.slots ? t("raids.battles.slots", { slots: notes.slots }) : null,
+    notes.slots !== undefined && notes.slots > 0
+      ? t("raids.battles.slots", { slots: notes.slots })
+      : null,
     notes.alliance && !notes.heroFaction
       ? t("raids.battles.alliance", { alliance: notes.alliance })
       : null,

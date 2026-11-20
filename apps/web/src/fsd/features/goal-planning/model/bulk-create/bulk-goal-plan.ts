@@ -221,11 +221,11 @@ export function buildUnitPlan(
     }
   }
   const inFlightAscensions = existing
-    .filter((goal) => goal.goalType === "Ascension" && goal.config.progression)
-    .map((goal) => ({
-      goalId: goal.goalId,
-      end: goal.config.progression!.end,
-    }))
+    .flatMap((goal) =>
+      goal.goalType === "Ascension" && goal.config.progression
+        ? [{ goalId: goal.goalId, end: goal.config.progression.end }]
+        : []
+    )
     .toSorted((a, b) => progressionIndex(a.end) - progressionIndex(b.end))
   // Where a target needing `need` gets it: this request's lowest Ascension that reaches it, the
   // lowest in-flight one that does, else an Ascension added to the highest need of this plan.

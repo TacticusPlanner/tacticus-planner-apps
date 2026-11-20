@@ -137,7 +137,9 @@ export function HreRaidsSection({
   const locations = loaded ? raids.locationsByBattleId : undefined
   const view = raids.status === "ready" ? raids : null
   const rowsView: RaidRowsView = { locations, view, onShowLocation }
-  const shown = request && (request.raids || manual || request.manualNotice)
+  const shown =
+    request !== null &&
+    (request.raids !== null || manual !== null || Boolean(request.manualNotice))
   const hseNote =
     runningEvent &&
     plan &&

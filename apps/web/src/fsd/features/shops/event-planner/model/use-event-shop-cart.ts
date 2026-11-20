@@ -90,7 +90,7 @@ export function useEventShopCart(
         })
         revision.current = saved.revision
         setSaveFailed(false)
-        if (pending.current === null) setLocal(null)
+        if (!hasPendingEdit(pending)) setLocal(null)
       } catch (error) {
         const conflict = eventShopPlanConflict(error)
         if (conflict) {
@@ -114,7 +114,7 @@ export function useEventShopCart(
   }, [client, event, save])
 
   const schedule = useCallback(() => {
-    if (timer.current) clearTimeout(timer.current)
+    if (timer.current !== null) clearTimeout(timer.current)
     timer.current = setTimeout(() => {
       timer.current = null
       void flush()
@@ -130,7 +130,7 @@ export function useEventShopCart(
   }, [flush])
   useEffect(
     () => () => {
-      if (timer.current) {
+      if (timer.current !== null) {
         clearTimeout(timer.current)
         timer.current = null
       }
@@ -170,6 +170,14 @@ export function useEventShopCart(
     notice,
     dismissNotice: () => setNotice(null),
   }
+}
+
+/** Whether an edit waits to be saved. A call, so the check after an `await` isn't narrowed away:
+ *  `apply` can queue an edit while a save is in flight. */
+function hasPendingEdit(pending: {
+  current: readonly EventShopCartEntry[] | null
+}): boolean {
+  return pending.current !== null
 }
 
 /** Queues `entries` to save unless a newer edit is already waiting. */

@@ -116,12 +116,13 @@ export function CurrentMissionCard({
                   inputMode="numeric"
                   max={objective.target}
                   min={0}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    const value = Number.parseInt(event.target.value, 10)
                     actions.setObjectiveProgress(
                       index as 0 | 1,
-                      Number.parseInt(event.target.value, 10) || 0
+                      Number.isNaN(value) ? 0 : value
                     )
-                  }
+                  }}
                   onFocus={(event) => event.target.select()}
                   placeholder="0"
                   type="number"

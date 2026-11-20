@@ -378,7 +378,9 @@ export function withUpgradeRange(
     ...next,
     targets: draft.targets.flatMap((target) => {
       const quantity = required.get(target.upgradeId)
-      return quantity ? [{ ...target, quantity }] : []
+      return quantity !== undefined && quantity > 0
+        ? [{ ...target, quantity }]
+        : []
     }),
   }
 }

@@ -72,7 +72,7 @@ export function useProjectActions() {
               "projectRevisionStale",
               "defaultProjectCannotBeArchived"
             )
-            if (stale?.current && typeof stale.current === "object") {
+            if (typeof stale?.current === "object" && stale.current !== null) {
               writeProject(stale.current as ProjectSummary)
             } else if (error instanceof ApiError && error.status === 409) {
               void queryClient.invalidateQueries({
@@ -111,7 +111,8 @@ export function useProjectActions() {
       toast.error(t("goals.limits.projectLimitReached", { max: MAX_PROJECTS }))
       return null
     }
-    let created: ProjectSummary | null = null
+    // Typed by assertion: assigned in the callback, so `ProjectSummary | null` must not narrow to null.
+    let created = null as ProjectSummary | null
     const ok = await run(async () => {
       created = await createProject({ name, description, color, target })
       return created

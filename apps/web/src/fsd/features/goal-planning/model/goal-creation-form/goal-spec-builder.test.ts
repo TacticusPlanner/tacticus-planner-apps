@@ -428,9 +428,7 @@ describe("buildCombinedGoalSpecs milestones", () => {
     expect(specs[3]?.dependsOnIndex).toEqual([1, 2])
     // The API rejects a repeated DependsOnIndex entry.
     for (const spec of specs) {
-      expect(new Set(spec.dependsOnIndex).size).toBe(
-        spec.dependsOnIndex?.length ?? 0
-      )
+      expect(new Set(spec.dependsOnIndex).size).toBe(spec.dependsOnIndex.length)
     }
   })
 

@@ -45,7 +45,7 @@ export function useGoalLabels(): GoalLabels {
             : undefined
         case "Rank":
           if (!goal.rankEnd) return undefined
-          return goal.appliedUpgradesEnd
+          return (goal.appliedUpgradesEnd ?? 0) > 0
             ? t("goalBadge.rankWithUpgrades", {
                 target: rank(goal.rankEnd),
                 count: goal.appliedUpgradesEnd,

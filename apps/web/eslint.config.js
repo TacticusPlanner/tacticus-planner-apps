@@ -224,6 +224,22 @@ export default defineConfig([
     },
   },
   {
+    // Tier 3 slices that reached zero, held at error until the last slice promotes the rules.
+    files: ["src/fsd/features/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/strict-boolean-expressions": [
+        "error",
+        {
+          allowString: true,
+          allowNumber: false,
+          allowNullableBoolean: true,
+          allowNullableString: true,
+        },
+      ],
+      "@typescript-eslint/no-unnecessary-condition": "error",
+    },
+  },
+  {
     files: ["**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
     rules: {
       "testing-library/no-node-access": "warn",

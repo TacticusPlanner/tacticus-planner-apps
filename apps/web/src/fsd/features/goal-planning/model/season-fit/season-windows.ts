@@ -36,7 +36,9 @@ export type SeasonWindows = {
 }
 
 function numberField(value: unknown, key: string): number | undefined {
-  if (!value || typeof value !== "object" || !(key in value)) return undefined
+  if (typeof value !== "object" || value === null || !(key in value)) {
+    return undefined
+  }
   const field = (value as Record<string, unknown>)[key]
   return typeof field === "number" && Number.isFinite(field) ? field : undefined
 }
@@ -68,7 +70,7 @@ function resolveFixed(
   nowMs: number
 ): SeasonWindows | null {
   const { intervalDays, anchorUtc } = definition.recurrence
-  if (!intervalDays || !anchorUtc) return null
+  if (intervalDays === null || intervalDays <= 0 || !anchorUtc) return null
   const anchorMs = Date.parse(anchorUtc)
   if (!Number.isFinite(anchorMs)) return null
   const intervalMs = intervalDays * DAY_MS

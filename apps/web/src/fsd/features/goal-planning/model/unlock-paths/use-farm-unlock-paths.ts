@@ -18,8 +18,6 @@ export type FarmUnlockPathViewModel = FarmUnlockPath & {
   icon?: string
 }
 
-const noBattles = new Map()
-
 /**
  * Resolves a blocked resource (an upgrade id or `shard:<unit>`) to the locked nodes that drop it,
  * closest first (see `farmUnlockPaths`), labelled for display. Empty until the catalog loads.
@@ -39,7 +37,7 @@ export function useFarmUnlockPaths(): (
 
   return useCallback(
     (resourceId: string) => {
-      const battles = allBattlesById ?? noBattles
+      const battles = allBattlesById
       const paths = farmUnlockPaths({
         farmLocations: resourceFarmLocations(
           resourceId,
@@ -47,9 +45,9 @@ export function useFarmUnlockPaths(): (
           charactersById
         ),
         allBattlesById: battles,
-        eligibleBattleIds: new Set(battlesById?.keys() ?? []),
+        eligibleBattleIds: new Set(battlesById.keys()),
         isEventGroup: (groupId) =>
-          releaseTypeByGroupId?.get(groupId) === "event",
+          releaseTypeByGroupId.get(groupId) === "event",
         gate,
       })
       return paths.map((path) => {
@@ -107,5 +105,5 @@ function resourceFarmLocations(
       (location) => !location.isMythic
     )
   }
-  return upgradesById?.get(resourceId as UpgradeId)?.farmLocations ?? []
+  return upgradesById.get(resourceId as UpgradeId)?.farmLocations ?? []
 }

@@ -7,6 +7,7 @@ import { goalKindsForEntity } from "../../model/shared/goal-validation"
 import { buildCombinedGoalSpecs } from "../../model/goal-creation-form/goal-spec-builder"
 import type { useCreateGoalForm } from "../../model/goal-creation-form/use-create-goal-form"
 import { GoalRangeSummary } from "../shared/goal-range-summary"
+import { firstDifference } from "@/shared/lib"
 
 type GoalForm = ReturnType<typeof useCreateGoalForm>
 
@@ -53,10 +54,11 @@ export function GoalCreationReview({ form }: { form: GoalForm }) {
   const kinds = goalKindsForEntity(form.entityType)
   const specs = buildCombinedGoalSpecs(form.combinedSpecParams)
     .map((spec, index) => ({ spec, index }))
-    .toSorted(
-      (a, b) =>
-        kinds.indexOf(a.spec.goalType) - kinds.indexOf(b.spec.goalType) ||
+    .toSorted((a, b) =>
+      firstDifference(
+        kinds.indexOf(a.spec.goalType) - kinds.indexOf(b.spec.goalType),
         a.index - b.index
+      )
     )
   const firstOfKind = new Set<number>()
   const seen = new Set<GoalKind>()

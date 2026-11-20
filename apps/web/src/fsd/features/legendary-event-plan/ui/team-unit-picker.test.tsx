@@ -282,7 +282,7 @@ describe("TeamUnitPicker", () => {
     const chip = (label: string) =>
       screen
         .getAllByTestId("team-picker-objective-chip")
-        .find((element) => element.textContent?.includes(label))!
+        .find((element) => element.textContent.includes(label))!
     const listed = () =>
       screen.getAllByTestId("team-picker-tile").map((el) => el.dataset.unit)
 

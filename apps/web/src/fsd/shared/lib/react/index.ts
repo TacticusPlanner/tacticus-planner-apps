@@ -9,3 +9,4 @@ export {
   useQueryReadState,
   type ReadState,
 } from "./use-read-state"
+export { hasNode } from "./has-node"

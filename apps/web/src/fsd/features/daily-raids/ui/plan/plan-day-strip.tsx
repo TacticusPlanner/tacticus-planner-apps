@@ -112,7 +112,7 @@ export function PlanDayStrip({
       className="relative flex cursor-grab gap-3 overflow-x-auto pb-2 select-none active:cursor-grabbing"
       data-testid="plan-days"
       style={
-        cardHeight
+        cardHeight !== undefined && cardHeight > 0
           ? ({ "--plan-card-h": `${cardHeight}px` } as CSSProperties)
           : undefined
       }

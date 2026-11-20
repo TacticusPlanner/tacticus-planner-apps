@@ -52,7 +52,9 @@ export function MaterialSteps({
               <p className="font-medium">
                 {[
                   step.upgradeId ? getUpgradeName(step.upgradeId) : null,
-                  step.quantity ? `×${step.quantity}` : null,
+                  step.quantity !== null && step.quantity > 0
+                    ? `×${step.quantity}`
+                    : null,
                 ]
                   .filter(Boolean)
                   .join(" · ")}
@@ -79,7 +81,9 @@ export function MaterialSteps({
                           entityId: unit.entityId as UnitId,
                           goalType: "Upgrade",
                           upgradeId: step.upgradeId as UpgradeId,
-                          ...(step.quantity ? { quantity: step.quantity } : {}),
+                          ...(step.quantity !== null && step.quantity > 0
+                            ? { quantity: step.quantity }
+                            : {}),
                         })
                       }
                       size="sm"

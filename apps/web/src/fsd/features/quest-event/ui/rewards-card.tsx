@@ -203,8 +203,7 @@ function ShardsMeaningLine({
     )
   }
   const last = meaning.steps.at(-1)
-  const lastLabel =
-    last && isProgression(last) ? progressionText(t, last) : (last ?? "")
+  const lastLabel = last && isProgression(last) ? progressionText(t, last) : ""
   return (
     <div className="space-y-0.5 text-sm" data-testid="quest-shards-meaning">
       <p className="font-medium">

@@ -94,9 +94,9 @@ export function campaignTrackGate(
   let prerequisiteBattles = 0
   const visited = new Set<string>()
 
-  let groupId: CampaignId | null = campaignGroupId
+  let groupId: CampaignId = campaignGroupId
   let direct = true
-  while (groupId && !visited.has(groupId)) {
+  while (!visited.has(groupId)) {
     visited.add(groupId)
     const definition = context.definitionsByGroupId.get(groupId)
     if (!definition) break

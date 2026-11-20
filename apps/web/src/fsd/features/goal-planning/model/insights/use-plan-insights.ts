@@ -154,7 +154,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   // The Onslaught cadence too, so a catalog refresh that changes it recomputes.
   // And the "Campaigns to push" inputs, which can land after the first run.
   const progressionKey = [
-    allBattlesById?.size,
+    allBattlesById.size,
     campaignDefinitions?.length,
     [...campaignProgressByKey]
       .map(([key, entry]) => `${key}=${entry.highestCompletedBattleIndex}`)
@@ -197,7 +197,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     battlesReady &&
     !!charactersById &&
     !!mowsById &&
-    !!onslaughtRewards?.length &&
+    (onslaughtRewards?.length ?? 0) > 0 &&
     onslaughtRunsPerDay !== undefined &&
     !!levelRules &&
     !!shops &&
@@ -284,9 +284,10 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             levelRules,
             upgradesById,
             battlesById,
-            insightBattles: allBattlesById
-              ? { reached: reachedBattlesById, all: allBattlesById }
-              : undefined,
+            insightBattles: {
+              reached: reachedBattlesById,
+              all: allBattlesById,
+            },
             charactersById: charactersById,
             mowsById: mowsById,
             ascensionCostsById: ascensionCostsById,
@@ -305,21 +306,19 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             onslaughtRewards: onslaughtRewards,
             onslaughtRunsPerDay,
             shops,
-            campaignProgression: allBattlesById
-              ? {
-                  allBattlesById,
-                  campaignProgressByKey,
-                  definitionsByGroupId: new Map(
-                    (campaignDefinitions ?? []).map((definition) => [
-                      definition.groupId,
-                      definition,
-                    ])
-                  ),
-                  ownedUnitIds,
-                  powerLevel,
-                  eliteCampaignMinPowerLevel,
-                }
-              : undefined,
+            campaignProgression: {
+              allBattlesById,
+              campaignProgressByKey,
+              definitionsByGroupId: new Map(
+                (campaignDefinitions ?? []).map((definition) => [
+                  definition.groupId,
+                  definition,
+                ])
+              ),
+              ownedUnitIds,
+              powerLevel,
+              eliteCampaignMinPowerLevel,
+            },
           })
 
           setFetchState({

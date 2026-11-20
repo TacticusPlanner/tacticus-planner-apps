@@ -335,7 +335,7 @@ describe("TeamEditorDialog", () => {
     const noResilient = () =>
       screen
         .getAllByTestId("team-editor-summary-objective")
-        .find((chip) => chip.textContent?.includes("No Resilient"))!
+        .find((chip) => chip.textContent.includes("No Resilient"))!
 
     it("marks No Resilient at the estimated depth 1 and drops the mark at depth 3", () => {
       renderEditor({ estimateTeam, progress })
@@ -526,7 +526,7 @@ describe("TeamEditorDialog", () => {
     const chip = (label: string) =>
       screen
         .getAllByTestId("team-picker-objective-chip")
-        .find((element) => element.textContent?.includes(label))!
+        .find((element) => element.textContent.includes(label))!
 
     it("saves, then clears the draft for the next team and keeps the chips and search", async () => {
       const { onSubmit, onOpenChange } = renderEditor()
@@ -628,7 +628,7 @@ describe("TeamEditorDialog", () => {
     const chip = (label: string) =>
       screen
         .getAllByTestId("team-picker-objective-chip")
-        .find((element) => element.textContent?.includes(label))!
+        .find((element) => element.textContent.includes(label))!
 
     it("lets a dimmed unit be picked, which drops Melee from the coverage", () => {
       renderEditor()

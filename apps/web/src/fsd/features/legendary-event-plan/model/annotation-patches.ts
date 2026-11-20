@@ -5,6 +5,7 @@ import type {
   LegendaryEventLaneId,
   LegendaryEventPlan,
 } from "@/entities/legendary-event"
+import { firstDifference } from "@/shared/lib"
 
 /** The not-cleared cell ids of a battle (0 defeat-all, 1–5 objective index + 1): the cells a
  *  battle-row action marks. */
@@ -45,7 +46,7 @@ export function withAnnotations(
   status: LegendaryEventAnnotationStatus | null,
   updatedAt: string
 ): LegendaryEventPlan {
-  const kept = (plan.annotations ?? []).filter(
+  const kept = plan.annotations.filter(
     (annotation) =>
       annotation.laneId !== laneId ||
       annotation.battleIndex !== battleIndex ||
@@ -63,11 +64,12 @@ export function withAnnotations(
         }))
   return {
     ...plan,
-    annotations: [...kept, ...added].toSorted(
-      (a, b) =>
-        laneOrder(a.laneId) - laneOrder(b.laneId) ||
-        a.battleIndex - b.battleIndex ||
+    annotations: [...kept, ...added].toSorted((a, b) =>
+      firstDifference(
+        laneOrder(a.laneId) - laneOrder(b.laneId),
+        a.battleIndex - b.battleIndex,
         a.objectiveId - b.objectiveId
+      )
     ),
   }
 }

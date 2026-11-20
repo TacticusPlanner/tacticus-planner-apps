@@ -498,7 +498,7 @@ export function buildCombinedGoalSpecs(params: {
         upgrade: { targets: params.upgradeTargets, ...params.upgradeRanges },
       },
       dependsOnIndex: unlockIndex === null ? [] : [unlockIndex],
-      ...(params.upgradeLinkedGoalIds?.length && {
+      ...((params.upgradeLinkedGoalIds?.length ?? 0) > 0 && {
         linkedGoalIds: params.upgradeLinkedGoalIds,
       }),
     })

@@ -37,15 +37,12 @@ const ALLIANCES = ["imperial", "xenos", "chaos"] as const
 function stockOf(inventory: AbilityInventory) {
   const stock = new Map<string, number>()
   for (const alliance of ALLIANCES) {
-    for (const entry of inventory.abilityBadges?.[alliance] ?? []) {
+    for (const entry of inventory.abilityBadges[alliance]) {
       stock.set(`badge:${alliance}:${entry.rarity}`, entry.amount)
     }
-    stock.set(
-      `component:${alliance}`,
-      inventory.components?.[alliance]?.amount ?? 0
-    )
+    stock.set(`component:${alliance}`, inventory.components[alliance].amount)
   }
-  for (const entry of inventory.forgeBadges ?? []) {
+  for (const entry of inventory.forgeBadges) {
     stock.set(`forge:${entry.rarity}`, entry.amount)
   }
   return stock

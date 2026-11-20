@@ -32,6 +32,7 @@ import {
   reasonKeyForLegendaryEventCode,
 } from "../model/legendary-event-outcome-buckets"
 import { V1_IMPORT_PARTS } from "../model/parts"
+import type { V1ImportPartKey } from "../model/parts"
 import {
   groupRosterSnapshotOutcomes,
   reasonKeyForRosterSnapshotPart,
@@ -97,7 +98,9 @@ export function ImportResult({ result }: { result: ImportV1ProfileResult }) {
   // "not_selected" (ImportPartResult.NotSelected — API contract) hides a part the user didn't ask
   // for, so a cleared part can't be mistaken for one that was attempted and skipped.
   // The Legendary Event part's own code is translated; the other parts keep the server's message.
-  const rows = V1_IMPORT_PARTS.filter(({ key }) => result[key])
+  // A part is absent from a response of an API that predates it.
+  const parts: Partial<Pick<ImportV1ProfileResult, V1ImportPartKey>> = result
+  const rows = V1_IMPORT_PARTS.filter(({ key }) => parts[key] !== undefined)
     .filter(({ key }) => result[key].code !== "not_selected")
     .filter(({ key }) => key !== "goals" || !syncRequired)
     .map(({ key, label }) => {

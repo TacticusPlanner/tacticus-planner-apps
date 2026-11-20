@@ -10,6 +10,7 @@ import type {
   TokenPlanInput,
 } from "./token-plan"
 import { splitPlanByRun } from "./token-runs"
+import { firstDifference } from "@/shared/lib"
 
 // The safest path to the run's milestone: the plan spends every token on the most points, but when
 // the run's tokens only need to reach a points milestone (and the character step its payout opens),
@@ -51,7 +52,7 @@ export interface SafestNext {
 
 /** Negative when `a` is safer than `b`. */
 export function compareRisk(a: TokenRisk, b: TokenRisk): number {
-  return a.band - b.band || b.headroom - a.headroom
+  return firstDifference(a.band - b.band, b.headroom - a.headroom)
 }
 
 const UNKNOWN_RISK: TokenRisk = { band: 1, headroom: 0 }

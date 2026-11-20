@@ -83,7 +83,7 @@ export function TeamSuggestionsDialog({
     ])
   )
   const owned =
-    source.estimates && source.estimates !== "pending"
+    source.estimates !== undefined && source.estimates !== "pending"
       ? source.estimates.roster
       : undefined
 

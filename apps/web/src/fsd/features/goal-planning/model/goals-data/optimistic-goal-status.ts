@@ -28,11 +28,12 @@ export function applyOptimisticGoalStatus(
   goalId: string,
   status: GoalStatus | GoalFieldPatch
 ): unknown {
-  if (!data || typeof data !== "object") return data
+  if (typeof data !== "object" || data === null) return data
   const patch = Object.fromEntries(
-    Object.entries(typeof status === "string" ? { status } : status).filter(
-      ([, value]) => value !== undefined
-    )
+    // A patch built at runtime can carry explicit `undefined` fields; those are not changes.
+    Object.entries<unknown>(
+      typeof status === "string" ? { status } : status
+    ).filter(([, value]) => value !== undefined)
   )
   const apply = <T extends WithStatus>(goal: T): T =>
     Object.entries(patch).every(
@@ -47,15 +48,12 @@ export function applyOptimisticGoalStatus(
 
   if ("goals" in data && Array.isArray(data.goals)) {
     const goals = (data as { goals: unknown[] }).goals
-    let changed = false
     const nextGoals = goals.map((entry) => {
-      if (!entry || typeof entry !== "object") return entry
+      if (typeof entry !== "object" || entry === null) return entry
       const flat = entry as { goalId: string } & WithStatus
-      if (flat.goalId !== goalId) return entry
-      const next = apply(flat)
-      if (next !== flat) changed = true
-      return next
+      return flat.goalId === goalId ? apply(flat) : entry
     })
+    const changed = nextGoals.some((goal, index) => goal !== goals[index])
     return changed ? { ...data, goals: nextGoals } : data
   }
 

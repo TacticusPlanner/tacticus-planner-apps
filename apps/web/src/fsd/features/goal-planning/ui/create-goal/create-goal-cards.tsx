@@ -77,7 +77,7 @@ export function GoalTypeCards({
       ref: (node: HTMLDivElement | null) => {
         if (node && scrollTarget.current === kind) {
           scrollTarget.current = null
-          node.scrollIntoView?.({ block: "nearest" })
+          node.scrollIntoView({ block: "nearest" })
         }
       },
     }

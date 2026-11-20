@@ -12,6 +12,7 @@ import type {
   GoalNeed,
 } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
+import { firstDifference } from "@/shared/lib"
 
 /** One location of the Dailies > HSE farm list. */
 type EventFarmRow = {
@@ -228,19 +229,22 @@ export function planEventFarm(input: PlanEventFarmInput): EventFarm {
     )
   const candidates = all
     .filter((candidate) => candidate.drops.some((drop) => drop.allowed))
-    .toSorted(
-      (a, b) =>
-        (energyOrder
-          ? efficiency(a) - efficiency(b) ||
-            (input.fewerRaids ? b.energyCost - a.energyCost : 0)
-          : 0) ||
-        b.ratio - a.ratio ||
-        b.pointsPerRaid - a.pointsPerRaid ||
+    .toSorted((a, b) =>
+      firstDifference(
+        ...(energyOrder
+          ? [
+              efficiency(a) - efficiency(b),
+              input.fewerRaids ? b.energyCost - a.energyCost : 0,
+            ]
+          : []),
+        b.ratio - a.ratio,
+        b.pointsPerRaid - a.pointsPerRaid,
         // Equal on points: Today's order between two nodes, cheaper per item then more gold.
-        efficiency(a) - efficiency(b) ||
-        b.expectedGold - a.expectedGold ||
-        (input.combineGoals ? 0 : a.priority - b.priority) ||
+        efficiency(a) - efficiency(b),
+        b.expectedGold - a.expectedGold,
+        input.combineGoals ? 0 : a.priority - b.priority,
         a.battleId.localeCompare(b.battleId)
+      )
     )
   if (candidates.length === 0) {
     return done([], all.length > 0 ? "filtered" : "nothing-contributes")

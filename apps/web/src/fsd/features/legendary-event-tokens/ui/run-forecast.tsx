@@ -16,6 +16,7 @@ import type { TokenPlanView } from "../lib/token-plan-view"
 import { MilestoneGapSection } from "./milestone-gap"
 import { useStoredOpen } from "../model/use-stored-open"
 import type { OpenTeamsHandler } from "./next-token-card"
+import { hasNode } from "@/shared/lib"
 
 const tokensIcon = legendaryEventResourceIcon("tokens")
 const pointsIcon = legendaryEventResourceIcon("points")
@@ -348,7 +349,7 @@ function RunBlock({
     )
 
   const inputsBlock =
-    inputs && run.state !== "done" ? (
+    hasNode(inputs) && run.state !== "done" ? (
       <div
         className="flex min-w-0 flex-col gap-2 border-t pt-2"
         data-testid="run-forecast-inputs"

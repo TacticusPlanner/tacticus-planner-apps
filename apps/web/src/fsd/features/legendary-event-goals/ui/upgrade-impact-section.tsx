@@ -196,7 +196,7 @@ export function UpgradeImpactSection({
           {summary}
         </p>
       )
-    } else if (state.kind === "ready" && rows.length > 0) {
+    } else if (rows.length > 0) {
       body =
         layout === "table" ? (
           <div className="min-w-0 overflow-x-auto rounded-lg border">

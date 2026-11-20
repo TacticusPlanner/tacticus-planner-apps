@@ -79,7 +79,7 @@ export function RaidRows({
                 goals={goals}
                 testId={`hre-raid-${row.battleId}-goals`}
               />
-              {resourceId && view ? (
+              {resourceId !== undefined && view ? (
                 <span className="flex items-center gap-1">
                   <ResourceIconWithTooltip
                     className="size-8"

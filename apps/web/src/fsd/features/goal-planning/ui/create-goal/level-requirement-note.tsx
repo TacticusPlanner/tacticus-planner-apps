@@ -19,7 +19,7 @@ export function LevelRequirementNote({
   const { t, i18n } = useTranslation(["common", "progression"])
   if (!preview) return null
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n?.resolvedLanguage).format(value)
+    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
 
   return (
     <div

@@ -19,6 +19,7 @@ export {
 } from "./format-time"
 export {
   combineReadStates,
+  hasNode,
   localReadQueryOptions,
   localReadTimeoutMs,
   useCampaignDisplay,
@@ -59,6 +60,6 @@ export {
   matchesSearch,
   normalizeSearchText,
 } from "./search-text"
-export { compareCodeUnits } from "./compare"
+export { compareCodeUnits, firstDifference } from "./compare"
 export { runCatching, runWithCleanup } from "./async"
 export { useStableByKey } from "./use-stable-by-key"

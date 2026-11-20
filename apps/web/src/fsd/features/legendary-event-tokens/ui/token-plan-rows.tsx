@@ -24,6 +24,7 @@ import { BattleInfoButton } from "./battle-info"
 import { TokenMissionSteps } from "./mission-order-view"
 import { TokenObjectives } from "./token-objectives"
 import { TokenMissionsPopover, TokenTeamPopover } from "./token-popovers"
+import { hasNode } from "@/shared/lib"
 
 type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
 type PlannedTokenRow = ReadyView["plan"]["tokens"][number]
@@ -284,7 +285,7 @@ function MobileRowLines({
   points: ReactNode
   running: ReactNode
 }) {
-  if (teamHeader) {
+  if (hasNode(teamHeader)) {
     return (
       <>
         <div className="flex min-w-0 items-center justify-between gap-2">
@@ -318,7 +319,7 @@ function MobileRowLines({
       <div
         className={cn(
           "flex min-w-0 items-center justify-between gap-2",
-          toggle ? "pl-7" : null
+          hasNode(toggle) ? "pl-7" : null
         )}
       >
         {cells}

@@ -21,6 +21,7 @@ import { EntityIcon } from "@/shared/ui"
 
 import type { GoalProject } from "../../model/shared/types"
 import { ProjectColorDot } from "@/entities/project"
+import { hasNode } from "@/shared/lib"
 
 export function GoalUnitIcon({
   entityType,
@@ -148,7 +149,7 @@ export function GoalTypeCard({
         src={goalTypeIcon(kind, entityType)}
       />
       <span>{t(`goals.create.goalTypes.${kind}`)}</span>
-      {summary ? (
+      {hasNode(summary) ? (
         <span className="flex min-w-0 items-center gap-1 text-sm font-normal text-muted-foreground">
           <span aria-hidden>·</span>
           {summary}

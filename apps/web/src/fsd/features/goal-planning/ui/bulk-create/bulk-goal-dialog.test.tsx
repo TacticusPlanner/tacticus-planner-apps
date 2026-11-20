@@ -221,7 +221,7 @@ describe("BulkGoalDialog", () => {
     fireEvent.click(screen.getByTestId("bulk-goal-ability-toggle"))
 
     const planned = within(rows()[0]!).getAllByTestId("bulk-goal-planned")
-    const texts = planned.map((row) => row.textContent ?? "")
+    const texts = planned.map((row) => row.textContent)
     expect(
       texts.some((text) => text.includes("Rank Gold I → Diamond III"))
     ).toBe(true)

@@ -39,6 +39,7 @@ import { TokenMarkButtons } from "./token-mark-buttons"
 import { TokenRow } from "./token-plan-rows"
 import { TokenObjectives } from "./token-objectives"
 import { TokenMissionsPopover, TokenTeamPopover } from "./token-popovers"
+import { hasNode } from "@/shared/lib"
 
 export type MarkTokenHandler = (
   laneId: LegendaryEventLaneId,
@@ -128,7 +129,7 @@ export function NextTokenCard({
         <CardTitle>
           <h2>{t("tokenPlan.nextToken.title")}</h2>
         </CardTitle>
-        {canOrder && view.kind === "ready" && view.next ? (
+        {canOrder && view.next ? (
           <CardAction data-testid="next-token-order">
             <TokenPlanOrderSwitch
               onChange={(order) => setByMissions(order === "missions")}
@@ -173,7 +174,7 @@ export function NextTokenCard({
               token={ordered.token}
               view={view}
             />
-            {missionsInput ? (
+            {hasNode(missionsInput) ? (
               <div
                 className="flex min-w-0 flex-col gap-2 border-t pt-3"
                 data-testid="next-token-missions-input"
@@ -323,7 +324,7 @@ function TokenView({
             >
               {band === "sure"
                 ? t("tokenPlan.nextToken.clear.sure")
-                : teamDepth?.sureDepth
+                : teamDepth && (teamDepth.sureDepth ?? 0) > 0
                   ? t("tokenPlan.nextToken.clear.likelySure", {
                       sure: teamDepth.sureDepth,
                     })
@@ -350,7 +351,7 @@ function TokenView({
           {reasonLine}
         </p>
       </div>
-      {canMark && onMarkToken ? (
+      {canMark ? (
         <TokenMarkButtons
           isMobile={isMobile}
           onMarkToken={onMarkToken}

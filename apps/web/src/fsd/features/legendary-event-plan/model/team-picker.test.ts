@@ -25,6 +25,7 @@ import {
   toggleObjectiveChip,
 } from "./team-picker"
 import type { PickerTile } from "./team-picker"
+import { firstDifference } from "@/shared/lib"
 
 // Lysander Alpha: 2 is Flying, 4 is No Resilient. Dante satisfies both (32 + 80 + 40 = 152). The
 // catalog has no Resilient flyer on Alpha, so a synthetic one (Flying, Resilient, 5 hits: 32 + 80
@@ -62,11 +63,12 @@ describe("buildPickerTiles with objective chips", () => {
 
   it("keeps today's order and dims nothing without a chip", () => {
     expect(plain.every((tile) => tile.matches)).toBe(true)
-    const sorted = plain.toSorted(
-      (a, b) =>
-        b.remainingPoints - a.remainingPoints ||
-        b.satisfied.length - a.satisfied.length ||
+    const sorted = plain.toSorted((a, b) =>
+      firstDifference(
+        b.remainingPoints - a.remainingPoints,
+        b.satisfied.length - a.satisfied.length,
         a.unit.name.localeCompare(b.unit.name)
+      )
     )
     expect(ids(plain)).toEqual(ids(sorted))
   })
@@ -172,11 +174,12 @@ describe("buildPickerTiles remaining points and sort", () => {
     })
     const dante = tiles.find((tile) => tile.unit.id === "bloodDante")
     expect(dante?.remainingPoints).toBe(1800)
-    const sorted = tiles.toSorted(
-      (a, b) =>
-        b.remainingPoints - a.remainingPoints ||
-        b.satisfied.length - a.satisfied.length ||
+    const sorted = tiles.toSorted((a, b) =>
+      firstDifference(
+        b.remainingPoints - a.remainingPoints,
+        b.satisfied.length - a.satisfied.length,
         a.unit.name.localeCompare(b.unit.name)
+      )
     )
     expect(ids(tiles)).toEqual(ids(sorted))
   })

@@ -10,6 +10,7 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { GoalKind } from "@/entities/goal"
 
+import { abilityTrackLevel } from "../attainment/goal-attainment"
 import { milestoneOrderIssue } from "./goal-milestones"
 import type { GoalMilestones } from "./goal-milestones"
 
@@ -79,11 +80,11 @@ export function useGoalValidationState({
   const currentActiveAbility =
     entityType === "Mow"
       ? mowAbilityTrackLevel(playerMow, "primary")
-      : (playerCharacter?.abilities?.[0]?.level ?? 1)
+      : abilityTrackLevel(playerCharacter, "primary")
   const currentPassiveAbility =
     entityType === "Mow"
       ? mowAbilityTrackLevel(playerMow, "secondary")
-      : (playerCharacter?.abilities?.[1]?.level ?? 1)
+      : abilityTrackLevel(playerCharacter, "secondary")
 
   // Preemptive "nowhere left to target" checks (plan: disable the toggle instead of letting the
   // user hit a submit-time validation message) — Rank is Character-only so Mow reads false; Upgrade

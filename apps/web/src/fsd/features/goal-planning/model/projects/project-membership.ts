@@ -7,7 +7,7 @@ export function goalSlotConflict(
   error: unknown
 ): { current: GoalDetail } | null {
   const issue = apiIssue(error, "slotOccupied")
-  return issue?.current && typeof issue.current === "object"
+  return typeof issue?.current === "object" && issue.current !== null
     ? { current: issue.current as GoalDetail }
     : null
 }

@@ -160,7 +160,11 @@ function useEditOnslaughtYield({
   const currentProgression =
     playerUnit?.progressionIndex ?? detail.config.progression?.start
   const shardsPerRun =
-    enabled && onslaughtProgress && rewards?.length && currentProgression
+    enabled &&
+    onslaughtProgress &&
+    rewards !== undefined &&
+    rewards.length > 0 &&
+    currentProgression
       ? onslaughtShardsPerRun({
           progress: onslaughtProgress,
           rewards,

@@ -162,7 +162,7 @@ describe("RunForecastSection", () => {
     renderForecast(
       buildTokenPlanView({
         ...base,
-        event: { ...base.event, rewards: undefined! },
+        event: { ...base.event, rewards: undefined },
       })
     )
 

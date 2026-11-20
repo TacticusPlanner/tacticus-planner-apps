@@ -72,7 +72,9 @@ export function planHookMissionRaids(input: {
   const raidFilters: RaidsFilters = { ...input.raidsFilters, campaignTypes: [] }
   const battleFilters: RaidsFilters = {
     ...raidFilters,
-    ...(manual?.slots ? { slots: [manual.slots] } : {}),
+    ...(manual?.slots !== undefined && manual.slots > 0
+      ? { slots: [manual.slots] }
+      : {}),
     ...(manual?.alliance ? { alliesAlliances: [manual.alliance] } : {}),
     ...(manual?.heroFaction ? { alliesFactions: [manual.heroFaction] } : {}),
   }
@@ -90,7 +92,10 @@ export function planHookMissionRaids(input: {
         ? {
             deploy: {
               factions: battle.alliesFactions,
-              slots: battle.slots || DEFAULT_SLOTS,
+              slots:
+                battle.slots !== undefined && battle.slots > 0
+                  ? battle.slots
+                  : DEFAULT_SLOTS,
             },
           }
         : {}),

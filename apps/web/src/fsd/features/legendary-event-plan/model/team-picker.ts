@@ -9,7 +9,11 @@ import type {
   LegendaryEventRosterUnit,
   LegendaryEventUnit,
 } from "@/entities/legendary-event"
-import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
+import {
+  anyNameIncludes,
+  normalizeSearchText,
+  firstDifference,
+} from "@/shared/lib"
 
 type PickerLane = Pick<
   LegendaryEventLane,
@@ -88,15 +92,20 @@ export function buildPickerTiles(
         matches: matchesObjectives(potential.satisfied, selectedObjectives),
       }
     })
-    .toSorted(
-      (a, b) =>
-        Number(b.matches) - Number(a.matches) ||
-        (sort === "power"
-          ? (b.effectivePower ?? 0) - (a.effectivePower ?? 0) ||
-            b.remainingPoints - a.remainingPoints
-          : b.remainingPoints - a.remainingPoints ||
-            b.satisfied.length - a.satisfied.length) ||
+    .toSorted((a, b) =>
+      firstDifference(
+        Number(b.matches) - Number(a.matches),
+        ...(sort === "power"
+          ? [
+              (b.effectivePower ?? 0) - (a.effectivePower ?? 0),
+              b.remainingPoints - a.remainingPoints,
+            ]
+          : [
+              b.remainingPoints - a.remainingPoints,
+              b.satisfied.length - a.satisfied.length,
+            ]),
         nameOf(a.unit).localeCompare(nameOf(b.unit))
+      )
     )
 }
 

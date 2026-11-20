@@ -26,7 +26,11 @@ function endScores(goal: GoalDetail): number[] | null {
       return rank
         ? [
             rank.end * 10 +
-              (rank.endAppliedUpgrades || (rank.endPointFive ? 3 : 0)),
+              (rank.endAppliedUpgrades > 0
+                ? rank.endAppliedUpgrades
+                : rank.endPointFive
+                  ? 3
+                  : 0),
           ]
         : null
     case "Ascension":
