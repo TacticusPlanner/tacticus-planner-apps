@@ -88,7 +88,7 @@ export function ProjectMultiPickerDialog({
           className="md:mr-auto"
           data-testid="project-picker-create-new"
           onClick={onCreateNew}
-          variant="outline"
+          variant="ghost"
         >
           <FolderPlus />
           {t("goals.project.createNewProject")}

@@ -113,7 +113,7 @@ function AllianceDialog({
           ))}
         </div>
         <DialogFooter>
-          <Button onClick={controller.closeDialog} variant="ghost">
+          <Button onClick={controller.closeDialog} variant="outline">
             {t("dialogs.cancel")}
           </Button>
         </DialogFooter>
@@ -215,7 +215,7 @@ function BoughtSomeDialog({
           value={bought}
         />
         <DialogFooter>
-          <Button onClick={controller.closeDialog} variant="ghost">
+          <Button onClick={controller.closeDialog} variant="outline">
             {t("dialogs.cancel")}
           </Button>
           <Button

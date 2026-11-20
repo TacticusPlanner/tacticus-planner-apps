@@ -31,12 +31,7 @@ import type {
 } from "@/entities/roster-snapshot"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { formatRelativeTime } from "@/shared/lib"
-import {
-  ResponsiveDialog,
-  ResponsiveDialogFooter,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
-} from "@/shared/ui"
+import { ConfirmationDialog } from "@/shared/ui"
 
 import { canKeep, manageSections } from "../../../model/manage-snapshots"
 import { isValidSnapshotRename } from "../../../model/take-snapshot"
@@ -299,49 +294,29 @@ function DeleteSnapshotDialog({
   const { captureEvent } = useAnalyticsActions()
 
   return (
-    <ResponsiveDialog
-      open={snapshot !== null}
-      onOpenChange={(open) => {
-        if (!open) onClose()
-      }}
-      desktopClassName="sm:max-w-md"
+    <ConfirmationDialog
+      cancelLabel={t("myGame.collection.snapshots.cancel")}
+      confirmLabel={t("myGame.collection.snapshots.deleteConfirm")}
+      confirmTestId="delete-snapshot-confirm"
       data-testid="delete-snapshot-dialog"
-    >
-      <ResponsiveDialogHeader>
-        <ResponsiveDialogTitle>
-          {t("myGame.collection.snapshots.deleteTitle", {
-            name: snapshot
-              ? snapshotLabel(snapshot, i18n.language, labels)
-              : "",
-          })}
-        </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
-          {t("myGame.collection.snapshots.deleteBody")}
-        </p>
-      </ResponsiveDialogHeader>
-      <ResponsiveDialogFooter>
-        <Button variant="outline" onClick={onClose}>
-          {t("myGame.collection.snapshots.cancel")}
-        </Button>
-        <Button
-          variant="destructive"
-          disabled={remove.isPending}
-          onClick={() => {
-            if (!snapshot) return
-            remove.mutate(snapshot.id, {
-              onSuccess: () => {
-                captureEvent({ type: "roster_snapshot_deleted" })
-                onClose()
-              },
-              onError: () =>
-                toast.error(t("myGame.collection.snapshots.deleteFailed")),
-            })
-          }}
-          data-testid="delete-snapshot-confirm"
-        >
-          {t("myGame.collection.snapshots.deleteConfirm")}
-        </Button>
-      </ResponsiveDialogFooter>
-    </ResponsiveDialog>
+      description={t("myGame.collection.snapshots.deleteBody")}
+      onCancel={onClose}
+      onConfirm={() => {
+        if (!snapshot) return
+        remove.mutate(snapshot.id, {
+          onSuccess: () => {
+            captureEvent({ type: "roster_snapshot_deleted" })
+            onClose()
+          },
+          onError: () =>
+            toast.error(t("myGame.collection.snapshots.deleteFailed")),
+        })
+      }}
+      open={snapshot !== null}
+      pending={remove.isPending}
+      title={t("myGame.collection.snapshots.deleteTitle", {
+        name: snapshot ? snapshotLabel(snapshot, i18n.language, labels) : "",
+      })}
+    />
   )
 }

@@ -336,7 +336,7 @@ export function TeamEditorDialog({
             {t("teams.editor.notSaved")}
           </p>
         ) : null}
-        <ResponsiveDialogFooter className="border-t md:justify-between">
+        <ResponsiveDialogFooter className="flex-col border-t md:justify-between">
           <TeamEditorSummary
             checkedObjectives={objectives.filter((objective) =>
               checked.includes(objective.index)

@@ -59,7 +59,7 @@ export function InstallAppDialog({
 
   return (
     <ResponsiveDialog
-      contentClassName="sm:max-w-lg"
+      contentClassName="sm:max-w-md"
       data-testid="app-install-dialog"
       onOpenChange={onOpenChange}
       open={open}
@@ -145,7 +145,7 @@ export function InstallAppDialog({
         </section>
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter className="border-t">
-        <Button onClick={() => onOpenChange(false)} variant="secondary">
+        <Button onClick={() => onOpenChange(false)} variant="outline">
           {t("common.close")}
         </Button>
       </ResponsiveDialogFooter>

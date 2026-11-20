@@ -37,7 +37,7 @@ export function MoveToPriorityDialog({
   const { t } = useTranslation()
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xs">
+      <DialogContent className="sm:max-w-md">
         {/* Remounted per opening so the field starts at the goal's current priority. */}
         {open ? (
           <MoveToPriorityForm

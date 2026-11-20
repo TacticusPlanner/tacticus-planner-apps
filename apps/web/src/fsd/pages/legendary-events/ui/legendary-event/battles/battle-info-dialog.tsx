@@ -56,7 +56,7 @@ export function BattleInfoDialog({
   return (
     <ResponsiveDialog
       data-testid="battle-info-dialog"
-      desktopClassName="sm:max-w-3xl"
+      desktopClassName="sm:max-w-2xl"
       onOpenChange={(open) => {
         if (!open) onClose()
       }}
@@ -145,7 +145,7 @@ function BattleInfoNav({
           data-testid="battle-info-close"
           onClick={onClose}
           type="button"
-          variant="secondary"
+          variant="outline"
         >
           {t("battleInfo.close")}
         </Button>

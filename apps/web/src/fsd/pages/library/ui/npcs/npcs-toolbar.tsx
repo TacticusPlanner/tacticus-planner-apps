@@ -120,6 +120,7 @@ export function NpcsToolbar({
                 </ResponsiveDialogBody>
                 <ResponsiveDialogFooter>
                   <Button
+                    className="md:mr-auto"
                     variant="ghost"
                     onClick={onClear}
                     disabled={activeCount === 0}

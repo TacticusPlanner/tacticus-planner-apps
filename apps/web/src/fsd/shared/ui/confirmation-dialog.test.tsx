@@ -28,4 +28,51 @@ describe("ConfirmationDialog", () => {
     await user.click(screen.getByRole("button", { name: "Discard" }))
     expect(onConfirm).toHaveBeenCalledOnce()
   })
+
+  it("renders extra content and keeps confirm off while confirmDisabled", async () => {
+    const user = userEvent.setup()
+    const onConfirm = vi.fn()
+    render(
+      <ConfirmationDialog
+        cancelLabel="Cancel"
+        confirmDisabled
+        confirmLabel="Delete guild"
+        onCancel={vi.fn()}
+        onConfirm={onConfirm}
+        open
+        title="Delete this guild?"
+      >
+        <p>Type Confirm to continue.</p>
+      </ConfirmationDialog>
+    )
+
+    expect(screen.getByText("Type Confirm to continue.")).toBeVisible()
+    const confirm = screen.getByRole("button", { name: "Delete guild" })
+    expect(confirm).toBeDisabled()
+    await user.click(confirm)
+    expect(onConfirm).not.toHaveBeenCalled()
+  })
+
+  it("turns both buttons off and ignores Escape while pending", async () => {
+    const user = userEvent.setup()
+    const onCancel = vi.fn()
+    render(
+      <ConfirmationDialog
+        cancelLabel="Cancel"
+        confirmLabel="Delete project"
+        onCancel={onCancel}
+        onConfirm={vi.fn()}
+        open
+        pending
+        title="Delete this project?"
+      />
+    )
+
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: /Delete project/ })
+    ).toBeDisabled()
+    await user.keyboard("{Escape}")
+    expect(onCancel).not.toHaveBeenCalled()
+  })
 })

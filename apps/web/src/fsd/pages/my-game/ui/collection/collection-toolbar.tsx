@@ -184,7 +184,12 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
             />
           </ResponsiveDialogBody>
           <ResponsiveDialogFooter>
-            <Button variant="ghost" onClick={clear} disabled={active === 0}>
+            <Button
+              className="md:mr-auto"
+              variant="ghost"
+              onClick={clear}
+              disabled={active === 0}
+            >
               <X aria-hidden />
               {t("myGame.collection.toolbar.clearFilters")}
             </Button>

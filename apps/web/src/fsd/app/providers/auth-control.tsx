@@ -269,7 +269,7 @@ export function AuthControl() {
             </div>
             <DrawerFooter className="border-t px-6 py-4">
               <DrawerClose asChild>
-                <Button className="w-full" variant="secondary">
+                <Button className="w-full" variant="outline">
                   {t("common.close")}
                 </Button>
               </DrawerClose>
