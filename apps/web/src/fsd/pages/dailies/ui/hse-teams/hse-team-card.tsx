@@ -107,7 +107,7 @@ export function HseTeamCard({
       <CardContent className="space-y-3">
         {category.broadened ? (
           <p
-            className="text-xs text-muted-foreground"
+            className="text-sm text-muted-foreground"
             data-testid={`${testId}-broadened`}
           >
             {pick.kind === "faction"
@@ -121,7 +121,7 @@ export function HseTeamCard({
         ) : null}
         {category.deliveredSize < category.requestedSize ? (
           <p
-            className="text-xs text-muted-foreground"
+            className="text-sm text-muted-foreground"
             data-testid={`${testId}-shortfall`}
           >
             {t("teamRecs:category.fewerThanRequested", {

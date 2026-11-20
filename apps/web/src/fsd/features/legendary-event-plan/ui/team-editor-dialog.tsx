@@ -274,7 +274,7 @@ export function TeamEditorDialog({
               value={draft.name ?? defaultName}
             />
             {nameTooLong ? (
-              <p className="text-xs text-destructive">
+              <p className="text-sm text-destructive">
                 {t("teams.editor.nameTooLong", { max: TEAM_NAME_MAX_LENGTH })}
               </p>
             ) : null}

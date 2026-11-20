@@ -79,7 +79,7 @@ export function HreTeamCard({
       <CardContent className="space-y-3">
         {reserve ? (
           <p
-            className="text-xs text-muted-foreground"
+            className="text-sm text-muted-foreground"
             data-testid="hre-team-reserve"
           >
             {t("hre:teams.reserve", {
@@ -130,7 +130,7 @@ export function HreTeamCard({
             {view.team.rule === "alliance" &&
             view.team.eligibleCount < HRE_TEAM_SIZE ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid="hre-team-few"
               >
                 {t("hre:teams.fewAlliance", {
@@ -141,7 +141,7 @@ export function HreTeamCard({
             ) : null}
             {view.team.support ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid={`hre-team-support-${view.team.support}`}
               >
                 {view.team.support === "included"
@@ -151,7 +151,7 @@ export function HreTeamCard({
             ) : null}
             {plan?.preferPsychic ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid="hre-team-psychic"
               >
                 {t("hre:teams.psychic")}
@@ -159,7 +159,7 @@ export function HreTeamCard({
             ) : null}
             {view.team.hseUnits !== null && hseEvent ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid="hre-team-hse"
               >
                 {view.team.hseUnits > 0

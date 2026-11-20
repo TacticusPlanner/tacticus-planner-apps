@@ -286,7 +286,7 @@ function RunInputsFields({
     <div className="flex flex-col gap-3">
       {phase === "now" ? (
         <p
-          className="text-xs text-muted-foreground"
+          className="text-sm text-muted-foreground"
           data-testid="run-inputs-now-hint"
         >
           {t("runInputs.nowHint")}

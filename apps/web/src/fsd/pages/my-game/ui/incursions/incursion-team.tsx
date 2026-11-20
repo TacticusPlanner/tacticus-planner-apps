@@ -121,7 +121,7 @@ export function IncursionTeam({
           )
         })}
       </ul>
-      <p className="text-xs text-muted-foreground">{t("team.hint")}</p>
+      <p className="text-sm text-muted-foreground">{t("team.hint")}</p>
     </section>
   )
 }

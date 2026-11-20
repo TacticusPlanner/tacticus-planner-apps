@@ -146,7 +146,7 @@ export function TakeSnapshotDialog({
             data-testid="take-snapshot-name"
           />
           {nameError ? (
-            <p className="text-xs text-destructive" role="alert">
+            <p className="text-sm text-destructive" role="alert">
               {t("myGame.collection.snapshots.nameTooLong", {
                 max: nameError.max,
               })}

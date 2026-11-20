@@ -22,7 +22,7 @@ export function PlanUnitFilter({
 
   return (
     <div className="space-y-1.5" data-testid="plan-unit-filter">
-      <p className="text-xs text-muted-foreground">{t("plan.filter.hint")}</p>
+      <p className="text-sm text-muted-foreground">{t("plan.filter.hint")}</p>
       <div
         aria-label={t("plan.filter.label")}
         className="flex flex-wrap items-center gap-2"

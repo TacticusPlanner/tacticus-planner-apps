@@ -113,7 +113,7 @@ export function ManageSnapshotsSheet({
                 ) : null}
               </div>
               {list ? (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {t("myGame.collection.snapshots.autoHint", {
                     limit: list.autoLimit,
                   })}

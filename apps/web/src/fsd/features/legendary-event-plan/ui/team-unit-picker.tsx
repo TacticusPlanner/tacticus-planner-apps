@@ -228,7 +228,7 @@ export function TeamUnitPicker({
         </ul>
       ) : null}
       {memberUnitIds.length === MAX_TEAM_MEMBERS ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("teams.picker.full")}
         </p>
       ) : null}

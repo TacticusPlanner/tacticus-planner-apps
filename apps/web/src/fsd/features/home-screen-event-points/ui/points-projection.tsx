@@ -178,7 +178,7 @@ function ReadyProjectionBody({
               )}
             </span>
             <span
-              className="mt-0.5 block text-xs text-muted-foreground"
+              className="mt-0.5 block text-sm text-muted-foreground"
               id="hse-progress-hint"
             >
               {t("hse.projection.progressHint")}

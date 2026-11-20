@@ -53,7 +53,7 @@ export function IncursionTierRewards({
             rewards={rewards}
             data-testid={testId ? `${testId}-popover` : undefined}
           />
-          <p className="text-xs text-muted-foreground">{t("rewards.hint")}</p>
+          <p className="text-sm text-muted-foreground">{t("rewards.hint")}</p>
         </PopoverContent>
       </Popover>
     </div>

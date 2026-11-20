@@ -139,7 +139,7 @@ export function ScoreEntry({
         </div>
       ) : null}
       {!won && !readOnly ? (
-        <p className="text-xs text-muted-foreground">{t("entry.notWon")}</p>
+        <p className="text-sm text-muted-foreground">{t("entry.notWon")}</p>
       ) : null}
     </fieldset>
   )

@@ -35,7 +35,7 @@ export function GoalLinksField({
       <legend className="mb-1 text-sm font-medium">
         {t("goals.create.upgrade.links.label")}
       </legend>
-      <p className="text-xs text-muted-foreground" id={hintId}>
+      <p className="text-sm text-muted-foreground" id={hintId}>
         {candidates.length > 0
           ? t("goals.create.upgrade.links.hint")
           : t("goals.create.upgrade.links.empty")}

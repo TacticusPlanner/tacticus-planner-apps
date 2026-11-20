@@ -156,7 +156,7 @@ export function UpgradesStep({ draft }: { draft: PlanDraft }) {
             </p>
           ) : null}
           {targetPoints !== null ? (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {t("planWizard.upgrades.ceilingNote")}
             </p>
           ) : null}

@@ -44,7 +44,7 @@ export function IncursionProgressControl({
             ? t("progress.remainingMythic", left)
             : t("progress.remaining", { shards: left.shards })}
       </p>
-      <p className="text-xs text-muted-foreground">{t("progress.howTo")}</p>
+      <p className="text-sm text-muted-foreground">{t("progress.howTo")}</p>
     </div>
   )
 }

@@ -101,7 +101,7 @@ export function CompareSummary({
         ) : null}
       </div>
       <div className="flex flex-wrap gap-2">{chips}</div>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-sm text-muted-foreground">
         {t("myGame.collection.compare.metricHint")}
       </p>
     </section>

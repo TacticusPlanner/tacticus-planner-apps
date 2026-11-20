@@ -197,7 +197,7 @@ export function CampaignEventsPage() {
           <div className="space-y-0.5">
             <h2 className="font-semibold">{t("progress.events.allEvents")}</h2>
             <p
-              className="text-xs text-muted-foreground"
+              className="text-sm text-muted-foreground"
               data-testid="campaign-events-save-hint"
             >
               {t("progress.events.saveHint")}

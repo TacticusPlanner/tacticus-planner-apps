@@ -104,7 +104,7 @@ export function UnitGoalFormFields({
       />
       {form.existingUnlockGoalId ? (
         <p
-          className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground"
+          className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground"
           data-testid="create-goal-unlock-existing"
         >
           {t("goals.create.unlockExistingGoal")}
@@ -117,7 +117,7 @@ export function UnitGoalFormFields({
           </Link>
         </p>
       ) : !form.unlockAvailable ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {form.entityAlreadyOwned
             ? t("goals.create.validation.alreadyUnlocked", {
                 context: unitKind,
@@ -126,17 +126,17 @@ export function UnitGoalFormFields({
         </p>
       ) : null}
       {form.atMaxRank ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("goals.create.validation.rankMaxed")}
         </p>
       ) : null}
       {form.atMaxProgression ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("goals.create.validation.progressionMaxed")}
         </p>
       ) : null}
       {form.atMaxAbility ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("goals.create.validation.abilityMaxed")}
         </p>
       ) : null}
