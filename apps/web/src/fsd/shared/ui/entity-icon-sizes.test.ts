@@ -1,28 +1,15 @@
-import { readdirSync, readFileSync } from "node:fs"
-import { join, relative } from "node:path"
 import { describe, expect, it } from "vitest"
 
 // The UI style guide's rule 6: a game icon's size comes from its role (`size="inline"`, `row`,
 // `tile`, a badge or a portrait), never from size classes at the call site. Fills of a sized frame
 // (`size-full`, fractions) and wide art sized by its height (`h-4 w-auto`) are the exceptions.
 
-const SRC = join(import.meta.dirname, "../..")
-
-interface DirEntry {
-  name: string
-  isDirectory: () => boolean
-}
-
-function sourceFiles(dir: string): string[] {
-  const entries: DirEntry[] = readdirSync(dir, { withFileTypes: true })
-  return entries.flatMap((entry) => {
-    const path = join(dir, entry.name)
-    if (entry.isDirectory()) return sourceFiles(path)
-    return entry.name.endsWith(".tsx") && !entry.name.includes(".test.")
-      ? [path]
-      : []
-  })
-}
+/** Every component file in `src`, keyed by its path from the app root (`/src/...`). Read through
+ *  Vite's glob, like the other source scans, so the test needs no Node types. */
+const SOURCES = import.meta.glob<string>(
+  ["/src/**/*.tsx", "!/src/**/*.test.tsx"],
+  { query: "?raw", import: "default", eager: true }
+)
 
 /** The icon components whose size is a role: `EntityIcon` and `RarityIcon`. */
 const ICON_COMPONENTS = ["<EntityIcon", "<RarityIcon"]
@@ -72,15 +59,14 @@ function offences(classes: string): boolean {
 
 describe("game icon sizes (UI style guide, rule 6)", () => {
   it("sizes every EntityIcon and RarityIcon by its role, not by size classes", () => {
-    const tags = sourceFiles(SRC).flatMap((file) => {
-      const source = readFileSync(file, "utf8")
+    const tags = Object.entries(SOURCES).flatMap(([file, source]) => {
       return ICON_COMPONENTS.flatMap((component) =>
         entityIconTags(source, component).map((found) => ({ ...found, file }))
       )
     })
     const found = tags
       .filter(({ tag }) => classStrings(tag).some(offences))
-      .map(({ file, line }) => `${relative(SRC, file)}:${line}`)
+      .map(({ file, line }) => `${file.replace(/^\/src\//, "")}:${line}`)
     // The scan sees the app's call sites (a broken walk would pass vacuously).
     expect(tags.length).toBeGreaterThan(250)
     expect(found).toEqual([])
