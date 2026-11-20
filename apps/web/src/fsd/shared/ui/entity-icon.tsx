@@ -6,29 +6,39 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { placeholderKindForIcon } from "./entity-icon-placeholder"
 import type { IconPlaceholderKind } from "./entity-icon-placeholder"
+import { itemIconClassName } from "./game-icon-size"
+import type { ItemIconSize } from "./game-icon-size"
 
 /** An <img> that swaps to a fallback image, or else to a placeholder glyph sized like the icon, when
  *  the source asset is missing (a new unit the datamine ships no art for yet). No `src` at all still
- *  renders nothing: that means the entity has no icon by design. Pass the intrinsic `width`/`height`
- *  when the CSS does not fix both dimensions (e.g. `h-4 w-auto`), so the box is reserved before the
- *  image loads. A layered icon renders its sprites stacked in a square box. */
+ *  renders nothing: that means the entity has no icon by design. `size` picks the icon's role on the
+ *  style guide's scale (`inline`, `row`, `tile`, or a badge over a portrait of that size); keep size
+ *  classes out of `className` when it is set. Pass the intrinsic `width`/`height` when the CSS does
+ *  not fix both dimensions (e.g. `h-4 w-auto`), so the box is reserved before the image loads. A
+ *  layered icon renders its sprites stacked in a square box. */
 export function EntityIcon({
   src,
   fallback,
   alt,
-  className,
+  size,
+  className: callerClassName,
   width,
   height,
 }: {
   src?: GameIcon | null
   fallback?: string
   alt: string
+  size?: ItemIconSize
   className?: string
   width?: number
   height?: number
 }) {
   // Track which src failed (rather than a boolean reset by an effect) so a new src is retried for free.
   const [erroredSrc, setErroredSrc] = useState<string | null>(null)
+  const className =
+    size === undefined
+      ? callerClassName
+      : cn(itemIconClassName(size), callerClassName)
 
   if (typeof src === "object" && src !== null) {
     return <LayeredEntityIcon icon={src} alt={alt} className={className} />

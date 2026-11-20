@@ -10,10 +10,10 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useSignInRedirect } from "@/shared/auth"
+import { UnitPortrait } from "@/entities/unit"
 import { EntityIcon } from "@/shared/ui"
 
 import type { UnitOwnership } from "./unit-ownership"
-import { UnitPortrait } from "./unit-portrait"
 import { hasNode } from "@/shared/lib"
 
 export type ValuesMode = "base" | "custom"
@@ -83,7 +83,7 @@ export function UnitHeader({
           src={portraitSrc}
           rarity={portraitRarity}
           greyed={ownership === "notOwned"}
-          size={isMobile ? 84 : 112}
+          size={isMobile ? "lg" : "hero"}
         />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h1

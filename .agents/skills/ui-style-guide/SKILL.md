@@ -14,10 +14,11 @@ Base: [Material 3](https://m3.material.io/) where it has an answer (segmented
 buttons, chips, top app bar, 48dp touch target), our shadcn tokens for colour
 and shape (`.design-sync/conventions.md`).
 
-Status: the rules are the target. `PageHeader`, `PageToolbar` and the icon
-`size` props do not exist yet (rollout Phase 1 and 3). Until a page is
-migrated, follow the rule with the existing primitives and do not add a new
-page-specific variant of anything below.
+Status: `PageHeader` and `PageToolbar` (`@/shared/ui`) are on every page.
+The icon sizes in rule 6 exist as `EntityIcon`'s `size` prop and the
+`UnitPortrait` component (`@/entities/unit`); older call sites still set size
+classes by hand until they are migrated. New code uses the props, and nothing
+adds a new page-specific variant of anything below.
 
 ## 1. Page header
 
@@ -101,6 +102,10 @@ sizes, chosen by its role, never by the page.
 | Portrait md | Unit in a grid, LRE lane on touch                                                          | 64px `size-16`              | 64px          |
 | Portrait lg | Unit card, detail header (128px `size-32` only for the detail hero)                        | 96px `size-24`              | 96px          |
 
+- In code: `<EntityIcon size="inline" | "row" | "tile" | "badge-sm" … />`
+  (a badge names the portrait it sits on) and
+  `<UnitPortrait size="sm" | "md" | "lg" | "hero" />`. Keep size classes out of
+  their `className`; it is for placement only.
 - No game icon below 16px.
 - Migrating an off-scale size: round to the nearest step, ties go up (17/18 →
   20 inline; 22/28 → 32 row; 36 → 40; 56/62 → 64).
