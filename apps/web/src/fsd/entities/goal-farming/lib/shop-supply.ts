@@ -120,7 +120,11 @@ export function onslaughtTokensFromSupply(
   let tokens = 0
   for (const supplier of suppliers ?? []) {
     const supplied = bySupplier.get(supplier.key) ?? 0
-    if (supplier.shardsPerRun && supplied > 0) {
+    if (
+      supplier.shardsPerRun !== undefined &&
+      supplier.shardsPerRun > 0 &&
+      supplied > 0
+    ) {
       tokens += Math.ceil(supplied / supplier.shardsPerRun)
     }
   }

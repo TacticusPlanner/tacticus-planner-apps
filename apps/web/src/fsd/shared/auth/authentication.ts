@@ -77,8 +77,8 @@ export function readAccountHint(): AccountHint | null {
     const hint: unknown = JSON.parse(
       safeStorage.get(ACCOUNT_HINT_KEY) ?? "null"
     )
-    return hint &&
-      typeof hint === "object" &&
+    return typeof hint === "object" &&
+      hint !== null &&
       typeof (hint as AccountHint).homeAccountId === "string" &&
       typeof (hint as AccountHint).username === "string"
       ? (hint as AccountHint)

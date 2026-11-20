@@ -206,28 +206,6 @@ export default defineConfig([
     rules: {
       "@typescript-eslint/no-non-null-assertion": "warn",
       "@typescript-eslint/strict-boolean-expressions": [
-        "warn",
-        {
-          allowString: true,
-          allowNumber: false,
-          allowNullableBoolean: true,
-          allowNullableString: true,
-        },
-      ],
-      "@typescript-eslint/no-unnecessary-condition": "warn",
-      "unicorn/no-array-sort": "error",
-      "unicorn/require-array-sort-compare": "error",
-      "unicorn/consistent-function-scoping": "warn",
-      "sonarjs/cognitive-complexity": ["warn", 15],
-      "@eslint-react/no-nested-component-definitions": "error",
-      "@eslint-react/purity": "error",
-    },
-  },
-  {
-    // Tier 3 slices that reached zero, held at error until the last slice promotes the rules.
-    files: ["src/fsd/features/**/*.{ts,tsx}", "src/fsd/pages/**/*.{ts,tsx}"],
-    rules: {
-      "@typescript-eslint/strict-boolean-expressions": [
         "error",
         {
           allowString: true,
@@ -237,6 +215,12 @@ export default defineConfig([
         },
       ],
       "@typescript-eslint/no-unnecessary-condition": "error",
+      "unicorn/no-array-sort": "error",
+      "unicorn/require-array-sort-compare": "error",
+      "unicorn/consistent-function-scoping": "warn",
+      "sonarjs/cognitive-complexity": ["warn", 15],
+      "@eslint-react/no-nested-component-definitions": "error",
+      "@eslint-react/purity": "error",
     },
   },
   {

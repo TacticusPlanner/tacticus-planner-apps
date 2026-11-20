@@ -278,7 +278,7 @@ export function EventUnitChip({
             {t("legendaryEvents:eventBoard.locked")}
           </span>
         ) : null}
-        {unit.supportTraits?.length ? (
+        {unit.supportTraits && unit.supportTraits.length > 0 ? (
           <span className="ml-1 hidden gap-0.5 [grid-area:traits] @[7.5rem]:flex">
             {unit.supportTraits.map((trait) => (
               <EntityIcon

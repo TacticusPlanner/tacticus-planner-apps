@@ -405,7 +405,7 @@ function MobileBottomNav({
                             </span>
                           </span>
                         </Link>
-                        {item.children?.length ? (
+                        {item.children && item.children.length > 0 ? (
                           <div className="mt-1 ml-8 space-y-1 border-l pl-3">
                             {item.children.map((child) => (
                               <MobileDrawerSubItem

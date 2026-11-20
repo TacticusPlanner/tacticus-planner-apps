@@ -56,11 +56,12 @@ export function unavailableReason(
     return !!battle && locationDropRate(location) > 0 && battle.energyCost > 0
   })
   if (available.length === 0) return "NoFarmLocation"
-  const restricted = farmingLocationIds?.length
-    ? available.filter((location) =>
-        farmingLocationIds.includes(location.battleId)
-      )
-    : available
+  const restricted =
+    farmingLocationIds && farmingLocationIds.length > 0
+      ? available.filter((location) =>
+          farmingLocationIds.includes(location.battleId)
+        )
+      : available
   if (restricted.length === 0) return "FarmingOverrideUnavailable"
   if (
     restricted.every(
@@ -75,7 +76,11 @@ export function unavailableReason(
 function locationDropRate(location: FarmLocation): number {
   if (location.guaranteed) return 1
   if (location.effectiveRate != null) return location.effectiveRate
-  if (location.numerator != null && location.denominator) {
+  if (
+    location.numerator != null &&
+    location.denominator !== null &&
+    location.denominator > 0
+  ) {
     return location.numerator / location.denominator
   }
   return 0

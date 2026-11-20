@@ -50,6 +50,7 @@ vi.mock("@/shared/auth", () => ({
 import { filterQuickActions } from "./quick-actions"
 import type { QuickAction } from "./quick-actions"
 import { useQuickActions } from "./use-quick-actions"
+import { hasNode } from "@/shared/lib"
 
 const action = (overrides: Partial<QuickAction>): QuickAction => ({
   id: "sync",
@@ -117,7 +118,9 @@ describe("useQuickActions", () => {
       "feedback",
       "tourPage",
     ])
-    expect(result.current.actions.every((a) => !a.disabledReason)).toBe(true)
+    expect(
+      result.current.actions.every((a) => !hasNode(a.disabledReason))
+    ).toBe(true)
   })
 
   it("gives guests Sign in and Sign up instead of account actions, and hides an absent page tour", () => {

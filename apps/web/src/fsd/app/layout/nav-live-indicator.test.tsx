@@ -23,7 +23,11 @@ vi.mock("./hse-live-context", async (importOriginal) => {
 vi.mock("@/features/daily-raids", () => ({
   useIsHomeScreenEventLive: () => {
     const state = hseState.current as { status: string; active?: unknown }
-    return state.status === "ready" && !!state.active
+    return (
+      state.status === "ready" &&
+      state.active !== undefined &&
+      state.active !== null
+    )
   },
 }))
 vi.mock("@/features/hre-missions", () => ({
@@ -161,14 +165,14 @@ describe.each([
     shell(desktop(false))
     const link = screen.getByTestId("desktop-nav-dailies")
     expect(dots(link)).toHaveLength(expected)
-    if (expected) expect(dots(link)[0]).toHaveClass("absolute")
+    if (expected > 0) expect(dots(link)[0]).toHaveClass("absolute")
   })
 
   it("desktop section menu marks the HSE child only", () => {
     shell(desktop(true))
     const menu = screen.getByTestId("desktop-section-navigation")
     expect(dots(menu)).toHaveLength(expected)
-    if (expected) {
+    if (expected > 0) {
       expect(
         within(
           screen.getByRole("link", { name: /dailies:tabs.hse/ })
@@ -200,7 +204,7 @@ describe.each([
     )
     const link = screen.getByTestId("mobile-nav-dailies")
     expect(dots(link)).toHaveLength(expected)
-    if (expected) expect(within(link).getByText(TEXT)).toBeInTheDocument()
+    if (expected > 0) expect(within(link).getByText(TEXT)).toBeInTheDocument()
     expect(dots(screen.getByTestId("mobile-nav-plan"))).toHaveLength(0)
 
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))

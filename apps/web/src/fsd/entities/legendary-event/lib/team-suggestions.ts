@@ -12,7 +12,7 @@ import { derivedTeamCoverage } from "./team-coverage"
 import { MIN_TEAM_MEMBERS } from "./team-size"
 import { withSupport } from "./team-support"
 import { unitLanePotential } from "./unit-potential"
-import { compareCodeUnits } from "@/shared/lib"
+import { compareCodeUnits, firstDifference } from "@/shared/lib"
 
 export const SUGGESTION_TEAM_SIZE = 5
 
@@ -109,12 +109,13 @@ export function suggestLaneTeams(
       hasGoal: input.goalUnitIds.has(unit.id),
       name: input.nameOf(unit),
     }))
-    .toSorted(
-      (a, b) =>
-        (input.preferGoals ? Number(b.hasGoal) - Number(a.hasGoal) : 0) ||
-        b.power - a.power ||
-        b.perBattle - a.perBattle ||
+    .toSorted((a, b) =>
+      firstDifference(
+        input.preferGoals ? Number(b.hasGoal) - Number(a.hasGoal) : 0,
+        b.power - a.power,
+        b.perBattle - a.perBattle,
         a.name.localeCompare(b.name)
+      )
     )
 
   const existingKeys = new Set(
@@ -202,13 +203,14 @@ export function suggestLaneTeams(
       tokensSaved: Math.max(0, tokensSaved),
     })
   }
-  return suggestions.toSorted(
-    (a, b) =>
-      b.gainPoints - a.gainPoints ||
-      b.tokensSaved - a.tokensSaved ||
-      b.depth - a.depth ||
-      b.memberUnitIds.length - a.memberUnitIds.length ||
+  return suggestions.toSorted((a, b) =>
+    firstDifference(
+      b.gainPoints - a.gainPoints,
+      b.tokensSaved - a.tokensSaved,
+      b.depth - a.depth,
+      b.memberUnitIds.length - a.memberUnitIds.length,
       Math.min(...a.coveredObjectiveIndexes) -
         Math.min(...b.coveredObjectiveIndexes)
+    )
   )
 }

@@ -1,4 +1,5 @@
 import type { NpcLevelOption, NpcVariation } from "../model/types"
+import { firstDifference } from "@/shared/lib"
 
 /**
  * Display order for a variation's ladder: rank ascending, then stars ascending, stable on ties so
@@ -18,10 +19,11 @@ export function orderLevels(variation: NpcVariation): NpcLevelOption[] {
       row,
       tie: (keyCounts.get(`${row.rank}/${row.stars}`) ?? 0) > 1,
     }))
-    .toSorted(
-      (a, b) =>
-        a.row.rank - b.row.rank ||
-        a.row.stars - b.row.stars ||
+    .toSorted((a, b) =>
+      firstDifference(
+        a.row.rank - b.row.rank,
+        a.row.stars - b.row.stars,
         a.servedIndex - b.servedIndex
+      )
     )
 }

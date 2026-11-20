@@ -1,4 +1,8 @@
-import { anyNameIncludes, normalizeSearchText } from "@/shared/lib"
+import {
+  anyNameIncludes,
+  normalizeSearchText,
+  firstDifference,
+} from "@/shared/lib"
 
 /** The catalog enemy NPC tier list (the `npc-tiers` record), as the client reads it. */
 export interface NpcTierListRecord {
@@ -202,7 +206,9 @@ export function buildNpcTierList(
           overridden: multiplier !== tier.multiplier,
         }
       })
-      .toSorted((a, b) => b.multiplier - a.multiplier || byName(a, b)),
+      .toSorted((a, b) =>
+        firstDifference(b.multiplier - a.multiplier, byName(a, b))
+      ),
   }))
   const untiered = npcIds
     .filter((npcId) => !tierOf.get(npcId)?.tier)

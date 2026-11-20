@@ -22,7 +22,7 @@ const closedDatabaseErrorNames = new Set([
 const sessionKeyPrefix = "tp:stale-reload:"
 
 function unwrap(error: unknown): unknown[] {
-  if (!error || typeof error !== "object") return [error]
+  if (typeof error !== "object" || error === null) return [error]
   const record = error as { error?: unknown; cause?: unknown }
   // react-router wraps render errors (`error.error`); fetch/import failures may carry a `cause`.
   return [error, record.error, record.cause].filter((e) => e !== undefined)
@@ -30,7 +30,7 @@ function unwrap(error: unknown): unknown[] {
 
 export function isStaleBuildError(error: unknown): boolean {
   return unwrap(error).some((candidate) => {
-    if (!candidate || typeof candidate !== "object") return false
+    if (typeof candidate !== "object" || candidate === null) return false
     const { name, message } = candidate as { name?: unknown; message?: unknown }
     if (typeof name === "string" && closedDatabaseErrorNames.has(name)) {
       return true

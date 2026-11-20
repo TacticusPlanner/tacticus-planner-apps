@@ -1,3 +1,4 @@
+import { recommendationVariants } from "./recommendation-variants"
 import type { GameCatalogGuildRaidMetaRecommendation } from "@workspace/game-catalog"
 
 import { matchGuildRaidCandidates } from "./match-guild-raid-candidates"
@@ -128,8 +129,8 @@ export function resolveGuildRaidLineup(params: {
   threshold: GuildRaidInvestmentThreshold | null
 }): GuildRaidLineup {
   const { recommendation, roster, threshold } = params
-  const heroSlots = recommendation.heroSlots ?? []
-  const mowSubstitutes = recommendation.mowReplacementIds ?? []
+  const { heroSlots, mowReplacementIds: mowSubstitutes } =
+    recommendationVariants(recommendation)
 
   const characterReadiness = threshold
     ? (characterId: string) =>

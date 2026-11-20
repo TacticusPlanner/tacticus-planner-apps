@@ -279,7 +279,8 @@ export function calculateGoalFarmingStages(params: GoalRequirementParams) {
     // True once at least one track produced stage targets — distinguishes "nothing to raise"
     // (return null, like a Rank goal with an empty range) from "raised, but crafted inventory
     // covers every material" (return the empty-after-filter array, an applicable empty result).
-    let anyStageTargets = false
+    // Set inside trackStages, which TypeScript's narrowing does not follow.
+    let anyStageTargets = false as boolean
 
     // Stages for one advancing track — the other track is pinned to its own start so this stage's
     // `abilityResourceNeed` yields only this track's materials.

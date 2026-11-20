@@ -259,7 +259,7 @@ export function computeGoalAcquisition(params: {
     }
   }
 
-  if (shopSource && params.shops?.length) {
+  if (shopSource && params.shops && params.shops.length > 0) {
     const offers = resolveUnitShardShopOffers(params.shops, detail.entityId)
     for (const offer of offers) {
       // A selected mythic Shop offer feeds the day-loop only when Onslaught already put the goal's
@@ -271,7 +271,11 @@ export function computeGoalAcquisition(params: {
     }
   }
 
-  if (takesMythicMaterialSources(detail) && params.shops?.length) {
+  if (
+    takesMythicMaterialSources(detail) &&
+    params.shops &&
+    params.shops.length > 0
+  ) {
     const materialIds = neededMythicMaterialIds(
       (need.upgrades ?? []).map((upgrade) => upgrade.id),
       params.upgradesById

@@ -25,6 +25,7 @@ vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 import { navItems } from "./nav-items"
 import type { NavItem } from "./nav-items"
 import { SectionTabs } from "./section-tabs"
+import { hasNode } from "@/shared/lib"
 
 /** Reports the current pathname, and offers a Back control so a test can tell one pushed history
  * entry from none: seed `previousEntry`, press Back, and read where it lands. */
@@ -57,7 +58,7 @@ function renderTabs(
     <MemoryRouter initialEntries={entries} initialIndex={entries.length - 1}>
       <SectionTabs item={item} />
       <LocationProbe />
-      {options.routes ? <Routes>{options.routes}</Routes> : null}
+      {hasNode(options.routes) ? <Routes>{options.routes}</Routes> : null}
     </MemoryRouter>
   )
 }

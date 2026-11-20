@@ -113,7 +113,7 @@ async function readError(response: Response): Promise<ApiError> {
   } catch {
     return new ApiError(response.status, generic, { retryAfterSeconds })
   }
-  if (!body || typeof body !== "object") {
+  if (typeof body !== "object" || body === null) {
     return new ApiError(response.status, generic, { retryAfterSeconds })
   }
   const {
@@ -128,7 +128,7 @@ async function readError(response: Response): Promise<ApiError> {
     Object.entries(body).filter(([key]) => !PROBLEM_MEMBERS.has(key))
   )
   const errors =
-    rawErrors && typeof rawErrors === "object"
+    typeof rawErrors === "object" && rawErrors !== null
       ? (rawErrors as Record<string, string[]>)
       : undefined
   const text = (value: unknown) =>

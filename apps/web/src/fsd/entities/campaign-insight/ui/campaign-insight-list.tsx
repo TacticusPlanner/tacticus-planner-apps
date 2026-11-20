@@ -16,7 +16,7 @@ import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import { rarityRank } from "@workspace/game-domain"
 import type { Rarity, UpgradeId } from "@workspace/game-domain"
 
-import { useCampaignDisplay } from "@/shared/lib"
+import { useCampaignDisplay, firstDifference } from "@/shared/lib"
 import { EntityIcon, LocationChips, UpgradeIcon } from "@/shared/ui"
 
 import type {
@@ -100,7 +100,8 @@ export function CampaignInsightList<TId extends string>({
                     {insight.label}
                   </span>
                 )}
-                {renderSummary ? null : insight.tierScores?.length ? (
+                {renderSummary ? null : insight.tierScores &&
+                  insight.tierScores.length > 0 ? (
                   <span className="flex shrink-0 gap-2 text-xs text-muted-foreground tabular-nums">
                     {insight.tierScores.map(({ tier, score }) => (
                       <span key={tier}>
@@ -203,9 +204,11 @@ function groupContributions<TId extends string>(
     }
     groups.set(contribution.upgradeId, group)
   }
-  return [...groups.values()].toSorted(
-    (a, b) =>
+  return [...groups.values()].toSorted((a, b) =>
+    firstDifference(
       rarityRank(b.resource?.rarity ?? "Common") -
-        rarityRank(a.resource?.rarity ?? "Common") || b.value - a.value
+        rarityRank(a.resource?.rarity ?? "Common"),
+      b.value - a.value
+    )
   )
 }

@@ -29,11 +29,12 @@ function renderRouter(
         children: [
           {
             path: "/",
-            element: shellError ? (
-              <Throwing error={shellError} />
-            ) : (
-              <div data-testid="landing" />
-            ),
+            element:
+              shellError === undefined ? (
+                <div data-testid="landing" />
+              ) : (
+                <Throwing error={shellError} />
+              ),
           },
           {
             element: (

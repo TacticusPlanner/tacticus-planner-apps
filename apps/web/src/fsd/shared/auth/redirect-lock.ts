@@ -42,8 +42,8 @@ function readLock(): RedirectLock | null {
   try {
     const parsed: unknown = JSON.parse(safeStorage.get(LOCK_KEY) ?? "null")
     if (
-      parsed &&
       typeof parsed === "object" &&
+      parsed !== null &&
       typeof (parsed as RedirectLock).tab === "string" &&
       typeof (parsed as RedirectLock).at === "number"
     ) {

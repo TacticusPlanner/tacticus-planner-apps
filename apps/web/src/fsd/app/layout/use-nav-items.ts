@@ -96,6 +96,7 @@ export function useNavItems(): NavItem[] {
       navItems.map((item) => {
         const children = item.children?.filter(
           (child) =>
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- FeatureFlag is `never` while no flag is defined; this check is the extension point for the next one.
             child.featureFlag === undefined ||
             enabledFlags.includes(child.featureFlag)
         )

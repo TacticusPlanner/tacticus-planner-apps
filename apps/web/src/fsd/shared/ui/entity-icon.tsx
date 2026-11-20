@@ -30,7 +30,7 @@ export function EntityIcon({
   // Track which src failed (rather than a boolean reset by an effect) so a new src is retried for free.
   const [erroredSrc, setErroredSrc] = useState<string | null>(null)
 
-  if (src && typeof src === "object") {
+  if (typeof src === "object" && src !== null) {
     return <LayeredEntityIcon icon={src} alt={alt} className={className} />
   }
 
@@ -88,7 +88,11 @@ function IconPlaceholder({
       aria-label={alt || undefined}
       aria-hidden={alt ? undefined : true}
       data-icon-placeholder={kind}
-      style={width && height ? { width, height } : undefined}
+      style={
+        width !== undefined && width > 0 && height !== undefined && height > 0
+          ? { width, height }
+          : undefined
+      }
       className={cn(
         "inline-flex aspect-square shrink-0 items-center justify-center rounded-sm bg-muted text-muted-foreground",
         className,

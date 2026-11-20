@@ -10,7 +10,7 @@ function readStoredEntries(): Record<string, string> {
     const raw = sessionStorage.getItem(STORAGE_KEY)
     if (!raw) return {}
     const parsed: unknown = JSON.parse(raw)
-    return parsed && typeof parsed === "object"
+    return typeof parsed === "object" && parsed !== null
       ? (parsed as Record<string, string>)
       : {}
   } catch {
@@ -79,7 +79,9 @@ export function useSectionEntryPath(navItems: NavItem[], pathname: string) {
 
     const recorded = lastVisitedChild[item.path]
     const isStillValid =
-      recorded && item.children.some((child) => child.path === recorded)
+      recorded !== undefined &&
+      recorded !== "" &&
+      item.children.some((child) => child.path === recorded)
 
     return isStillValid ? recorded : item.path
   }

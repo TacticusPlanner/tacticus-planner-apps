@@ -72,7 +72,11 @@ export interface CampaignInsight<TId extends string = UpgradeId> {
 export function dropRate(location: FarmLocation): number {
   if (location.guaranteed) return 1
   if (location.effectiveRate != null) return location.effectiveRate
-  if (location.numerator != null && location.denominator) {
+  if (
+    location.numerator != null &&
+    location.denominator !== null &&
+    location.denominator > 0
+  ) {
     return location.numerator / location.denominator
   }
   return 0

@@ -154,9 +154,10 @@ describe("listHreInstances", () => {
 describe("missions", () => {
   it("has 20 missions plus the Bonus, two objectives each", () => {
     expect(hreMissions).toHaveLength(21)
-    expect(
-      hreMissions.every((mission) => mission.objectives.length === 2)
-    ).toBe(true)
+    // The type is a pair; the bundled data is what this checks.
+    expect(hreMissions.map((mission) => mission.objectives.length)).toEqual(
+      Array.from({ length: 21 }, () => 2)
+    )
   })
 
   it("clamps the mission number into range", () => {

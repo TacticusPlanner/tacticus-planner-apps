@@ -6,7 +6,8 @@ type EnvironmentVariableName =
   | "VITE_MSAL_TENANT_ID"
 
 export function getRequiredEnvironmentValue(name: EnvironmentVariableName) {
-  const value = import.meta.env[name]?.trim()
+  // Typed as set, but this is the check that it was.
+  const value = (import.meta.env[name] as string | undefined)?.trim()
 
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`)

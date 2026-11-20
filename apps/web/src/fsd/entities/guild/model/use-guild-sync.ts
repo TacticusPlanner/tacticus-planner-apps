@@ -33,8 +33,11 @@ export function useGuildSync(onSynchronized: (guild: RegisteredGuild) => void) {
     onError: (error) => {
       if (isCooldown(error)) {
         setRateLimited(issueOf(error) === "rateLimited")
+        const retryAfter = (error as ApiError).retryAfterSeconds
         setCooldownSeconds(
-          (error as ApiError).retryAfterSeconds || DEFAULT_COOLDOWN_SECONDS
+          retryAfter !== undefined && retryAfter > 0
+            ? retryAfter
+            : DEFAULT_COOLDOWN_SECONDS
         )
       }
     },

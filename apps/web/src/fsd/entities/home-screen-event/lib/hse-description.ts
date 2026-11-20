@@ -5,6 +5,7 @@ import type {
   GameCatalogHseUnitFilter,
   GameCatalogHseVariant,
 } from "@workspace/game-catalog"
+import { firstDifference } from "@/shared/lib"
 
 // Description lines are data, not text (design D6): each is an i18n key with values that are numbers,
 // nested texts (labels resolved from other namespaces) or lists of them. `useHseText` (ui) turns a
@@ -65,7 +66,7 @@ const byOrder = (order: readonly string[]) => (a: string, b: string) => {
     const index = order.indexOf(value)
     return index === -1 ? order.length : index
   }
-  return rank(a) - rank(b) || a.localeCompare(b)
+  return firstDifference(rank(a) - rank(b), a.localeCompare(b))
 }
 
 const humanize = (id: string) =>
@@ -109,7 +110,7 @@ function modesPhrase(gameModes: GameCatalogHseRestriction | null): HseText {
     return text("phrase.modesIn", {
       modes: { list: sorted(gameModes.allowed), join: "and" },
     })
-  if (gameModes?.disallowed?.length)
+  if (gameModes?.disallowed && gameModes.disallowed.length > 0)
     return text("phrase.modesExcept", {
       modes: { list: sorted(gameModes.disallowed), join: "and" },
     })
@@ -163,7 +164,7 @@ function withExclusions(noun: HseText, excluded: HseText[]): HseText {
 /** Plural subject of a modifier line: "Psyker characters", "All characters". */
 function modifierUnits(filter: GameCatalogHseUnitFilter | null): HseText {
   const parts = filterParts(filter)
-  if (filter?.unitIds?.length)
+  if (filter?.unitIds && filter.unitIds.length > 0)
     return text("phrase.named", {
       names: { list: filter.unitIds.map(unitLabel), join: "and" },
     })
@@ -181,7 +182,7 @@ function trackerPlayer(
   filter: GameCatalogHseUnitFilter | null
 ): HseText | null {
   const parts = filterParts(filter)
-  if (filter?.unitIds?.length)
+  if (filter?.unitIds && filter.unitIds.length > 0)
     return text("phrase.named", {
       names: { list: filter.unitIds.map(unitLabel), join: "or" },
     })
@@ -199,7 +200,7 @@ function trackerPlayer(
 /** The enemy a kill tracker counts: "enemy unit (excluding Summons)", "Large Squig". */
 function trackerEnemy(filter: GameCatalogHseUnitFilter | null): HseText {
   const parts = filterParts(filter)
-  if (filter?.unitIds?.length)
+  if (filter?.unitIds && filter.unitIds.length > 0)
     return text("phrase.named", {
       names: { list: filter.unitIds.map(unitLabel), join: "or" },
     })

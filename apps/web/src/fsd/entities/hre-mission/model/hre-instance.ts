@@ -1,4 +1,4 @@
-import { compareCodeUnits } from "@/shared/lib"
+import { compareCodeUnits, firstDifference } from "@/shared/lib"
 /** What the HRE selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type HreCalendarEntry = {
   occurrenceId?: string | null
@@ -53,18 +53,20 @@ export function selectHreInstance<TEntry extends HreCalendarEntry>(
       (entry) =>
         Date.parse(entry.startUtc) <= nowMs && nowMs < Date.parse(entry.endUtc)
     )
-    .toSorted(
-      (a, b) =>
-        Date.parse(b.startUtc) - Date.parse(a.startUtc) ||
+    .toSorted((a, b) =>
+      firstDifference(
+        Date.parse(b.startUtc) - Date.parse(a.startUtc),
         compareCodeUnits(instanceKey(a), instanceKey(b))
+      )
     )[0]
   if (running) return toInstance(running, "running")
   const next = events
     .filter((entry) => Date.parse(entry.startUtc) > nowMs)
-    .toSorted(
-      (a, b) =>
-        Date.parse(a.startUtc) - Date.parse(b.startUtc) ||
+    .toSorted((a, b) =>
+      firstDifference(
+        Date.parse(a.startUtc) - Date.parse(b.startUtc),
         compareCodeUnits(instanceKey(a), instanceKey(b))
+      )
     )[0]
   return next ? toInstance(next, "upcoming") : null
 }
@@ -96,10 +98,11 @@ export function listHreInstances<TEntry extends HreCalendarEntry>(
     if (!byKey.has(key))
       byKey.set(key, toInstance(entry, statusAt(entry, nowMs)))
   }
-  return [...byKey.values()].toSorted(
-    (a, b) =>
-      Date.parse(a.entry.startUtc) - Date.parse(b.entry.startUtc) ||
+  return [...byKey.values()].toSorted((a, b) =>
+    firstDifference(
+      Date.parse(a.entry.startUtc) - Date.parse(b.entry.startUtc),
       compareCodeUnits(a.key, b.key)
+    )
   )
 }
 

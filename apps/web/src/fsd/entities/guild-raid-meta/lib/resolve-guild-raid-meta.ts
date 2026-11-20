@@ -1,3 +1,4 @@
+import { recommendationVariants } from "./recommendation-variants"
 import { characterIcon, mowIcon } from "@workspace/game-catalog"
 import type {
   GameCatalogGuildRaidMeta,
@@ -176,28 +177,27 @@ export function createGuildRaidMetaPresentationResolver({
     resolveSignature,
     resolveRole,
     resolveKind,
-    resolveRecommendation: (recommendation) => ({
-      recommendation,
-      kind: resolveKind(recommendation.kind),
-      heroes: (recommendation.heroSlots ?? []).map((slot) =>
-        resolveCharacter(slot.heroId)
-      ),
-      // A recommendation cached before variant rules existed carries neither field at runtime even
-      // though the current type declares them required — fall back to empty rather than crash while
-      // that stale row is still on screen, mid-rollout.
-      heroSlots: (recommendation.heroSlots ?? []).map(resolveHeroSlot),
-      mow: resolveMow(recommendation.mowId),
-      mowReplacements: (recommendation.mowReplacementIds ?? []).map(resolveMow),
-      comps: recommendation.compIds.map((compId) => {
-        const comp = meta.comps.find((candidate) => candidate.id === compId)
-        return {
-          id: compId,
-          signature: comp
-            ? resolveSignature(comp.signatureUnitId)
-            : unknownUnit(compId),
-        }
-      }),
-    }),
+    resolveRecommendation: (recommendation) => {
+      const { heroSlots, mowReplacementIds } =
+        recommendationVariants(recommendation)
+      return {
+        recommendation,
+        kind: resolveKind(recommendation.kind),
+        heroes: heroSlots.map((slot) => resolveCharacter(slot.heroId)),
+        heroSlots: heroSlots.map(resolveHeroSlot),
+        mow: resolveMow(recommendation.mowId),
+        mowReplacements: mowReplacementIds.map(resolveMow),
+        comps: recommendation.compIds.map((compId) => {
+          const comp = meta.comps.find((candidate) => candidate.id === compId)
+          return {
+            id: compId,
+            signature: comp
+              ? resolveSignature(comp.signatureUnitId)
+              : unknownUnit(compId),
+          }
+        }),
+      }
+    },
     resolveSource: (sourceId) => {
       if (sourceId === terminusMaximusSourceId) {
         return {

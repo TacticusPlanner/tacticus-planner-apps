@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
+import { hasNode } from "@/shared/lib"
 
 // Mirrors site.webmanifest's `background_color` and the static boot markup in index.html, so the
 // installed app's splash, the HTML before the bundle runs and this screen read as one surface.
@@ -47,7 +48,7 @@ export function BootScreen({
             aria-hidden="true"
             className="h-1 w-16 animate-pulse rounded-full bg-white/30 motion-reduce:animate-none"
           />
-          {children ? (
+          {hasNode(children) ? (
             <div className="flex flex-col items-center gap-2">{children}</div>
           ) : null}
         </div>

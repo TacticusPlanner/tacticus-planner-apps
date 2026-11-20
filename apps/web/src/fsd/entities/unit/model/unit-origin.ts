@@ -24,8 +24,11 @@ export function unitLibraryPath(kind: UnitKind, unitId: string): string {
 
 type OriginState = { unitOrigin?: UnitOrigin }
 
+// History state is untrusted: an older build or another page may have written it.
+type StoredOriginState = { unitOrigin?: { kind?: unknown; ids?: unknown } }
+
 export function readUnitOrigin(state: unknown): UnitOrigin | undefined {
-  const origin = (state as OriginState | null | undefined)?.unitOrigin
+  const origin = (state as StoredOriginState | null | undefined)?.unitOrigin
   if (
     !origin ||
     (origin.kind !== "list" && origin.kind !== "collection") ||
@@ -33,7 +36,7 @@ export function readUnitOrigin(state: unknown): UnitOrigin | undefined {
   ) {
     return undefined
   }
-  return origin
+  return { kind: origin.kind, ids: origin.ids }
 }
 
 export function unitOriginState(origin: UnitOrigin): OriginState {

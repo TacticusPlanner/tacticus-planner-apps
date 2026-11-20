@@ -1,4 +1,5 @@
 import type { LegendaryEventLifecycle } from "../model/types"
+import { firstDifference } from "@/shared/lib"
 
 /** A run lasts 7 days from its start (V1's `getLegendaryEventDurationMillis`). Isolated so a
  *  catalog-served duration can replace it. */
@@ -115,9 +116,11 @@ export function orderLegendaryEventsForHub<
     (a.lifecycle.runStartMs ?? Number.MAX_SAFE_INTEGER) -
     (b.lifecycle.runStartMs ?? Number.MAX_SAFE_INTEGER)
   groups.active.sort(byStart)
-  groups.upcoming.sort(
-    (a, b) =>
-      byStart(a, b) || nameOf(a.event).localeCompare(nameOf(b.event), locale)
+  groups.upcoming.sort((a, b) =>
+    firstDifference(
+      byStart(a, b),
+      nameOf(a.event).localeCompare(nameOf(b.event), locale)
+    )
   )
   groups.archived.sort((a, b) =>
     nameOf(a.event).localeCompare(nameOf(b.event), locale)

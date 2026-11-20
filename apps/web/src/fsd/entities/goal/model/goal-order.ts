@@ -1,6 +1,7 @@
 import { apiIssue } from "@/shared/api"
 
 import type { GoalDetail, GoalOrderResponse } from "./types"
+import { firstDifference } from "@/shared/lib"
 
 /** Only an Active/Paused goal holds a position in the account-wide order. */
 export const holdsGlobalPosition = (goal: { status: string }) =>
@@ -15,11 +16,12 @@ export function inFlightInGlobalOrder<
   return goals
     .filter(holdsGlobalPosition)
     .map((goal, index) => ({ goal, index }))
-    .toSorted(
-      (left, right) =>
+    .toSorted((left, right) =>
+      firstDifference(
         (left.goal.globalPriority ?? Number.MAX_SAFE_INTEGER) -
-          (right.goal.globalPriority ?? Number.MAX_SAFE_INTEGER) ||
+          (right.goal.globalPriority ?? Number.MAX_SAFE_INTEGER),
         left.index - right.index
+      )
     )
     .map(({ goal }) => goal)
 }

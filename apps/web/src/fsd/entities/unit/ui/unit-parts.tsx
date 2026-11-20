@@ -62,7 +62,7 @@ export function UnownedDetails({ data }: { data: UnownedUnitTileData }) {
 
   const { shards, unlockShards, mythicShards } = data
   const percent =
-    unlockShards && unlockShards > 0
+    unlockShards !== undefined && unlockShards > 0
       ? Math.min(100, Math.round((shards / unlockShards) * 100))
       : undefined
 
@@ -73,7 +73,7 @@ export function UnownedDetails({ data }: { data: UnownedUnitTileData }) {
           <b className="font-bold">{shards}</b>
           {unlockShards === undefined ? null : `/${unlockShards}`}
         </span>
-        {mythicShards ? (
+        {mythicShards !== undefined && mythicShards > 0 ? (
           <span
             className="inline-flex items-center gap-0.5"
             data-testid="unit-tile-mythic-shards"
