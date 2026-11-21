@@ -113,7 +113,7 @@ export function RaidBossMobilePicker({
               <RaidBossPortrait
                 name={selected.name}
                 src={selected.portraitSrc}
-                className="size-9"
+                size="portrait-sm"
               />
             ) : null}
             <span className="truncate">
@@ -154,7 +154,7 @@ export function RaidBossMobilePicker({
                     <RaidBossPortrait
                       name={member.name}
                       src={member.portraitSrc}
-                      className="size-9"
+                      size="portrait-sm"
                     />
                     <span className="truncate">{member.name}</span>
                     <Check

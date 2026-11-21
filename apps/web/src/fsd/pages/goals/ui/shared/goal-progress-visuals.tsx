@@ -16,6 +16,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { ProgressionBadge, RankBadge } from "@/shared/ui"
+import type { EntityIconSize } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/entities/goal-farming"
 import type { GoalProgress, GoalTargetPreview } from "@/features/goal-planning"
@@ -127,13 +128,13 @@ function GoalTargetPreviewDisplay({
   preview,
   entityType,
   size,
-  rankIconClass,
+  rankIconSize,
   arrowClass,
 }: {
   preview: GoalTargetPreview
   entityType?: string
   size: "md" | "lg"
-  rankIconClass?: string
+  rankIconSize: EntityIconSize
   arrowClass: string
 }) {
   switch (preview.kind) {
@@ -144,14 +145,14 @@ function GoalTargetPreviewDisplay({
           data-testid="goal-target-preview"
         >
           <RankBadge
-            iconClassName={rankIconClass}
+            size={rankIconSize}
             rank={preview.start}
             showLabel={false}
             tooltip
           />
           <ArrowRight className={arrowClass} />
           <RankBadge
-            iconClassName={rankIconClass}
+            size={rankIconSize}
             rank={preview.target}
             showLabel={false}
             tooltip
@@ -236,7 +237,7 @@ export function GoalTargetDisplay({
 }) {
   const { t } = useTranslation()
   const large = size === "lg"
-  const rankIconClass = large ? "size-8" : undefined
+  const rankIconSize: EntityIconSize = large ? "row" : "inline"
   // `w-max` on each target row: the Goal column shrinks to its content's minimum width, and Tailwind's
   // `max-width: 100%` on images gives a row of icons almost none, which squashed them into the next cell.
   const arrowClass = cn("text-muted-foreground", large ? "size-4" : "size-3.5")
@@ -247,7 +248,7 @@ export function GoalTargetDisplay({
         arrowClass={arrowClass}
         entityType={entityType}
         preview={progress.preview}
-        rankIconClass={rankIconClass}
+        rankIconSize={rankIconSize}
         size={size}
       />
     ) : null
@@ -256,7 +257,7 @@ export function GoalTargetDisplay({
   return progress.kind === "Rank" ? (
     <span className="flex w-max items-center gap-1.5">
       <RankBadge
-        iconClassName={rankIconClass}
+        size={rankIconSize}
         rank={progress.current}
         showLabel={false}
         tooltip
@@ -265,7 +266,7 @@ export function GoalTargetDisplay({
       {/* Emblems only: the rank name is each emblem's tooltip and accessible name. The `(n/6)` marker
           below is a target modifier, so it stays. */}
       <RankBadge
-        iconClassName={rankIconClass}
+        size={rankIconSize}
         rank={progress.target}
         showLabel={false}
         tooltip

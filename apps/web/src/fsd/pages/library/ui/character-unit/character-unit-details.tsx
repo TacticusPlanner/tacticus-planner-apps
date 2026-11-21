@@ -138,12 +138,7 @@ export function CharacterUnitDetails({
     <span className="inline-flex items-center gap-1.5">
       {t("characterUnit.compare.subtitle")}
       <CompactProgression iconClassName="size-4" value="Mythic:MythicWings" />
-      <RankBadge
-        iconClassName="size-4"
-        rank={Rank.Adamantine2}
-        showLabel={false}
-        tooltip
-      />
+      <RankBadge rank={Rank.Adamantine2} showLabel={false} tooltip />
     </span>
   )
 
@@ -222,12 +217,7 @@ export function CharacterUnitDetails({
           )}
           {section(
             "stats",
-            <RankBadge
-              rank={shownRank}
-              showLabel={false}
-              tooltip
-              iconClassName="size-4"
-            />,
+            <RankBadge rank={shownRank} showLabel={false} tooltip />,
             t("characterUnit.statsByRank.title"),
             "",
             statsByRank

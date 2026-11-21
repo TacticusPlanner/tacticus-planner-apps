@@ -111,9 +111,10 @@ export function IncursionTeam({
               data-unit-id={member.id}
             >
               <EntityIcon
+                size="portrait-sm"
                 src={characterIcon(member.id as UnitId)}
                 alt=""
-                className="size-7 rounded-sm"
+                className="rounded-sm"
               />
               <span className="max-w-28 truncate">{name}</span>
             </li>

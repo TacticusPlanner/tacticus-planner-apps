@@ -54,16 +54,14 @@ export function NpcDetailHeader({
         <NpcPortrait
           variationId={selectedVariationId}
           name={name}
-          className="size-16"
+          size="portrait-md"
         />
         <div className="min-w-0">
           <h2 className="truncate text-lg font-semibold" data-testid="npc-name">
             {name}
           </h2>
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            {emblem ? (
-              <EntityIcon src={emblem} alt="" className="size-4" />
-            ) : null}
+            {emblem ? <EntityIcon size="inline" src={emblem} alt="" /> : null}
             <span className="truncate">{factionName}</span>
           </p>
           {selectedLevel ? (

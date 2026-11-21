@@ -46,7 +46,12 @@ function AbilityChip({
 
   const chip = (
     <span className="flex items-center gap-1.5">
-      <EntityIcon src={abilityIcon(id)} alt="" className="size-6 shrink-0" />
+      <EntityIcon
+        size="row"
+        src={abilityIcon(id)}
+        alt=""
+        className="shrink-0"
+      />
       <span className="truncate">{name}</span>
     </span>
   )

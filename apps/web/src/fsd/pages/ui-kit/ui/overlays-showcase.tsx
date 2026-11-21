@@ -131,24 +131,27 @@ export function OverlaysShowcase() {
               <div className="flex flex-col gap-3 px-4 pb-2 text-sm text-muted-foreground">
                 <p className="flex items-center gap-1.5">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                     src={energyIconUrl}
                   />
                   Indomitus: 120 energy
                 </p>
                 <p className="flex items-center gap-1.5">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                     src={energyIconUrl}
                   />
                   Octarius Mirror: 60 energy
                 </p>
                 <p className="flex items-center gap-1.5">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                     src={energyIconUrl}
                   />
                   Event nodes: 50 energy

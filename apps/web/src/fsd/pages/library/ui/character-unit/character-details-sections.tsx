@@ -90,7 +90,7 @@ function AttackRow({
       data-testid={`unit-attack-${kind}`}
     >
       <dt className="flex w-24 items-center gap-1.5 text-sm text-muted-foreground">
-        <EntityIcon src={statIcon(kind)} alt="" className="size-4" />
+        <EntityIcon size="inline" src={statIcon(kind)} alt="" />
         {t(`characterUnit.glance.${kind}`)}
       </dt>
       <dd className="flex flex-wrap items-center gap-1.5">
@@ -98,11 +98,7 @@ function AttackRow({
           {t("characterUnit.glance.hits", { count: hits })}
         </span>
         <span className={chip}>
-          <EntityIcon
-            src={damageTypeIcon(damageType)}
-            alt=""
-            className="size-4"
-          />
+          <EntityIcon size="inline" src={damageTypeIcon(damageType)} alt="" />
           {t(`damageTypes:${damageType}`, { defaultValue: damageType })}
           {pierce !== undefined ? (
             <Tooltip>
@@ -180,9 +176,10 @@ export function AtAGlance({
           >
             <dt className="flex items-center gap-1 text-xs text-muted-foreground">
               <EntityIcon
+                size="inline"
                 src={statIcon(box.key)}
                 alt=""
-                className="size-4 shrink-0"
+                className="shrink-0"
               />
               <span className="truncate">
                 {t(`characterUnit.glance.${box.key}`, {
@@ -266,7 +263,7 @@ export function TraitsList({ traits }: { traits: readonly string[] }) {
             data-testid={`unit-trait-${trait}`}
           >
             <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
-              <EntityIcon src={traitIcon(trait)} alt="" className="size-7" />
+              <EntityIcon size="row" src={traitIcon(trait)} alt="" />
             </span>
             <div className="min-w-0">
               <p className="text-base font-semibold">

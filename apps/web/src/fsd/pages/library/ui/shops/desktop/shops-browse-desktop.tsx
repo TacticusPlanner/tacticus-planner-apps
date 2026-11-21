@@ -42,8 +42,9 @@ export function ShopsBrowseDesktop({
           {LIBRARY_SHOP_IDS.map((value) => (
             <TabsTrigger key={value} value={value}>
               <EntityIcon
+                size="inline"
                 alt=""
-                className="size-5 shrink-0"
+                className="shrink-0"
                 src={shopIcon(value)}
               />
               {t(`shops.shopName.${value}`)}

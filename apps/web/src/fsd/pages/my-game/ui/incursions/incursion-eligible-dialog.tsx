@@ -108,9 +108,10 @@ export function IncursionEligibleDialog({
                     )}
                   </span>
                   <EntityIcon
+                    size="portrait-sm"
                     src={characterIcon(unit.id as UnitId)}
                     alt=""
-                    className="size-8 shrink-0 rounded-sm"
+                    className="shrink-0 rounded-sm"
                   />
                   <span className="min-w-0 flex-1 space-y-0.5">
                     <span className="block truncate">{name}</span>
@@ -124,7 +125,6 @@ export function IncursionEligibleDialog({
                             rank={unit.rank}
                             showLabel={false}
                             tooltip
-                            iconClassName="size-4"
                           />
                         ) : null}
                       </span>
@@ -134,21 +134,23 @@ export function IncursionEligibleDialog({
                     unit.traits.includes(trait)
                   ).map((trait) => (
                     <EntityIcon
+                      size="inline"
                       key={trait}
                       src={traitIcon(trait)}
                       alt={trait}
-                      className="size-5 shrink-0"
+                      className="shrink-0"
                     />
                   ))}
                   <EntityIcon
+                    size="inline"
                     src={factionIcon(unit.faction)}
                     alt={t(`factions:${unit.faction}`, {
                       defaultValue: unit.faction,
                     })}
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                   />
                   <span className="flex w-24 shrink-0 items-center justify-end gap-1 tabular-nums">
-                    <EntityIcon src={powerIcon()} alt="" className="size-4" />
+                    <EntityIcon size="inline" src={powerIcon()} alt="" />
                     {number.format(Math.round(unit.power))}
                   </span>
                 </button>

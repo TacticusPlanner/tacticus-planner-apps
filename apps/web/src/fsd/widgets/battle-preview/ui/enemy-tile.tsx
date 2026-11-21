@@ -43,7 +43,7 @@ export function EnemyTile({
       data-testid="battle-enemy-tile"
       type="button"
     >
-      <NpcPortrait className="size-10" name={name} variationId={tile.npcId} />
+      <NpcPortrait size="portrait-sm" name={name} variationId={tile.npcId} />
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="flex min-w-0 items-baseline gap-1">
           <span className="truncate text-sm font-medium">{name}</span>

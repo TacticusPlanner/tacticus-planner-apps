@@ -79,8 +79,9 @@ export function ShopsToolbar({
                 {LIBRARY_SHOP_IDS.map((value) => (
                   <SelectItem key={value} value={value}>
                     <EntityIcon
+                      size="inline"
                       alt=""
-                      className="size-5 shrink-0"
+                      className="shrink-0"
                       src={shopIcon(value)}
                     />
                     {t(`shops.shopName.${value}`)}

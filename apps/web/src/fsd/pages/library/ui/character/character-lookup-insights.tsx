@@ -37,7 +37,7 @@ export function TopRarityChip({
             id={upgrade.id}
             rarity={upgrade.rarity}
             crafted={upgrade.crafted}
-            className="size-15"
+            size="tile"
           />
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium">{upgrade.label}</p>
@@ -61,7 +61,8 @@ export function TopRarityChip({
         id={upgrade.id}
         rarity={upgrade.rarity}
         crafted={upgrade.crafted}
-        className="size-10 shrink-0"
+        size="tile"
+        className="shrink-0"
       />
       <div className="flex min-w-0 flex-col">
         <RarityIcon rarity={upgrade.rarity} className="size-4" />

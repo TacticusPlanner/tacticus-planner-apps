@@ -141,7 +141,8 @@ function EventDetailsPopover({
         <PopoverHeader>
           <div className="flex items-center gap-3">
             <EventIcon
-              className="size-10 shrink-0"
+              size="tile"
+              className="shrink-0"
               definitionId={entry.definitionId}
               definitionType={entry.definitionType}
               parameters={entry.parameters}
@@ -283,10 +284,8 @@ export function EventBar({
       >
         {entry.phases.length > 0 ? <PhaseOverlay entry={entry} /> : null}
         <EventIcon
-          className={cn(
-            "shrink-0",
-            isBreak ? "size-3.5" : compact ? "size-5" : "size-7"
-          )}
+          size={isBreak || compact ? "inline" : "row"}
+          className="shrink-0"
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}
@@ -337,7 +336,8 @@ export function EventAgendaRow({
         type="button"
       >
         <EventIcon
-          className="size-8 shrink-0"
+          size="row"
+          className="shrink-0"
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}
@@ -390,7 +390,7 @@ export function OngoingEventTile({
         type="button"
       >
         <EventIcon
-          className="size-10"
+          size="tile"
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}

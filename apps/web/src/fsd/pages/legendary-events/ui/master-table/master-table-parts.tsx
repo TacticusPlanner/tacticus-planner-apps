@@ -42,12 +42,7 @@ export function MasterTableUnit({
             />
           ) : null}
           {row.rank ? (
-            <RankBadge
-              iconClassName="size-4"
-              rank={row.rank}
-              showLabel={false}
-              tooltip
-            />
+            <RankBadge rank={row.rank} showLabel={false} tooltip />
           ) : null}
           {row.owned === false ? (
             <span

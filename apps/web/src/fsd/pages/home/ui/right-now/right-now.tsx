@@ -153,7 +153,7 @@ function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
         data-testid="home-events-row"
         to={row.destination}
       >
-        <HomeEventVisual className="size-12" row={row} />
+        <HomeEventVisual size="tile" row={row} />
         <span className="min-w-0 space-y-1">
           <span className="flex flex-wrap items-center gap-2 font-semibold">
             {eventName(row)}

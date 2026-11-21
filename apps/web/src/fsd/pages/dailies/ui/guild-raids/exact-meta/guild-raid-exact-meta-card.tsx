@@ -213,7 +213,6 @@ function OptionRow({
             rank={option.unit.investment.rank}
             showLabel={false}
             tooltip
-            iconClassName="size-4"
           />
         ) : null}
         {option.readiness === undefined ? null : (

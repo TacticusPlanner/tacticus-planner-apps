@@ -77,9 +77,9 @@ function RarityTier({
   return (
     <span className="inline-flex items-center gap-1">
       <EntityIcon
+        size="inline"
         src={rarityIcon(rarity)}
         alt={t(`rarities.${rarity}`, { defaultValue: rarity })}
-        className="size-4"
       />
       {index}
     </span>
@@ -336,7 +336,7 @@ export function RaidBossDetail({
                 <RaidBossPortrait
                   name={enemy.name}
                   src={enemy.iconSrc}
-                  className="size-8"
+                  size="portrait-sm"
                 />
                 <span className="text-muted-foreground">{enemy.name}</span>
               </li>

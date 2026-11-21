@@ -270,11 +270,7 @@ function NpcTile({
       data-testid="npc-tier-tile"
       type="button"
     >
-      <NpcPortrait
-        className={isMobile ? "size-12" : "size-14"}
-        name={name}
-        variationId={tile.npcId}
-      />
+      <NpcPortrait size="portrait-md" name={name} variationId={tile.npcId} />
       <span className="line-clamp-2 w-16 text-xs/tight">{name}</span>
       <span className="text-xs text-muted-foreground tabular-nums">
         {multiplier}

@@ -140,7 +140,8 @@ function StatusFrame({
     <div className="flex items-start gap-3" data-testid={testId}>
       {entry ? (
         <EventIcon
-          className="size-12 shrink-0"
+          size="tile"
+          className="shrink-0"
           definitionId={entry.definitionId}
           definitionType="HomeScreenEvent"
           parameters={entry.parameters ?? null}

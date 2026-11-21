@@ -292,9 +292,9 @@ function StoryCard({
       {/* `flex` replaces the header's default grid, so icon, title and percent share one row. */}
       <CardHeader className="flex flex-row items-center gap-3">
         <EntityIcon
+          size="tile"
           src={first && campaignIcon(first.definition.groupId, first.type)}
           alt=""
-          className="size-10"
         />
         <div className="min-w-0 flex-1">
           <CardTitle>
@@ -311,10 +311,11 @@ function StoryCard({
           <div className="flex gap-2">
             {story.coreCharacters.map((id) => (
               <EntityIcon
+                size="portrait-sm"
                 key={id}
                 src={characterIcon(id as UnitId)}
                 alt={id}
-                className="size-10 rounded-sm"
+                className="rounded-sm"
               />
             ))}
           </div>
@@ -345,7 +346,7 @@ function StoryCard({
                 {track.medals ? (
                   <MedalStats stats={track.medals} />
                 ) : (
-                  <EntityIcon alt="" src={medalIcon} className="size-4" />
+                  <EntityIcon size="inline" alt="" src={medalIcon} />
                 )}
                 <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap">
                   {t("dailies:battleProgress.edit")}

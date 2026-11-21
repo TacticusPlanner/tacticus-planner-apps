@@ -51,7 +51,7 @@ export function IncursionsOverview() {
           data-testid="incursions-countdown"
           data-status={run.status}
         >
-          <EntityIcon alt="" className="size-5" src={countdownIcon()} />
+          <EntityIcon size="inline" alt="" src={countdownIcon()} />
           {t(run.status === "live" ? "event.endsIn" : "event.startsIn", {
             when: formatEventCountdown(
               run.status === "live" ? run.endMs : run.startMs,
@@ -74,11 +74,7 @@ export function IncursionsOverview() {
             data-testid="incursions-rules-toggle"
           >
             <span className="flex items-center gap-2 font-semibold">
-              <EntityIcon
-                src={incursionTokenIcon()}
-                alt=""
-                className="size-6"
-              />
+              <EntityIcon size="inline" src={incursionTokenIcon()} alt="" />
               {t("rules.title")}
             </span>
           </AccordionTrigger>
@@ -128,9 +124,10 @@ export function IncursionsOverview() {
                 data-testid={`${testId}-open`}
               >
                 <EntityIcon
+                  size="portrait-md"
                   src={mowIcon(incursion.mowId as UnitId)}
                   alt=""
-                  className="size-14 shrink-0 rounded-sm"
+                  className="shrink-0 rounded-sm"
                 />
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <p className="truncate font-semibold">{name}</p>

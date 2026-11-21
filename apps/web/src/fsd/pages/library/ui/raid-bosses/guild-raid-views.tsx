@@ -22,7 +22,7 @@ function ChestLabel({ chestId }: { chestId: string }) {
   if (!tier) return <span>{t("raidBosses.chest", { chest: chestId })}</span>
   return (
     <span className="flex items-center gap-1">
-      <EntityIcon src={chestIcon(tier)} alt="" className="size-5" />
+      <EntityIcon size="inline" src={chestIcon(tier)} alt="" />
       {t("raidBosses.chest", { chest: t(`raidBosses.chestTiers.${tier}`) })}
     </span>
   )

@@ -52,7 +52,7 @@ export function IncursionPower({
       data-testid={testId}
       data-standing={standing}
     >
-      <EntityIcon src={powerIcon()} alt="" className="size-4 shrink-0" />
+      <EntityIcon size="inline" src={powerIcon()} alt="" className="shrink-0" />
       {number.format(Math.round(power))}
     </span>
   )

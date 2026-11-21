@@ -113,15 +113,17 @@ export function UnitList({
                 >
                   <span className="relative">
                     <EntityIcon
+                      size="portrait-md"
                       src={iconFor(item.id)}
                       alt=""
-                      className="size-14 rounded-full bg-muted"
+                      className="rounded-full bg-muted"
                     />
                     {emblem ? (
                       <EntityIcon
+                        size="badge-md"
                         src={emblem}
                         alt={item.factionName}
-                        className="absolute -right-1 -bottom-1 size-5 rounded-full bg-background p-0.5"
+                        className="absolute -right-1 -bottom-1 rounded-full bg-background p-0.5"
                       />
                     ) : null}
                   </span>

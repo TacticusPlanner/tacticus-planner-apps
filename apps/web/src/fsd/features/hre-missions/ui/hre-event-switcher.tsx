@@ -69,7 +69,8 @@ export function HreEventSwitcher({
               />
             ) : (
               <EventIcon
-                className="size-6 shrink-0"
+                size="inline"
+                className="shrink-0"
                 definitionId={instance.entry.definitionId}
                 definitionType="NewCharacterEvent"
               />

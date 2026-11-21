@@ -25,9 +25,10 @@ export function UnitProfile({ profile }: { profile: UnitProfileViewModel }) {
     <Card className="gap-4 py-4" data-testid="unit-profile">
       <CardHeader className="flex flex-row items-center gap-3 px-4">
         <EntityIcon
+          size="portrait-md"
           src={characterIcon(profile.id)}
           alt=""
-          className="size-16 shrink-0 rounded-full"
+          className="shrink-0 rounded-full"
         />
         <div className="min-w-0">
           <p className="truncate text-lg font-semibold">{profile.name}</p>
@@ -85,9 +86,9 @@ export function UnitProfile({ profile }: { profile: UnitProfileViewModel }) {
                 className="gap-1 font-normal"
               >
                 <EntityIcon
+                  size="inline"
                   src={equipmentSlotIcon(slot)}
                   alt=""
-                  className="size-4"
                 />
                 {t(`equipment:slots.${slot}`, { defaultValue: slot })}
               </Badge>
@@ -103,7 +104,7 @@ export function UnitProfile({ profile }: { profile: UnitProfileViewModel }) {
                 variant="outline"
                 className="gap-1 font-normal"
               >
-                <EntityIcon src={traitIcon(trait)} alt="" className="size-4" />
+                <EntityIcon size="inline" src={traitIcon(trait)} alt="" />
                 {t(`traits:${trait}`, { defaultValue: trait })}
               </Badge>
             ))}
@@ -145,7 +146,7 @@ function StatRow({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <EntityIcon src={icon} alt={label} className="size-6 opacity-80" />
+      <EntityIcon size="inline" src={icon} alt={label} className="opacity-80" />
       <span className="text-sm text-muted-foreground">{label}</span>
       <span className="font-medium tabular-nums">{value}</span>
       {children}
@@ -157,7 +158,7 @@ function DamageTypeChip({ type }: { type: string }) {
   const { t } = useTranslation(["damageTypes"])
   return (
     <Badge variant="outline" className="gap-1 font-normal">
-      <EntityIcon src={damageTypeIcon(type)} alt="" className="size-4" />
+      <EntityIcon size="inline" src={damageTypeIcon(type)} alt="" />
       {t(`damageTypes:${type}`, { defaultValue: type })}
     </Badge>
   )
@@ -191,7 +192,7 @@ function HdaCell({
   return (
     <div className="flex flex-col gap-1 rounded-md border p-2">
       <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <EntityIcon src={icon} alt="" className="size-4" />
+        <EntityIcon size="inline" src={icon} alt="" />
         {label}
       </span>
       <span className="flex items-baseline gap-1 text-sm tabular-nums">

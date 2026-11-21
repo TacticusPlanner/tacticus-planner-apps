@@ -55,9 +55,9 @@ export function OnslaughtAllianceCard({
       <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle className="flex items-center gap-2">
           <EntityIcon
+            size="inline"
             src={onslaughtAllianceIcon(alliance)}
             alt=""
-            className="size-6"
           />
           {t(`alliances.${alliance}`)}
         </CardTitle>

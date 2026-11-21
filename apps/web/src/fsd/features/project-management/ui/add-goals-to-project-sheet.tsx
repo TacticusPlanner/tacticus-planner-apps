@@ -193,7 +193,6 @@ export function AddGoalsToProjectSheet({
         {text} ·{" "}
         <RankBadge
           className="align-text-bottom"
-          iconClassName="size-4"
           rank={target.rank}
           showLabel={false}
           tooltip

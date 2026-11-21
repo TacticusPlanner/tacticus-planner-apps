@@ -38,8 +38,9 @@ function CurrencyAmount({
   return (
     <span className="inline-flex items-center gap-1 align-middle">
       <EntityIcon
+        size="inline"
         alt={label}
-        className="inline size-3.5 shrink-0"
+        className="inline shrink-0"
         src={shopCurrencyIcon(currencyId)}
       />
       <span className="tabular-nums">{amount.toLocaleString()}</span>
@@ -68,8 +69,9 @@ export function ShopSlotCard({
       >
         <div className="flex items-start gap-2">
           <EntityIcon
+            size="tile"
             alt=""
-            className="size-10 shrink-0"
+            className="shrink-0"
             src={reward.iconUrl}
           />
           <h4 className="min-w-0 flex-1 text-sm font-medium">{reward.label}</h4>
@@ -96,7 +98,7 @@ export function ShopSlotCard({
               {t("shops.randomSlot", { count: slot.rewards.length })}
             </span>
             <Badge className="shrink-0 gap-1" variant="outline">
-              <EntityIcon src={chanceIcon()} alt="" className="size-3.5" />
+              <EntityIcon size="inline" src={chanceIcon()} alt="" />
               {t("shops.randomBadge")}
             </Badge>
           </div>
@@ -105,8 +107,9 @@ export function ShopSlotCard({
             {preview.map((reward) => (
               <li key={reward.rewardType} className="flex items-center gap-1.5">
                 <EntityIcon
+                  size="inline"
                   alt=""
-                  className="size-5 shrink-0"
+                  className="shrink-0"
                   src={reward.iconUrl}
                 />
                 <span className="truncate text-xs">{reward.label}</span>
@@ -151,8 +154,9 @@ export function ShopSlotCard({
             >
               <div className="flex items-start gap-2">
                 <EntityIcon
+                  size="row"
                   alt=""
-                  className="size-9 shrink-0"
+                  className="shrink-0"
                   src={reward.iconUrl}
                 />
                 <h4 className="min-w-0 flex-1 text-sm font-medium">
