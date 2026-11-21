@@ -1120,10 +1120,12 @@ describe("GoalsPage", () => {
       )
       expect(scopeSelect()).toHaveTextContent(/^All goals/)
       await user.click(scopeSelect())
-      await screen.findByTestId("goals-project-scope-option-all")
+      // All goals and the two live projects; the archived one isn't offered.
       expect(
-        screen.queryByTestId("goals-project-scope-option-proj-old")
-      ).not.toBeInTheDocument()
+        (await screen.findAllByRole("option")).map(
+          (option) => option.textContent
+        )
+      ).toEqual(["All goals2", "My Goals (default)1", "Event Prep1"])
     }
   )
 
