@@ -325,6 +325,7 @@ function CharacterUnit({
           unitId={unitId}
           name={name}
           factionId={character.faction}
+          allianceId={character.alliance}
           alliance={t(`npcs.alliances.${character.alliance}`, {
             defaultValue: character.alliance,
           })}

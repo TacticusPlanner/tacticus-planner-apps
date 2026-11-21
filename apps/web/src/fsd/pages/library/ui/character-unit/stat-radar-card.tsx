@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RadarAxisResult } from "../../model/stat-radar"
+import { HowToRead } from "../unit/how-to-read"
 
 const RINGS = [0.25, 0.5, 0.75, 1]
 
@@ -183,12 +184,15 @@ export function StatRadarCard({
             </li>
           ))}
         </ul>
-        <p className="text-xs text-muted-foreground">
+        <HowToRead
+          summary={t("characterUnit.compare.howToRead")}
+          data-testid="unit-compare-how-to-read"
+        >
           {t("characterUnit.compare.footnote", {
             value: armour,
             name: unitName,
           })}
-        </p>
+        </HowToRead>
         <a
           href={DAMAGE_WIKI_URL}
           target="_blank"

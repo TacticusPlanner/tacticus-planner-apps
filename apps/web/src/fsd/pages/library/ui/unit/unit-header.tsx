@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { factionIcon } from "@workspace/game-catalog"
+import { factionIcon, onslaughtAllianceIcon } from "@workspace/game-catalog"
+import type { OnslaughtAllianceIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -30,6 +31,7 @@ export function UnitHeader({
   portraitRarity,
   name,
   factionId,
+  allianceId,
   kindLine,
   ownership,
   signedIn,
@@ -48,6 +50,8 @@ export function UnitHeader({
   portraitRarity: Rarity
   name: string
   factionId: string
+  /** The unit's alliance ("Imperial", "Chaos", "Xenos"); its emblem leads the kind line. */
+  allianceId: string
   /** Shown after the faction chip, e.g. the alliance, or "<alliance> · Machine of War". */
   kindLine: string
   ownership: UnitOwnership
@@ -99,7 +103,7 @@ export function UnitHeader({
               <EntityIcon size="inline" src={factionIcon(factionId)} alt="" />
               {t(`factions:${factionId}`, { defaultValue: factionId })}
             </span>
-            {kindLine}
+            <KindLine allianceId={allianceId} text={kindLine} />
           </p>
           {ownership === "owned" && yourUnit ? (
             <p
@@ -213,4 +217,26 @@ function UnitSignInButton() {
         : t("characterUnit.header.signIn")}
     </Button>
   )
+}
+
+/** The kind line after the faction chip, led by the alliance emblem when the alliance is known. */
+function KindLine({ allianceId, text }: { allianceId: string; text: string }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      {isAlliance(allianceId) ? (
+        <EntityIcon
+          size="inline"
+          src={onslaughtAllianceIcon(allianceId)}
+          alt=""
+        />
+      ) : null}
+      {text}
+    </span>
+  )
+}
+
+const ALLIANCE_IDS = new Set<string>(["Imperial", "Chaos", "Xenos"])
+
+function isAlliance(id: string): id is OnslaughtAllianceIcon {
+  return ALLIANCE_IDS.has(id)
 }

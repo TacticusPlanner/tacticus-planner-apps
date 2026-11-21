@@ -8,6 +8,8 @@ const statIconFile = {
   melee: "ui_icon_stat_melee_01.webp",
   ranged: "ui_icon_stat_rangedattack_01.webp",
   hits: "ui_icon_stat_hit_01.webp",
+  block: "ui_icon_stat_block_01.webp",
+  critDamage: "ui_icon_stat_critdmg_01.webp",
 } satisfies Record<string, string>
 
 export type StatIconKind = keyof typeof statIconFile

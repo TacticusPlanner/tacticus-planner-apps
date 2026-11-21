@@ -105,6 +105,13 @@ export function goldIcon(): string {
   return datamineAssetUrl(`atlases/ui_icon_resource_coin_small.webp`)
 }
 
+/** The Machine of War munition an ability costs. */
+export function mowAmmoIcon(): string {
+  return datamineAssetUrl(
+    `atlases/ui_icon_resource_machines_of_war_ammo_small.webp`
+  )
+}
+
 export function raidTicketIcon(): string {
   return datamineAssetUrl(`atlases/ui_icon_resource_raid_large.webp`)
 }

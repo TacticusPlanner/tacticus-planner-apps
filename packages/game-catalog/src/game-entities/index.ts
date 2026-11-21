@@ -21,6 +21,7 @@ export {
   goldIcon,
   salvageIcon,
   raidTicketIcon,
+  mowAmmoIcon,
   xpBookIcon,
   gameModeTokenIcon,
   type GameModeToken,
@@ -68,6 +69,10 @@ export {
   campaignDescriptor,
   traitIcon,
   damageTypeIcon,
+  unitEffectIcon,
+  tileIcon,
+  medalIcon,
+  milestoneMedalIcon,
   equipmentSlotIcon,
   EquipmentIcons,
   statIcon,
@@ -76,6 +81,9 @@ export {
   heroStarIcon,
 } from "./icons"
 export type {
+  UnitEffectIcon,
+  TileIcon,
+  MilestoneMedal,
   CampaignDescriptor,
   CampaignDifficultyToken,
   StatIconKind,

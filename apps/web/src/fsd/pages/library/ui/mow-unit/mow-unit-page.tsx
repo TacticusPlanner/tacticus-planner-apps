@@ -316,6 +316,7 @@ function MowUnit({
           }
           name={name}
           factionId={mow.faction}
+          allianceId={mow.alliance}
           kindLine={t("mowUnit.header.kind", { alliance: allianceName })}
           ownership={ownership}
           signedIn={isAuthenticated}
