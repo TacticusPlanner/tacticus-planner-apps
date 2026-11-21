@@ -9,12 +9,18 @@ vi.mock("react-i18next", () => ({
 }))
 
 describe("RaidState", () => {
-  it("wraps its message in a card by default", () => {
+  it("shows the shared empty state when there are no goals", () => {
     render(<RaidState state="no-goals" />)
 
-    const state = screen.getByTestId("dailies-no-goals")
-    expect(state).toHaveAttribute("data-slot", "card")
+    const state = screen.getByRole("status")
+    expect(state).toHaveAttribute("data-testid", "dailies-no-goals")
     expect(state).toHaveTextContent("empty.noGoals")
+  })
+
+  it("takes a page's own no-goals sentence", () => {
+    render(<RaidState noGoalsMessage="Schedule copy" state="no-goals" />)
+
+    expect(screen.getByRole("status")).toHaveTextContent("Schedule copy")
   })
 
   it("renders the same message and retry button without a card inline", () => {

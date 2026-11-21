@@ -236,7 +236,6 @@
   "npcs": {
     "title": "PNJ",
     "search": "Buscar PNJ",
-    "searchPlaceholder": "Buscar por nombre…",
     "faction": "Facción",
     "allFactions": "Todas las facciones",
     "damageType": "Tipo de daño",
@@ -440,7 +439,6 @@
   "charactersList": {
     "title": "Personajes",
     "search": "Buscar personajes",
-    "searchPlaceholder": "Buscar por nombre…",
     "noMatching": "Ningún personaje coincide con tu búsqueda.",
     "clearSearch": "Borrar búsqueda",
     "tour": {

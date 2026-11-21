@@ -19,6 +19,7 @@ import type {
 import { UnitGoalBadge } from "@/entities/goal"
 import {
   CompactProgression,
+  EmptyState,
   EntityIcon,
   RankBadge,
   RarityIcon,
@@ -286,20 +287,20 @@ export function LeaderboardEmptyBody({
   const { t } = useTranslation("legendaryEvents")
   if (body.kind === "noneMatch") {
     return (
-      <div
-        className="flex flex-col items-start gap-2 text-sm text-muted-foreground"
-        data-testid="leaderboard-none-match"
-      >
-        <p>{t("leaderboard.noneMatch")}</p>
-        <Button
-          data-testid="leaderboard-clear-filter"
-          onClick={onClearFilter}
-          size="sm"
-          variant="outline"
-        >
-          {t("leaderboard.clearFilter")}
-        </Button>
-      </div>
+      <EmptyState
+        actions={
+          <Button
+            data-testid="leaderboard-clear-filter"
+            onClick={onClearFilter}
+            variant="outline"
+          >
+            {t("leaderboard.clearFilter")}
+          </Button>
+        }
+        description={t("leaderboard.noneMatch")}
+        testId="leaderboard-none-match"
+        variant="no-match"
+      />
     )
   }
   const message = {
@@ -313,11 +314,10 @@ export function LeaderboardEmptyBody({
     noneInTeams: "leaderboard-none-in-teams",
   } as const
   return (
-    <p
-      className="text-sm text-muted-foreground"
-      data-testid={testId[body.kind]}
-    >
-      {t(message[body.kind])}
-    </p>
+    <EmptyState
+      description={t(message[body.kind])}
+      testId={testId[body.kind]}
+      variant={body.kind === "noEligible" ? "empty" : "no-match"}
+    />
   )
 }

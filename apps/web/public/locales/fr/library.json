@@ -236,7 +236,6 @@
   "npcs": {
     "title": "PNJ",
     "search": "Rechercher des PNJ",
-    "searchPlaceholder": "Rechercher par nom…",
     "faction": "Faction",
     "allFactions": "Toutes les factions",
     "damageType": "Type de dégâts",
@@ -440,7 +439,6 @@
   "charactersList": {
     "title": "Personnages",
     "search": "Rechercher des personnages",
-    "searchPlaceholder": "Rechercher par nom…",
     "noMatching": "Aucun personnage ne correspond à votre recherche.",
     "clearSearch": "Effacer la recherche",
     "tour": {

@@ -3,6 +3,8 @@ import { Button } from "@workspace/ui/components/button"
 
 import { useNpcLabels, useRarityFromStars } from "@/entities/npc"
 
+import { EmptyState } from "@/shared/ui"
+
 import { NpcAbilities } from "./npc-abilities"
 import { NpcAttacks } from "./npc-attacks"
 import { NpcDetailHeader } from "./npc-detail-header"
@@ -63,15 +65,16 @@ export function NpcDetail({
 
   if (!selectedVariation || !selectedLevel) {
     return (
-      <div
-        className="flex flex-col items-center gap-4 py-10 text-center text-muted-foreground"
-        data-testid="npcs-no-matching-variation"
-      >
-        <p>{t("npcs.noMatchingVariation")}</p>
-        <Button variant="outline" onClick={onClearFilters}>
-          {t("npcs.clearFilters")}
-        </Button>
-      </div>
+      <EmptyState
+        actions={
+          <Button variant="outline" onClick={onClearFilters}>
+            {t("npcs.clearFilters")}
+          </Button>
+        }
+        description={t("npcs.noMatchingVariation")}
+        testId="npcs-no-matching-variation"
+        variant="no-match"
+      />
     )
   }
 

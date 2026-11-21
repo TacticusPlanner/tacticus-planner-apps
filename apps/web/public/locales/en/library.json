@@ -236,7 +236,6 @@
   "npcs": {
     "title": "NPCs",
     "search": "Search NPCs",
-    "searchPlaceholder": "Search by name…",
     "faction": "Faction",
     "allFactions": "All factions",
     "damageType": "Damage type",
@@ -440,7 +439,6 @@
   "charactersList": {
     "title": "Characters",
     "search": "Search characters",
-    "searchPlaceholder": "Search by name…",
     "noMatching": "No characters match your search.",
     "clearSearch": "Clear search",
     "tour": {
