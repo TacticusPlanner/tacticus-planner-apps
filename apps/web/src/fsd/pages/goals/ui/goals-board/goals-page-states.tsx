@@ -1,11 +1,8 @@
 import { useTranslation } from "react-i18next"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
+import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+
+import { EmptyState } from "@/shared/ui"
 
 import { GoalsFetchError } from "./goals-estimates-error"
 
@@ -18,6 +15,7 @@ export function GoalsPageStates({
   showPristineEmptyState,
   showEmptyProjectState,
   showFilteredEmpty,
+  onClearFilters,
 }: {
   isLoading: boolean
   fetchError: string | null
@@ -25,6 +23,8 @@ export function GoalsPageStates({
   showPristineEmptyState: boolean
   showEmptyProjectState: boolean
   showFilteredEmpty: boolean
+  /** Shown as "Clear filters" on the filtered-empty line while a status or Type filter is set. */
+  onClearFilters?: () => void
 }) {
   const { t } = useTranslation()
   return (
@@ -41,25 +41,19 @@ export function GoalsPageStates({
       ) : null}
 
       {showPristineEmptyState ? (
-        <Card data-testid="goals-page-empty">
-          <CardHeader>
-            <CardTitle>{t("goals.empty.title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-start gap-3 text-sm text-muted-foreground">
-            {t("goals.empty.description")}
-          </CardContent>
-        </Card>
+        <EmptyState
+          description={t("goals.empty.description")}
+          testId="goals-page-empty"
+          title={t("goals.empty.title")}
+        />
       ) : null}
 
       {showEmptyProjectState ? (
-        <Card data-testid="goals-page-empty-project">
-          <CardHeader>
-            <CardTitle>{t("goals.project.emptyProjectTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {t("goals.project.emptyProjectDescription")}
-          </CardContent>
-        </Card>
+        <EmptyState
+          description={t("goals.project.emptyProjectDescription")}
+          testId="goals-page-empty-project"
+          title={t("goals.project.emptyProjectTitle")}
+        />
       ) : null}
 
       {!isLoading &&
@@ -67,12 +61,18 @@ export function GoalsPageStates({
       !showPristineEmptyState &&
       !showEmptyProjectState &&
       showFilteredEmpty ? (
-        <p
-          className="py-10 text-center text-muted-foreground"
-          data-testid="goals-page-filtered-empty"
-        >
-          {t("goals.empty.filtered")}
-        </p>
+        <EmptyState
+          actions={
+            onClearFilters ? (
+              <Button onClick={onClearFilters} variant="outline">
+                {t("filtersControl.clear")}
+              </Button>
+            ) : undefined
+          }
+          description={t("goals.empty.filtered")}
+          testId="goals-page-filtered-empty"
+          variant="no-match"
+        />
       ) : null}
     </>
   )

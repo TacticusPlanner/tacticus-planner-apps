@@ -503,9 +503,14 @@ describe("GoalsPage", () => {
     await user.click(screen.getByTestId("goals-status-filter"))
     await user.click(await screen.findByRole("option", { name: "Reached (0)" }))
 
-    expect(
-      await screen.findByTestId("goals-page-filtered-empty")
-    ).toBeInTheDocument()
+    const empty = await screen.findByTestId("goals-page-filtered-empty")
+    await user.click(
+      within(empty).getByRole("button", { name: "Clear filters" })
+    )
+    expect(await screen.findByText("Hero One")).toBeInTheDocument()
+    expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
+      /All statuses/
+    )
   })
 
   it("lists every goal, reached or not, Active or Paused, under All statuses", async () => {

@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useId, useState } from "react"
+import { useCallback, useId } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { LayoutGrid, List, Search, X } from "lucide-react"
+import { LayoutGrid, List, X } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import type { LucideIcon } from "lucide-react"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -17,13 +16,13 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
-import { cn } from "@workspace/ui/lib/utils"
 
 import {
   FILTER_CHIP_CLASS_NAME,
   FiltersControl,
   GroupByControl,
   PageToolbar,
+  SearchField,
   SegmentedControl,
   useViewPlacement,
 } from "@/shared/ui"
@@ -45,6 +44,9 @@ import type {
 import type { CollectionOptions } from "../../model/use-collection-options"
 import type { QuickFilterAvailability } from "../../model/use-collection-view"
 import { CollectionFilterFields } from "./collection-filter-fields"
+
+/** The search writes the URL, so it waits for a pause in typing. */
+const SEARCH_DELAY_MS = 200
 import { QuickFilterChips } from "./quick-filter-chips"
 
 export interface CollectionToolbarProps {
@@ -113,9 +115,10 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
           aria-label={t("myGame.collection.toolbar.label")}
         >
           <SearchField
-            value={query.search}
+            debounceMs={SEARCH_DELAY_MS}
+            label={t("myGame.collection.toolbar.search")}
             onChange={setSearch}
-            className="min-w-40 flex-1"
+            value={query.search}
           />
           <FiltersControl
             count={activeStandaloneFilterCount(query)}
@@ -149,58 +152,6 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
       }
       viewTestId="collection-view-switch"
     />
-  )
-}
-
-const SEARCH_DELAY_MS = 200
-
-/**
- * The search box keeps what the player types and sends it to the URL once typing pauses, so a
- * keystroke never waits on a navigation and a list rebuild. A URL change made elsewhere (Clear
- * filters, Back) replaces the text; the echo of a value it sent itself does not.
- */
-function SearchField({
-  value,
-  onChange,
-  className,
-}: {
-  value: string
-  onChange: (value: string) => void
-  className?: string
-}) {
-  const { t } = useTranslation("common")
-  const [draft, setDraft] = useState(value)
-  const [followed, setFollowed] = useState(value)
-  const [sent, setSent] = useState<string | null>(null)
-  if (value !== followed) {
-    setFollowed(value)
-    if (value !== sent) setDraft(value)
-  }
-
-  useEffect(() => {
-    if (draft === value) return
-    const timer = setTimeout(() => {
-      setSent(draft)
-      onChange(draft)
-    }, SEARCH_DELAY_MS)
-    return () => clearTimeout(timer)
-  }, [draft, value, onChange])
-
-  return (
-    <div className={cn("relative", className)}>
-      <Search
-        aria-hidden
-        className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-      />
-      <Input
-        type="search"
-        value={draft}
-        onChange={(event) => setDraft(event.target.value)}
-        placeholder={t("myGame.collection.toolbar.searchPlaceholder")}
-        aria-label={t("myGame.collection.toolbar.search")}
-        className="pl-8"
-      />
-    </div>
   )
 }
 

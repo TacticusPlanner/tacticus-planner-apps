@@ -236,7 +236,6 @@
   "npcs": {
     "title": "NPCs",
     "search": "NPCs suchen",
-    "searchPlaceholder": "Nach Name suchen…",
     "faction": "Fraktion",
     "allFactions": "Alle Fraktionen",
     "damageType": "Schadensart",
@@ -440,7 +439,6 @@
   "charactersList": {
     "title": "Charaktere",
     "search": "Charaktere suchen",
-    "searchPlaceholder": "Nach Name suchen…",
     "noMatching": "Keine Charaktere passen zu deiner Suche.",
     "clearSearch": "Suche zurücksetzen",
     "tour": {

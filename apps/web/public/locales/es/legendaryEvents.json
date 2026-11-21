@@ -957,7 +957,6 @@
     },
     "search": {
       "label": "Buscar unidades",
-      "placeholder": "Buscar unidades",
       "clear": "Borrar búsqueda"
     },
     "sort": {

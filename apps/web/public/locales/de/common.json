@@ -394,7 +394,6 @@
       "toolbar": {
         "label": "Einheiten suchen, sortieren und filtern",
         "search": "Einheiten suchen",
-        "searchPlaceholder": "Nach Namen suchen",
         "sort": "Sortierung",
         "sortOptions": {
           "rarity": "Seltenheit",
@@ -2595,5 +2594,9 @@
     "title": "Filter",
     "clear": "Filter zurücksetzen",
     "done": "Fertig"
+  },
+  "searchField": {
+    "placeholder": "Nach Namen suchen",
+    "clear": "Suche zurücksetzen"
   }
 }

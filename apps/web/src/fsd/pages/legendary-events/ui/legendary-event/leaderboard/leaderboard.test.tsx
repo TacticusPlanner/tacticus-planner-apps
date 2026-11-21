@@ -409,6 +409,21 @@ describe("LeaderboardSection", () => {
     fireEvent.click(filterSwitch("Only unlocked"))
     expect(rows()).toHaveLength(0)
     expect(screen.getByTestId("leaderboard-no-unlocked")).toBeInTheDocument()
+
+    act(() => {
+      fireEvent.click(
+        within(screen.getByTestId("leaderboard-no-unlocked")).getByRole(
+          "button",
+          // The Filters dialog is still open, so the page behind it is aria-hidden.
+          { name: "Clear filters", hidden: true }
+        )
+      )
+    })
+    expect(rows().length).toBeGreaterThan(0)
+    expect(filterSwitch("Only unlocked")).toHaveAttribute(
+      "aria-checked",
+      "false"
+    )
   })
 
   it("keeps only the units the lane's teams use with Only in my teams", () => {

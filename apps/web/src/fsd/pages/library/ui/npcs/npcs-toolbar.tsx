@@ -1,9 +1,7 @@
 import { useTranslation } from "react-i18next"
-import { Search } from "lucide-react"
-import { Input } from "@workspace/ui/components/input"
 
 import type { NpcFilters } from "@/entities/npc"
-import { FiltersControl, PageToolbar } from "@/shared/ui"
+import { FiltersControl, PageToolbar, SearchField } from "@/shared/ui"
 
 import { NpcsFilterBar } from "./npcs-filter-bar"
 import type { NpcFilterOptions } from "./npcs-page.view-model"
@@ -33,23 +31,12 @@ export function NpcsToolbar({
     <PageToolbar
       find={
         <>
-          <div className="relative min-w-40 flex-1 sm:max-w-sm">
-            <Search
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              type="search"
-              value={filters.search}
-              onChange={(event) =>
-                onChange({ ...filters, search: event.target.value })
-              }
-              placeholder={t("npcs.searchPlaceholder")}
-              aria-label={t("npcs.search")}
-              className="pl-8"
-              data-testid="npcs-search"
-            />
-          </div>
+          <SearchField
+            label={t("npcs.search")}
+            onChange={(search) => onChange({ ...filters, search })}
+            testId="npcs-search"
+            value={filters.search}
+          />
           <FiltersControl
             count={activeCount}
             onClear={onClear}

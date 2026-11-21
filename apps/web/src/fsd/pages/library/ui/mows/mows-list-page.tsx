@@ -50,7 +50,6 @@ export function MowsListPage() {
         labels={{
           title: t("mowsList.title"),
           search: t("mowsList.search"),
-          searchPlaceholder: t("charactersList.searchPlaceholder"),
           noMatching: t("mowsList.noMatching"),
           clearSearch: t("charactersList.clearSearch"),
         }}

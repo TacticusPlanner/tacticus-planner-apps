@@ -211,7 +211,8 @@
     "more_other": "{{count}} still needed",
     "progress": "{{owned}} of {{target}} owned",
     "fullyRaided": "Fully raided",
-    "battle": "Battle {{node}}"
+    "battle": "Battle {{node}}",
+    "noGoals": "You have no active goals. Create or resume a goal to see the days your raids will take."
   },
   "bonus": {
     "title": "Bonus raids",

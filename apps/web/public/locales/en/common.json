@@ -394,7 +394,6 @@
       "toolbar": {
         "label": "Search, sort and filter units",
         "search": "Search units",
-        "searchPlaceholder": "Search by name",
         "sort": "Sort",
         "sortOptions": {
           "rarity": "Rarity",
@@ -2595,5 +2594,9 @@
     "title": "Filters",
     "clear": "Clear filters",
     "done": "Done"
+  },
+  "searchField": {
+    "placeholder": "Search by name",
+    "clear": "Clear search"
   }
 }

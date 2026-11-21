@@ -19,6 +19,7 @@ import type {
 import { UnitGoalBadge } from "@/entities/goal"
 import {
   CompactProgression,
+  EmptyState,
   EntityIcon,
   RankBadge,
   RarityIcon,
@@ -284,40 +285,42 @@ export function LeaderboardEmptyBody({
   onClearFilter: () => void
 }) {
   const { t } = useTranslation("legendaryEvents")
-  if (body.kind === "noneMatch") {
-    return (
-      <div
-        className="flex flex-col items-start gap-2 text-sm text-muted-foreground"
-        data-testid="leaderboard-none-match"
-      >
-        <p>{t("leaderboard.noneMatch")}</p>
-        <Button
-          data-testid="leaderboard-clear-filter"
-          onClick={onClearFilter}
-          size="sm"
-          variant="outline"
-        >
-          {t("leaderboard.clearFilter")}
-        </Button>
-      </div>
-    )
-  }
   const message = {
     noEligible: "leaderboard.noEligible",
     noUnlocked: "leaderboard.noUnlocked",
     noneInTeams: "leaderboard.noneInTeams",
+    noneMatch: "leaderboard.noneMatch",
   } as const
   const testId = {
     noEligible: "leaderboard-no-eligible",
     noUnlocked: "leaderboard-no-unlocked",
     noneInTeams: "leaderboard-none-in-teams",
+    noneMatch: "leaderboard-none-match",
   } as const
+  // No unit can play here at all: nothing to clear. Every other body comes from a filter.
+  if (body.kind === "noEligible") {
+    return (
+      <EmptyState
+        description={t(message.noEligible)}
+        testId={testId.noEligible}
+        variant="empty"
+      />
+    )
+  }
   return (
-    <p
-      className="text-sm text-muted-foreground"
-      data-testid={testId[body.kind]}
-    >
-      {t(message[body.kind])}
-    </p>
+    <EmptyState
+      actions={
+        <Button
+          data-testid="leaderboard-clear-filter"
+          onClick={onClearFilter}
+          variant="outline"
+        >
+          {t("leaderboard.clearFilter")}
+        </Button>
+      }
+      description={t(message[body.kind])}
+      testId={testId[body.kind]}
+      variant="no-match"
+    />
   )
 }
