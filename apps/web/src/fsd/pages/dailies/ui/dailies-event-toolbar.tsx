@@ -65,7 +65,6 @@ export function DailiesEventToolbar({
               {/* Labelled on mobile too: no icon-only toolbar control (ui-style-guide). */}
               <ProjectSelect
                 allowAll
-                compact={false}
                 onProjectIdChange={context.setProjectId}
                 placeholder={t("project.placeholder")}
                 projectId={context.projectId}

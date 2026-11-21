@@ -29,7 +29,18 @@
     "synced": "Synced {{time}}",
     "notSynced": "Not synced",
     "income": "≈ {{free}} free + {{bonus}} bonus shipment this week",
-    "tba": "Start date TBA"
+    "tba": "Start date TBA",
+    "switcher": {
+      "placeholder": "Choose an event",
+      "empty": "No events in the calendar",
+      "previous": "Previous event",
+      "next": "Next event",
+      "groups": {
+        "running": "Running",
+        "upcoming": "Upcoming",
+        "past": "Past"
+      }
+    }
   },
   "tabs": {
     "label": "Event shop sections",

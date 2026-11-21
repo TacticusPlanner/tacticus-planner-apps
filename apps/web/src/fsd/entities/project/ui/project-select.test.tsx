@@ -81,28 +81,10 @@ describe("ProjectSelect", () => {
     )
   })
 
-  it("renders icon-only below the mobile breakpoint while keeping an accessible name", () => {
+  it("shows the chosen project on mobile too (never icon-only)", () => {
     useIsMobileMock.mockReturnValue(true)
     render(
       <ProjectSelect
-        onProjectIdChange={vi.fn()}
-        placeholder="Select a project"
-        projectId="proj-1"
-        projects={projects}
-        testId="project-select"
-      />
-    )
-
-    const trigger = screen.getByTestId("project-select")
-    expect(trigger).not.toHaveTextContent("My Plan")
-    expect(trigger).toHaveAccessibleName("Select a project")
-  })
-
-  it("shows the full label on mobile when compact is explicitly disabled", () => {
-    useIsMobileMock.mockReturnValue(true)
-    render(
-      <ProjectSelect
-        compact={false}
         onProjectIdChange={vi.fn()}
         projectId="proj-1"
         projects={projects}
@@ -157,12 +139,7 @@ describe("ProjectSelect", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("positions its content with popper mode, not item-aligned, so the icon-only trigger doesn't need to match a SelectValue", async () => {
-    // item-aligned mode (Radix's default) measures SelectValue to align the selected item over the
-    // trigger; the icon-only mobile trigger has no SelectValue, which makes item-aligned mode render
-    // the content far off-screen while leaving the page inert (see project-select.tsx's comment).
-    // jsdom doesn't compute real layout, so this can only assert the mode, not the broken position.
-    useIsMobileMock.mockReturnValue(true)
+  it("positions its content against the trigger (popper mode)", async () => {
     const user = userEvent.setup()
     render(
       <ProjectSelect

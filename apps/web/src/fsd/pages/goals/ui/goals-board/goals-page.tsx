@@ -55,7 +55,7 @@ import { usePersistedSelection } from "@/shared/lib"
 import type { GoalRow } from "@/features/goal-planning"
 import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
-import { useProjects } from "@/entities/project"
+import { ProjectSelect, useProjects } from "@/entities/project"
 import { GoalsList } from ".//goals-list"
 import { GoalGroupSection } from "./goal-group-section"
 import { GoalsBulkControls } from "./goals-bulk-controls"
@@ -73,12 +73,14 @@ import {
 } from "./targeted-fit-choice"
 import { DeadlineFitHeader } from "./deadline-fit-header"
 import type { GoalFitView } from "./season-fit-copy"
-import { useEventTargetName } from "@/features/project-management"
+import {
+  orderDefaultFirst,
+  useEventTargetName,
+} from "@/features/project-management"
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
 import { GoalsSelectButton } from "./goals-select-button"
 import { GoalsSelectBar } from "./goals-select-bar"
 import { SortBlocksReorderNotice } from "./sort-blocks-reorder-notice"
-import { GoalsProjectScope } from "./goals-project-scope"
 import { GoalsMoveProjectGoalsButton } from "./goals-move-project-goals-button"
 import { useLevelRules } from "@/entities/goal-farming"
 import { buildCascadeContext } from "./goal-row-utils"
@@ -490,14 +492,19 @@ export function GoalsPage() {
       <GoalsToolbar
         projectScope={
           <>
-            <GoalsProjectScope
-              counts={scopeCounts}
-              failed={projects.fetchState.status === "error"}
-              loading={projects.loading}
-              onSelect={setScopeId}
-              projects={projects.projects}
-              selectedId={scopeId}
-              totalCount={nonArchivedRows.length}
+            <ProjectSelect
+              allLabel={t("goals.project.scopeAll")}
+              allowAll
+              counts={{ all: nonArchivedRows.length, byProject: scopeCounts }}
+              label={t("goals.filters.projectFilterLabel")}
+              onProjectIdChange={setScopeId}
+              projectId={scopeId}
+              projects={
+                projects.fetchState.status === "error"
+                  ? []
+                  : orderDefaultFirst(projects.projects)
+              }
+              testId="goals-project-scope"
             />
             {deadlineFit.status === "off" ? moveGoalsButton : null}
           </>

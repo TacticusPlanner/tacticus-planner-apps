@@ -84,7 +84,6 @@ export function InsightsPage() {
         find={
           <ProjectSelect
             allowAll
-            compact={false}
             onProjectIdChange={setProjectId}
             projectId={projectId}
             projects={projects.projects}

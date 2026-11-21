@@ -29,7 +29,18 @@
     "synced": "Synchronisé {{time}}",
     "notSynced": "Non synchronisé",
     "income": "≈ {{free}} gratuits + {{bonus}} livraison bonus cette semaine",
-    "tba": "Date de début à venir"
+    "tba": "Date de début à venir",
+    "switcher": {
+      "placeholder": "Choisir un événement",
+      "empty": "Aucun événement dans le calendrier",
+      "previous": "Événement précédent",
+      "next": "Événement suivant",
+      "groups": {
+        "running": "En cours",
+        "upcoming": "À venir",
+        "past": "Passés"
+      }
+    }
   },
   "tabs": {
     "label": "Sections de la boutique d'événement",

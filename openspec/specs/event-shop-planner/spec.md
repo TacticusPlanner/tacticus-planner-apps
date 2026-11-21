@@ -41,12 +41,17 @@ The page SHALL distinguish: catalog loading (skeleton); catalog load failure (er
 
 ### Requirement: The header names the event and its timing
 
-The page toolbar's Find slot (`app-page-layout`) SHALL show an event picker labelled with the event's name — its calendar `definitionId` through the existing `events` i18n names, followed by its start month and year in the user's locale ("Armageddon Shop · October 2026") — that lists every catalog event, newest first, with its date range. Under the toolbar the page SHALL show a status badge (`Starts in N days` · `Running` · `Ended`), the date range and day count, the daily shop reset in the user's time zone ("shop resets 01:00 your time", the local time of 00:00 UTC), and when the player data was last synced ("Synced 2 h ago"; "Not synced" without player data). When the selected day's week has `estimatedWeeklyIncome`, the header SHALL show "≈ {free} free + {bonusShipment} bonus shipment this week" in the event currency; otherwise nothing.
+The page toolbar's Find slot (`app-page-layout`) SHALL show an event picker labelled with the event's name — its calendar `definitionId` through the existing `events` i18n names, followed by its start month and year in the user's locale ("Armageddon Shop · October 2026") — that lists every catalog event with its date range and status. The picker SHALL be the shared event switcher the HSE and HRE pages use: Previous / Next around a select grouped Running / Upcoming / Past, oldest first under Running and Upcoming and newest first under Past, with an event that has no start date yet listed last under Upcoming. Previous / Next step through the events in date order. Under the toolbar the page SHALL show a status badge (`Starts in N days` · `Running` · `Ended`), the date range and day count, the daily shop reset in the user's time zone ("shop resets 01:00 your time", the local time of 00:00 UTC), and when the player data was last synced ("Synced 2 h ago"; "Not synced" without player data). When the selected day's week has `estimatedWeeklyIncome`, the header SHALL show "≈ {free} free + {bonusShipment} bonus shipment this week" in the event currency; otherwise nothing.
 
 #### Scenario: Event name
 
 - **WHEN** the event has `definitionId` `armageddon-shop` and starts 2026-10-26
 - **THEN** the picker shows "Armageddon Shop · October 2026"
+
+#### Scenario: The picker steps through events
+
+- **WHEN** an event is running and the next one has been announced
+- **THEN** the picker lists the running event under Running and the next under Upcoming, and Next selects the next event
 
 #### Scenario: Reset time follows the user's time zone
 

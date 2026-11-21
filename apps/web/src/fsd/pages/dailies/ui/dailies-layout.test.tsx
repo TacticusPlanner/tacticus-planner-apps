@@ -222,7 +222,7 @@ describe("Dailies navigation", () => {
     expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
   })
 
-  it("labels the project selector on desktop and compresses it to an icon on mobile", async () => {
+  it("shows the project selector's value on desktop and on mobile (never icon-only)", async () => {
     renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
     expect(screen.getByTestId("raids-project-select")).toHaveTextContent(/\S/)
@@ -234,8 +234,7 @@ describe("Dailies navigation", () => {
       expect(screen.getAllByTestId("raids-project-select")).toHaveLength(2)
     )
     const [, mobileSelect] = screen.getAllByTestId("raids-project-select")
-    expect(mobileSelect).toHaveAccessibleName("project.placeholder")
-    expect(mobileSelect).not.toHaveTextContent(/\S/)
+    expect(mobileSelect).toHaveTextContent(/\S/)
   })
 
   it("exposes the shared Planning Settings action as the page's Settings button on Today", async () => {

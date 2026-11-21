@@ -29,7 +29,18 @@
     "synced": "Sincronizado {{time}}",
     "notSynced": "Sin sincronizar",
     "income": "≈ {{free}} gratis + {{bonus}} envío extra esta semana",
-    "tba": "Fecha de inicio por anunciar"
+    "tba": "Fecha de inicio por anunciar",
+    "switcher": {
+      "placeholder": "Elige un evento",
+      "empty": "No hay eventos en el calendario",
+      "previous": "Evento anterior",
+      "next": "Evento siguiente",
+      "groups": {
+        "running": "En curso",
+        "upcoming": "Próximos",
+        "past": "Pasados"
+      }
+    }
   },
   "tabs": {
     "label": "Secciones de la tienda del evento",
