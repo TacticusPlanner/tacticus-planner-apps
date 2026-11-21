@@ -7,10 +7,11 @@ import { NpcsFilterBar } from "./npcs-filter-bar"
 import type { NpcFilterOptions } from "./npcs-page.view-model"
 
 /**
- * The NPCs page toolbar (ui-style-guide rule 2). Find: name search, always visible (it is how you
- * reach an NPC you already have in mind, not one of the filters), then the shared "Filters" button
- * with the active count. The filters open in a popover on desktop and a bottom sheet on mobile
- * (`FiltersControl`), so the list and the detail stay where they are.
+ * The NPCs page toolbar (ui-style-guide rule 2). Find: name search, always visible on the list (it
+ * is how you reach an NPC you already have in mind, not one of the filters), then the shared
+ * "Filters" button with the active count. The filters open in a popover on desktop and a bottom
+ * sheet on mobile (`FiltersControl`). An NPC's page keeps only Filters (`showSearch={false}`): they
+ * also narrow its variations and encounter rows, and what Previous / Next step through.
  */
 export function NpcsToolbar({
   filters,
@@ -18,12 +19,14 @@ export function NpcsToolbar({
   activeCount,
   onChange,
   onClear,
+  showSearch = true,
 }: {
   filters: NpcFilters
   options: NpcFilterOptions
   activeCount: number
   onChange: (filters: NpcFilters) => void
   onClear: () => void
+  showSearch?: boolean
 }) {
   const { t } = useTranslation("library")
 
@@ -31,12 +34,14 @@ export function NpcsToolbar({
     <PageToolbar
       find={
         <>
-          <SearchField
-            label={t("npcs.search")}
-            onChange={(search) => onChange({ ...filters, search })}
-            testId="npcs-search"
-            value={filters.search}
-          />
+          {showSearch ? (
+            <SearchField
+              label={t("npcs.search")}
+              onChange={(search) => onChange({ ...filters, search })}
+              testId="npcs-search"
+              value={filters.search}
+            />
+          ) : null}
           <FiltersControl
             count={activeCount}
             onClear={onClear}
