@@ -1,6 +1,6 @@
+import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { CalendarRange } from "lucide-react"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import {
   Select,
   SelectContent,
@@ -10,14 +10,15 @@ import {
 } from "@workspace/ui/components/select"
 
 import { SEASON_FIT_MODES } from "@/features/goal-planning"
-import { useViewPlacement } from "@/shared/ui"
+import { ToolbarField, useViewPlacement } from "@/shared/ui"
 import type { SeasonFitState } from "@/features/goal-planning"
 
 import type { TargetedFitChoice } from "./targeted-fit-choice"
 
 /**
- * The Goals toolbar's Season fit select (goal-season-fit spec), in the View slot: it shows its value
- * on desktop and full width in the mobile View sheet. A mode the catalog has no season dates for is
+ * The Goals toolbar's Season fit select (goal-season-fit spec), in the View slot: labelled "Season
+ * fit" outside the trigger, and showing its value on every viewport (full width in the mobile View
+ * sheet). A mode the catalog has no season dates for is
  * disabled with the reason; while the catalog loads every mode is disabled. In a project scope with
  * a target, `projectDeadline` adds that project's deadline as the first option (project-deadline-fit).
  */
@@ -33,53 +34,48 @@ export function SeasonFitSelect<Value extends TargetedFitChoice>({
   projectDeadline?: boolean
 }) {
   const { t } = useTranslation()
-  const isMobile = useIsMobile()
-  // Mobile shows it in the View sheet, full width with its value; icon-only only in a bar.
+  const labelId = useId()
   const inSheet = useViewPlacement() === "sheet"
-  const iconOnly = isMobile && !inSheet
   const optionLabel = (mode: TargetedFitChoice) =>
     t(`goals.seasonFit.options.${mode}`)
 
   return (
-    <Select
-      onValueChange={(next) => onValueChange(next as Value)}
-      value={value}
-    >
-      <SelectTrigger
-        aria-describedby="goals-season-fit-value"
-        aria-label={t("goals.seasonFit.label")}
-        className={inSheet ? "w-full" : undefined}
-        data-testid="goals-season-fit"
+    <ToolbarField label={t("goals.seasonFit.label")} labelId={labelId}>
+      <Select
+        onValueChange={(next) => onValueChange(next as Value)}
+        value={value}
       >
-        <CalendarRange />
-        {iconOnly ? null : <SelectValue />}
-        <span className="sr-only" id="goals-season-fit-value">
-          {optionLabel(value)}
-        </span>
-      </SelectTrigger>
-      {/* `popper` for the same reason as GoalFilters: mobile hides SelectValue. */}
-      <SelectContent position="popper">
-        {projectDeadline ? (
-          <SelectItem value="projectDeadline">
-            {optionLabel("projectDeadline")}
-          </SelectItem>
-        ) : null}
-        {SEASON_FIT_MODES.map((mode) => {
-          const available =
-            mode === "off" ||
-            (state.status === "ready" && state.available[mode])
-          return (
-            <SelectItem disabled={!available} key={mode} value={mode}>
-              {optionLabel(mode)}
-              {!available && state.status === "ready" ? (
-                <span className="text-xs text-muted-foreground">
-                  {t("goals.seasonFit.unavailable")}
-                </span>
-              ) : null}
+        <SelectTrigger
+          aria-labelledby={labelId}
+          className={inSheet ? "w-full" : undefined}
+          data-testid="goals-season-fit"
+        >
+          <CalendarRange />
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent position="popper">
+          {projectDeadline ? (
+            <SelectItem value="projectDeadline">
+              {optionLabel("projectDeadline")}
             </SelectItem>
-          )
-        })}
-      </SelectContent>
-    </Select>
+          ) : null}
+          {SEASON_FIT_MODES.map((mode) => {
+            const available =
+              mode === "off" ||
+              (state.status === "ready" && state.available[mode])
+            return (
+              <SelectItem disabled={!available} key={mode} value={mode}>
+                {optionLabel(mode)}
+                {!available && state.status === "ready" ? (
+                  <span className="text-xs text-muted-foreground">
+                    {t("goals.seasonFit.unavailable")}
+                  </span>
+                ) : null}
+              </SelectItem>
+            )
+          })}
+        </SelectContent>
+      </Select>
+    </ToolbarField>
   )
 }

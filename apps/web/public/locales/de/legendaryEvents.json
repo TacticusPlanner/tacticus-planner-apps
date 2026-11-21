@@ -380,7 +380,7 @@
   },
   "teams": {
     "title": "Teams",
-    "add": "Team hinzufügen",
+    "add": "Team erstellen",
     "empty": "Noch keine Teams auf {{lane}}.",
     "loading": "Teams werden geladen …",
     "loadError": "Deine Teams konnten nicht geladen werden.",
@@ -1229,7 +1229,7 @@
       "modeLabel": "Deine Teams",
       "restoreAll": "Alle wiederherstellen",
       "undo": "Rückgängig",
-      "add": "Team hinzufügen",
+      "add": "Team erstellen",
       "editTeam": "{{name}} bearbeiten",
       "lanesLabel": "Lanes",
       "depthOf": "Durchlauf {{run}}: {{depth}} von {{battles}} Kämpfen"
@@ -1239,7 +1239,7 @@
     },
     "review": {
       "project": "Projekt",
-      "newProject": "Neues Projekt",
+      "newProject": "Projekt erstellen",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Zu erstellende Ziele",
       "teams": "Teams",

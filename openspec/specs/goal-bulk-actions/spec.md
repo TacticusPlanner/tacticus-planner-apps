@@ -8,7 +8,7 @@ Defines how a user selects several goals on the Goals page and acts on them at o
 
 ### Requirement: Bulk actions are enabled by the selection
 
-The bulk actions SHALL be Pause, Resume, Add to project and Delete, on both platforms, plus Remove from project while the Goals page is scoped to a project (see "Remove from project takes the selection out of the scoped project"). The bulk actions SHALL render only in the select bar, and with no goal selected each SHALL be disabled. With a non-empty selection: Pause SHALL be enabled only when at least one selected goal is Active and not Reached; Resume SHALL be enabled only when at least one selected goal is Paused and not Reached; Add to project and Delete SHALL be enabled for any non-empty selection; Remove from project SHALL be enabled once the account's projects have loaded (a goal's memberships are part of the goals list, so they are always known with the rows). Each enabled action's label SHALL carry the count of goals it would act on (for example "Pause (3)"). An action SHALL act on the applicable subset of the selection and skip the rest without error: Pause skips goals that are not Active or are Reached, Resume skips goals that are not Paused or are Reached. A goal whose own request is already in flight SHALL be skipped as well.
+The bulk actions SHALL be Pause, Resume, Add to project and Delete, on both platforms, plus Remove from project while the Goals page is scoped to a project (see "Remove from project takes the selection out of the scoped project"). The bulk actions SHALL render only in the select bar, and with no goal selected each SHALL be disabled. With a non-empty selection: Pause SHALL be enabled only when at least one selected goal is Active and not Reached; Resume SHALL be enabled only when at least one selected goal is Paused and not Reached; Add to project and Delete SHALL be enabled for any non-empty selection; Remove from project SHALL be enabled once the account's projects have loaded (a goal's memberships are part of the goals list, so they are always known with the rows). Each enabled action SHALL show the count of goals it would act on as a count badge after its label (never "(3)" in the text), and its accessible name SHALL say it in words ("Pause, 3 selected"). An action SHALL act on the applicable subset of the selection and skip the rest without error: Pause skips goals that are not Active or are Reached, Resume skips goals that are not Paused or are Reached. A goal whose own request is already in flight SHALL be skipped as well.
 
 #### Scenario: Nothing selected
 
@@ -19,7 +19,7 @@ The bulk actions SHALL be Pause, Resume, Add to project and Delete, on both plat
 
 - **GIVEN** the selection holds two Paused goals and nothing else
 - **WHEN** the select bar renders
-- **THEN** Resume reads "Resume (2)" and is enabled, Pause is disabled, and Add to project and Delete read "(2)" and are enabled
+- **THEN** Resume shows a 2 badge and is enabled, Pause is disabled, and Add to project and Delete show a 2 badge and are enabled
 
 #### Scenario: Mixed selection acts on the applicable subset
 
@@ -31,7 +31,7 @@ The bulk actions SHALL be Pause, Resume, Add to project and Delete, on both plat
 
 - **GIVEN** two goals are selected
 - **WHEN** the select bar renders on the Goals page without a project scope, and again scoped to project A
-- **THEN** the unscoped bar has no Remove from project action, and the scoped bar shows "Remove from project (2)", enabled
+- **THEN** the unscoped bar has no Remove from project action, and the scoped bar shows Remove from project with a 2 badge, enabled
 
 ### Requirement: Bulk pause and resume act on the selection only
 

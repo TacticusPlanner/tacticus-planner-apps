@@ -28,7 +28,7 @@ import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
-import { EmptyState } from "@/shared/ui"
+import { EmptyState, HowToRead } from "@/shared/ui"
 
 import { MasterTableControls } from "./master-table-controls"
 import { MasterTableList } from "./master-table-list"
@@ -472,19 +472,16 @@ function MasterTableNotes({
 function PointsExplanation() {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <details
-      className="rounded-xl border px-3 py-2 text-sm"
+    <HowToRead
       data-testid="master-table-explanation"
+      summary={t("masterTable.explanation.title")}
     >
-      <summary className="cursor-pointer font-medium">
-        {t("masterTable.explanation.title")}
-      </summary>
-      <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-muted-foreground">
+      <ul className="flex list-disc flex-col gap-1 pl-5">
         <li>{t("masterTable.explanation.remaining")}</li>
         <li>{t("masterTable.explanation.all")}</li>
         <li>{t("masterTable.explanation.estimated")}</li>
         <li>{t("masterTable.explanation.inTeams")}</li>
       </ul>
-    </details>
+    </HowToRead>
   )
 }

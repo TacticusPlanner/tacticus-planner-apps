@@ -4,6 +4,8 @@ import { FolderMinus, FolderPlus, Pause, Play, Trash2 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 
 import type { CascadeTarget, GoalRow } from "@/features/goal-planning"
+import { CountBadge } from "@/shared/ui"
+
 import { isReachedRow } from "./goal-row-utils"
 import { canRemoveFromProject } from "./project-removal-flow"
 import type { ProjectRemoval } from "./project-removal-flow"
@@ -106,13 +108,13 @@ export function GoalsBulkActions({
       role="group"
     >
       {buttons.map(({ key, count, icon, onClick }) => {
-        const label =
-          count > 0
-            ? t(`goals.bulk.${key}Count`, { count })
-            : t(`goals.bulk.${key}`)
+        const label = t(`goals.bulk.${key}`)
+        // The count is a badge; the accessible name says it in words ("Pause, 2 selected").
+        const name =
+          count > 0 ? `${label}, ${t("goals.bulk.selected", { count })}` : label
         return (
           <Button
-            aria-label={compact ? label : undefined}
+            aria-label={name}
             data-testid={`goals-bulk-${key}`}
             disabled={count === 0}
             key={key}
@@ -122,6 +124,7 @@ export function GoalsBulkActions({
           >
             {icon}
             {compact ? null : label}
+            {compact ? null : <CountBadge count={count} />}
           </Button>
         )
       })}

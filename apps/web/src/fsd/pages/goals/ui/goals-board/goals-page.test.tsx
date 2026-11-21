@@ -1317,9 +1317,9 @@ describe("GoalsPage", () => {
       await vi.waitFor(() =>
         expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
       )
-      expect(
-        document.getElementById("goals-season-fit-value")
-      ).toHaveTextContent("No season fit")
+      expect(screen.getByTestId("goals-season-fit")).toHaveTextContent(
+        "No season fit"
+      )
       expect(screen.queryByTestId("goal-season-fit")).toBeNull()
       expect(screen.queryByTestId("goals-season-cutoff")).toBeNull()
     })
@@ -1362,9 +1362,9 @@ describe("GoalsPage", () => {
       view.unmount()
       renderPage()
       await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
-      expect(
-        document.getElementById("goals-season-fit-value")
-      ).toHaveTextContent("Battle Pass")
+      expect(screen.getByTestId("goals-season-fit")).toHaveTextContent(
+        "Battle Pass"
+      )
     })
 
     it("keeps the fit in a project scope and places the divider among that project's goals", async () => {
@@ -1443,9 +1443,9 @@ describe("GoalsPage", () => {
             "runs Nov 27 – Dec 4 · 0 of 1 fit · 1 during the event"
           )
         )
-        expect(
-          document.getElementById("goals-season-fit-value")
-        ).toHaveTextContent("Project deadline")
+        expect(screen.getByTestId("goals-season-fit")).toHaveTextContent(
+          "Project deadline"
+        )
         expect(screen.getByTestId("goal-deadline-fit")).toHaveTextContent(
           "During event"
         )
@@ -1458,9 +1458,9 @@ describe("GoalsPage", () => {
         renderPage()
         await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
         expect(screen.queryByTestId("goals-deadline-fit")).toBeNull()
-        expect(
-          document.getElementById("goals-season-fit-value")
-        ).toHaveTextContent("Battle Pass")
+        expect(screen.getByTestId("goals-season-fit")).toHaveTextContent(
+          "Battle Pass"
+        )
       })
 
       it("switches the targeted scope to Off or a season from the Season fit select", async () => {
@@ -1492,9 +1492,9 @@ describe("GoalsPage", () => {
         again.unmount()
         renderPage()
         await screen.findByTestId("goals-list-table")
-        expect(
-          document.getElementById("goals-season-fit-value")
-        ).toHaveTextContent("No season fit")
+        expect(screen.getByTestId("goals-season-fit")).toHaveTextContent(
+          "No season fit"
+        )
       })
 
       it("keeps Season fit in an untargeted project", async () => {

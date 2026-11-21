@@ -275,7 +275,6 @@
     }
   },
   "nav": {
-    "addGoal": "Añadir objetivo",
     "dailies": "Diarias",
     "dailiesDescription": "Tareas diarias y periódicas del juego.",
     "eventLive": "Evento activo",
@@ -1235,21 +1234,16 @@
     },
     "bulk": {
       "pause": "Pausar",
-      "pauseCount": "Pausar ({{count}})",
       "resume": "Reanudar",
-      "resumeCount": "Reanudar ({{count}})",
       "addToProject": "Añadir al proyecto",
-      "addToProjectCount": "Añadir al proyecto ({{count}})",
       "delete": "Eliminar",
-      "deleteCount": "Eliminar ({{count}})",
       "selected_one": "{{count}} seleccionado",
       "selected_other": "{{count}} seleccionados",
       "selectAll": "Seleccionar todos los objetivos",
       "selectRow": "Seleccionar {{entity}}",
       "selectMode": "Seleccionar objetivos",
       "selectDone": "Listo",
-      "removeFromProject": "Quitar del proyecto",
-      "removeFromProjectCount": "Quitar del proyecto ({{count}})"
+      "removeFromProject": "Quitar del proyecto"
     },
     "delete": {
       "title_one": "¿Eliminar este objetivo?",
@@ -1301,9 +1295,9 @@
       "cancel": "Cancelar",
       "edit": "Editar",
       "editTitle": "Editar proyecto",
-      "newProjectTitle": "Nuevo proyecto",
+      "newProjectTitle": "Crear proyecto",
       "formDescription": "Asigna nombre, descripción y color a este proyecto.",
-      "newProject": "Nuevo proyecto",
+      "newProject": "Crear proyecto",
       "name": "Nombre",
       "description": "Descripción",
       "color": "Color",
@@ -2181,7 +2175,7 @@
       },
       "bottomNavigation": {
         "addGoal": {
-          "title": "Añadir objetivo",
+          "title": "Crear objetivo",
           "content": "Crea objetivos de Personaje o Máquina de Guerra y elige uno o varios proyectos. El proyecto predeterminado se selecciona automáticamente."
         },
         "sync": {
@@ -2448,6 +2442,74 @@
         "save": {
           "title": "Guardar tus cambios",
           "content": "En cuanto edites algo, aparece abajo una barra con Guardar y Descartar. Se te preguntará antes de salir con cambios sin guardar."
+        }
+      }
+    },
+    "campaigns": {
+      "steps": {
+        "summary": {
+          "title": "Progreso de campañas",
+          "content": "Cuánto llevas de las campañas normales y espejo, según tu progreso sincronizado."
+        },
+        "stories": {
+          "title": "Historias y recorridos",
+          "content": "Cada historia muestra sus recorridos Estándar y Élite y las batallas que has superado. Usa «Editar medallas» en un recorrido para marcar las batallas que ganaste con menos de 3 medallas, y las incursiones diarias las planificarán como batallas para jugar a mano."
+        }
+      }
+    },
+    "incursions": {
+      "steps": {
+        "rules": {
+          "title": "Cómo funcionan las Incursiones",
+          "content": "Ábrelo para ver las fichas de partida, quién puede unirse a un equipo y cómo se desarrolla una partida."
+        },
+        "list": {
+          "title": "Máquinas de guerra",
+          "content": "Una tarjeta por cada máquina de guerra de Incursión, la más nueva primero, con si la tienes y las estrellas que has ganado. Abre una tarjeta para ver sus niveles, mapas y equipos."
+        }
+      }
+    },
+    "insights": {
+      "steps": {
+        "toolbar": {
+          "title": "Alcance",
+          "content": "Informa sobre todos tus objetivos activos o sobre un proyecto. Lugares decide si el farmeo ordena solo las batallas que has alcanzado o todas."
+        },
+        "outlook": {
+          "title": "Previsión del plan",
+          "content": "Cuándo termina el plan con tu energía diaria, qué objetivos marcan esa fecha y cuáles quedan fuera de ella."
+        },
+        "holdingBack": {
+          "title": "Qué te frena",
+          "content": "Lo que ningún farmeo resuelve y, después, los recursos que más energía cuestan en los nodos elegidos."
+        },
+        "farming": {
+          "title": "Dónde farmear",
+          "content": "Las campañas y eventos cuyas batallas sueltan más de lo que necesitan tus objetivos, y las campañas que conviene avanzar."
+        },
+        "missing": {
+          "title": "Aún falta",
+          "content": "Todo lo que tus objetivos necesitan más allá de tu inventario actual, gastando tus existencias en orden de prioridad."
+        }
+      }
+    },
+    "guild": {
+      "steps": {
+        "summary": {
+          "title": "Tu gremio",
+          "content": "El nombre, la etiqueta y el nivel del gremio, y cuándo se sincronizó por última vez."
+        },
+        "actions": {
+          "title": "Sincronizar y eliminar",
+          "content": "Un Líder o Colíder puede sincronizar el gremio para actualizar sus miembros, o eliminarlo de Planner."
+        },
+        "members": {
+          "title": "Miembros",
+          "content": "Todos los del gremio, con su rol, nivel, última actividad en el juego y en Planner, y si han vinculado una cuenta de Planner."
+        },
+        "apiKey": {
+          "title": "Clave API del gremio",
+          "content": "Planner sincroniza el gremio con esta clave. Un Líder o Colíder puede sustituirla aquí tras regenerarla o revocarla."
         }
       }
     }

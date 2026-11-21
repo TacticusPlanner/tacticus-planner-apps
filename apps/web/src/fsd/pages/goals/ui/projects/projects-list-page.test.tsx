@@ -124,7 +124,7 @@ describe("ProjectsListPage", () => {
     onLaunch.mockReset()
   })
 
-  it("shows only the New project button when there are no projects yet", async () => {
+  it("shows only the Create project button when there are no projects yet", async () => {
     listProjects.mockResolvedValue({ projects: [] })
     renderPage()
 
@@ -211,7 +211,7 @@ describe("ProjectsListPage", () => {
     expect(screen.queryByRole("heading")).not.toBeInTheDocument()
   })
 
-  it("opens a blank Sheet from the New project button and a pre-filled Sheet from a row's Edit icon", async () => {
+  it("opens a blank Sheet from the Create project button and a pre-filled Sheet from a row's Edit icon", async () => {
     const projectA = project()
     listProjects.mockResolvedValue({ projects: [projectA] })
     const user = userEvent.setup()
@@ -220,7 +220,7 @@ describe("ProjectsListPage", () => {
     await screen.findByText("Project A")
     await user.click(screen.getByTestId("projects-new-project"))
     expect(
-      await screen.findByRole("heading", { name: "New project" })
+      await screen.findByRole("heading", { name: "Create project" })
     ).toBeInTheDocument()
     expect(screen.getByLabelText("Name")).toHaveValue("")
     await user.keyboard("{Escape}")

@@ -241,11 +241,11 @@ describe("TeamsSection", () => {
     i18n = await createTestI18n("en")
   })
 
-  it("lists the lane's teams once each in stored order, with Add team", () => {
+  it("lists the lane's teams once each in stored order, with Create team", () => {
     renderSection(ready())
     expect(cardNames()).toEqual(["Melee", "Flyers"])
     expect(screen.getByTestId("legendary-event-add-team")).toHaveTextContent(
-      "Add team"
+      "Create team"
     )
   })
 
@@ -302,7 +302,7 @@ describe("TeamsSection", () => {
     expect(screen.getByTestId("legendary-event-add-team")).toBeInTheDocument()
   })
 
-  it("disables Add team and says so when the lane holds 50 teams", () => {
+  it("disables Create team and says so when the lane holds 50 teams", () => {
     renderSection(
       ready({
         ...plan,
@@ -382,7 +382,7 @@ describe("TeamsSection", () => {
     )
   })
 
-  it("opens the editor from Add team only", async () => {
+  it("opens the editor from Create team only", async () => {
     renderSection(ready())
     expect(screen.queryByTestId("team-editor")).toBeNull()
     await userEvent
@@ -391,7 +391,7 @@ describe("TeamsSection", () => {
     expect(await screen.findByTestId("team-editor")).toBeInTheDocument()
   })
 
-  it("returns focus to Add team after the editor closes", async () => {
+  it("returns focus to Create team after the editor closes", async () => {
     renderSection(ready())
     const user = userEvent.setup()
     const addTeam = screen.getByTestId("legendary-event-add-team")

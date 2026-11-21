@@ -184,6 +184,8 @@ vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
 import { InsightsPage } from ".//insights-page"
 
+vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
+
 const rankGoal = {
   goalId: "goal-1",
   entityType: "Character",

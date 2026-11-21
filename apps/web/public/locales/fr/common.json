@@ -275,7 +275,6 @@
     }
   },
   "nav": {
-    "addGoal": "Ajouter un objectif",
     "dailies": "Quotidiennes",
     "dailiesDescription": "Tâches quotidiennes et périodiques du jeu.",
     "eventLive": "Événement en cours",
@@ -1235,21 +1234,16 @@
     },
     "bulk": {
       "pause": "Mettre en pause",
-      "pauseCount": "Mettre en pause ({{count}})",
       "resume": "Reprendre",
-      "resumeCount": "Reprendre ({{count}})",
       "addToProject": "Ajouter à un projet",
-      "addToProjectCount": "Ajouter à un projet ({{count}})",
       "delete": "Supprimer",
-      "deleteCount": "Supprimer ({{count}})",
       "selected_one": "{{count}} sélectionné",
       "selected_other": "{{count}} sélectionnés",
       "selectAll": "Sélectionner tous les objectifs",
       "selectRow": "Sélectionner {{entity}}",
       "selectMode": "Sélectionner des objectifs",
       "selectDone": "Terminé",
-      "removeFromProject": "Retirer du projet",
-      "removeFromProjectCount": "Retirer du projet ({{count}})"
+      "removeFromProject": "Retirer du projet"
     },
     "delete": {
       "title_one": "Supprimer cet objectif ?",
@@ -1301,9 +1295,9 @@
       "cancel": "Annuler",
       "edit": "Modifier",
       "editTitle": "Modifier le projet",
-      "newProjectTitle": "Nouveau projet",
+      "newProjectTitle": "Créer le projet",
       "formDescription": "Nommez, décrivez et colorez ce projet.",
-      "newProject": "Nouveau projet",
+      "newProject": "Créer le projet",
       "name": "Nom",
       "description": "Description",
       "color": "Couleur",
@@ -2181,7 +2175,7 @@
       },
       "bottomNavigation": {
         "addGoal": {
-          "title": "Ajouter un objectif",
+          "title": "Créer un objectif",
           "content": "Créez des objectifs de personnage ou de machine de guerre, puis choisissez un ou plusieurs projets. Le projet par défaut est sélectionné automatiquement."
         },
         "sync": {
@@ -2448,6 +2442,74 @@
         "save": {
           "title": "Enregistrer vos modifications",
           "content": "Dès que vous modifiez quelque chose, une barre avec Enregistrer et Annuler apparaît en bas. Une confirmation vous est demandée avant de quitter avec des modifications non enregistrées."
+        }
+      }
+    },
+    "campaigns": {
+      "steps": {
+        "summary": {
+          "title": "Progression des campagnes",
+          "content": "Votre avancée dans les campagnes normales et miroir, d’après votre progression synchronisée."
+        },
+        "stories": {
+          "title": "Histoires et parcours",
+          "content": "Chaque histoire affiche ses parcours Standard et Élite et les combats que vous avez terminés. Utilisez « Modifier les médailles » sur un parcours pour signaler les combats gagnés avec moins de 3 médailles : les raids quotidiens les prévoient alors comme combats à jouer manuellement."
+        }
+      }
+    },
+    "incursions": {
+      "steps": {
+        "rules": {
+          "title": "Fonctionnement des Incursions",
+          "content": "Ouvrez ceci pour les jetons de partie, qui peut rejoindre une équipe et le déroulement d’une partie."
+        },
+        "list": {
+          "title": "Machines de guerre",
+          "content": "Une carte par machine de guerre d’Incursion, la plus récente d’abord, avec sa possession et les étoiles gagnées. Ouvrez une carte pour ses paliers, cartes de partie et équipes."
+        }
+      }
+    },
+    "insights": {
+      "steps": {
+        "toolbar": {
+          "title": "Portée",
+          "content": "Analysez tous vos objectifs actifs ou un seul projet. Lieux indique si le farm classe seulement les combats atteints ou tous les combats."
+        },
+        "outlook": {
+          "title": "Prévision du plan",
+          "content": "Quand le plan sera terminé avec votre énergie quotidienne, quels objectifs fixent cette date et lesquels en sont exclus."
+        },
+        "holdingBack": {
+          "title": "Ce qui vous freine",
+          "content": "Ce qu’aucun farm ne débloque, puis les ressources qui coûtent le plus d’énergie aux nœuds choisis."
+        },
+        "farming": {
+          "title": "Où farmer",
+          "content": "Les campagnes et événements dont les combats donnent le plus de ce dont vos objectifs ont besoin, et les campagnes à faire avancer ensuite."
+        },
+        "missing": {
+          "title": "Encore manquant",
+          "content": "Tout ce dont vos objectifs ont besoin au-delà de votre inventaire actuel, votre stock étant dépensé par ordre de priorité."
+        }
+      }
+    },
+    "guild": {
+      "steps": {
+        "summary": {
+          "title": "Votre guilde",
+          "content": "Le nom, le tag et le niveau de la guilde, et sa dernière synchronisation."
+        },
+        "actions": {
+          "title": "Synchroniser et supprimer",
+          "content": "Un Chef ou Co-chef peut synchroniser la guilde pour mettre à jour ses membres, ou la supprimer de Planner."
+        },
+        "members": {
+          "title": "Membres",
+          "content": "Tous les membres de la guilde, avec leur rôle, leur niveau, leur dernière activité dans le jeu et dans Planner, et s’ils ont lié un compte Planner."
+        },
+        "apiKey": {
+          "title": "Clé API de guilde",
+          "content": "Planner synchronise la guilde avec cette clé. Un Chef ou Co-chef peut la remplacer ici après l’avoir régénérée ou révoquée."
         }
       }
     }

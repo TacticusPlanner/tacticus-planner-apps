@@ -10,6 +10,8 @@ Gives every page of the web app the same header and toolbar, so a page's title, 
 
 The app shell SHALL render the page header above every page: the page's title (its `<h1>`), the help action ("Tour this page") right after it, a one-line description under the title row, then a divider. A page that has settings SHALL show one "Settings" button at the right end of the title row; the page supplies it, and a page without settings shows nothing there. On desktop (at least 768px) the Settings button SHALL show the settings icon and the label "Settings". On mobile (below 768px) it SHALL be an icon button in the mobile header, next to the icon-only tour button, with the accessible name "Settings".
 
+Every page in the navigation SHALL register its own page tour, so the header's "Tour this page" action is present on it. A tour step whose target may be absent (an empty list, a loading report, a control only a guild Leader or Co-Leader sees) SHALL be skipped when its target is not on the page.
+
 #### Scenario: Desktop header with settings
 
 - **GIVEN** a page that has settings, at 1440px
@@ -21,6 +23,12 @@ The app shell SHALL render the page header above every page: the page's title (i
 - **GIVEN** the same page at 390px
 - **WHEN** it renders
 - **THEN** the mobile header shows a Settings icon button named "Settings" beside the tour button
+
+#### Scenario: Tour on Guild Members
+
+- **GIVEN** a guild member who is not a Leader or Co-Leader, on Guild › Members
+- **WHEN** they start "Tour this page"
+- **THEN** the tour covers the guild summary and the member list, and skips the Sync and Delete actions they do not see
 
 #### Scenario: Page without settings
 

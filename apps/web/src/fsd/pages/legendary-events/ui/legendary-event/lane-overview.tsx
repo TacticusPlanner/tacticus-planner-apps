@@ -5,6 +5,7 @@ import type {
   LegendaryEventLane,
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
+import { HowToRead } from "@/shared/ui"
 
 import type { LanePotentialViewModel } from "./lane-potential.view-model"
 import { RosterPotentialMap } from "./roster-potential-map"
@@ -72,16 +73,11 @@ export function LaneOverviewFigures({
 export function HowPointsDisclosure() {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <details
-      className="rounded-xl border p-3 text-sm"
+    <HowToRead
       data-testid="legendary-event-how-points"
+      summary={t("laneOverview.howPoints.title")}
     >
-      <summary className="cursor-pointer font-medium">
-        {t("laneOverview.howPoints.title")}
-      </summary>
-      <p className="mt-2 text-muted-foreground">
-        {t("laneOverview.howPoints.body")}
-      </p>
-    </details>
+      {t("laneOverview.howPoints.body")}
+    </HowToRead>
   )
 }

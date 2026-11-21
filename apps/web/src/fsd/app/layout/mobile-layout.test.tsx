@@ -198,7 +198,7 @@ describe("MobileBottomNav actions", () => {
     expect(sync.tagName).toBe("BUTTON")
     expect(createGoal.querySelector(".rounded-full")).toBeInTheDocument()
     expect(sync.querySelector(".rounded-full")).toBeInTheDocument()
-    expect(createGoal).toHaveTextContent("nav.addGoal")
+    expect(createGoal).toHaveTextContent("nav.createGoal")
     expect(sync).toHaveTextContent("nav.sync")
   })
 
@@ -234,7 +234,7 @@ describe("MobileBottomNav actions", () => {
     ).toEqual([
       "nav.home",
       "nav.goals",
-      "nav.addGoal",
+      "nav.createGoal",
       "nav.sync",
       "nav.dailies",
       "nav.menu",

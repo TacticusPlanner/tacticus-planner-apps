@@ -380,7 +380,7 @@
   },
   "teams": {
     "title": "Teams",
-    "add": "Add team",
+    "add": "Create team",
     "empty": "No teams on {{lane}} yet.",
     "loading": "Loading teams…",
     "loadError": "Your teams could not be loaded.",
@@ -1229,7 +1229,7 @@
       "modeLabel": "Your teams",
       "restoreAll": "Restore all",
       "undo": "Undo",
-      "add": "Add a team",
+      "add": "Create a team",
       "editTeam": "Edit {{name}}",
       "lanesLabel": "Lanes",
       "depthOf": "Run {{run}}: {{depth}} of {{battles}} battles"
@@ -1239,7 +1239,7 @@
     },
     "review": {
       "project": "Project",
-      "newProject": "New project",
+      "newProject": "Create project",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Goals to create",
       "teams": "Teams",

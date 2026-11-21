@@ -380,7 +380,7 @@
   },
   "teams": {
     "title": "Équipes",
-    "add": "Ajouter une équipe",
+    "add": "Créer une équipe",
     "empty": "Aucune équipe sur {{lane}} pour l'instant.",
     "loading": "Chargement des équipes…",
     "loadError": "Impossible de charger tes équipes.",
@@ -1229,7 +1229,7 @@
       "modeLabel": "Vos équipes",
       "restoreAll": "Tout restaurer",
       "undo": "Annuler",
-      "add": "Ajouter une équipe",
+      "add": "Créer une équipe",
       "editTeam": "Modifier {{name}}",
       "lanesLabel": "Voies",
       "depthOf": "Manche {{run}} : {{depth}} combats sur {{battles}}"
@@ -1239,7 +1239,7 @@
     },
     "review": {
       "project": "Projet",
-      "newProject": "Nouveau projet",
+      "newProject": "Créer le projet",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Objectifs à créer",
       "teams": "Équipes",

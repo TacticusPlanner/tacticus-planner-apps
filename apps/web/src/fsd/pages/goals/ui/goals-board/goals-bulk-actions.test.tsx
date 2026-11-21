@@ -57,14 +57,14 @@ describe("GoalsBulkActions", () => {
 
   it("enables Resume with the paused count and leaves Pause disabled for two Paused goals", () => {
     setup([row("a", "Paused"), row("b", "Paused")])
-    expect(screen.getByTestId("goals-bulk-resume")).toHaveTextContent(
-      "Resume (2)"
+    // The count is a badge after the label, and the accessible name says it in words.
+    expect(screen.getByTestId("goals-bulk-resume")).toHaveTextContent("Resume2")
+    expect(screen.getByTestId("goals-bulk-resume")).toHaveAccessibleName(
+      "Resume, 2 selected"
     )
     expect(screen.getByTestId("goals-bulk-resume")).toBeEnabled()
     expect(screen.getByTestId("goals-bulk-pause")).toBeDisabled()
-    expect(screen.getByTestId("goals-bulk-delete")).toHaveTextContent(
-      "Delete (2)"
-    )
+    expect(screen.getByTestId("goals-bulk-delete")).toHaveTextContent("Delete2")
   })
 
   it("pauses only Active, non-reached, non-pending goals of a mixed selection", async () => {
@@ -122,7 +122,7 @@ describe("GoalsBulkActions", () => {
         />
       )
       const button = screen.getByTestId("goals-bulk-removeFromProject")
-      expect(button).toHaveTextContent("Remove from project (2)")
+      expect(button).toHaveTextContent("Remove from project2")
       await userEvent.setup().click(button)
       expect(onRemoveFromProject).toHaveBeenCalledWith([rows[0], rows[1]])
     })

@@ -174,10 +174,11 @@ function ViewSheetButton({
 }
 
 /**
- * A visibly labelled View control: label then control on one line in the toolbar, label above a
- * full-width control in the View sheet.
+ * A toolbar control with its visible label: label then control on one line in the toolbar, label
+ * above a full-width control in the View sheet (ui-style-guide rule 3: labels sit outside the
+ * control, never inside the trigger).
  */
-function ToolbarField({
+export function ToolbarField({
   label,
   labelId,
   children,

@@ -275,7 +275,6 @@
     }
   },
   "nav": {
-    "addGoal": "Add goal",
     "dailies": "Dailies",
     "dailiesDescription": "Daily and periodic in-game tasks.",
     "eventLive": "Event live",
@@ -1235,21 +1234,16 @@
     },
     "bulk": {
       "pause": "Pause",
-      "pauseCount": "Pause ({{count}})",
       "resume": "Resume",
-      "resumeCount": "Resume ({{count}})",
       "addToProject": "Add to project",
-      "addToProjectCount": "Add to project ({{count}})",
       "delete": "Delete",
-      "deleteCount": "Delete ({{count}})",
       "selected_one": "{{count}} selected",
       "selected_other": "{{count}} selected",
       "selectAll": "Select all goals",
       "selectRow": "Select {{entity}}",
       "selectMode": "Select goals",
       "selectDone": "Done",
-      "removeFromProject": "Remove from project",
-      "removeFromProjectCount": "Remove from project ({{count}})"
+      "removeFromProject": "Remove from project"
     },
     "delete": {
       "title_one": "Delete this goal?",
@@ -1301,9 +1295,9 @@
       "cancel": "Cancel",
       "edit": "Edit",
       "editTitle": "Edit project",
-      "newProjectTitle": "New project",
+      "newProjectTitle": "Create project",
       "formDescription": "Name, describe, and color this project.",
-      "newProject": "New project",
+      "newProject": "Create project",
       "name": "Name",
       "description": "Description",
       "color": "Color",
@@ -2181,7 +2175,7 @@
       },
       "bottomNavigation": {
         "addGoal": {
-          "title": "Add goal",
+          "title": "Create goal",
           "content": "Create Character or Machine of War goals, then choose one or more projects. The default project is selected automatically."
         },
         "sync": {
@@ -2448,6 +2442,74 @@
         "save": {
           "title": "Save your changes",
           "content": "Once you edit something, a bar with Save and Discard appears at the bottom. You'll be asked before leaving with unsaved changes."
+        }
+      }
+    },
+    "campaigns": {
+      "steps": {
+        "summary": {
+          "title": "Campaign progress",
+          "content": "How far you are through the Normal and Mirror campaigns, from your synced progress."
+        },
+        "stories": {
+          "title": "Stories and tracks",
+          "content": "Each story shows its Standard and Elite tracks and the battles you have cleared. Use Edit medals on a track to mark battles you beat with fewer than 3 medals, so daily raids plan them as battles to play manually."
+        }
+      }
+    },
+    "incursions": {
+      "steps": {
+        "rules": {
+          "title": "How Incursions work",
+          "content": "Open this for the run tokens, who can join a team and how a run plays out."
+        },
+        "list": {
+          "title": "Machines of War",
+          "content": "One card per Incursion MoW, newest first, with whether you own it and the stars you have earned. Open a card for its tiers, run maps and teams."
+        }
+      }
+    },
+    "insights": {
+      "steps": {
+        "toolbar": {
+          "title": "Scope",
+          "content": "Report on all your active goals or on one project. Locations sets whether farming ranks only battles you have reached or every battle."
+        },
+        "outlook": {
+          "title": "Plan outlook",
+          "content": "When the plan is done at your daily energy, which goals set that date, and which goals are left out of it."
+        },
+        "holdingBack": {
+          "title": "What's holding you back",
+          "content": "What no farming clears, then the resources that take the most energy at your chosen nodes."
+        },
+        "farming": {
+          "title": "Where to farm",
+          "content": "The campaigns and events whose battles drop the most of what your goals need, and the campaigns worth pushing next."
+        },
+        "missing": {
+          "title": "Still missing",
+          "content": "Everything your goals need beyond your current inventory, with your stock spent in priority order."
+        }
+      }
+    },
+    "guild": {
+      "steps": {
+        "summary": {
+          "title": "Your guild",
+          "content": "The guild's name, tag and level, and when it was last synced."
+        },
+        "actions": {
+          "title": "Sync and delete",
+          "content": "A Leader or Co-Leader can sync the guild to refresh its members, or delete it from Planner."
+        },
+        "members": {
+          "title": "Members",
+          "content": "Everyone in the guild, with their role, level, when they were last active in the game and in Planner, and whether they have linked a Planner account."
+        },
+        "apiKey": {
+          "title": "Guild API key",
+          "content": "Planner syncs the guild with this key. A Leader or Co-Leader can replace it here after regenerating or revoking it."
         }
       }
     }
