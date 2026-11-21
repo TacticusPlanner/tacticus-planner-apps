@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   activeFilterCount,
   activeStandaloneFilterCount,
+  clearedStandaloneFilters,
   defaultCollectionQuery,
   isCollectionAlliance,
   isCollectionAttackType,
@@ -89,6 +90,23 @@ describe("activeFilterCount", () => {
     }
     expect(activeFilterCount(query)).toBe(8)
     expect(activeStandaloneFilterCount(query)).toBe(8)
+  })
+
+  it("clears the panel's filters but keeps the search, quick filter and Owned only", () => {
+    const query = {
+      ...defaultCollectionQuery,
+      search: "ti",
+      quick: "canAscend" as const,
+      hideUnowned: true,
+      alliance: "Imperial" as const,
+      traits: ["Psyker"],
+      rankMin: "Gold1" as const,
+    }
+    const cleared = { ...query, ...clearedStandaloneFilters }
+    expect(activeStandaloneFilterCount(cleared)).toBe(0)
+    expect(cleared.search).toBe("ti")
+    expect(cleared.quick).toBe("canAscend")
+    expect(cleared.hideUnowned).toBe(true)
   })
 
   it("does not count Hide unowned as a filter", () => {

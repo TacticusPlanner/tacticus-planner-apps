@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { X } from "lucide-react"
 import {
   factionIcon,
   onslaughtAllianceIcon,
@@ -382,6 +383,7 @@ export function RaidsFiltersDialog({
           }}
           variant="ghost"
         >
+          <X data-icon="inline-start" />
           {t("dailies:raidsFilters.actions.reset")}
         </Button>
         <Button

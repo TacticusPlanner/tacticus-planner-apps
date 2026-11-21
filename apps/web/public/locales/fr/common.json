@@ -414,10 +414,7 @@
         "ownedOnly": "Débloquées uniquement",
         "hideUnownedNeedsRoster": "Masquer les unités non débloquées nécessite un effectif synchronisé.",
         "filters": "Filtres",
-        "filtersCount_one": "Filtres ({{count}})",
-        "filtersCount_other": "Filtres ({{count}})",
         "clearFilters": "Effacer les filtres",
-        "done": "Terminé",
         "alliance": "Alliance",
         "allAlliances": "Toutes les alliances",
         "faction": "Faction",
@@ -2591,5 +2588,12 @@
     "layout": "Disposition",
     "done": "Terminé",
     "none": "Aucun"
+  },
+  "filtersControl": {
+    "button": "Filtres",
+    "buttonActive": "Filtres, {{count}} actifs",
+    "title": "Filtres",
+    "clear": "Effacer les filtres",
+    "done": "Terminé"
   }
 }

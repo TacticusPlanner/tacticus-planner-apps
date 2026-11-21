@@ -163,7 +163,31 @@ export function activeFilterCount(query: CollectionQuery): number {
   ].filter(Boolean).length
 }
 
-/** The standalone filters only (no search, no quick filter): what opens the filter panel. */
+/**
+ * The standalone filters (the Filters panel's fields) back at their defaults: the panel's "Clear
+ * filters" keeps the search, the quick filter, Owned only and the view settings.
+ */
+export const clearedStandaloneFilters: Partial<CollectionQuery> = {
+  alliance: null,
+  factions: [],
+  rarities: [],
+  rankMin: null,
+  rankMax: null,
+  starsMin: null,
+  starsMax: null,
+  kind: null,
+  attack: null,
+  hitsMin: null,
+  hitsMax: null,
+  movement: null,
+  rangeMin: null,
+  rangeMax: null,
+  damageTypes: [],
+  traits: [],
+  shardSources: [],
+}
+
+/** The standalone filters only (no search, no quick filter): the Filters button's badge. */
 export function activeStandaloneFilterCount(query: CollectionQuery): number {
   return (
     activeFilterCount(query) -

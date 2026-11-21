@@ -65,14 +65,14 @@ One row directly under the header, three fixed slots, left to right:
 
 ## 3. Which control for which option
 
-| Option type                           | Control                                                              | Example                                 |
-| ------------------------------------- | -------------------------------------------------------------------- | --------------------------------------- |
-| 2–4 exclusive choices, always visible | Labelled segmented button: `ToggleGroup`, `type="single"`, one style | Cards / Table, Group by: None / Faction |
-| 5+ exclusive choices, or no room      | `Select` with a visible label                                        | Sort, Group by with many keys           |
-| On/off that changes what is shown     | Filter chip in the Find slot (`FILTER_CHIP_CLASS_NAME`)              | Owned only, Raidable only               |
-| On/off that is a saved preference     | `Switch`, in the Settings sheet                                      | Rank shading                            |
-| Many filters                          | "Filters" button → sheet (mobile) / popover (desktop)                | Raids filters                           |
-| Views of one thing                    | Tabs (rule 4)                                                        | Overview / Teams / Plan                 |
+| Option type                           | Control                                                                 | Example                                 |
+| ------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------- |
+| 2–4 exclusive choices, always visible | Labelled segmented button: `ToggleGroup`, `type="single"`, one style    | Cards / Table, Group by: None / Faction |
+| 5+ exclusive choices, or no room      | `Select` with a visible label                                           | Sort, Group by with many keys           |
+| On/off that changes what is shown     | Filter chip in the Find slot (`FILTER_CHIP_CLASS_NAME`)                 | Owned only, Raidable only               |
+| On/off that is a saved preference     | `Switch`, in the Settings sheet                                         | Rank shading                            |
+| Many filters                          | `FiltersControl`: "Filters" button → popover or dialog; sheet on mobile | NPC filters, Collection filters         |
+| Views of one thing                    | Tabs (rule 4)                                                           | Overview / Teams / Plan                 |
 
 - Group by is always labelled "Group by", sits in the View slot after Layout,
   and is a segmented button with a "None" option (`Select` when more than 3
@@ -81,6 +81,15 @@ One row directly under the header, three fixed slots, left to right:
   pills; use `ToggleGroup` or the filter chip.
 - Icon-only segmented buttons are allowed only with a tooltip and an
   `aria-label`, and only where the label would not fit (mobile).
+- A `Select` is never icon-only: it shows its value on every viewport.
+- Filters go through the shared `FiltersControl` (`@/shared/ui`): the
+  "Filters" button with the active count as a badge, and its panel.
+  `size="compact"` is a `w-80` popover on desktop, for a short list that fits
+  without scrolling; `size="form"` is a form-width dialog, for longer lists.
+  Both are a bottom sheet on mobile. Inside, each field has its visible label
+  above it (`FilterField`; `inline` for a switch or a short number). Changes
+  apply as they are made; the footer is ghost "Clear filters" at the left and
+  "Done".
 
 ## 4. Tabs
 
@@ -203,6 +212,9 @@ other content that needs to is a sheet or dialog.
   nothing to lose. Never both.
 - A dialog whose changes apply as they are made (filters, view options) ends
   with one primary "Done" and no dismiss.
+- Exception: a filters dialog whose every change recomputes something slow
+  (the Raids filters re-plan the day) keeps a draft and ends with "Cancel" and
+  "Apply filters"; its ghost "Clear filters" applies at once and closes.
 - The primary is verb + object (copy rule 10): "Save goal", "Delete project",
   "Apply filters", not "OK", "Yes" or "Submit".
 

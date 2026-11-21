@@ -75,7 +75,7 @@ When there is at least one goal in the Reached status and the status filter's cu
 
 ### Requirement: Goals controls compress on mobile
 
-Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then the page toolbar (`app-page-layout`). The toolbar's Find slot SHALL hold the status filter (with its reached-indicator), the Type filter, the Reorder toggle (always present; disabled while goals load or when reordering is unavailable, including while Sort is not Priority) and the Select goals button (`goal-bulk-actions`); the Type filter SHALL render as an icon-only trigger with an accessible name for its full label, and Reorder and Select goals SHALL show their icon and a text label. The View button SHALL sit at the top right of the toolbar and open a sheet holding Layout, Group by, Sort, Season fit and Collapse all, stacked and full width. Planning Settings SHALL be the page header's Settings icon button. Create Goal SHALL NOT render in the toolbar on mobile; the bottom navigation's Add goal button is the mobile entry point (`goal-creation-entry-points`). Because every control is present from the first render, the toolbar SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in the toolbar; they live in the select bar. When the Find controls do not fit one line (for example at 360px), they SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
+Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then the page toolbar (`app-page-layout`). The toolbar's Find slot SHALL hold the status filter (with its reached-indicator), the Type filter, the Reorder toggle (always present; disabled while goals load or when reordering is unavailable, including while Sort is not Priority) and the Select goals button (`goal-bulk-actions`); the Type filter SHALL show the chosen type ("All goal types" by default) like on desktop, never as an icon-only trigger, and Reorder and Select goals SHALL show their icon and a text label. The View button SHALL sit at the top right of the toolbar and open a sheet holding Layout, Group by, Sort, Season fit and Collapse all, stacked and full width. Planning Settings SHALL be the page header's Settings icon button. Create Goal SHALL NOT render in the toolbar on mobile; the bottom navigation's Add goal button is the mobile entry point (`goal-creation-entry-points`). Because every control is present from the first render, the toolbar SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in the toolbar; they live in the select bar. When the Find controls do not fit one line (for example at 360px), they SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
 
 #### Scenario: Mobile Goals order
 
@@ -85,7 +85,7 @@ Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row
 #### Scenario: Mobile Reorder and Select goals carry text
 
 - **WHEN** Goals is viewed below the 768px breakpoint
-- **THEN** Reorder and Select goals show an icon and a text label, the Type filter shows its icon only and remains identifiable via its accessible name, and the header's Settings button is an icon button named "Settings"
+- **THEN** Reorder and Select goals show an icon and a text label, the Type filter shows the chosen type as text, and the header's Settings button is an icon button named "Settings"
 
 #### Scenario: Mobile View sheet
 

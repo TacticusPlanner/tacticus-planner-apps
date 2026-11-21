@@ -215,7 +215,7 @@ const powerValue = () => screen.getByTestId("npc-stat-power-value")
 
 /** Filters are collapsed behind a toggle on both platforms; open them before driving a control. */
 const openFilters = (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByTestId("npcs-filters-toggle"))
+  user.click(screen.getByTestId("npcs-filters"))
 
 /** `toLocaleString` grouping differs per machine locale; match digits regardless of separators. */
 const numberText = (value: number) =>
@@ -591,12 +591,12 @@ describe("NpcsPage", () => {
 
       const toggle = screen.getByRole("button", { name: "Filters" })
       await user.click(toggle)
-      const sheet = await screen.findByTestId("npcs-filter-sheet")
+      const sheet = await screen.findByTestId("npcs-filters-panel")
       expect(within(sheet).getByTestId("npcs-filter-bar")).toBeVisible()
 
       await user.click(within(sheet).getByRole("button", { name: "Done" }))
       await waitFor(() =>
-        expect(screen.queryByTestId("npcs-filter-sheet")).toBeNull()
+        expect(screen.queryByTestId("npcs-filters-panel")).toBeNull()
       )
       expect(toggle).toHaveFocus()
     })
@@ -668,9 +668,7 @@ describe("NpcsPage desktop layout and filters", () => {
     expect(
       within(screen.getByTestId("npcs-list")).getAllByRole("button")
     ).toHaveLength(1)
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters"
-    )
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName("Filters")
   })
 
   it("narrows by alliance and by attack type", async () => {
@@ -688,8 +686,8 @@ describe("NpcsPage desktop layout and filters", () => {
 
     await user.click(screen.getByTestId("npcs-attack-filter"))
     await user.click(await screen.findByRole("option", { name: "Melee only" }))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
   })
 
@@ -705,15 +703,15 @@ describe("NpcsPage desktop layout and filters", () => {
     await user.click(
       await screen.findByRole("option", { name: "Living Metal" })
     )
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
 
     await user.click(screen.getByTestId("npcs-damage-type-filter-clear"))
 
     // Only the damage-type facet is reset; the trait facet survives.
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
     expect(screen.queryByTestId("npcs-damage-type-filter-clear")).toBeNull()
     expect(screen.getByTestId("npcs-trait-filter-clear")).toBeVisible()
@@ -755,21 +753,21 @@ describe("NpcsPage desktop layout and filters", () => {
     expect(
       within(screen.getByTestId("npcs-list")).getAllByRole("button")
     ).toHaveLength(1)
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
 
     await user.click(screen.getByTestId("npcs-damage-type-filter"))
     await user.click(await screen.findByRole("option", { name: "Piercing" }))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
 
-    await user.click(screen.getByTestId("npcs-clear-filters"))
+    await user.click(screen.getByTestId("npcs-filters-clear"))
     expect(
       within(screen.getByTestId("npcs-list")).getAllByRole("button")
     ).toHaveLength(4)
-    expect(screen.getByTestId("npcs-clear-filters")).toBeDisabled()
+    expect(screen.getByTestId("npcs-filters-clear")).toBeDisabled()
   })
 })
 
@@ -1090,8 +1088,8 @@ describe("NpcsPage encounters", () => {
     await user.click(screen.getByTestId("npcs-game-mode-filter"))
     await user.click(await screen.findByRole("option", { name: "Survival" }))
 
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
     expect(
       within(screen.getByTestId("npcs-list")).getAllByRole("button")
@@ -1125,8 +1123,8 @@ describe("NpcsPage encounters", () => {
     const elite = locations.find((option) => /elite/i.test(option.textContent))
     await user.click(elite as HTMLElement)
 
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
     await waitFor(() =>
       expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
@@ -1136,8 +1134,8 @@ describe("NpcsPage encounters", () => {
 
     await user.click(screen.getByTestId("npcs-game-mode-filter"))
     await user.click(await screen.findByRole("option", { name: "Survival" }))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
   })
 
@@ -1210,7 +1208,7 @@ describe("NpcsPage encounters", () => {
     await waitFor(() =>
       expect(location()).toContain("variation=necroBossWardenLEG&level=0")
     )
-    expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent("(")
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName("Filters")
     expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
       "Legendary Event"
     )
@@ -1244,8 +1242,8 @@ describe("NpcsPage encounters", () => {
     await user.click(chip as HTMLElement)
     await user.keyboard("{/Control}")
 
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
     expect(location()).toBe(urlBefore)
   })
@@ -1257,8 +1255,8 @@ describe("NpcsPage encounters", () => {
     await openFilters(user)
     await user.click(screen.getByTestId("npcs-game-mode-filter"))
     await user.click(await screen.findByRole("option", { name: "Survival" }))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
 
     await seedGameCatalog({
@@ -1271,9 +1269,7 @@ describe("NpcsPage encounters", () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent(
-        "("
-      )
+      expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName("Filters")
     )
     expect(screen.getByTestId("npc-name")).toBeInTheDocument()
   })
@@ -1297,8 +1293,8 @@ describe("NpcsPage encounters", () => {
     const options = await screen.findAllByRole("option")
     const elite = options.find((option) => /elite/i.test(option.textContent))
     await user.click(elite as HTMLElement)
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
 
     await seedGameCatalog({ "npc-encounters": wardenEncounters })
@@ -1307,8 +1303,8 @@ describe("NpcsPage encounters", () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-        "Filters (1)"
+      expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+        "Filters, 1 active"
       )
     )
     expect(screen.queryByTestId("npcs-location-filter")).not.toBeInTheDocument()
@@ -1343,8 +1339,8 @@ describe("NpcsPage encounters", () => {
     await openFilters(user)
 
     await user.click(screen.getByTestId("npcs-running-filter"))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
     expect(
       within(screen.getByTestId("npcs-list")).getAllByRole("button")
@@ -1364,8 +1360,8 @@ describe("NpcsPage encounters", () => {
     await openFilters(user)
 
     await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
     await waitFor(() =>
       expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
