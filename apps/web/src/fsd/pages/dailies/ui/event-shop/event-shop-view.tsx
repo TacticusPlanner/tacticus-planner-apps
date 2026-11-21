@@ -10,12 +10,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@workspace/ui/components/sheet"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs"
+import { Tabs, TabsContent } from "@workspace/ui/components/tabs"
+
+import { PageTabsList, PageTabsTrigger } from "@/shared/ui"
 
 import type { EventShopForm, EventShopTab } from "../../model/event-shop-route"
 import { eventShopTabs } from "../../model/event-shop-route"
@@ -115,24 +112,19 @@ export function EventShopView(props: EventShopViewProps) {
       onValueChange={(value) => onSelectTab(value as EventShopTab)}
       value={tab}
     >
-      {/* The standard left-aligned underline tabs (ui-style-guide rule 4); the shop search sits in
-          the page toolbar's Find slot. */}
-      <TabsList
-        aria-label={t("tabs.label")}
-        className="justify-start"
-        variant="line"
-      >
+      {/* The shared page tabs (ui-style-guide rule 4). The event picker and the shop search scope
+          every tab, so they sit above it in the page toolbar. */}
+      <PageTabsList aria-label={t("tabs.label")}>
         {eventShopTabs(form).map((value) => (
-          <TabsTrigger
+          <PageTabsTrigger
             key={value}
-            className="flex-none px-2.5"
             data-testid={`event-shop-tab-${value}`}
             value={value}
           >
             {tabLabel(value)}
-          </TabsTrigger>
+          </PageTabsTrigger>
         ))}
-      </TabsList>
+      </PageTabsList>
       <TabsContent className="flex flex-col gap-4 pt-2" value="shop">
         {form === "phone" ? (
           <>

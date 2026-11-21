@@ -520,7 +520,7 @@
           "content": "Ouvrez votre liste d'achats et la couverture. Le bouton indique ce qu'il reste à acheter et combien d'éléments sont à vérifier."
         },
         "planTab": {
-          "title": "Plan",
+          "title": "Liste d'achats",
           "content": "Votre liste d'achats et la couverture. Le badge compte les éléments à vérifier."
         },
         "stillToBuy": {

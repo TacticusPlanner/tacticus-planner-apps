@@ -520,7 +520,7 @@
           "content": "Open your shopping list and Coverage. The button shows what is still to buy and how many items need review."
         },
         "planTab": {
-          "title": "Plan",
+          "title": "Shopping list",
           "content": "Your shopping list and Coverage. The badge counts items that need review."
         },
         "stillToBuy": {

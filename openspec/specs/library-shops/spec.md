@@ -28,7 +28,9 @@ or a signed-in roster to render.
 
 The page SHALL provide a control to choose any one of the seven days of the week and a control to
 choose which of the four daily shops (Guild Shop, Guild War Shop, Crusade Shop, Rogue Trader) is
-shown. The day control SHALL default to the current UTC day of week. Changing either control SHALL
+shown. The day SHALL be a labelled select in the page toolbar, and the shops SHALL be left-aligned
+underline tabs under it on every viewport, scrolling sideways when they don't fit on a phone (never
+a select). The day control SHALL default to the current UTC day of week. Changing either control SHALL
 recompute the displayed slots for that day and shop.
 
 #### Scenario: Default day is today
@@ -111,7 +113,7 @@ both.
 #### Scenario: Mobile layout
 
 - **WHEN** the browsing page is viewed below the 768px breakpoint
-- **THEN** the day and shop controls and the slot cards are composed for a narrow viewport while preserving every label, cost, and availability note
+- **THEN** the slot cards are one column under the same day select and shop tabs as desktop, preserving every label, cost, and availability note
 
 #### Scenario: Desktop layout
 

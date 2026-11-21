@@ -1,6 +1,6 @@
 import { startTransition, useEffect, useOptimistic, useRef } from "react"
 import { useTranslation } from "react-i18next"
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import { Tabs } from "@workspace/ui/components/tabs"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -12,6 +12,7 @@ import type {
   LegendaryEventLaneId,
   LegendaryEventLifecycle,
 } from "@/entities/legendary-event"
+import { PageTabsList, PageTabsTrigger } from "@/shared/ui"
 
 import { LEGENDARY_EVENT_TABS } from "./legendary-event-page.view-model"
 import type { LegendaryEventTab } from "./legendary-event-page.view-model"
@@ -85,26 +86,21 @@ export function LegendaryEventTabs({
         }
         value={shownTab}
       >
-        {/* The bottom padding keeps the active tab's underline inside the scroll box. */}
-        <div className="overflow-x-auto pb-1.5" ref={scroller}>
-          <TabsList
-            aria-label={t("tabs.label")}
-            className="w-max min-w-full justify-start"
-            data-testid="legendary-event-tab-list"
-            variant="line"
-          >
-            {LEGENDARY_EVENT_TABS.map((tab) => (
-              <TabsTrigger
-                className="flex-none px-2.5"
-                data-testid={`legendary-event-tab-${tab}`}
-                key={tab}
-                value={tab}
-              >
-                {tab === "run" ? t(RUN_TAB_LABEL[lifecycle]) : t(`tabs.${tab}`)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
+        <PageTabsList
+          aria-label={t("tabs.label")}
+          data-testid="legendary-event-tab-list"
+          scrollRef={scroller}
+        >
+          {LEGENDARY_EVENT_TABS.map((tab) => (
+            <PageTabsTrigger
+              data-testid={`legendary-event-tab-${tab}`}
+              key={tab}
+              value={tab}
+            >
+              {tab === "run" ? t(RUN_TAB_LABEL[lifecycle]) : t(`tabs.${tab}`)}
+            </PageTabsTrigger>
+          ))}
+        </PageTabsList>
       </Tabs>
     </div>
   )
