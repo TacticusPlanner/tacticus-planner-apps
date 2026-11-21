@@ -832,7 +832,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     act(() => selectTab("teams"))
     await screen.findByTestId("legendary-event-overview-leaderboard")
     openFilters()
-    const previewSwitch = screen.getByTestId("leaderboard-goals-preview")
+    const previewSwitch = screen.getByRole("switch", { name: "Goals preview" })
     await vi.waitFor(() => expect(previewSwitch).toBeEnabled())
     toggleOnlyUnlocked()
     showOnlyLane("alpha")
