@@ -9,7 +9,8 @@ type StepKey = "summary" | "stories"
 /**
  * Joyride tour for the Campaigns progress page: the Normal and Mirror totals, then the story cards
  * with their tracks and the medals editor. Desktop and mobile share the targets; only the cards'
- * layout differs (two columns vs stacked).
+ * layout differs (two columns vs stacked). Both steps are optional, since neither target renders
+ * while the campaign progress loads or fails.
  */
 export function useCampaignsTutorial() {
   const { t } = useTranslation()
@@ -19,6 +20,7 @@ export function useCampaignsTutorial() {
       target: `[data-testid="${target}"]`,
       title: t(`tour.campaigns.steps.${key}.title`),
       content: t(`tour.campaigns.steps.${key}.content`),
+      data: { optional: true },
     })
     const shared = [
       step("campaigns-summary", "summary"),

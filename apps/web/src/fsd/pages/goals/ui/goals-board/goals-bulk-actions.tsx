@@ -115,6 +115,7 @@ export function GoalsBulkActions({
         return (
           <Button
             aria-label={name}
+            className={compact ? "relative" : undefined}
             data-testid={`goals-bulk-${key}`}
             disabled={count === 0}
             key={key}
@@ -124,7 +125,15 @@ export function GoalsBulkActions({
           >
             {icon}
             {compact ? null : label}
-            {compact ? null : <CountBadge count={count} />}
+            {/* Icon-only on a phone: the badge sits on the button's corner so the bar keeps its width. */}
+            <CountBadge
+              className={
+                compact
+                  ? "pointer-events-none absolute -top-1.5 -right-1.5"
+                  : undefined
+              }
+              count={count}
+            />
           </Button>
         )
       })}
