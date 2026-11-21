@@ -14,7 +14,7 @@ import {
 } from "@workspace/ui/components/accordion"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { CompactProgression, RankBadge } from "@/shared/ui"
+import { CompactProgression, HowToRead, RankBadge } from "@/shared/ui"
 
 import type { RadarAxisResult } from "../../model/stat-radar"
 import {
@@ -24,7 +24,6 @@ import {
   TraitsList,
 } from "./character-details-sections"
 import type { StatsFigure } from "./character-unit.view-model"
-import { HowToRead } from "../unit/how-to-read"
 import { StatRadarCard } from "./stat-radar-card"
 import { hasNode } from "@/shared/lib"
 

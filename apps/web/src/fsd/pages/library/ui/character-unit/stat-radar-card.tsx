@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RadarAxisResult } from "../../model/stat-radar"
-import { HowToRead } from "../unit/how-to-read"
+import { HowToRead } from "@/shared/ui"
 
 const RINGS = [0.25, 0.5, 0.75, 1]
 

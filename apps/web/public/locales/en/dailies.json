@@ -880,7 +880,8 @@
         "syncedAt": "Tokens from your sync {{when}}, assuming you spend them before your buckets fill up.",
         "syncUnknown": "Your sync time is unknown, so tokens are counted from now, assuming you spend them before your buckets fill up.",
         "upcoming": "Tokens assume full buckets when the event starts and that you spend them before they fill up."
-      }
+      },
+      "howWorkedOut": "How this is worked out"
     },
     "teams": {
       "title": "Event teams",

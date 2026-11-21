@@ -82,8 +82,6 @@
     "title": "Batalla {{number}} · {{tier}}",
     "slots_one": "{{count}} unidad, {{hero}} incluido",
     "slots_other": "{{count}} unidades, {{hero}} incluido",
-    "cap": "Límite {{rarity}}: hasta {{progression}}, {{rank}}, nivel de habilidad {{ability}}, nivel de objeto {{item}}",
-    "capNoItems": "Límite {{rarity}}: hasta {{progression}}, {{rank}}, nivel de habilidad {{ability}}",
     "lightning_one": "Victoria relámpago en {{count}} turno",
     "lightning_other": "Victoria relámpago en {{count}} turnos",
     "power": "Poder enemigo {{power}}",
@@ -102,7 +100,11 @@
     "have": "Tienes {{have}} / necesitas {{need}}",
     "noGoal": "Ningún objetivo lo necesita",
     "needError": "No se pudo leer lo que tus objetivos necesitan de este botín.",
-    "neededBy": "Lo necesitan"
+    "neededBy": "Lo necesitan",
+    "capLabel": "Límite {{rarity}}: hasta",
+    "capAbility": "nivel de habilidad {{level}}",
+    "capItem": "nivel de objeto {{level}}",
+    "jarSummary": "Sobre la probabilidad"
   },
   "rewards": {
     "title": "Recompensas",

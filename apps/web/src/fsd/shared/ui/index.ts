@@ -1,5 +1,6 @@
 export { CompactStarLevel, CompactStars } from "./compact-stars"
 export { CompactProgression } from "./compact-progression"
+export { ProgressionSummary } from "./progression-summary"
 export { progressionText } from "./progression-text"
 export { EntityIcon } from "./entity-icon"
 export {
@@ -10,6 +11,8 @@ export {
 } from "./game-icon-size"
 export { CampaignLocationName } from "./campaign-location-name"
 export { IconLine } from "./icon-line"
+export { HowToRead } from "./how-to-read"
+export { IconCount } from "./icon-count"
 export { energyIconUrl } from "./energy-icon"
 export { UpgradeIcon } from "./upgrade-icon"
 export { RankBadge } from "./rank-badge"

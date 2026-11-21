@@ -128,12 +128,13 @@
     },
     "summary": {
       "none": "Il ne reste aucune bataille de campagne dans les missions de cet événement.",
-      "fits_one": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jour restant, cela fait environ {{perDay}} par jour, {{energy}} d'énergie par jour sur les nœuds les moins chers.",
-      "fits_other": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jours restants, cela fait environ {{perDay}} par jour, {{energy}} d'énergie par jour sur les nœuds les moins chers.",
-      "perDay_one": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jour restant, cela fait environ {{perDay}} par jour.",
-      "perDay_other": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jours restants, cela fait environ {{perDay}} par jour.",
       "short_one": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jour restant, votre énergie quotidienne couvre au plus {{max}} par jour sur les nœuds les moins chers, donc environ {{short}} ne tiendront pas avant la fin de l'événement.",
-      "short_other": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jours restants, votre énergie quotidienne couvre au plus {{max}} par jour sur les nœuds les moins chers, donc environ {{short}} ne tiendront pas avant la fin de l'événement."
+      "short_other": "Batailles de campagne restantes dans les missions de cet événement : {{battles}}. Avec {{count}} jours restants, votre énergie quotidienne couvre au plus {{max}} par jour sur les nœuds les moins chers, donc environ {{short}} ne tiendront pas avant la fin de l'événement.",
+      "label": "Batailles de campagne restantes dans les missions de cet événement",
+      "chipBattles": "{{battles}} batailles",
+      "chipPerDay_one": "{{perDay}} par jour, {{count}} jour restant",
+      "chipPerDay_other": "{{perDay}} par jour, {{count}} jours restants",
+      "chipEnergy": "{{energy}} d’énergie par jour sur les nœuds les moins chers"
     },
     "noDrop": {
       "title": "Ou les batailles d'Indomitus sans butin (6 à 14)",

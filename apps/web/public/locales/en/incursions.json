@@ -116,7 +116,8 @@
       "description": "Your Incursion progress changes haven't been saved and will be lost.",
       "stay": "Stay",
       "leave": "Leave"
-    }
+    },
+    "howToSummary": "How to track your stars"
   },
   "team": {
     "title": "Suggested team",
@@ -129,7 +130,8 @@
     "unsynced": "Sync your roster to see a suggested team and which tiers it can clear.",
     "noPower": "Power estimates are unavailable right now.",
     "eligible_one": "{{count}} eligible hero",
-    "eligible_other": "All {{count}} eligible heroes"
+    "eligible_other": "All {{count}} eligible heroes",
+    "hintSummary": "How this team is picked"
   },
   "nav": {
     "label": "Incursion navigation",

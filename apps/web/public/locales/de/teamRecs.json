@@ -52,7 +52,8 @@
     "eventUnitAny": "Punktet für das Event.",
     "strength": "Aufgrund der Stärke ausgewählt ({{power}}).",
     "minimumSize": "Hinzugefügt, um das Team zu vervollständigen.",
-    "random": "Zufällig ausgewählt."
+    "random": "Zufällig ausgewählt.",
+    "eventUnitShort": "Punktet: {{match}}"
   },
   "track": {
     "shortfallTitle": "Nicht genug {{track}}-Charaktere",

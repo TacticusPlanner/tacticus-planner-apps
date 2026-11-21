@@ -21,7 +21,7 @@ import {
 import { useAbilityText } from "@/shared/ability-text"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { useTourPageSteps } from "@/shared/tour"
-import { CompactProgression, RankBadge } from "@/shared/ui"
+import { ProgressionSummary } from "@/shared/ui"
 
 import { buildRadarPopulation, buildStatRadar } from "../../model/stat-radar"
 import { usePierceRatios } from "../../model/use-pierce-ratios"
@@ -235,23 +235,19 @@ function CharacterUnit({
 
   // The rarity, stars and rank as icons (names in tooltips), then the levels as text.
   const yourUnitLine = player ? (
-    <>
-      <CompactProgression value={player.progressionIndex} />
-      <span aria-hidden="true">·</span>
-      <RankBadge rank={player.rank} showLabel={false} tooltip />
-      <span aria-hidden="true">·</span>
-      <span>
-        {[
-          t("characterUnit.header.abilities", {
-            active: (activeId && levels.get(activeId)) ?? 1,
-            passive: (passiveId && levels.get(passiveId)) ?? 1,
-          }),
-          ...(relic?.equippedLevel !== undefined
-            ? [t("characterUnit.header.relic", { level: relic.equippedLevel })]
-            : []),
-        ].join(" · ")}
-      </span>
-    </>
+    <ProgressionSummary
+      progression={player.progressionIndex}
+      rank={player.rank}
+      details={[
+        t("characterUnit.header.abilities", {
+          active: (activeId && levels.get(activeId)) ?? 1,
+          passive: (passiveId && levels.get(passiveId)) ?? 1,
+        }),
+        ...(relic?.equippedLevel !== undefined
+          ? [t("characterUnit.header.relic", { level: relic.equippedLevel })]
+          : []),
+      ]}
+    />
   ) : undefined
 
   useTourPageSteps(

@@ -420,9 +420,15 @@ describe("CharacterUnitPage", () => {
       "data-greyed",
       "true"
     )
-    expect(screen.getByTestId("unit-not-unlocked")).toHaveTextContent(
-      "Not unlocked. Values start at Uncommon 2★, Stone I."
-    )
+    const notUnlocked = screen.getByTestId("unit-not-unlocked")
+    expect(notUnlocked).toHaveTextContent("Not unlocked. Values start at")
+    // The starting values show as icons, named for assistive technology.
+    expect(
+      within(notUnlocked).getByRole("img", { name: "Uncommon 2★" })
+    ).toBeInTheDocument()
+    expect(
+      within(notUnlocked).getByRole("img", { name: "Stone I" })
+    ).toBeInTheDocument()
     const progress = screen.getByRole("progressbar", {
       name: "Shards towards unlocking",
     })
@@ -580,9 +586,14 @@ describe("CharacterUnitPage", () => {
     expect(screen.getByTestId("unit-portrait")).not.toHaveAttribute(
       "data-greyed"
     )
-    expect(screen.getByTestId("unit-showing-starting")).toHaveTextContent(
-      "Showing Uncommon 2★, Stone I, abilities level 1."
-    )
+    const showing = screen.getByTestId("unit-showing-starting")
+    expect(showing).toHaveTextContent("Showing 2··abilities level 1")
+    expect(
+      within(showing).getByRole("img", { name: "Uncommon 2★" })
+    ).toBeInTheDocument()
+    expect(
+      within(showing).getByRole("img", { name: "Stone I" })
+    ).toBeInTheDocument()
     expect(
       within(screen.getByTestId("unit-sign-in-banner")).getByRole("button", {
         name: "Sign in",
@@ -825,9 +836,10 @@ describe("CharacterUnitPage", () => {
           .getAllByRole("listitem")
           .map((chip) => chip.textContent)
       ).toEqual([
-        "4 × Abaddon mythic shards",
-        "2 × Mythic Chaos ascension orb",
-        "1 × Mythic XP book",
+        // Icon and count; the name is for assistive technology (and a tooltip).
+        "Abaddon mythic shards×4",
+        "Mythic Chaos ascension orb×2",
+        "Mythic XP book×1",
       ])
     })
 

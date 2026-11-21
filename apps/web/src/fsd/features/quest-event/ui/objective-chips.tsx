@@ -2,7 +2,12 @@ import { useTranslation } from "react-i18next"
 import { BanIcon, CircleCheckIcon } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { isRestrictingObjective } from "../model/quest-objectives"
+import { EntityIcon } from "@/shared/ui"
+
+import {
+  isRestrictingObjective,
+  objectiveIcon,
+} from "../model/quest-objectives"
 import type { QuestObjectiveBadge } from "../model/quest-team"
 import { useObjectiveWording } from "./use-objective-wording"
 import type { Objective } from "./use-objective-wording"
@@ -35,6 +40,7 @@ export function ObjectiveChips({
       {objectives.map((objective, index) => {
         const restriction = isRestrictingObjective(objective.type)
         const Icon = restriction ? BanIcon : CircleCheckIcon
+        const subjectIcon = objectiveIcon(objective)
         const badge = badges?.[index]
         const score = number.format(objective.score)
         const badgeText = (() => {
@@ -68,6 +74,9 @@ export function ObjectiveChips({
             <Icon aria-hidden className="size-3.5 shrink-0" />
             {restriction ? (
               <span className="sr-only">{t("objectives.restriction")}: </span>
+            ) : null}
+            {subjectIcon ? (
+              <EntityIcon size="inline" src={subjectIcon} alt="" />
             ) : null}
             <span className="truncate">
               {t("objectives.chip", { text: word(objective), score })}

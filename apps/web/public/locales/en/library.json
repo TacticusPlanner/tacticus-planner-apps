@@ -475,13 +475,14 @@
       "yourUnit": "Your unit:",
       "abilities": "abilities {{active}} / {{passive}}",
       "relic": "relic level {{level}}",
-      "notUnlocked": "Not unlocked. Values start at {{progression}}, {{rank}}.",
-      "showing": "Showing {{progression}}, {{rank}}, abilities level 1.",
+      "notUnlocked": "Not unlocked. Values start at",
+      "showing": "Showing",
       "shards": "{{owned}} / {{needed}} shards",
       "shardProgress": "Shards towards unlocking",
       "signInBanner": "Sign in and sync to open this page at your own levels.",
       "signIn": "Sign in",
-      "syncBanner": "Sync with Tacticus (in the header) to open this page at your own levels."
+      "syncBanner": "Sync with Tacticus (in the header) to open this page at your own levels.",
+      "abilitiesStart": "abilities level 1"
     },
     "glance": {
       "title": "At a glance",
@@ -615,8 +616,9 @@
       "kind": "{{alliance}} · Machine of War",
       "yourUnit": "Your Machine of War:",
       "levels": "primary {{primary}} · secondary {{secondary}}",
-      "notUnlocked": "Not unlocked. Values start at {{rarity}}.",
-      "showing": "Showing {{rarity}}, abilities level 1."
+      "notUnlocked": "Not unlocked. Values start at",
+      "showing": "Showing",
+      "abilitiesStart": "abilities level 1"
     },
     "tabs": {
       "upgrades": "Ability upgrades"

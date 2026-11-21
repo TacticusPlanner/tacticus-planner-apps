@@ -128,12 +128,13 @@
     },
     "summary": {
       "none": "In den Missionen dieses Events sind keine Kampagnenschlachten mehr übrig.",
-      "fits_one": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibendem Tag sind das etwa {{perDay}} pro Tag, {{energy}} Energie pro Tag auf den günstigsten Knoten.",
-      "fits_other": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibenden Tagen sind das etwa {{perDay}} pro Tag, {{energy}} Energie pro Tag auf den günstigsten Knoten.",
-      "perDay_one": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibendem Tag sind das etwa {{perDay}} pro Tag.",
-      "perDay_other": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibenden Tagen sind das etwa {{perDay}} pro Tag.",
       "short_one": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibendem Tag reicht deine tägliche Energie für höchstens {{max}} pro Tag auf den günstigsten Knoten, also passen etwa {{short}} nicht mehr vor Eventende.",
-      "short_other": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibenden Tagen reicht deine tägliche Energie für höchstens {{max}} pro Tag auf den günstigsten Knoten, also passen etwa {{short}} nicht mehr vor Eventende."
+      "short_other": "Übrige Kampagnenschlachten in den Missionen dieses Events: {{battles}}. Bei {{count}} verbleibenden Tagen reicht deine tägliche Energie für höchstens {{max}} pro Tag auf den günstigsten Knoten, also passen etwa {{short}} nicht mehr vor Eventende.",
+      "label": "Übrige Kampagnenschlachten in den Missionen dieses Events",
+      "chipBattles": "{{battles}} Schlachten",
+      "chipPerDay_one": "{{perDay}} pro Tag, {{count}} Tag übrig",
+      "chipPerDay_other": "{{perDay}} pro Tag, {{count}} Tage übrig",
+      "chipEnergy": "{{energy}} Energie pro Tag auf den günstigsten Knoten"
     },
     "noDrop": {
       "title": "Oder die Indomitus-Schlachten ohne Drops (6 bis 14)",

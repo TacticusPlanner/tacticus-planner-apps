@@ -1,6 +1,9 @@
 import type { ReactNode } from "react"
 
-/** A chart's reading notes, closed until opened (copy rule 3: explanations collapsed by default). */
+/**
+ * Notes that explain a figure or a chart (how it is worked out, how to read it), closed until opened:
+ * the style guide's copy rule keeps explanations collapsed by default.
+ */
 export function HowToRead({
   summary,
   children,
@@ -15,7 +18,7 @@ export function HowToRead({
       <summary className="cursor-pointer text-sm font-medium text-foreground">
         {summary}
       </summary>
-      <p className="mt-1">{children}</p>
+      <div className="mt-1">{children}</div>
     </details>
   )
 }

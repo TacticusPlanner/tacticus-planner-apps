@@ -57,10 +57,10 @@ export function UnitHeader({
   signedIn: boolean
   /** "Your unit:" label and its details, for an owned unit. */
   yourUnit?: { label: string; line: ReactNode }
-  /** Header state (b): what the values start at. */
-  notUnlockedText: string
-  /** Header state (c): what the values are. */
-  showingText: string
+  /** Header state (b): what the values start at (a label and a `ProgressionSummary`). */
+  notUnlockedText: ReactNode
+  /** Header state (c): what the values are (a label and a `ProgressionSummary`). */
+  showingText: ReactNode
   /** Shard progress towards unlocking, for a unit the player doesn't own. */
   shards?: { owned: number; needed: number }
   mode: ValuesMode

@@ -6,7 +6,7 @@ import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HowToRead } from "@/shared/ui"
 
 import type { IncursionPlans } from "../../model/use-incursion-plans"
 import type { Incursion } from "../../model/incursions.model"
@@ -121,7 +121,12 @@ export function IncursionTeam({
           )
         })}
       </ul>
-      <p className="text-sm text-muted-foreground">{t("team.hint")}</p>
+      <HowToRead
+        summary={t("team.hintSummary")}
+        data-testid="incursion-team-hint"
+      >
+        {t("team.hint")}
+      </HowToRead>
     </section>
   )
 }

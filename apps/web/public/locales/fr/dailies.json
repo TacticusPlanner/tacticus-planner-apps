@@ -880,7 +880,8 @@
         "syncedAt": "Jetons issus de votre synchronisation {{when}}, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "syncUnknown": "L'heure de votre synchronisation est inconnue, les jetons sont donc comptés à partir de maintenant, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "upcoming": "Les jetons supposent des réserves pleines au début de l'événement et que vous les dépensez avant qu'elles soient pleines."
-      }
+      },
+      "howWorkedOut": "Comment c’est calculé"
     },
     "teams": {
       "title": "Équipes de l'événement",

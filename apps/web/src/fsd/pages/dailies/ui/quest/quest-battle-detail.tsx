@@ -24,7 +24,12 @@ import type {
   QuestTierCap,
 } from "@/features/quest-event"
 import type { NpcRecord } from "@/entities/npc"
-import { EntityIcon, UpgradeIcon, progressionText } from "@/shared/ui"
+import {
+  EntityIcon,
+  HowToRead,
+  ProgressionSummary,
+  UpgradeIcon,
+} from "@/shared/ui"
 import { BoardMap, buildEnemyTile, EnemyList } from "@/widgets/battle-preview"
 import type { EnemyNpcs } from "@/widgets/battle-preview"
 
@@ -85,15 +90,12 @@ export function QuestBattleDetail({
       buildEnemyTile(enemy, `${prefix}-${index}`, npcs)
     )
   const tierName = t(`progression:rarities.${battle.tier}`)
-  const capValues = {
-    rarity: tierName,
-    progression: progressionText(t, cap.progression),
-    rank: t(`progression:ranks.${cap.rank}` as never, {
-      defaultValue: cap.rank,
-    }),
-    ability: cap.abilityLevel,
-    item: cap.itemLevel ?? 0,
-  }
+  const capDetails = [
+    t("quest:detail.capAbility", { level: cap.abilityLevel }),
+    ...(cap.itemLevel === null
+      ? []
+      : [t("quest:detail.capItem", { level: cap.itemLevel })]),
+  ]
   const dropName = t(`upgrades:${battle.loot.upgradeId}`, {
     defaultValue: upgrade?.label ?? battle.loot.upgradeId,
   })
@@ -169,9 +171,12 @@ export function QuestBattleDetail({
             })}
           </IconLine>
           <IconLine icon={rarityIcon(battle.tier)} testId="quest-battle-cap">
-            {cap.itemLevel === null
-              ? t("quest:detail.capNoItems", capValues)
-              : t("quest:detail.cap", capValues)}
+            {t("quest:detail.capLabel", { rarity: tierName })}{" "}
+            <ProgressionSummary
+              progression={cap.progression}
+              rank={cap.rank}
+              details={capDetails}
+            />
           </IconLine>
           <IconLine icon={battleGlyphIcon("lightningVictory")}>
             {t("quest:detail.lightning", {
@@ -247,7 +252,12 @@ export function QuestBattleDetail({
           </div>
         </div>
         <DropNeed need={need} />
-        <p className="text-sm text-muted-foreground">{t("quest:detail.jar")}</p>
+        <HowToRead
+          summary={t("quest:detail.jarSummary")}
+          data-testid="quest-battle-jar"
+        >
+          {t("quest:detail.jar")}
+        </HowToRead>
       </section>
     </article>
   )

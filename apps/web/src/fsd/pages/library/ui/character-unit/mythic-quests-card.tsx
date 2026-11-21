@@ -10,7 +10,7 @@ import {
 import type { EquipmentStorageModel, GameIcon } from "@workspace/game-catalog"
 
 import { AbilityText } from "@/shared/ability-text"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, IconCount } from "@/shared/ui"
 
 import {
   mythicQuestReward,
@@ -76,8 +76,22 @@ function RewardChip({
     }
   }
   const format = new Intl.NumberFormat(i18n.language)
+  // Equipment keeps its name: the slot icon alone doesn't say which item it is.
+  if (icon !== undefined && reward.kind !== "equipment") {
+    return (
+      <IconCount
+        icon={icon}
+        name={label}
+        count={format.format(reward.quantity)}
+        data-testid="mythic-quest-reward"
+      />
+    )
+  }
   return (
-    <li className="inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold">
+    <li
+      className="inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold"
+      data-testid="mythic-quest-reward"
+    >
       {icon === undefined ? null : (
         <EntityIcon size="inline" src={icon} alt="" />
       )}

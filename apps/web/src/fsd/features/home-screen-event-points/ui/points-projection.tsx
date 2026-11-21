@@ -14,7 +14,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { formatRelativeTime } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HowToRead } from "@/shared/ui"
 
 import type {
   HseProjectionMode,
@@ -262,7 +262,7 @@ function ReadyProjectionBody({
     </dl>
   )
 
-  const notes: { id: string; text: string; hintId?: string }[] = [
+  const notes: ProjectionNote[] = [
     ...projection.modes
       .filter((mode) => mode.trackerCount > 1)
       .map((mode) => ({
@@ -319,6 +319,11 @@ function ReadyProjectionBody({
               }),
     },
   ]
+  // Notes that ask for something (enter tokens, unlock a mode) stay in view; the ones that explain
+  // the figures sit behind "How this is worked out" (copy rule: explanations collapsed by default).
+  const ACTION_NOTES = new Set(["locked", "manual-tokens"])
+  const actionNotes = notes.filter((note) => ACTION_NOTES.has(note.id))
+  const explainNotes = notes.filter((note) => !ACTION_NOTES.has(note.id))
 
   return (
     <>
@@ -414,20 +419,15 @@ function ReadyProjectionBody({
           </TableBody>
         </Table>
       )}
-      <ul
-        className="space-y-1 text-xs text-muted-foreground"
-        data-testid="hse-projection-notes"
+      {actionNotes.length > 0 ? (
+        <NoteList notes={actionNotes} testId="hse-projection-notes" />
+      ) : null}
+      <HowToRead
+        summary={t("hse.projection.howWorkedOut")}
+        data-testid="hse-projection-how-worked-out"
       >
-        {notes.map((note) => (
-          <li
-            data-testid={`hse-projection-note-${note.id}`}
-            id={note.hintId}
-            key={note.id}
-          >
-            {note.text}
-          </li>
-        ))}
-      </ul>
+        <NoteList notes={explainNotes} testId="hse-projection-explain-notes" />
+      </HowToRead>
     </>
   )
 }
@@ -462,5 +462,32 @@ function ModePoints({ mode }: { mode: HseProjectionMode }) {
             value: numbers.format(Math.floor(mode.points)),
           })}
     </span>
+  )
+}
+
+type ProjectionNote = { id: string; text: string; hintId?: string }
+
+function NoteList({
+  notes,
+  testId,
+}: {
+  notes: readonly ProjectionNote[]
+  testId: string
+}) {
+  return (
+    <ul
+      className="space-y-1 text-xs text-muted-foreground"
+      data-testid={testId}
+    >
+      {notes.map((note) => (
+        <li
+          data-testid={`hse-projection-note-${note.id}`}
+          id={note.hintId}
+          key={note.id}
+        >
+          {note.text}
+        </li>
+      ))}
+    </ul>
   )
 }

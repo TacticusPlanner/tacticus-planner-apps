@@ -82,8 +82,6 @@
     "title": "Combat {{number}} · {{tier}}",
     "slots_one": "{{count}} unité, {{hero}} compris",
     "slots_other": "{{count}} unités, {{hero}} compris",
-    "cap": "Plafond {{rarity}} : jusqu'à {{progression}}, {{rank}}, niveau de compétence {{ability}}, niveau d'objet {{item}}",
-    "capNoItems": "Plafond {{rarity}} : jusqu'à {{progression}}, {{rank}}, niveau de compétence {{ability}}",
     "lightning_one": "Victoire éclair en {{count}} tour",
     "lightning_other": "Victoire éclair en {{count}} tours",
     "power": "Puissance ennemie {{power}}",
@@ -102,7 +100,11 @@
     "have": "Possédé {{have}} / requis {{need}}",
     "noGoal": "Aucun objectif n'en a besoin",
     "needError": "Le besoin de vos objectifs pour ce butin n'a pas pu être lu.",
-    "neededBy": "Requis par"
+    "neededBy": "Requis par",
+    "capLabel": "Plafond {{rarity}} : jusqu’à",
+    "capAbility": "niveau de compétence {{level}}",
+    "capItem": "niveau d’objet {{level}}",
+    "jarSummary": "À propos de la chance"
   },
   "rewards": {
     "title": "Récompenses",
