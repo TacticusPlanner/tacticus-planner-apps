@@ -546,7 +546,8 @@
       "percent": "{{value}} %",
       "caption": "Perzentile: {{values}}.",
       "footnote": "Gestrichelt = mittlerer Charakter. {{value}} % Rüstung heißt: {{name}} hat mehr Rüstung als {{value}} % der Charaktere bei Mythic Wings, Adamant II.",
-      "damageLink": "So funktioniert Schaden (Tacticus-Wiki)"
+      "damageLink": "So funktioniert Schaden (Tacticus-Wiki)",
+      "howToRead": "So liest du das"
     },
     "statsByRank": {
       "title": "Werte nach Rang",
@@ -555,7 +556,8 @@
       "aboveCap": " (über der Obergrenze für diese Sterne)",
       "capFootnote": "Blasse Ränge liegen über {{rank}}, der Obergrenze für diese Sterne.",
       "caption": "{{stat}} steigt von {{from}} bei {{firstRank}} auf {{to}} bei {{lastRank}}.",
-      "rank": "Rang"
+      "rank": "Rang",
+      "howToRead": "So liest du das"
     },
     "relic": {
       "kind": "Relikt",

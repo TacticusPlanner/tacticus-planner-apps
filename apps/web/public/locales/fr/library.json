@@ -547,7 +547,8 @@
       "percent": "{{value}} %",
       "caption": "Centiles : {{values}}.",
       "footnote": "Pointillés = personnage médian. {{value}} % d'armure signifie que {{name}} a plus d'armure que {{value}} % des personnages à Mythic Wings, Adamantium II.",
-      "damageLink": "Fonctionnement des dégâts (wiki Tacticus)"
+      "damageLink": "Fonctionnement des dégâts (wiki Tacticus)",
+      "howToRead": "Comment lire ceci"
     },
     "statsByRank": {
       "title": "Statistiques par rang",
@@ -556,7 +557,8 @@
       "aboveCap": " (au-delà du plafond pour ces étoiles)",
       "capFootnote": "Les rangs estompés dépassent {{rank}}, le plafond pour ces étoiles.",
       "caption": "{{stat}} passe de {{from}} à {{firstRank}} à {{to}} à {{lastRank}}.",
-      "rank": "Rang"
+      "rank": "Rang",
+      "howToRead": "Comment lire ceci"
     },
     "relic": {
       "kind": "Relique",
