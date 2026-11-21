@@ -1324,7 +1324,6 @@
       "dashboardIntro": "A project is a named selection of your goals. Keep several to group different things — a roster push, an event, a long-term build — and browse each on its own. Priority is one order for all goals, managed on the Goals page.",
       "emptyProjectTitle": "This project has no goals yet",
       "emptyProjectDescription": "Use Manage goals on the Projects page to put existing goals into it, or Create goal to make a new one.",
-      "scopeLabel": "Project scope",
       "scopeAll": "All goals",
       "reorderGoals": "Reorder",
       "reorderDone": "Done",

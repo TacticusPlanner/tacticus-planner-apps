@@ -1324,7 +1324,6 @@
       "dashboardIntro": "Un proyecto es una selección de tus objetivos con nombre. Ten varios para agrupar cosas distintas (ampliar la plantilla, un evento, una mejora a largo plazo) y consulta cada uno por separado. La prioridad es un único orden para todos los objetivos y se gestiona en la página Objetivos.",
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
       "emptyProjectDescription": "Usa «Gestionar objetivos» en la página de Proyectos para añadir objetivos existentes, o «Crear objetivo» para crear uno nuevo.",
-      "scopeLabel": "Alcance por proyecto",
       "scopeAll": "Todos los objetivos",
       "reorderGoals": "Reordenar",
       "reorderDone": "Listo",

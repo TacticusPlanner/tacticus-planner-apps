@@ -62,6 +62,12 @@ One row directly under the header, three fixed slots, left to right:
   View sheet, not on extra toolbar rows.
 - The filter entry point is always called "Filters" — not "Raids Filters",
   "Controls" or an unlabelled funnel.
+- A page scoped to a project puts the shared `ProjectSelect`
+  (`@/entities/project`) first in the Find slot, showing the chosen project's
+  name on every viewport. A page about one event at a time (Event shop, HSE,
+  HRE) puts the shared `EventInstanceSwitcher` (`@/shared/ui`) first instead:
+  Previous / Next around a select grouped Running / Upcoming / Past. No page
+  builds its own chip row or picker for either.
 
 ## 3. Which control for which option
 

@@ -47,7 +47,7 @@ export function useEventShopTutorial({
       content: t(`tour.eventShop.steps.${key}.content`),
     })
     const desktop = [
-      step("event-shop-picker", "picker"),
+      step("event-shop-picker-switcher", "picker"),
       step("event-shop-week-calendar", "calendar"),
       ...(hasSlots ? [step("event-shop-slots", "slots")] : []),
       step("event-shop-side-column", "sideColumn"),
@@ -56,7 +56,7 @@ export function useEventShopTutorial({
       step("event-shop-search-open", "search"),
     ]
     const tablet = [
-      step("event-shop-picker", "picker"),
+      step("event-shop-picker-switcher", "picker"),
       step("event-shop-week-calendar", "calendar"),
       ...(hasSlots ? [step("event-shop-slots", "slots")] : []),
       step("event-shop-list-button", "listButton"),
@@ -64,7 +64,7 @@ export function useEventShopTutorial({
       step("event-shop-search-open", "search"),
     ]
     const phone = [
-      step("event-shop-picker", "picker"),
+      step("event-shop-picker-switcher", "picker"),
       step("event-shop-day-chips", "chips"),
       ...(hasSlots ? [step("event-shop-tiles", "tiles")] : []),
       ...(hasTick ? [step("event-shop-tick-", "tick")] : []),

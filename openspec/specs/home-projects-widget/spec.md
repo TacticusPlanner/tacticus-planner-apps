@@ -127,7 +127,7 @@ Activating a project card SHALL navigate to the Goals page scoped to that projec
 #### Scenario: Card opens the scoped Goals page
 
 - **WHEN** the user activates a project card in the widget
-- **THEN** `/plan/goals?project={id}` opens with that project's scope chip selected
+- **THEN** `/plan/goals?project={id}` opens with that project selected in its project select
 
 ### Requirement: Widget cards show unit portraits
 
