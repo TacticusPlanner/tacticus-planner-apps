@@ -1324,7 +1324,6 @@
       "dashboardIntro": "Ein Projekt ist eine benannte Auswahl deiner Ziele. Lege mehrere an, um Verschiedenes zu bündeln – einen Kaderausbau, ein Event, einen langfristigen Aufbau – und durchsuche jedes für sich. Die Priorität ist eine einzige Reihenfolge für alle Ziele und wird auf der Seite „Ziele“ verwaltet.",
       "emptyProjectTitle": "Dieses Projekt hat noch keine Ziele",
       "emptyProjectDescription": "Füge über „Ziele verwalten“ auf der Projektseite vorhandene Ziele hinzu oder erstelle mit „Ziel erstellen“ ein neues.",
-      "scopeLabel": "Projektbereich",
       "scopeAll": "Alle Ziele",
       "reorderGoals": "Neu anordnen",
       "reorderDone": "Fertig",

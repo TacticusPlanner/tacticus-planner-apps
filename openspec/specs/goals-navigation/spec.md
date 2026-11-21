@@ -75,12 +75,12 @@ When there is at least one goal in the Reached status and the status filter's cu
 
 ### Requirement: Goals controls compress on mobile
 
-Below the 768px mobile breakpoint, Goals SHALL render the project scope chip row first, then the page toolbar (`app-page-layout`). The toolbar's Find slot SHALL hold the status filter (with its reached-indicator), the Type filter, the Reorder toggle (always present; disabled while goals load or when reordering is unavailable, including while Sort is not Priority) and the Select goals button (`goal-bulk-actions`); the Type filter SHALL show the chosen type ("All goal types" by default) like on desktop, never as an icon-only trigger, and Reorder and Select goals SHALL show their icon and a text label. The View button SHALL sit at the top right of the toolbar and open a sheet holding Layout, Group by, Sort, Season fit and Collapse all, stacked and full width. Planning Settings SHALL be the page header's Settings icon button. Create Goal SHALL NOT render in the toolbar on mobile; the bottom navigation's Add goal button is the mobile entry point (`goal-creation-entry-points`). Because every control is present from the first render, the toolbar SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in the toolbar; they live in the select bar. When the Find controls do not fit one line (for example at 360px), they SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
+Below the 768px mobile breakpoint, Goals SHALL render the page toolbar (`app-page-layout`). The toolbar's Find slot SHALL hold the project select, the status filter (with its reached-indicator), the Type filter, the Reorder toggle (always present; disabled while goals load or when reordering is unavailable, including while Sort is not Priority) and the Select goals button (`goal-bulk-actions`); the Type filter SHALL show the chosen type ("All goal types" by default) like on desktop, never as an icon-only trigger, and Reorder and Select goals SHALL show their icon and a text label. The View button SHALL sit at the top right of the toolbar and open a sheet holding Layout, Group by, Sort, Season fit and Collapse all, stacked and full width. Planning Settings SHALL be the page header's Settings icon button. Create Goal SHALL NOT render in the toolbar on mobile; the bottom navigation's Add goal button is the mobile entry point (`goal-creation-entry-points`). Because every control is present from the first render, the toolbar SHALL NOT shift when goals finish loading. The bulk actions themselves SHALL NOT render in the toolbar; they live in the select bar. When the Find controls do not fit one line (for example at 360px), they SHALL wrap onto a further line rather than clip, scroll horizontally, or hide a control.
 
 #### Scenario: Mobile Goals order
 
 - **WHEN** Goals is viewed below the 768px breakpoint
-- **THEN** the scope chip row renders first, and the toolbar beneath it holds the status filter, Type filter, Reorder and Select goals, with the View button at its top right
+- **THEN** the toolbar holds the project select, status filter, Type filter, Reorder and Select goals, with the View button at its top right
 
 #### Scenario: Mobile Reorder and Select goals carry text
 
@@ -186,7 +186,7 @@ The Goals page's project filter ("project scope") SHALL be the `project` query p
 #### Scenario: Selecting a chip updates the URL without a history entry
 
 - **GIVEN** the user is on `/plan/goals` having arrived from `/home`
-- **WHEN** they select project B's chip and then press Back
+- **WHEN** they select project B and then press Back
 - **THEN** the URL was `/plan/goals?project={B}` while selected, and Back returns to `/home`, not to unscoped Goals
 
 #### Scenario: Reload keeps the scope
@@ -204,7 +204,7 @@ The Goals page's project filter ("project scope") SHALL be the `project` query p
 
 - **GIVEN** the project list fails to load
 - **WHEN** the user opens `/plan/goals?project={id}`
-- **THEN** all goals are listed, the URL keeps `?project={id}`, and no project-list error is shown by the chip row
+- **THEN** all goals are listed, the URL keeps `?project={id}`, and no project-list error is shown by the project select
 
 #### Scenario: Deep link while projects load
 
@@ -212,32 +212,25 @@ The Goals page's project filter ("project scope") SHALL be the `project` query p
 - **WHEN** the user opens `/plan/goals?project={id}`
 - **THEN** the list shows its loading skeleton rather than all goals, and the URL keeps `?project={id}`
 
-### Requirement: Goals project scope chip row
+### Requirement: Goals project scope select
 
-Goals SHALL render, as the only row above its control row, a single horizontally scrollable row of scope chips: "All goals" first, then the Default project, then the other non-archived projects in the order the Projects dashboard uses. Archived projects SHALL NOT appear. Each project chip SHALL show the project's color, name, and its count of non-archived member goals; "All goals" SHALL show the count of all non-archived goals. Exactly one chip SHALL be selected at any time and SHALL be distinguishable without color alone. The row SHALL NOT offer New project, an All projects link, or any lifecycle action. This presentation SHALL be the same at and above 768px and below it: the row scrolls horizontally rather than wrapping, capping, or switching to a card widget. While projects are loading the row SHALL show a skeleton in place of the project chips; if they fail to load the row SHALL show only the "All goals" chip and no error message, since the goal list does not depend on it. With no projects, the row SHALL show only the "All goals" chip.
+Goals SHALL render its project scope as the shared project select (see "Consistent project selector"), first in the page toolbar's Find slot at every width: "All goals" first, then the Default project, then the other non-archived projects in the order the Projects dashboard uses. Archived projects SHALL NOT appear. Each project option SHALL show the project's color, name and its count of non-archived member goals; "All goals" SHALL show the count of all non-archived goals. The trigger SHALL show the selected scope's text at every width, never icon-only. The select SHALL NOT offer New project, an All projects link, or any lifecycle action. While projects load or if they fail to load, it SHALL offer only "All goals" and show no error message, since the goal list does not depend on it.
 
-#### Scenario: Chips list every non-archived project with counts
+#### Scenario: Options list every non-archived project with counts
 
 - **GIVEN** the player has the Default project "My Goals" with 16 goals, "Neuro" with 5, and an archived project
-- **WHEN** Goals renders at either breakpoint
-- **THEN** the row reads All goals (16), My Goals (16), Neuro (5) in that order and the archived project is absent
+- **WHEN** the user opens the Goals project select at either breakpoint
+- **THEN** it lists All goals 16, My Goals 16, Neuro 5 in that order and the archived project is absent
 
-#### Scenario: Many projects scroll rather than wrap
+#### Scenario: Selecting a project filters in place
 
-- **GIVEN** more projects than fit the row's width
-- **WHEN** Goals renders at either breakpoint
-- **THEN** the row scrolls horizontally, no chip is hidden or clipped, and the control row below it is unaffected
-
-#### Scenario: Selecting a chip filters in place
-
-- **WHEN** the user selects a project chip
+- **WHEN** the user selects a project in the select
 - **THEN** the goal list narrows to that project's members without leaving `/plan/goals`, and selecting "All goals" restores the full list
 
-#### Scenario: Loading and failure
+#### Scenario: Failure
 
-- **WHEN** the project list is loading
-- **THEN** skeleton chips render where the project chips will be
-- **AND** if the project list fails to load, only the "All goals" chip renders and no error message appears in the row
+- **WHEN** the project list fails to load
+- **THEN** the select offers only "All goals" and no error message appears
 
 ### Requirement: Switching project scope preserves list controls
 
@@ -246,7 +239,7 @@ The status filter, Type filter, and Group selections SHALL persist unchanged whe
 #### Scenario: Group selection carries across scopes
 
 - **GIVEN** the user has Group set to goal type while viewing "All goals"
-- **WHEN** they select project B's chip
+- **WHEN** they select project B
 - **THEN** project B's goals render grouped by goal type
 
 #### Scenario: Status carries across scopes
@@ -282,42 +275,23 @@ While a project scope is selected, Goals' contextual Create goal action SHALL la
 - **WHEN** the user selects project B with the status filter set to Reached
 - **THEN** the generic filtered-empty copy renders, not the empty-project copy
 
-### Requirement: Project selector is trailing in its row
+### Requirement: Project selector leads the Find slot
 
-On any subpage that renders both a tab or status control and a project selector, the project selector SHALL be trailing (right-aligned) in the same row as that tab or status control. On a subpage with a project selector and no tab or status control (Insights, Schedule), the project selector SHALL be the first control of the page toolbar's Find slot (`app-page-layout`), with its text label at every width. No subpage is exempt.
+On every subpage with a project selector (Goals, Insights, Schedule, Today, HSE, HRE), the project selector SHALL be the first control of the page toolbar's Find slot (`app-page-layout`), after only the event switcher on a one-event-at-a-time page (HSE, HRE), and SHALL show its selected value as text at every width. No subpage is exempt.
 
-#### Scenario: Project selector shares a row with tabs where both exist
+#### Scenario: Project selector leads the toolbar
 
-- **WHEN** a subpage renders both a tab/status row and a project selector
-- **THEN** the project selector appears trailing in that same row, not in a separate row
-
-#### Scenario: Project selector sits in the toolbar when there is nothing to pair it with
-
-- **WHEN** a subpage renders a project selector but no tab or status control (Goals Insights, Schedule)
-- **THEN** the project selector is in the page toolbar's Find slot and shows its selected project's name, also below 768px
-
-### Requirement: Goals project scope is not a project selector
-
-The Goals page's project scope chip row SHALL NOT be treated as a project selector for the purposes of the "Consistent project selector" and "Project selector is trailing in its row" requirements: it chooses no project for any calculating view to operate on, and only narrows the displayed list. It SHALL therefore render as its own row above the control row rather than trailing in the status-control row, SHALL NOT be required to use the shared project-selector component, and SHALL NOT be required to present the Default marker beyond listing the Default project first.
-
-#### Scenario: The chip row sits above the controls
-
-- **WHEN** Goals renders at either breakpoint
-- **THEN** the scope chips render in their own row above the status filter, and no project select renders in the control row
-
-#### Scenario: No selector markers are required
-
-- **WHEN** the scope chip row lists projects
-- **THEN** it may show them as color-and-name chips without a Default marker without violating the consistent-project-selector requirement
+- **WHEN** a subpage renders a project selector
+- **THEN** it is the first control in the page toolbar's Find slot (after the event switcher, if any) and shows its selected project's name, also below 768px
 
 ### Requirement: Goals controls form one toolbar on desktop
 
-At or above the 768px desktop breakpoint, Goals SHALL render, directly beneath the project scope chip row, the page toolbar (`app-page-layout`) and no other row of controls. Its Find slot SHALL hold, in order, the status filter, the Type filter and the Select goals button (`goal-bulk-actions`); its View slot SHALL hold Layout, Group by, Sort, Season fit and Collapse all; its Actions slot, at the far right, SHALL hold the filled Create Goal action. Planning Settings SHALL be the page header's Settings button. The bulk actions SHALL NOT render in the toolbar; they live in the select bar (`goal-bulk-actions`). When the window is too narrow for one line, the View and Actions slots SHALL wrap together under Find, still at the right, so Create Goal is never alone on a line.
+At or above the 768px desktop breakpoint, Goals SHALL render the page toolbar (`app-page-layout`) and no other row of controls. Its Find slot SHALL hold, in order, the project select, the status filter, the Type filter and the Select goals button (`goal-bulk-actions`); its View slot SHALL hold Layout, Group by, Sort, Season fit and Collapse all; its Actions slot, at the far right, SHALL hold the filled Create Goal action. Planning Settings SHALL be the page header's Settings button. The bulk actions SHALL NOT render in the toolbar; they live in the select bar (`goal-bulk-actions`). When the window is too narrow for one line, the View and Actions slots SHALL wrap together under Find, still at the right, so Create Goal is never alone on a line.
 
 #### Scenario: Desktop Goals renders one toolbar
 
 - **WHEN** Goals is viewed at or above the 768px breakpoint outside select mode
-- **THEN** the toolbar below the scope chip row holds the status filter, Type filter and Select goals on the left, Layout, Group by, Sort, Season fit and Collapse all toward the right, Create Goal at the far right, and no bulk actions; Settings sits at the right end of the page header
+- **THEN** the toolbar holds the project select, status filter, Type filter and Select goals on the left, Layout, Group by, Sort, Season fit and Collapse all toward the right, Create Goal at the far right, and no bulk actions; Settings sits at the right end of the page header
 
 #### Scenario: Select goals opens the select bar
 
