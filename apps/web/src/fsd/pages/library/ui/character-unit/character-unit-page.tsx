@@ -236,10 +236,7 @@ function CharacterUnit({
   // The rarity, stars and rank as icons (names in tooltips), then the levels as text.
   const yourUnitLine = player ? (
     <>
-      <CompactProgression
-        iconClassName="size-4"
-        value={player.progressionIndex}
-      />
+      <CompactProgression value={player.progressionIndex} />
       <span aria-hidden="true">·</span>
       <RankBadge rank={player.rank} showLabel={false} tooltip />
       <span aria-hidden="true">·</span>

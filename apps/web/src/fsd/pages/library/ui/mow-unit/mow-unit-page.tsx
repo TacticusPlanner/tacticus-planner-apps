@@ -244,10 +244,7 @@ function MowUnit({
   // The rarity and stars as icons (rarity name in a tooltip), then the levels as text.
   const yourUnitLine = player ? (
     <>
-      <CompactProgression
-        iconClassName="size-4"
-        value={player.progressionIndex}
-      />
+      <CompactProgression value={player.progressionIndex} />
       <span aria-hidden="true">·</span>
       <span>{t("mowUnit.header.levels", playerLevels)}</span>
     </>

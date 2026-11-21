@@ -76,7 +76,7 @@ export function UnlockRequirementField({
       </p>
       <p className="flex items-center gap-1.5">
         {t("goals.create.unlock.unlocksAt")}
-        <RarityIcon className="size-5" rarity={rarity} />
+        <RarityIcon rarity={rarity} />
         <span className="font-semibold">
           {t(`rarities.${rarity}`, { defaultValue: rarity })}
         </span>

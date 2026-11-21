@@ -36,10 +36,7 @@ export function MasterTableUnit({
         </span>
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
           {row.progression ? (
-            <RarityIcon
-              className="size-4"
-              rarity={progressionRarity(row.progression)}
-            />
+            <RarityIcon rarity={progressionRarity(row.progression)} />
           ) : null}
           {row.rank ? (
             <RankBadge rank={row.rank} showLabel={false} tooltip />

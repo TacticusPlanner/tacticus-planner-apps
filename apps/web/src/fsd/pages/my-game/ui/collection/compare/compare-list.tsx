@@ -416,8 +416,8 @@ function UnitDiffDetails({
           label: t("myGame.collection.compare.details.stars"),
           value: (
             <FromToMarks
-              from={<ProgressionMark value={row.from} large />}
-              to={<ProgressionMark value={row.to} large />}
+              from={<ProgressionMark value={row.from} />}
+              to={<ProgressionMark value={row.to} />}
               label={labels.progression(row.from, row.to)}
             />
           ),

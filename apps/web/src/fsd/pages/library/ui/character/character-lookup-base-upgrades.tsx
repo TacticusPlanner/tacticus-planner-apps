@@ -140,7 +140,7 @@ export function BaseUpgradesCards({
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{upgrade.label}</p>
-                <RarityIcon rarity={upgrade.rarity} className="size-8" />
+                <RarityIcon rarity={upgrade.rarity} size="row" />
               </div>
               <span className="text-lg font-semibold tabular-nums">
                 ×{upgrade.count}

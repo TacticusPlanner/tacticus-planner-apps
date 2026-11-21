@@ -153,7 +153,7 @@ export function TeamList({
                 "preferences.matchesDamageType",
                 "preferences.missingDamageType"
               )}
-              <RarityIcon rarity={member.rarity} className="size-5" />
+              <RarityIcon rarity={member.rarity} />
               <RankBadge rank={member.rank} showLabel={false} tooltip />
             </div>
             {onToggleLock ? (

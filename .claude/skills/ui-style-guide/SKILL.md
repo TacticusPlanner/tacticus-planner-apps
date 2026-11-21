@@ -15,10 +15,10 @@ buttons, chips, top app bar, 48dp touch target), our shadcn tokens for colour
 and shape (`.design-sync/conventions.md`).
 
 Status: `PageHeader` and `PageToolbar` (`@/shared/ui`) are on every page.
-The icon sizes in rule 6 exist as `EntityIcon`'s `size` prop and the
-`UnitPortrait` component (`@/entities/unit`); older call sites still set size
-classes by hand until they are migrated. New code uses the props, and nothing
-adds a new page-specific variant of anything below.
+The icon sizes in rule 6 are the `size` prop of `EntityIcon` and `RarityIcon`
+and the `UnitPortrait` component (`@/entities/unit`). Every call site uses
+them, and `entity-icon-sizes.test.ts` fails on a fixed size class in an
+`EntityIcon` or `RarityIcon` `className`. Nothing adds a new page-specific variant of anything below.
 
 ## 1. Page header
 
@@ -107,7 +107,9 @@ sizes, chosen by its role, never by the page.
   ringless portrait such as an NPC or a unit in a chip) and
   `<UnitPortrait size="sm" | "md" | "lg" | "hero" />` for a unit with its
   rarity ring. Keep size classes out of
-  their `className`; it is for placement only.
+  their `className`; it is for placement only. Fills of a sized frame
+  (`size-full`) and wide art sized by height (`h-4 w-auto`) are the only
+  exceptions.
 - No game icon below 16px.
 - Migrating an off-scale size: round to the nearest step, ties go up (17/18 →
   20 inline; 22/28 → 32 row; 36 → 40; 56/62 → 64).

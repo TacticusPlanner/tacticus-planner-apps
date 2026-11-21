@@ -74,7 +74,7 @@ function TierTileDetailsList({ details }: { details: TierTileDetails }) {
         >
           {ownership.state === "owned" ? (
             <>
-              <RarityIcon className="size-5" rarity={ownership.rarity} />
+              <RarityIcon rarity={ownership.rarity} />
               <RankBadge rank={ownership.rank} />
             </>
           ) : null}

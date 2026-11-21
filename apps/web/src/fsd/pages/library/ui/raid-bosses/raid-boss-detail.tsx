@@ -251,10 +251,7 @@ export function RaidBossDetail({
                 label={t("raidBosses.baseRarity")}
                 value={
                   baseRarity ? (
-                    <RarityIcon
-                      className="ml-auto size-5"
-                      rarity={baseRarity}
-                    />
+                    <RarityIcon className="ml-auto" rarity={baseRarity} />
                   ) : (
                     humanizeToken(step.baseRarity)
                   )

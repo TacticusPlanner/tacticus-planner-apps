@@ -56,10 +56,7 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
           className="shrink-0"
           src={goalTypeIcon(goal.goalKind, goal.unitType)}
         />
-        <CompactProgression
-          iconClassName="size-4"
-          value={goal.targetProgression}
-        />
+        <CompactProgression value={goal.targetProgression} />
       </span>
     )
   }

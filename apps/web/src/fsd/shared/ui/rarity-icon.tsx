@@ -6,13 +6,20 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { cn } from "@workspace/ui/lib/utils"
 
-/** Rarity badge icon; the rarity name is shown as a tooltip instead of text. */
+import { entityIconClassName } from "./game-icon-size"
+import type { EntityIconSize } from "./game-icon-size"
+
+/** Rarity badge icon; the rarity name is shown as a tooltip instead of text. `size` is its role on the
+ *  icon scale (UI style guide, rule 6); `className` is for placement only. */
 export function RarityIcon({
   rarity,
-  className = "size-6",
+  size = "inline",
+  className,
 }: {
   rarity: Rarity
+  size?: EntityIconSize
   className?: string
 }) {
   const { t } = useTranslation(["progression"])
@@ -21,7 +28,11 @@ export function RarityIcon({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <img src={rarityIcon(rarity)} alt={label} className={className} />
+        <img
+          src={rarityIcon(rarity)}
+          alt={label}
+          className={cn(entityIconClassName(size), className)}
+        />
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>

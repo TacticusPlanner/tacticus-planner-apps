@@ -137,7 +137,7 @@ export function CharacterUnitDetails({
   const compareAt = (
     <span className="inline-flex items-center gap-1.5">
       {t("characterUnit.compare.subtitle")}
-      <CompactProgression iconClassName="size-4" value="Mythic:MythicWings" />
+      <CompactProgression value="Mythic:MythicWings" />
       <RankBadge rank={Rank.Adamantine2} showLabel={false} tooltip />
     </span>
   )

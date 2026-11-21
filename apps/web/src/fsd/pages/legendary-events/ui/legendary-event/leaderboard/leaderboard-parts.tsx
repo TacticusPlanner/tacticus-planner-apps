@@ -170,7 +170,7 @@ export function LeaderboardRarity({ row }: { row: LeaderboardUnitRow }) {
   if (!row.rarity) return null
   return (
     <span data-testid="leaderboard-rarity" data-rarity={row.rarity}>
-      <RarityIcon className="size-5" rarity={row.rarity} />
+      <RarityIcon rarity={row.rarity} />
     </span>
   )
 }
