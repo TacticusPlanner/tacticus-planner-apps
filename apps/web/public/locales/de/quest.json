@@ -199,7 +199,7 @@
     "optionsHint": "Stärkste zuerst, auf Stufenobergrenze. Wähle Einheiten, um die Teamstärke zu vergleichen; die Auswahl wird nicht gespeichert.",
     "optionsSelected": "{{count}} von {{slots}} gewählt · Teamstärke {{power}}",
     "optionsReset": "Auf Vorschlag zurücksetzen",
-    "optionsClose": "Schließen"
+    "optionsDone": "Fertig"
   },
   "estimate": {
     "title": "Siegesschätzung",

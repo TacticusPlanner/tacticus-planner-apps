@@ -125,7 +125,7 @@
     "boughtSome": {
       "title": "Combien en avez-vous acheté ?",
       "value": "Lots achetés",
-      "confirm": "Enregistrer"
+      "confirm": "Enregistrer les achats"
     },
     "clearWeek": {
       "title": "Vider la semaine {{week}} ?",

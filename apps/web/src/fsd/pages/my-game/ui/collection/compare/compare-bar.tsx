@@ -196,7 +196,7 @@ export function CompareControls(props: CompareControlsProps) {
             onClick={() => setOpen(false)}
             data-testid="compare-options-close"
           >
-            {t("myGame.collection.compare.closeOptions")}
+            {t("myGame.collection.compare.optionsDone")}
           </Button>
         </SheetFooter>
       </SheetContent>

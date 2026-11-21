@@ -199,7 +199,7 @@
     "optionsHint": "Strongest first at the tier cap. Pick units to compare team power; picks are not saved.",
     "optionsSelected": "{{count}} of {{slots}} picked · team power {{power}}",
     "optionsReset": "Reset to suggested",
-    "optionsClose": "Close"
+    "optionsDone": "Done"
   },
   "estimate": {
     "title": "Clear estimate",

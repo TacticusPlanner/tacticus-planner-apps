@@ -51,7 +51,7 @@ export function ManageProjectsSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        className="overflow-y-auto"
+        className="sm:data-[side=right]:max-w-md"
         data-testid="manage-projects-sheet"
       >
         <SheetHeader>
@@ -136,7 +136,7 @@ function ProjectForm({
   return (
     <>
       <form
-        className="grid gap-4 px-4"
+        className="grid min-h-0 flex-1 content-start gap-4 overflow-y-auto px-4"
         id="manage-project-form"
         onSubmit={submit}
       >

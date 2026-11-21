@@ -389,7 +389,7 @@ export function RaidsFiltersDialog({
           onClick={close}
           variant="outline"
         >
-          {t("dailies:raidsFilters.actions.close")}
+          {t("dailies:raidsFilters.actions.cancel")}
         </Button>
         <Button
           data-testid="raids-filters-apply"

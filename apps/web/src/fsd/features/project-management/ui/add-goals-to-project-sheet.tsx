@@ -347,7 +347,7 @@ export function AddGoalsToProjectSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        className="overflow-y-auto"
+        className="sm:data-[side=right]:max-w-md"
         data-testid="add-goals-to-project-sheet"
       >
         <SheetHeader>
@@ -357,7 +357,7 @@ export function AddGoalsToProjectSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="grid gap-3 px-4">
+        <div className="grid min-h-0 flex-1 content-start gap-3 overflow-y-auto px-4">
           <Button
             data-testid="add-goals-create-new"
             onClick={() => {
@@ -437,7 +437,7 @@ export function AddGoalsToProjectSheet({
           )}
         </div>
 
-        <SheetFooter className="sticky bottom-0 flex-col border-t bg-background">
+        <SheetFooter className="flex-col border-t">
           <MembershipReview draft={draft} goalName={goalName} />
           <Button
             data-testid="add-goals-save"

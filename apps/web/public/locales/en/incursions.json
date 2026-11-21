@@ -166,7 +166,7 @@
     "selected_one": "{{count}} hero · power {{power}}",
     "selected_other": "{{count}} heroes · power {{power}}",
     "reset": "Back to suggested",
-    "close": "Close"
+    "done": "Done"
   },
   "estimate": {
     "clears_one": "Clears in 1 run",

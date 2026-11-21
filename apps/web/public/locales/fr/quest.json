@@ -199,7 +199,7 @@
     "optionsHint": "Les plus fortes d'abord, au plafond du palier. Choisissez des unités pour comparer la puissance ; la sélection n'est pas enregistrée.",
     "optionsSelected": "{{count}} sur {{slots}} choisies · puissance {{power}}",
     "optionsReset": "Revenir à la suggestion",
-    "optionsClose": "Fermer"
+    "optionsDone": "Terminé"
   },
   "estimate": {
     "title": "Estimation de victoire",

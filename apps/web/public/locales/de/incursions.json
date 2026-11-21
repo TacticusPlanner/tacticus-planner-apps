@@ -166,7 +166,7 @@
     "selected_one": "{{count}} Held · Macht {{power}}",
     "selected_other": "{{count}} Helden · Macht {{power}}",
     "reset": "Zurück zum Vorschlag",
-    "close": "Schließen"
+    "done": "Fertig"
   },
   "estimate": {
     "clears_one": "In 1 Lauf geschafft",

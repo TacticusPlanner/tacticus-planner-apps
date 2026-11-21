@@ -121,7 +121,7 @@ export function QuestTeamOptionsDialog({
             {t("team.optionsReset")}
           </Button>
           <Button onClick={() => onOpenChange(false)}>
-            {t("team.optionsClose")}
+            {t("team.optionsDone")}
           </Button>
         </div>
       </ResponsiveDialogFooter>

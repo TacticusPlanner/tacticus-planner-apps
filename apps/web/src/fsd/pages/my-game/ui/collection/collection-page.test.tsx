@@ -1130,10 +1130,10 @@ describe("CollectionPage snapshots and compare", () => {
     expect(mobileTargets[optionsStep + 1]).toBe(
       '[data-testid="compare-summary"]'
     )
-    // The options sheet closes from a button at its bottom.
+    // The options sheet closes from a Done button at its bottom.
     fireEvent.click(options)
     const close = await screen.findByTestId("compare-options-close")
-    expect(close).toHaveAccessibleName("Close")
+    expect(close).toHaveAccessibleName("Done")
     fireEvent.click(close)
     await waitFor(() =>
       expect(

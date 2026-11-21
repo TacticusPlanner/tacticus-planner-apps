@@ -609,7 +609,7 @@
             "I_Defensive": "Defensiv-Gegenstand"
           }
         },
-        "closeOptions": "Schließen",
+        "optionsDone": "Fertig",
         "menuItem": "Mit einem Snapshot vergleichen"
       },
       "snapshots": {
@@ -1232,7 +1232,7 @@
       "moveToPriorityTitle": "Auf Priorität verschieben",
       "moveToPriorityLabel": "Priorität (1–{{total}})",
       "moveToPriorityDescription": "Gib die Priorität ein, die dieses Ziel erhalten soll, von 1 bis {{total}}.",
-      "moveToPriorityConfirm": "Verschieben",
+      "moveToPriorityConfirm": "Ziel verschieben",
       "moveToPriorityCancel": "Abbrechen",
       "movedTo": "Auf Priorität {{position}} von {{total}} verschoben.",
       "edit": "Bearbeiten"
@@ -1377,7 +1377,8 @@
       "projectsSaveFailed": "Die Projekte konnten nicht gespeichert werden. Prüfe deine Verbindung und versuche es erneut.",
       "addToProjectsDescription": "Wähle ein oder mehrere Projekte für die ausgewählten Ziele oder erstelle ein neues.",
       "addToProjectsConfirm": "Zu Projekten hinzufügen",
-      "addToProjectsConfirmCount": "Zu {{count}} Projekten hinzufügen"
+      "addToProjectsConfirmCount": "Zu {{count}} Projekten hinzufügen",
+      "saveProjects": "Projekte speichern"
     },
     "toasts": {
       "statusConflict": "{{goal}} konnte nicht geändert werden: {{reason}}",
@@ -2000,7 +2001,7 @@
         "projectLabel": "Projekt",
         "projectPlaceholder": "Projekt wählen",
         "noReference": "Kein anderes Projekt zum Einordnen",
-        "confirm": "Verschieben",
+        "confirm": "Ziele verschieben",
         "cancel": "Abbrechen"
       },
       "sortBlocksReorder": "Die Ziele sind nach Fertigstellung sortiert, daher kannst du sie nicht ziehen, um ihre Priorität zu ändern.",
@@ -2008,7 +2009,7 @@
     },
     "edit": {
       "title": "Ziel bearbeiten",
-      "save": "Speichern",
+      "save": "Ziel speichern",
       "cancel": "Abbrechen",
       "close": "Schließen",
       "loadError": "Dieses Ziel konnte nicht geladen werden. Möglicherweise existiert es nicht mehr.",

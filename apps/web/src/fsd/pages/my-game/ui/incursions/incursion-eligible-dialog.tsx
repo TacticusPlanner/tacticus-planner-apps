@@ -178,7 +178,7 @@ export function IncursionEligibleDialog({
             {t("eligible.reset")}
           </Button>
           <Button onClick={() => onOpenChange(false)}>
-            {t("eligible.close")}
+            {t("eligible.done")}
           </Button>
         </div>
       </ResponsiveDialogFooter>

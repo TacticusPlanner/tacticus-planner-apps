@@ -125,7 +125,7 @@
     "boughtSome": {
       "title": "Wie viele hast du gekauft?",
       "value": "Gekaufte Pakete",
-      "confirm": "Speichern"
+      "confirm": "Käufe speichern"
     },
     "clearWeek": {
       "title": "Woche {{week}} leeren?",

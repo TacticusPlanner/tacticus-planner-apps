@@ -592,7 +592,7 @@
     },
     "slotsOption": "{{count}} Slots",
     "actions": {
-      "close": "Schließen",
+      "cancel": "Abbrechen",
       "reset": "Filter zurücksetzen",
       "apply": "Filter anwenden"
     },
