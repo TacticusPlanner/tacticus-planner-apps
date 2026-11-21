@@ -439,7 +439,7 @@ describe("HSE tab header", () => {
     expect(within(find).getByTestId("hse-event-switcher")).toBeInTheDocument()
     expect(within(find).getByTestId("hse-project-select")).toBeInTheDocument()
     expect(within(find).getByTestId("hse-raids-filters")).toHaveTextContent(
-      "raidsFilters.trigger"
+      "filtersControl.button"
     )
     expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
   })

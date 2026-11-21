@@ -84,7 +84,9 @@ When `variation` is absent or names a variation that is not in the selected grou
 
 The page SHALL offer a name search plus faction, alliance, attack-type, game-mode, damage-type and trait
 filters. The name search SHALL remain visible at all times and SHALL NOT be counted as a filter; the
-remaining controls MAY be collapsed behind a toggle that reports how many are active. Faction, alliance,
+remaining controls SHALL sit, each with a visible label, in the shared Filters panel (a popover on
+desktop, a bottom sheet on mobile) behind a Filters button whose badge reports how many are active; the
+panel ends with Clear filters and Done. Faction, alliance,
 attack type and game mode SHALL be single-select; damage type and trait SHALL be multi-select, and each
 multi-select SHALL offer its own clear control that resets only that control. Filter options SHALL be
 derived from the listed catalog, and an option whose id is blank SHALL NOT be offered. The game-mode

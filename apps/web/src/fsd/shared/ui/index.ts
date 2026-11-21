@@ -54,6 +54,7 @@ export { NumberStepper } from "./number-stepper"
 export { LevelChart } from "./level-chart"
 export { describeSeries } from "./level-chart.model"
 export { FILTER_CHIP_CLASS_NAME } from "./filter-chip"
+export { FilterField, FiltersButton, FiltersControl } from "./filters-control"
 export { LegalDocument } from "./legal-document"
 export { EventInstanceSwitcher } from "./event-instance-switcher"
 export {

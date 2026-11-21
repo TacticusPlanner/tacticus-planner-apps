@@ -242,8 +242,6 @@
     "damageType": "Damage type",
     "trait": "Trait",
     "clearFilters": "Clear filters",
-    "filtersCount": "Filters ({{count}})",
-    "filtersDone": "Done",
     "filters": "Filters",
     "npc": "NPC",
     "variation": "Variation",
@@ -392,7 +390,9 @@
     "minCount": "Min. in one battle",
     "meleeOnly": "Melee only",
     "hasRanged": "Has ranged",
-    "clearOne": "Clear {{name}}"
+    "clearOne": "Clear {{name}}",
+    "anyDamageType": "Any damage type",
+    "anyTrait": "Any trait"
   },
   "unit": {
     "nav": {

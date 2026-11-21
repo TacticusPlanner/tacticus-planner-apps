@@ -414,10 +414,7 @@
         "ownedOnly": "Solo desbloqueadas",
         "hideUnownedNeedsRoster": "Para ocultar las unidades no desbloqueadas hace falta una plantilla sincronizada.",
         "filters": "Filtros",
-        "filtersCount_one": "Filtros ({{count}})",
-        "filtersCount_other": "Filtros ({{count}})",
         "clearFilters": "Borrar filtros",
-        "done": "Listo",
         "alliance": "Alianza",
         "allAlliances": "Todas las alianzas",
         "faction": "Facción",
@@ -2591,5 +2588,12 @@
     "layout": "Diseño",
     "done": "Listo",
     "none": "Ninguno"
+  },
+  "filtersControl": {
+    "button": "Filtros",
+    "buttonActive": "Filtros, {{count}} activos",
+    "title": "Filtros",
+    "clear": "Borrar filtros",
+    "done": "Listo"
   }
 }

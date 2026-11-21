@@ -1,8 +1,6 @@
-import { useId, useState } from "react"
+import { useId } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { SlidersHorizontal } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Switch } from "@workspace/ui/components/switch"
@@ -12,13 +10,17 @@ import {
 } from "@workspace/ui/components/toggle-group"
 
 import { ObjectiveIcon } from "@/entities/legendary-event"
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import { FILTER_CHIP_CLASS_NAME, FiltersControl } from "@/shared/ui"
 
 import type {
   LeaderboardControlsState,
   LeaderboardGoalsViewModel,
 } from "../legendary-event-page.view-model"
 import type { ObjectiveChipGroup } from "./leaderboard.view-model"
+import {
+  clearLeaderboardFilters,
+  leaderboardActiveFilterCount,
+} from "./leaderboard-filters"
 
 /**
  * The one controls bar shared by the lane and Overview leaderboards (design D7): "Only unlocked"
@@ -26,8 +28,8 @@ import type { ObjectiveChipGroup } from "./leaderboard.view-model"
  * unavailable), "Deduct scored points", "Goals Preview" (disabled while
  * goals load, failed or none target the event's units) and the objective multi-select
  * chips, one group per lane with a lane heading when there are several (design D2 of the Overview
- * refinement). Like the collection page, the switches and chips sit in a panel behind a Filters
- * button that counts the active filters (open at first when any is active); `leading` (the
+ * refinement). The switches and chips sit in the shared Filters panel (`FiltersControl`: a dialog
+ * on desktop, a sheet on mobile) behind a Filters button that counts the active filters; `leading` (the
  * Overview's lane picker) sits before it. The notes for an unsynced roster and an unavailable
  * progress read sit beneath it.
  */
@@ -56,13 +58,7 @@ export function LeaderboardControls({
   const previewHintId = useId()
   const previewReady = goals.availability === "ready"
   const labelled = groups.length > 1
-  const panelId = useId()
-  const active =
-    state.selectedObjectives.size +
-    (rosterAvailable && state.onlyUnlocked ? 1 : 0) +
-    (teamsAvailable && state.onlyInTeams ? 1 : 0) +
-    (previewReady && goals.previewEnabled ? 1 : 0)
-  const [open, setOpen] = useState(() => active > 0)
+  const active = leaderboardActiveFilterCount(state, rosterAvailable)
   const selectedIn = (group: ObjectiveChipGroup) =>
     group.chips
       .map((chip) => chip.key)
@@ -83,150 +79,139 @@ export function LeaderboardControls({
     >
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         {leading}
-        <Button
-          aria-controls={panelId}
-          aria-expanded={open}
-          data-testid="leaderboard-filters-button"
-          onClick={() => setOpen((value) => !value)}
-          variant="outline"
+        <FiltersControl
+          count={active}
+          onClear={() => clearLeaderboardFilters(state)}
+          size="form"
+          testId="leaderboard-filters"
         >
-          <SlidersHorizontal aria-hidden />
-          {active > 0
-            ? t("leaderboard.filtersCount", { count: active })
-            : t("leaderboard.filters")}
-        </Button>
-      </div>
-      {/* Kept mounted while closed, so a filter's state and focus survive closing the panel. */}
-      <div
-        className="flex min-w-0 flex-col gap-2"
-        data-testid="leaderboard-filters-panel"
-        hidden={!open}
-        id={panelId}
-      >
-        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={rosterAvailable && state.onlyUnlocked}
-              data-testid="leaderboard-only-unlocked"
-              disabled={!rosterAvailable}
-              id={unlockedId}
-              onCheckedChange={state.onOnlyUnlockedChange}
-            />
-            <Label htmlFor={unlockedId}>{t("leaderboard.onlyUnlocked")}</Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={teamsAvailable && state.onlyInTeams}
-              disabled={!teamsAvailable}
-              id={inTeamsId}
-              onCheckedChange={state.onOnlyInTeamsChange}
-            />
-            <Label htmlFor={inTeamsId}>{t("leaderboard.onlyInTeams")}</Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={state.deductScored}
-              data-testid="leaderboard-deduct-scored"
-              id={deductId}
-              onCheckedChange={state.onDeductScoredChange}
-            />
-            <Label htmlFor={deductId}>{t("leaderboard.deductScored")}</Label>
-          </div>
-          <div className="flex min-h-11 items-center gap-2 md:min-h-0">
-            <Switch
-              aria-describedby={previewHintId}
-              checked={previewReady && goals.previewEnabled}
-              data-testid="leaderboard-goals-preview"
-              disabled={!previewReady}
-              id={previewId}
-              onCheckedChange={goals.onPreviewChange}
-            />
-            <Label htmlFor={previewId}>{t("goalsPreview.switch")}</Label>
-            <span
-              className="flex items-center gap-1 text-xs text-muted-foreground"
-              data-testid="leaderboard-goals-preview-hint"
-              id={previewHintId}
-            >
-              {goals.availability === "loading" ? (
-                <>
-                  <Spinner aria-hidden className="size-3" />
-                  <span className="sr-only">{t("goalsPreview.loading")}</span>
-                </>
-              ) : null}
-              {goals.availability === "failed"
-                ? t("goalsPreview.unavailable")
-                : null}
-              {goals.availability === "noRoster"
-                ? t("goalsPreview.noRoster")
-                : null}
-              {goals.availability === "noGoals"
-                ? t("goalsPreview.noGoals")
-                : null}
-              {previewReady ? (
-                <span className="sr-only">{t("goalsPreview.hint")}</span>
-              ) : null}
-            </span>
-          </div>
-        </div>
-        {groups.map((group) => {
-          const lane = t(`lanes.${group.laneId}`)
-          return (
-            <div
-              className="flex min-w-0 flex-col gap-1"
-              data-lane={group.laneId}
-              data-testid="leaderboard-objective-group"
-              key={group.laneId}
-            >
-              {labelled ? (
-                <span
-                  className="text-xs font-medium text-muted-foreground"
-                  data-testid="leaderboard-objective-group-label"
-                >
-                  {t("leaderboard.laneObjectives", { lane })}
-                </span>
-              ) : null}
-              <ToggleGroup
-                aria-label={
-                  labelled
-                    ? t("leaderboard.laneObjectiveFilter", { lane })
-                    : t("leaderboard.objectiveFilter")
-                }
-                className="flex-wrap"
-                data-testid="leaderboard-objective-filter"
-                onValueChange={(keys) => changeGroup(group, keys)}
-                size="sm"
-                spacing={1}
-                type="multiple"
-                value={selectedIn(group)}
-                variant="outline"
-              >
-                {group.chips.map((chip) => (
-                  <ToggleGroupItem
-                    className={FILTER_CHIP_CLASS_NAME}
-                    data-objective={chip.key}
-                    data-testid="leaderboard-objective-chip"
-                    key={chip.key}
-                    value={chip.key}
-                  >
-                    <ObjectiveIcon className="size-4" icon={chip.icon} />
-                    {chip.label}
-                    {chip.count ? (
-                      <span
-                        className="text-xs text-muted-foreground tabular-nums"
-                        data-testid="leaderboard-objective-count"
-                      >
-                        {t("leaderboard.objectiveCount", {
-                          cleared: number.format(chip.count.cleared),
-                          total: number.format(chip.count.total),
-                        })}
-                      </span>
-                    ) : null}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
+          <div className="flex min-w-0 flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={rosterAvailable && state.onlyUnlocked}
+                data-testid="leaderboard-only-unlocked"
+                disabled={!rosterAvailable}
+                id={unlockedId}
+                onCheckedChange={state.onOnlyUnlockedChange}
+              />
+              <Label htmlFor={unlockedId}>
+                {t("leaderboard.onlyUnlocked")}
+              </Label>
             </div>
-          )
-        })}
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={teamsAvailable && state.onlyInTeams}
+                disabled={!teamsAvailable}
+                id={inTeamsId}
+                onCheckedChange={state.onOnlyInTeamsChange}
+              />
+              <Label htmlFor={inTeamsId}>{t("leaderboard.onlyInTeams")}</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={state.deductScored}
+                data-testid="leaderboard-deduct-scored"
+                id={deductId}
+                onCheckedChange={state.onDeductScoredChange}
+              />
+              <Label htmlFor={deductId}>{t("leaderboard.deductScored")}</Label>
+            </div>
+            <div className="flex min-h-11 items-center gap-2 md:min-h-0">
+              <Switch
+                aria-describedby={previewHintId}
+                checked={previewReady && goals.previewEnabled}
+                data-testid="leaderboard-goals-preview"
+                disabled={!previewReady}
+                id={previewId}
+                onCheckedChange={goals.onPreviewChange}
+              />
+              <Label htmlFor={previewId}>{t("goalsPreview.switch")}</Label>
+              <span
+                className="flex items-center gap-1 text-xs text-muted-foreground"
+                data-testid="leaderboard-goals-preview-hint"
+                id={previewHintId}
+              >
+                {goals.availability === "loading" ? (
+                  <>
+                    <Spinner aria-hidden className="size-3" />
+                    <span className="sr-only">{t("goalsPreview.loading")}</span>
+                  </>
+                ) : null}
+                {goals.availability === "failed"
+                  ? t("goalsPreview.unavailable")
+                  : null}
+                {goals.availability === "noRoster"
+                  ? t("goalsPreview.noRoster")
+                  : null}
+                {goals.availability === "noGoals"
+                  ? t("goalsPreview.noGoals")
+                  : null}
+                {previewReady ? (
+                  <span className="sr-only">{t("goalsPreview.hint")}</span>
+                ) : null}
+              </span>
+            </div>
+          </div>
+          {groups.map((group) => {
+            const lane = t(`lanes.${group.laneId}`)
+            return (
+              <div
+                className="flex min-w-0 flex-col gap-1"
+                data-lane={group.laneId}
+                data-testid="leaderboard-objective-group"
+                key={group.laneId}
+              >
+                {labelled ? (
+                  <span
+                    className="text-sm font-medium"
+                    data-testid="leaderboard-objective-group-label"
+                  >
+                    {t("leaderboard.laneObjectives", { lane })}
+                  </span>
+                ) : null}
+                <ToggleGroup
+                  aria-label={
+                    labelled
+                      ? t("leaderboard.laneObjectiveFilter", { lane })
+                      : t("leaderboard.objectiveFilter")
+                  }
+                  className="flex-wrap"
+                  data-testid="leaderboard-objective-filter"
+                  onValueChange={(keys) => changeGroup(group, keys)}
+                  size="sm"
+                  spacing={1}
+                  type="multiple"
+                  value={selectedIn(group)}
+                  variant="outline"
+                >
+                  {group.chips.map((chip) => (
+                    <ToggleGroupItem
+                      className={FILTER_CHIP_CLASS_NAME}
+                      data-objective={chip.key}
+                      data-testid="leaderboard-objective-chip"
+                      key={chip.key}
+                      value={chip.key}
+                    >
+                      <ObjectiveIcon className="size-4" icon={chip.icon} />
+                      {chip.label}
+                      {chip.count ? (
+                        <span
+                          className="text-xs text-muted-foreground tabular-nums"
+                          data-testid="leaderboard-objective-count"
+                        >
+                          {t("leaderboard.objectiveCount", {
+                            cleared: number.format(chip.count.cleared),
+                            total: number.format(chip.count.total),
+                          })}
+                        </span>
+                      ) : null}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+            )
+          })}
+        </FiltersControl>
       </div>
       {rosterAvailable ? null : (
         <p

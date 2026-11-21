@@ -273,7 +273,7 @@
     "noUnlocked": "Aucune de vos unités débloquées ne peut jouer dans cette voie.",
     "noneInTeams": "Vos équipes ici n’ont encore aucune unité.",
     "noneMatch": "Aucune unité ne remplit ces objectifs.",
-    "clearFilter": "Effacer le filtre",
+    "clearFilter": "Effacer les filtres",
     "rosterNotSynced": "Votre effectif n'est pas encore synchronisé : la possession, la rareté et le rang ne sont pas affichés.",
     "progressUnavailable": "Progression synchronisée indisponible : rien n'est compté comme marqué.",
     "loading": "Chargement des unités…",
@@ -283,8 +283,6 @@
       "notAllowedLabel": "{{lane}} : non autorisé",
       "laneFigure": "{{lane}} : {{points}}"
     },
-    "filters": "Filtres",
-    "filtersCount": "Filtres ({{count}})",
     "lanes": "Voies",
     "lanesAll": "Toutes les voies",
     "lanesCount": "{{count}} voies",

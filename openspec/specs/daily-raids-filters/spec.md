@@ -43,7 +43,7 @@ Dailies > Raids (Today) SHALL provide a keyboard-operable "Raids Filters" action
 
 ### Requirement: Raids Filters dialog
 
-Activating the action SHALL open a dialog titled "Raids Filters" with sections, in order: Allies (Alliances, Factions), Enemies (Alliances, Factions, Enemy Traits, Min Enemy, Max Enemy, Enemy Types), Locations (Types, Slots), Upgrades (Rarity). Alliance, faction, enemy trait, enemy type, campaign type, slot and rarity fields SHALL be multi-selects whose empty state reads as "all" (for example "All alliances"). Min Enemy and Max Enemy SHALL be single searchable selects over the distinct enemy totals present in the catalog (descending), clearable to "no limit". Faction options SHALL be limited to factions of the selected alliances in the same group (all factions when no alliance is selected). Options SHALL show id-based icons (alliance, faction, rarity) with localized labels. Slots options SHALL be 3, 4 and 5; campaign type options SHALL be Elite, Extremis, Standard, Mirror, Normal and Early; upgrade rarity options SHALL be Common through Mythic and SHALL NOT include Shard or Mythic Shard. The footer SHALL offer Reset, Cancel and Apply.
+Activating the action SHALL open a dialog titled "Raids Filters" with sections, in order: Allies (Alliances, Factions), Enemies (Alliances, Factions, Enemy Traits, Min Enemy, Max Enemy, Enemy Types), Locations (Types, Slots), Upgrades (Rarity). Alliance, faction, enemy trait, enemy type, campaign type, slot and rarity fields SHALL be multi-selects whose empty state reads as "all" (for example "All alliances"). Min Enemy and Max Enemy SHALL be single searchable selects over the distinct enemy totals present in the catalog (descending), clearable to "no limit". Faction options SHALL be limited to factions of the selected alliances in the same group (all factions when no alliance is selected). Options SHALL show id-based icons (alliance, faction, rarity) with localized labels. Slots options SHALL be 3, 4 and 5; campaign type options SHALL be Elite, Extremis, Standard, Mirror, Normal and Early; upgrade rarity options SHALL be Common through Mythic and SHALL NOT include Shard or Mythic Shard. The footer SHALL offer Clear filters, Cancel and Apply.
 
 #### Scenario: Draft until Apply
 
@@ -56,9 +56,9 @@ Activating the action SHALL open a dialog titled "Raids Filters" with sections, 
 - **WHEN** the user chooses Apply
 - **THEN** the draft becomes the applied filter, the dialog closes and Today recomputes
 
-#### Scenario: Reset
+#### Scenario: Clear filters
 
-- **WHEN** the user chooses Reset
+- **WHEN** the user chooses Clear filters
 - **THEN** every field is cleared, the empty filter is applied immediately and the dialog closes
 
 #### Scenario: Faction options follow alliance
@@ -149,7 +149,7 @@ Indomitus battles with `energyCost` below 5 (no raid rewards) belong to no optio
 
 The applied filter SHALL constrain the node(s) the daily-raids engine schedules for Today and Bonus Raids, the candidate locations of the HSE tab's farm list and the locations listed in the HSE tab's two top-10 lists, and the HRE tab's campaign raid suggestions as `hre-campaign-raids` specifies (which waives some filters there), and nothing else. Raids Plan / Schedule, Goals page estimates and dates, goal-creation previews and Insights SHALL be computed without the filter and SHALL be identical whether or not a filter is applied.
 
-For every material (upgrades and character shards alike) the engine SHALL first remove the eligible nodes that fail the filter, then choose the preferred nodes among the nodes that pass exactly as it does with no filter (least energy per item, with the same tie and value rules). A material whose cheapest node fails the filter SHALL therefore be scheduled on the cheapest node(s) that pass. A material none of whose nodes pass SHALL be reported on Today as filtered out, with a reason distinct from "no farm location", and offered a Reset action. The filter wins over a goal's pinned farm locations: pinned locations are filtered exactly like auto-picked ones, so a goal whose pinned locations all fail the filter is reported as filtered out. The filtered-out notice SHALL state, for such goals, that their pinned location is excluded by the Raids Filters and that the filter or the pin must change. With an empty filter, results are identical to current behavior. Today, Bonus Raids and the HSE tab's farm list therefore all treat the filter as a candidate rule (filter-then-pick).
+For every material (upgrades and character shards alike) the engine SHALL first remove the eligible nodes that fail the filter, then choose the preferred nodes among the nodes that pass exactly as it does with no filter (least energy per item, with the same tie and value rules). A material whose cheapest node fails the filter SHALL therefore be scheduled on the cheapest node(s) that pass. A material none of whose nodes pass SHALL be reported on Today as filtered out, with a reason distinct from "no farm location", and offered a Clear filters action. The filter wins over a goal's pinned farm locations: pinned locations are filtered exactly like auto-picked ones, so a goal whose pinned locations all fail the filter is reported as filtered out. The filtered-out notice SHALL state, for such goals, that their pinned location is excluded by the Raids Filters and that the filter or the pin must change. With an empty filter, results are identical to current behavior. Today, Bonus Raids and the HSE tab's farm list therefore all treat the filter as a candidate rule (filter-then-pick).
 
 #### Scenario: Filter removes the cheapest node
 
@@ -167,7 +167,7 @@ For every material (upgrades and character shards alike) the engine SHALL first 
 
 - **GIVEN** every eligible node for a material fails the filter
 - **WHEN** Today is computed
-- **THEN** the material is reported as filtered out with a Reset action
+- **THEN** the material is reported as filtered out with a Clear filters action
 
 #### Scenario: Character shards behave the same as upgrades
 
@@ -193,7 +193,7 @@ For every material (upgrades and character shards alike) the engine SHALL first 
 
 - **GIVEN** a goal pins its farm location to a node that fails the filter
 - **WHEN** Today is computed
-- **THEN** the goal is reported as filtered out, not scheduled on the pinned node, and the notice says its pinned location is excluded by the Raids Filters and offers Reset
+- **THEN** the goal is reported as filtered out, not scheduled on the pinned node, and the notice says its pinned location is excluded by the Raids Filters and offers Clear filters
 
 #### Scenario: Pinned location passes the filter
 
@@ -241,7 +241,7 @@ While catalog battle data is loading, the dialog SHALL render its sections with 
 
 ### Requirement: Enemy traits filter
 
-The Enemies section SHALL offer an Enemy Traits multi-select. Its options SHALL be the distinct enemy traits that occur on at least one enemy of at least one campaign battle in the catalog (derived from the served `npcs` dataset through each battle's enemy ids, using the same enemy-to-npc lookup as the Home Screen Event rules), labelled through the game-data `traits` namespace with a humanised id as fallback, each with its trait icon. A location SHALL pass the criterion when at least one of its enemies has at least one selected trait; an enemy id that cannot be resolved contributes no traits. An empty selection passes every location. The selection SHALL be persisted in the applied filter, SHALL read as empty for a stored filter that predates the field, SHALL be cleared by Reset, and SHALL count as one active group. The field SHALL be disabled while battle or npc data is loading, and every dialog string for it SHALL exist in en, de, es and fr.
+The Enemies section SHALL offer an Enemy Traits multi-select. Its options SHALL be the distinct enemy traits that occur on at least one enemy of at least one campaign battle in the catalog (derived from the served `npcs` dataset through each battle's enemy ids, using the same enemy-to-npc lookup as the Home Screen Event rules), labelled through the game-data `traits` namespace with a humanised id as fallback, each with its trait icon. A location SHALL pass the criterion when at least one of its enemies has at least one selected trait; an enemy id that cannot be resolved contributes no traits. An empty selection passes every location. The selection SHALL be persisted in the applied filter, SHALL read as empty for a stored filter that predates the field, SHALL be cleared by Clear filters, and SHALL count as one active group. The field SHALL be disabled while battle or npc data is loading, and every dialog string for it SHALL exist in en, de, es and fr.
 
 #### Scenario: Any enemy with any selected trait
 
@@ -263,15 +263,15 @@ The Enemies section SHALL offer an Enemy Traits multi-select. Its options SHALL 
 - **WHEN** the user opens Enemy Traits
 - **THEN** the options are exactly the traits present on campaign-battle enemies, including Mechanical, and not traits that occur on no such enemy
 
-#### Scenario: Reset clears the traits
+#### Scenario: Clear filters clears the traits
 
 - **GIVEN** an applied filter with enemy traits
-- **WHEN** the user chooses Reset
+- **WHEN** the user chooses Clear filters
 - **THEN** the trait selection is empty and the badge no longer counts it
 
 ### Requirement: Filtered-out notice lists the skipped materials
 
-Below its count sentences, Today's filtered-out notice SHALL list each material the applied Raids Filters left without an allowed node, once, in the order the plan first reports it (goal priority). Each row SHALL show the material's icon and name, the player's have/need over the run's goals, a **Pinned** badge when at least one goal pinned it to a location the filters exclude, and the icons of the goals waiting on it (every goal named in its accessible name and tooltip). The list SHALL show at most five materials, followed by a **Show all N** toggle that reveals the rest and then reads **Show less**. Beside **Reset filters** the notice SHALL link to Plan > Insights, whose results stay unfiltered.
+Below its count sentences, Today's filtered-out notice SHALL list each material the applied Raids Filters left without an allowed node, once, in the order the plan first reports it (goal priority). Each row SHALL show the material's icon and name, the player's have/need over the run's goals, a **Pinned** badge when at least one goal pinned it to a location the filters exclude, and the icons of the goals waiting on it (every goal named in its accessible name and tooltip). The list SHALL show at most five materials, followed by a **Show all N** toggle that reveals the rest and then reads **Show less**. Beside **Clear filters** the notice SHALL link to Plan > Insights, whose results stay unfiltered.
 
 #### Scenario: A material is filtered out
 

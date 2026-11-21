@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   activeFilterCount,
   activeStandaloneFilterCount,
+  clearedStandaloneFilters,
   defaultCollectionQuery,
   isCollectionAlliance,
   isCollectionAttackType,
@@ -16,6 +17,7 @@ import {
   isCollectionShardSource,
   isCollectionSort,
 } from "./collection-query"
+import type { CollectionQuery } from "./collection-query"
 
 describe("collection query validators", () => {
   it("accept only known values", () => {
@@ -89,6 +91,47 @@ describe("activeFilterCount", () => {
     }
     expect(activeFilterCount(query)).toBe(8)
     expect(activeStandaloneFilterCount(query)).toBe(8)
+  })
+
+  it("clears every panel filter but keeps the search, quick filter, Owned only and view", () => {
+    const query: CollectionQuery = {
+      search: "ti",
+      alliance: "Imperial",
+      factions: ["Ultramarines"],
+      rarities: ["Epic"],
+      rankMin: "Gold1",
+      rankMax: "Diamond3",
+      starsMin: "Legendary:RedThreeStars",
+      starsMax: "Legendary:RedThreeStars",
+      hideUnowned: true,
+      kind: "character",
+      attack: "ranged",
+      hitsMin: 2,
+      hitsMax: 4,
+      movement: 3,
+      rangeMin: 1,
+      rangeMax: 2,
+      damageTypes: ["Bolter"],
+      traits: ["Psyker"],
+      shardSources: ["Extremis"],
+      quick: "canAscend",
+      sort: "rank",
+      view: "roster",
+      group: "none",
+    }
+    const cleared = { ...query, ...clearedStandaloneFilters }
+    expect(cleared).toEqual({
+      ...defaultCollectionQuery,
+      search: "ti",
+      hideUnowned: true,
+      quick: "canAscend",
+      sort: "rank",
+      view: "roster",
+      group: "none",
+    })
+    expect(activeStandaloneFilterCount(cleared)).toBe(0)
+    // Clearing again changes nothing.
+    expect({ ...cleared, ...clearedStandaloneFilters }).toEqual(cleared)
   })
 
   it("does not count Hide unowned as a filter", () => {

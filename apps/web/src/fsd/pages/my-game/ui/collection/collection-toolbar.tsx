@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useId, useState } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { LayoutGrid, List, Search, Funnel, X } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
+import { LayoutGrid, List, Search, X } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
+import type { LucideIcon } from "lucide-react"
 import { Input } from "@workspace/ui/components/input"
 import {
   Select,
@@ -21,13 +21,9 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import {
   FILTER_CHIP_CLASS_NAME,
+  FiltersControl,
   GroupByControl,
   PageToolbar,
-  ResponsiveDialog,
-  ResponsiveDialogBody,
-  ResponsiveDialogFooter,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
   SegmentedControl,
   useViewPlacement,
 } from "@/shared/ui"
@@ -35,6 +31,7 @@ import {
 import {
   activeFilterCount,
   activeStandaloneFilterCount,
+  clearedStandaloneFilters,
   collectionLayouts,
   collectionSorts,
   isCollectionSort,
@@ -69,8 +66,8 @@ export interface CollectionToolbarProps {
  * Collection's page toolbar (ui-style-guide rule 2). Find: search and the "Filters" button (badge =
  * active count); the chip row below starts with "Owned only", then the quick filters. View: Layout
  * (Cards / Roster), Group by (None / Faction) and Sort, which mobile keeps in the View sheet.
- * Desktop opens the filters inline below the row (already open when one is set, so a short list is
- * never unexplained); mobile opens them in a bottom sheet. The chips scroll sideways in one row.
+ * Filters opens the shared `FiltersControl`: a form-width dialog on desktop, a bottom sheet on
+ * mobile, with "Clear filters" and "Done" in its footer. The chips scroll sideways in one row.
  */
 export function CollectionToolbar(props: CollectionToolbarProps) {
   const {
@@ -90,116 +87,68 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
     (search: string) => update({ search }),
     [update]
   )
-  // Desktop: the inline panel's open state. Mobile: the sheet's (closed until asked for).
-  const [panelOpen, setPanelOpen] = useState(
-    () => activeStandaloneFilterCount(query) > 0
-  )
-  const [sheetOpen, setSheetOpen] = useState(false)
-  const panelId = useId()
-  const active = activeFilterCount(query)
 
   return (
-    <>
-      <PageToolbar
-        below={
-          !isMobile && panelOpen ? (
-            <div id={panelId}>
-              <CollectionFilterFields
-                query={query}
-                update={update}
-                options={options}
-                rosterAvailable={rosterAvailable}
-                layout="panel"
-              />
-            </div>
-          ) : null
-        }
-        chips={
-          <QuickFilterChips
-            value={query.quick}
-            availability={quickFilters}
-            counts={quickCounts}
-            onChange={(quick) => update({ quick })}
-            onRetry={onRetry}
-            leading={
-              <OwnedOnlyChip
-                query={query}
-                update={update}
-                rosterAvailable={rosterAvailable}
-              />
-            }
-          />
-        }
-        find={
-          <div
-            className="flex min-w-0 flex-1 flex-wrap items-center gap-2"
-            role="search"
-            aria-label={t("myGame.collection.toolbar.label")}
-          >
-            <SearchField
-              value={query.search}
-              onChange={setSearch}
-              className="min-w-40 flex-1"
+    <PageToolbar
+      chips={
+        <QuickFilterChips
+          value={query.quick}
+          availability={quickFilters}
+          counts={quickCounts}
+          onChange={(quick) => update({ quick })}
+          onRetry={onRetry}
+          leading={
+            <OwnedOnlyChip
+              query={query}
+              update={update}
+              rosterAvailable={rosterAvailable}
             />
-            <FiltersButton
-              count={active}
-              expanded={isMobile ? sheetOpen : panelOpen}
-              controls={isMobile ? undefined : panelId}
-              onClick={() =>
-                isMobile ? setSheetOpen(true) : setPanelOpen((value) => !value)
-              }
-            />
-            {active > 0 ? <ClearFiltersButton onClick={clear} /> : null}
-            {findActions}
-          </div>
-        }
-        testId="collection-toolbar"
-        view={
-          <>
-            <LayoutControl query={query} update={update} />
-            <GroupControl query={query} update={update} />
-            <SortSelect query={query} update={update} />
-          </>
-        }
-        viewTestId="collection-view-switch"
-      />
-      {isMobile ? (
-        <ResponsiveDialog
-          open={sheetOpen}
-          onOpenChange={setSheetOpen}
-          data-testid="collection-filter-sheet"
+          }
+        />
+      }
+      find={
+        <div
+          className="flex min-w-0 flex-1 flex-wrap items-center gap-2"
+          role="search"
+          aria-label={t("myGame.collection.toolbar.label")}
         >
-          <ResponsiveDialogHeader>
-            <ResponsiveDialogTitle>
-              {t("myGame.collection.toolbar.filters")}
-            </ResponsiveDialogTitle>
-          </ResponsiveDialogHeader>
-          <ResponsiveDialogBody>
+          <SearchField
+            value={query.search}
+            onChange={setSearch}
+            className="min-w-40 flex-1"
+          />
+          <FiltersControl
+            count={activeStandaloneFilterCount(query)}
+            onClear={() => update(clearedStandaloneFilters)}
+            size="form"
+            testId="collection-filters"
+          >
             <CollectionFilterFields
               query={query}
               update={update}
               options={options}
               rosterAvailable={rosterAvailable}
-              layout="sheet"
+              layout={isMobile ? "sheet" : "panel"}
             />
-          </ResponsiveDialogBody>
-          <ResponsiveDialogFooter>
-            <Button
-              className="md:mr-auto"
-              variant="ghost"
-              onClick={clear}
-              disabled={active === 0}
-            >
-              <X aria-hidden />
-              {t("myGame.collection.toolbar.clearFilters")}
-            </Button>
-            <Button onClick={() => setSheetOpen(false)}>
-              {t("myGame.collection.toolbar.done")}
-            </Button>
-          </ResponsiveDialogFooter>
-        </ResponsiveDialog>
-      ) : null}
-    </>
+          </FiltersControl>
+          {/* Clears everything that narrows the list (search, quick filter, panel filters); the
+              panel's own "Clear filters" clears only its fields. */}
+          {activeFilterCount(query) > 0 ? (
+            <ClearFiltersButton onClick={clear} />
+          ) : null}
+          {findActions}
+        </div>
+      }
+      testId="collection-toolbar"
+      view={
+        <>
+          <LayoutControl query={query} update={update} />
+          <GroupControl query={query} update={update} />
+          <SortSelect query={query} update={update} />
+        </>
+      }
+      viewTestId="collection-view-switch"
+    />
   )
 }
 
@@ -289,37 +238,10 @@ function SortSelect({
   )
 }
 
-function FiltersButton({
-  count,
-  expanded,
-  controls,
-  onClick,
-}: {
-  count: number
-  expanded: boolean
-  controls?: string
-  onClick: () => void
-}) {
-  const { t } = useTranslation("common")
-  return (
-    <Button
-      variant="outline"
-      aria-expanded={expanded}
-      aria-controls={controls}
-      onClick={onClick}
-    >
-      <Funnel aria-hidden />
-      {count > 0
-        ? t("myGame.collection.toolbar.filtersCount", { count })
-        : t("myGame.collection.toolbar.filters")}
-    </Button>
-  )
-}
-
 function ClearFiltersButton({ onClick }: { onClick: () => void }) {
   const { t } = useTranslation("common")
   return (
-    <Button variant="ghost" onClick={onClick} className="justify-self-start">
+    <Button variant="ghost" onClick={onClick}>
       <X aria-hidden />
       {t("myGame.collection.toolbar.clearFilters")}
     </Button>

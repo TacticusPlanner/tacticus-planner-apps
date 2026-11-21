@@ -700,11 +700,36 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(localStorage.getItem("collection.sort")).toBe("rank")
   })
 
-  it("opens the filters when a standalone filter is already set", () => {
+  it("counts a standalone filter already set on the Filters button and opens the panel on demand", () => {
     ready(synced)
     renderPage(1280, "/my-game/collection?alliance=Imperial")
 
-    expect(screen.getByRole("group", { name: "Filters" })).toBeInTheDocument()
+    const filters = screen.getByRole("button", { name: "Filters, 1 active" })
+    expect(
+      screen.queryByRole("group", { name: "Filters" })
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(filters)
+
+    const panel = screen.getByRole("dialog", { name: "Filters" })
+    expect(within(panel).getByRole("group", { name: "Filters" })).toBeVisible()
+  })
+
+  it("clears only the panel's filters from the panel, keeping the search", () => {
+    ready(synced)
+    renderPage(1280, "/my-game/collection?q=ti&alliance=Imperial")
+
+    fireEvent.click(screen.getByRole("button", { name: "Filters, 1 active" }))
+    const panel = screen.getByRole("dialog", { name: "Filters" })
+    fireEvent.click(
+      within(panel).getByRole("button", { name: "Clear filters" })
+    )
+    fireEvent.click(within(panel).getByRole("button", { name: "Done" }))
+
+    expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument()
+    expect(screen.getByRole("searchbox", { name: "Search units" })).toHaveValue(
+      "ti"
+    )
   })
 
   it("reports the active filters and clears them in one action, keeping the sort", () => {
@@ -713,7 +738,7 @@ describe("CollectionPage toolbar on desktop", () => {
     renderPage(1280, "/my-game/collection?q=ti&alliance=Imperial&sort=rank")
 
     expect(
-      screen.getByRole("button", { name: "Filters (3)" })
+      screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
     expect(screen.getAllByRole("link")).toHaveLength(1)
 
@@ -852,9 +877,10 @@ describe("CollectionPage toolbar on desktop", () => {
       within(quick).getByRole("radio", { name: "Can ascend" })
     ).toHaveAttribute("aria-checked", "false")
     expect(
-      screen.getByRole("button", { name: "Filters (1)" })
+      screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
 
+    fireEvent.click(screen.getByRole("button", { name: "Filters, 1 active" }))
     const fields = screen.getByRole("group", { name: "Filters" })
     expect(
       within(fields).getByRole("group", { name: "Rank range" })
@@ -920,8 +946,9 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(screen.getAllByRole("link")).toHaveLength(1)
     expect(factionsShown()).toEqual(["BlackLegion"])
     expect(
-      screen.getByRole("button", { name: "Filters (1)" })
+      screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Filters, 1 active" }))
     expect(screen.getByRole("region", { name: "Combat" })).toBeInTheDocument()
   })
 
@@ -966,7 +993,7 @@ describe("CollectionPage toolbar on mobile", () => {
     // Titus is owned at Legendary; Calgar is unowned but starts Legendary.
     expect(screen.getAllByRole("link")).toHaveLength(2)
     expect(
-      screen.getByRole("button", { name: "Filters (1)" })
+      screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
   })
 })
@@ -1231,7 +1258,7 @@ describe("CollectionPage view switch and Roster on desktop", () => {
     expect(rosterSections()).toEqual(["Ultramarines"])
     expect(listedNames()).toEqual(cardsOrder)
     expect(
-      screen.getByRole("button", { name: "Filters (1)" })
+      screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
     expect(
       screen.getByRole("combobox", { name: "Sort: Rank" })
@@ -1324,7 +1351,7 @@ describe("CollectionPage Owned only chip", () => {
     renderPage(1280, "/my-game/collection?owned=owned&alliance=Imperial")
 
     expect(
-      screen.getByRole("button", { name: "Filters (1)" })
+      screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
 

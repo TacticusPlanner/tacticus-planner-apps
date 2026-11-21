@@ -50,6 +50,7 @@ import { nextCrossLaneSort, sortCrossLaneRows } from "./cross-lane-sort"
 import type { CrossLaneSort, CrossLaneSortKey } from "./cross-lane-sort"
 import { LeaderboardLanePicker } from "./leaderboard-lane-picker"
 import { useLeaderboardLanes } from "./use-leaderboard-lanes"
+import { clearLeaderboardFilters } from "../leaderboard/leaderboard-filters"
 
 /**
  * The cross-lane Eligibility leaderboard (spec: one eligibility leaderboard on Teams): one row per
@@ -86,7 +87,7 @@ export function CrossLaneLeaderboard({
   const rosterAvailable = ready && leaderboard.rosterAvailable
   const figure = leaderboardFigure(leaderboard)
   const groups = objectiveChips(event, laneIds, progressGrid)
-  const clearFilter = () => leaderboard.onSelectedObjectivesChange(new Set())
+  const clearFilter = () => clearLeaderboardFilters(leaderboard)
 
   let body: ReactNode
   if (leaderboard.kind === "loading") {

@@ -159,6 +159,17 @@ const renderOverview = (
   render(<Harness layout={layout} progressGrid={progressGrid} rows={rows} />, {
     wrapper: i18nWrapper(i18n),
   })
+/** The filters live in the Filters dialog: open it (once) before reaching a filter. */
+const openFilters = () => {
+  if (!screen.queryByTestId("leaderboard-filters-panel"))
+    fireEvent.click(screen.getByRole("button", { name: /^Filters/ }))
+}
+const closeFilters = () =>
+  fireEvent.click(screen.getByRole("button", { name: "Done" }))
+const filterSwitch = (name: string) => {
+  openFilters()
+  return screen.getByRole("switch", { name })
+}
 const units = () =>
   screen.getAllByTestId("leaderboard-row").map((r) => r.dataset.unit)
 const laneFigures = (unit: string) =>
@@ -180,16 +191,15 @@ describe("CrossLaneLeaderboard", () => {
 
   it("hides the filters behind a Filters button that counts the active ones", () => {
     renderOverview()
-    const button = screen.getByRole("button", { name: "Filters" })
-    const panel = screen.getByTestId("leaderboard-filters-panel")
-    expect(panel).not.toBeVisible()
-    fireEvent.click(button)
-    expect(panel).toBeVisible()
+    expect(screen.queryByTestId("leaderboard-filters-panel")).toBeNull()
+    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    expect(screen.getByRole("dialog", { name: "Filters" })).toBeVisible()
     act(() => {
       fireEvent.click(screen.getAllByTestId("leaderboard-objective-chip")[0]!)
     })
+    closeFilters()
     expect(
-      screen.getByRole("button", { name: "Filters (1)" })
+      screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
   })
 
@@ -200,6 +210,8 @@ describe("CrossLaneLeaderboard", () => {
     await user.click(screen.getByRole("menuitemcheckbox", { name: "Alpha" }))
     expect(screen.queryByRole("columnheader", { name: /Alpha/ })).toBeNull()
     expect(laneFigures("bloodDante")).toEqual(["1,200", "—"])
+    await user.keyboard("{Escape}")
+    openFilters()
     expect(
       screen
         .getAllByTestId("leaderboard-objective-group")
@@ -212,10 +224,12 @@ describe("CrossLaneLeaderboard", () => {
     render(<Harness layout="table" rows={ready} wholeSelection />, {
       wrapper: i18nWrapper(i18n),
     })
-    const healer = () =>
-      screen
+    const healer = () => {
+      openFilters()
+      return screen
         .getAllByTestId("leaderboard-objective-chip")
         .find((element) => element.dataset.objective === "Trait:Healer:is")
+    }
     const lane = healer()!.closest<HTMLElement>(
       "[data-testid='leaderboard-objective-group']"
     )!.dataset.lane!
@@ -223,6 +237,7 @@ describe("CrossLaneLeaderboard", () => {
       fireEvent.click(healer()!)
     })
     expect(screen.getByTestId("leaderboard-none-match")).toBeInTheDocument()
+    closeFilters()
 
     const laneName = lane.charAt(0).toUpperCase() + lane.slice(1)
     await user.click(screen.getByRole("button", { name: "Lanes: All lanes" }))
@@ -329,11 +344,12 @@ describe("CrossLaneLeaderboard", () => {
       />,
       { wrapper: i18nWrapper(i18n) }
     )
-    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    openFilters()
     await user.click(screen.getByRole("switch", { name: "Only in my teams" }))
     expect(units()).toEqual(["bloodDante"])
+    closeFilters()
     expect(
-      screen.getByRole("button", { name: "Filters (1)" })
+      screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
     // Beta hidden: no shown lane's team uses a unit any more.
     await user.click(screen.getByRole("button", { name: "Lanes: All lanes" }))
@@ -347,7 +363,7 @@ describe("CrossLaneLeaderboard", () => {
 
   it("disables Only in my teams while the plan is unavailable", () => {
     renderOverview()
-    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    openFilters()
     expect(
       screen.getByRole("switch", { name: "Only in my teams" })
     ).toBeDisabled()
@@ -355,9 +371,7 @@ describe("CrossLaneLeaderboard", () => {
 
   it("re-orders by points per battle when Deduct scored points is off", () => {
     renderOverview()
-    act(() => {
-      fireEvent.click(screen.getByTestId("leaderboard-deduct-scored"))
-    })
+    fireEvent.click(filterSwitch("Deduct scored points"))
     expect(units()).toEqual(["other", "bloodDante"])
     expect(laneFigures("bloodDante")).toEqual(["152", "100", "—"])
   })
@@ -385,6 +399,7 @@ describe("CrossLaneLeaderboard", () => {
 
   it("groups the chips per lane under Alpha, Beta and Gamma with cleared counts", () => {
     renderOverview()
+    openFilters()
     const groups = screen.getAllByTestId("leaderboard-objective-group")
     expect(groups.map((group) => group.dataset.lane)).toEqual([
       "alpha",
@@ -412,6 +427,7 @@ describe("CrossLaneLeaderboard", () => {
 
   it("shows no counts when the progress read failed", () => {
     renderOverview("table", ready, { kind: "unavailable" })
+    openFilters()
     expect(screen.getAllByTestId("leaderboard-objective-chip")).toHaveLength(15)
     expect(screen.queryAllByTestId("leaderboard-objective-count")).toEqual([])
   })
@@ -447,6 +463,7 @@ describe("CrossLaneLeaderboard", () => {
       crossLaneRows: [otherRow, { ...danteRow, satisfiedKeys: [flying] }],
     }
     renderOverview("table", rows)
+    openFilters()
     const chip = screen
       .getAllByTestId("leaderboard-objective-chip")
       .find((element) => element.dataset.objective === flying)!

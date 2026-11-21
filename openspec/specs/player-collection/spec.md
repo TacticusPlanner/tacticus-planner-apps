@@ -290,7 +290,7 @@ The Collection page SHALL show the page toolbar (`app-page-layout`) above the fa
 - in its View slot: the Layout control (see "Collection switches between the Cards and Roster views"), Group by (see "Faction grouping can be switched off") and a Sort control;
 - on its chip row: the Owned only chip, then the quick-filter chips.
 
-The toolbar SHALL show how many filters are active. The search, each standalone filter that is set, and the quick filter each count as one. A range with a lowest and a highest end counts as one. The layout, the grouping and Owned only do not count. Clear filters SHALL remove the search, every standalone filter and the quick filter in one step, and leave the sort, the layout, the grouping and Owned only unchanged.
+The Filters button's badge SHALL show how many standalone filters are set. Each standalone filter that is set counts as one, and a range with a lowest and a highest end counts as one. The search, the quick filter, the layout, the grouping and Owned only do not count. Clear filters SHALL remove the search, every standalone filter and the quick filter in one step, and leave the sort, the layout, the grouping and Owned only unchanged.
 
 The quick-filter chips SHALL be a single-select group: selecting a chip selects that quick filter, and selecting the selected chip again clears it.
 
@@ -301,7 +301,7 @@ While the catalog is loading or has failed to load, the toolbar SHALL NOT be sho
 On desktop (at least 768px):
 
 - Find SHALL lead the first row and the View controls SHALL sit at its right end; when the window is too narrow the View controls SHALL wrap under Find, still at the right, without truncating their labels;
-- the Filters control SHALL expand and collapse the standalone filter controls inline below the toolbar, opening expanded when a standalone filter is already active;
+- the Filters control SHALL open the standalone filter controls in a form-width dialog with its own Clear filters action and a Done action that closes it;
 - the chip row SHALL stay on one line and scroll sideways when the chips do not fit, as on mobile.
 
 On mobile (below 768px):
@@ -326,7 +326,7 @@ On mobile (below 768px):
 
 - **GIVEN** the user has searched "ti", set the Imperial alliance filter and selected the Need to level quick filter, with sort Rank and the Roster layout
 - **WHEN** they look at the toolbar
-- **THEN** it reports 3 active filters, and Clear filters empties the search, removes the alliance filter and the quick filter, lists every unit again, and keeps sort Rank and the Roster layout
+- **THEN** the Filters button reports 1 active filter, and the toolbar's Clear filters empties the search, removes the alliance filter and the quick filter, lists every unit again, and keeps sort Rank and the Roster layout
 
 #### Scenario: Quick filter chips are single-select
 
@@ -338,7 +338,7 @@ On mobile (below 768px):
 
 - **GIVEN** a desktop viewport and no active standalone filter
 - **WHEN** the page renders and the user then activates the Filters control
-- **THEN** search and Filters lead the toolbar row, Layout, Group by and Sort sit at its right end, Owned only leads the chip row, and activating Filters shows the standalone filters inline below the toolbar without covering the faction groups
+- **THEN** search and Filters lead the toolbar row, Layout, Group by and Sort sit at its right end, Owned only leads the chip row, and activating Filters opens the standalone filters in a dialog whose Done closes it
 
 #### Scenario: Mobile toolbar
 

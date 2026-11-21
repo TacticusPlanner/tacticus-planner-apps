@@ -548,8 +548,6 @@
     "row": "{{material}} ×{{count}}: {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filter",
-    "triggerActive": "Filter, {{count}} aktiv",
     "title": "Filter",
     "description": "Begrenze, welche Kampagnenorte Heute, Bonus-Raids und der SBE-Tab nutzen dürfen. Plan und Ziele sind nicht betroffen.",
     "sections": {

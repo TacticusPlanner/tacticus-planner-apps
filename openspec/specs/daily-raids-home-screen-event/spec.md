@@ -178,7 +178,7 @@ When a rule-bearing HSE is active (or previewed, see "The HSE tab previews the n
 #### Scenario: Filter excludes every location
 
 - **GIVEN** a Raids Filter that no eligible location passes
-- **THEN** each shown top-10 list shows a message that no location matches the Raids Filters, with a Reset action
+- **THEN** each shown top-10 list shows a message that no location matches the Raids Filters, with a Clear filters action
 
 #### Scenario: Fewer than 10 qualify
 
@@ -258,7 +258,7 @@ Each row of the farm list SHALL show the location (its battle under its campaign
 
 ### Requirement: The farm list handles empty cases
 
-When the farm list has no rows it SHALL say why: no active goals in scope; no energy budget (the daily energy is 0 or all of it is spent, also when less energy is left than any candidate costs); nothing contributes (no point-earning, unlocked location with attempts left drops a resource the goals need), with a pointer to the top-10 lists below; or, when Raids Filters are active and candidates exist without them, that no location matches the Raids Filters, with a Reset action. The status line and both top-10 lists SHALL still render in every case.
+When the farm list has no rows it SHALL say why: no active goals in scope; no energy budget (the daily energy is 0 or all of it is spent, also when less energy is left than any candidate costs); nothing contributes (no point-earning, unlocked location with attempts left drops a resource the goals need), with a pointer to the top-10 lists below; or, when Raids Filters are active and candidates exist without them, that no location matches the Raids Filters, with a Clear filters action. The status line and both top-10 lists SHALL still render in every case.
 
 #### Scenario: No active goals
 
@@ -278,7 +278,7 @@ When the farm list has no rows it SHALL say why: no active goals in scope; no en
 #### Scenario: Filtered empty
 
 - **GIVEN** a Raids Filter leaves no candidate that would exist without it
-- **THEN** the farm list says no location matches the Raids Filters and offers Reset
+- **THEN** the farm list says no location matches the Raids Filters and offers Clear filters
 
 ### Requirement: Farm rows show the item's stock against its total target
 

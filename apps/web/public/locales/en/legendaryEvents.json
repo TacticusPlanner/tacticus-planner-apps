@@ -273,7 +273,7 @@
     "noUnlocked": "None of your unlocked units can play in this lane.",
     "noneInTeams": "Your teams here have no units yet.",
     "noneMatch": "No unit satisfies these objectives.",
-    "clearFilter": "Clear filter",
+    "clearFilter": "Clear filters",
     "rosterNotSynced": "Your roster hasn't synced yet, so ownership, rarity and rank aren't shown.",
     "progressUnavailable": "Synced progress unavailable, so nothing counts as scored.",
     "loading": "Loading units…",
@@ -283,8 +283,6 @@
       "notAllowedLabel": "{{lane}}: not allowed",
       "laneFigure": "{{lane}}: {{points}}"
     },
-    "filters": "Filters",
-    "filtersCount": "Filters ({{count}})",
     "lanes": "Lanes",
     "lanesAll": "All lanes",
     "lanesCount": "{{count}} lanes",
