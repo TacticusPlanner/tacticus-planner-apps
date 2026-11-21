@@ -71,8 +71,9 @@ export function GuildRaidBossCard({
   const difficultyBadge = (
     <Badge data-testid="guild-raid-difficulty-badge" variant="outline">
       <EntityIcon
+        size="inline"
         alt=""
-        className="size-3.5"
+
         src={rarityIcon(season.difficulty)}
       />
       {t(`guildRaids.status.difficulty.${difficultyKeys[season.difficulty]}`)}

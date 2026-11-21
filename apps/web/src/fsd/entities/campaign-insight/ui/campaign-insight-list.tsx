@@ -80,9 +80,10 @@ export function CampaignInsightList<TId extends string>({
                   {index + 1}
                 </span>
                 <EntityIcon
+                  size="inline"
                   src={insight.icon}
                   alt=""
-                  className="size-6 shrink-0"
+                  className="shrink-0"
                 />
                 {renderSummary ? (
                   // Name above the summary on a narrow row, so neither is cut off; side by side
@@ -132,7 +133,7 @@ export function CampaignInsightList<TId extends string>({
                         id={group.id as unknown as UpgradeId}
                         rarity={group.resource.rarity}
                         crafted={group.resource.crafted ?? false}
-                        className="size-6 shrink-0"
+                        className="shrink-0"
                       />
                     ) : null}
                     <span className="shrink-0 truncate">

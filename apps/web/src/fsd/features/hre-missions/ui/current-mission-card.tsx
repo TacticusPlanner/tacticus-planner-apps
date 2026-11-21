@@ -92,8 +92,9 @@ export function CurrentMissionCard({
               <div className="flex items-start justify-between gap-2">
                 <p className="flex items-center gap-2 text-sm font-medium">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                     src={objectiveIcon?.(objective)}
                   />
                   {objectiveText(objective)}

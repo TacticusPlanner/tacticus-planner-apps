@@ -24,13 +24,10 @@ const portraitSrc = (unit: PortraitUnit) =>
 export function ProjectUnitPortraits({
   units,
   total,
-  size = "card",
 }: {
   units: readonly PortraitUnit[]
   /** Distinct in-flight units in the project, shown or not. */
   total: number
-  /** `card` on the Projects page, `widget` (smaller) in the home widget. */
-  size?: "card" | "widget"
 }) {
   const { t, i18n } = useTranslation()
   const unitName = useUnitName()
@@ -43,7 +40,6 @@ export function ProjectUnitPortraits({
     i18n.language,
     (count, names) => t("goals.project.portraits.more", { count, names })
   )
-  const iconSize = size === "card" ? "size-6" : "size-5"
 
   return (
     <span
@@ -55,8 +51,8 @@ export function ProjectUnitPortraits({
       {units.map((unit, index) => (
         <EntityIcon
           alt=""
+          size="inline"
           className={cn(
-            iconSize,
             "rounded-full bg-muted ring-2 ring-background",
             index > 0 && "-ml-1.5"
           )}

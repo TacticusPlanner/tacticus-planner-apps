@@ -97,8 +97,9 @@ export function PlanningSettingsDialog({
               data-testid="planning-settings-energy-value"
             >
               <EntityIcon
+                size="inline"
                 alt=""
-                className="size-5 shrink-0"
+                className="shrink-0"
                 src={energyIconUrl}
               />
               {tier

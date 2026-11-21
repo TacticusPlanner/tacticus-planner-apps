@@ -77,7 +77,7 @@ export function TeamList({
               preference.matched ? "bg-primary/15" : "opacity-40 grayscale"
             )}
           >
-            <EntityIcon src={iconOf(preference.id)} alt="" className="size-4" />
+            <EntityIcon size="inline" src={iconOf(preference.id)} alt="" />
           </span>
         </TooltipTrigger>
         <TooltipContent>
@@ -124,9 +124,10 @@ export function TeamList({
             className="flex items-center gap-3 rounded-lg border p-2"
           >
             <EntityIcon
+              size="portrait-sm"
               alt={name}
               src={characterIcon(member.unitId)}
-              className="size-10 shrink-0"
+              className="shrink-0"
             />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{name}</p>

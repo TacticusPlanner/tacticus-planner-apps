@@ -29,8 +29,9 @@ export function ShopList({
         >
           <h3 className="flex items-center gap-2 text-base font-semibold">
             <EntityIcon
+              size="inline"
               alt=""
-              className="size-6 shrink-0"
+              className="shrink-0"
               src={shopIcon(section.shopId)}
             />
             {t(`shopName.${section.shopId}`, { defaultValue: section.shopId })}

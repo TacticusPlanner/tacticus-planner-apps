@@ -227,7 +227,7 @@ export function QuestBattleDetail({
         <h4 className="text-sm font-semibold">{t("quest:detail.drop")}</h4>
         <div className="flex items-center gap-3">
           <UpgradeIcon
-            className="size-10"
+            size="tile"
             id={battle.loot.upgradeId}
             rarity={upgrade?.rarity}
           />
@@ -237,7 +237,7 @@ export function QuestBattleDetail({
               className="inline-flex items-center gap-1 text-sm text-muted-foreground tabular-nums"
               data-testid="quest-battle-odds"
             >
-              <EntityIcon alt="" className="size-4" src={chanceIcon()} />
+              <EntityIcon size="inline" alt="" src={chanceIcon()} />
               {t("quest:detail.odds", {
                 numerator: battle.loot.chanceNumerator,
                 denominator: battle.loot.chanceDenominator,
@@ -267,7 +267,12 @@ function IconLine({
     <li className="flex items-start gap-2" data-testid={testId}>
       <span className="flex size-5 shrink-0 items-center justify-center">
         {typeof icon === "string" ? (
-          <EntityIcon alt="" className="size-5 object-contain" src={icon} />
+          <EntityIcon
+            size="inline"
+            alt=""
+            className="object-contain"
+            src={icon}
+          />
         ) : (
           icon
         )}

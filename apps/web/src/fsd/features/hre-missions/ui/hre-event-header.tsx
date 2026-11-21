@@ -65,8 +65,9 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
     <div className="flex items-start gap-3" data-testid="hre-header">
       {icon ? (
         <EntityIcon
+          size="portrait-sm"
           alt=""
-          className="size-12 shrink-0 rounded-full"
+          className="shrink-0 rounded-full"
           src={icon}
         />
       ) : (

@@ -109,7 +109,7 @@ export function QuestTeamOptionsDialog({
           className="inline-flex items-center gap-1 text-sm tabular-nums"
           data-testid="quest-team-options-power"
         >
-          <EntityIcon alt="" className="size-4" src={powerIcon()} />
+          <EntityIcon size="inline" alt="" src={powerIcon()} />
           {t("team.optionsSelected", {
             count: picked.length,
             slots: team.openSlots,
@@ -154,14 +154,15 @@ function OptionRow({
         {lead}
       </span>
       <EntityIcon
+        size="portrait-sm"
         alt=""
-        className="size-8 shrink-0 rounded-full bg-portrait"
+        className="shrink-0 rounded-full bg-portrait"
         src={characterIcon(unitId as UnitId)}
       />
       <span className="min-w-0 flex-1 truncate">{name}</span>
       {power === null ? null : (
         <span className="inline-flex items-center gap-1 tabular-nums">
-          <EntityIcon alt="" className="size-4" src={powerIcon()} />
+          <EntityIcon size="inline" alt="" src={powerIcon()} />
           {number.format(power)}
         </span>
       )}

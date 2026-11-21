@@ -62,8 +62,9 @@ export function HreEventSwitcher({
           <>
             {hero ? (
               <EntityIcon
+                size="inline"
                 alt=""
-                className="size-6 shrink-0 rounded-full"
+                className="shrink-0 rounded-full"
                 src={characterIcon(hero.id as UnitId)}
               />
             ) : (

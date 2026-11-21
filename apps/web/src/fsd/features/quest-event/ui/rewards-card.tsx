@@ -87,8 +87,9 @@ function CrateRewards({
             title={name}
           >
             <EntityIcon
+              size="inline"
               alt=""
-              className="size-5 object-contain"
+              className="object-contain"
               src={rewardIcon(reward, alliance)}
             />
             <span className="sr-only">{name}</span>
@@ -132,7 +133,7 @@ function RewardsLeftStrip({
           className="inline-flex items-center gap-1"
           title={t("rewards.left.medals")}
         >
-          <EntityIcon alt="" className="size-5" src={heroStarIcon()} />
+          <EntityIcon size="inline" alt="" src={heroStarIcon()} />
           <span className="sr-only">{t("rewards.left.medals")}</span>
           <span data-testid="quest-left-medals">
             {number.format(left.medals)}
@@ -142,14 +143,14 @@ function RewardsLeftStrip({
           className="inline-flex items-center gap-1"
           title={t("rewards.left.shards", { hero })}
         >
-          <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
+          <EntityIcon size="inline" alt="" src={shardIcon("Regular")} />
           <span className="sr-only">{t("rewards.left.shards", { hero })}</span>
           <span data-testid="quest-left-shards">
             {number.format(left.shards)}
           </span>
         </li>
         <li className="inline-flex items-center gap-1">
-          <EntityIcon alt="" className="size-5" src={chestIcon("wood")} />
+          <EntityIcon size="inline" alt="" src={chestIcon("wood")} />
           <span data-testid="quest-left-crates">
             {t("rewards.left.crates", { count: left.crates })}
           </span>

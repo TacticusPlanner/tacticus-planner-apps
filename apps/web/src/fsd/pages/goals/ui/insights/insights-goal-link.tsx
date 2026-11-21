@@ -55,10 +55,8 @@ export function GoalLink({
       {portrait ? (
         <EntityIcon
           alt=""
-          className={cn(
-            "shrink-0 rounded-full",
-            variant === "chip" ? "size-6" : "size-9 pointer-coarse:size-10"
-          )}
+          size={variant === "chip" ? "inline" : "portrait-sm"}
+          className="shrink-0 rounded-full"
           src={portrait}
         />
       ) : null}
@@ -67,7 +65,7 @@ export function GoalLink({
       </span>
       <span className="sr-only">{` · ${label.goalType}`}</span>
       {typeIcon ? (
-        <EntityIcon alt="" className="size-4 shrink-0" src={typeIcon} />
+        <EntityIcon size="inline" alt="" className="shrink-0" src={typeIcon} />
       ) : null}
     </Link>
   )
