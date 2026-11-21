@@ -156,8 +156,10 @@ Pick the overlay by the job, then use its shared component. Mobile means below
 
 - No raw `Dialog` for a task: on a phone it is a cramped box, not a sheet.
   Raw `Dialog` is only for `ConfirmationDialog` and desktop-only chrome.
-- The vaul `Drawer` is for app chrome only (mobile navigation, account menu).
-  Content bottom sheets come from `ResponsiveDialog` or `Sheet side="bottom"`.
+- The vaul `Drawer` is for app chrome (mobile navigation, account menu) and
+  for a short phone-only panel on one item that swipes away (the event shop
+  slot). Other bottom sheets are full screen on a phone and come from
+  `ResponsiveDialog` or `Sheet side="bottom"`.
 - No overlay opens another overlay, except a confirm on top of the dialog it
   guards (unsaved changes, delete).
 

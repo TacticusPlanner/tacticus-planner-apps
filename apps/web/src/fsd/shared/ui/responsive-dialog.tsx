@@ -2,6 +2,7 @@ import type { ComponentProps, Ref } from "react"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
 import { Sheet, SheetContent } from "@workspace/ui/components/sheet"
@@ -100,6 +101,13 @@ export function ResponsiveDialogTitle(
   props: ComponentProps<typeof DialogTitle>
 ) {
   return <DialogTitle {...props} />
+}
+
+/** Radix's dialog description, shared by both shells: one line, `text-sm text-muted-foreground`. */
+export function ResponsiveDialogDescription(
+  props: ComponentProps<typeof DialogDescription>
+) {
+  return <DialogDescription {...props} />
 }
 
 export function ResponsiveDialogBody({

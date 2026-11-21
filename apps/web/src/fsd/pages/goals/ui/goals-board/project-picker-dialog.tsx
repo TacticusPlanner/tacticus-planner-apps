@@ -1,17 +1,17 @@
 import { useTranslation } from "react-i18next"
 import { FolderPlus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
 
 import { ProjectColorDot } from "@/entities/project"
 import type { ProjectSummary } from "@/entities/project"
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/shared/ui"
 
 type Props = {
   open: boolean
@@ -26,8 +26,8 @@ type Props = {
   onCreateNew: () => void
 }
 
-/** A destination project picker — a `Dialog` (not a `Popover`) so it opens identically from a toolbar
- * button and the mobile bottom bar, mirroring `DeleteGoalDialog`'s pattern in this directory. */
+/** A destination project picker — a `ResponsiveDialog` (not a `Popover`) so it opens identically from a
+ * toolbar button and the mobile bottom bar: a dialog on desktop, a bottom sheet on mobile. */
 export function ProjectPickerDialog({
   open,
   onOpenChange,
@@ -41,47 +41,48 @@ export function ProjectPickerDialog({
   const { t } = useTranslation()
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent
-        className="sm:max-w-md"
-        data-testid="project-picker-dialog"
-      >
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-1">
-          {projects.map((project) => (
-            <Button
-              className="justify-start gap-2"
-              data-testid={`project-picker-option-${project.projectId}`}
-              disabled={pending}
-              key={project.projectId}
-              onClick={() => onSelect(project)}
-              variant="ghost"
-            >
-              <ProjectColorDot color={project.color} />
-              <span className="flex-1 text-left">{project.name}</span>
-              {project.isDefault ? (
-                <span className="text-xs text-muted-foreground">
-                  {t("goals.create.projectDefaultMarker")}
-                </span>
-              ) : null}
-            </Button>
-          ))}
-        </div>
-        <DialogFooter>
+    <ResponsiveDialog
+      data-testid="project-picker-dialog"
+      desktopClassName="sm:max-w-md"
+      onOpenChange={onOpenChange}
+      open={open}
+    >
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
+        <ResponsiveDialogDescription>{description}</ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
+      <ResponsiveDialogBody className="gap-1 py-2">
+        {projects.map((project) => (
           <Button
-            data-testid="project-picker-create-new"
+            className="justify-start gap-2"
+            data-testid={`project-picker-option-${project.projectId}`}
             disabled={pending}
-            onClick={onCreateNew}
-            variant="outline"
+            key={project.projectId}
+            onClick={() => onSelect(project)}
+            variant="ghost"
           >
-            <FolderPlus />
-            {t("goals.project.createNewProject")}
+            <ProjectColorDot color={project.color} />
+            <span className="flex-1 text-left">{project.name}</span>
+            {project.isDefault ? (
+              <span className="text-xs text-muted-foreground">
+                {t("goals.create.projectDefaultMarker")}
+              </span>
+            ) : null}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        ))}
+      </ResponsiveDialogBody>
+      <ResponsiveDialogFooter>
+        <Button
+          className="md:mr-auto"
+          data-testid="project-picker-create-new"
+          disabled={pending}
+          onClick={onCreateNew}
+          variant="ghost"
+        >
+          <FolderPlus />
+          {t("goals.project.createNewProject")}
+        </Button>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialog>
   )
 }
