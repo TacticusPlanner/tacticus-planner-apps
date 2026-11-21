@@ -496,6 +496,7 @@ export function GoalsPage() {
               allLabel={t("goals.project.scopeAll")}
               allowAll
               counts={{ all: nonArchivedRows.length, byProject: scopeCounts }}
+              label={t("goals.filters.projectFilterLabel")}
               onProjectIdChange={setScopeId}
               projectId={scopeId}
               projects={

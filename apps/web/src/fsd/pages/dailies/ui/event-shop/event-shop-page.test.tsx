@@ -259,9 +259,9 @@ describe("event with no start date yet", () => {
   it("names the undated event from the game text and its event month", () => {
     events = [runningEvent, undatedEvent]
     renderPage("/plan/event-shop/january-2027")
-    expect(screen.getByTestId("event-shop-picker-select")).toHaveTextContent(
-      "eventMissions:events.January2027"
-    )
+    expect(
+      screen.getByRole("combobox", { name: "header.picker" })
+    ).toHaveTextContent("eventMissions:events.January2027")
   })
 })
 

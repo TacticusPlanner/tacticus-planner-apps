@@ -1706,6 +1706,7 @@
       "groupByUnit": "Agrupar por unidad",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
       "statusFilterLabel": "Filtro de estado de objetivos",
+      "projectFilterLabel": "Filtro de proyecto de objetivos",
       "groupCount_one": "{{count}} objetivo",
       "groupCount_other": "{{count}} objetivos",
       "collapseAllGroups": "Contraer todo",

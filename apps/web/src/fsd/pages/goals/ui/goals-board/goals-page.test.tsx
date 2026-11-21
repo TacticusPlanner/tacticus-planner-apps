@@ -368,12 +368,17 @@ const overviewProject = {
   updatedAt: "2026-01-01T00:00:00Z",
 }
 
-const scopeSelect = () => screen.getByTestId("goals-project-scope")
-/** Picks a project (or "all") in the Find slot's project select. */
-async function pickScope(user: ReturnType<typeof userEvent.setup>, id: string) {
+const scopeSelect = () =>
+  screen.getByRole("combobox", { name: "Goal project filter" })
+/** Picks a project (or "All goals") by name in the Find slot's project select. */
+async function pickScope(
+  user: ReturnType<typeof userEvent.setup>,
+  name: string
+) {
   await user.click(scopeSelect())
+  // Each option's name ends with its goal count.
   await user.click(
-    await screen.findByTestId(`goals-project-scope-option-${id}`)
+    await screen.findByRole("option", { name: new RegExp(`^${name}\\d`) })
   )
 }
 
@@ -1026,7 +1031,7 @@ describe("GoalsPage", () => {
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
 
-    await pickScope(user, "proj-2")
+    await pickScope(user, "Event Prep")
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
@@ -1039,7 +1044,7 @@ describe("GoalsPage", () => {
     expect(updateProjectGoals).not.toHaveBeenCalled()
     expect(updateGoalsStatus).not.toHaveBeenCalled()
 
-    await pickScope(user, "all")
+    await pickScope(user, "All goals")
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
@@ -1074,7 +1079,7 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
     await user.keyboard("{Escape}")
 
-    await pickScope(user, "all")
+    await pickScope(user, "All goals")
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
@@ -1140,7 +1145,7 @@ describe("GoalsPage", () => {
   })
 
   it.each([false, true])(
-    "puts the project select first in the toolbar's Find slot, before the status filter (mobile: %s)",
+    "puts the project select first in the toolbar's Find slot (mobile: %s)",
     async (isMobile) => {
       mobile.value = isMobile
       twoProjects()
@@ -1148,13 +1153,17 @@ describe("GoalsPage", () => {
 
       await screen.findByTestId("goals-status-filter")
       const chips = scopeSelect()
-      const status = screen.getByTestId("goals-status-filter")
-      expect(screen.getByTestId("goals-toolbar")).toContainElement(chips)
+      const find = screen
+        .getByTestId("goals-toolbar")
+        .querySelector<HTMLElement>('[data-slot="page-toolbar-find"]')
+      expect(find).toContainElement(chips)
+      // No other control in the Find slot comes before it.
+      expect(
+        find?.querySelector('button, input, select, [role="combobox"]')
+      ).toBe(chips)
+      expect(within(find!).getByTestId("goals-status-filter")).toBeVisible()
       expect(chips).toHaveTextContent("All goals")
       expect(screen.queryByTestId("goals-project-filter")).toBeNull()
-      expect(
-        chips.compareDocumentPosition(status) & Node.DOCUMENT_POSITION_FOLLOWING
-      ).toBeTruthy()
       expect(
         screen.queryByTestId("overview-quicknav-create-project")
       ).toBeNull()

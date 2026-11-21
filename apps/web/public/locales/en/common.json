@@ -1706,6 +1706,7 @@
       "groupByUnit": "Group by unit",
       "reachedIndicatorLabel": "Reached goals are waiting to be viewed",
       "statusFilterLabel": "Goal status filter",
+      "projectFilterLabel": "Goal project filter",
       "groupCount_one": "{{count}} goal",
       "groupCount_other": "{{count}} goals",
       "collapseAllGroups": "Collapse all",

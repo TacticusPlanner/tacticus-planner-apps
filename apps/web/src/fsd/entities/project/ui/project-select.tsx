@@ -27,6 +27,7 @@ export function ProjectSelect({
   onProjectIdChange,
   allowAll = false,
   testId,
+  label,
   placeholder,
   allLabel,
   counts,
@@ -37,6 +38,8 @@ export function ProjectSelect({
   onProjectIdChange: (projectId: string | undefined) => void
   allowAll?: boolean
   testId?: string
+  /** The trigger's accessible name, like the other toolbar selects' filter labels. */
+  label?: string
   placeholder?: string
   /** The "all" option's text; defaults to "All projects". */
   allLabel?: string
@@ -58,6 +61,7 @@ export function ProjectSelect({
       value={value}
     >
       <SelectTrigger
+        aria-label={label}
         className={cn("max-w-full min-w-56", className)}
         data-testid={testId}
       >
