@@ -4,12 +4,7 @@ import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs"
+import { Tabs, TabsContent } from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
@@ -24,7 +19,7 @@ import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 
-import { EmptyState } from "@/shared/ui"
+import { EmptyState, PageTabsList, PageTabsTrigger } from "@/shared/ui"
 
 import { NpcTierListView } from "./npc-tier-list-view"
 import {
@@ -75,23 +70,20 @@ export function TierListPage() {
       }}
       value={kind}
     >
-      <TabsList
+      <PageTabsList
         aria-label={t("npcTierList.kind.label")}
-        className="justify-start"
         data-testid="tier-list-kind"
-        variant="line"
       >
         {TIER_LIST_KINDS.map((item) => (
-          <TabsTrigger
-            className="flex-none px-2.5"
+          <PageTabsTrigger
             data-testid={`tier-list-kind-${item}`}
             key={item}
             value={item}
           >
             {t(`npcTierList.kind.${item}`)}
-          </TabsTrigger>
+          </PageTabsTrigger>
         ))}
-      </TabsList>
+      </PageTabsList>
       <TabsContent className="min-w-0" value="heroes">
         <HeroTierList />
       </TabsContent>

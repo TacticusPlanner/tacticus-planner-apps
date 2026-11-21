@@ -18,12 +18,7 @@ import {
   RadioGroupItem,
 } from "@workspace/ui/components/radio-group"
 import { Spinner } from "@workspace/ui/components/spinner"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs"
+import { Tabs, TabsContent } from "@workspace/ui/components/tabs"
 
 import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
 import { useMsal } from "@azure/msal-react"
@@ -51,6 +46,8 @@ import {
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
+  PageTabsList,
+  PageTabsTrigger,
 } from "@/shared/ui"
 
 import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
@@ -73,9 +70,6 @@ function isPurgeScope(value: string): value is PurgeScope {
 }
 
 /** On a narrow screen the tabs sit two per row and a long label wraps, so the tab row never widens the dialog. */
-const tabTriggerClassName =
-  "max-sm:h-auto max-sm:text-center max-sm:leading-tight max-sm:whitespace-normal"
-
 export type ManageAccountTab = "integration" | "profile" | "account" | "staging"
 
 type ManageAccountDialogProps = {
@@ -123,38 +117,34 @@ export function ManageAccountDialog({
       <ResponsiveDialogBody className="pb-4">
         <DialogActionSlotContext value={actionSlot}>
           <Tabs className="min-w-0" defaultValue={initialTab}>
-            <TabsList className="w-full max-sm:grid max-sm:grid-cols-2 max-sm:group-data-horizontal/tabs:h-auto">
-              <TabsTrigger
-                className={tabTriggerClassName}
+            <PageTabsList>
+              <PageTabsTrigger
                 data-testid="manage-account-tab-integration"
                 value="integration"
               >
                 {t("manageAccount.tabs.integration")}
-              </TabsTrigger>
-              <TabsTrigger
-                className={tabTriggerClassName}
+              </PageTabsTrigger>
+              <PageTabsTrigger
                 data-testid="manage-account-tab-profile"
                 value="profile"
               >
                 {t("manageAccount.tabs.profile")}
-              </TabsTrigger>
-              <TabsTrigger
-                className={tabTriggerClassName}
+              </PageTabsTrigger>
+              <PageTabsTrigger
                 data-testid="manage-account-tab-account"
                 value="account"
               >
                 {t("manageAccount.tabs.account")}
-              </TabsTrigger>
+              </PageTabsTrigger>
               {stagingMode ? (
-                <TabsTrigger
-                  className={tabTriggerClassName}
+                <PageTabsTrigger
                   data-testid="manage-account-tab-staging"
                   value="staging"
                 >
                   {t("manageAccount.tabs.staging")}
-                </TabsTrigger>
+                </PageTabsTrigger>
               ) : null}
-            </TabsList>
+            </PageTabsList>
             <TabsContent value="integration">
               <TacticusIntegrationTab
                 accountId={getPlannerAccountId(account)}

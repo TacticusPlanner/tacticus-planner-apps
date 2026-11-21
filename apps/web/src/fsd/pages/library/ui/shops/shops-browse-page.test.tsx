@@ -129,7 +129,7 @@ describe("ShopsBrowsePage", () => {
     expect(screen.queryByTestId("shop-slot-2")).not.toBeInTheDocument()
   })
 
-  it("renders a distinct mobile layout with dropdown controls", () => {
+  it("renders the mobile list under the same day select and shop tabs", () => {
     useIsMobileMock.mockReturnValue(true)
     useLibraryShops.mockReturnValue(ready())
     render(<ShopsBrowsePage />)
@@ -137,7 +137,7 @@ describe("ShopsBrowsePage", () => {
     expect(screen.getByTestId("shops-browse-mobile")).toBeInTheDocument()
     expect(screen.queryByTestId("shops-browse-desktop")).not.toBeInTheDocument()
     expect(screen.getByTestId("shops-day-select")).toBeInTheDocument()
-    expect(screen.getByTestId("shops-shop-select")).toBeInTheDocument()
+    expect(screen.getByRole("tablist", { name: "Shop" })).toBeInTheDocument()
     expect(screen.getByTestId("shop-slot-0")).toHaveTextContent(
       "Farseer shards"
     )
