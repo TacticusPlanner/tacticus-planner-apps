@@ -3,6 +3,9 @@ import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
 
+import { CreateGoalButton } from "@/entities/goal"
+import { EmptyState } from "@/shared/ui"
+
 export type ShopsStateKind =
   "loading" | "error" | "no-project" | "no-goals" | "nothing"
 
@@ -41,6 +44,20 @@ export function ShopsState({
         : state === "no-goals"
           ? t("state.noGoals")
           : t("state.nothingToBuy")
+
+  if (
+    state === "no-project" ||
+    state === "no-goals" ||
+    (state === "nothing" && !compact)
+  ) {
+    return (
+      <EmptyState
+        actions={state === "no-goals" ? <CreateGoalButton /> : null}
+        description={message}
+        testId={`shops-${state}`}
+      />
+    )
+  }
 
   if (compact && state === "nothing") {
     return (

@@ -28,6 +28,8 @@ import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
+import { EmptyState } from "@/shared/ui"
+
 import { MasterTableControls } from "./master-table-controls"
 import { MasterTableList } from "./master-table-list"
 import { MasterTableTable } from "./master-table-table"
@@ -377,19 +379,18 @@ export function MasterTablePage() {
           <Skeleton className="h-12 w-full rounded-xl" />
         </div>
       ) : rows.length === 0 ? (
-        <div
-          className="flex flex-col items-start gap-2 rounded-xl border border-dashed p-4"
-          data-testid="master-table-no-rows"
-        >
-          <p className="text-sm text-muted-foreground">
-            {t("masterTable.noRows")}
-          </p>
-          {q ? (
-            <Button onClick={() => commitQuery("")} size="sm" variant="outline">
-              {t("masterTable.search.clear")}
-            </Button>
-          ) : null}
-        </div>
+        <EmptyState
+          actions={
+            q ? (
+              <Button onClick={() => commitQuery("")} variant="outline">
+                {t("masterTable.search.clear")}
+              </Button>
+            ) : null
+          }
+          description={t("masterTable.noRows")}
+          testId="master-table-no-rows"
+          variant={q ? "no-match" : "empty"}
+        />
       ) : isMobile ? (
         <MasterTableList
           eventIds={state.selectedEventIds}

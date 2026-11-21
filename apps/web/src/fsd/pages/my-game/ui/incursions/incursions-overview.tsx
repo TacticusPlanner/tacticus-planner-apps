@@ -18,7 +18,7 @@ import {
 import { useIncursionWindow } from "@/entities/incursion"
 import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEventCountdown } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { EmptyState, EntityIcon } from "@/shared/ui"
 
 import { incursionStarCount } from "../../model/incursion-progress.model"
 import { IncursionStarsBar } from "./incursion-stars-bar"
@@ -36,11 +36,7 @@ export function IncursionsOverview() {
   const rules = incursions[0]
 
   if (!rules) {
-    return (
-      <p className="text-muted-foreground" data-testid="incursions-empty">
-        {t("empty")}
-      </p>
-    )
+    return <EmptyState description={t("empty")} testId="incursions-empty" />
   }
 
   return (

@@ -376,7 +376,11 @@ describe("MasterTablePage", () => {
     expect(await screen.findByTestId("master-table-no-rows")).toHaveTextContent(
       "No unit matches"
     )
-    fireEvent.click(screen.getByRole("button", { name: "Clear search" }))
+    fireEvent.click(
+      within(screen.getByTestId("master-table-no-rows")).getByRole("button", {
+        name: "Clear search",
+      })
+    )
     await waitFor(() =>
       expect(screen.queryByTestId("master-table-no-rows")).toBeNull()
     )

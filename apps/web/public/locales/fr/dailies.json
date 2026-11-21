@@ -211,7 +211,8 @@
     "more_other": "Encore {{count}} requis",
     "progress": "{{owned}} sur {{target}} possédés",
     "fullyRaided": "Entièrement attaqué",
-    "battle": "Bataille {{node}}"
+    "battle": "Bataille {{node}}",
+    "noGoals": "Vous n'avez aucun objectif actif. Créez ou reprenez un objectif pour voir combien de jours vos raids vont prendre."
   },
   "bonus": {
     "title": "Raids bonus",

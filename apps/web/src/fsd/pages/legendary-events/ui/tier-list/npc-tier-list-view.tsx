@@ -34,7 +34,7 @@ import {
 import type { NpcTierTile } from "@/entities/legendary-event"
 import { NpcPortrait, useNpcLabels, useNpcsById } from "@/entities/npc"
 import { useTourPageSteps } from "@/shared/tour"
-import { PageToolbar } from "@/shared/ui"
+import { EmptyState, PageToolbar } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { useNpcThreatText } from "../../model/use-npc-threat-text"
@@ -139,12 +139,10 @@ export function NpcTierListView() {
   }
   if (eventIds.length === 0) {
     return (
-      <p
-        className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground"
-        data-testid="npc-tier-list-no-event"
-      >
-        {t("npcTierList.noEvent")}
-      </p>
+      <EmptyState
+        description={t("npcTierList.noEvent")}
+        testId="npc-tier-list-no-event"
+      />
     )
   }
   if (tiers.data === null) {

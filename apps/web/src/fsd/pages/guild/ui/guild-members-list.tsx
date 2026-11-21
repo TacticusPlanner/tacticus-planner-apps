@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
+import { Users } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -13,6 +14,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import type { GuildMemberSummary } from "@/entities/guild"
 
 import { formatRelativeTime } from "@/shared/lib"
+import { EmptyState } from "@/shared/ui"
 import { GuildRoleBadge } from "./guild-role-badge"
 
 type Props = {
@@ -30,12 +32,11 @@ export function GuildMembersList({ members }: Props) {
 
   if (members.length === 0) {
     return (
-      <p
-        className="py-10 text-center text-muted-foreground"
-        data-testid="guild-members-empty"
-      >
-        {t("guild.members.empty")}
-      </p>
+      <EmptyState
+        description={t("guild.members.empty")}
+        icon={Users}
+        testId="guild-members-empty"
+      />
     )
   }
 

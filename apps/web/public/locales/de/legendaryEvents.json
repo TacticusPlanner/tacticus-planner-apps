@@ -957,7 +957,6 @@
     },
     "search": {
       "label": "Einheiten suchen",
-      "placeholder": "Einheiten suchen",
       "clear": "Suche leeren"
     },
     "sort": {

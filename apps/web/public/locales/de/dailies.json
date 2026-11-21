@@ -211,7 +211,8 @@
     "more_other": "Noch {{count}} nötig",
     "progress": "{{owned}} von {{target}} im Besitz",
     "fullyRaided": "Vollständig geraidet",
-    "battle": "Kampf {{node}}"
+    "battle": "Kampf {{node}}",
+    "noGoals": "Du hast keine aktiven Ziele. Erstelle oder setze ein Ziel fort, um zu sehen, wie viele Tage deine Raids dauern."
   },
   "bonus": {
     "title": "Bonus-Raids",

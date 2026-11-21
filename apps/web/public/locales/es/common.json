@@ -394,7 +394,6 @@
       "toolbar": {
         "label": "Buscar, ordenar y filtrar unidades",
         "search": "Buscar unidades",
-        "searchPlaceholder": "Buscar por nombre",
         "sort": "Orden",
         "sortOptions": {
           "rarity": "Rareza",
@@ -2595,5 +2594,9 @@
     "title": "Filtros",
     "clear": "Borrar filtros",
     "done": "Listo"
+  },
+  "searchField": {
+    "placeholder": "Buscar por nombre",
+    "clear": "Borrar búsqueda"
   }
 }

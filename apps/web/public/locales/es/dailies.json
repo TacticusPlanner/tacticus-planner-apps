@@ -211,7 +211,8 @@
     "more_other": "Faltan {{count}}",
     "progress": "{{owned}} de {{target}} en posesión",
     "fullyRaided": "Completado",
-    "battle": "Batalla {{node}}"
+    "battle": "Batalla {{node}}",
+    "noGoals": "No tienes objetivos activos. Crea o reanuda un objetivo para ver cuántos días te llevarán las incursiones."
   },
   "bonus": {
     "title": "Incursiones extra",
