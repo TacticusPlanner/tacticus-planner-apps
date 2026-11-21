@@ -505,7 +505,8 @@ describe("NpcsPage", () => {
     await user.click(screen.getByTestId("npc-tile-termagant"))
     await waitFor(() => expect(location()).toBe("/library/npcs/termagant"))
     expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("1 of 1")
-    expect(screen.getByTestId("unit-nav-next")).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Previous" })).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Next" })).toBeDisabled()
   })
 
   it("shows the no-matching-NPCs state with a clear control", async () => {
