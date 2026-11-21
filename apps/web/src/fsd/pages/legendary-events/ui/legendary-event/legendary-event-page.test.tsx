@@ -330,7 +330,7 @@ const lockedRows = () =>
 // before reaching the page behind it.
 const openFilters = () => {
   if (!screen.queryByTestId("leaderboard-filters-panel"))
-    fireEvent.click(screen.getByTestId("leaderboard-filters"))
+    fireEvent.click(screen.getByRole("button", { name: /^Filters/ }))
 }
 const closeFilters = () => {
   if (screen.queryByTestId("leaderboard-filters-panel"))

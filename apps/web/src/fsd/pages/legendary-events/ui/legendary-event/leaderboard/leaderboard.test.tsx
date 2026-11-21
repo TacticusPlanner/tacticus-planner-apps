@@ -176,7 +176,7 @@ const objectivesCount = (entry: HTMLElement) =>
 /** The filters live in the Filters dialog: open it (once) before reaching a filter. */
 const openFilters = () => {
   if (!screen.queryByTestId("leaderboard-filters-panel"))
-    fireEvent.click(screen.getByTestId("leaderboard-filters"))
+    fireEvent.click(screen.getByRole("button", { name: /^Filters/ }))
 }
 const filter = (testId: string) => {
   openFilters()

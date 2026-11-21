@@ -118,7 +118,7 @@ export function FiltersControl({
         <PopoverContent
           align="start"
           aria-label={heading}
-          className="flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-3"
+          className="flex max-h-(--radix-popover-content-available-height) w-80 max-w-[calc(100vw-2rem)] flex-col gap-3 overflow-y-auto"
           data-testid={testId ? `${testId}-panel` : undefined}
         >
           <div className="flex flex-col gap-3">{children}</div>

@@ -93,4 +93,27 @@ describe("FiltersControl", () => {
       expect(button).toHaveFocus()
     }
   )
+
+  it.each([
+    ["the compact popover", "compact", false],
+    ["the dialog", "form", false],
+    ["the mobile sheet", "compact", true],
+  ] as const)(
+    "keeps the filters and refocuses Filters when %s is dismissed with Escape",
+    async (_, size, isMobile) => {
+      mobile.value = isMobile
+      const user = userEvent.setup()
+      renderControl(size)
+      await user.click(screen.getByRole("button", { name: "Filters" }))
+      await user.click(screen.getByRole("switch", { name: "Owned only" }))
+
+      await user.keyboard("{Escape}")
+      const button = screen.getByRole("button", { name: "Filters, 1 active" })
+      expect(button).toHaveAttribute("aria-expanded", "false")
+      expect(button).toHaveFocus()
+
+      await user.click(button)
+      expect(screen.getByRole("switch", { name: "Owned only" })).toBeChecked()
+    }
+  )
 })
