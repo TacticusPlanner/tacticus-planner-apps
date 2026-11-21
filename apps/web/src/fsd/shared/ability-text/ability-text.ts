@@ -1,7 +1,6 @@
 // Ported from V1 `3-features/character-details/ability-text.ts`. The parser and variable resolver are
-// faithful; the style layer is reduced to color/underline/italic/gradient — V2 does not bundle the
-// per-token icon set, and the raid-boss spec accepts a plain-text rendering that still substitutes
-// the scaled values (see openspec/changes/add-raid-boss-ability-text).
+// faithful; the style layer here is color/underline/italic/gradient, and `style-icon.ts` adds the
+// per-token game icon (see openspec/changes/add-raid-boss-ability-text for the plain-text baseline).
 
 import { required } from "../lib"
 

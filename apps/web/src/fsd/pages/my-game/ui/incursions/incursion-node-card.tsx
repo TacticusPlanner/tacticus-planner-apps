@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { incursionBoardImage } from "@workspace/game-catalog"
+import { incursionBoardImage, medalIcon } from "@workspace/game-catalog"
 import type { NpcStorageModel } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import {
@@ -26,7 +26,6 @@ import { MAX_STARS } from "../../model/incursion-progress.model"
 import { IncursionNodeMarker } from "./incursion-node-marker"
 import { IncursionPower } from "./incursion-power"
 import { IncursionRewards } from "./incursion-rewards"
-import { medalIcon } from "./medal-icon"
 
 const STARS = [1, 2, 3] as const
 const STAR_CHOICES = [0, 1, 2, 3] as const
@@ -71,7 +70,7 @@ function StarsPicker({
             className="gap-1 tabular-nums"
           >
             {count}
-            <EntityIcon size="inline" src={medalIcon} alt="" />
+            <EntityIcon size="inline" src={medalIcon()} alt="" />
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
@@ -84,7 +83,7 @@ function Medals({ count }: { count: number }) {
   return (
     <span className="flex" aria-hidden="true">
       {Array.from({ length: count }, (_, at) => (
-        <EntityIcon size="inline" key={at} src={medalIcon} alt="" />
+        <EntityIcon size="inline" key={at} src={medalIcon()} alt="" />
       ))}
     </span>
   )

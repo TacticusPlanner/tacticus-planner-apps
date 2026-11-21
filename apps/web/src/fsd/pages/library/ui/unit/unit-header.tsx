@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { factionIcon } from "@workspace/game-catalog"
+import { allianceIcon, factionIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -30,6 +30,7 @@ export function UnitHeader({
   portraitRarity,
   name,
   factionId,
+  allianceId,
   kindLine,
   ownership,
   signedIn,
@@ -48,6 +49,8 @@ export function UnitHeader({
   portraitRarity: Rarity
   name: string
   factionId: string
+  /** The unit's alliance ("Imperial", "Chaos", "Xenos"); its emblem leads the kind line. */
+  allianceId: string
   /** Shown after the faction chip, e.g. the alliance, or "<alliance> · Machine of War". */
   kindLine: string
   ownership: UnitOwnership
@@ -99,7 +102,7 @@ export function UnitHeader({
               <EntityIcon size="inline" src={factionIcon(factionId)} alt="" />
               {t(`factions:${factionId}`, { defaultValue: factionId })}
             </span>
-            {kindLine}
+            <KindLine allianceId={allianceId} text={kindLine} />
           </p>
           {ownership === "owned" && yourUnit ? (
             <p
@@ -212,5 +215,16 @@ function UnitSignInButton() {
         ? t("common:auth.checkingSignIn")
         : t("characterUnit.header.signIn")}
     </Button>
+  )
+}
+
+/** The kind line after the faction chip, led by the alliance emblem when the alliance is known. */
+function KindLine({ allianceId, text }: { allianceId: string; text: string }) {
+  const emblem = allianceIcon(allianceId)
+  return (
+    <span className="inline-flex items-center gap-1">
+      {emblem ? <EntityIcon size="inline" src={emblem} alt="" /> : null}
+      {text}
+    </span>
   )
 }

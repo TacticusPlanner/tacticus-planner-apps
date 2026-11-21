@@ -25,6 +25,7 @@ export function CharacterUnitHeader({
   name,
   factionId,
   alliance,
+  allianceId,
   ownership,
   signedIn,
   baseValues,
@@ -42,6 +43,7 @@ export function CharacterUnitHeader({
   name: string
   factionId: string
   alliance: string
+  allianceId: string
   ownership: UnitOwnership
   signedIn: boolean
   /** The player's values (owned) or the starting values (otherwise). */
@@ -86,6 +88,7 @@ export function CharacterUnitHeader({
       portraitRarity={ownership === "notOwned" ? baseRarity : rarity}
       name={name}
       factionId={factionId}
+      allianceId={allianceId}
       kindLine={alliance}
       ownership={ownership}
       signedIn={signedIn}

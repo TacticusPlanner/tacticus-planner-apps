@@ -11,6 +11,7 @@ export { rankIcon } from "./rank"
 export {
   onslaughtTierIcon,
   onslaughtAllianceIcon,
+  allianceIcon,
   type OnslaughtSectorIcon,
   type OnslaughtTierIcon,
   type OnslaughtAllianceIcon,
@@ -78,6 +79,9 @@ export {
 } from "./campaign"
 export { traitIcon } from "./trait"
 export { damageTypeIcon } from "./damage-type"
+export { unitEffectIcon, type UnitEffectIcon } from "./unit-effect"
+export { tileIcon, type TileIcon } from "./tile"
+export { medalIcon, milestoneMedalIcon, type MilestoneMedal } from "./medal"
 export { equipmentSlotIcon, EquipmentIcons } from "./equipment"
 export { statIcon, type StatIconKind } from "./stat"
 export {
@@ -98,6 +102,7 @@ export {
   goldIcon,
   salvageIcon,
   raidTicketIcon,
+  mowAmmoIcon,
   xpBookIcon,
   gameModeTokenIcon,
   type GameModeToken,

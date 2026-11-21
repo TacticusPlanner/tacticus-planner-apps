@@ -97,6 +97,23 @@ describe("AbilityPanel", () => {
     )
   })
 
+  it("puts the damage type's game icon in front of its styled words", () => {
+    render(<Harness text={stormOfWrath} />)
+    // Decorative (alt=""), so it has the presentation role: the words after it name the type.
+    const icon = screen
+      .getAllByRole("presentation")
+      .find((image) =>
+        image.getAttribute("src")?.includes("ui_icon_damage_profile2_Psychic")
+      )
+    if (!icon) throw new Error("no Psychic damage icon")
+    const words = screen.getAllByText("Psychic Damage")[0]
+    if (!words) throw new Error("no Psychic Damage words")
+    // The icon comes first in the document, in front of the words it marks.
+    expect(
+      icon.compareDocumentPosition(words) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
   it("sets the level from a chart column", () => {
     render(<Harness text={stormOfWrath} />)
     fireEvent.click(screen.getByTestId("panel-chart-minDmg-column-39"))

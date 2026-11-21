@@ -545,11 +545,13 @@
       },
       "percent": "{{value}}%",
       "caption": "Percentiles: {{values}}.",
+      "howToRead": "How to read this",
       "footnote": "Dashed = median character. {{value}}% armour means {{name}} has more armour than {{value}}% of characters at Mythic Wings, Adamantine II.",
       "damageLink": "How damage works (Tacticus wiki)"
     },
     "statsByRank": {
       "title": "Stats by rank",
+      "howToRead": "How to read this",
       "footnote": "Dashed line = the rank shown ({{rank}}). Hover a chart to read any rank.",
       "yours": " (yours)",
       "aboveCap": " (above the cap for these stars)",

@@ -24,6 +24,7 @@ import {
   TraitsList,
 } from "./character-details-sections"
 import type { StatsFigure } from "./character-unit.view-model"
+import { HowToRead } from "../unit/how-to-read"
 import { StatRadarCard } from "./stat-radar-card"
 import { hasNode } from "@/shared/lib"
 
@@ -294,7 +295,10 @@ export function CharacterUnitDetails({
           data-testid="unit-stats-by-rank"
         >
           {statsByRank}
-          <p className="text-xs text-muted-foreground">
+          <HowToRead
+            summary={t("characterUnit.statsByRank.howToRead")}
+            data-testid="unit-stats-by-rank-how-to-read"
+          >
             {t("characterUnit.statsByRank.footnote", {
               rank: t(`progression:ranks.${shownRank}`),
             })}
@@ -303,7 +307,7 @@ export function CharacterUnitDetails({
                   rank: t(`progression:ranks.${rankCap}`),
                 })}`
               : null}
-          </p>
+          </HowToRead>
         </DetailsCard>
       </div>
       <div

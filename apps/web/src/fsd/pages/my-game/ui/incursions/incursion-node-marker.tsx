@@ -1,4 +1,8 @@
-import { chestIcon, incursionEnhancementIcon } from "@workspace/game-catalog"
+import {
+  chestIcon,
+  incursionEnhancementIcon,
+  medalIcon,
+} from "@workspace/game-catalog"
 import type { ChestTier } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -6,7 +10,6 @@ import { EntityIcon } from "@/shared/ui"
 
 import { nodeName } from "../../model/incursions.model"
 import type { Incursion, IncursionNode } from "../../model/incursions.model"
-import { medalIcon } from "./medal-icon"
 
 const CHEST_TIERS: Record<string, ChestTier> = {
   Bronze: "bronze",
@@ -44,7 +47,7 @@ export function IncursionNodeMarker({
               <EntityIcon
                 size="badge-sm"
                 key={count}
-                src={medalIcon}
+                src={medalIcon()}
                 alt=""
                 className={cn(count > stars && "opacity-25 grayscale")}
               />

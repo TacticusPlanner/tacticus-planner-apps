@@ -546,7 +546,8 @@
       "percent": "{{value}} %",
       "caption": "Percentiles: {{values}}.",
       "footnote": "Discontinua = personaje mediano. Un {{value}} % de armadura significa que {{name}} tiene más armadura que el {{value}} % de los personajes en Mythic Wings, Adamantino II.",
-      "damageLink": "Cómo funciona el daño (wiki de Tacticus)"
+      "damageLink": "Cómo funciona el daño (wiki de Tacticus)",
+      "howToRead": "Cómo leer esto"
     },
     "statsByRank": {
       "title": "Estadísticas por rango",
@@ -555,7 +556,8 @@
       "aboveCap": " (por encima del límite para estas estrellas)",
       "capFootnote": "Los rangos atenuados están por encima de {{rank}}, el límite para estas estrellas.",
       "caption": "{{stat}} pasa de {{from}} en {{firstRank}} a {{to}} en {{lastRank}}.",
-      "rank": "Rango"
+      "rank": "Rango",
+      "howToRead": "Cómo leer esto"
     },
     "relic": {
       "kind": "Reliquia",
