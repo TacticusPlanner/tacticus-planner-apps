@@ -138,7 +138,7 @@ export function EquipmentSlots({
                   aria-controls={itemsId}
                   onClick={() => setOpenSlot(open ? undefined : slot)}
                   className={cn(
-                    "inline-flex items-center gap-1 py-0.5 pr-2 pl-1 hover:bg-muted",
+                    "inline-flex items-center gap-1 py-0.5 pr-2 pl-1 hover:bg-muted pointer-coarse:min-h-11",
                     open && "bg-muted"
                   )}
                   data-testid={`unit-glance-slot-${slot}-toggle`}

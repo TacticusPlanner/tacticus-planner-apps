@@ -29,6 +29,11 @@ When you fix one, run `pnpm --filter web lint:eslint --prune-suppressions` so
 it can't come back. A screen outside the app shell (landing, account setup,
 legal pages, the route error screen) disables the `<h1>` check with a reason.
 
+`apps/web/e2e/style-guide.spec.ts` checks the rendered pages on a signed-in
+stack: every page in the navigation has one `<h1>` in the shell's header, and on
+a phone every control in the page has a hit area of at least 44px (fields 40px).
+Run it after changing a page's controls (instructions at the top of the spec).
+
 ## 1. Page header
 
 - Order: title (`text-2xl`), help action ("Tour this page"), one-line
