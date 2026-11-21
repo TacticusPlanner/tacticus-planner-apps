@@ -17,3 +17,10 @@ export function useTierName(incursion: Incursion | undefined) {
     [labelName, labels]
   )
 }
+
+/** A tier's rarity and its number within that rarity ("Epic 2" is `{ rarity: "Epic", number: 2 }`). */
+export function useTierLabel(incursion: Incursion | undefined) {
+  const tiers = incursion?.tiers
+  const labels = useMemo(() => tierLabels(tiers ?? []), [tiers])
+  return useCallback((index: number) => labels.get(index), [labels])
+}

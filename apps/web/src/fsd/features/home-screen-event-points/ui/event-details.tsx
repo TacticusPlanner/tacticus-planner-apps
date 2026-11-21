@@ -1,5 +1,4 @@
 import { useState } from "react"
-import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
@@ -12,7 +11,7 @@ import type {
   HseEventPointsState,
 } from "@/entities/home-screen-event"
 import { MilestoneGrid } from "./milestone-grid"
-import { useHseText } from "./use-hse-text"
+import { useHseRichText } from "./use-hse-rich-text"
 
 /**
  * The selected instance's event details, after V1's Learn > HSEs page without paid offers (the
@@ -118,23 +117,25 @@ function TierLine({ details }: { details: HseDetailsView }) {
 
 function Description({ details }: { details: HseDetailsView }) {
   const { t } = useTranslation("dailies")
-  const render = useHseText()
+  const render = useHseRichText()
   const isMobile = useIsMobile()
   const [expanded, setExpanded] = useState(false)
-  const lines = details.description.map(render)
+  // Each line in its sentence frame ("{{line}}."), with the line's labels led by their icons.
+  const lines = details.description.map((line) =>
+    render({ key: "dailies:hse.details.descriptionLine", values: { line } })
+  )
   if (lines.length === 0) return null
   const collapsible = isMobile && lines.length > 1
   const shown = collapsible && !expanded ? lines.slice(0, 1) : lines
-  const item = (line: string, index: number): ReactNode => (
-    <li key={index}>{t("hse.details.descriptionLine", { line })}</li>
-  )
   return (
     <div className="space-y-1">
       <ul
         className="list-disc space-y-1 pl-5 text-sm"
         data-testid="hse-event-details-description"
       >
-        {shown.map(item)}
+        {shown.map((line, index) => (
+          <li key={index}>{line}</li>
+        ))}
       </ul>
       {collapsible ? (
         <Button

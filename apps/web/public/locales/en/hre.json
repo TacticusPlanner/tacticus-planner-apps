@@ -128,12 +128,13 @@
     },
     "summary": {
       "none": "No campaign battles are left in this event's missions.",
-      "fits_one": "Campaign battles left in this event's missions: {{battles}}. With {{count}} day left, that is about {{perDay}} a day, {{energy}} energy a day at the cheapest nodes.",
-      "fits_other": "Campaign battles left in this event's missions: {{battles}}. With {{count}} days left, that is about {{perDay}} a day, {{energy}} energy a day at the cheapest nodes.",
-      "perDay_one": "Campaign battles left in this event's missions: {{battles}}. With {{count}} day left, that is about {{perDay}} a day.",
-      "perDay_other": "Campaign battles left in this event's missions: {{battles}}. With {{count}} days left, that is about {{perDay}} a day.",
       "short_one": "Campaign battles left in this event's missions: {{battles}}. With {{count}} day left, your daily energy covers at most {{max}} a day at the cheapest nodes, so about {{short}} won't fit before the event ends.",
-      "short_other": "Campaign battles left in this event's missions: {{battles}}. With {{count}} days left, your daily energy covers at most {{max}} a day at the cheapest nodes, so about {{short}} won't fit before the event ends."
+      "short_other": "Campaign battles left in this event's missions: {{battles}}. With {{count}} days left, your daily energy covers at most {{max}} a day at the cheapest nodes, so about {{short}} won't fit before the event ends.",
+      "label": "Campaign battles left in this event’s missions",
+      "chipBattles": "{{battles}} battles",
+      "chipPerDay_one": "{{perDay}} a day, {{count}} day left",
+      "chipPerDay_other": "{{perDay}} a day, {{count}} days left",
+      "chipEnergy": "{{energy}} energy a day at the cheapest nodes"
     },
     "noDrop": {
       "title": "Or the no-drop Indomitus battles (6 to 14)",

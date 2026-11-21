@@ -8,7 +8,7 @@ import type {
 import { firstDifference } from "@/shared/lib"
 
 // Description lines are data, not text (design D6): each is an i18n key with values that are numbers,
-// nested texts (labels resolved from other namespaces) or lists of them. `useHseText` (ui) turns a
+// nested texts (labels resolved from other namespaces) or lists of them. `useHseRichText` (ui) turns a
 // line into the player's language; nothing here knows any copy.
 
 /** A translatable text: an i18n key (with namespace) and its interpolation values. */

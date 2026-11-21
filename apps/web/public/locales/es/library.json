@@ -475,13 +475,14 @@
       "yourUnit": "Tu unidad:",
       "abilities": "habilidades {{active}} / {{passive}}",
       "relic": "reliquia nivel {{level}}",
-      "notUnlocked": "No desbloqueado. Los valores empiezan en {{progression}}, {{rank}}.",
-      "showing": "Mostrando {{progression}}, {{rank}}, habilidades en nivel 1.",
+      "notUnlocked": "No desbloqueado. Los valores empiezan en",
+      "showing": "Mostrando",
       "shards": "{{owned}} / {{needed}} fragmentos",
       "shardProgress": "Fragmentos para desbloquear",
       "signInBanner": "Inicia sesión y sincroniza para abrir esta página con tus propios valores.",
       "signIn": "Iniciar sesión",
-      "syncBanner": "Sincroniza con Tacticus (en la cabecera) para abrir esta página con tus propios valores."
+      "syncBanner": "Sincroniza con Tacticus (en la cabecera) para abrir esta página con tus propios valores.",
+      "abilitiesStart": "habilidades en nivel 1"
     },
     "glance": {
       "title": "De un vistazo",
@@ -615,8 +616,9 @@
       "kind": "{{alliance}} · Máquina de Guerra",
       "yourUnit": "Tu Máquina de Guerra:",
       "levels": "principal {{primary}} · secundaria {{secondary}}",
-      "notUnlocked": "No desbloqueada. Los valores empiezan en {{rarity}}.",
-      "showing": "Mostrando {{rarity}}, habilidades en nivel 1."
+      "notUnlocked": "No desbloqueada. Los valores empiezan en",
+      "showing": "Mostrando",
+      "abilitiesStart": "habilidades en nivel 1"
     },
     "tabs": {
       "upgrades": "Mejoras de habilidades"

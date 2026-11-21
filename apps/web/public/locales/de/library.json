@@ -475,13 +475,14 @@
       "yourUnit": "Deine Einheit:",
       "abilities": "Fähigkeiten {{active}} / {{passive}}",
       "relic": "Relikt Stufe {{level}}",
-      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{progression}}, {{rank}}.",
-      "showing": "Angezeigt: {{progression}}, {{rank}}, Fähigkeiten auf Stufe 1.",
+      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei",
+      "showing": "Angezeigt:",
       "shards": "{{owned}} / {{needed}} Splitter",
       "shardProgress": "Splitter bis zur Freischaltung",
       "signInBanner": "Melde dich an und synchronisiere, um diese Seite mit deinen eigenen Werten zu öffnen.",
       "signIn": "Anmelden",
-      "syncBanner": "Synchronisiere mit Tacticus (in der Kopfzeile), um diese Seite mit deinen eigenen Werten zu öffnen."
+      "syncBanner": "Synchronisiere mit Tacticus (in der Kopfzeile), um diese Seite mit deinen eigenen Werten zu öffnen.",
+      "abilitiesStart": "Fähigkeiten auf Stufe 1"
     },
     "glance": {
       "title": "Auf einen Blick",
@@ -615,8 +616,9 @@
       "kind": "{{alliance}} · Kriegsmaschine",
       "yourUnit": "Deine Kriegsmaschine:",
       "levels": "primär {{primary}} · sekundär {{secondary}}",
-      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{rarity}}.",
-      "showing": "Angezeigt: {{rarity}}, Fähigkeiten auf Stufe 1."
+      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei",
+      "showing": "Angezeigt:",
+      "abilitiesStart": "Fähigkeiten auf Stufe 1"
     },
     "tabs": {
       "upgrades": "Fähigkeits-Upgrades"

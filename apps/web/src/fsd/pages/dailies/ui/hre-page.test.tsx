@@ -401,9 +401,12 @@ describe("HRE tab", () => {
       "hre:raids.notice.preview"
     )
     // The whole 14 days of a preview: 725 battles, 52 a day (27 at 3 energy, 25 at 5).
-    expect(screen.getByTestId("hre-campaign-summary")).toHaveTextContent(
-      "raids.summary.fits|count=14,battles=725,perDay=52,energy=206"
+    const summary = screen.getByTestId("hre-campaign-summary")
+    expect(summary).toHaveTextContent("raids.summary.chipBattles|battles=725")
+    expect(summary).toHaveTextContent(
+      "raids.summary.chipPerDay|count=14,perDay=52"
     )
+    expect(summary).toHaveTextContent("raids.summary.chipEnergy|energy=206")
     expect(screen.queryByTestId("hre-pace")).toBeNull()
   })
 
@@ -479,9 +482,12 @@ describe("HRE tab", () => {
       "count=27"
     )
     // 20 hours into the 14 days: 14 days left, 48 a day (27 at 3 energy, 21 at 5).
-    expect(screen.getByTestId("hre-campaign-summary")).toHaveTextContent(
-      "raids.summary.fits|count=14,battles=663,perDay=48,energy=186"
+    const summary = screen.getByTestId("hre-campaign-summary")
+    expect(summary).toHaveTextContent("raids.summary.chipBattles|battles=663")
+    expect(summary).toHaveTextContent(
+      "raids.summary.chipPerDay|count=14,perDay=48"
     )
+    expect(summary).toHaveTextContent("raids.summary.chipEnergy|energy=186")
   })
 
   it("suggests alliance ability uses as 5-slot battles by hand, from progress saved in the old order", () => {

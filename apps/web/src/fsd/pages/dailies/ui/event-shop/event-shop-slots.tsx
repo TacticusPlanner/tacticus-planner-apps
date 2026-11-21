@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Check, Info, X } from "lucide-react"
+import { shardIcon } from "@workspace/game-catalog"
 import type { ResolvedShopOffer } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -86,6 +87,20 @@ function SlotSubtitle({ view }: { view: SlotView }) {
           {t("slot.tierRule")}
         </TooltipContent>
       </Tooltip>
+    )
+  }
+  if (view.label?.kind === "thenMythic") {
+    // "Then mythic shards at max legendary", led by the mythic shard icon.
+    return (
+      <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+        <EntityIcon
+          size="inline"
+          alt=""
+          className="shrink-0"
+          src={shardIcon("Mythic")}
+        />
+        <span className="line-clamp-2">{text}</span>
+      </p>
     )
   }
   return <p className="line-clamp-2 text-xs text-muted-foreground">{text}</p>

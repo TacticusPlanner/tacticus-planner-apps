@@ -52,7 +52,8 @@
     "eventUnitAny": "Scores for the event.",
     "strength": "Chosen for combat strength ({{power}}).",
     "minimumSize": "Added to complete the team.",
-    "random": "Drawn at random."
+    "random": "Drawn at random.",
+    "eventUnitShort": "Scores: {{match}}"
   },
   "track": {
     "shortfallTitle": "Not enough {{track}} characters",

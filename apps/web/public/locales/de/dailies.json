@@ -880,7 +880,8 @@
         "syncedAt": "Marken aus deiner Synchronisierung {{when}}, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
         "syncUnknown": "Der Zeitpunkt deiner Synchronisierung ist unbekannt, daher werden Marken ab jetzt gezählt, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
         "upcoming": "Die Marken setzen volle Speicher zu Event-Beginn voraus und dass du sie verbrauchst, bevor sie voll sind."
-      }
+      },
+      "howWorkedOut": "So wird das berechnet"
     },
     "teams": {
       "title": "Event-Teams",

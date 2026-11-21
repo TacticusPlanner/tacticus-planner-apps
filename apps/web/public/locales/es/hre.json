@@ -128,12 +128,13 @@
     },
     "summary": {
       "none": "No quedan batallas de campaña en las misiones de este evento.",
-      "fits_one": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} día restante, son unas {{perDay}} al día, {{energy}} de energía al día en los nodos más baratos.",
-      "fits_other": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} días restantes, son unas {{perDay}} al día, {{energy}} de energía al día en los nodos más baratos.",
-      "perDay_one": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} día restante, son unas {{perDay}} al día.",
-      "perDay_other": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} días restantes, son unas {{perDay}} al día.",
       "short_one": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} día restante, tu energía diaria cubre como mucho {{max}} al día en los nodos más baratos, así que unas {{short}} no caben antes de que termine el evento.",
-      "short_other": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} días restantes, tu energía diaria cubre como mucho {{max}} al día en los nodos más baratos, así que unas {{short}} no caben antes de que termine el evento."
+      "short_other": "Batallas de campaña restantes en las misiones de este evento: {{battles}}. Con {{count}} días restantes, tu energía diaria cubre como mucho {{max}} al día en los nodos más baratos, así que unas {{short}} no caben antes de que termine el evento.",
+      "label": "Batallas de campaña restantes en las misiones de este evento",
+      "chipBattles": "{{battles}} batallas",
+      "chipPerDay_one": "{{perDay}} al día, queda {{count}} día",
+      "chipPerDay_other": "{{perDay}} al día, quedan {{count}} días",
+      "chipEnergy": "{{energy}} de energía al día en los nodos más baratos"
     },
     "noDrop": {
       "title": "O las batallas de Indomitus sin botín (6 a 14)",

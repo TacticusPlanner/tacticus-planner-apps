@@ -14,7 +14,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { RARITY_BORDER, RARITY_TEXT } from "@/entities/incursion"
 import { formatShortDate, useDateLocale } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, RarityIcon } from "@/shared/ui"
 
 import {
   MAX_STARS,
@@ -41,7 +41,7 @@ import {
   useIncursionsOutlet,
 } from "./incursions-outlet"
 import type { IncursionProgress } from "./incursions-outlet"
-import { useTierName } from "./use-tier-name"
+import { useTierLabel } from "./use-tier-name"
 
 const NO_STARS: TierStars = () => 0
 
@@ -61,7 +61,7 @@ function TierCard({
   power?: IncursionTierPlan
 }) {
   const { t } = useTranslation("incursions")
-  const tierName = useTierName(incursion)
+  const tierLabel = useTierLabel(incursion)
   const stars = progress?.starsOf(incursion.mowId)
   const count = stars ? tierStarCount(tier, stars) : undefined
   const cleared = stars ? tierCleared(tier, stars) : false
@@ -85,8 +85,12 @@ function TierCard({
           >
             {t("tier.title", { number: tier.index + 1 })}
           </Link>
-          <span className="text-xs text-muted-foreground">
-            {tierName(tier.index)}
+          <span
+            className="inline-flex items-center gap-0.5 text-xs text-muted-foreground tabular-nums"
+            data-testid={`${testId}-label`}
+          >
+            <RarityIcon rarity={tier.rarity as Rarity} />
+            {tierLabel(tier.index)?.number ?? tier.index + 1}
           </span>
           {power ? (
             <IncursionPower

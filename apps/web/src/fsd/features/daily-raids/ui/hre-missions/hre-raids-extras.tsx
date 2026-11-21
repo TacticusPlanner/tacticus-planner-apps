@@ -184,33 +184,51 @@ export function HreCampaignOutlook({
     daysLeft
   )
   const noNodes = (plan?.outlookNodes.length ?? 0) === 0
-  const text = !outlook
-    ? t("raids.summary.none")
-    : !noNodes && outlook.shortfall > 0
-      ? t("raids.summary.short", {
-          count: outlook.daysLeft,
-          battles: n(outlook.battles),
-          max: n(outlook.maxPerDay),
-          short: n(outlook.shortfall),
-        })
-      : noNodes || outlook.perDayEnergy === null
-        ? t("raids.summary.perDay", {
-            count: outlook.daysLeft,
-            battles: n(outlook.battles),
-            perDay: n(outlook.perDay),
-          })
-        : t("raids.summary.fits", {
-            count: outlook.daysLeft,
-            battles: n(outlook.battles),
-            perDay: n(outlook.perDay),
-            energy: n(outlook.perDayEnergy),
-          })
+  if (!outlook || (!noNodes && outlook.shortfall > 0)) {
+    return (
+      <p
+        className="rounded-lg border px-3 py-2 text-sm"
+        data-testid="hre-campaign-summary"
+      >
+        {outlook
+          ? t("raids.summary.short", {
+              count: outlook.daysLeft,
+              battles: n(outlook.battles),
+              max: n(outlook.maxPerDay),
+              short: n(outlook.shortfall),
+            })
+          : t("raids.summary.none")}
+      </p>
+    )
+  }
+  // Fits: the battles, the daily pace and its energy as chips instead of a sentence.
+  const energy = noNodes ? null : outlook.perDayEnergy
   return (
-    <p
-      className="rounded-lg border px-3 py-2 text-sm"
+    <div
+      className="flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-sm"
       data-testid="hre-campaign-summary"
     >
-      {text}
-    </p>
+      <span className="text-muted-foreground">{t("raids.summary.label")}</span>
+      <Badge variant="secondary">
+        <EntityIcon
+          size="inline"
+          alt=""
+          src={battleGlyphIcon("campaignBattle")}
+        />
+        {t("raids.summary.chipBattles", { battles: n(outlook.battles) })}
+      </Badge>
+      <Badge variant="outline">
+        {t("raids.summary.chipPerDay", {
+          count: outlook.daysLeft,
+          perDay: n(outlook.perDay),
+        })}
+      </Badge>
+      {energy === null ? null : (
+        <Badge variant="outline">
+          <EntityIcon size="inline" alt="" src={energyIcon()} />
+          {t("raids.summary.chipEnergy", { energy: n(energy) })}
+        </Badge>
+      )}
+    </div>
   )
 }

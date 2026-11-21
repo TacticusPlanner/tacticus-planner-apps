@@ -880,7 +880,8 @@
         "syncedAt": "Fichas de tu sincronización {{when}}, suponiendo que las gastas antes de que tus reservas se llenen.",
         "syncUnknown": "Se desconoce la hora de tu sincronización, así que las fichas se cuentan desde ahora, suponiendo que las gastas antes de que tus reservas se llenen.",
         "upcoming": "Las fichas suponen reservas llenas al empezar el evento y que las gastas antes de que se llenen."
-      }
+      },
+      "howWorkedOut": "Cómo se calcula"
     },
     "teams": {
       "title": "Equipos del evento",

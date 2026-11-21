@@ -10,6 +10,7 @@ import {
   heroShardPoolIcon,
   isResourceGlyph,
   itemPoolIcon,
+  xpBookIcon,
   mowIcon,
   resourceGlyphIcon,
   seasonalEventCurrencyIcon,
@@ -81,15 +82,6 @@ const RARITY_SUFFIXES = [
 type RaritySuffix = (typeof RARITY_SUFFIXES)[number]
 
 /** XP-book asset index by rarity (`ui_icon_consumable_xp_book_{0..5}.webp`). */
-const XP_BOOK_INDEX: Record<RaritySuffix, number> = {
-  Common: 0,
-  Uncommon: 1,
-  Rare: 2,
-  Epic: 3,
-  Legendary: 4,
-  Mythic: 5,
-}
-
 /** Humanizes a raw reward type for the reward vocabularies with no dedicated label. */
 function prettifyRewardType(rewardType: string): string {
   return rewardType
@@ -185,9 +177,7 @@ export function shopRewardDisplay(
   if (xpRarity) {
     return {
       kind: "xpBook",
-      iconUrl: datamineAssetUrl(
-        `atlases/ui_icon_consumable_xp_book_${XP_BOOK_INDEX[xpRarity]}.webp`
-      ),
+      iconUrl: xpBookIcon(xpRarity),
       label: t("shops:reward.xpBook", { rarity: xpRarity }),
     }
   }
