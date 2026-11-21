@@ -368,6 +368,15 @@ const overviewProject = {
   updatedAt: "2026-01-01T00:00:00Z",
 }
 
+const scopeSelect = () => screen.getByTestId("goals-project-scope")
+/** Picks a project (or "all") in the Find slot's project select. */
+async function pickScope(user: ReturnType<typeof userEvent.setup>, id: string) {
+  await user.click(scopeSelect())
+  await user.click(
+    await screen.findByTestId(`goals-project-scope-option-${id}`)
+  )
+}
+
 describe("GoalsPage", () => {
   beforeEach(async () => {
     listGoals.mockReset()
@@ -982,25 +991,23 @@ describe("GoalsPage", () => {
     membership = { "proj-1": [activeGoal.goalId], "proj-2": [goalB.goalId] }
   }
 
-  it("applies no project scope initially, listing goals from every project with counts per chip", async () => {
+  it("applies no project scope initially, listing goals from every project with counts per option", async () => {
     twoProjects()
+    const user = userEvent.setup()
     renderPage()
 
     await screen.findByTestId("goals-list-table")
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
-    expect(screen.getByTestId("goals-project-scope-all")).toHaveAttribute(
-      "aria-pressed",
-      "true"
-    )
     await vi.waitFor(() =>
-      expect(
-        within(screen.getByTestId("goals-project-scope"))
-          .getAllByRole("button")
-          .map((chip) => chip.textContent)
-      ).toEqual(["All goals2", "My Goals1", "Event Prep1"])
+      expect(scopeSelect()).toHaveTextContent("All goals2")
     )
+    await user.click(scopeSelect())
+    expect(
+      (await screen.findAllByRole("option")).map((option) => option.textContent)
+    ).toEqual(["All goals2", "My Goals (default)1", "Event Prep1"])
+    await user.keyboard("{Escape}")
     expect(screen.getByTestId("location-search")).toHaveTextContent("")
   })
 
@@ -1014,7 +1021,7 @@ describe("GoalsPage", () => {
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
 
-    await user.click(screen.getByTestId("goals-project-scope-chip-proj-2"))
+    await pickScope(user, "proj-2")
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(1)
     )
@@ -1022,14 +1029,12 @@ describe("GoalsPage", () => {
     expect(screen.getByTestId("location-search")).toHaveTextContent(
       "?project=proj-2"
     )
-    expect(
-      screen.getByTestId("goals-project-scope-chip-proj-2")
-    ).toHaveAttribute("aria-pressed", "true")
+    expect(scopeSelect()).toHaveTextContent("Event Prep")
     // Narrowing a list is not selecting a project: nothing is written.
     expect(updateProjectGoals).not.toHaveBeenCalled()
     expect(updateGoalsStatus).not.toHaveBeenCalled()
 
-    await user.click(screen.getByTestId("goals-project-scope-all"))
+    await pickScope(user, "all")
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
@@ -1064,7 +1069,7 @@ describe("GoalsPage", () => {
     ).toBeInTheDocument()
     await user.keyboard("{Escape}")
 
-    await user.click(screen.getByTestId("goals-project-scope-all"))
+    await pickScope(user, "all")
     await vi.waitFor(() =>
       expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     )
@@ -1093,6 +1098,7 @@ describe("GoalsPage", () => {
           { ...otherProject, projectId: "proj-old", status: "Archived" },
         ],
       })
+      const user = userEvent.setup()
       renderPage(`/plan/goals?project=${id}`)
 
       await screen.findByTestId("goals-list-table")
@@ -1102,19 +1108,19 @@ describe("GoalsPage", () => {
       await vi.waitFor(() =>
         expect(screen.getByTestId("location-search")).toHaveTextContent(/^$/)
       )
-      expect(screen.getByTestId("goals-project-scope-all")).toHaveAttribute(
-        "aria-pressed",
-        "true"
-      )
+      expect(scopeSelect()).toHaveTextContent(/^All goals/)
+      await user.click(scopeSelect())
+      await screen.findByTestId("goals-project-scope-option-all")
       expect(
-        screen.queryByTestId("goals-project-scope-chip-proj-old")
+        screen.queryByTestId("goals-project-scope-option-proj-old")
       ).not.toBeInTheDocument()
     }
   )
 
-  it("keeps the param but lists all goals with only the All goals chip while projects fail to load", async () => {
+  it("keeps the param but lists all goals with only the All goals option while projects fail to load", async () => {
     listGoals.mockResolvedValue({ goals: [activeGoal, goalB] })
     listProjects.mockRejectedValue(new Error("boom"))
+    const user = userEvent.setup()
     renderPage("/plan/goals?project=proj-1")
 
     await screen.findByTestId("goals-list-table")
@@ -1124,26 +1130,22 @@ describe("GoalsPage", () => {
     expect(screen.getByTestId("location-search")).toHaveTextContent(
       "?project=proj-1"
     )
-    await vi.waitFor(() =>
-      expect(
-        within(screen.getByTestId("goals-project-scope")).getAllByRole("button")
-      ).toHaveLength(1)
-    )
+    await user.click(scopeSelect())
+    expect(await screen.findAllByRole("option")).toHaveLength(1)
   })
 
   it.each([false, true])(
-    "renders the scope chips as their own row above the controls, with no project select (mobile: %s)",
+    "puts the project select first in the toolbar's Find slot, before the status filter (mobile: %s)",
     async (isMobile) => {
       mobile.value = isMobile
       twoProjects()
       renderPage()
 
       await screen.findByTestId("goals-status-filter")
-      const chips = screen.getByTestId("goals-project-scope")
+      const chips = scopeSelect()
       const status = screen.getByTestId("goals-status-filter")
-      expect(screen.getByTestId("goals-filter-group")).not.toContainElement(
-        chips
-      )
+      expect(screen.getByTestId("goals-toolbar")).toContainElement(chips)
+      expect(chips).toHaveTextContent("All goals")
       expect(screen.queryByTestId("goals-project-filter")).toBeNull()
       expect(
         chips.compareDocumentPosition(status) & Node.DOCUMENT_POSITION_FOLLOWING
@@ -1546,9 +1548,7 @@ describe("GoalsPage", () => {
       expect(screen.getByTestId("goals-status-filter")).toHaveTextContent(
         /^Paused/
       )
-      expect(
-        screen.getByTestId("goals-project-scope-chip-proj-2")
-      ).toHaveAttribute("aria-pressed", "true")
+      expect(scopeSelect()).toHaveTextContent("Event Prep")
     })
 
     it("adds no history entry per filter change, so Back leaves the page", async () => {

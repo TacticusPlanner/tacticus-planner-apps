@@ -93,7 +93,6 @@ export function EventShopCoverage({
         {context.projects.length > 0 && !ended ? (
           <ProjectSelect
             allowAll
-            compact={false}
             onProjectIdChange={context.setProjectId}
             placeholder={t("coverage.allGoals")}
             projectId={context.projectId}

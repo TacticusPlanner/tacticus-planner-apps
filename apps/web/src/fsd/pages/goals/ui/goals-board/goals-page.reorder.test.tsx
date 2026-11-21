@@ -28,6 +28,7 @@ vi.mock("@/entities/project", () => ({
     fetchState: { status: "success" },
   }),
   useProjectDeadline: () => null,
+  ProjectSelect: () => null,
 }))
 vi.mock(
   "@/features/goal-planning/model/goal-order/use-goal-order-actions",
@@ -90,9 +91,7 @@ vi.mock("@/features/project-management", () => ({
   ManageProjectsSheet: () => null,
   useEventTargetName: () => null,
   ProjectTargetChip: () => null,
-}))
-vi.mock("./goals-project-scope", () => ({
-  GoalsProjectScope: () => null,
+  orderDefaultFirst: <T,>(projects: T[]) => projects,
 }))
 vi.mock(
   "@/features/goal-planning/model/projects/use-goals-project-scope",

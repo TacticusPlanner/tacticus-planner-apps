@@ -55,7 +55,6 @@ export function SchedulePage() {
         find={
           <ProjectSelect
             allowAll
-            compact={false}
             onProjectIdChange={setProjectId}
             placeholder={t("project.placeholder")}
             projectId={projectId}

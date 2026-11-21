@@ -185,7 +185,7 @@ describe("routes and page states", () => {
     expect(screen.getByTestId("event-shop-empty")).toHaveTextContent(
       "states.empty"
     )
-    expect(screen.queryByTestId("event-shop-picker")).toBeNull()
+    expect(screen.queryByTestId("event-shop-picker-switcher")).toBeNull()
   })
 
   it("shows a skeleton while the catalog loads and a retry when it fails", async () => {
@@ -259,7 +259,7 @@ describe("event with no start date yet", () => {
   it("names the undated event from the game text and its event month", () => {
     events = [runningEvent, undatedEvent]
     renderPage("/plan/event-shop/january-2027")
-    expect(screen.getByTestId("event-shop-picker")).toHaveTextContent(
+    expect(screen.getByTestId("event-shop-picker-select")).toHaveTextContent(
       "eventMissions:events.January2027"
     )
   })
