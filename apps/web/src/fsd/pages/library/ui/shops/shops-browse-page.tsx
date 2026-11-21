@@ -27,20 +27,21 @@ export function ShopsBrowsePage() {
       ) : (
         <>
           <ShopsToolbar day={view.day} setDay={view.setDay} />
-          <ShopTabs setShopId={view.setShopId} shopId={view.shopId} />
-          {isMobile ? (
-            <ShopsBrowseMobile
-              day={view.day}
-              shopId={view.shopId}
-              slots={view.slots}
-            />
-          ) : (
-            <ShopsBrowseDesktop
-              day={view.day}
-              shopId={view.shopId}
-              slots={view.slots}
-            />
-          )}
+          <ShopTabs setShopId={view.setShopId} shopId={view.shopId}>
+            {isMobile ? (
+              <ShopsBrowseMobile
+                day={view.day}
+                shopId={view.shopId}
+                slots={view.slots}
+              />
+            ) : (
+              <ShopsBrowseDesktop
+                day={view.day}
+                shopId={view.shopId}
+                slots={view.slots}
+              />
+            )}
+          </ShopTabs>
         </>
       )}
     </div>
