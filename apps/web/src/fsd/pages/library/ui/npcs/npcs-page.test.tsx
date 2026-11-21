@@ -563,6 +563,16 @@ describe("NpcsPage", () => {
       await screen.findByTestId("npcs-no-matching-variation")
     ).toBeVisible()
     expect(location()).toBe("/library/npcs/makhotep")
+    // Filtered out of the list, the NPC steps through every NPC instead.
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("2 of 4")
+    expect(screen.getByRole("link", { name: /Havoc/ })).toHaveAttribute(
+      "href",
+      "/library/npcs/havoc"
+    )
+    expect(screen.getByRole("link", { name: /Imospekh/ })).toHaveAttribute(
+      "href",
+      "/library/npcs/imospekh"
+    )
   })
 
   it("links an open filter combobox to its listbox via aria-controls", async () => {

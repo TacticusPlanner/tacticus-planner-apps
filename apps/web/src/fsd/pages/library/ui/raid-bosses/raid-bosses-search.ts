@@ -131,7 +131,9 @@ export function encounterSearch(
   current: URLSearchParams,
   located: ResolvedRaidBossEncounterLocation
 ) {
+  // An encounter opens on the boss's Details, also when picked from the Seasons tab's reference.
   return updateSearch(current, {
+    tab: undefined,
     season: located.seasonId,
     tier: String(located.tier),
     set: String(located.set),
