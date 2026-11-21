@@ -9,11 +9,11 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { useGlobalGoalPlan } from "@/entities/goal"
+import { CreateGoalButton, useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
-import { PageToolbar, SegmentedControl } from "@/shared/ui"
+import { EmptyState, PageToolbar, SegmentedControl } from "@/shared/ui"
 import { InsightsCampaignProgression } from "./insights-campaign-progression"
 import { InsightsEvents } from "./insights-events"
 import { InsightsHoldingBack } from "./insights-holding-back"
@@ -118,14 +118,12 @@ export function InsightsPage() {
       ) : !projectId &&
         !globalPlan.loading &&
         globalPlan.active.length === 0 ? (
-        <Card data-testid="insights-page-empty">
-          <CardHeader>
-            <CardTitle>{t("goals.insights.noGoalsTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {t("goals.insights.noGoalsDescription")}
-          </CardContent>
-        </Card>
+        <EmptyState
+          actions={<CreateGoalButton />}
+          description={t("goals.insights.noGoalsDescription")}
+          testId="insights-page-empty"
+          title={t("goals.insights.noGoalsTitle")}
+        />
       ) : loading ? (
         <div
           className="flex flex-col gap-3"

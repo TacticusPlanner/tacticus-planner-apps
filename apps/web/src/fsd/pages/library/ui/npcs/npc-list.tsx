@@ -5,7 +5,7 @@ import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NpcPortrait } from "@/entities/npc"
-import { EntityIcon } from "@/shared/ui"
+import { EmptyState, EntityIcon } from "@/shared/ui"
 
 import type { NpcListItem } from "./npcs-page.view-model"
 
@@ -34,15 +34,16 @@ export function NpcList({
 
   if (items.length === 0) {
     return (
-      <div
-        className="flex flex-col items-center gap-4 py-10 text-center text-muted-foreground"
-        data-testid="npcs-no-matching"
-      >
-        <p>{t("npcs.noMatchingNpcs")}</p>
-        <Button variant="outline" onClick={onClearFilters}>
-          {t("npcs.clearFilters")}
-        </Button>
-      </div>
+      <EmptyState
+        actions={
+          <Button variant="outline" onClick={onClearFilters}>
+            {t("npcs.clearFilters")}
+          </Button>
+        }
+        description={t("npcs.noMatchingNpcs")}
+        testId="npcs-no-matching"
+        variant="no-match"
+      />
     )
   }
 

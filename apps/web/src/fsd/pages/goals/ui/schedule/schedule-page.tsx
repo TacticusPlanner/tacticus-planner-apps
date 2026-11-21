@@ -68,7 +68,10 @@ export function SchedulePage() {
       {raids.status === "ready" ? (
         <SchedulePlan raids={raids} />
       ) : (
-        <RaidState state={raids.status} />
+        <RaidState
+          noGoalsMessage={t("schedule.noGoals")}
+          state={raids.status}
+        />
       )}
       {settingsOpen ? (
         <PlanningSettingsDialog

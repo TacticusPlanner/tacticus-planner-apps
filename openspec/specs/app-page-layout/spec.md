@@ -56,3 +56,21 @@ Group by and Layout SHALL each be one labelled segmented control (2 to 4 exclusi
 - **GIVEN** Group by reads Faction
 - **WHEN** the user presses Faction again
 - **THEN** Group by still reads Faction and the list does not change
+
+### Requirement: Search boxes and empty states look the same on every page
+
+A page's name search SHALL be one search box in the Find slot with a search icon, the localized placeholder "Search by name" (unless the page searches something other than names), an accessible name saying what it searches, and a clear button while it holds text that empties it at once. It SHALL grow to fill the row up to a fixed maximum width.
+
+A list or page that has nothing to show SHALL show one empty state: a dashed box with an icon, an optional title, one sentence and at most a few actions, centered and announced as a status. When nothing exists yet it SHALL say what is missing and, where the page cannot already create it, offer the action that does (for example Create goal on Insights, Today's raids and Schedule). When a search or filters match nothing it SHALL say so and offer Clear filters, or Clear search when only the search is set.
+
+#### Scenario: Clearing a search from the box
+
+- **GIVEN** the Characters search holds "zzz"
+- **WHEN** the user presses the search box's clear button
+- **THEN** the box is empty and every character is listed again
+
+#### Scenario: No active goals on Insights
+
+- **GIVEN** a signed-in player with no active goals
+- **WHEN** Insights opens with "All goals"
+- **THEN** it shows the empty state with its title, one sentence and Create goal, which opens goal creation

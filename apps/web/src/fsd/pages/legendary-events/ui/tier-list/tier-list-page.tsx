@@ -24,6 +24,8 @@ import { useAnalyticsActions } from "@/shared/analytics"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 
+import { EmptyState } from "@/shared/ui"
+
 import { NpcTierListView } from "./npc-tier-list-view"
 import {
   TIER_LIST_KINDS,
@@ -264,18 +266,19 @@ function HeroTierList() {
     )
   } else if (noMatch && hasActiveFilters(filters)) {
     content = (
-      <div
-        className="flex flex-col items-start gap-3 rounded-xl border border-dashed p-4"
-        data-testid="tier-list-no-match"
-      >
-        <p className="text-sm text-muted-foreground">{t("tierList.noMatch")}</p>
-        <Button
-          onClick={() => changeFilters(DEFAULT_TIER_LIST_FILTERS)}
-          variant="outline"
-        >
-          {t("tierList.clearFilters")}
-        </Button>
-      </div>
+      <EmptyState
+        actions={
+          <Button
+            onClick={() => changeFilters(DEFAULT_TIER_LIST_FILTERS)}
+            variant="outline"
+          >
+            {t("tierList.clearFilters")}
+          </Button>
+        }
+        description={t("tierList.noMatch")}
+        testId="tier-list-no-match"
+        variant="no-match"
+      />
     )
   } else {
     content = (

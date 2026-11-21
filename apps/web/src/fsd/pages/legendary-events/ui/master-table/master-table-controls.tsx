@@ -1,12 +1,11 @@
 import { useId } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown, Search } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
-import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import {
   Popover,
@@ -29,6 +28,7 @@ import type {
 import {
   EntityIcon,
   PageToolbar,
+  SearchField,
   SegmentedControl,
   useViewPlacement,
 } from "@/shared/ui"
@@ -69,7 +69,7 @@ export function MasterTableControls(props: MasterTableControlsProps) {
       below={<ControlHints {...props} />}
       find={
         <>
-          <SearchField {...props} />
+          <MasterTableSearch {...props} />
           <Popover>
             <PopoverTrigger asChild>
               <Button data-testid="master-table-events" variant="outline">
@@ -292,24 +292,15 @@ function ControlHints({ unitSets, estimated }: MasterTableControlsProps) {
   )
 }
 
-function SearchField({ state, onQueryChange }: MasterTableControlsProps) {
+function MasterTableSearch({ state, onQueryChange }: MasterTableControlsProps) {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <div className="relative min-w-40 flex-1 md:max-w-64">
-      <Search
-        aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-      />
-      <Input
-        aria-label={t("masterTable.search.label")}
-        className="pl-8"
-        data-testid="master-table-search"
-        onChange={(event) => onQueryChange(event.target.value)}
-        placeholder={t("masterTable.search.placeholder")}
-        type="search"
-        value={state.q}
-      />
-    </div>
+    <SearchField
+      label={t("masterTable.search.label")}
+      onChange={onQueryChange}
+      testId="master-table-search"
+      value={state.q}
+    />
   )
 }
 

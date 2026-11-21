@@ -30,6 +30,7 @@ export {
 export { StatusFilterSelect } from "./ui/status-filter-select"
 export { GoalTypeBadge } from "./ui/goal-type-badge"
 export { UnitGoalBadge } from "./ui/unit-goal-badge"
+export { CreateGoalButton } from "./ui/create-goal-button"
 export { goalTypeIcon } from "./model/goal-type-icon"
 export type { GoalStatusFilterValue } from "./ui/status-filter-select"
 export { GoalFilters, GoalGroupBy, GoalSort } from "./ui/goal-filters"

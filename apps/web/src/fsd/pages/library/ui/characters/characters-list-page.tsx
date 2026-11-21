@@ -66,7 +66,6 @@ export function CharactersListPage() {
         labels={{
           title: t("charactersList.title"),
           search: t("charactersList.search"),
-          searchPlaceholder: t("charactersList.searchPlaceholder"),
           noMatching: t("charactersList.noMatching"),
           clearSearch: t("charactersList.clearSearch"),
         }}

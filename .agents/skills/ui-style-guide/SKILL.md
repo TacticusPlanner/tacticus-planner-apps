@@ -82,6 +82,14 @@ One row directly under the header, three fixed slots, left to right:
 - Icon-only segmented buttons are allowed only with a tooltip and an
   `aria-label`, and only where the label would not fit (mobile).
 - A `Select` is never icon-only: it shows its value on every viewport.
+- A name search is the shared `SearchField` (`@/shared/ui`): search icon,
+  clear X, "Search by name" unless it searches something else. Pass
+  `debounceMs` when the search writes the URL.
+- An empty list or page shows the shared `EmptyState`: `variant="empty"` says
+  what is missing and offers the action that fills it ("Create goal") unless
+  the toolbar already has it; `variant="no-match"` offers "Clear filters", or
+  "Clear search" when only the search is set. No bare grey line, no card with a
+  title and no action.
 - Filters go through the shared `FiltersControl` (`@/shared/ui`): the
   "Filters" button with the active count as a badge, and its panel.
   `size="compact"` is a `w-80` popover on desktop, for a short list that fits
