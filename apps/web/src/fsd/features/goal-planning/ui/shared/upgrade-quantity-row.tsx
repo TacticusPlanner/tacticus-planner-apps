@@ -116,7 +116,7 @@ export function UpgradeQuantityRow({
         </p>
       ) : alreadyMet ? (
         <p
-          className="text-xs text-muted-foreground"
+          className="text-sm text-muted-foreground"
           data-testid={`${testId}-already-met`}
           id={warningId}
         >

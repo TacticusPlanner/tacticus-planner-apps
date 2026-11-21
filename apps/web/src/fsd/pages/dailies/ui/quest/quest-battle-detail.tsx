@@ -247,7 +247,7 @@ export function QuestBattleDetail({
           </div>
         </div>
         <DropNeed need={need} />
-        <p className="text-xs text-muted-foreground">{t("quest:detail.jar")}</p>
+        <p className="text-sm text-muted-foreground">{t("quest:detail.jar")}</p>
       </section>
     </article>
   )

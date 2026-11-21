@@ -170,7 +170,7 @@ export function InsightsEvents({
                     </div>
                   </>
                 ) : (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     {t("goals.insights.noBenefitingGoals")}
                   </p>
                 )}

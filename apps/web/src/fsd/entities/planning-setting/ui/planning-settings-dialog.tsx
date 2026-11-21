@@ -154,7 +154,7 @@ export function PlanningSettingsDialog({
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {t("goals.planningSettings.xpBookRarityHint")}
             </p>
           </Field>

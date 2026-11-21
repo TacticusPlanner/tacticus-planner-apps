@@ -353,7 +353,7 @@ export function UpgradeImpactSection({
       <div hidden={!open} id={bodyId}>
         {open ? (
           <div className="flex min-w-0 flex-col gap-2">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {t("upgradeImpact.hint")}
             </p>
             {body}

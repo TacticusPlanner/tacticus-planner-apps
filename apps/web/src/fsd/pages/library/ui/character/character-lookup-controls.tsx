@@ -155,7 +155,7 @@ export function CharacterLookupControls({
           <Label htmlFor="point-five">{t("unitLookup.pointFive")}</Label>
         </div>
         {pointFiveDisabled ? (
-          <p className="text-xs text-muted-foreground" id="point-five-disabled">
+          <p className="text-sm text-muted-foreground" id="point-five-disabled">
             {t("unitLookup.pointFiveAdamantineDisabled")}
           </p>
         ) : null}
@@ -178,7 +178,7 @@ export function CharacterLookupControls({
         </div>
         {includeOwnedDisabled ? (
           <p
-            className="text-xs text-muted-foreground"
+            className="text-sm text-muted-foreground"
             id="include-owned-disabled"
           >
             {t("unitLookup.includeOwnedUpgradesSignInRequired")}

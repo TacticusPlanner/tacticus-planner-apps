@@ -49,7 +49,7 @@ export function V1ImportPage() {
           <p className="text-sm text-muted-foreground">
             {t("goals.v1Import.description")}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             {t("goals.v1Import.descriptionNote")}
           </p>
         </div>

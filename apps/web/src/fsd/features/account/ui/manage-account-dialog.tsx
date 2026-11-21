@@ -528,7 +528,7 @@ function AccountTab({
             </span>
           </div>
         ) : null}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("manageAccount.account.signInMethodNote")}
         </p>
       </div>

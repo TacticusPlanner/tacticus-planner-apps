@@ -103,7 +103,7 @@ export function AbilityGoalCard({
           testId="create-goal-ability-preview"
         />
       ) : (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("goals.create.characterAbilityCostUnsupported")}
         </p>
       )}

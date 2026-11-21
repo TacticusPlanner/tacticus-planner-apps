@@ -138,7 +138,7 @@ export function AcquisitionSourceField({
                 !selectedShardLocationIds.includes(location.battleId)
             ) ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid="create-goal-acquisition-cheapest-node"
               >
                 {t("goals.create.acquisitionSources.cheapestNode")}

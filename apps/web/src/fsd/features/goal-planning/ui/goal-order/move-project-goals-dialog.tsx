@@ -130,7 +130,7 @@ export function MoveProjectGoalsDialog({
                     {t(`goals.order.projectMove.${CHOICE_KEY[option]}`)}
                   </FieldLabel>
                   {disabled ? (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       {option === "top"
                         ? t("goals.order.projectMove.alreadyFirst")
                         : t("goals.order.projectMove.noReference")}

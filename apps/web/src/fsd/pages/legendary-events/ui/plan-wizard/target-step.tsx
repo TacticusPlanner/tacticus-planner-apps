@@ -231,7 +231,7 @@ export function TargetStep({
               )
             })}
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {t("planWizard.target.horizonNote")}
           </p>
         </div>

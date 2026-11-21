@@ -76,7 +76,7 @@ export function InsightsHoldingBack({
                 {t("goals.insights.blockersTitle")}
               </h3>
               {allNoFarmLocation ? (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {t("goals.estimate.blocked.NoFarmLocation")}
                 </p>
               ) : null}

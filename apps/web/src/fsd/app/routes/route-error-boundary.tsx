@@ -64,7 +64,7 @@ export function RouteErrorBoundary() {
             {t("appError.goHome")}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("appError.feedbackHint")}
         </p>
       </div>

@@ -174,7 +174,7 @@ export function IncursionTierPage() {
               {t("tier.reset")}
             </Button>
           </div>
-          <p className="w-full text-xs text-muted-foreground">
+          <p className="w-full text-sm text-muted-foreground">
             {t("tier.markHint")}
           </p>
         </div>
@@ -183,7 +183,7 @@ export function IncursionTierPage() {
         <div className="space-y-1.5" data-testid="incursion-replay-rewards">
           <p className="text-sm font-medium">{t("progress.replayTitle")}</p>
           <IncursionRewards rewards={tierChestRewards(tier)} />
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {t("progress.replayHint")}
           </p>
         </div>

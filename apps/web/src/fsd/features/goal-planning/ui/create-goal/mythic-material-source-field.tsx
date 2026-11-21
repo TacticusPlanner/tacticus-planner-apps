@@ -35,12 +35,12 @@ export function MythicMaterialSourceField({
       data-testid="goal-mythic-material-sources"
     >
       <p className="font-medium">{t("goals.create.mythicMaterials.title")}</p>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-sm text-muted-foreground">
         {t("goals.create.mythicMaterials.description")}
       </p>
       {failed ? (
         <p
-          className="text-xs text-muted-foreground"
+          className="text-sm text-muted-foreground"
           data-testid="goal-mythic-material-sources-failed"
         >
           {t("goals.create.mythicMaterials.unavailable")}
@@ -64,7 +64,7 @@ export function MythicMaterialSourceField({
               materialId={materialId}
             >
               {materialOffers.length === 0 ? (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {t("goals.create.mythicMaterials.noOffers")}
                 </p>
               ) : (

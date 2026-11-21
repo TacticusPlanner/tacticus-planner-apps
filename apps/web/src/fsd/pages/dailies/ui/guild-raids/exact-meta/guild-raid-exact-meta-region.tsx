@@ -160,7 +160,7 @@ export function GuildRaidExactMetaRegion({
         <ThresholdStrip threshold={threshold} />
       ) : (
         <p
-          className="text-xs text-muted-foreground"
+          className="text-sm text-muted-foreground"
           data-testid="guild-raid-exact-meta-no-target"
         >
           {t("guildRaids.exactMeta.noTarget")}
