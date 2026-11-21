@@ -68,6 +68,11 @@ One row directly under the header, three fixed slots, left to right:
   HRE) puts the shared `EventInstanceSwitcher` (`@/shared/ui`) first instead:
   Previous / Next around a select grouped Running / Upcoming / Past. No page
   builds its own chip row or picker for either.
+- A page with views inside it puts its tabs directly under the header, and
+  each tab owns its toolbar (Tier list: Heroes / Enemies, each with its own
+  Find row). A control that scopes every tab (the event picker, the shop
+  search that jumps to a day, the day on Daily Shops, the LE countdown and
+  "Plan this event") sits above the tabs instead.
 
 ## 3. Which control for which option
 
@@ -107,7 +112,12 @@ One row directly under the header, three fixed slots, left to right:
 
 ## 4. Tabs
 
-- One style: left-aligned underline `Tabs`, `text-sm`, for views inside a page.
+- One style: left-aligned underline tabs, `text-sm`, for views inside a page
+  or a dialog. Build them with `PageTabsList` and `PageTabsTrigger`
+  (`@/shared/ui`) inside a `Tabs` root: natural-width tabs, no border under
+  the strip, and a strip that scrolls sideways when it doesn't fit.
+- Tabs stay tabs on a phone. They never turn into a select, a grid or wrapped
+  rows.
 - Pills and segmented buttons are never tabs.
 - Section navigation (the strip under the mobile header) is app chrome, not
   page tabs.

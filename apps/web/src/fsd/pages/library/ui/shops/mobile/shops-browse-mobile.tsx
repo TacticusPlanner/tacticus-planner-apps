@@ -6,10 +6,7 @@ import type { LibraryShopSlotView } from "../library-shops.view-model"
 import { ShopSlotCard } from "../shop-slot-card"
 import { ShopsBrowseState } from "../shops-browse-state"
 
-/**
- * Mobile layout (<768px): a single-column list of slot cards under the page toolbar's day and shop
- * selects, distinct from the desktop shop tabs + card grid rather than a reflow.
- */
+/** Mobile layout (<768px): a single-column list of slot cards under the shop tabs. */
 export function ShopsBrowseMobile({
   day,
   shopId,

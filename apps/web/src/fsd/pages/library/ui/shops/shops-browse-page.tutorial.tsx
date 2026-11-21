@@ -7,9 +7,9 @@ import { useTourPageSteps } from "@/shared/tour"
 type StepKey = "day" | "shop" | "random"
 
 /**
- * Joyride tour for the public Library Shops browsing page: the day selector, the shop selector, and
- * how a randomized "N possible rewards" slot is read. The day select is the same on both; the shop is
- * underline tabs on desktop and a select on mobile, so that step targets different elements.
+ * Joyride tour for the public Library Shops browsing page: the day select, the shop tabs, and how a
+ * randomized "N possible rewards" slot is read. The controls are the same on both; the mobile list
+ * stays separate so the tour helper keeps its desktop/mobile shape.
  */
 export function useShopsBrowseTutorial() {
   const { t } = useTranslation("library")
@@ -29,7 +29,7 @@ export function useShopsBrowseTutorial() {
       ] satisfies Step[],
       mobile: [
         step("shops-day-select", "day"),
-        step("shops-shop-select", "shop"),
+        step("shops-shop-toggle", "shop"),
         step("shop-slot-0", "random"),
       ] satisfies Step[],
     }

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from "react"
 import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import { Tabs } from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
@@ -15,6 +15,7 @@ import {
 import type { ResolvedRaidBossEncounterLocation } from "@/entities/raid-boss"
 import { useGuildRaidMetaCatalog } from "@/entities/guild-raid-meta"
 import { useTourPageSteps } from "@/shared/tour"
+import { PageTabsList, PageTabsTrigger } from "@/shared/ui"
 
 import { RaidBossesDesktopPage } from "./desktop/raid-bosses-desktop-page"
 import { RaidBossesMobilePage } from "./mobile/raid-bosses-mobile-page"
@@ -268,28 +269,20 @@ export function RaidBossesPage() {
     <div className="flex flex-col gap-6" data-testid="raid-bosses-library-page">
       {/* The page header already carries the title and description; the views are underline tabs. */}
       <Tabs value={tab} onValueChange={(value) => updateQuery({ tab: value })}>
-        {/* The padding keeps the active tab's underline and the 48px touch hit area inside the scroll
-            box. */}
-        <div
-          className="overflow-x-auto pt-1 pb-1.5"
-          data-testid="raid-boss-tabs-scroll"
+        <PageTabsList
+          data-testid="raid-boss-tabs"
+          scrollTestId="raid-boss-tabs-scroll"
         >
-          <TabsList
-            className="w-max min-w-full justify-start"
-            data-testid="raid-boss-tabs"
-            variant="line"
-          >
-            <TabsTrigger className="flex-none px-2.5" value="seasons">
-              {t("raidBosses.tabs.seasons")}
-            </TabsTrigger>
-            <TabsTrigger className="flex-none px-2.5" value="meta">
-              {t("raidBosses.tabs.meta")}
-            </TabsTrigger>
-            <TabsTrigger className="flex-none px-2.5" value="details">
-              {t("raidBosses.tabs.details")}
-            </TabsTrigger>
-          </TabsList>
-        </div>
+          <PageTabsTrigger value="seasons">
+            {t("raidBosses.tabs.seasons")}
+          </PageTabsTrigger>
+          <PageTabsTrigger value="meta">
+            {t("raidBosses.tabs.meta")}
+          </PageTabsTrigger>
+          <PageTabsTrigger value="details">
+            {t("raidBosses.tabs.details")}
+          </PageTabsTrigger>
+        </PageTabsList>
       </Tabs>
       {tab === "details" ? (
         entityId && selectedUnit ? (
