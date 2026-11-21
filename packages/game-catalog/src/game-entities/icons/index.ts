@@ -11,6 +11,7 @@ export { rankIcon } from "./rank"
 export {
   onslaughtTierIcon,
   onslaughtAllianceIcon,
+  allianceIcon,
   type OnslaughtSectorIcon,
   type OnslaughtTierIcon,
   type OnslaughtAllianceIcon,

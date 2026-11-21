@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { factionIcon, onslaughtAllianceIcon } from "@workspace/game-catalog"
-import type { OnslaughtAllianceIcon } from "@workspace/game-catalog"
+import { allianceIcon, factionIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -221,22 +220,11 @@ function UnitSignInButton() {
 
 /** The kind line after the faction chip, led by the alliance emblem when the alliance is known. */
 function KindLine({ allianceId, text }: { allianceId: string; text: string }) {
+  const emblem = allianceIcon(allianceId)
   return (
     <span className="inline-flex items-center gap-1">
-      {isAlliance(allianceId) ? (
-        <EntityIcon
-          size="inline"
-          src={onslaughtAllianceIcon(allianceId)}
-          alt=""
-        />
-      ) : null}
+      {emblem ? <EntityIcon size="inline" src={emblem} alt="" /> : null}
       {text}
     </span>
   )
-}
-
-const ALLIANCE_IDS = new Set<string>(["Imperial", "Chaos", "Xenos"])
-
-function isAlliance(id: string): id is OnslaughtAllianceIcon {
-  return ALLIANCE_IDS.has(id)
 }

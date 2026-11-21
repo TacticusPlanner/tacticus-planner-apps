@@ -197,6 +197,7 @@ export {
   rankIcon,
   onslaughtTierIcon,
   onslaughtAllianceIcon,
+  allianceIcon,
   shardIcon,
   abilityBadgeIcon,
   forgeBadgeIcon,

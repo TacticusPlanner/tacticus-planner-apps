@@ -12,7 +12,7 @@ export function HowToRead({
 }) {
   return (
     <details className="text-xs text-muted-foreground" data-testid={testId}>
-      <summary className="cursor-pointer font-medium text-foreground">
+      <summary className="cursor-pointer text-sm font-medium text-foreground">
         {summary}
       </summary>
       <p className="mt-1">{children}</p>

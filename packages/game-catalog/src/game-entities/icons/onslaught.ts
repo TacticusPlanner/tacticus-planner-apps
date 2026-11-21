@@ -22,3 +22,18 @@ export function onslaughtAllianceIcon(alliance: OnslaughtAllianceIcon): string {
     `atlases/ui_ability_badges_${alliance.toLowerCase()}.webp`
   )
 }
+
+const ALLIANCE_EMBLEMS: ReadonlySet<string> = new Set<OnslaughtAllianceIcon>([
+  "Imperial",
+  "Xenos",
+  "Chaos",
+])
+
+/** A unit's or hero's alliance emblem, or undefined for Neutral or an unknown alliance id. */
+export function allianceIcon(
+  alliance: string | null | undefined
+): string | undefined {
+  return alliance && ALLIANCE_EMBLEMS.has(alliance)
+    ? onslaughtAllianceIcon(alliance as OnslaughtAllianceIcon)
+    : undefined
+}
