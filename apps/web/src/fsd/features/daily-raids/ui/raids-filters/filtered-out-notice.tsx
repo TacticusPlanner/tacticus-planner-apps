@@ -83,7 +83,7 @@ export function FilteredOutNotice({
                 key={row.resourceId}
               >
                 <ResourceIconWithTooltip
-                  className="size-8"
+                  size="row"
                   label={label}
                   visual={raids.resourceVisuals.get(row.resourceId)}
                 />

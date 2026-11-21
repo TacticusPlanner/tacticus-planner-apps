@@ -140,8 +140,9 @@ function AllianceChips({
           value={item}
         >
           <EntityIcon
+            size="inline"
             alt=""
-            className="size-4 shrink-0"
+            className="shrink-0"
             height={16}
             src={onslaughtAllianceIcon(item)}
             width={16}

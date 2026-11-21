@@ -172,8 +172,9 @@ export function UpgradeImpactSection({
   const unit = (row: UpgradeImpactRow) => (
     <span className="flex min-w-0 items-center gap-2">
       <EntityIcon
+        size="portrait-sm"
         alt=""
-        className="size-8 shrink-0 rounded-full"
+        className="shrink-0 rounded-full"
         src={characterIcon(row.unitId as UnitId)}
       />
       <span className="truncate font-medium">{nameOf(row.unitId)}</span>

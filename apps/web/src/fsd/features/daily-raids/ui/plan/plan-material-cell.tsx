@@ -71,7 +71,7 @@ export function PlanMaterialCell({
           data-testid={testId}
           type="button"
         >
-          <ResourceIcon className="size-10" label={label} visual={visual} />
+          <ResourceIcon label={label} visual={visual} />
           <Badge
             className={cn(
               "tabular-nums",
@@ -85,7 +85,7 @@ export function PlanMaterialCell({
           </Badge>
           <span className="flex items-center gap-0.5">
             {cell.units.slice(0, PORTRAIT_LIMIT).map((unit) => (
-              <UnitIcon key={unit.unitId} className="size-6" goal={unit} />
+              <UnitIcon key={unit.unitId} size="inline" goal={unit} />
             ))}
             {extraUnits > 0 ? (
               <span className="text-xs text-muted-foreground tabular-nums">
@@ -266,7 +266,7 @@ function ShopGroup({
         })
         return (
           <li key={shop.shopId} className="flex items-center gap-1">
-            <EntityIcon alt="" className="size-4" src={shopIcon(shop.shopId)} />
+            <EntityIcon size="inline" alt="" src={shopIcon(shop.shopId)} />
             <span>
               {t(`shops:shopName.${shop.shopId}`, {
                 defaultValue: shop.shopId,
@@ -283,8 +283,9 @@ function ShopGroup({
             >
               {t("dailies:plan.cell.shopQty", { qty: shop.rewardQty })}
               <EntityIcon
+                size="inline"
                 alt=""
-                className="size-3.5"
+
                 src={shopCurrencyIcon(shop.currency)}
               />
               {number.format(shop.cost)}
@@ -306,7 +307,7 @@ function PlanNodeLocation({
   return (
     <>
       {location?.icon ? (
-        <EntityIcon alt="" className="size-4" src={location.icon} />
+        <EntityIcon size="inline" alt="" src={location.icon} />
       ) : null}
       <span>
         <CampaignLocationName

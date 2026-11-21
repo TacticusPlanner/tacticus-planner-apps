@@ -130,8 +130,9 @@ function DetailsHeading({ name, unitId }: { name: string; unitId: string }) {
   return (
     <span className="flex min-w-0 items-center gap-2">
       <EntityIcon
+        size="portrait-sm"
         alt=""
-        className="size-8 shrink-0 rounded-full"
+        className="shrink-0 rounded-full"
         src={characterIcon(unitId as UnitId)}
       />
       <span className="truncate">{name}</span>

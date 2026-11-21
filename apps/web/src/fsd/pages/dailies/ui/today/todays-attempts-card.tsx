@@ -72,7 +72,7 @@ export function TodaysAttemptsCard({
               >
                 {resource ? (
                   <ResourceIconWithTooltip
-                    className="size-6"
+                    size="row"
                     label={resource.label}
                     visual={resource.visual}
                   />
@@ -83,8 +83,9 @@ export function TodaysAttemptsCard({
                 )}
                 {location?.icon ? (
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-3.5 shrink-0"
+                    className="shrink-0"
                     src={location.icon}
                   />
                 ) : null}

@@ -43,7 +43,7 @@ export function PlanUnitFilter({
               onClick={() => onSelect(pressed ? undefined : unit.unitId)}
               type="button"
             >
-              <UnitIcon className="size-10 rounded-full" goal={unit} />
+              <UnitIcon className="rounded-full" goal={unit} />
             </button>
           )
         })}

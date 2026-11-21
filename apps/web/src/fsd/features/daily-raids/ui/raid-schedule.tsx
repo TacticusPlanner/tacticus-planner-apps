@@ -249,7 +249,7 @@ export function RaidSchedule({
 function GoalHeader({ goal }: { goal: DailyRaidGoalViewModel }) {
   return (
     <div className="flex items-center gap-2 border-b pb-2">
-      <UnitIcon goal={goal} className="size-9 md:size-10" />
+      <UnitIcon goal={goal} />
       <div className="min-w-0 leading-tight">
         <h3 className="truncate font-semibold">{goal.unitLabel}</h3>
         <p className="truncate text-xs text-muted-foreground md:text-sm">

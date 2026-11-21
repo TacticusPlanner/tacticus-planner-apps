@@ -19,9 +19,9 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
         title={t("battleProgress.medalsEarned")}
       >
         <EntityIcon
+          size="inline"
           alt={t("battleProgress.medalsEarned")}
           src={medalIcon}
-          className="size-4"
         />
         {stats.medals}/{stats.maxMedals}
       </span>
@@ -31,9 +31,9 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
           title={t("battleProgress.lightningVictory")}
         >
           <EntityIcon
+            size="inline"
             alt={t("battleProgress.lightningVictory")}
             src={lightningVictoryIcon}
-            className="size-4"
           />
           {stats.lightningVictories}/{stats.maxLightningVictories}
         </span>
@@ -44,9 +44,9 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
           title={t("battleProgress.goldMilestones")}
         >
           <EntityIcon
+            size="inline"
             alt={t("battleProgress.goldMilestones")}
             src={milestoneIcons.Gold}
-            className="size-4"
           />
           {stats.goldMilestones ?? 0}/{stats.maxGoldMilestones}
         </span>

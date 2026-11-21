@@ -94,10 +94,7 @@ export function InsightsCampaignProgression({
                         className="flex items-center gap-2"
                         key={unblock.resourceId}
                       >
-                        <GoalResourceIcon
-                          className="size-6"
-                          resourceId={unblock.resourceId}
-                        />
+                        <GoalResourceIcon resourceId={unblock.resourceId} />
                         {t("goals.insights.unblocks", {
                           material: unblock.label,
                           count: unblock.battlesToGo,

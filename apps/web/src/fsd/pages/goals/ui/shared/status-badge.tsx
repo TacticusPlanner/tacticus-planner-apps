@@ -300,10 +300,7 @@ function UnavailableMaterials({
         return (
           <li className="grid gap-1" key={blocker.resourceId}>
             <span className="flex items-center gap-2 text-sm font-medium">
-              <GoalResourceIcon
-                className="size-8"
-                resourceId={blocker.resourceId}
-              />
+              <GoalResourceIcon resourceId={blocker.resourceId} />
               {reasonLines.includes(reason)
                 ? material
                 : t("common:goals.estimate.unavailableRow", {

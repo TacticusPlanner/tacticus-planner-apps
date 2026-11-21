@@ -158,7 +158,6 @@ export const GoalRowCells = memo(function GoalRowCells({
             actions button out of the cell and under the Projects column. */}
         <div className="flex w-max min-w-full items-center gap-3">
           <GoalUnitIcon
-            className="size-12"
             entityId={row.entityId}
             entityType={row.entityType}
             name={getEntityName(row.entityType, row.entityId)}

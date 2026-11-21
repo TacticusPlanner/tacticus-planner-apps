@@ -221,8 +221,9 @@ function RunSummary({ run }: { run: RunForecast }) {
           title={item.label}
         >
           <EntityIcon
+            size="inline"
             alt={item.label}
-            className="size-4 shrink-0"
+            className="shrink-0"
             src={item.icon}
           />
           {item.value}

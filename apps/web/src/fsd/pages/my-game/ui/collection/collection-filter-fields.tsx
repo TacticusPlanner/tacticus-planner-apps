@@ -140,9 +140,9 @@ export function CollectionFilterFields({
                 label: faction.name,
                 icon: (
                   <EntityIcon
+                    size="inline"
                     src={factionIcon(faction.id)}
                     alt={faction.name}
-                    className="size-5"
                   />
                 ),
               }))}
@@ -340,9 +340,9 @@ export function CollectionFilterFields({
                 label: type.name,
                 icon: (
                   <EntityIcon
+                    size="inline"
                     src={damageTypeIcon(type.id)}
                     alt={type.name}
-                    className="size-5"
                   />
                 ),
               }))}
@@ -365,9 +365,9 @@ export function CollectionFilterFields({
                 label: trait.name,
                 icon: (
                   <EntityIcon
+                    size="inline"
                     src={traitIcon(trait.id)}
                     alt={trait.name}
-                    className="size-5"
                   />
                 ),
               }))}

@@ -109,9 +109,7 @@ export function RaidsFiltersDialog({
       .map((faction) => ({
         value: faction,
         label: t(`factions:${faction}`, { defaultValue: faction }),
-        icon: (
-          <EntityIcon alt="" className="size-5" src={factionIcon(faction)} />
-        ),
+        icon: <EntityIcon size="inline" alt="" src={factionIcon(faction)} />,
       }))
   const alliesFactionOptions = factionOptions(draft.alliesAlliances)
   const enemiesFactionOptions = factionOptions(draft.enemiesAlliances)
@@ -131,7 +129,7 @@ export function RaidsFiltersDialog({
         .map((trait) => ({
           value: trait,
           label: t(`traits:${trait}`, { defaultValue: humanizeId(trait) }),
-          icon: <EntityIcon alt="" className="size-5" src={traitIcon(trait)} />,
+          icon: <EntityIcon size="inline" alt="" src={traitIcon(trait)} />,
         }))
         .toSorted((a, b) => a.label.localeCompare(b.label)),
     [battles, npcs, t]
@@ -154,7 +152,7 @@ export function RaidsFiltersDialog({
   const rarityOptions = RAIDS_UPGRADE_RARITIES.map((rarity) => ({
     value: rarity,
     label: t(`progression:rarities.${rarity}`, { defaultValue: rarity }),
-    icon: <EntityIcon alt="" className="size-5" src={rarityIcon(rarity)} />,
+    icon: <EntityIcon size="inline" alt="" src={rarityIcon(rarity)} />,
   }))
 
   const loading = battles === undefined

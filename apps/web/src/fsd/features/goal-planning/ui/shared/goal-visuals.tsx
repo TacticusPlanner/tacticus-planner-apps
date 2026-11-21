@@ -18,6 +18,7 @@ import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { goalTypeIcon } from "@/entities/goal"
 import type { GoalKind } from "@/entities/goal"
 import { EntityIcon } from "@/shared/ui"
+import type { EntityIconSize } from "@/shared/ui"
 
 import type { GoalProject } from "../../model/shared/types"
 import { ProjectColorDot } from "@/entities/project"
@@ -27,11 +28,13 @@ export function GoalUnitIcon({
   entityType,
   entityId,
   name,
-  className = "size-10",
+  size = "portrait-sm",
+  className,
 }: {
   entityType: string
   entityId: string
   name: string
+  size?: EntityIconSize
   className?: string
 }) {
   const src =
@@ -41,7 +44,7 @@ export function GoalUnitIcon({
         ? mowIcon(entityId as UnitId)
         : undefined
 
-  return <EntityIcon alt={name} className={className} src={src} />
+  return <EntityIcon alt={name} size={size} className={className} src={src} />
 }
 
 /** The Create Goal sheet's goal-type picker — a bordered, two-per-row checkbox grid, each option
@@ -101,8 +104,9 @@ export function GoalTypeToggleGroup({
             htmlFor={`${idPrefix}-${kind}`}
           >
             <EntityIcon
+              size="inline"
               alt=""
-              className="size-5 shrink-0"
+              className="shrink-0"
               src={goalTypeIcon(kind, entityType)}
             />
             {t(`goals.create.goalTypes.${kind}`)}
@@ -144,8 +148,9 @@ export function GoalTypeCard({
   const title = (
     <>
       <EntityIcon
+        size="inline"
         alt=""
-        className="size-6 shrink-0"
+        className="shrink-0"
         src={goalTypeIcon(kind, entityType)}
       />
       <span>{t(`goals.create.goalTypes.${kind}`)}</span>

@@ -253,8 +253,9 @@ function TokenCount({ count }: { count: number }) {
       title={label}
     >
       <EntityIcon
+        size="inline"
         alt=""
-        className="size-4 shrink-0"
+        className="shrink-0"
         src={legendaryEventResourceIcon("tokens")}
       />
       <span aria-hidden="true">{count}</span>

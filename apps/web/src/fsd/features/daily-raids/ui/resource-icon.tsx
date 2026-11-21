@@ -6,31 +6,35 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon, UpgradeIcon } from "@/shared/ui"
+import { EntityIcon, entityIconClassName, UpgradeIcon } from "@/shared/ui"
+import type { EntityIconSize } from "@/shared/ui"
 
 import type { DailyRaidResourceVisual } from "../model/daily-raids.domain"
 
 /** A resource's icon: an upgrade material's rarity-framed icon, or a unit's shard icon. Shared
- * between `pages/dailies`'s resource cards and the home Daily Raids widget's compact rows. */
+ * between `pages/dailies`'s resource cards and the home Daily Raids widget's compact rows. `size`
+ * is the style guide's icon role: `tile` on a card, `row` in a list row. */
 export function ResourceIcon({
-  className = "size-10 md:size-12",
+  size = "tile",
   label,
   visual,
 }: {
-  className?: string
+  size?: ResourceIconSize
   label: string
   visual: DailyRaidResourceVisual | undefined
 }) {
-  if (!visual) return <span className={className} />
+  if (!visual) {
+    return <span className={cn("shrink-0", entityIconClassName(size))} />
+  }
 
   return (
     <span
-      className={cn("flex shrink-0 items-center justify-center", className)}
+      className="flex shrink-0 items-center justify-center"
       data-testid="raid-resource-icon"
     >
       {visual.kind === "upgrade" ? (
         <UpgradeIcon
-          className={className}
+          size={size}
           crafted={visual.crafted}
           id={visual.id}
           rarity={visual.rarity}
@@ -38,7 +42,7 @@ export function ResourceIcon({
       ) : (
         <EntityIcon
           alt={label}
-          className={className}
+          size={size}
           src={characterIcon(visual.unitId)}
         />
       )}
@@ -46,14 +50,16 @@ export function ResourceIcon({
   )
 }
 
+type ResourceIconSize = Extract<EntityIconSize, "row" | "tile">
+
 /** `ResourceIcon` with its name available as a tooltip on hover/focus, since the icon alone
  * replaces the visible resource name in location-emphasis rendering. */
 export function ResourceIconWithTooltip({
-  className,
+  size,
   label,
   visual,
 }: {
-  className?: string
+  size?: ResourceIconSize
   label: string
   visual: DailyRaidResourceVisual | undefined
 }) {
@@ -65,7 +71,7 @@ export function ResourceIconWithTooltip({
           className="shrink-0 border-0 bg-transparent p-0"
           type="button"
         >
-          <ResourceIcon className={className} label={label} visual={visual} />
+          <ResourceIcon size={size} label={label} visual={visual} />
         </button>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>

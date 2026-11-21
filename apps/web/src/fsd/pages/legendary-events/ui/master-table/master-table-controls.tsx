@@ -184,8 +184,9 @@ function EventPickerItem({
         onCheckedChange={(value) => onCheckedChange(value === true)}
       />
       <EntityIcon
+        size="inline"
         alt=""
-        className="size-6 shrink-0 rounded-full"
+        className="shrink-0 rounded-full"
         src={characterIcon(eventId as UnitId)}
       />
       <Label className="min-w-0 flex-1 truncate font-normal" htmlFor={id}>

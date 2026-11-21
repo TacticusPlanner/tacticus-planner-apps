@@ -82,7 +82,7 @@ export function RaidRows({
               {resourceId !== undefined && view ? (
                 <span className="flex items-center gap-1">
                   <ResourceIconWithTooltip
-                    className="size-8"
+                    size="row"
                     label={view.resourceLabels.get(resourceId) ?? resourceId}
                     visual={view.resourceVisuals.get(resourceId)}
                   />
@@ -103,14 +103,15 @@ export function RaidRows({
               ) : null}
               {openEnded ? (
                 <Badge className="tabular-nums" variant="secondary">
-                  <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
+                  <EntityIcon size="inline" alt="" src={energyIcon()} />
                   {t("raids.energyPerBattle", { energy: row.energyCost })}
                 </Badge>
               ) : battles ? (
                 <Badge className="tabular-nums" variant="outline">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-3.5"
+
                     src={battleGlyphIcon("campaignBattle")}
                   />
                   {t("raids.battleCount", { count: row.raids })}
@@ -149,11 +150,11 @@ export function HreNoDropRaids({
         data-testid="hre-raids-no-drop-totals"
       >
         <Badge variant="secondary">
-          <EntityIcon alt="" className="size-3.5" src={raidTicketIcon()} />
+          <EntityIcon size="inline" alt="" src={raidTicketIcon()} />
           {t("raids.raidCount", { count: raids })}
         </Badge>
         <Badge variant="outline">
-          <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
+          <EntityIcon size="inline" alt="" src={energyIcon()} />
           {t("raids.energy", { energy })}
         </Badge>
       </div>

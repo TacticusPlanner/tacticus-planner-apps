@@ -79,11 +79,11 @@ export function OnslaughtRunList({
             data-dimmed={dimmed || undefined}
             data-testid={rowTestId(run.unit.unitId)}
           >
-            <UnitIcon className="size-8 rounded-full" goal={run.unit} />
+            <UnitIcon className="rounded-full" goal={run.unit} />
             <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground tabular-nums">
               {t("plan.onslaughtRun.expected", values)}
             </span>
-            <EntityIcon alt="" className="size-5" src={onslaughtTokenIcon()} />
+            <EntityIcon size="inline" alt="" src={onslaughtTokenIcon()} />
           </li>
         )
       })}

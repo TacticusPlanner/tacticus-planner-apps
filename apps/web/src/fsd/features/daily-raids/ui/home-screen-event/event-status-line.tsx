@@ -147,8 +147,9 @@ function StatusFrame({
         />
       ) : (
         <EntityIcon
+          size="row"
           alt=""
-          className="size-9 shrink-0"
+          className="shrink-0"
           src={gameMenuIcon("homeScreenEvent")}
         />
       )}

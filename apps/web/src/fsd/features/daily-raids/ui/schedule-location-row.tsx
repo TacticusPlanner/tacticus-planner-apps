@@ -65,11 +65,7 @@ export function ScheduleLocationRow({
         className="flex shrink-0 items-center gap-1"
         data-testid={`raid-upgrade-${entry.goalId}-${entry.resourceId}`}
       >
-        <ResourceIconWithTooltip
-          className="size-8"
-          label={label}
-          visual={visual}
-        />
+        <ResourceIconWithTooltip size="row" label={label} visual={visual} />
         <ResourceStock
           progress={progress}
           testId={`raid-location-${entry.battleId}-stock`}
