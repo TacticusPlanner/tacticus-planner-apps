@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
 import {
+  battleGlyphIcon,
   characterIcon,
   factionIcon,
   powerIcon,
@@ -161,14 +162,21 @@ export function IncursionEligibleDialog({
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter className="flex-col border-t md:justify-between">
         <p
-          className="text-sm tabular-nums"
+          className="inline-flex flex-wrap items-center gap-1 text-sm tabular-nums"
           data-testid="incursion-eligible-power"
         >
+          <EntityIcon size="inline" alt="" src={powerIcon()} />
           {t("eligible.selected", {
             count: team.length,
             power: number.format(Math.round(teamPowerOf(team))),
           })}
-          {hasSustain(team) ? ` · ${t("team.sustain")}` : ""}
+          {hasSustain(team) ? (
+            <>
+              {" · "}
+              <EntityIcon size="inline" alt="" src={battleGlyphIcon("heal")} />
+              {t("team.sustain")}
+            </>
+          ) : null}
         </p>
         <div className="flex gap-2">
           <Button

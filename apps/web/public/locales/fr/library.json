@@ -227,7 +227,11 @@
       "flex": "Flexible",
       "suitableMows": "Machines de guerre adaptées"
     },
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "encounterTypes": {
+      "Boss": "Boss",
+      "Crystal": "Prime"
+    }
   },
   "npcs": {
     "title": "PNJ",

@@ -112,6 +112,11 @@ export function mowAmmoIcon(): string {
   )
 }
 
+/** Guild XP, the score a guild raid set awards. */
+export function guildXpIcon(): string {
+  return datamineAssetUrl(`atlases/ui_icon_resource_score_guild_xp_medium.webp`)
+}
+
 export function raidTicketIcon(): string {
   return datamineAssetUrl(`atlases/ui_icon_resource_raid_large.webp`)
 }

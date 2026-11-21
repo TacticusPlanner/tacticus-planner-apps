@@ -12,7 +12,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { RARITY_BORDER, RARITY_TEXT } from "@/entities/incursion"
+import { RARITY_BORDER } from "@/entities/incursion"
 import { formatShortDate, useDateLocale } from "@/shared/lib"
 import { EntityIcon, RarityIcon } from "@/shared/ui"
 
@@ -271,12 +271,7 @@ export function IncursionMowPage() {
       >
         {tierGroups(incursion.tiers).map((group) => (
           <div key={group.rarity} className="space-y-2">
-            <h3
-              className={cn(
-                "flex items-center gap-2 text-sm font-medium",
-                RARITY_TEXT[group.rarity]
-              )}
-            >
+            <h3 className="flex items-center gap-2 text-sm font-medium">
               <EntityIcon
                 size="inline"
                 src={rarityIcon(group.rarity as Rarity)}

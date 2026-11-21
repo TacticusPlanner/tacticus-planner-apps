@@ -132,6 +132,12 @@ sizes, chosen by its role, never by the page.
 - Item icons at row and tile size sit on their rarity frame
   (`ui_frame_upgrades_*`); inline icons never have a frame.
 - Portrait badges: `sm` shows one (rank or stars), `md` two, `lg` all.
+- When a game entity has an icon (unit, faction, alliance, rarity, rank,
+  stat, ability, trait, damage type, resource, event, game mode), show it:
+  the icon before the name, or the icon alone with the name as its tooltip
+  and accessible name. Text alone only inside a sentence that can't hold an
+  icon. Never show a raw id (`guild_boss_season_config_1`,
+  `necroBossWardenLEG`): name it, or number it ("Season 1", "Other 2").
 
 ## 7. Copy
 
@@ -234,6 +240,7 @@ back to the control that opened it (`onCloseAutoFocus`).
 - [ ] No new tab, segmented or pill style; no hand-rolled `aria-pressed` toggles.
 - [ ] Controls meet 48px on touch; no `size="sm"` in toolbars.
 - [ ] Every game icon uses a size from rule 6.
+- [ ] Every game entity with an icon shows it; no raw ids reach the screen.
 - [ ] Each overlay is the one rule 8 names for its job, with a title, a rule 8 footer and one of the three widths.
 - [ ] New or changed strings pass the copy rules.
 - [ ] PR has desktop and mobile before/after screenshots.

@@ -96,16 +96,7 @@ export function NpcDetailHeader({
               <SelectGroup>
                 {variationOptions.map((option) => (
                   <SelectItem key={option.id} value={option.id}>
-                    <span className="flex min-w-0 flex-col items-start text-left leading-tight">
-                      <span className="max-w-full truncate">
-                        {option.label}
-                      </span>
-                      {option.label !== option.id ? (
-                        <span className="max-w-full truncate text-xs text-muted-foreground">
-                          {option.id}
-                        </span>
-                      ) : null}
-                    </span>
+                    <span className="max-w-full truncate">{option.label}</span>
                   </SelectItem>
                 ))}
               </SelectGroup>

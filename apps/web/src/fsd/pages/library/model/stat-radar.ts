@@ -21,6 +21,14 @@ const radarAxes = [
 
 export type RadarAxis = (typeof radarAxes)[number]
 
+/** The game stat icon that stands for an axis: the attack kind for the damage axes. */
+export function radarAxisIcon(
+  axis: RadarAxis
+): "health" | "armour" | "melee" | "ranged" {
+  if (axis === "health" || axis === "armour") return axis
+  return axis.startsWith("melee") ? "melee" : "ranged"
+}
+
 export type RadarAxisResult = {
   axis: RadarAxis
   /** The raw value at the reference (Mythic Wings, Adamantine II). */

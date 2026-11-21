@@ -369,9 +369,7 @@ describe("NpcsPage", () => {
     await user.click(screen.getByTestId("npcs-variation-select"))
     const options = await screen.findAllByRole("option")
     expect(options).toHaveLength(5)
-    await user.click(
-      options.find((o) => o.textContent.includes("necroBossWardenLEG"))!
-    )
+    await user.click(options.find((o) => o.textContent === "Legendary Event")!)
 
     await waitFor(() =>
       expect(location()).toBe(
@@ -1100,7 +1098,7 @@ describe("NpcsPage encounters", () => {
     ).toHaveLength(1)
     await waitFor(() =>
       expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-        "necroBossWardenLEG"
+        "Legendary Event"
       )
     )
     expect(screen.getByTestId("npcs-variation-select")).toBeDisabled()
@@ -1132,7 +1130,7 @@ describe("NpcsPage encounters", () => {
     )
     await waitFor(() =>
       expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-        "necroBossWardenLEG"
+        "Legendary Event"
       )
     )
 
@@ -1214,7 +1212,7 @@ describe("NpcsPage encounters", () => {
     )
     expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent("(")
     expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-      "necroBossWardenLEG"
+      "Legendary Event"
     )
   })
 
@@ -1371,7 +1369,7 @@ describe("NpcsPage encounters", () => {
     )
     await waitFor(() =>
       expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-        "necroBossWardenLEG"
+        "Legendary Event"
       )
     )
 
@@ -1550,7 +1548,7 @@ describe("NpcsPage encounters", () => {
     expect(screen.getByTestId(id)).not.toHaveTextContent(/battles 0/i)
   })
 
-  it("names and colours Incursion tiers by rarity, as the Incursions page does", async () => {
+  it("names Incursion tiers by rarity, with its icon, as the Incursions page does", async () => {
     const user = userEvent.setup()
     await seedGameCatalog({
       incursions: incursionsFixture,
@@ -1574,8 +1572,9 @@ describe("NpcsPage encounters", () => {
     await user.click(screen.getByTestId(`${id}-toggle`))
     const mythic = screen.getByTestId(`${id}-group-12`)
     expect(mythic).toHaveTextContent("Mythic 1")
-    expect(within(mythic).getByText("Mythic 1")).toHaveClass(
-      "text-(--rarity-mythic)"
+    expect(within(mythic).getByRole("presentation")).toHaveAttribute(
+      "src",
+      expect.stringContaining("rarity/mythic")
     )
   })
 

@@ -38,6 +38,7 @@ import { encounterTiming } from "../../model/encounter-timing"
 
 import { useNpcEncounters } from "../../model/npcs/use-npc-encounters"
 import { useNpcsCatalog } from "../../model/npcs/use-npcs-catalog"
+import { numberRepeatedLabels } from "../../model/npcs/number-repeated-labels"
 import { NpcsMobilePage } from "./mobile/npcs-mobile-page"
 import { useNpcsTutorial } from "./npcs.tutorial"
 import { npcPowerFigure } from "./npcs-page.view-model"
@@ -279,22 +280,21 @@ export function NpcsPage() {
   const variationOptions = useMemo<NpcVariationOption[]>(
     () =>
       selectedGroup
-        ? matching.map((variation) => {
-            const mode = variationMode(
-              variation.id,
-              variation.id === selectedGroup.defaultVariationId
-            )
-            return {
-              id: variation.id,
-              mode,
-              label:
-                mode === "unknown"
-                  ? variation.id
-                  : t(`library:${variationModeLabelKey(mode)}`, {
-                      defaultValue: mode,
-                    }),
-            }
-          })
+        ? numberRepeatedLabels(
+            matching.map((variation) => {
+              const mode = variationMode(
+                variation.id,
+                variation.id === selectedGroup.defaultVariationId
+              )
+              return {
+                id: variation.id,
+                mode,
+                label: t(`library:${variationModeLabelKey(mode)}`, {
+                  defaultValue: mode,
+                }),
+              }
+            })
+          )
         : [],
     [selectedGroup, matching, t]
   )

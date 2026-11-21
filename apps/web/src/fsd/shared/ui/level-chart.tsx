@@ -1,5 +1,8 @@
 import { useId, useState } from "react"
+import type { ReactNode } from "react"
 import { cn } from "@workspace/ui/lib/utils"
+
+import { EntityIcon } from "./entity-icon"
 
 import {
   chartScale,
@@ -19,6 +22,7 @@ const PLOT_WIDTH = 1000
  * The header shows `<x label>: <value>` for the marker, or for the hovered column while hovering.
  * With `onSelect`, clicking a column reports its index (an ability chart sets its level that way).
  * With `dimFrom`, the columns from that index on are faded and their readout gets `dimmedSuffix`.
+ * With `xIcon`, an axis tick is the column's game icon (a rank badge) and the readout leads with it.
  */
 export function LevelChart({
   title,
@@ -26,6 +30,7 @@ export function LevelChart({
   xLabels,
   xTicks,
   tickLabel,
+  xIcon,
   markerIndex,
   caption,
   onSelect,
@@ -38,7 +43,8 @@ export function LevelChart({
   className,
   "data-testid": testId,
 }: {
-  title: string
+  /** The series name; may lead with its stat icon. */
+  title: ReactNode
   points: readonly ChartPoint[]
   /** One label per point, used by the readout. */
   xLabels: readonly string[]
@@ -46,6 +52,8 @@ export function LevelChart({
   xTicks: readonly number[]
   /** A shorter label for an axis tick, when the readout's label is too long to sit under the axis. */
   tickLabel?: (index: number) => string
+  /** A column's game icon (e.g. a rank badge): it replaces the tick text and leads the readout. */
+  xIcon?: (index: number) => string | undefined
   markerIndex?: number
   caption: string
   onSelect?: (index: number) => void
@@ -88,6 +96,10 @@ export function LevelChart({
     : undefined
 
   const readoutIndex = hoverIndex ?? markerIndex
+  const readoutIcon =
+    readoutIndex !== undefined && points[readoutIndex]
+      ? xIcon?.(readoutIndex)
+      : undefined
   const dimmed = dimFrom !== undefined && dimFrom < count ? dimFrom : undefined
   const readout =
     readoutIndex !== undefined && points[readoutIndex]
@@ -110,11 +122,16 @@ export function LevelChart({
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-xs">
         <span className="text-muted-foreground">{title}</span>
-        <span
-          className="font-semibold tabular-nums"
-          data-testid={testId && `${testId}-readout`}
-        >
-          {readout}
+        <span className="inline-flex items-center gap-1">
+          {readoutIcon ? (
+            <EntityIcon size="inline" alt="" src={readoutIcon} />
+          ) : null}
+          <span
+            className="font-semibold tabular-nums"
+            data-testid={testId && `${testId}-readout`}
+          >
+            {readout}
+          </span>
         </span>
       </div>
       <div className="flex gap-1" aria-hidden="true">
@@ -241,16 +258,31 @@ export function LevelChart({
               />
             </div>
           )}
-          <div className="relative mt-1 h-4 text-xs text-muted-foreground">
-            {xTicks.map((index) => (
-              <span
-                key={index}
-                className="absolute -translate-x-1/2 whitespace-nowrap"
-                style={{ left: `${((index + 0.5) / count) * 100}%` }}
-              >
-                {tickLabel ? tickLabel(index) : xLabels[index]}
-              </span>
-            ))}
+          <div
+            className={cn(
+              "relative mt-1 text-xs text-muted-foreground",
+              xIcon ? "h-5" : "h-4"
+            )}
+          >
+            {xTicks.map((index) => {
+              const icon = xIcon?.(index)
+              const label = tickLabel ? tickLabel(index) : xLabels[index]
+              return (
+                <span
+                  key={index}
+                  className="absolute -translate-x-1/2 whitespace-nowrap"
+                  style={{ left: `${((index + 0.5) / count) * 100}%` }}
+                  title={icon ? label : undefined}
+                  data-testid={testId && `${testId}-tick-${index}`}
+                >
+                  {icon ? (
+                    <EntityIcon size="inline" alt={label ?? ""} src={icon} />
+                  ) : (
+                    label
+                  )}
+                </span>
+              )
+            })}
           </div>
         </div>
       </div>

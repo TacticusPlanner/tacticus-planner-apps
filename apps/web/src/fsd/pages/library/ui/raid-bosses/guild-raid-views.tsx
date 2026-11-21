@@ -5,7 +5,18 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion"
 import { Button } from "@workspace/ui/components/button"
-import { chestIcon, guildRaidChestTier } from "@workspace/game-catalog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
+import {
+  chestIcon,
+  guildRaidChestTier,
+  guildXpIcon,
+} from "@workspace/game-catalog"
 import { useTranslation } from "react-i18next"
 
 import type {
@@ -27,6 +38,9 @@ function ChestLabel({ chestId }: { chestId: string }) {
     </span>
   )
 }
+
+/** The comp filter's "every comp" choice: a Select item can't carry an empty value. */
+const ALL_COMPS = "__all__"
 
 function Unit({ unit }: { unit: GuildRaidMetaUnitPresentation }) {
   return (
@@ -72,7 +86,10 @@ export function GuildRaidSeasonsView({
         <span>{t("raidBosses.tier", { tier })}</span>
         <span>{t("raidBosses.set", { set: set.set + 1 })}</span>
         <ChestLabel chestId={set.chestId} />
-        <span>{t("raidBosses.guildXp", { xp: set.guildXp })}</span>
+        <span className="flex items-center gap-1">
+          <EntityIcon size="inline" src={guildXpIcon()} alt="" />
+          {t("raidBosses.guildXp", { xp: set.guildXp })}
+        </span>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
         {set.encounters.map((encounter) => {
@@ -90,8 +107,10 @@ export function GuildRaidSeasonsView({
               <div>
                 <p className="font-medium">{name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {encounter.encounterType} ·{" "}
-                  {t("raidBosses.turns", { count: encounter.maxNrOfTurns })}
+                  {t(`raidBosses.encounterTypes.${encounter.encounterType}`, {
+                    defaultValue: encounter.encounterType,
+                  })}{" "}
+                  · {t("raidBosses.turns", { count: encounter.maxNrOfTurns })}
                 </p>
               </div>
             </div>
@@ -104,21 +123,22 @@ export function GuildRaidSeasonsView({
   return (
     <section className="flex flex-col gap-5" data-testid="raid-boss-seasons">
       <label
-        className="flex w-fit flex-col gap-1 text-sm font-medium"
+        className="flex flex-wrap items-center gap-3 text-sm"
         data-testid="raid-boss-season-select"
       >
-        {t("raidBosses.season")}
-        <select
-          value={selectedSeasonId}
-          onChange={(event) => onSelectSeason(event.target.value)}
-          className="rounded-lg border bg-background px-3 py-2"
-        >
-          {payload.seasonConfigRotation.map((seasonId) => (
-            <option key={seasonId} value={seasonId}>
-              {seasonId}
-            </option>
-          ))}
-        </select>
+        <span className="text-muted-foreground">{t("raidBosses.season")}</span>
+        <Select value={selectedSeasonId} onValueChange={onSelectSeason}>
+          <SelectTrigger className="w-56">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {payload.seasonConfigRotation.map((seasonId, index) => (
+              <SelectItem key={seasonId} value={seasonId}>
+                {t("raidBosses.seasonLabel", { season: index + 1 })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </label>
       {mobile ? (
         <Accordion type="multiple" data-testid="raid-boss-season-mobile-cards">
@@ -218,22 +238,41 @@ export function GuildRaidMetaView({
     <section className="flex flex-col gap-5" data-testid="raid-boss-meta">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <label
-          className="flex flex-col gap-1 text-sm font-medium"
+          className="flex flex-wrap items-center gap-3 text-sm"
           data-testid="raid-boss-meta-filter"
         >
-          {t("raidBosses.meta.compFilter")}
-          <select
-            value={compId ?? ""}
-            onChange={(event) => onCompChange(event.target.value || undefined)}
-            className="rounded-lg border bg-background px-3 py-2"
+          <span className="text-muted-foreground">
+            {t("raidBosses.meta.compFilter")}
+          </span>
+          <Select
+            value={compId ?? ALL_COMPS}
+            onValueChange={(value) =>
+              onCompChange(value === ALL_COMPS ? undefined : value)
+            }
           >
-            <option value="">{t("raidBosses.meta.allComps")}</option>
-            {meta.comps.map((comp) => (
-              <option key={comp.id} value={comp.id}>
-                {comp.id}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-56">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_COMPS}>
+                {t("raidBosses.meta.allComps")}
+              </SelectItem>
+              {meta.comps.map((comp) => (
+                <SelectItem key={comp.id} value={comp.id}>
+                  <EntityIcon
+                    size="inline"
+                    src={
+                      presentation.resolveSignature(comp.signatureUnitId)
+                        .portraitUrl
+                    }
+                    alt=""
+                    className="rounded-full"
+                  />
+                  {comp.id}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
         <p className="text-sm text-muted-foreground">
           {t("raidBosses.meta.updated", { date: meta.updatedOn })}{" "}
@@ -276,12 +315,18 @@ export function GuildRaidMetaView({
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <h3 className="font-medium">{lineup.kind.label}</h3>
                         <div className="flex flex-wrap gap-1">
-                          {recommendation.compIds.map((id) => (
+                          {lineup.comps.map((comp) => (
                             <span
-                              key={id}
-                              className="rounded-full bg-background px-2 py-0.5 text-xs"
+                              key={comp.id}
+                              className="flex items-center gap-1 rounded-full bg-background py-0.5 pr-2 pl-0.5 text-xs"
                             >
-                              {id}
+                              <EntityIcon
+                                size="inline"
+                                src={comp.signature.portraitUrl}
+                                alt=""
+                                className="rounded-full"
+                              />
+                              {comp.id}
                             </span>
                           ))}
                         </div>
@@ -312,7 +357,17 @@ export function GuildRaidMetaView({
           const signature = presentation.resolveSignature(comp.signatureUnitId)
           return (
             <AccordionItem key={comp.id} value={comp.id}>
-              <AccordionTrigger>{comp.id}</AccordionTrigger>
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <EntityIcon
+                    size="row"
+                    src={signature.portraitUrl}
+                    alt=""
+                    className="rounded-full"
+                  />
+                  {comp.id}
+                </span>
+              </AccordionTrigger>
               <AccordionContent>
                 <div
                   className="flex flex-col gap-4"

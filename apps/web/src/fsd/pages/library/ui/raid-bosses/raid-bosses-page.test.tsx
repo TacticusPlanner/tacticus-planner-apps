@@ -475,6 +475,13 @@ describe("RaidBossesPage", () => {
       )
     )
     expect(screen.getByTestId("raid-boss-seasons")).toBeInTheDocument()
+    // the rotation position, never the raw season config id
+    expect(screen.getByTestId("raid-boss-season-select")).toHaveTextContent(
+      "Season 1"
+    )
+    expect(screen.getByTestId("raid-boss-season-select")).not.toHaveTextContent(
+      "s1"
+    )
     expect(
       screen.getByTestId("raid-boss-season-desktop-table")
     ).toHaveTextContent("chest-0")
@@ -555,10 +562,8 @@ describe("RaidBossesPage", () => {
       "admech"
     )
 
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "Filter by comp" }),
-      "admech"
-    )
+    await user.click(screen.getByRole("combobox", { name: "Filter by comp" }))
+    await user.click(await screen.findByRole("option", { name: "admech" }))
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(

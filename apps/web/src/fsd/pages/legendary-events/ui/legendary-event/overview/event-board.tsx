@@ -160,17 +160,9 @@ export function EventBoard({
       data-testid="legendary-event-board"
     >
       <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
-        <div className="flex min-w-0 flex-col gap-1">
-          <h2
-            className="text-lg font-semibold"
-            id="legendary-event-board-title"
-          >
-            {t("eventBoard.title")}
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {t("eventBoard.description")}
-          </p>
-        </div>
+        <h2 className="text-lg font-semibold" id="legendary-event-board-title">
+          {t("eventBoard.title")}
+        </h2>
         <RankShadingSwitch />
       </div>
       <div

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
 import { LevelChart } from "./level-chart"
@@ -43,6 +43,25 @@ describe("level chart scale", () => {
 })
 
 describe("LevelChart", () => {
+  it("names an icon tick with its label as tooltip and alt text", () => {
+    render(
+      <LevelChart
+        title="Health"
+        points={rising}
+        xLabels={levels}
+        xTicks={[0, 1]}
+        xIcon={(index) => (index === 0 ? "/rank.png" : undefined)}
+        caption="Health by level"
+        data-testid="chart"
+      />
+    )
+    const iconTick = screen.getByTestId("chart-tick-0")
+    expect(iconTick).toHaveAttribute("title", "Lv 1")
+    expect(within(iconTick).getByAltText("Lv 1")).toBeInTheDocument()
+    expect(screen.getByTestId("chart-tick-1")).toHaveTextContent("Lv 2")
+    expect(screen.getByTestId("chart-tick-1")).not.toHaveAttribute("title")
+  })
+
   it("fades the columns from dimFrom on and marks their readout", () => {
     render(
       <LevelChart

@@ -1,6 +1,11 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { damageTypeIcon, statIcon, traitIcon } from "@workspace/game-catalog"
+import {
+  damageTypeIcon,
+  rankIcon,
+  statIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import type {
   CharacterStorageModel,
   EquipmentStorageModel,
@@ -344,7 +349,10 @@ export function StatsByRank({
             </th>
             {statKeys.map((key) => (
               <th key={key} scope="col" className="py-1 text-right font-normal">
-                {t(`characterUnit.glance.${key}`, { defaultValue: key })}
+                <span className="inline-flex items-center gap-1">
+                  <EntityIcon size="inline" src={statIcon(key)} alt="" />
+                  {t(`characterUnit.glance.${key}`, { defaultValue: key })}
+                </span>
               </th>
             ))}
           </tr>
@@ -362,7 +370,10 @@ export function StatsByRank({
               data-above-cap={aboveCap(index) || undefined}
             >
               <th scope="row" className="py-1 text-left font-normal">
-                {rankLabel(rank)}
+                <span className="inline-flex items-center gap-1.5 align-middle">
+                  <EntityIcon size="inline" src={rankIcon(rank)} alt="" />
+                  {rankLabel(rank)}
+                </span>
                 {aboveCap(index) ? (
                   <span className="sr-only">
                     {t("characterUnit.statsByRank.aboveCap")}
@@ -390,12 +401,20 @@ export function StatsByRank({
         return (
           <LevelChart
             key={key}
-            title={stat}
+            title={
+              <span className="inline-flex items-center gap-1">
+                <EntityIcon size="inline" src={statIcon(key)} alt="" />
+                {stat}
+              </span>
+            }
             points={points}
             xLabels={xLabels}
             xTicks={xTicks}
-            // Tier initials (St, Ir, Br …) under narrow charts; the readout names the full rank.
-            tickLabel={(index) => xLabels[index]?.slice(0, 2) ?? ""}
+            // Each tier's badge under the axis; the readout leads with the rank's badge and names it.
+            xIcon={(index) => {
+              const rank = ladderRanks[index]
+              return rank ? rankIcon(rank) : undefined
+            }}
             markerIndex={markerIndex}
             readoutSuffix={
               owned ? t("characterUnit.statsByRank.yours") : undefined

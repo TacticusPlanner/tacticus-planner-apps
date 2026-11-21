@@ -15,12 +15,15 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { ProgressionBadge, RankBadge } from "@/shared/ui"
+import { abilityIcon } from "@workspace/game-catalog"
+
+import { EntityIcon, ProgressionBadge, RankBadge } from "@/shared/ui"
 import type { EntityIconSize } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/entities/goal-farming"
 import type { GoalProgress, GoalTargetPreview } from "@/features/goal-planning"
 import { reachableCeilingLabel } from "./ceiling-marker"
+import type { GoalAbilityIds } from "./goal-ability-ids"
 import {
   formatGenericRemainingText,
   formatGoalRemainingText,
@@ -48,10 +51,12 @@ function displayPercent(ratio: number): number {
  *  the emphasised target. A Machine of War's tracks are Primary/Secondary, a Character's are
  *  Active/Passive (`active*` fields hold the first track, `passive*` the second, for both). A track at
  *  or above its target gets no pill. `blocks` draws them as V1's goal card did: soft blocks sharing the
- *  row's width, label left and levels right. */
+ *  row's width, label left and levels right. With `abilityIds`, each pill leads with its ability's
+ *  icon. */
 function AbilityTargetPills({
   progress,
   entityType,
+  abilityIds,
   blocks = false,
 }: {
   progress: Pick<
@@ -59,6 +64,7 @@ function AbilityTargetPills({
     "currentActive" | "targetActive" | "currentPassive" | "targetPassive"
   >
   entityType?: string
+  abilityIds?: GoalAbilityIds
   blocks?: boolean
 }) {
   const { t } = useTranslation()
@@ -66,11 +72,13 @@ function AbilityTargetPills({
   const tracks = [
     {
       key: mow ? ("primary" as const) : ("active" as const),
+      abilityId: abilityIds?.[0],
       current: progress.currentActive,
       target: progress.targetActive,
     },
     {
       key: mow ? ("secondary" as const) : ("passive" as const),
+      abilityId: abilityIds?.[1],
       current: progress.currentPassive,
       target: progress.targetPassive,
     },
@@ -89,7 +97,15 @@ function AbilityTargetPills({
           data-testid={`goal-ability-pill-${track.key}`}
           key={track.key}
         >
-          <span className="font-medium text-muted-foreground">
+          <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
+            {track.abilityId ? (
+              <EntityIcon
+                size="inline"
+                alt=""
+                src={abilityIcon(track.abilityId)}
+                className="rounded-sm"
+              />
+            ) : null}
             {t(`goals.overview.abilityTrack.${track.key}`)}
           </span>
           <span className="inline-flex items-center gap-1">
@@ -127,12 +143,14 @@ function ProgressSwatch({ variant }: { variant: "actual" | "potential" }) {
 function GoalTargetPreviewDisplay({
   preview,
   entityType,
+  abilityIds,
   size,
   rankIconSize,
   arrowClass,
 }: {
   preview: GoalTargetPreview
   entityType?: string
+  abilityIds?: GoalAbilityIds
   size: "md" | "lg"
   rankIconSize: EntityIconSize
   arrowClass: string
@@ -179,6 +197,7 @@ function GoalTargetPreviewDisplay({
       return (
         <span data-testid="goal-target-preview">
           <AbilityTargetPills
+            abilityIds={abilityIds}
             entityType={entityType}
             progress={{
               currentActive: preview.startActive,
@@ -224,12 +243,15 @@ export function ProgressLegend({ className }: { className?: string }) {
 export function GoalTargetDisplay({
   progress,
   entityType,
+  abilityIds,
   size = "md",
   abilityBlocks = false,
 }: {
   progress: GoalProgress
   /** Picks the Ability track labels (Machine of War: Primary/Secondary; otherwise Active/Passive). */
   entityType?: string
+  /** An Ability goal's unit abilities, for each track's icon (see `goalAbilityIds`). */
+  abilityIds?: GoalAbilityIds
   /** `lg` (desktop table) enlarges the rank and rarity emblems so the target reads at a glance. */
   size?: "md" | "lg"
   /** Ability tracks as full-width blocks (the goal card) instead of compact pills (the table). */
@@ -245,6 +267,7 @@ export function GoalTargetDisplay({
   if (progress.kind === "Unknown") {
     return progress.preview ? (
       <GoalTargetPreviewDisplay
+        abilityIds={abilityIds}
         arrowClass={arrowClass}
         entityType={entityType}
         preview={progress.preview}
@@ -285,6 +308,7 @@ export function GoalTargetDisplay({
     </span>
   ) : progress.kind === "Ability" ? (
     <AbilityTargetPills
+      abilityIds={abilityIds}
       blocks={abilityBlocks}
       entityType={entityType}
       progress={progress}

@@ -23,6 +23,7 @@ import {
   GoalProgressDisplay,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
+import { goalAbilityIds } from "../shared/goal-ability-ids"
 import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
@@ -124,7 +125,8 @@ export const GoalCard = memo(
     ...sources
   }: GoalCardProps) {
     const { t, i18n } = useTranslation()
-    const { getEntityName } = useGoalCatalog()
+    const catalog = useGoalCatalog()
+    const { getEntityName } = catalog
     const name = getEntityName(row.entityType, row.entityId)
     const data = deriveGoalRowData(
       row,
@@ -253,6 +255,11 @@ export const GoalCard = memo(
               {data.progress.kind === "Unlock" ? null : (
                 <GoalTargetDisplay
                   abilityBlocks
+                  abilityIds={goalAbilityIds(
+                    row.entityType,
+                    row.entityId,
+                    catalog
+                  )}
                   entityType={row.entityType}
                   progress={data.progress}
                 />

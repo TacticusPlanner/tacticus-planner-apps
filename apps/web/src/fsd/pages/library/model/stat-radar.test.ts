@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { buildRadarPopulation, buildStatRadar } from "./stat-radar"
+import {
+  buildRadarPopulation,
+  buildStatRadar,
+  radarAxisIcon,
+} from "./stat-radar"
 import type { RadarCharacter } from "./stat-radar"
 import type { PierceRatios } from "./pierce-ratios"
 import v1Fixture from "./v1-radar.fixture.json"
@@ -140,5 +144,14 @@ describe("buildStatRadar", () => {
         id
       ).toEqual(percentiles.map((value) => expect.closeTo(value, 6)))
     }
+  })
+})
+
+describe("radarAxisIcon", () => {
+  it("uses the stat itself, or the attack kind for a damage axis", () => {
+    expect(radarAxisIcon("health")).toBe("health")
+    expect(radarAxisIcon("armour")).toBe("armour")
+    expect(radarAxisIcon("meleeVsZeroArmour")).toBe("melee")
+    expect(radarAxisIcon("rangedVsInfiniteArmour")).toBe("ranged")
   })
 })

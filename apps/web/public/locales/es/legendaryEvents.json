@@ -195,7 +195,6 @@
   },
   "eventBoard": {
     "title": "Tablero del evento",
-    "description": "Los objetivos de cada carril mostrado, las unidades que encajan en cada uno y los equipos del carril lado a lado. Elige objetivos para ver las unidades que los cumplen todos, o una unidad para empezar un equipo con ella.",
     "noTeam": "Sin equipo",
     "cleared": "Cumplido en {{cleared}} de {{total}} batallas",
     "clearSelection": "Borrar selección",
