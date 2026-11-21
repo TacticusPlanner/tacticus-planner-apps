@@ -182,6 +182,10 @@ const filter = (testId: string) => {
   openFilters()
   return screen.getByTestId(testId)
 }
+const filterSwitch = (name: string) => {
+  openFilters()
+  return screen.getByRole("switch", { name })
+}
 const chip = (key: string) => {
   openFilters()
   return screen
@@ -374,7 +378,7 @@ describe("LeaderboardSection", () => {
 
   it("turns Deduct scored points off to show and order by points per battle", () => {
     renderLeaderboard()
-    const toggle = filter("leaderboard-deduct-scored")
+    const toggle = filterSwitch("Deduct scored points")
     expect(toggle).toHaveAttribute("aria-checked", "true")
 
     act(() => {
@@ -396,13 +400,13 @@ describe("LeaderboardSection", () => {
 
   it("hides locked units with Only unlocked", () => {
     renderLeaderboard()
-    fireEvent.click(filter("leaderboard-only-unlocked"))
+    fireEvent.click(filterSwitch("Only unlocked"))
     expect(units()).toEqual(["bloodDante", "ultraCalgar"])
   })
 
   it("shows the no-unlocked body on a lane none of the owned units can play", () => {
     renderLeaderboard({ laneId: "beta" })
-    fireEvent.click(filter("leaderboard-only-unlocked"))
+    fireEvent.click(filterSwitch("Only unlocked"))
     expect(rows()).toHaveLength(0)
     expect(screen.getByTestId("leaderboard-no-unlocked")).toBeInTheDocument()
   })
@@ -513,7 +517,7 @@ describe("LeaderboardSection", () => {
     expect(
       screen.getByTestId("leaderboard-roster-not-synced")
     ).toHaveTextContent("Your roster hasn't synced yet")
-    expect(filter("leaderboard-only-unlocked")).toBeDisabled()
+    expect(filterSwitch("Only unlocked")).toBeDisabled()
     expect(screen.queryAllByTestId("leaderboard-locked")).toHaveLength(0)
     expect(screen.queryAllByTestId("leaderboard-rank")).toHaveLength(0)
     expect(rows().every((entry) => entry.dataset.ownership === "unknown")).toBe(
@@ -599,7 +603,7 @@ describe("LeaderboardSection", () => {
       within(dante).getByTestId("leaderboard-objectives")
     ).toHaveTextContent("Objectives: 2")
 
-    fireEvent.click(filter("leaderboard-deduct-scored"))
+    fireEvent.click(filterSwitch("Deduct scored points"))
     expect(within(dante).getByTestId("leaderboard-points")).toHaveTextContent(
       "152 per battle"
     )
@@ -664,7 +668,7 @@ describe("LeaderboardSection", () => {
 
     it("disables the Goals Preview switch with the reason", () => {
       renderLeaderboard({ goals: { ...noGoals, availability: "failed" } })
-      expect(filter("leaderboard-goals-preview")).toBeDisabled()
+      expect(filterSwitch("Goals preview")).toBeDisabled()
       expect(filter("leaderboard-goals-preview-hint")).toHaveTextContent(
         "Goals unavailable"
       )
@@ -675,7 +679,7 @@ describe("LeaderboardSection", () => {
       )
       cleanupRender()
       renderLeaderboard({ goals: { ...noGoals, availability: "noRoster" } })
-      expect(filter("leaderboard-goals-preview")).toBeDisabled()
+      expect(filterSwitch("Goals preview")).toBeDisabled()
       expect(filter("leaderboard-goals-preview-hint")).toHaveTextContent(
         "Sync your roster to preview goals"
       )
@@ -686,7 +690,7 @@ describe("LeaderboardSection", () => {
       renderLeaderboard({
         goals: { ...noGoals, availability: "ready", onPreviewChange },
       })
-      fireEvent.click(filter("leaderboard-goals-preview"))
+      fireEvent.click(filterSwitch("Goals preview"))
       expect(onPreviewChange).toHaveBeenCalledWith(true)
     })
   })

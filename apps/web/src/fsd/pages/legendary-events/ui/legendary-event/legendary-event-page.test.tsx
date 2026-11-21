@@ -336,12 +336,12 @@ const closeFilters = () => {
   if (screen.queryByTestId("leaderboard-filters-panel"))
     fireEvent.click(screen.getByRole("button", { name: "Done" }))
 }
-const filter = (testId: string) => {
+const filterSwitch = (name: string) => {
   openFilters()
-  return screen.getByTestId(testId)
+  return screen.getByRole("switch", { name })
 }
 const toggleOnlyUnlocked = () => {
-  fireEvent.click(filter("leaderboard-only-unlocked"))
+  fireEvent.click(filterSwitch("Only unlocked"))
   closeFilters()
 }
 const follows = (first: HTMLElement, second: HTMLElement) =>
@@ -777,23 +777,23 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     act(() => selectTab("teams"))
     await screen.findByTestId("legendary-event-overview-leaderboard")
     expect(lockedRows().length).toBeGreaterThan(0)
-    expect(filter("leaderboard-deduct-scored")).toHaveAttribute(
+    expect(filterSwitch("Deduct scored points")).toHaveAttribute(
       "aria-checked",
       "true"
     )
 
     toggleOnlyUnlocked()
-    fireEvent.click(filter("leaderboard-deduct-scored"))
+    fireEvent.click(filterSwitch("Deduct scored points"))
     expect(lockedRows()).toHaveLength(0)
     closeFilters()
 
     showOnlyLane("alpha")
     await screen.findByTestId("legendary-event-leaderboard")
-    expect(filter("leaderboard-only-unlocked")).toHaveAttribute(
+    expect(filterSwitch("Only unlocked")).toHaveAttribute(
       "aria-checked",
       "true"
     )
-    expect(filter("leaderboard-deduct-scored")).toHaveAttribute(
+    expect(filterSwitch("Deduct scored points")).toHaveAttribute(
       "aria-checked",
       "false"
     )
@@ -813,11 +813,11 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     await overviewReady()
     act(() => selectTab("teams"))
     await screen.findByTestId("legendary-event-leaderboard")
-    expect(filter("leaderboard-only-unlocked")).toHaveAttribute(
+    expect(filterSwitch("Only unlocked")).toHaveAttribute(
       "aria-checked",
       "false"
     )
-    expect(filter("leaderboard-deduct-scored")).toHaveAttribute(
+    expect(filterSwitch("Deduct scored points")).toHaveAttribute(
       "aria-checked",
       "true"
     )
@@ -839,7 +839,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     await screen.findByTestId("legendary-event-leaderboard")
     expect(screen.getAllByTestId("leaderboard-row")).toHaveLength(1)
 
-    fireEvent.click(filter("leaderboard-goals-preview"))
+    fireEvent.click(filterSwitch("Goals preview"))
     // Cyrus's Unlock goal makes him owned in the preview, so Only unlocked keeps his row.
     const rows = screen.getAllByTestId("leaderboard-row")
     expect(rows).toHaveLength(2)
@@ -848,7 +848,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
 
     switchLane("beta")
     await screen.findByTestId("legendary-event-overview-leaderboard")
-    expect(filter("leaderboard-goals-preview")).toHaveAttribute(
+    expect(filterSwitch("Goals preview")).toHaveAttribute(
       "aria-checked",
       "true"
     )
@@ -864,7 +864,7 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     await overviewReady()
     act(() => selectTab("teams"))
     await screen.findByTestId("legendary-event-overview-leaderboard")
-    expect(filter("leaderboard-goals-preview")).toHaveAttribute(
+    expect(filterSwitch("Goals preview")).toHaveAttribute(
       "aria-checked",
       "false"
     )

@@ -166,9 +166,9 @@ const openFilters = () => {
 }
 const closeFilters = () =>
   fireEvent.click(screen.getByRole("button", { name: "Done" }))
-const filter = (testId: string) => {
+const filterSwitch = (name: string) => {
   openFilters()
-  return screen.getByTestId(testId)
+  return screen.getByRole("switch", { name })
 }
 const units = () =>
   screen.getAllByTestId("leaderboard-row").map((r) => r.dataset.unit)
@@ -371,7 +371,7 @@ describe("CrossLaneLeaderboard", () => {
 
   it("re-orders by points per battle when Deduct scored points is off", () => {
     renderOverview()
-    fireEvent.click(filter("leaderboard-deduct-scored"))
+    fireEvent.click(filterSwitch("Deduct scored points"))
     expect(units()).toEqual(["other", "bloodDante"])
     expect(laneFigures("bloodDante")).toEqual(["152", "100", "—"])
   })
