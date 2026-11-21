@@ -22,6 +22,13 @@ them, and `entity-icon-sizes.test.ts` fails on a fixed size class in an
 overlays are being moved onto it. Nothing adds a new page-specific variant of
 anything below.
 
+Lint enforces two rules in `apps/web` (`no-restricted-syntax`): a hand-written
+`aria-pressed` (rule 3) and an `<h1>` outside the app shell's layout (rule 1).
+Hits that predate the rule are counted in `apps/web/eslint-suppressions.json`.
+When you fix one, run `pnpm --filter web lint:eslint --prune-suppressions` so
+it can't come back. A screen outside the app shell (landing, account setup,
+legal pages, the route error screen) disables the `<h1>` check with a reason.
+
 ## 1. Page header
 
 - Order: title (`text-2xl`), help action ("Tour this page"), one-line
@@ -31,6 +38,8 @@ anything below.
   row. Never a bare gear beside the title, never inside section tabs, never in
   the middle of the toolbar.
 - The first heading inside the page never repeats the page title.
+- The shell renders the page's only `<h1>` (the `PageHeader` title on desktop,
+  the mobile header on phones). Headings inside a page start at `<h2>`.
 
 ## 2. Page toolbar
 

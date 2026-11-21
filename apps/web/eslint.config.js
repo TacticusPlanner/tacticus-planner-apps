@@ -18,6 +18,23 @@ import noUseEffect from "eslint-plugin-react-you-might-not-need-an-effect"
 import { defineConfig, globalIgnores } from "eslint/config"
 import { tailwindSizingConfig } from "../../packages/ui/eslint.tailwind-sizing.js"
 
+// ui-style-guide rule 3. Radix `Toggle`/`ToggleGroupItem` set aria-pressed themselves, so only a
+// hand-written attribute matches.
+const HAND_ROLLED_TOGGLE = {
+  selector: "JSXAttribute[name.name='aria-pressed']",
+  message:
+    "Hand-rolled toggle (ui-style-guide rule 3). Use `SegmentedControl` (or `ToggleGroup`) for 2–4 exclusive options, or a `ToggleGroupItem` with `FILTER_CHIP_CLASS_NAME` for an on/off filter.",
+}
+
+// ui-style-guide rule 1: the page's one `<h1>` is the shell's title (`PageHeader` on desktop, the
+// mobile header), so a page uses `<h2>` and below. A screen outside the shell disables it with a
+// reason.
+const PAGE_H1 = {
+  selector: "JSXOpeningElement[name.name='h1']",
+  message:
+    "The page title is the shell's `<h1>` (ui-style-guide rule 1: `PageHeader` on desktop, the mobile header). Use `<h2>` or below inside a page.",
+}
+
 export default defineConfig([
   // schema.d.ts is generated from the API's OpenAPI document (pnpm api:types).
   globalIgnores(["dist", "coverage", "src/fsd/shared/api/schema.d.ts"]),
@@ -261,6 +278,23 @@ export default defineConfig([
       // Flags any guarded effect, so most hits were real DOM, URL or storage syncs kept with a
       // disable. Off, like no-array-index-key, rather than disabled at every call site.
       "react-you-might-not-need-an-effect/no-event-handler": "off",
+    },
+  },
+  {
+    // ui-style-guide guard rails. Hits that predate them are listed in eslint-suppressions.json;
+    // after fixing one, run `pnpm lint:eslint --prune-suppressions` so the count cannot come back.
+    files: ["src/fsd/**/*.tsx"],
+    ignores: ["**/*.test.tsx"],
+    rules: {
+      "no-restricted-syntax": ["error", HAND_ROLLED_TOGGLE, PAGE_H1],
+    },
+  },
+  {
+    // The app shell renders the page title, so its `<h1>`s are the allowed ones.
+    files: ["src/fsd/app/layout/**/*.tsx"],
+    ignores: ["**/*.test.tsx"],
+    rules: {
+      "no-restricted-syntax": ["error", HAND_ROLLED_TOGGLE],
     },
   },
   tailwindSizingConfig,

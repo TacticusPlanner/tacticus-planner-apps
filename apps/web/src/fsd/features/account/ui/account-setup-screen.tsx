@@ -117,6 +117,7 @@ export function AccountSetupScreen({
             })}
           </p>
         </div>
+        {/* eslint-disable-next-line no-restricted-syntax -- Account setup runs outside the app shell. */}
         <h1
           className="font-heading text-xl font-medium"
           data-testid="account-setup-title"
