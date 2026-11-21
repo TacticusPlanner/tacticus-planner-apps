@@ -58,7 +58,7 @@ export function DesktopNavigationDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="flex max-h-[80vh] flex-col sm:max-w-xl"
+        className="flex max-h-[80vh] flex-col sm:max-w-2xl"
         data-testid="desktop-navigation-dialog"
         onCloseAutoFocus={(event) => {
           if (returnFocusRef?.current) {
@@ -165,7 +165,7 @@ export function DesktopNavigationDialog({
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button className="w-full" variant="secondary">
+            <Button className="w-full" variant="outline">
               {t("common.close")}
             </Button>
           </DialogClose>

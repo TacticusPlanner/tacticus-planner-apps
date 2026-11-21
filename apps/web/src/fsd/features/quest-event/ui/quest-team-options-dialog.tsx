@@ -48,7 +48,7 @@ export function QuestTeamOptionsDialog({
   return (
     <ResponsiveDialog
       data-testid="quest-team-options"
-      desktopClassName="sm:max-w-xl"
+      desktopClassName="sm:max-w-2xl"
       onOpenChange={onOpenChange}
       open={open}
     >
@@ -104,7 +104,7 @@ export function QuestTeamOptionsDialog({
           })}
         </ol>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="border-t md:justify-between">
+      <ResponsiveDialogFooter className="flex-col border-t md:justify-between">
         <p
           className="inline-flex items-center gap-1 text-sm tabular-nums"
           data-testid="quest-team-options-power"
@@ -117,7 +117,7 @@ export function QuestTeamOptionsDialog({
           })}
         </p>
         <div className="flex gap-2">
-          <Button onClick={() => setPicked(suggested)} variant="outline">
+          <Button onClick={() => setPicked(suggested)} variant="ghost">
             {t("team.optionsReset")}
           </Button>
           <Button onClick={() => onOpenChange(false)}>

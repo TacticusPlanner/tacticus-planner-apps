@@ -193,7 +193,7 @@ export function RaidsFiltersDialog({
 
   return (
     <ResponsiveDialog
-      contentClassName="sm:max-w-3xl"
+      contentClassName="sm:max-w-2xl"
       data-testid="raids-filters-dialog"
       onOpenChange={onOpenChange}
       open={open}
@@ -374,21 +374,22 @@ export function RaidsFiltersDialog({
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter className="border-t">
         <Button
-          data-testid="raids-filters-close"
-          onClick={close}
-          variant="outline"
-        >
-          {t("dailies:raidsFilters.actions.close")}
-        </Button>
-        <Button
+          className="md:mr-auto"
           data-testid="raids-filters-reset"
           onClick={() => {
             setApplied(emptyRaidsFilters)
             close()
           }}
-          variant="outline"
+          variant="ghost"
         >
           {t("dailies:raidsFilters.actions.reset")}
+        </Button>
+        <Button
+          data-testid="raids-filters-close"
+          onClick={close}
+          variant="outline"
+        >
+          {t("dailies:raidsFilters.actions.close")}
         </Button>
         <Button
           data-testid="raids-filters-apply"

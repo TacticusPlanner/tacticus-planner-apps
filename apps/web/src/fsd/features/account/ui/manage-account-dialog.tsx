@@ -111,7 +111,7 @@ export function ManageAccountDialog({
   return (
     <ResponsiveDialog
       data-testid="manage-account-dialog"
-      desktopClassName="sm:max-w-lg"
+      desktopClassName="sm:max-w-2xl"
       open={open}
       onOpenChange={onOpenChange}
     >

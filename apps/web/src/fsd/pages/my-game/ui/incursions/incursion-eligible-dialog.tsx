@@ -68,7 +68,7 @@ export function IncursionEligibleDialog({
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      desktopClassName="sm:max-w-3xl"
+      desktopClassName="sm:max-w-2xl"
       data-testid="incursion-eligible-dialog"
     >
       <ResponsiveDialogHeader>
@@ -159,7 +159,7 @@ export function IncursionEligibleDialog({
           })}
         </ol>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="border-t md:justify-between">
+      <ResponsiveDialogFooter className="flex-col border-t md:justify-between">
         <p
           className="text-sm tabular-nums"
           data-testid="incursion-eligible-power"
@@ -172,7 +172,7 @@ export function IncursionEligibleDialog({
         </p>
         <div className="flex gap-2">
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={() => setPicked(suggested.map((member) => member.id))}
           >
             {t("eligible.reset")}

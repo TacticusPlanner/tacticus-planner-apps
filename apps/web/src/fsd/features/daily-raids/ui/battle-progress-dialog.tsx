@@ -109,7 +109,7 @@ export function BattleProgressDialog({
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      desktopClassName="sm:max-w-xl"
+      desktopClassName="sm:max-w-2xl"
       data-testid="battle-progress-dialog"
     >
       {open ? (

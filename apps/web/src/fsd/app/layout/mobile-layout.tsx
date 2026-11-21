@@ -438,7 +438,7 @@ function MobileBottomNav({
               value={search}
             />
             <DrawerClose asChild>
-              <Button className="w-full" variant="secondary">
+              <Button className="w-full" variant="outline">
                 {t("common.close")}
               </Button>
             </DrawerClose>

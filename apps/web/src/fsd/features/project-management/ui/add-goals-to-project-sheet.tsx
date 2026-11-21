@@ -437,7 +437,7 @@ export function AddGoalsToProjectSheet({
           )}
         </div>
 
-        <SheetFooter className="sticky bottom-0 border-t bg-background">
+        <SheetFooter className="sticky bottom-0 flex-col border-t bg-background">
           <MembershipReview draft={draft} goalName={goalName} />
           <Button
             data-testid="add-goals-save"
