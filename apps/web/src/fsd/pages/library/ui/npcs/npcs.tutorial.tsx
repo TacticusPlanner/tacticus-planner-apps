@@ -5,11 +5,11 @@ import type { Step } from "react-joyride"
 import type { TourPageSteps } from "@/shared/tour"
 
 /**
- * Both start on the page toolbar (search and Filters), then desktop targets the tile list and mobile
- * the combobox, then the two selectors and the stats (whose step also explains that power is an
- * estimate). Both end on where the variation is encountered.
+ * The list (`/library/npcs`) covers the toolbar (search and Filters) and the tiles; an NPC's page
+ * covers the two selectors, the stats (whose step also explains that power is an estimate) and
+ * where the variation is encountered. Desktop and mobile share the steps.
  */
-export function useNpcsTutorial(): TourPageSteps {
+export function useNpcsTutorial(onNpcPage: boolean): TourPageSteps {
   const { t } = useTranslation("library")
 
   return useMemo<TourPageSteps>(() => {
@@ -21,23 +21,17 @@ export function useNpcsTutorial(): TourPageSteps {
         placement,
       }) satisfies Step
 
-    return {
-      desktop: [
-        step("filters", "npcs-toolbar", "bottom"),
-        step("list", "npcs-list", "right"),
-        step("variation", "npcs-variation-select", "bottom"),
-        step("level", "npcs-level-select", "bottom"),
-        step("stats", "npcs-stats", "top"),
-        step("encounters", "npc-encounters", "top"),
-      ],
-      mobile: [
-        step("filters", "npcs-toolbar", "bottom"),
-        step("picker", "npcs-combobox", "bottom"),
-        step("variation", "npcs-variation-select", "bottom"),
-        step("level", "npcs-level-select", "bottom"),
-        step("stats", "npcs-stats", "top"),
-        step("encounters", "npc-encounters", "top"),
-      ],
-    }
-  }, [t])
+    const steps = onNpcPage
+      ? [
+          step("variation", "npcs-variation-select", "bottom"),
+          step("level", "npcs-level-select", "bottom"),
+          step("stats", "npcs-stats", "top"),
+          step("encounters", "npc-encounters", "top"),
+        ]
+      : [
+          step("filters", "npcs-toolbar", "bottom"),
+          step("list", "npcs-list", "top"),
+        ]
+    return { desktop: steps, mobile: steps }
+  }, [onNpcPage, t])
 }

@@ -93,6 +93,11 @@ One row directly under the header, three fixed slots, left to right:
 - Icon-only segmented buttons are allowed only with a tooltip and an
   `aria-label`, and only where the label would not fit (mobile).
 - A `Select` is never icon-only: it shows its value on every viewport.
+- Browsing a set of items (characters, MoWs, NPCs, raid bosses) is a list
+  whose items open their own page. That page starts with the shared unit top
+  bar: Back to the list, then Previous / Next with "N of M" in the order the
+  list showed. Never a list beside the detail, and never a picker in place of
+  the list on phones.
 - A name search is the shared `SearchField` (`@/shared/ui`): search icon,
   clear X, "Search by name" unless it searches something else. Pass
   `debounceMs` when the search writes the URL.

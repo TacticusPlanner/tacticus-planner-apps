@@ -6,60 +6,45 @@ Defines the `/library/raid-bosses` experience: a public Library page listing eve
 
 ## Requirements
 
-### Requirement: The Raid Bosses list shows Bosses and Primes as two sections
+### Requirement: Each boss and prime opens on its own page
 
 The public **Guild Raid Bosses** Library SHALL render a tab control with
-**Seasons Config**, **Meta**, and **Boss / Prime Details** views. The Details
-tab SHALL present the roster so that every boss and every raid-boss prime is
-selectable, showing each entity's resolved portrait and resolved name. The
-portrait is the round portrait resolved from `unitSetId` (see
-`raid-boss-catalog`); when no portrait resolves, a readable initials badge is
-shown. The Library remains available to anonymous and signed-in users and
-shall not depend on signed-in user data.
+**Seasons Config**, **Meta**, and **Boss / Prime Details** views. With no
+entity in the path, Details SHALL show the season reference, where every boss
+and every raid-boss prime of the season is a button showing its resolved
+portrait and name. The portrait is the round portrait resolved from
+`unitSetId` (see `raid-boss-catalog`); when no portrait resolves, a readable
+initials badge is shown. Activating one SHALL open that entity's page at
+`/library/raid-bosses/{unitSetId}` with the encounter context. The Library
+remains available to anonymous and signed-in users and shall not depend on
+signed-in user data.
 
-The Details roster presentation depends on viewport:
+An entity's page SHALL show the shared Library unit top bar (Back to Season
+reference on the season it was opened from, the breadcrumb on desktop, and
+Previous / Next with "N of M" through the bosses then the primes, in served
+order), then the detail at full width. Previous / Next keep the season and
+Comp but drop any encounter context. There SHALL be no list beside the detail
+and no separate picker on mobile.
 
-- **Desktop (≥768px)**: two labelled sections — **Bosses** and **Primes** —
-  each listing its entities as a portrait grid in the catalog's served order.
-- **Mobile (<768px)**: a single searchable Select (a combobox — trigger with
-  the selected entity's portrait and name, a text search field, a scrollable
-  grouped list). The list is grouped one group per boss, in the catalog's
-  served boss order; each group's heading is the boss name and its members
-  are the boss entry followed by the primes fought alongside it — the primes
-  referenced by that boss's encounter sets' `Crystal` encounters, deduped and
-  in encounter order. The served dataset is assumed to reference every prime
-  through the boss(es) it fights with.
+#### Scenario: Opening a boss from the season reference
 
-Selecting an entity in either form SHALL behave identically.
-
-#### Scenario: Details tab shows both entity sections
-
-- **WHEN** an anonymous user opens the Details tab at ≥768px after the
-  `raid-bosses` dataset has synced
-- **THEN** Bosses and Primes sections are shown in served order, with a
-  portrait or readable initials fallback for every entity
-
-#### Scenario: Mobile shows a grouped searchable Select
-
-- **WHEN** an anonymous user opens `/library/raid-bosses` below 768px after
-  the dataset has synced
-- **THEN** the roster is a single combobox whose list is grouped per boss,
-  each group headed by the boss name and containing that boss followed by
-  its primes, with a search field that filters options by name
-
-#### Scenario: Selecting an entity opens its detail
-
-- **WHEN** the user activates a boss or prime entry in either the desktop
-  sections or the mobile Select
-- **THEN** the app navigates to `/library/raid-bosses/{unitSetId}` while
-  retaining the Details tab and shows that entity's detail
+- **WHEN** a user activates a boss on the season reference
+- **THEN** the app navigates to `/library/raid-bosses/{unitSetId}` with its
+  encounter context and shows that boss's page with its position among the
+  bosses and primes
 
 #### Scenario: Primes are browsable in their own right
 
-- **WHEN** the user selects a prime — from the desktop Primes section or
-  from a boss's group in the mobile Select
-- **THEN** its detail view opens the same way a boss's does — primes are
+- **WHEN** the user activates a prime on the season reference, or steps onto
+  one with Next
+- **THEN** its page opens the same way a boss's does — primes are
   first-class entities, not a sub-view of a boss
+
+#### Scenario: Back returns to the season reference
+
+- **WHEN** the user opens a boss from season 2 and activates Back
+- **THEN** the URL becomes `/library/raid-bosses?season=s2` and the season
+  reference for season 2 is shown
 
 #### Scenario: Field enemies show an icon
 
@@ -76,8 +61,9 @@ unrecognized values default to `details`. The selected `unitSetId` remains
 path-backed and is preserved while switching tabs, even where Seasons Config
 or Meta does not use it directly, so returning to Details restores the
 selection. Opening a bare collection URL with a populated `raid-bosses`
-dataset canonicalizes to the first available entity URL; unknown entity ids
-fall back to that first entity. Browser history and shared links SHALL restore
+dataset shows the season reference without redirecting; an unknown entity id
+falls back to the first entity when `tab` is set, else to the bare collection
+URL. Browser history and shared links SHALL restore
 both selection and tab state.
 
 The Seasons Config tab SHALL store its selected season in `season`; it
@@ -94,12 +80,12 @@ its selection/filter.
 - **THEN** the Meta tab is active, the matching Comp filter is applied, and
   switching back to Details retains `{unitSetId}`
 
-#### Scenario: Bare collection URL canonicalizes to Details
+#### Scenario: Bare collection URL shows the season reference
 
 - **WHEN** a user opens `/library/raid-bosses` and the raid-boss dataset has
   entities
-- **THEN** the URL is replaced with
-  `/library/raid-bosses/{firstEntityId}` and Details is the active tab
+- **THEN** the URL stays `/library/raid-bosses`, Details is the active tab,
+  and the season reference is shown
 
 #### Scenario: Unknown URL state is repaired
 
@@ -251,42 +237,32 @@ The page's Joyride tour (desktop and mobile step sets) SHALL include a step anch
 ### Requirement: Desktop and mobile present distinct layouts
 
 The page SHALL render its tab control and shared route state at all viewport
-sizes. At ≥768px, Details keeps the two-section portrait grid beside the
-selected detail; Seasons Config uses a dense selectable season/tier/set
-presentation; Meta uses scannable boss recommendation cards and a Comp
-filter/guidance area. Below 768px, the tab control remains touch-accessible,
-Details uses a single searchable Select grouped by boss (each boss heading
-followed by the primes it is fought alongside) plus compact stacked detail
-cards, Seasons Config uses stacked expandable tier/set cards, and Meta uses
-stacked recommendation and Comp guidance cards. Both layouts expose the same
-datasets, tab state, content, and entity selection behavior.
+sizes. An entity's page is the same on both, with the detail at full width
+(compact stacked detail cards below 768px). At ≥768px, Seasons Config uses a
+dense selectable season/tier/set presentation and Meta uses scannable boss
+recommendation cards and a Comp filter/guidance area. Below 768px, the tab
+control remains touch-accessible, Seasons Config uses stacked expandable
+tier/set cards, and Meta uses stacked recommendation and Comp guidance cards.
+Both layouts expose the same datasets, tab state, content, and entity
+navigation.
 
 #### Scenario: Desktop season reference
 
 - **WHEN** the Seasons Config tab renders at a viewport at or above 768px
 - **THEN** the desktop season selector and dense, horizontally grouped
-  tier/set encounter rows render, while the Details tab retains its desktop
-  navigation and side-by-side detail layout
+  tier/set encounter rows render
 
 #### Scenario: Mobile season reference
 
 - **WHEN** the Seasons Config tab renders below 768px
 - **THEN** every tier and set is reachable through stacked, expandable,
-  touch-oriented cards, while the Details tab retains its searchable picker
-  and compact form
+  touch-oriented cards
 
-#### Scenario: Desktop layout
+#### Scenario: Mobile entity page
 
-- **WHEN** the page renders at a viewport ≥768px
-- **THEN** the desktop tab layout is used, with the Details two-section
-  portrait grid beside the selected detail, and dense season/Meta forms
-  appropriate to the wider viewport
-
-#### Scenario: Mobile layout
-
-- **WHEN** the page renders at a viewport below 768px
-- **THEN** the mobile tab layout is used, with the Details roster as a
-  grouped searchable Select and stacked/expandable season and Meta content
+- **WHEN** an entity's page renders below 768px
+- **THEN** it shows the same top bar with Back and Previous / Next as desktop,
+  then the compact detail, with no roster picker
 
 ### Requirement: Loading, dataset-absent, and failure states are distinct
 
@@ -332,9 +308,9 @@ Meta shows an explicit no-recommendation state for that boss or filter.
 
 The page SHALL register a Joyride tour via `useTourPageSteps` with localized
 `library` keys and targets that exist for the active tab. Every tour includes
-a tab-control step. The Details tour covers choosing an entity, the roster
-layout (the Bosses/Primes split on desktop and one grouped searchable Select
-on mobile), progression, encounter modifiers, and adjusted stats; the
+a tab-control step. The Details tour covers the season reference when no entity is
+open, and progression, encounter modifiers, and adjusted stats on an entity's
+page; the
 Seasons Config tour covers season selection and tier/set content; the Meta
 tour covers recommendations, Comp filtering, and expandable core/flex/
 Machine-of-War guidance. Desktop and mobile tours SHALL use
@@ -351,9 +327,8 @@ platform-appropriate targets.
 
 - **WHEN** a user starts the page tour with Details active on a valid entity
   route at a viewport at or above 768px and again below 768px
-- **THEN** the applicable tour steps target only visible detail navigation,
-  progression, modifier, and adjusted-stats controls, using the two section
-  targets on desktop and the single picker target on mobile
+- **THEN** the applicable tour steps target only visible progression,
+  modifier, and adjusted-stats controls, the same on both platforms
 
 #### Scenario: A Details tour includes adjusted stats
 

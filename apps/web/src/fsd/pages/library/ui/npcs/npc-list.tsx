@@ -1,36 +1,22 @@
-import { useEffect, useRef } from "react"
+import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { factionIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
-import { cn } from "@workspace/ui/lib/utils"
 
 import { NpcPortrait } from "@/entities/npc"
 import { EmptyState, EntityIcon } from "@/shared/ui"
 
 import type { NpcListItem } from "./npcs-page.view-model"
 
-/** Desktop tile grid of listed NPCs; the selected tile is pressed. */
+/** The grid of listed NPCs; each tile opens that NPC's page. */
 export function NpcList({
   items,
-  selectedId,
-  onSelect,
   onClearFilters,
 }: {
   items: NpcListItem[]
-  selectedId: string | undefined
-  onSelect: (id: string) => void
   onClearFilters: () => void
 }) {
   const { t } = useTranslation("library")
-  const listRef = useRef<HTMLDivElement>(null)
-
-  // A direct link can land on an NPC far down the grid; bring its tile into view once, on selection.
-  useEffect(() => {
-    if (!selectedId) return
-    listRef.current
-      ?.querySelector<HTMLElement>(`[data-testid="npc-tile-${selectedId}"]`)
-      ?.scrollIntoView({ block: "nearest" })
-  }, [selectedId])
 
   if (items.length === 0) {
     return (
@@ -49,28 +35,18 @@ export function NpcList({
 
   return (
     <div
-      ref={listRef}
       className="flex flex-wrap gap-2"
       data-testid="npcs-list"
       aria-label={t("npcs.npc")}
     >
       {items.map((item) => {
         const emblem = factionIcon(item.factionId)
-        const selected = item.id === selectedId
         return (
-          <button
+          <Link
             key={item.id}
-            type="button"
-            aria-pressed={selected}
-            onClick={() => onSelect(item.id)}
+            to={`/library/npcs/${item.id}`}
             title={`${item.name} · ${item.factionName}`}
-            className={cn(
-              "flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors",
-              "focus-visible:outline-2 focus-visible:outline-primary",
-              selected
-                ? "border-primary bg-primary/10"
-                : "border-border hover:bg-accent/10"
-            )}
+            className="flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary"
             data-testid={`npc-tile-${item.id}`}
           >
             <span className="relative">
@@ -91,7 +67,7 @@ export function NpcList({
             <span className="line-clamp-2 text-xs font-medium">
               {item.name}
             </span>
-          </button>
+          </Link>
         )
       })}
     </div>

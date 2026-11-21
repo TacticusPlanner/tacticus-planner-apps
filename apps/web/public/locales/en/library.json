@@ -86,12 +86,8 @@
     "seasonLabel": "Season {{season}}",
     "tier": "Tier {{tier}}",
     "set": "Set {{set}}",
-    "viewSeasonReference": "View season reference",
+    "seasonReference": "Season reference",
     "noSeasonReference": "No raid-boss season data is available.",
-    "bosses": "Bosses",
-    "primes": "Primes",
-    "pickerPlaceholder": "Search bosses and primes…",
-    "pickerEmpty": "No boss or prime found.",
     "primarch": "Primarch",
     "progression": "Progression",
     "stats": "Stats",
@@ -117,18 +113,6 @@
     "noModifiers": "No modifiers.",
     "tour": {
       "steps": {
-        "bosses": {
-          "title": "Guild Raid Bosses",
-          "content": "Every guild raid boss. Pick one to see its stats, abilities, and encounter modifiers."
-        },
-        "primes": {
-          "title": "Primes",
-          "content": "The prime enemies fought alongside each boss — browsable in their own right."
-        },
-        "mobilePicker": {
-          "title": "Guild Raid Bosses",
-          "content": "Search and select a boss or prime — each boss is grouped with the primes fought alongside it."
-        },
         "progression": {
           "title": "Progression step",
           "content": "Step through the boss's progression ladder to see how its stats scale."
@@ -334,7 +318,6 @@
     "noMatchingOptions": "No matching options.",
     "noMatchingVariation": "None of this NPC’s variations match the current filters.",
     "loadFailed": "NPC data could not be loaded.",
-    "selectNpc": "Select an NPC",
     "tour": {
       "steps": {
         "filters": {
@@ -344,10 +327,6 @@
         "list": {
           "title": "Pick an NPC",
           "content": "Every non-playable unit in the game, one entry per unit. Variations of the same unit are grouped under it."
-        },
-        "picker": {
-          "title": "Pick an NPC",
-          "content": "Open the picker and search for a unit. Variations of the same unit are grouped under one entry."
         },
         "variation": {
           "title": "Variation",
