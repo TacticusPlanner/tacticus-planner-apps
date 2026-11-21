@@ -266,18 +266,19 @@ export function LevelChart({
           >
             {xTicks.map((index) => {
               const icon = xIcon?.(index)
+              const label = tickLabel ? tickLabel(index) : xLabels[index]
               return (
                 <span
                   key={index}
                   className="absolute -translate-x-1/2 whitespace-nowrap"
                   style={{ left: `${((index + 0.5) / count) * 100}%` }}
+                  title={icon ? label : undefined}
+                  data-testid={testId && `${testId}-tick-${index}`}
                 >
                   {icon ? (
-                    <EntityIcon size="inline" alt="" src={icon} />
-                  ) : tickLabel ? (
-                    tickLabel(index)
+                    <EntityIcon size="inline" alt={label ?? ""} src={icon} />
                   ) : (
-                    xLabels[index]
+                    label
                   )}
                 </span>
               )
