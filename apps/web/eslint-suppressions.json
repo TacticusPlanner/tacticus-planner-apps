@@ -79,16 +79,6 @@
       "count": 1
     }
   },
-  "src/fsd/pages/library/ui/npcs/npc-list.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/library/ui/raid-bosses/raid-boss-list.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/my-game/ui/collection/compare/compare-summary.tsx": {
     "no-restricted-syntax": {
       "count": 1

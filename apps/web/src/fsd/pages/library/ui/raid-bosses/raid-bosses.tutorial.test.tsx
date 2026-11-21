@@ -15,55 +15,31 @@ const copy = (...keys: (keyof typeof tourSteps)[]) =>
 vi.mock("@/shared/tour", () => ({}))
 
 describe("useRaidBossesTutorial", () => {
-  it("covers the detail view on desktop with the two-section roster", () => {
-    const { result } = renderHook(() => useRaidBossesTutorial("details"))
+  it("covers the season reference when no boss is open", () => {
+    const { result } = renderHook(() => useRaidBossesTutorial("details", false))
 
-    expect(result.current.desktop.map((step) => step.target)).toEqual([
-      '[data-testid="raid-boss-tabs"]',
-      '[data-testid="raid-boss-list-bosses"]',
-      '[data-testid="raid-boss-list-primes"]',
-      '[data-testid="raid-boss-progression"]',
-      '[data-testid="raid-boss-prime-modifiers"]',
-      '[data-testid="raid-boss-adjusted-stats"]',
-    ])
-    expect(
-      result.current.desktop.map(({ title, content }) => ({ title, content }))
-    ).toEqual(
-      copy(
-        "tabs",
-        "bosses",
-        "primes",
-        "progression",
-        "primeModifiers",
-        "adjustedStats"
-      )
-    )
+    for (const set of [result.current.desktop, result.current.mobile ?? []]) {
+      expect(set.map((step) => step.target)).toEqual([
+        '[data-testid="raid-boss-tabs"]',
+        '[data-testid="raid-boss-season-reference"]',
+      ])
+    }
   })
 
-  it("covers the detail view on mobile with the single collapsed picker step", () => {
+  it("covers a boss's page on both forms", () => {
     const { result } = renderHook(() => useRaidBossesTutorial("details"))
 
-    expect((result.current.mobile ?? []).map((step) => step.target)).toEqual([
-      '[data-testid="raid-boss-tabs"]',
-      '[data-testid="raid-boss-mobile-picker"]',
-      '[data-testid="raid-boss-progression"]',
-      '[data-testid="raid-boss-prime-modifiers"]',
-      '[data-testid="raid-boss-adjusted-stats"]',
-    ])
-    expect(
-      (result.current.mobile ?? []).map(({ title, content }) => ({
-        title,
-        content,
-      }))
-    ).toEqual(
-      copy(
-        "tabs",
-        "mobilePicker",
-        "progression",
-        "primeModifiers",
-        "adjustedStats"
+    for (const set of [result.current.desktop, result.current.mobile ?? []]) {
+      expect(set.map((step) => step.target)).toEqual([
+        '[data-testid="raid-boss-tabs"]',
+        '[data-testid="raid-boss-progression"]',
+        '[data-testid="raid-boss-prime-modifiers"]',
+        '[data-testid="raid-boss-adjusted-stats"]',
+      ])
+      expect(set.map(({ title, content }) => ({ title, content }))).toEqual(
+        copy("tabs", "progression", "primeModifiers", "adjustedStats")
       )
-    )
+    }
   })
 
   it("guides the season-reference landing page", () => {

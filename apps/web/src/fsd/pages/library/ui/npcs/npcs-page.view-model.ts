@@ -13,6 +13,7 @@ import type {
   NpcVariation,
   NpcVariationMode,
 } from "@/entities/npc"
+import type { UnitNeighbours } from "@/entities/unit"
 import type { ReadState } from "@/shared/lib"
 import { npcPowerAt } from "@/shared/unit-power"
 import type { UnitPowerContext } from "@/shared/unit-power"
@@ -20,7 +21,7 @@ import type { UnitPowerContext } from "@/shared/unit-power"
 import { powerFigure } from "../unit/unit-power.model"
 import type { PowerFigure } from "../unit/unit-power.model"
 
-/** One NPC as listed in the desktop tile grid / mobile picker. */
+/** One NPC as listed in the tile grid. */
 export interface NpcListItem {
   id: string
   name: string
@@ -52,7 +53,7 @@ export interface NpcFilterOptions {
   canFilterRunning: boolean
 }
 
-/** Flat props for the desktop and mobile sub-pages; the orchestrator computes them once. */
+/** Flat props for the list and detail pages; the orchestrator computes them once. */
 export interface NpcsPageViewProps {
   items: NpcListItem[]
   filters: NpcFilters
@@ -64,7 +65,10 @@ export interface NpcsPageViewProps {
   selectedGroup: NpcGroup | undefined
   selectedName: string
   selectedId: string | undefined
-  onSelect: (groupId: string) => void
+  /** The selected NPC's place in the listed order (the filtered list, else every NPC), for
+   *  Previous / Next on its page. */
+  neighbours: UnitNeighbours
+  nameOf: (groupId: string) => string
 
   /** Variations of the selected group that pass the active filters. */
   variationOptions: NpcVariationOption[]
