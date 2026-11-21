@@ -23,6 +23,7 @@ import {
   useLeaderboardUnitName,
   useObjectiveChips,
 } from "./leaderboard.view-model"
+import { clearLeaderboardFilters } from "./leaderboard-filters"
 
 /**
  * The Eligibility leaderboard of one lane tab, after the Synced progress grid: every unit the lane
@@ -52,7 +53,7 @@ export function LeaderboardSection({
   const groups = objectiveChips(event, [laneId], progressGrid)
   const objectives = groups[0]?.chips ?? []
   const figure = leaderboardFigure(leaderboard)
-  const clearFilter = () => leaderboard.onSelectedObjectivesChange(new Set())
+  const clearFilter = () => clearLeaderboardFilters(leaderboard)
   const clearsOf = laneClearsOf(leaderboard.clears, laneId)
 
   let body: ReactNode

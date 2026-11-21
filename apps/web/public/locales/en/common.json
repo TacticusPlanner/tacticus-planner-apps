@@ -414,10 +414,7 @@
         "ownedOnly": "Owned only",
         "hideUnownedNeedsRoster": "Hiding unowned units needs a synced roster.",
         "filters": "Filters",
-        "filtersCount_one": "Filters ({{count}})",
-        "filtersCount_other": "Filters ({{count}})",
         "clearFilters": "Clear filters",
-        "done": "Done",
         "alliance": "Alliance",
         "allAlliances": "All alliances",
         "faction": "Faction",
@@ -2591,5 +2588,12 @@
     "layout": "Layout",
     "done": "Done",
     "none": "None"
+  },
+  "filtersControl": {
+    "button": "Filters",
+    "buttonActive": "Filters, {{count}} active",
+    "title": "Filters",
+    "clear": "Clear filters",
+    "done": "Done"
   }
 }

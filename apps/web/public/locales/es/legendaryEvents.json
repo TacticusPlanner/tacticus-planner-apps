@@ -273,7 +273,7 @@
     "noUnlocked": "Ninguna de tus unidades desbloqueadas puede jugar en este carril.",
     "noneInTeams": "Tus equipos aquí aún no tienen unidades.",
     "noneMatch": "Ninguna unidad cumple estos objetivos.",
-    "clearFilter": "Quitar filtro",
+    "clearFilter": "Borrar filtros",
     "rosterNotSynced": "Tu plantilla aún no se ha sincronizado, así que no se muestran la propiedad, la rareza ni el rango.",
     "progressUnavailable": "Progreso sincronizado no disponible, así que nada cuenta como conseguido.",
     "loading": "Cargando unidades…",
@@ -283,8 +283,6 @@
       "notAllowedLabel": "{{lane}}: no permitido",
       "laneFigure": "{{lane}}: {{points}}"
     },
-    "filters": "Filtros",
-    "filtersCount": "Filtros ({{count}})",
     "lanes": "Carriles",
     "lanesAll": "Todos los carriles",
     "lanesCount": "{{count}} carriles",

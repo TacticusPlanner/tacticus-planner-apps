@@ -242,8 +242,6 @@
     "damageType": "Schadensart",
     "trait": "Eigenschaft",
     "clearFilters": "Filter zurücksetzen",
-    "filtersCount": "Filter ({{count}})",
-    "filtersDone": "Fertig",
     "filters": "Filter",
     "npc": "NPC",
     "variation": "Variante",
@@ -392,7 +390,9 @@
     "minCount": "Min. in einem Kampf",
     "meleeOnly": "Nur Nahkampf",
     "hasRanged": "Mit Fernkampf",
-    "clearOne": "{{name}} zurücksetzen"
+    "clearOne": "{{name}} zurücksetzen",
+    "anyDamageType": "Beliebige Schadensart",
+    "anyTrait": "Beliebige Eigenschaft"
   },
   "unit": {
     "nav": {

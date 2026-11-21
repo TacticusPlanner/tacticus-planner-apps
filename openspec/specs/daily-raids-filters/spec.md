@@ -56,9 +56,9 @@ Activating the action SHALL open a dialog titled "Raids Filters" with sections, 
 - **WHEN** the user chooses Apply
 - **THEN** the draft becomes the applied filter, the dialog closes and Today recomputes
 
-#### Scenario: Reset
+#### Scenario: Clear filters
 
-- **WHEN** the user chooses Reset
+- **WHEN** the user chooses Clear filters
 - **THEN** every field is cleared, the empty filter is applied immediately and the dialog closes
 
 #### Scenario: Faction options follow alliance
@@ -167,7 +167,7 @@ For every material (upgrades and character shards alike) the engine SHALL first 
 
 - **GIVEN** every eligible node for a material fails the filter
 - **WHEN** Today is computed
-- **THEN** the material is reported as filtered out with a Reset action
+- **THEN** the material is reported as filtered out with a Clear filters action
 
 #### Scenario: Character shards behave the same as upgrades
 
@@ -193,7 +193,7 @@ For every material (upgrades and character shards alike) the engine SHALL first 
 
 - **GIVEN** a goal pins its farm location to a node that fails the filter
 - **WHEN** Today is computed
-- **THEN** the goal is reported as filtered out, not scheduled on the pinned node, and the notice says its pinned location is excluded by the Raids Filters and offers Reset
+- **THEN** the goal is reported as filtered out, not scheduled on the pinned node, and the notice says its pinned location is excluded by the Raids Filters and offers Clear filters
 
 #### Scenario: Pinned location passes the filter
 
@@ -263,10 +263,10 @@ The Enemies section SHALL offer an Enemy Traits multi-select. Its options SHALL 
 - **WHEN** the user opens Enemy Traits
 - **THEN** the options are exactly the traits present on campaign-battle enemies, including Mechanical, and not traits that occur on no such enemy
 
-#### Scenario: Reset clears the traits
+#### Scenario: Clear filters clears the traits
 
 - **GIVEN** an applied filter with enemy traits
-- **WHEN** the user chooses Reset
+- **WHEN** the user chooses Clear filters
 - **THEN** the trait selection is empty and the badge no longer counts it
 
 ### Requirement: Filtered-out notice lists the skipped materials

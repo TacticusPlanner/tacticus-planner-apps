@@ -548,8 +548,6 @@
     "row": "{{material}} ×{{count}}: {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filtros",
-    "triggerActive": "Filtros, {{count}} activos",
     "title": "Filtros",
     "description": "Limita qué ubicaciones de campaña pueden usar Hoy, las incursiones extra y la pestaña EPI. El plan y los objetivos no se ven afectados.",
     "sections": {
@@ -593,16 +591,16 @@
     "slotsOption": "{{count}} espacios",
     "actions": {
       "cancel": "Cancelar",
-      "reset": "Restablecer filtros",
+      "reset": "Borrar filtros",
       "apply": "Aplicar filtros"
     },
     "filteredOut": {
       "title": "Los filtros de incursiones quitaron algunos materiales",
       "materials_one": "{{count}} material no tiene ninguna ubicación permitida con estos filtros.",
       "materials_other": "{{count}} materiales no tienen ninguna ubicación permitida con estos filtros.",
-      "pinned_one": "{{count}} objetivo está fijado a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
-      "pinned_other": "{{count}} objetivos están fijados a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
-      "reset": "Restablecer filtros",
+      "pinned_one": "{{count}} objetivo está fijado a una ubicación excluida por tus filtros de incursiones. Borra los filtros o cambia la ubicación fijada.",
+      "pinned_other": "{{count}} objetivos están fijados a una ubicación excluida por tus filtros de incursiones. Borra los filtros o cambia la ubicación fijada.",
+      "reset": "Borrar filtros",
       "listLabel": "Materiales que tus filtros de incursiones omiten",
       "pinnedBadge": "Fijado",
       "showAll": "Mostrar los {{count}}",

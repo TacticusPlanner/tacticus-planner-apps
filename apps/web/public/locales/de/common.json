@@ -414,10 +414,7 @@
         "ownedOnly": "Nur freigeschaltete",
         "hideUnownedNeedsRoster": "Zum Ausblenden nicht freigeschalteter Einheiten braucht es einen synchronisierten Kader.",
         "filters": "Filter",
-        "filtersCount_one": "Filter ({{count}})",
-        "filtersCount_other": "Filter ({{count}})",
         "clearFilters": "Filter zurücksetzen",
-        "done": "Fertig",
         "alliance": "Allianz",
         "allAlliances": "Alle Allianzen",
         "faction": "Fraktion",
@@ -2591,5 +2588,12 @@
     "layout": "Layout",
     "done": "Fertig",
     "none": "Keine"
+  },
+  "filtersControl": {
+    "button": "Filter",
+    "buttonActive": "Filter, {{count}} aktiv",
+    "title": "Filter",
+    "clear": "Filter zurücksetzen",
+    "done": "Fertig"
   }
 }

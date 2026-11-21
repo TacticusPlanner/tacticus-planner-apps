@@ -548,8 +548,6 @@
     "row": "{{material}} ×{{count}}: {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filters",
-    "triggerActive": "Filters, {{count}} active",
     "title": "Filters",
     "description": "Limit which campaign locations Today, Bonus Raids and the HSE tab may use. Plan and Goals are not affected.",
     "sections": {
@@ -593,16 +591,16 @@
     "slotsOption": "{{count}} slots",
     "actions": {
       "cancel": "Cancel",
-      "reset": "Reset filters",
+      "reset": "Clear filters",
       "apply": "Apply filters"
     },
     "filteredOut": {
       "title": "Filters removed some materials",
       "materials_one": "{{count}} material has no allowed location with these filters.",
       "materials_other": "{{count}} materials have no allowed location with these filters.",
-      "pinned_one": "{{count}} goal is pinned to a location excluded by your raid filters. Reset the filters or change the pin.",
-      "pinned_other": "{{count}} goals are pinned to a location excluded by your raid filters. Reset the filters or change the pin.",
-      "reset": "Reset filters",
+      "pinned_one": "{{count}} goal is pinned to a location excluded by your raid filters. Clear the filters or change the pin.",
+      "pinned_other": "{{count}} goals are pinned to a location excluded by your raid filters. Clear the filters or change the pin.",
+      "reset": "Clear filters",
       "listLabel": "Materials your raid filters skip",
       "pinnedBadge": "Pinned",
       "showAll": "Show all {{count}}",

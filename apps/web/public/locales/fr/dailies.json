@@ -548,8 +548,6 @@
     "row": "{{material}} ×{{count}} : {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filtres",
-    "triggerActive": "Filtres, {{count}} actifs",
     "title": "Filtres",
     "description": "Limitez les lieux de campagne que Aujourd'hui, les raids bonus et l'onglet ÉÉA peuvent utiliser. Le plan et les objectifs ne sont pas affectés.",
     "sections": {
@@ -593,16 +591,16 @@
     "slotsOption": "{{count}} emplacements",
     "actions": {
       "cancel": "Annuler",
-      "reset": "Réinitialiser les filtres",
+      "reset": "Effacer les filtres",
       "apply": "Appliquer les filtres"
     },
     "filteredOut": {
       "title": "Les filtres de raids ont retiré certains matériaux",
       "materials_one": "{{count}} matériau n'a aucun lieu autorisé avec ces filtres.",
       "materials_other": "{{count}} matériaux n'ont aucun lieu autorisé avec ces filtres.",
-      "pinned_one": "{{count}} objectif est épinglé sur un lieu exclu par vos filtres de raids. Réinitialisez les filtres ou changez l'épingle.",
-      "pinned_other": "{{count}} objectifs sont épinglés sur un lieu exclu par vos filtres de raids. Réinitialisez les filtres ou changez l'épingle.",
-      "reset": "Réinitialiser les filtres",
+      "pinned_one": "{{count}} objectif est épinglé sur un lieu exclu par vos filtres de raids. Effacez les filtres ou changez l'épingle.",
+      "pinned_other": "{{count}} objectifs sont épinglés sur un lieu exclu par vos filtres de raids. Effacez les filtres ou changez l'épingle.",
+      "reset": "Effacer les filtres",
       "listLabel": "Matériaux ignorés par vos filtres de raids",
       "pinnedBadge": "Épinglé",
       "showAll": "Tout afficher ({{count}})",

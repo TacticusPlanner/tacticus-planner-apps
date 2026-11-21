@@ -301,7 +301,7 @@ While the catalog is loading or has failed to load, the toolbar SHALL NOT be sho
 On desktop (at least 768px):
 
 - Find SHALL lead the first row and the View controls SHALL sit at its right end; when the window is too narrow the View controls SHALL wrap under Find, still at the right, without truncating their labels;
-- the Filters control SHALL expand and collapse the standalone filter controls inline below the toolbar, opening expanded when a standalone filter is already active;
+- the Filters control SHALL open the standalone filter controls in a form-width dialog with its own Clear filters action and a Done action that closes it;
 - the chip row SHALL stay on one line and scroll sideways when the chips do not fit, as on mobile.
 
 On mobile (below 768px):
@@ -338,7 +338,7 @@ On mobile (below 768px):
 
 - **GIVEN** a desktop viewport and no active standalone filter
 - **WHEN** the page renders and the user then activates the Filters control
-- **THEN** search and Filters lead the toolbar row, Layout, Group by and Sort sit at its right end, Owned only leads the chip row, and activating Filters shows the standalone filters inline below the toolbar without covering the faction groups
+- **THEN** search and Filters lead the toolbar row, Layout, Group by and Sort sit at its right end, Owned only leads the chip row, and activating Filters opens the standalone filters in a dialog whose Done closes it
 
 #### Scenario: Mobile toolbar
 
