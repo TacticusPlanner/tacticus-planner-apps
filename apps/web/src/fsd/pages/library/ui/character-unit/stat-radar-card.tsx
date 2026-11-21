@@ -1,8 +1,10 @@
 import { ExternalLink } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { statIcon } from "@workspace/game-catalog"
 
+import { radarAxisIcon } from "../../model/stat-radar"
 import type { RadarAxisResult } from "../../model/stat-radar"
-import { HowToRead } from "@/shared/ui"
+import { EntityIcon, HowToRead } from "@/shared/ui"
 
 const RINGS = [0.25, 0.5, 0.75, 1]
 
@@ -165,7 +167,12 @@ export function StatRadarCard({
               className="grid grid-cols-[minmax(0,12.5rem)_1fr_auto] items-center gap-3 text-sm"
               data-testid={`unit-radar-${entry.axis}`}
             >
-              <span className="text-muted-foreground">
+              <span className="flex items-center gap-1.5 text-muted-foreground">
+                <EntityIcon
+                  size="inline"
+                  src={statIcon(radarAxisIcon(entry.axis))}
+                  alt=""
+                />
                 {t(`characterUnit.compare.axes.${entry.axis}`)}
               </span>
               <span

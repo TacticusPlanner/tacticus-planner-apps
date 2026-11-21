@@ -227,7 +227,11 @@
       "flex": "Flexibel",
       "suitableMows": "Geeignete Kriegsmaschinen"
     },
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "encounterTypes": {
+      "Boss": "Boss",
+      "Crystal": "Prime"
+    }
   },
   "npcs": {
     "title": "NPCs",

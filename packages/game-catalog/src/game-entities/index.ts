@@ -20,6 +20,7 @@ export {
   energyIcon,
   onslaughtTokenIcon,
   goldIcon,
+  guildXpIcon,
   salvageIcon,
   raidTicketIcon,
   mowAmmoIcon,

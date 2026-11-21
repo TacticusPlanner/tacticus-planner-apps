@@ -1,4 +1,12 @@
 import type { TFunction } from "i18next"
+import {
+  characterIcon,
+  factionIcon,
+  mowIcon,
+  rarityIcon,
+} from "@workspace/game-catalog"
+import { Rarity } from "@workspace/game-domain"
+import type { UnitId } from "@workspace/game-domain"
 
 import type { EventEntryViewModel } from "./events-calendar.types"
 
@@ -25,6 +33,9 @@ function booleanParam(
   const value = parameters?.[key]
   return typeof value === "boolean" ? value : undefined
 }
+
+const RARITIES: ReadonlySet<string> = new Set(Object.values(Rarity))
+const isRarity = (value: string): value is Rarity => RARITIES.has(value)
 
 const COMPACT_SEASON_TYPES = new Set(["GuildRaidSeason", "GuildWarSeason"])
 
@@ -148,4 +159,31 @@ export function resolveEventDisplayName(
   }
 
   return name
+}
+
+/**
+ * The game icons for what an event names after its base name: the boosted or opposing faction, the
+ * featured hero or Machine of War, the rarity cap. Decorative: the display name still says each one.
+ * `exclude` drops an icon the entry already shows (a Faction Boost's own emblem).
+ */
+export function eventSubjectIcons(
+  entry: Pick<EventEntryViewModel, "parameters">,
+  exclude?: string
+): string[] {
+  const { parameters } = entry
+  const targetFactionId = stringParam(parameters, "targetFactionId")
+  const featuredCharacterId = stringParam(parameters, "featuredCharacterId")
+  const featuredMowId = stringParam(parameters, "featuredMowId")
+  const enemyFactionId = stringParam(parameters, "enemyFactionId")
+  const rarityCap = stringParam(parameters, "rarityCap")
+  const icons = [
+    targetFactionId && factionIcon(targetFactionId),
+    featuredCharacterId && characterIcon(featuredCharacterId as UnitId),
+    featuredMowId && mowIcon(featuredMowId as UnitId),
+    enemyFactionId && factionIcon(enemyFactionId),
+    rarityCap && isRarity(rarityCap) ? rarityIcon(rarityCap) : undefined,
+  ]
+  return icons.filter(
+    (icon): icon is string => typeof icon === "string" && icon !== exclude
+  )
 }

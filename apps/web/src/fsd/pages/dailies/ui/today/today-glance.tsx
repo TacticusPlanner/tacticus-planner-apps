@@ -2,6 +2,9 @@ import { useTranslation } from "react-i18next"
 import { Progress } from "@workspace/ui/components/progress"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
+import { energyIcon, onslaughtTokenIcon } from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import { CampaignEventTile } from "../campaign-event-status"
 import { GlanceTile } from "./glance-tile"
@@ -54,7 +57,8 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
                   value={Math.min(view.energy.percent, 100)}
                 />
               ) : null}
-              <span className="shrink-0">
+              <span className="flex shrink-0 items-center gap-1">
+                <EntityIcon size="inline" alt="" src={energyIcon()} />
                 {view.energy.daily > 0
                   ? t("today.glance.energyValue", {
                       used: Math.round(view.energy.used),
@@ -76,7 +80,10 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
         )}
         {view && hasOnslaught ? (
           <GlanceTile label={t("plan.onslaught")}>
-            {t("today.glance.tokens", { count: view.onslaughtTokens })}
+            <span className="flex items-center justify-end gap-1 @2xl:justify-start">
+              <EntityIcon size="inline" alt="" src={onslaughtTokenIcon()} />
+              {t("today.glance.tokens", { count: view.onslaughtTokens })}
+            </span>
           </GlanceTile>
         ) : null}
         <CampaignEventTile />

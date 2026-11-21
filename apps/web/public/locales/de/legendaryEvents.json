@@ -195,7 +195,6 @@
   },
   "eventBoard": {
     "title": "Eventübersicht",
-    "description": "Die Ziele jeder angezeigten Bahn, die passenden Einheiten und die Teams der Bahn nebeneinander. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, oder eine Einheit, um damit ein Team zu beginnen.",
     "noTeam": "Kein Team",
     "cleared": "In {{cleared}} von {{total}} Kämpfen erfüllt",
     "clearSelection": "Auswahl aufheben",

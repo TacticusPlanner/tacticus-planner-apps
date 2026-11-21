@@ -8,6 +8,8 @@ import type {
   NpcEncounterBattle,
   NpcEncounterSource,
 } from "@workspace/game-catalog"
+import { rarityIcon } from "@workspace/game-catalog"
+import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -26,11 +28,12 @@ import type {
   EncounterPlaceIndex,
   NpcEncounter,
 } from "@/entities/npc"
-import { RARITY_TEXT } from "@/entities/incursion"
 import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEstimateDate, localIsoDate, useDateLocale } from "@/shared/lib"
+import { EntityIcon } from "@/shared/ui"
 
 import { useEncounterGroupName } from "../../model/npcs/use-encounter-group-name"
+import { encounterGroupIcon } from "../../model/npcs/encounter-group-icon"
 import { useIncursionTierNames } from "../../model/npcs/use-incursion-tier-names"
 import type { NpcsPageViewProps } from "./npcs-page.view-model"
 import { encounterTiming } from "../../model/encounter-timing"
@@ -51,7 +54,8 @@ const LINKS: Partial<Record<NpcEncounterSource, (groupId: string) => string>> =
 type PlaceGroup = {
   key: string
   label: string
-  labelClassName?: string
+  /** The tier's rarity icon, before the label. */
+  icon?: string
   detail: string
   places: readonly EncounterPlace[]
 }
@@ -282,7 +286,7 @@ function useEncounterText() {
                 label:
                   tier?.name ??
                   t("npcs.encounters.tier", { number: Number(key) + 1 }),
-                labelClassName: tier && RARITY_TEXT[tier.rarity],
+                icon: tier && rarityIcon(tier.rarity as Rarity),
                 detail: detail(group),
                 places: group,
               }
@@ -465,14 +469,14 @@ function PlaceNpcs({
 /** One row of a location list, opening to its content. `detail` sums it up while it is closed. */
 function DisclosureRow({
   label,
-  labelClassName,
+  icon,
   detail,
   defaultOpen = false,
   testId,
   children,
 }: {
   label: string
-  labelClassName?: string
+  icon?: string
   detail?: string
   defaultOpen?: boolean
   testId: string
@@ -490,7 +494,8 @@ function DisclosureRow({
         data-testid={testId}
       >
         <span className="flex min-w-0 items-baseline gap-2">
-          <span className={cn("min-w-0 wrap-break-word", labelClassName)}>
+          <span className="flex min-w-0 items-center gap-1 self-center wrap-break-word">
+            {icon ? <EntityIcon size="inline" alt="" src={icon} /> : null}
             {label}
           </span>
           {detail ? (
@@ -554,7 +559,7 @@ function GroupedPlaces({
         <DisclosureRow
           key={group.key}
           label={group.label}
-          labelClassName={group.labelClassName}
+          icon={group.icon}
           detail={group.detail}
           defaultOpen={groups.length === 1}
           testId={`${testId}-group-${group.key}`}
@@ -599,6 +604,7 @@ function EncounterRow({
     encounterTiming(encounter.source, encounter.groupId, calendar, nowMs)
   )
   const href = LINKS[encounter.source]?.(encounter.groupId)
+  const icon = encounterGroupIcon(encounter)
   const testId = `npc-encounter-${encounter.source}-${encounter.groupId}`
   const allPlaces = open ? encounterPlaces(encounter) : []
   const rowPlaces = allPlaces.filter(
@@ -610,17 +616,27 @@ function EncounterRow({
   return (
     <li className="rounded-lg border bg-card text-sm" data-testid={testId}>
       <div className="flex flex-col gap-0.5 px-3 py-2 md:flex-row md:items-baseline md:gap-3">
-        {href ? (
-          <Link
-            to={href}
-            className="min-w-0 font-medium wrap-break-word underline-offset-4 hover:underline"
-            data-testid={`${testId}-link`}
-          >
-            {name}
-          </Link>
-        ) : (
-          <span className="min-w-0 font-medium wrap-break-word">{name}</span>
-        )}
+        <span className="flex min-w-0 items-center gap-1.5 md:self-center">
+          {icon ? (
+            <EntityIcon
+              size="inline"
+              alt=""
+              src={icon}
+              className="rounded-sm object-contain"
+            />
+          ) : null}
+          {href ? (
+            <Link
+              to={href}
+              className="min-w-0 font-medium wrap-break-word underline-offset-4 hover:underline"
+              data-testid={`${testId}-link`}
+            >
+              {name}
+            </Link>
+          ) : (
+            <span className="min-w-0 font-medium wrap-break-word">{name}</span>
+          )}
+        </span>
         <button
           type="button"
           className="relative flex min-w-0 flex-1 flex-col gap-0.5 pr-6 text-left md:flex-row md:items-baseline md:gap-3"

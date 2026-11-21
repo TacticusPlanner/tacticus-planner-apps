@@ -2,10 +2,13 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { energyIcon, powerIcon } from "@workspace/game-catalog"
+import { UsersIcon } from "lucide-react"
 
 import { toById, useCatalogDataset } from "@/shared/local-data"
 import {
   CampaignLocationName,
+  EntityIcon,
   ResponsiveDialog,
   ResponsiveDialogBody,
   ResponsiveDialogHeader,
@@ -104,20 +107,23 @@ function CampaignBattleContent({ target }: { target: CampaignBattleTarget }) {
               className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground"
               data-testid="campaign-battle-summary"
             >
-              <li>
+              <li className="inline-flex items-center gap-1">
+                <EntityIcon size="inline" alt="" src={energyIcon()} />
                 {t("locationDetails.energy", {
                   count: battle.energyCost,
                   formatted: number.format(battle.energyCost),
                 })}
               </li>
-              <li>
+              <li className="inline-flex items-center gap-1">
+                <UsersIcon aria-hidden className="size-4" />
                 {t("locationDetails.slots", {
                   count: battle.slots,
                   formatted: number.format(battle.slots),
                 })}
               </li>
               {battle.enemyPower > 0 ? (
-                <li>
+                <li className="inline-flex items-center gap-1">
+                  <EntityIcon size="inline" alt="" src={powerIcon()} />
                   {t("locationDetails.power", {
                     power: number.format(battle.enemyPower),
                   })}

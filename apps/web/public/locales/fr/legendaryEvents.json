@@ -195,7 +195,6 @@
   },
   "eventBoard": {
     "title": "Tableau de l'événement",
-    "description": "Les objectifs de chaque voie affichée, les unités qui conviennent à chacun et les équipes de la voie côte à côte. Choisissez des objectifs pour voir les unités qui les remplissent tous, ou une unité pour commencer une équipe avec elle.",
     "noTeam": "Aucune équipe",
     "cleared": "Rempli dans {{cleared}} combats sur {{total}}",
     "clearSelection": "Effacer la sélection",

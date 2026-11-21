@@ -6,5 +6,4 @@ export {
   RARITY_BORDER,
   RARITY_FILL,
   RARITY_FILL_FAINT,
-  RARITY_TEXT,
 } from "./model/rarity-classes"

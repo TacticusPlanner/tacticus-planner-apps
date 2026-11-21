@@ -195,7 +195,6 @@
   },
   "eventBoard": {
     "title": "Event board",
-    "description": "Each shown lane's objectives, the units that fit each and the lane's teams side by side. Pick objectives to see the units that fit all of them, or a unit to start a team with it.",
     "noTeam": "No team",
     "cleared": "Cleared in {{cleared}} of {{total}} battles",
     "clearSelection": "Clear selection",

@@ -650,6 +650,7 @@ atlases/ui_icon_resource_machines_of_war_ammo_small.webp
 atlases/ui_icon_resource_mythic_salvage.webp
 atlases/ui_icon_resource_raid_large.webp
 atlases/ui_icon_resource_salvage.webp
+atlases/ui_icon_resource_score_guild_xp_medium.webp
 atlases/ui_icon_resource_stamina_small.webp
 atlases/ui_icon_resource_summoning_special.webp
 atlases/ui_icon_resource_summoning_token.webp

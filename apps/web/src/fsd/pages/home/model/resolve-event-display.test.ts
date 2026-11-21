@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import { resolveEventDisplayName } from "./resolve-event-display"
+import {
+  eventSubjectIcons,
+  resolveEventDisplayName,
+} from "./resolve-event-display"
 import type { EventEntryViewModel } from "./events-calendar.types"
 
 // Real interpolation templates (matching public/locales/en/events.json) rather than an echo, since these
@@ -239,5 +242,31 @@ describe("resolveEventDisplayName", () => {
     )
 
     expect(name).toBe("ta-faction-war (Legendary) No MoW")
+  })
+})
+
+describe("eventSubjectIcons", () => {
+  it("shows the faction, featured unit and rarity cap the name spells out", () => {
+    const icons = eventSubjectIcons(
+      baseEntry({
+        parameters: {
+          targetFactionId: "WorldEaters",
+          featuredCharacterId: "ultraTigurius",
+          rarityCap: "Legendary",
+        },
+      })
+    )
+    expect(icons).toHaveLength(3)
+    expect(icons[1]).toContain("RoundPortrait_ultra_tigurius")
+    expect(icons[2]).toContain("rarity/legendary")
+  })
+
+  it("leaves out an icon the entry already shows, and unknown values", () => {
+    const entry = baseEntry({
+      parameters: { targetFactionId: "WorldEaters", rarityCap: "Shiny" },
+    })
+    const [faction] = eventSubjectIcons(entry)
+    expect(faction).toBeDefined()
+    expect(eventSubjectIcons(entry, faction)).toEqual([])
   })
 })
