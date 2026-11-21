@@ -102,7 +102,8 @@ import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
 export function GoalsPage() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
-  const { tab, setTab, goalType, setGoalType } = useGoalsListFilters()
+  const { tab, setTab, goalType, setGoalType, filtered, clearFilters } =
+    useGoalsListFilters()
   // Persisted per browser (see project detail's own group state for the same reasoning) so it
   // survives navigating away and a reload instead of resetting to "none" every time.
   const [group, setGroup] = usePersistedSelection(
@@ -568,6 +569,7 @@ export function GoalsPage() {
       <GoalsPageStates
         fetchError={fetchError}
         isLoading={isLoading}
+        onClearFilters={filtered ? clearFilters : undefined}
         onRetry={selectedGoals.retry}
         showEmptyProjectState={showEmptyProjectState}
         showFilteredEmpty={rows.length === 0}

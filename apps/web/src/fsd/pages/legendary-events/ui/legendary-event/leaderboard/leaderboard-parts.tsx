@@ -285,39 +285,42 @@ export function LeaderboardEmptyBody({
   onClearFilter: () => void
 }) {
   const { t } = useTranslation("legendaryEvents")
-  if (body.kind === "noneMatch") {
-    return (
-      <EmptyState
-        actions={
-          <Button
-            data-testid="leaderboard-clear-filter"
-            onClick={onClearFilter}
-            variant="outline"
-          >
-            {t("leaderboard.clearFilter")}
-          </Button>
-        }
-        description={t("leaderboard.noneMatch")}
-        testId="leaderboard-none-match"
-        variant="no-match"
-      />
-    )
-  }
   const message = {
     noEligible: "leaderboard.noEligible",
     noUnlocked: "leaderboard.noUnlocked",
     noneInTeams: "leaderboard.noneInTeams",
+    noneMatch: "leaderboard.noneMatch",
   } as const
   const testId = {
     noEligible: "leaderboard-no-eligible",
     noUnlocked: "leaderboard-no-unlocked",
     noneInTeams: "leaderboard-none-in-teams",
+    noneMatch: "leaderboard-none-match",
   } as const
+  // No unit can play here at all: nothing to clear. Every other body comes from a filter.
+  if (body.kind === "noEligible") {
+    return (
+      <EmptyState
+        description={t(message.noEligible)}
+        testId={testId.noEligible}
+        variant="empty"
+      />
+    )
+  }
   return (
     <EmptyState
+      actions={
+        <Button
+          data-testid="leaderboard-clear-filter"
+          onClick={onClearFilter}
+          variant="outline"
+        >
+          {t("leaderboard.clearFilter")}
+        </Button>
+      }
       description={t(message[body.kind])}
       testId={testId[body.kind]}
-      variant={body.kind === "noEligible" ? "empty" : "no-match"}
+      variant="no-match"
     />
   )
 }

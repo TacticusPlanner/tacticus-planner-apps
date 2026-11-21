@@ -12,7 +12,7 @@ const PARAM = "goal"
 /**
  * The Goals list's status and Type filters as `?status=` / `?type=` (goals-navigation: "Goals list
  * controls are URL state"). Replace history, so Back leaves the page rather than stepping through
- * filters; a missing or unknown value is the control's default.
+ * filters; a missing or unknown value is the control's default. `clearFilters` resets both.
  */
 export function useGoalsListFilters() {
   const [tab, setTab] = useSearchParamState<GoalStatusFilterValue>(
@@ -25,7 +25,19 @@ export function useGoalsListFilters() {
     isGoalTypeFilterValue,
     "all"
   )
-  return { tab, setTab, goalType, setGoalType }
+  const [, setSearchParams] = useSearchParams()
+  // One write for both params: two setters called together would each start from the same URL.
+  const clearFilters = () =>
+    setSearchParams(
+      (previous) => {
+        previous.delete("status")
+        previous.delete("type")
+        return previous
+      },
+      { replace: true }
+    )
+  const filtered = tab !== "all" || goalType !== "all"
+  return { tab, setTab, goalType, setGoalType, filtered, clearFilters }
 }
 
 /**

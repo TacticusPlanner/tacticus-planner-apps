@@ -39,7 +39,11 @@ export function SearchField({
   const [sent, setSent] = useState<string | null>(null)
   if (value !== followed) {
     setFollowed(value)
+    // The echo of our own report keeps the draft (typing may have moved on); anything else from
+    // outside replaces it. Either way the report is consumed, so a later outside value equal to it
+    // still replaces the draft.
     if (value !== sent) setDraft(value)
+    setSent(null)
   }
 
   useEffect(() => {
@@ -79,7 +83,7 @@ export function SearchField({
       {shown === "" ? null : (
         <button
           aria-label={t("searchField.clear")}
-          className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary"
+          className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary pointer-coarse:after:absolute pointer-coarse:after:-inset-3"
           data-testid={testId ? `${testId}-clear` : undefined}
           onClick={() => change("")}
           type="button"

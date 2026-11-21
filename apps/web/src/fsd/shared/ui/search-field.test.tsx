@@ -20,15 +20,23 @@ function Harness({
 }) {
   const [value, setValue] = useState("")
   return (
-    <SearchField
-      debounceMs={debounceMs}
-      label="Search units"
-      onChange={(next) => {
-        onChange(next)
-        setValue(next)
-      }}
-      value={value}
-    />
+    <>
+      {/* Writes the value from outside the field, like a link or Back would. */}
+      {["ork", "dan"].map((outside) => (
+        <button key={outside} onClick={() => setValue(outside)} type="button">
+          {`Set ${outside}`}
+        </button>
+      ))}
+      <SearchField
+        debounceMs={debounceMs}
+        label="Search units"
+        onChange={(next) => {
+          onChange(next)
+          setValue(next)
+        }}
+        value={value}
+      />
+    </>
   )
 }
 
@@ -72,6 +80,60 @@ describe("SearchField", () => {
       fireEvent.click(screen.getByRole("button", { name: "Clear search" }))
       expect(onChange).toHaveBeenLastCalledWith("")
       expect(box).toHaveValue("")
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("drops a pending query when cleared or unmounted before the delay ends", () => {
+    vi.useFakeTimers()
+    try {
+      const onChange = vi.fn()
+      const view = render(<Harness debounceMs={200} onChange={onChange} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      const box = screen.getByRole("searchbox", { name: "Search units" })
+
+      fireEvent.change(box, { target: { value: "dan" } })
+      fireEvent.click(screen.getByRole("button", { name: "Clear search" }))
+      expect(onChange).toHaveBeenCalledExactlyOnceWith("")
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
+      expect(onChange).toHaveBeenCalledExactlyOnceWith("")
+
+      fireEvent.change(box, { target: { value: "ork" } })
+      view.unmount()
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
+      expect(onChange).toHaveBeenCalledExactlyOnceWith("")
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it("follows an outside value back to the one it last reported", () => {
+    vi.useFakeTimers()
+    try {
+      const onChange = vi.fn()
+      render(<Harness debounceMs={200} onChange={onChange} />, {
+        wrapper: i18nWrapper(i18n),
+      })
+      const box = screen.getByRole("searchbox", { name: "Search units" })
+
+      fireEvent.change(box, { target: { value: "dan" } })
+      act(() => {
+        vi.advanceTimersByTime(200)
+      })
+      fireEvent.click(screen.getByRole("button", { name: "Set ork" }))
+      expect(box).toHaveValue("ork")
+      fireEvent.click(screen.getByRole("button", { name: "Set dan" }))
+      expect(box).toHaveValue("dan")
+      act(() => {
+        vi.advanceTimersByTime(400)
+      })
+      expect(onChange).toHaveBeenCalledExactlyOnceWith("dan")
     } finally {
       vi.useRealTimers()
     }

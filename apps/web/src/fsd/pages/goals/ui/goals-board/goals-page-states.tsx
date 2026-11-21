@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { EmptyState } from "@/shared/ui"
@@ -14,6 +15,7 @@ export function GoalsPageStates({
   showPristineEmptyState,
   showEmptyProjectState,
   showFilteredEmpty,
+  onClearFilters,
 }: {
   isLoading: boolean
   fetchError: string | null
@@ -21,6 +23,8 @@ export function GoalsPageStates({
   showPristineEmptyState: boolean
   showEmptyProjectState: boolean
   showFilteredEmpty: boolean
+  /** Shown as "Clear filters" on the filtered-empty line while a status or Type filter is set. */
+  onClearFilters?: () => void
 }) {
   const { t } = useTranslation()
   return (
@@ -58,6 +62,13 @@ export function GoalsPageStates({
       !showEmptyProjectState &&
       showFilteredEmpty ? (
         <EmptyState
+          actions={
+            onClearFilters ? (
+              <Button onClick={onClearFilters} variant="outline">
+                {t("filtersControl.clear")}
+              </Button>
+            ) : undefined
+          }
           description={t("goals.empty.filtered")}
           testId="goals-page-filtered-empty"
           variant="no-match"
