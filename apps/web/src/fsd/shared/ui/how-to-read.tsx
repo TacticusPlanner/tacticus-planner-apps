@@ -18,7 +18,7 @@ export function HowToRead({
       <summary className="cursor-pointer text-sm font-medium text-foreground">
         {summary}
       </summary>
-      <div className="mt-1">{children}</div>
+      <div className="mt-1 text-sm">{children}</div>
     </details>
   )
 }

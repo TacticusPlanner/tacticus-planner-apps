@@ -227,8 +227,10 @@ function RationaleLine({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <p
-          className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
+        {/* A button, so a keyboard user can open the tooltip with the full reason. */}
+        <button
+          type="button"
+          className="flex max-w-full min-w-0 items-center gap-1 rounded-sm text-left text-xs text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           data-testid="team-member-rationale"
         >
           <span className="sr-only">{text}</span>
@@ -236,7 +238,7 @@ function RationaleLine({
           <span aria-hidden="true" className="truncate tabular-nums">
             {short}
           </span>
-        </p>
+        </button>
       </TooltipTrigger>
       <TooltipContent>{text}</TooltipContent>
     </Tooltip>

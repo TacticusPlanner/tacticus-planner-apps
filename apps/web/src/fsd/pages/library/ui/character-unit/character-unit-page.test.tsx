@@ -831,16 +831,16 @@ describe("CharacterUnitPage", () => {
       expect(first).toHaveTextContent(
         "Defeat 8 enemies that have the Emplacement trait with Abaddon in one battle"
       )
-      expect(
-        within(first)
-          .getAllByRole("listitem")
-          .map((chip) => chip.textContent)
-      ).toEqual([
-        // Icon and count; the name is for assistive technology (and a tooltip).
-        "Abaddon mythic shards×4",
-        "Mythic Chaos ascension orb×2",
-        "Mythic XP book×1",
+      // Icon and count on screen; each chip's button is named by the reward and its count (the name
+      // is also its tooltip), so a keyboard can reach it.
+      const chips = within(first).getAllByRole("listitem")
+      expect(chips).toHaveLength(3)
+      for (const name of [
+        "Abaddon mythic shards ×4",
+        "Mythic Chaos ascension orb ×2",
+        "Mythic XP book ×1",
       ])
+        expect(within(first).getByRole("button", { name })).toBeInTheDocument()
     })
 
     it("has no card for a character the dataset has no record for", async () => {

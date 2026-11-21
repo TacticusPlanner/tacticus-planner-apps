@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown, Coins, TriangleAlert } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
-import { legendaryEventResourceIcon, shardIcon } from "@workspace/game-catalog"
+import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
@@ -287,7 +287,7 @@ function RunDetails({ run }: { run: RunForecast }) {
           chests: number.format(run.chestsOpened),
         })}
       </GlyphLine>
-      <IconLine icon={shardIcon("Regular")} testId="run-forecast-step">
+      <IconLine icon={shardsIcon} testId="run-forecast-step">
         {run.stepsReached.length > 0
           ? t("tokenPlan.forecast.reachedThen", { steps, next })
           : next}

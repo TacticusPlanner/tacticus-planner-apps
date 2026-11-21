@@ -24,35 +24,54 @@ export function renderHseText(
   translate: Translate,
   language: string,
   root: HseText,
-  leaf: (text: HseText, label: string) => string = (_text, label) => label
+  leaf: (text: HseText, label: string) => string = keepLabel
 ): string {
   const numbers = new Intl.NumberFormat(language)
   const lists = {
     and: new Intl.ListFormat(language, { type: "conjunction" }),
     or: new Intl.ListFormat(language, { type: "disjunction" }),
   }
-  const render = (text: HseText): string => {
+  const render = (text: HseText, mark: typeof leaf): string => {
     const values: Record<string, string | number> = {}
     for (const [name, value] of Object.entries(text.values ?? {}))
-      values[name] = renderValue(name, value)
+      values[name] = renderValue(name, value, mark)
     const label = translate(text.key, {
       ...values,
       ...(text.fallback === undefined ? {} : { defaultValue: text.fallback }),
     })
-    return text === root ? label : leaf(text, label)
+    return text === root ? label : mark(text, label)
   }
-  const renderValue = (name: string, value: HseTextValue) => {
+  const renderValue = (
+    name: string,
+    value: HseTextValue,
+    mark: typeof leaf
+  ): string | number => {
     if (typeof value === "number")
       return name === "count" ? value : numbers.format(value)
     if ("list" in value) {
-      const items = value.list.map(render)
-      return value.join === "space"
-        ? items.join(" ")
-        : lists[value.join].format(items)
+      const items = value.list.map((item) => render(item, mark))
+      if (value.join === "space") return items.join(" ")
+      // The list is formatted from the real labels, whose first letters can pick the joining word
+      // (Spanish "y" becomes "e" before "Imperial"); the marked items then take their places.
+      const labels =
+        mark === keepLabel
+          ? items
+          : value.list.map((item) => render(item, keepLabel))
+      let element = 0
+      return lists[value.join]
+        .formatToParts(labels)
+        .map((part) =>
+          part.type === "element" ? (items[element++] ?? "") : part.value
+        )
+        .join("")
     }
-    return render(value)
+    return render(value, mark)
   }
-  return render(root)
+  return render(root, leaf)
+}
+
+function keepLabel(_text: HseText, label: string): string {
+  return label
 }
 
 /** The translate function and language every description line renders with. */

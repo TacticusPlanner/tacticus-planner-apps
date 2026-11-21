@@ -319,9 +319,10 @@ function ReadyProjectionBody({
               }),
     },
   ]
-  // Notes that ask for something (enter tokens, unlock a mode) stay in view; the ones that explain
-  // the figures sit behind "How this is worked out" (copy rule: explanations collapsed by default).
-  const ACTION_NOTES = new Set(["locked", "manual-tokens"])
+  // Notes that ask for something (enter tokens, unlock a mode, count only qualifying kills) stay in
+  // view; the ones that explain the figures sit behind "How this is worked out" (copy rule:
+  // explanations collapsed by default).
+  const ACTION_NOTES = new Set(["locked", "manual-tokens", "enemy"])
   const actionNotes = notes.filter((note) => ACTION_NOTES.has(note.id))
   const explainNotes = notes.filter((note) => !ACTION_NOTES.has(note.id))
 

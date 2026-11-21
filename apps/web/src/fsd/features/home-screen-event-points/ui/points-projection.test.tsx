@@ -409,7 +409,12 @@ describe("PointsProjection: other events and states", () => {
 
   it("states that only some enemies count for For the Emperor", () => {
     renderHse(i18n, hseInstance("hse-for-the-emperor", "upcoming"))
-    expect(screen.getByTestId("hse-projection-note-enemy")).toBeInTheDocument()
+    // It asks the player to enter only qualifying kills, so it stays in view, not behind the disclosure.
+    expect(
+      within(screen.getByTestId("hse-projection-notes")).getByTestId(
+        "hse-projection-note-enemy"
+      )
+    ).toBeVisible()
     expect(
       screen.queryByTestId("hse-projection-note-campaign")
     ).not.toBeInTheDocument()
