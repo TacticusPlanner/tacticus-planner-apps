@@ -189,10 +189,10 @@ export function CompareControls(props: CompareControlsProps) {
         <SheetHeader>
           <SheetTitle>{t("myGame.collection.compare.options")}</SheetTitle>
         </SheetHeader>
-        <SheetBody className="flex flex-col gap-3 pb-0">
+        <SheetBody className="flex flex-col gap-3">
           <CompareFields {...props} />
         </SheetBody>
-        <SheetFooter className="pt-2 pb-4">
+        <SheetFooter>
           <Button
             onClick={() => setOpen(false)}
             data-testid="compare-options-close"

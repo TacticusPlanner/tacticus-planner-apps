@@ -963,8 +963,7 @@
       "dailyEnergy": "Energía por día",
       "xpBookRarity": "Rareza de libro de XP",
       "xpBookRarityHint": "La guía de nivel requerido muestra su cantidad adicional de libros en esta rareza.",
-      "save": "Guardar ajustes",
-      "cancel": "Cancelar",
+      "done": "Listo",
       "error": "No se pudieron guardar los ajustes de planificación."
     },
     "v1Import": {

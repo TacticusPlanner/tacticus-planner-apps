@@ -217,6 +217,19 @@ const powerValue = () => screen.getByTestId("npc-stat-power-value")
 const openFilters = (user: ReturnType<typeof userEvent.setup>) =>
   user.click(screen.getByTestId("npcs-filters"))
 
+/** Filters is a dialog on desktop too: close it with Done before using the page behind it. */
+const closeFilters = (user: ReturnType<typeof userEvent.setup>) =>
+  user.click(
+    within(screen.getByTestId("npcs-filters-panel")).getByRole("button", {
+      name: "Done",
+    })
+  )
+
+/** The listed NPC tiles. While the Filters dialog is open it hides the page from the
+ *  accessibility tree, so the list is read with `hidden: true`. */
+const listedNpcs = () =>
+  within(screen.getByTestId("npcs-list")).getAllByRole("link", { hidden: true })
+
 /** `toLocaleString` grouping differs per machine locale; match digits regardless of separators. */
 const numberText = (value: number) =>
   new RegExp(
@@ -520,9 +533,7 @@ describe("NpcsPage", () => {
     await user.click(
       within(screen.getByTestId("npcs-no-matching")).getByRole("button")
     )
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("link")
-    ).toHaveLength(4)
+    expect(listedNpcs()).toHaveLength(4)
   })
 
   it("moves the URL to the first matching variation when the selected one stops matching", async () => {
@@ -559,6 +570,7 @@ describe("NpcsPage", () => {
     await openFilters(user)
     await user.click(screen.getByTestId("npcs-trait-filter"))
     await user.click(await screen.findByRole("option", { name: /Swarm/ }))
+    await closeFilters(user)
 
     expect(
       await screen.findByTestId("npcs-no-matching-variation")
@@ -600,17 +612,13 @@ describe("NpcsPage", () => {
     await user.click(screen.getByTestId("npc-tile-termagant"))
     await user.click(await screen.findByTestId("unit-nav-back"))
     expect(await screen.findByTestId("npcs-search")).toHaveValue("term")
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("link")
-    ).toHaveLength(1)
+    expect(listedNpcs()).toHaveLength(1)
 
     view.unmount()
     await renderPage("/library/npcs")
     await screen.findByTestId("npcs-list")
 
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("link")
-    ).toHaveLength(4)
+    expect(listedNpcs()).toHaveLength(4)
   })
 
   describe("mobile", () => {
@@ -682,9 +690,7 @@ describe("NpcsPage desktop layout and filters", () => {
     expect(screen.queryByTestId("npcs-filter-bar")).toBeNull()
     await user.type(screen.getByTestId("npcs-search"), "term")
 
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("link")
-    ).toHaveLength(1)
+    expect(listedNpcs()).toHaveLength(1)
     expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName("Filters")
   })
 
@@ -696,9 +702,7 @@ describe("NpcsPage desktop layout and filters", () => {
 
     await user.click(screen.getByTestId("npcs-alliance-filter"))
     await user.click(await screen.findByRole("option", { name: /Xenos/ }))
-    const afterAlliance = within(screen.getByTestId("npcs-list")).getAllByRole(
-      "link"
-    ).length
+    const afterAlliance = listedNpcs().length
     expect(afterAlliance).toBeGreaterThan(0)
 
     await user.click(screen.getByTestId("npcs-attack-filter"))
@@ -767,9 +771,7 @@ describe("NpcsPage desktop layout and filters", () => {
     await openFilters(user)
     await user.click(screen.getByTestId("npcs-faction-filter"))
     await user.click(await screen.findByRole("option", { name: "Tyranids" }))
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("link")
-    ).toHaveLength(1)
+    expect(listedNpcs()).toHaveLength(1)
     expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
       "Filters, 1 active"
     )
@@ -781,9 +783,7 @@ describe("NpcsPage desktop layout and filters", () => {
     )
 
     await user.click(screen.getByTestId("npcs-filters-clear"))
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("link")
-    ).toHaveLength(4)
+    expect(listedNpcs()).toHaveLength(4)
     expect(screen.getByTestId("npcs-filters-clear")).toBeDisabled()
   })
 })
@@ -1210,6 +1210,7 @@ describe("NpcsPage encounters", () => {
     await screen.findByTestId(id)
     await openFilters(user)
     await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    await closeFilters(user)
     await user.click(await screen.findByTestId(`${id}-toggle`))
     await user.click(screen.getByTestId(`${id}-place-I03`))
 
@@ -1244,6 +1245,7 @@ describe("NpcsPage encounters", () => {
     await screen.findByTestId(id)
     await openFilters(user)
     await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    await closeFilters(user)
     await user.click(await screen.findByTestId(`${id}-toggle`))
     await user.click(screen.getByTestId(`${id}-place-I03`))
     const chip = within(screen.getByTestId(`${id}-place-I03-npcs`))
@@ -1381,6 +1383,8 @@ describe("NpcsPage encounters", () => {
         "Legendary Event"
       )
     )
+
+    await closeFilters(user)
 
     const id = "npc-encounter-campaign-elite1"
     expect(

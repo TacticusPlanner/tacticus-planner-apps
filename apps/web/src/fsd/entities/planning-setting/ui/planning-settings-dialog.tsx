@@ -12,7 +12,6 @@ import {
 } from "@workspace/ui/components/select"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Slider } from "@workspace/ui/components/slider"
-import { Spinner } from "@workspace/ui/components/spinner"
 
 import { ApiError } from "@/shared/api"
 import { useCatalogDataset } from "@/shared/local-data"
@@ -28,8 +27,8 @@ import {
 } from "@/shared/ui"
 
 import { energySourceLabel, toDailyEnergyTiers } from "../model/energy-tiers"
-import { normalizeXpBookRarity, xpBookRarityOptions } from "../model/types"
-import { usePlanningSettings } from "../model/use-planning-settings"
+import { xpBookRarityOptions } from "../model/types"
+import { usePlanningSettingsEditor } from "../model/use-planning-settings-editor"
 
 /**
  * The one Planning Settings dialog, reused from both Plan > Goals (`/plan/goals`) and Dailies >
@@ -45,40 +44,22 @@ export function PlanningSettingsDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const { t } = useTranslation(["common", "progression"])
-  const { settings, save } = usePlanningSettings()
+  const [error, setError] = useState<string | null>(null)
+  const editor = usePlanningSettingsEditor((caught) => {
+    setError(
+      caught instanceof ApiError
+        ? caught.message
+        : t("goals.planningSettings.error")
+    )
+  })
   const tiersRead = useCatalogDataset("global-values", toDailyEnergyTiers)
   const tiers = tiersRead.status === "ready" ? tiersRead.data : null
-  // The saved value until the slider moves, even when the ladder no longer offers it.
-  const [dailyEnergy, setDailyEnergy] = useState(settings.dailyEnergy)
+  const { dailyEnergy } = editor
   const tier = tiers?.find((candidate) => candidate.energy === dailyEnergy)
   // An energy value off the ladder only parks the slider at its first tier.
   const tierIndex = tier && tiers ? tiers.indexOf(tier) : 0
-  const [xpBookRarity, setXpBookRarity] = useState<Rarity>(() =>
-    normalizeXpBookRarity(settings.xpBookRarity)
-  )
-  const [status, setStatus] = useState<"idle" | "saving" | "error">("idle")
-  const [error, setError] = useState<string | null>(null)
-
-  const handleSave = async () => {
-    setStatus("saving")
-    setError(null)
-    try {
-      await save({
-        dailyEnergy,
-        xpBookRarity,
-        preferences: settings.preferences,
-        revision: settings.revision,
-      })
-      onOpenChange(false)
-    } catch (caught) {
-      setStatus("error")
-      setError(
-        caught instanceof ApiError
-          ? caught.message
-          : t("goals.planningSettings.error")
-      )
-    }
-  }
+  const tierEnergy = (index: number | undefined) =>
+    index === undefined ? undefined : tiers?.[index]?.energy
 
   return (
     <ResponsiveDialog
@@ -123,8 +104,14 @@ export function PlanningSettingsDialog({
                 step={1}
                 value={[tierIndex]}
                 onValueChange={([value]) => {
-                  const next = value === undefined ? undefined : tiers[value]
-                  if (next) setDailyEnergy(next.energy)
+                  const energy = tierEnergy(value)
+                  if (energy !== undefined) editor.previewDailyEnergy(energy)
+                }}
+                onValueCommit={([value]) => {
+                  const energy = tierEnergy(value)
+                  if (energy === undefined) return
+                  setError(null)
+                  editor.commitDailyEnergy(energy)
                 }}
               />
               <div className="flex justify-between text-xs text-muted-foreground">
@@ -144,8 +131,11 @@ export function PlanningSettingsDialog({
         <Field>
           <FieldLabel>{t("goals.planningSettings.xpBookRarity")}</FieldLabel>
           <Select
-            onValueChange={(value) => setXpBookRarity(value as Rarity)}
-            value={xpBookRarity}
+            onValueChange={(value) => {
+              setError(null)
+              editor.changeXpBookRarity(value as Rarity)
+            }}
+            value={editor.xpBookRarity}
           >
             <SelectTrigger
               className="w-full"
@@ -173,16 +163,11 @@ export function PlanningSettingsDialog({
         ) : null}
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
-        <Button variant="outline" onClick={() => onOpenChange(false)}>
-          {t("goals.planningSettings.cancel")}
-        </Button>
         <Button
-          data-testid="planning-settings-save"
-          disabled={status === "saving"}
-          onClick={() => void handleSave()}
+          data-testid="planning-settings-done"
+          onClick={() => onOpenChange(false)}
         >
-          {status === "saving" ? <Spinner /> : null}
-          {t("goals.planningSettings.save")}
+          {t("goals.planningSettings.done")}
         </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>

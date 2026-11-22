@@ -220,14 +220,15 @@ Strings live in `apps/web/public/locales/en`; see the `react-i18next` skill.
 Pick the overlay by the job, then use its shared component. Mobile means below
 `md` (768px), as `useIsMobile` does.
 
-| Job                                                                 | Desktop               | Mobile                                                               | Use                                       |
-| ------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------- | ----------------------------------------- |
-| A task: fields to fill, a list to pick from, filters, an editor     | Centered dialog       | Bottom sheet                                                         | `ResponsiveDialog`                        |
-| Confirm one step that can't be undone (delete, discard, overwrite)  | Small centered dialog | Same                                                                 | `ConfirmationDialog`                      |
-| A panel the page keeps reacting to (run inputs, a shopping list)    | Right `Sheet`         | Bottom sheet                                                         | `Sheet side="right"` / `ResponsiveDialog` |
-| Details of one thing the player tapped (a unit, an enemy, a reward) | `Popover`             | `Popover`; bottom `Sheet` if it has actions or more than a few lines | `Popover` / `Sheet side="bottom"`         |
-| Name or explain one control or icon                                 | `Tooltip`             | No tooltip: the name must also be in visible text or `aria-label`    | `Tooltip`                                 |
-| Choose one of a few actions                                         | `DropdownMenu`        | Same                                                                 | `DropdownMenu`                            |
+| Job                                                                 | Desktop                                                                              | Mobile                                                               | Use                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------- | ----------------------------------------- |
+| A task: fields to fill, a list to pick from, an editor              | Centered dialog                                                                      | Bottom sheet                                                         | `ResponsiveDialog`                        |
+| Filters                                                             | Popover (`size="compact"`) for a short list; dialog (`size="form"`) for a longer one | Bottom sheet                                                         | `FiltersControl`                          |
+| Confirm one step that can't be undone (delete, discard, overwrite)  | Small centered dialog                                                                | Same                                                                 | `ConfirmationDialog`                      |
+| A panel the page keeps reacting to (run inputs, a shopping list)    | Right `Sheet`                                                                        | Bottom sheet                                                         | `Sheet side="right"` / `ResponsiveDialog` |
+| Details of one thing the player tapped (a unit, an enemy, a reward) | `Popover`                                                                            | `Popover`; bottom `Sheet` if it has actions or more than a few lines | `Popover` / `Sheet side="bottom"`         |
+| Name or explain one control or icon                                 | `Tooltip`                                                                            | No tooltip: the name must also be in visible text or `aria-label`    | `Tooltip`                                 |
+| Choose one of a few actions                                         | `DropdownMenu`                                                                       | Same                                                                 | `DropdownMenu`                            |
 
 - No raw `Dialog` for a task: on a phone it is a cramped box, not a sheet.
   Raw `Dialog` is only for `ConfirmationDialog` and desktop-only chrome.
@@ -261,8 +262,8 @@ other content that needs to is a sheet or dialog.
   left (`md:mr-auto`).
 - Dismiss says "Cancel" when it throws input away and "Close" when there is
   nothing to lose. Never both.
-- A dialog whose changes apply as they are made (filters, view options) ends
-  with one primary "Done" and no dismiss.
+- A dialog whose changes apply as they are made (filters, view options,
+  planner settings) ends with one primary "Done" and no dismiss.
 - Exception: a filters dialog whose every change recomputes something slow
   (the Raids filters re-plan the day) keeps a draft and ends with "Cancel" and
   "Apply filters"; its ghost "Clear filters" applies at once and closes.
