@@ -15,7 +15,11 @@ import {
 } from "@/features/daily-raids"
 import type { DailyRaidsReadyViewModel } from "@/features/daily-raids"
 import { PlanningSettingsDialog } from "@/entities/planning-setting"
-import { ProjectSelect, useProjects } from "@/entities/project"
+import {
+  ProjectSelect,
+  useProjects,
+  useSelectedProjectId,
+} from "@/entities/project"
 import {
   energyIconUrl,
   EntityIcon,
@@ -27,8 +31,8 @@ import { useScheduleTutorial } from "./schedule-page.tutorial"
 
 /**
  * Plan > Schedule: the day-by-day continuation of Today's raid plan (formerly Dailies > Raids >
- * Raids Plan). Like Insights it owns a session-local project selection (default: all goals) rather
- * than sharing Dailies' outlet-context one, in the page toolbar's Find slot, and it carries its own
+ * Raids Plan). Its project selection (default: all goals) is the shared, remembered one Dailies and
+ * Insights use, in the page toolbar's Find slot, and it carries its own
  * Planning Settings (the page header's Settings button) since every total here depends on daily
  * energy. The dailies namespace is kept for its copy - it is
  * preloaded app-wide (see nav-items.ts) and the keys did not change meaning by moving sections.
@@ -36,7 +40,7 @@ import { useScheduleTutorial } from "./schedule-page.tutorial"
 export function SchedulePage() {
   const { t } = useTranslation("dailies")
   const projects = useProjects()
-  const [projectId, setProjectId] = useState<string>()
+  const [projectId, setProjectId] = useSelectedProjectId(projects)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const raids = useDailyRaids(projectId)
   useScheduleTutorial()
