@@ -152,7 +152,7 @@ export function ResponsiveDialogFooter({
     <div
       data-slot="responsive-dialog-footer"
       className={cn(
-        "flex shrink-0 flex-col-reverse gap-2 border-t px-6 py-3 md:flex-row md:items-center md:justify-end",
+        "flex shrink-0 flex-wrap items-center gap-2 border-t px-6 py-3 max-md:*:data-[slot=button]:flex-1 md:flex-nowrap md:justify-end",
         className
       )}
       {...props}

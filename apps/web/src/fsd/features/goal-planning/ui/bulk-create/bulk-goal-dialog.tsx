@@ -160,10 +160,10 @@ function BulkGoalDialogContent({
           ))}
         </ul>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="flex-col items-stretch gap-2 md:flex-row md:items-center">
+      <ResponsiveDialogFooter>
         <p
           aria-live="polite"
-          className="text-sm text-muted-foreground md:mr-auto"
+          className="text-sm text-muted-foreground max-md:basis-full md:mr-auto"
           data-testid="bulk-goal-summary"
         >
           {allDone && sent
@@ -182,7 +182,7 @@ function BulkGoalDialogContent({
         </p>
         {sent === null && form.overLimit.length > 0 ? (
           <p
-            className="text-sm text-destructive"
+            className="text-sm text-destructive max-md:basis-full"
             data-testid="bulk-goal-over-limit"
             role="alert"
           >

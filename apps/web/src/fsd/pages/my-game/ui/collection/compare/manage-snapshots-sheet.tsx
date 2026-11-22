@@ -63,6 +63,14 @@ export function ManageSnapshotsSheet({
         <SheetContent
           className="sm:data-[side=right]:max-w-md"
           data-testid="manage-snapshots-sheet"
+          onOpenAutoFocus={(event) => {
+            // Focus the sheet itself, not the first row's keep button, which would show a focus
+            // ring on a phone for no reason.
+            event.preventDefault()
+            if (event.currentTarget instanceof HTMLElement) {
+              event.currentTarget.focus()
+            }
+          }}
         >
           <SheetHeader>
             <SheetTitle>

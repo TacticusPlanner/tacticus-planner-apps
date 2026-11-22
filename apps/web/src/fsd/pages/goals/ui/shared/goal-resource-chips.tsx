@@ -3,6 +3,7 @@ import { ChevronDown } from "lucide-react"
 import {
   Popover,
   PopoverContent,
+  PopoverTitle,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
@@ -79,10 +80,10 @@ ${chip.hint}`
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                className="w-auto gap-2 p-3"
+                className="gap-2"
                 data-testid="goal-resource-chip-breakdown"
               >
-                <p className="font-medium">{chip.name}</p>
+                <PopoverTitle>{chip.name}</PopoverTitle>
                 <ul className="grid gap-1.5">
                   {chip.parts.map((part) => (
                     <li

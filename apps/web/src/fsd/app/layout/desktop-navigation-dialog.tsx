@@ -2,13 +2,10 @@ import { useState } from "react"
 import type { RefObject } from "react"
 import { Link, useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
-import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
@@ -163,13 +160,6 @@ export function DesktopNavigationDialog({
             </p>
           )}
         </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button className="w-full" variant="outline">
-              {t("common.close")}
-            </Button>
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

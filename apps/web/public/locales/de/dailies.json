@@ -550,7 +550,7 @@
   },
   "raidsFilters": {
     "title": "Filter",
-    "description": "Begrenze, welche Kampagnenorte Heute, Bonus-Raids und der SBE-Tab nutzen dürfen. Plan und Ziele sind nicht betroffen.",
+    "description": "Gilt für Heute, Bonus-Raids und den SBE-Tab, nicht für Plan und Ziele.",
     "sections": {
       "allies": "Verbündete",
       "enemies": "Gegner",
@@ -929,7 +929,8 @@
   "battleProgress": {
     "open": "Medaillen",
     "title": "Kämpfe ohne 3 Medaillen",
-    "description": "Raids benötigen 3 Medaillen. Geschlagene Kämpfe zählen als bestes Ergebnis (3 Medaillen, Blitzsieg, höchster Meilenstein); ändere nur die, die darunter liegen. Ein Kampf unter 3 Medaillen wird als manueller Kampf geplant. Dein nächster Kampf in jeder Kampagne wird immer manuell gespielt.",
+    "description": "Raids benötigen 3 Medaillen. Ändere nur die Kämpfe, die darunter liegen.",
+    "note": "Geschlagene Kämpfe zählen als 3 Medaillen, Blitzsieg und höchster Meilenstein. Ein Kampf unter 3 Medaillen und dein nächster Kampf in jeder Kampagne werden manuell gespielt.",
     "campaign": "Kampagne",
     "notStarted": "Du hast in dieser Kampagne noch keinen Kampf erreicht.",
     "notBeaten": "Noch nicht besiegt",

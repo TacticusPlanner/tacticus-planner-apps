@@ -550,7 +550,7 @@
   },
   "raidsFilters": {
     "title": "Filtres",
-    "description": "Limitez les lieux de campagne que Aujourd'hui, les raids bonus et l'onglet ÉÉA peuvent utiliser. Le plan et les objectifs ne sont pas affectés.",
+    "description": "S'applique à Aujourd'hui, aux raids bonus et à l'onglet ÉÉA, pas au plan ni aux objectifs.",
     "sections": {
       "allies": "Alliés",
       "enemies": "Ennemis",
@@ -929,7 +929,8 @@
   "battleProgress": {
     "open": "Médailles",
     "title": "Combats sans 3 médailles",
-    "description": "Les raids nécessitent 3 médailles. Les combats gagnés comptent comme le meilleur résultat (3 médailles, victoire éclair, palier maximal) ; modifiez seulement ceux qui n'y sont pas. Un combat sous 3 médailles est prévu en jeu manuel. Votre prochain combat de chaque campagne se joue toujours manuellement.",
+    "description": "Les raids nécessitent 3 médailles. Modifiez seulement les combats qui n'y sont pas.",
+    "note": "Les combats gagnés comptent comme 3 médailles, victoire éclair et palier maximal. Un combat sous 3 médailles et votre prochain combat de chaque campagne se jouent manuellement.",
     "campaign": "Campagne",
     "notStarted": "Vous n'avez encore atteint aucun combat de cette campagne.",
     "notBeaten": "Pas encore vaincu",

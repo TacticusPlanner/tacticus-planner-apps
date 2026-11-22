@@ -121,9 +121,7 @@ export function RosterPotentialMap({
                 {isMobile ? (
                   <Popover>
                     <PopoverTrigger asChild>{column}</PopoverTrigger>
-                    <PopoverContent className="w-64 text-sm">
-                      {label}
-                    </PopoverContent>
+                    <PopoverContent>{label}</PopoverContent>
                   </Popover>
                 ) : (
                   <Tooltip>

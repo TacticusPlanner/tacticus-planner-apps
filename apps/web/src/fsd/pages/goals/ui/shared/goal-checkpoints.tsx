@@ -3,6 +3,7 @@ import { Flag } from "lucide-react"
 import {
   Popover,
   PopoverContent,
+  PopoverTitle,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 
@@ -67,12 +68,10 @@ export function GoalCheckpoints({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-auto max-w-[calc(100vw-2rem)]"
+        className="gap-2"
         data-testid="goal-checkpoints"
       >
-        <p className="mb-2 text-sm font-medium">
-          {t("goals.estimate.checkpoints.title")}
-        </p>
+        <PopoverTitle>{t("goals.estimate.checkpoints.title")}</PopoverTitle>
         <ol className="grid gap-1.5 text-sm">
           {view.rows.map((row) => (
             <li

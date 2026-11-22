@@ -309,6 +309,9 @@ function BattleProgressEditor({
           <AlertDescription>{t(`battleProgress.${message}`)}</AlertDescription>
         </Alert>
       ) : null}
+      <p className="mb-4 text-sm text-muted-foreground">
+        {t("battleProgress.note")}
+      </p>
       <div className="grid gap-1.5">
         <Label htmlFor={pickerId} className="text-xs text-muted-foreground">
           {t("battleProgress.campaign")}

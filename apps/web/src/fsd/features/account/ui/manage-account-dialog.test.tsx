@@ -114,7 +114,7 @@ describe("ManageAccountDialog", () => {
     expect(link).toHaveAttribute("rel", "noopener noreferrer")
   })
 
-  it("shows Close beside the open tab's main button in the footer", async () => {
+  it("shows Cancel beside the open tab's main button in the footer", async () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
     render(<ManageAccountDialog onOpenChange={onOpenChange} open />)

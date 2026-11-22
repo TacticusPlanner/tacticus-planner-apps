@@ -79,7 +79,7 @@
   "runInputs": {
     "button": "Saisies",
     "title": "Saisies par manche",
-    "description": "Missions et packs que le jeu ne signale pas pour la session en cours. Les missions se terminent dans l'ordre : indiquez combien sont terminées. Ils alimentent les prévisions de récompenses de la carte État de la session.",
+    "description": "Missions et packs que le jeu ne signale pas pour la session en cours.",
     "run": "Manche {{run}}",
     "phase": {
       "done": "Terminée",

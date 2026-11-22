@@ -107,9 +107,9 @@ export function QuestTeamOptionsDialog({
           })}
         </ol>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="flex-col md:justify-between">
+      <ResponsiveDialogFooter>
         <p
-          className="inline-flex items-center gap-1 text-sm tabular-nums"
+          className="inline-flex items-center gap-1 text-sm tabular-nums max-md:basis-full md:mr-auto"
           data-testid="quest-team-options-power"
         >
           <EntityIcon size="inline" alt="" src={powerIcon()} />
@@ -119,14 +119,12 @@ export function QuestTeamOptionsDialog({
             power: power === null ? "–" : number.format(power),
           })}
         </p>
-        <div className="flex gap-2">
-          <Button onClick={() => setPicked(suggested)} variant="ghost">
-            {t("team.optionsReset")}
-          </Button>
-          <Button onClick={() => onOpenChange(false)}>
-            {t("team.optionsDone")}
-          </Button>
-        </div>
+        <Button onClick={() => setPicked(suggested)} variant="ghost">
+          {t("team.optionsReset")}
+        </Button>
+        <Button onClick={() => onOpenChange(false)}>
+          {t("team.optionsDone")}
+        </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>
   )

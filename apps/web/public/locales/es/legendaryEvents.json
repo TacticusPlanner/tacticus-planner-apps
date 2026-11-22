@@ -79,7 +79,7 @@
   "runInputs": {
     "button": "Datos",
     "title": "Datos por ronda",
-    "description": "Misiones y paquetes que el juego no informa para la ejecución actual. Las misiones se completan en orden, así que indica cuántas están hechas. Alimentan la previsión de recompensas de la tarjeta Estado de la ejecución.",
+    "description": "Misiones y paquetes que el juego no informa para la ejecución actual.",
     "run": "Ronda {{run}}",
     "phase": {
       "done": "Hecha",
