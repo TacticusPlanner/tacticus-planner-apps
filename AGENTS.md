@@ -24,7 +24,8 @@ files there.
 - `.agents/skills` (canonical) / `.claude/skills` (generated mirror, kept in
   sync manually or via `skills-lock.json`): local agent skill docs — FSD,
   shadcn, naming conventions, UI sizing, i18n, tanstack-query, vitest, joyride tours,
-  and `vulnerabilities-scan` (pnpm audit + fix process for this repo).
+  `review-guidelines` (what a code review checks here) and `vulnerabilities-scan`
+  (pnpm audit + fix process for this repo).
   Read the relevant skill before touching an area it covers. The V1→V2 page
   migration workflow (`tp-reimplement-v1-page`) lives in the `tacticus-planner-dev`
   orchestration workspace instead, since it spans this repo, `tacticusplanner`,
@@ -182,6 +183,13 @@ go in `.test.ts`. A `.test.ts` that needs `window`,
 element has no accessible role or name a user could find it by (e.g. a
 decorative tile or a layout container); never add a `data-testid` to something
 a role query can already reach.
+
+## Code Review
+
+When you review a diff or pull request in this repo, including with the
+built-in `/code-review` or `/simplify` or when triaging CodeRabbit findings,
+read the `review-guidelines` skill first and apply it on top of the general
+review. It lists what to flag here, at what severity, and what to skip.
 
 ## Commit & Pull Request Guidelines
 
