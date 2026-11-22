@@ -16,18 +16,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@workspace/ui/components/sheet"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { unitLibraryPath, UnitTile } from "@/entities/unit"
-import { EntityIcon } from "@/shared/ui"
+import { DetailsSheet, EntityIcon } from "@/shared/ui"
 
 import {
   compareChips,
@@ -177,23 +170,18 @@ function MobileList({
           </li>
         ))}
       </ul>
-      <Sheet
+      <DetailsSheet
         open={open !== null}
         onOpenChange={(next) => {
           if (!next) setOpenId(null)
         }}
+        testId="compare-details"
+        title={open?.unit.name}
       >
-        <SheetContent side="bottom" data-testid="compare-details">
-          <SheetHeader>
-            <SheetTitle>{open?.unit.name}</SheetTitle>
-          </SheetHeader>
-          <SheetBody>
-            {open ? (
-              <UnitDiffDetails item={open} fields={fields} hideTitle />
-            ) : null}
-          </SheetBody>
-        </SheetContent>
-      </Sheet>
+        {open ? (
+          <UnitDiffDetails item={open} fields={fields} hideTitle />
+        ) : null}
+      </DetailsSheet>
     </>
   )
 }
