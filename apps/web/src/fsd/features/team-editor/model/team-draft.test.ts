@@ -117,10 +117,11 @@ describe("core and flex", () => {
   })
 })
 
-describe("core limits", () => {
-  const war = (overrides: Partial<TeamDraft> = {}) =>
-    draft({ modes: ["warOffense"], ...overrides })
+/** A War Offense draft (core capped at 5 characters and 1 MoW). */
+const war = (overrides: Partial<TeamDraft> = {}) =>
+  draft({ modes: ["warOffense"], ...overrides })
 
+describe("core limits", () => {
   it("keeps a flex character flex while a war core is full", () => {
     const full = war({
       characterIds: ["A", "B", "C", "D", "E", "F"],
@@ -150,7 +151,7 @@ describe("core limits", () => {
 
 describe("undo", () => {
   it("restores the lineup exactly while nothing changed since", () => {
-    const before = war()
+    const before = war({ characterIds: ["A", "B", "C", "D", "E"] })
     const after = addCharacter(before, "F")
     expect(
       undoToggle(after, before, after, { kind: "character", id: "F" })
@@ -181,14 +182,6 @@ describe("undo", () => {
       undoToggle(back, before, afterRemove, { kind: "mow", id: "M" })
     ).toBe(back)
   })
-
-  function war(overrides: Partial<TeamDraft> = {}) {
-    return draft({
-      modes: ["warOffense"],
-      characterIds: ["A", "B", "C", "D", "E"],
-      ...overrides,
-    })
-  }
 })
 
 describe("MoW core and flex", () => {
