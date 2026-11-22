@@ -44,7 +44,6 @@ export {
   type HreProgress,
   advanceMission,
   clampProgress,
-  isMissionComplete,
   missionStatus,
   normalizeHreProgress,
   parseHreProgress,

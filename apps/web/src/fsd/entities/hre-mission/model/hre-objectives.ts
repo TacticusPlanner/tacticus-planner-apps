@@ -260,7 +260,7 @@ export function tokenNeeds(
 }
 
 /** The token modes a manual objective can also be played in, with tokens to spare. */
-export const HRE_SPARE_MODES = ["arena", "onslaught", "salvageRun"] as const
+const HRE_SPARE_MODES = ["arena", "onslaught", "salvageRun"] as const
 export type HreSpareMode = (typeof HRE_SPARE_MODES)[number]
 
 /** Tokens held of a spare mode against what the remaining missions need of it. */

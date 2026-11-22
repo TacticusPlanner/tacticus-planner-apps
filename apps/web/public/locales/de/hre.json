@@ -93,7 +93,9 @@
     "add": "+{{amount}}",
     "addLabel": "{{amount}} hinzufügen: {{objective}}",
     "completed": "{{mission}} abgeschlossen.",
-    "undo": "Rückgängig"
+    "undo": "Rückgängig",
+    "detailsTitle": "Vorschläge",
+    "detailsDescription": "Wo du für jedes Ziel der aktuellen Mission spielst. Tippe auf eine Zeile unter einem Ziel, um zu ihrer Karte zu springen."
   },
   "raids": {
     "title": "Kampagne für {{mission}}",

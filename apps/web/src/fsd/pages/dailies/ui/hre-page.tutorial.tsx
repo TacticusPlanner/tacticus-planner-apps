@@ -17,7 +17,7 @@ type StepKey =
 
 /**
  * Joyride tour for Dailies > HRE: the event switcher, the event header, then (with an event) the
- * current mission and the suggestions folded under its first objective that has any, the pace and
+ * current mission and the suggestion rows under its first objective that has any, the pace and
  * the tokens needed on a running event, the campaign outlook, and the mission list, in the page's
  * order. The `has*` flags and `suggestionsTarget` gate steps whose targets are not rendered, since
  * react-joyride cannot recover from a target that never appears. Desktop points at the mission
@@ -37,7 +37,7 @@ export function useHreTutorial({
   /** The raids section renders (an event that is not past). */
   hasRaids?: boolean
   running: boolean
-  /** The test id of the first objective's suggestions, or null when no objective has a fold. */
+  /** The test id of the first objective's suggestions, or null when no objective has any. */
   suggestionsTarget: string | null
   hasTokens: boolean
 }) {

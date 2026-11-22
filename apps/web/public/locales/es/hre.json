@@ -93,7 +93,9 @@
     "add": "+{{amount}}",
     "addLabel": "Sumar {{amount}}: {{objective}}",
     "completed": "{{mission}} completada.",
-    "undo": "Deshacer"
+    "undo": "Deshacer",
+    "detailsTitle": "Sugerencias",
+    "detailsDescription": "Dónde jugar para cada objetivo de la misión actual. Toca una fila bajo un objetivo para ir a su tarjeta."
   },
   "raids": {
     "title": "Campaña: {{mission}}",

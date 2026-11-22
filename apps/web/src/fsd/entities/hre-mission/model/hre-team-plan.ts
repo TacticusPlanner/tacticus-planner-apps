@@ -140,7 +140,7 @@ function spareModes(
   const modes = spareOrder(manual).filter(
     (mode) => spare[mode] && !played.has(mode)
   )
-  if (!manual.every((objective) => KILL_KINDS.has(objective.kind))) {
+  if (manual.some((objective) => !KILL_KINDS.has(objective.kind))) {
     return modes
   }
   const picked: HreSpareMode[] = []

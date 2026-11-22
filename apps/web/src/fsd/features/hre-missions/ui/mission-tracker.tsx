@@ -10,7 +10,7 @@ import type {
 } from "@/entities/hre-mission"
 import type { HreProgressActions } from "../model/use-hre-progress"
 import { CurrentMissionCard } from "./current-mission-card"
-import type { ObjectiveSuggestions } from "./objective-folds"
+import type { ObjectiveSuggestions } from "./objective-suggestions"
 import { MissionList } from "./mission-list"
 
 /** The current mission card on a running event, or "All missions complete" once the Bonus is done. */
@@ -31,7 +31,7 @@ export function MissionTracker({
   objectiveIcon?: (objective: HreObjective) => string | undefined
   /** The game's hint for an objective. */
   objectiveHint?: (objective: HreObjective) => string | undefined
-  /** The suggestions folded under an objective. */
+  /** The suggestion rows under an objective. */
   objectiveSuggestions?: (
     objective: HreObjective,
     index: number

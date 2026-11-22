@@ -168,7 +168,7 @@ function compareCandidates(
   goalNodes: ReadonlyMap<BattleId, MissionGoalNode>,
   eventPoints: ReadonlyMap<BattleId, number> | undefined,
   combineGoals = false,
-  preferred: ReadonlySet<BattleId> | undefined = undefined
+  preferred?: ReadonlySet<BattleId>
 ): (a: MissionRaidBattle, b: MissionRaidBattle) => number {
   const later = (battle: MissionRaidBattle) =>
     preferred ? Number(!preferred.has(battle.id)) : 0

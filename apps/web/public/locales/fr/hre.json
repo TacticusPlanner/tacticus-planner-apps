@@ -93,7 +93,9 @@
     "add": "+{{amount}}",
     "addLabel": "Ajouter {{amount}} : {{objective}}",
     "completed": "{{mission}} terminée.",
-    "undo": "Annuler"
+    "undo": "Annuler",
+    "detailsTitle": "Suggestions",
+    "detailsDescription": "Où jouer pour chaque objectif de la mission en cours. Touchez une ligne sous un objectif pour aller à sa carte."
   },
   "raids": {
     "title": "Campagne : {{mission}}",

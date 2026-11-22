@@ -338,7 +338,7 @@ describe("buildMissionGoalNodes", () => {
         battlesById,
         () => rarity
       ).keys(),
-    ].toSorted()
+    ].toSorted((a, b) => a.localeCompare(b))
 
   it("farms a Rare upgrade on any node", () => {
     expect(nodesFor("Rare")).toHaveLength(6)

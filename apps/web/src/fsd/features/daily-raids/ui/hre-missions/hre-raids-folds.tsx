@@ -26,9 +26,9 @@ import type { HreRaids, HreRaidsRequest } from "./use-hre-raids"
 type Row = MissionRaidPlan["rows"][number]
 
 /**
- * A folded suggestion's one row: the top node as a regular raid card row (campaign icon, node, the
- * goal drop with "owned/target"), then a count chip. Nothing in it is interactive: the whole row
- * opens the fold.
+ * A suggestion's one row: the top node as a regular raid card row (campaign icon, node, the goal
+ * drop with "owned/target"), then a count chip. Nothing in it is interactive: the whole row scrolls
+ * to its details.
  */
 function TopRowSummary({
   row,
@@ -79,7 +79,7 @@ function TopRowSummary({
   )
 }
 
-/** The raid objective's folded row: its top raid node and "N raids" (or the battles to go while the
+/** The raid objective's row: its top raid node and "N raids" (or the battles to go while the
  * raids load or when none fit). */
 export function HreRaidsSummary({
   raids,
@@ -112,7 +112,7 @@ export function HreRaidsSummary({
   )
 }
 
-/** The manual objectives' folded row: the top node to fight by hand and "N battles". */
+/** The manual objectives' row: the top node to fight by hand and "N battles". */
 export function HreBattlesSummary({ raids }: { raids: HreRaids }) {
   const { t } = useTranslation("hre")
   const battles = raids.plan?.battles
@@ -141,7 +141,7 @@ export function HreBattlesSummary({ raids }: { raids: HreRaids }) {
   )
 }
 
-/** The raid objective's fold: the energy note, then its raids with their totals, empty state and
+/** The raid objective's details: the energy note, then its raids with their totals, empty state and
  * the no-drop Indomitus alternative. */
 export function HreRaidsDetails({
   raids,
@@ -208,7 +208,7 @@ export function HreRaidsDetails({
   )
 }
 
-/** The manual objectives' fold: the battles to fight by hand with their node rules, then the teams,
+/** The manual objectives' details: the battles to fight by hand with their node rules, then the teams,
  * one per group of nodes that allow the same factions. */
 export function HreBattlesDetails({
   raids,

@@ -93,7 +93,9 @@
     "add": "+{{amount}}",
     "addLabel": "Add {{amount}}: {{objective}}",
     "completed": "{{mission}} complete.",
-    "undo": "Undo"
+    "undo": "Undo",
+    "detailsTitle": "Suggestions",
+    "detailsDescription": "Where to play for each objective of the current mission. Tap a row under an objective to jump to its card."
   },
   "raids": {
     "title": "Campaign for {{mission}}",
