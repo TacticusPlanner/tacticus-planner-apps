@@ -110,7 +110,11 @@ describe("MowsListPage", () => {
     expect(screen.getByTestId("mows-no-matching")).toHaveTextContent(
       "No Machines of War match your search."
     )
-    fireEvent.click(screen.getByRole("button", { name: "Clear search" }))
+    fireEvent.click(
+      within(screen.getByTestId("mows-no-matching")).getByRole("button", {
+        name: "Clear search",
+      })
+    )
     expect(screen.getByTestId("mows-list")).toBeInTheDocument()
   })
 

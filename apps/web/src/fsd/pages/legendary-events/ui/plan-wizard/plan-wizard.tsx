@@ -262,9 +262,9 @@ export function PlanWizard({
           <ArrowLeft aria-hidden="true" className="size-4" />
           {t("planWizard.states.backToEvent")}
         </Link>
-        <h1 className="text-xl font-semibold">
+        <h2 className="text-xl font-semibold">
           {t("planWizard.title", { name })}
-        </h1>
+        </h2>
       </div>
       <div
         className="flex flex-col gap-2 md:hidden"

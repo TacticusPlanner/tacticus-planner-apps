@@ -60,7 +60,7 @@ export function UpgradeQuantityRow({
     <div className="grid gap-1" data-testid={testId}>
       <div className="flex items-center gap-2">
         <UpgradeIcon
-          className="size-8 shrink-0"
+          className="shrink-0"
           crafted={upgrade?.crafted}
           id={upgradeId}
           rarity={upgrade?.rarity}
@@ -116,7 +116,7 @@ export function UpgradeQuantityRow({
         </p>
       ) : alreadyMet ? (
         <p
-          className="text-xs text-muted-foreground"
+          className="text-sm text-muted-foreground"
           data-testid={`${testId}-already-met`}
           id={warningId}
         >

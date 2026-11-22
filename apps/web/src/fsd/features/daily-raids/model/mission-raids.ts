@@ -1,3 +1,5 @@
+import { campaignDescriptor } from "@workspace/game-catalog"
+import { Rarity, rarityRank } from "@workspace/game-domain"
 import type { BattleId } from "@workspace/game-domain"
 
 import {
@@ -52,6 +54,8 @@ export type MissionGoalNode = {
   priority: number
   goalIds: string[]
   resourceId: EstimateResourceId
+  /** How many of the resource the in-scope goals still need in all; unknown when absent. */
+  need?: number
 }
 
 type MissionRaidRow = {
@@ -65,6 +69,8 @@ type MissionRaidRow = {
   eventPoints: number
   /** Who may deploy there, for the team that fights it by hand. */
   deploy?: MissionDeploy
+  /** The enemies one battle there defeats toward a kill objective, on rows fought by hand for one. */
+  enemies?: number
 }
 
 /** A node's deployment rules: the allied factions its campaign lets you field and its slots. */
@@ -141,6 +147,9 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   eventPointsByBattle?: ReadonlyMap<BattleId, number>
   /** Today's "Combine goals": goal priority no longer breaks ties between nodes. */
   combineGoals?: boolean
+  /** "CE nodes first": the running campaign event's reached nodes, ranked ahead of the others that
+   * feed a goal the same way (or none), even when they cost more energy. */
+  preferredBattleIds?: ReadonlySet<BattleId>
   /** Plan as if energy were unlimited: only attempts and the objective bound the suggestions. */
   unlimitedEnergy?: boolean
   /** Whether a node may be fought by hand for `battles` (the Raids Filters plus its slots, alliance
@@ -153,7 +162,8 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
 const descending = (a: number, b: number) => b - a
 
 /**
- * Suggestion order: energy cost; then more points in a running Home Screen Event; then more HRE
+ * Suggestion order: a node feeding an in-scope goal first; then, with "CE nodes first", the running
+ * campaign event's nodes; then energy cost; then more points in a running Home Screen Event; then more HRE
  * points (a lightning-victory condition, then more enemy power); then a node feeding an in-scope goal; among those, the higher drop rate of the goal's resource (common and
  * uncommon drop more often), then more gold, then the goal's priority (skipped with `combineGoals`);
  * other nodes by gold; then battle id.
@@ -161,8 +171,11 @@ const descending = (a: number, b: number) => b - a
 function compareCandidates(
   goalNodes: ReadonlyMap<BattleId, MissionGoalNode>,
   eventPoints: ReadonlyMap<BattleId, number> | undefined,
-  combineGoals = false
+  combineGoals = false,
+  preferred?: ReadonlySet<BattleId>
 ): (a: MissionRaidBattle, b: MissionRaidBattle) => number {
+  const later = (battle: MissionRaidBattle) =>
+    preferred ? Number(!preferred.has(battle.id)) : 0
   const points = (battle: MissionRaidBattle) => eventPoints?.get(battle.id) ?? 0
   const rate = (
     battle: MissionRaidBattle,
@@ -174,6 +187,7 @@ function compareCandidates(
     // Nodes that feed a goal come first of all (Severyn, 2026-10), then the cheapest.
     return firstDifference(
       Number(!goalA) - Number(!goalB),
+      later(a) - later(b),
       a.energyCost - b.energyCost,
       descending(points(a), points(b)),
       Number(a.lightningCondition === false) -
@@ -208,7 +222,8 @@ export function planMissionRaids(
   const sort = compareCandidates(
     input.goalNodesByBattle,
     input.eventPointsByBattle,
-    input.combineGoals
+    input.combineGoals,
+    input.preferredBattleIds
   )
   const battles = input.manual
     ? planMissionBattles(input, input.manual, energyBudget, sort)
@@ -240,16 +255,16 @@ export function planMissionRaids(
     .filter((battle) => battle.energyCost > 0 && input.passesFilter(battle.id))
     .map(({ energyCost, dailyAttempts }) => ({ energyCost, dailyAttempts }))
 
-  const fillFrom = (candidates: readonly MissionRaidBattle[]) =>
-    fill(
-      candidates.toSorted(sort),
-      raidBudget,
-      [{ left: battlesLeft, weightOf: () => 1 }],
-      input,
-      usedAttempts
-    )
   const noDropRows =
-    battlesLeft > 0 && raidBudget > 0 ? fillFrom(noDropPool).rows : []
+    battlesLeft > 0 && raidBudget > 0
+      ? fill(
+          noDropPool.toSorted(sort),
+          raidBudget,
+          [{ left: battlesLeft, weightOf: () => 1 }],
+          input,
+          usedAttempts
+        ).rows
+      : []
 
   const done = (
     rows: MissionRaidRow[],
@@ -280,15 +295,141 @@ export function planMissionRaids(
   }
   if (raidBudget <= 0) return done([], "no-energy")
 
-  const { rows, attemptsBlocked } = fillFrom(pool)
+  const { rows, attemptsBlocked } = fillRaids(
+    pool,
+    raidBudget,
+    battlesLeft,
+    input,
+    usedAttempts
+  )
   return done(rows, attemptsBlocked ? "no-attempts" : "no-energy")
+}
+
+/**
+ * The raid fill over the nodes that drop something: like `fill` with one need (the battles left),
+ * but a node feeds its goal only until the raids already taken are expected to drop what the goals
+ * still need of its resource (raids times drop rate). A goal node gets no more raids for its goal
+ * than that, and once its resource is covered every node dropping it ranks as a node that feeds no
+ * goal, so six Combat Stimms take the Extremis raids that cover them and not every node that drops
+ * them (Severyn, 2026-11). Nodes still feeding a goal rank by energy per expected drop (after "CE
+ * nodes first"), so the best drop rate wins over a cheaper node that rarely drops it. The battles
+ * left are then filled as usual.
+ */
+function fillRaids(
+  pool: readonly MissionRaidBattle[],
+  energyBudget: number,
+  battlesLeft: number,
+  input: PlanMissionRaidsInput,
+  usedAttempts: ReadonlyMap<BattleId, number>
+): { rows: MissionRaidRow[]; attemptsBlocked: boolean } {
+  const expected = new Map<string, number>()
+  const used = new Map(usedAttempts)
+  const raidsOf = new Map<MissionRaidBattle, number>()
+  let budget = energyBudget
+  let left = battlesLeft
+  let attemptsBlocked = false
+  // The goal a node still feeds: none once the raids taken cover its resource.
+  const openGoal = (battle: MissionRaidBattle) => {
+    const goal = input.goalNodesByBattle.get(battle.id)
+    if (!goal || goal.need === undefined) return goal
+    return (expected.get(goal.resourceId) ?? 0) < goal.need ? goal : undefined
+  }
+  const attemptsLeft = (battle: MissionRaidBattle) =>
+    (input.attemptsLeftByBattle.get(battle.id) ??
+      (battle.dailyAttempts > 0 ? battle.dailyAttempts : Infinity)) -
+    (used.get(battle.id) ?? 0)
+  for (;;) {
+    if (left <= 0) break
+    const open = new Map<BattleId, MissionGoalNode>()
+    for (const battle of pool) {
+      const goal = openGoal(battle)
+      if (goal) open.set(battle.id, goal)
+    }
+    const sort = openGoalSort(open, input)
+    const next = pool
+      .filter((battle) => {
+        const attempts = attemptsLeft(battle)
+        if (attempts <= 0 && budget >= battle.energyCost) {
+          attemptsBlocked = true
+        }
+        return attempts > 0 && budget >= battle.energyCost
+      })
+      .toSorted(sort)[0]
+    if (!next) break
+    const raids = Math.min(
+      attemptsLeft(next),
+      Math.floor(budget / next.energyCost),
+      left,
+      raidsForGoal(next, open.get(next.id), expected)
+    )
+    budget -= raids * next.energyCost
+    left -= raids
+    used.set(next.id, (used.get(next.id) ?? 0) + raids)
+    const drops = input.goalNodesByBattle.get(next.id)
+    if (drops) {
+      const dropRate = next.dropRates.get(drops.resourceId) ?? 0
+      expected.set(
+        drops.resourceId,
+        (expected.get(drops.resourceId) ?? 0) + raids * dropRate
+      )
+    }
+    const taken = raidsOf.get(next)
+    raidsOf.set(next, (taken ?? 0) + raids)
+  }
+  // A node picked twice (for its goal, then as filler) keeps its first place.
+  const rows = [...raidsOf].map(([battle, raids]) => row(battle, raids, input))
+  return { rows, attemptsBlocked: rows.length === 0 && attemptsBlocked }
+}
+
+/** `compareCandidates` with the nodes still feeding a goal (`open`) first, then "CE nodes first",
+ * then among goal nodes the least energy per expected drop of the goal's resource. */
+function openGoalSort(
+  open: ReadonlyMap<BattleId, MissionGoalNode>,
+  input: PlanMissionRaidsInput
+): (a: MissionRaidBattle, b: MissionRaidBattle) => number {
+  const preferred = input.preferredBattleIds
+  const base = compareCandidates(
+    open,
+    input.eventPointsByBattle,
+    input.combineGoals,
+    preferred
+  )
+  const later = (battle: MissionRaidBattle) =>
+    preferred ? Number(!preferred.has(battle.id)) : 0
+  const perItem = (battle: MissionRaidBattle) => {
+    const goal = open.get(battle.id)
+    const rate = goal ? (battle.dropRates.get(goal.resourceId) ?? 0) : 0
+    return goal && rate > 0 ? battle.energyCost / rate : 0
+  }
+  return (a, b) =>
+    firstDifference(
+      Number(!open.has(a.id)) - Number(!open.has(b.id)),
+      later(a) - later(b),
+      perItem(a) - perItem(b),
+      base(a, b)
+    )
+}
+
+/** The raids a node still feeding `goal` gets for it: enough to drop what is left of the need at
+ * its rate; unbounded for a node feeding no goal or one whose need is unknown. */
+function raidsForGoal(
+  battle: MissionRaidBattle,
+  goal: MissionGoalNode | undefined,
+  expected: ReadonlyMap<string, number>
+): number {
+  const rate = goal ? (battle.dropRates.get(goal.resourceId) ?? 0) : 0
+  if (goal?.need === undefined || rate <= 0) return Infinity
+  const left = goal.need - (expected.get(goal.resourceId) ?? 0)
+  return Math.max(1, Math.ceil(left / rate - 1e-9))
 }
 
 /**
  * The battles to fight by hand for the mission's manual objectives, over every node that passes
  * `passesBattlesFilter` (drops or not: a kill counts anywhere). Nodes with a lightning condition
- * come first while lightning victories are open; then the nodes that feed a goal; then the most of the first estimated objective
- * per energy (the most enemies, enemy health or ability uses; for wins, the cheapest); then
+ * come first while lightning victories are open; then the nodes that feed a goal; then
+ * the least energy to finish the first estimated objective at that node alone (its battles times
+ * their cost, so a node with more enemies than the kills left is no better than one with just
+ * enough), then the fewest of those battles; then
  * `compareCandidates`. Each node gets as many battles as its attempts, the budget and the
  * objective still needing the most battles allow. Without any estimate, the best few nodes are
  * listed open-ended, ranked by enemy health.
@@ -306,8 +447,25 @@ function planMissionBattles(
     need.per && need.toGo > 0 ? [{ toGo: need.toGo, per: need.per }] : []
   )
   const primary = quantified[0]?.per ?? "enemyHealth"
-  const efficiency = (battle: MissionRaidBattle) =>
-    yieldOf(battle.id, primary) / battle.energyCost
+  const primaryLeft = quantified[0]?.toGo
+  // The battles a node alone takes to finish the first estimated objective, and their energy: five
+  // kills to go rank every node with five enemies or more by energy alone, not the biggest node
+  // first. Open-ended, the most of it per energy.
+  const battlesToFinish = (battle: MissionRaidBattle) =>
+    primaryLeft === undefined
+      ? 1
+      : Math.ceil(primaryLeft / yieldOf(battle.id, primary))
+  const finishCost = (battle: MissionRaidBattle) =>
+    primaryLeft === undefined
+      ? -yieldOf(battle.id, primary) / battle.energyCost
+      : battlesToFinish(battle) * battle.energyCost
+  const kills = quantified.find(
+    (need) => need.per === "enemies" || need.per === "factionEnemies"
+  )?.per
+  const withEnemies = (rows: MissionRaidRow[]) =>
+    kills
+      ? rows.map((row) => ({ ...row, enemies: yieldOf(row.battleId, kills) }))
+      : rows
   const candidates = input.battles
     .filter(
       (battle) =>
@@ -323,7 +481,8 @@ function planMissionBattles(
           : 0,
         Number(!input.goalNodesByBattle.has(a.id)) -
           Number(!input.goalNodesByBattle.has(b.id)),
-        efficiency(b) - efficiency(a),
+        finishCost(a) - finishCost(b),
+        battlesToFinish(a) - battlesToFinish(b),
         sort(a, b)
       )
     )
@@ -370,7 +529,7 @@ function planMissionBattles(
     input
   )
   return plan(
-    rows,
+    withEnemies(rows),
     false,
     left.some((value) => value > 0),
     attemptsBlocked ? "no-attempts" : "no-energy"
@@ -438,19 +597,42 @@ function fill(
 }
 
 /**
+ * Whether a node is an Elite tier: a storyline Elite or Elite Mirror node, or an event's Extremis
+ * node. Only these drop Epic and higher upgrades often enough to farm them.
+ */
+function isEliteBattle(
+  battle: Pick<Battle, "campaignGroupId" | "type">
+): boolean {
+  const token = campaignDescriptor(
+    battle.campaignGroupId,
+    battle.type
+  )?.difficultyToken
+  return token === "elite" || token === "eventExtremis"
+}
+
+/** An Epic or higher upgrade, farmed for HRE only on Elite nodes (see `isEliteBattle`). */
+const eliteOnlyRarity = (rarity: Rarity | undefined) =>
+  rarity !== undefined && rarityRank(rarity) >= rarityRank(Rarity.Epic)
+
+/**
  * Per node, the best-priority in-scope goal it feeds: a node drops a resource some goal still needs
  * over its whole schedule (after the Plan's priority-ordered inventory allocation). A goal with
- * pinned farm locations is served only by them, as on the HSE farm list.
+ * pinned farm locations is served only by them, as on the HSE farm list. Otherwise an Epic or higher
+ * upgrade counts only on Elite nodes (`rarityOf` gives an upgrade's rarity): a standard or Mirror
+ * node drops it too rarely to farm it there (Severyn, 2026-11). Each node carries how many of its
+ * resource the goals still need in all, so the raids stop favouring it once they cover that.
  */
 export function buildMissionGoalNodes(
   goals: readonly GoalNeed[],
   inventory: EstimatePlanParams["inventory"],
   upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
-  battlesById: ReadonlyMap<BattleId, Battle>
+  battlesById: ReadonlyMap<BattleId, Battle>,
+  rarityOf: (id: EstimateResourceId) => Rarity | undefined = () => undefined
 ): Map<BattleId, MissionGoalNode> {
   const sorted = goals.toSorted((a, b) => a.priority - b.priority)
   const allocations = allocatePlanInventory(sorted, inventory)
   const nodes = new Map<BattleId, MissionGoalNode>()
+  const needs = new Map<EstimateResourceId, number>()
   for (const goal of sorted) {
     const pins =
       goal.farmingLocationIds && goal.farmingLocationIds.length > 0
@@ -461,7 +643,14 @@ export function buildMissionGoalNodes(
         if (need.count <= 0) continue
         const upgrade = upgradesById.get(need.id)
         if (!upgrade) continue
+        needs.set(need.id, (needs.get(need.id) ?? 0) + need.count)
+        // A pinned location is the player's own pick, kept whatever its tier.
+        const eliteOnly = !pins && eliteOnlyRarity(rarityOf(need.id))
         for (const node of collectFarmNodes(upgrade, battlesById, pins)) {
+          if (eliteOnly) {
+            const battle = battlesById.get(node.battleId)
+            if (!battle || !isEliteBattle(battle)) continue
+          }
           const existing = nodes.get(node.battleId)
           if (!existing) {
             nodes.set(node.battleId, {
@@ -476,5 +665,6 @@ export function buildMissionGoalNodes(
       }
     }
   }
+  for (const node of nodes.values()) node.need = needs.get(node.resourceId)
   return nodes
 }

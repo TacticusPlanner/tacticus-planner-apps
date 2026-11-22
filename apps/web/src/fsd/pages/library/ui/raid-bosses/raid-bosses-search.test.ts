@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { repairRaidBossesSearch } from "./raid-bosses-search"
+import {
+  encounterSearch,
+  entitySearch,
+  repairRaidBossesSearch,
+} from "./raid-bosses-search"
 import type { RaidBossesSearchState } from "./raid-bosses-search"
 
 const known: RaidBossesSearchState = {
@@ -137,5 +141,35 @@ describe("repairRaidBossesSearch", () => {
       pathname: "/library/raid-bosses/Tervigon",
       search: "tab=details&season=s1&source=shared",
     })
+  })
+})
+
+describe("encounterSearch", () => {
+  it("opens the encounter on Details, keeping the season and comp", () => {
+    const next = encounterSearch(
+      new URLSearchParams("tab=seasons&season=s2&comp=c1"),
+      {
+        seasonId: "s2",
+        tier: 3,
+        set: 1,
+        encounterIndex: 2,
+      } as Parameters<typeof encounterSearch>[1]
+    )
+    expect(Object.fromEntries(next)).toEqual({
+      season: "s2",
+      comp: "c1",
+      tier: "3",
+      set: "1",
+      encounter: "2",
+    })
+  })
+})
+
+describe("entitySearch", () => {
+  it("keeps the season and comp for Previous / Next but drops the encounter context", () => {
+    const next = entitySearch(
+      new URLSearchParams("season=s2&comp=c1&tier=3&set=1&encounter=2")
+    )
+    expect(Object.fromEntries(next)).toEqual({ season: "s2", comp: "c1" })
   })
 })

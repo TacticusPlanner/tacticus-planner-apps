@@ -60,7 +60,7 @@ Assumptions:
 ### Requirement: The rules-text namespace is reproducible
 
 The namespace SHALL be produced by a committed generator that reads the pinned data-mines files through
-`ensureDatamine()` (no sibling checkout) and writes the per-ability files for all four locales and the summoning-ability list. Running it twice on
+`ensureDatamine()` (no sibling checkout) and writes the per-ability files for all four locales. Running it twice on
 the same pin SHALL produce identical files, and it SHALL delete files for ids it no longer covers. The generator SHALL print every referenced ability id it could not cover, with
 the reason (no ability entry, a placeholder description, or the unresolved tokens), and SHALL exit non-zero when
 that list differs from the known-gap list it carries, or when a relic ability has no `.webp` icon, so a refresh
@@ -72,8 +72,7 @@ across locales, the entry count, every file holding exactly the entry its name s
 
 - **GIVEN** the generated locale files are committed
 - **WHEN** the generator runs again with no pin change
-- **THEN** `git diff` shows no change under the four `npcAbilityText/` directories or to
-  `npcAbilitySummoners.json`, and it exits 0
+- **THEN** `git diff` shows no change under the four `npcAbilityText/` directories, and it exits 0
 
 #### Scenario: A refresh adds an ability without text
 
@@ -126,22 +125,3 @@ that text again. Trait text SHALL load the same way, with the trait chips.
 - **GIVEN** the ability is in the generated known-gap list, so no file exists for it
 - **WHEN** the panel settles
 - **THEN** no request is made for that ability's file and it shows the missing-text note, as before
-
-### Requirement: Summoning abilities are listed with the rules text
-
-The generator SHALL write `locales/en/npcAbilitySummoners.json`, the sorted list of ability ids whose
-English rules text summons a unit, derived from the same descriptions it writes, so features that need
-summoners across the whole roster read this list instead of every description. The apps test suite SHALL
-verify the committed list matches the committed English descriptions.
-
-#### Scenario: Hollan is a summoner
-
-- **WHEN** the list is generated at game version 1.43
-- **THEN** it contains Hollan's Aberrant Hypermorph ability id, and the HRE summon-free team still
-  excludes Hollan
-
-#### Scenario: List drifts from the text
-
-- **GIVEN** a hand edit that removes a summoning ability from the list without changing its description
-- **WHEN** the apps test suite runs
-- **THEN** the summoners test fails naming the ability id

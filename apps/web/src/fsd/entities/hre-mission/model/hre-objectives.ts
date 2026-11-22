@@ -118,12 +118,12 @@ function openObjectives(state: HreProgress, missions: readonly HreMission[]) {
  * manual objectives get one list of battles to fight by hand, kept to the nodes they need: full
  * 5-slot teams for ability uses, the featured hero's alliance for alliance and featured-hero
  * objectives, the faction for faction kills. Summon-free wins (mission 6) leave out the wins the
- * Arena tokens above a later mission's reserve can play (`arenaSurplus`).
+ * spare Arena tokens can play (`spareTokens`).
  */
 export function selectCampaignPlan(
   state: HreProgress,
   missions: readonly HreMission[],
-  arenaSurplus = 0
+  spareArena = 0
 ): HreCampaignPlan | null {
   if (state.mission >= hreAllDone(missions)) return null
   const open = openObjectives(state, missions)
@@ -133,7 +133,7 @@ export function selectCampaignPlan(
     if (!isManualObjective(kind)) return []
     const toGo =
       kind === "winWithoutSummons"
-        ? item.toGo - Math.max(0, arenaSurplus)
+        ? item.toGo - Math.max(0, spareArena)
         : item.toGo
     return toGo > 0
       ? [{ objective: item.objective, toGo, per: MANUAL_YIELD[kind] ?? null }]
@@ -257,6 +257,41 @@ export function tokenNeeds(
     })
   }
   return needs
+}
+
+/** The token modes a manual objective can also be played in, with tokens to spare (Guild Raid for
+ * ability damage only, see `selectTeamPlans`). */
+const HRE_SPARE_MODES = [
+  "arena",
+  "onslaught",
+  "salvageRun",
+  "guildRaid",
+] as const
+export type HreSpareMode = (typeof HRE_SPARE_MODES)[number]
+
+/** Tokens held of a spare mode against what the remaining missions need of it. */
+type HreSpare = { held: number; need: number }
+export type HreSpareTokens = Partial<Record<HreSpareMode, HreSpare>>
+
+/**
+ * The spare-token modes (Severyn, 2026-11): Arena, Onslaught, Salvage Run and Guild Raid where the tokens held
+ * now exceed what the current mission (less its progress) and every later one need. Regeneration
+ * over the event is left out, so the count is a safe floor. A mode with unknown tokens has none.
+ */
+export function spareTokens(
+  state: HreProgress,
+  missions: readonly HreMission[],
+  tokens: Record<HreSpareMode, number | null>
+): HreSpareTokens {
+  const needs = tokenNeeds(state, missions)
+  const spare: HreSpareTokens = {}
+  for (const mode of HRE_SPARE_MODES) {
+    const held = tokens[mode]
+    if (held !== null && held > needs[mode]) {
+      spare[mode] = { held, need: needs[mode] }
+    }
+  }
+  return spare
 }
 
 /** Whether an objective spends a token mode's tokens. */

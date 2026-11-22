@@ -50,8 +50,9 @@ export function UnlockRequirementField({
             <>
               <span className="text-muted-foreground">·</span>
               <EntityIcon
+                size="inline"
                 alt=""
-                className="size-4 shrink-0"
+                className="shrink-0"
                 src={energyIconUrl}
               />
               <span className="text-muted-foreground">
@@ -75,7 +76,7 @@ export function UnlockRequirementField({
       </p>
       <p className="flex items-center gap-1.5">
         {t("goals.create.unlock.unlocksAt")}
-        <RarityIcon className="size-5" rarity={rarity} />
+        <RarityIcon rarity={rarity} />
         <span className="font-semibold">
           {t(`rarities.${rarity}`, { defaultValue: rarity })}
         </span>

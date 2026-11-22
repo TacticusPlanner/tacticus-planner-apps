@@ -79,6 +79,7 @@ export type {
 } from "./record-types"
 
 export { shopDaysOfWeek, type ShopDayOfWeek } from "./schemas/shops"
+export { unitSummons, type UnitSummons } from "./schemas/shared"
 export {
   npcEncounterSources,
   type NpcEncounterBattle,
@@ -197,6 +198,7 @@ export {
   rankIcon,
   onslaughtTierIcon,
   onslaughtAllianceIcon,
+  allianceIcon,
   shardIcon,
   abilityBadgeIcon,
   forgeBadgeIcon,
@@ -207,8 +209,10 @@ export {
   energyIcon,
   onslaughtTokenIcon,
   goldIcon,
+  guildXpIcon,
   salvageIcon,
   raidTicketIcon,
+  mowAmmoIcon,
   xpBookIcon,
   gameModeTokenIcon,
   type GameModeToken,
@@ -264,6 +268,10 @@ export {
   type CampaignDifficultyToken,
   traitIcon,
   damageTypeIcon,
+  unitEffectIcon,
+  tileIcon,
+  medalIcon,
+  milestoneMedalIcon,
   equipmentSlotIcon,
   EquipmentIcons,
   statIcon,
@@ -275,4 +283,7 @@ export {
   type OnslaughtSectorIcon,
   type OnslaughtTierIcon,
   type OnslaughtAllianceIcon,
+  type UnitEffectIcon,
+  type TileIcon,
+  type MilestoneMedal,
 } from "./game-entities"

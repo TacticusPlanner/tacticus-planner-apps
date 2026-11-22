@@ -15,6 +15,8 @@ const seasonalEventCurrencyFiles: Record<string, string> = {
   June2026: "fonts/SE_Currency_june_26",
   August2026: "liveevents/ui_icon_resource_event_currency_august_2026",
   September2026: "liveevents/ui_icon_resource_event_currency_september_2026",
+  November2026: "liveevents/ui_icon_resource_event_currency_november_2026",
+  December2026: "liveevents/ui_icon_resource_event_currency_december_2026",
 }
 
 /** A seasonal event's currency, from its `seasonalEventCurrency<Month><Year>` reward id. */

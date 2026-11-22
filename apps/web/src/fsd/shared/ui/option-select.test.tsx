@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest"
 import userEvent from "@testing-library/user-event"
 
-import { render, screen } from "@/test/render"
+import { render, screen, within } from "@/test/render"
 
 import { MultiSelect, SearchableSelect } from "./option-select"
 
@@ -127,5 +127,27 @@ describe("option-select", () => {
 
     expect(screen.queryByTestId("select-more-chip")).toBeNull()
     vi.restoreAllMocks()
+  })
+
+  it("repeats the chosen option's icon beside its label in the SearchableSelect trigger", () => {
+    render(
+      <SearchableSelect
+        options={[
+          { value: "a", label: "Alpha", icon: <img alt="" src="alpha.webp" /> },
+          { value: "b", label: "Beta" },
+        ]}
+        value="a"
+        onChange={vi.fn()}
+        placeholder="No limit"
+        clearLabel="Clear"
+      />
+    )
+
+    const trigger = screen.getByRole("combobox", { name: "No limit" })
+    expect(trigger).toHaveTextContent("Alpha")
+    expect(within(trigger).getByRole("presentation")).toHaveAttribute(
+      "src",
+      "alpha.webp"
+    )
   })
 })

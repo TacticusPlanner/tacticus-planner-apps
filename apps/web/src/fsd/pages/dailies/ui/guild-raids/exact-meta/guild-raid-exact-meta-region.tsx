@@ -12,14 +12,14 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs"
+import { Tabs, TabsContent } from "@workspace/ui/components/tabs"
 
-import { ProgressionBadge, RankBadge } from "@/shared/ui"
+import {
+  PageTabsList,
+  PageTabsTrigger,
+  ProgressionBadge,
+  RankBadge,
+} from "@/shared/ui"
 import type {
   GuildRaidExactReadinessQuery,
   GuildRaidInvestmentThreshold,
@@ -41,7 +41,7 @@ function ThresholdStrip({
     >
       <span>{t("guildRaids.exactMeta.target")}</span>
       <ProgressionBadge value={threshold.progression} />
-      <RankBadge rank={threshold.requiredRank} iconClassName="size-4" />
+      <RankBadge rank={threshold.requiredRank} />
       <span className="font-medium text-foreground">
         {t("guildRaids.exactMeta.targetAbilities", {
           level: threshold.requiredAbilityLevel,
@@ -160,19 +160,16 @@ export function GuildRaidExactMetaRegion({
         <ThresholdStrip threshold={threshold} />
       ) : (
         <p
-          className="text-xs text-muted-foreground"
+          className="text-sm text-muted-foreground"
           data-testid="guild-raid-exact-meta-no-target"
         >
           {t("guildRaids.exactMeta.noTarget")}
         </p>
       )}
       <Tabs defaultValue={recommendations[0]?.id}>
-        <TabsList
-          className="max-w-full justify-start overflow-x-auto"
-          variant="line"
-        >
+        <PageTabsList>
           {recommendations.map((recommendation) => (
-            <TabsTrigger
+            <PageTabsTrigger
               key={recommendation.id}
               value={recommendation.id}
               className="gap-1.5"
@@ -183,9 +180,9 @@ export function GuildRaidExactMetaRegion({
                   {recommendation.teamReadiness}%
                 </span>
               )}
-            </TabsTrigger>
+            </PageTabsTrigger>
           ))}
-        </TabsList>
+        </PageTabsList>
         {recommendations.map((recommendation) => (
           <TabsContent key={recommendation.id} value={recommendation.id}>
             <GuildRaidExactMetaCard

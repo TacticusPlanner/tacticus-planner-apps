@@ -18,12 +18,7 @@ import {
   RadioGroupItem,
 } from "@workspace/ui/components/radio-group"
 import { Spinner } from "@workspace/ui/components/spinner"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs"
+import { Tabs, TabsContent } from "@workspace/ui/components/tabs"
 
 import type { AccountInfo, IPublicClientApplication } from "@azure/msal-browser"
 import { useMsal } from "@azure/msal-react"
@@ -51,6 +46,8 @@ import {
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
+  PageTabsList,
+  PageTabsTrigger,
 } from "@/shared/ui"
 
 import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
@@ -73,9 +70,6 @@ function isPurgeScope(value: string): value is PurgeScope {
 }
 
 /** On a narrow screen the tabs sit two per row and a long label wraps, so the tab row never widens the dialog. */
-const tabTriggerClassName =
-  "max-sm:h-auto max-sm:text-center max-sm:leading-tight max-sm:whitespace-normal"
-
 export type ManageAccountTab = "integration" | "profile" | "account" | "staging"
 
 type ManageAccountDialogProps = {
@@ -111,7 +105,7 @@ export function ManageAccountDialog({
   return (
     <ResponsiveDialog
       data-testid="manage-account-dialog"
-      desktopClassName="sm:max-w-lg"
+      width="form"
       open={open}
       onOpenChange={onOpenChange}
     >
@@ -120,41 +114,37 @@ export function ManageAccountDialog({
           {t("manageAccount.title")}
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="pb-4">
+      <ResponsiveDialogBody>
         <DialogActionSlotContext value={actionSlot}>
           <Tabs className="min-w-0" defaultValue={initialTab}>
-            <TabsList className="w-full max-sm:grid max-sm:grid-cols-2 max-sm:group-data-horizontal/tabs:h-auto">
-              <TabsTrigger
-                className={tabTriggerClassName}
+            <PageTabsList>
+              <PageTabsTrigger
                 data-testid="manage-account-tab-integration"
                 value="integration"
               >
                 {t("manageAccount.tabs.integration")}
-              </TabsTrigger>
-              <TabsTrigger
-                className={tabTriggerClassName}
+              </PageTabsTrigger>
+              <PageTabsTrigger
                 data-testid="manage-account-tab-profile"
                 value="profile"
               >
                 {t("manageAccount.tabs.profile")}
-              </TabsTrigger>
-              <TabsTrigger
-                className={tabTriggerClassName}
+              </PageTabsTrigger>
+              <PageTabsTrigger
                 data-testid="manage-account-tab-account"
                 value="account"
               >
                 {t("manageAccount.tabs.account")}
-              </TabsTrigger>
+              </PageTabsTrigger>
               {stagingMode ? (
-                <TabsTrigger
-                  className={tabTriggerClassName}
+                <PageTabsTrigger
                   data-testid="manage-account-tab-staging"
                   value="staging"
                 >
                   {t("manageAccount.tabs.staging")}
-                </TabsTrigger>
+                </PageTabsTrigger>
               ) : null}
-            </TabsList>
+            </PageTabsList>
             <TabsContent value="integration">
               <TacticusIntegrationTab
                 accountId={getPlannerAccountId(account)}
@@ -179,15 +169,15 @@ export function ManageAccountDialog({
           </Tabs>
         </DialogActionSlotContext>
       </ResponsiveDialogBody>
-      {/* Close and the open tab's main button (rendered here through `DialogAction`) share one row. */}
-      <ResponsiveDialogFooter className="grid grid-cols-2 border-t">
+      {/* Cancel and the open tab's main button (rendered here through `DialogAction`). Every tab is a
+          form, so the dismiss throws input away and says Cancel (ui-style-guide rule 8). */}
+      <ResponsiveDialogFooter>
         <Button
-          className={dialogActionClassName}
           data-testid="manage-account-close"
           variant="outline"
           onClick={() => onOpenChange(false)}
         >
-          {t("common.close")}
+          {t("common.cancel")}
         </Button>
         <div className="contents" ref={setActionSlot} />
       </ResponsiveDialogFooter>
@@ -528,7 +518,7 @@ function AccountTab({
             </span>
           </div>
         ) : null}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {t("manageAccount.account.signInMethodNote")}
         </p>
       </div>

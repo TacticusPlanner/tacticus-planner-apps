@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Check, Info, X } from "lucide-react"
+import { shardIcon } from "@workspace/game-catalog"
 import type { ResolvedShopOffer } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -56,8 +57,9 @@ export function Cost({
       className={cn("inline-flex items-center gap-1 tabular-nums", className)}
     >
       <EntityIcon
+        size="inline"
         alt=""
-        className="size-4 shrink-0"
+        className="shrink-0"
         src={format.currencyIcon(currency)}
       />
       {format.number(amount)}
@@ -85,6 +87,20 @@ function SlotSubtitle({ view }: { view: SlotView }) {
           {t("slot.tierRule")}
         </TooltipContent>
       </Tooltip>
+    )
+  }
+  if (view.label?.kind === "thenMythic") {
+    // "Then mythic shards at max legendary", led by the mythic shard icon.
+    return (
+      <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+        <EntityIcon
+          size="inline"
+          alt=""
+          className="shrink-0"
+          src={shardIcon("Mythic")}
+        />
+        <span className="line-clamp-2">{text}</span>
+      </p>
     )
   }
   return <p className="line-clamp-2 text-xs text-muted-foreground">{text}</p>
@@ -425,7 +441,7 @@ function OfferLine({
   const reward = format.reward(offer.rewardType, offer.unitId)
   return (
     <span className="flex min-w-0 items-center gap-2">
-      <EntityIcon alt="" className="size-8 shrink-0" src={reward.iconUrl} />
+      <EntityIcon size="row" alt="" className="shrink-0" src={reward.iconUrl} />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm">{reward.label}</span>
         <span className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
@@ -470,7 +486,12 @@ function SlotCard({
       data-testid={`event-shop-slot-${view.ref.slotIndex}`}
     >
       <div className="flex flex-col items-center gap-2 text-center @[14rem]:flex-row @[14rem]:items-start @[14rem]:gap-3 @[14rem]:text-left">
-        <EntityIcon alt="" className="size-12 shrink-0" src={reward.iconUrl} />
+        <EntityIcon
+          size="tile"
+          alt=""
+          className="shrink-0"
+          src={reward.iconUrl}
+        />
         <div className="w-full min-w-0 flex-1">
           <div className="flex flex-col items-center gap-x-2 @[14rem]:flex-row @[14rem]:items-baseline @[14rem]:justify-between">
             <h3 className="line-clamp-2 text-sm font-semibold wrap-break-word">
@@ -523,7 +544,7 @@ function SlotCard({
               className="mt-1 h-auto max-w-full whitespace-normal"
               variant="secondary"
             >
-              <EntityIcon alt="" className="size-3.5" src={free.iconUrl} />
+              <EntityIcon size="inline" alt="" src={free.iconUrl} />
               {t("slot.free", { reward: free.label, qty: view.freeQty })}
             </Badge>
           ) : null}
@@ -651,8 +672,9 @@ function SlotTile({
       >
         <span className="relative">
           <EntityIcon
+            size="tile"
             alt=""
-            className={cn("size-12", allBought && "opacity-60")}
+            className={cn(allBought && "opacity-60")}
             src={reward.iconUrl}
           />
           {allBought ? (

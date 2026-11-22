@@ -1,11 +1,12 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import { Tabs } from "@workspace/ui/components/tabs"
 
 import type {
   HseTeamMode,
   HseTeamRecommendations,
 } from "@/features/team-recommendations"
+import { PageTabsList, PageTabsTrigger } from "@/shared/ui"
 import { HseEnemyHints } from "./hse-enemy-hints"
 import { HseTeamCard } from "./hse-team-card"
 import { hseTeamTestId } from "./hse-team-test-id"
@@ -31,22 +32,20 @@ export function HseTeamsMobile({
         onValueChange={(value) => setChosen(value as HseTeamMode)}
         value={selected.mode}
       >
-        <TabsList
+        <PageTabsList
           aria-label={t("hse.teams.modeLabel")}
-          className="max-w-full justify-start overflow-x-auto"
           data-testid="hse-teams-mode-control"
-          variant="line"
         >
           {modes.map(({ mode }) => (
-            <TabsTrigger
+            <PageTabsTrigger
               data-testid={`hse-teams-mode-option-${mode.toLowerCase()}`}
               key={mode}
               value={mode}
             >
               {t(`hse.details.modes.${mode}`)}
-            </TabsTrigger>
+            </PageTabsTrigger>
           ))}
-        </TabsList>
+        </PageTabsList>
       </Tabs>
       <div
         className="space-y-3"

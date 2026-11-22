@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
+import { allianceIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   NPC_ENCOUNTER_SOURCES,
@@ -28,17 +28,22 @@ import type {
   NpcFilters,
 } from "@/entities/npc"
 import { useMinuteNow } from "@/entities/legendary-event"
+import { unitNeighbours } from "@/entities/unit"
 import { useTourPageSteps } from "@/shared/tour"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
-import { useLibraryRouteSelection } from "../../model/use-library-route-selection"
-import { NpcsDesktopPage } from "./desktop/npcs-desktop-page"
 import { useEncounterGroupName } from "../../model/npcs/use-encounter-group-name"
 import { encounterTiming } from "../../model/encounter-timing"
+import {
+  encounterGroupIcon,
+  encounterSourceIcon,
+} from "../../model/npcs/encounter-group-icon"
 
 import { useNpcEncounters } from "../../model/npcs/use-npc-encounters"
 import { useNpcsCatalog } from "../../model/npcs/use-npcs-catalog"
-import { NpcsMobilePage } from "./mobile/npcs-mobile-page"
+import { numberRepeatedLabels } from "../../model/npcs/number-repeated-labels"
+import { NpcDetailPage } from "./npc-detail-page"
+import { NpcsListPage } from "./npcs-list-page"
 import { useNpcsTutorial } from "./npcs.tutorial"
 import { npcPowerFigure } from "./npcs-page.view-model"
 import type {
@@ -58,7 +63,6 @@ function parseLevel(raw: string | null): number | undefined {
 
 export function NpcsPage() {
   const { t } = useTranslation(["library", "damageTypes", "traits"])
-  const isMobile = useIsMobile()
   const { entityId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
@@ -131,19 +135,20 @@ export function NpcsPage() {
     }
   }, [filterState, hasEncounters, canFilterRunning, locationsByMode])
 
-  // Route selection runs over every listed group (not the filtered view) so applying a filter never
-  // redirects the current entity away.
-  const groupIds = useMemo(
-    () => catalog.groups.map((group) => group.id),
-    [catalog.groups]
-  )
-  const { selectedId } = useLibraryRouteSelection({
-    collectionPath: COLLECTION_PATH,
-    entityId,
-    entityIds: catalog.status === "ready" ? groupIds : undefined,
-    loading: catalog.status !== "ready",
-  })
-  const selectedGroup = selectedId ? catalog.byId.get(selectedId) : undefined
+  // `/library/npcs` is the list; `/library/npcs/{id}` is that NPC's page. The id is looked up in
+  // every group (not the filtered view), so applying a filter never sends the page away. An unknown
+  // id goes back to the list.
+  const selectedGroup = entityId ? catalog.byId.get(entityId) : undefined
+  const selectedId = selectedGroup?.id
+  const unknownEntity =
+    catalog.status === "ready" && entityId !== undefined && !selectedGroup
+  useEffect(() => {
+    if (unknownEntity)
+      void navigate(
+        { pathname: COLLECTION_PATH, search: "" },
+        { replace: true }
+      )
+  }, [navigate, unknownEntity])
 
   const listedGroups = useMemo(
     () => filterNpcGroups(catalog.groups, filters, groupName, encounterLookup),
@@ -194,6 +199,7 @@ export function NpcsPage() {
         .map((id) => ({
           id,
           name: t(`library:npcs.alliances.${id}`, { defaultValue: id }),
+          icon: allianceIcon(id),
         }))
         .toSorted(byName),
       damageTypes: [...damageTypes]
@@ -211,9 +217,14 @@ export function NpcsPage() {
       ).map((id) => ({
         id,
         name: t(`library:npcs.encounters.source.${id}`, { defaultValue: id }),
+        icon: encounterSourceIcon(id),
       })),
       locations: [...(locations ?? [])]
-        .map(([id, encounter]) => ({ id, name: encounterGroupName(encounter) }))
+        .map(([id, encounter]) => ({
+          id,
+          name: encounterGroupName(encounter),
+          icon: encounterGroupIcon(encounter),
+        }))
         .toSorted(byName),
       canFilterRunning,
     }
@@ -279,22 +290,21 @@ export function NpcsPage() {
   const variationOptions = useMemo<NpcVariationOption[]>(
     () =>
       selectedGroup
-        ? matching.map((variation) => {
-            const mode = variationMode(
-              variation.id,
-              variation.id === selectedGroup.defaultVariationId
-            )
-            return {
-              id: variation.id,
-              mode,
-              label:
-                mode === "unknown"
-                  ? variation.id
-                  : t(`library:${variationModeLabelKey(mode)}`, {
-                      defaultValue: mode,
-                    }),
-            }
-          })
+        ? numberRepeatedLabels(
+            matching.map((variation) => {
+              const mode = variationMode(
+                variation.id,
+                variation.id === selectedGroup.defaultVariationId
+              )
+              return {
+                id: variation.id,
+                mode,
+                label: t(`library:${variationModeLabelKey(mode)}`, {
+                  defaultValue: mode,
+                }),
+              }
+            })
+          )
         : [],
     [selectedGroup, matching, t]
   )
@@ -311,11 +321,22 @@ export function NpcsPage() {
   }, [levels, search])
 
   // --- Navigation -----------------------------------------------------------------------------
-  const onSelect = useCallback(
+  // Previous / Next follow the list the NPC was opened from (the filtered list); an NPC the filters
+  // leave out steps through every NPC instead.
+  const neighbours = useMemo(() => {
+    if (!selectedId) return { index: -1, total: 0 }
+    const listedIds = items.map((item) => item.id)
+    const ids = listedIds.includes(selectedId)
+      ? listedIds
+      : catalog.groups.map((group) => group.id)
+    return unitNeighbours(ids, selectedId)
+  }, [catalog.groups, items, selectedId])
+  const nameOf = useCallback(
     (groupId: string) => {
-      void navigate({ pathname: `${COLLECTION_PATH}/${groupId}`, search: "" })
+      const group = catalog.byId.get(groupId)
+      return group ? groupName(group) : groupId
     },
-    [navigate]
+    [catalog.byId, groupName]
   )
   const onVariationChange = useCallback(
     (variationId: string) => {
@@ -352,7 +373,7 @@ export function NpcsPage() {
     [catalog.groups, encounterLookup, filters]
   )
 
-  useTourPageSteps(useNpcsTutorial())
+  useTourPageSteps(useNpcsTutorial(selectedGroup !== undefined))
   const powerContext = useUnitPowerContext()
 
   if (catalog.status === "loading") {
@@ -401,7 +422,8 @@ export function NpcsPage() {
     selectedGroup,
     selectedName: selectedGroup ? groupName(selectedGroup) : "",
     selectedId,
-    onSelect,
+    neighbours,
+    nameOf,
     variationOptions,
     selectedVariation,
     onVariationChange,
@@ -437,10 +459,10 @@ export function NpcsPage() {
 
   return (
     <div data-testid="npcs-library-page">
-      {isMobile ? (
-        <NpcsMobilePage {...viewProps} />
+      {selectedGroup ? (
+        <NpcDetailPage {...viewProps} />
       ) : (
-        <NpcsDesktopPage {...viewProps} />
+        <NpcsListPage {...viewProps} />
       )}
     </div>
   )

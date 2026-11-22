@@ -16,13 +16,11 @@ import { RarityIcon } from "./rarity-icon"
 export function CompactProgression({
   value,
   className,
-  iconClassName = "size-5",
   fade,
   "data-testid": testId,
 }: {
   value: Progression
   className?: string
-  iconClassName?: string
   fade?: "rarity" | "stars"
   "data-testid"?: string
 }) {
@@ -36,7 +34,7 @@ export function CompactProgression({
       role="img"
     >
       <RarityIcon
-        className={cn(iconClassName, fade === "rarity" && fadedPart)}
+        className={fade === "rarity" ? fadedPart : undefined}
         rarity={progressionRarity(value)}
       />
       <CompactStars

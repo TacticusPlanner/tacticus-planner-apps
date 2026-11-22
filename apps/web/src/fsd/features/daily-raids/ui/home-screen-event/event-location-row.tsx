@@ -1,16 +1,15 @@
 import type { ReactNode } from "react"
 import type { BattleId } from "@workspace/game-domain"
-import { cn } from "@workspace/ui/lib/utils"
 
 import type { DailyRaidLocationViewModel } from "../../model/daily-raids.domain"
-import { useIsLoneCampaignRow } from "../campaign-group-context"
 import { RaidLocationName } from "../raid-location-name"
 import type { RaidLocationTarget } from "../raid-location-name"
 
 /**
  * One campaign location on the HSE/HRE lists, as a row under its campaign's header (`CampaignGroup`):
  * the battle ("Battle 36") and trailing badges. A battle the catalog cannot place has no header, so
- * its row shows its raw id instead. With `onShowLocation`, the battle's name opens its enemies.
+ * its row shows its raw id instead. A group's only row names its location in full on the same line
+ * as its badges, as on Dailies > Raids. With `onShowLocation`, the battle's name opens its enemies.
  */
 export function EventLocationRow({
   battleId,
@@ -28,14 +27,12 @@ export function EventLocationRow({
   testId: string
   children: ReactNode
 }) {
-  // A lone row names its location in full, so it takes its own line above the badges.
-  const lone = useIsLoneCampaignRow()
   return (
     <li
       className="flex flex-wrap items-center gap-x-2 gap-y-1 py-1.5"
       data-testid={testId}
     >
-      <div className={cn("min-w-20 flex-1", lone && "basis-full")}>
+      <div className="min-w-20 flex-1">
         <RaidLocationName
           battleId={battleId}
           fallbackLabel={fallbackLabel}

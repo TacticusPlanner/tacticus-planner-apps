@@ -3,21 +3,32 @@ import type { Rarity, UpgradeId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "./entity-icon"
+import { entityIconClassName } from "./game-icon-size"
+import type { EntityIconSize } from "./game-icon-size"
 
-/** Underlay + material icon + rarity frame, layered the same way V1's upgrade-image.tsx does. */
+/** Underlay + material icon + rarity frame, layered the same way V1's upgrade-image.tsx does.
+ *  `size` is the style guide's icon role (`row` by default); keep size classes out of `className`. */
 export function UpgradeIcon({
   id,
   rarity,
   crafted,
-  className = "size-8",
+  size = "row",
+  className,
 }: {
   id: UpgradeId
   rarity?: Rarity
   crafted?: boolean
+  size?: EntityIconSize
   className?: string
 }) {
   return (
-    <span className={cn("relative inline-block", className)}>
+    <span
+      className={cn(
+        "relative inline-block",
+        entityIconClassName(size),
+        className
+      )}
+    >
       <img
         src={UpgradeIcons.underlay}
         alt=""

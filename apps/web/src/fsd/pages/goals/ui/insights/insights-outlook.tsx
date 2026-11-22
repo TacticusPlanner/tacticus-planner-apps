@@ -68,8 +68,9 @@ export function InsightsOutlook({
             </span>
             <span aria-hidden>·</span>
             <EntityIcon
+              size="inline"
               alt=""
-              className="size-4 shrink-0"
+              className="shrink-0"
               src={energyIconUrl}
             />
             <span data-testid="insights-energy-summary">
@@ -134,7 +135,7 @@ export function InsightsOutlook({
               {/* One heading per reason, so a reason shared by several goals is said once. */}
               {groupByReason(excludedGoals).map(([reason, goals]) => (
                 <div className="flex flex-col gap-2" key={reason}>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     {reason === "NotEstimated"
                       ? t("goals.insights.notEstimated")
                       : t(`goals.estimate.blocked.${reason}`)}

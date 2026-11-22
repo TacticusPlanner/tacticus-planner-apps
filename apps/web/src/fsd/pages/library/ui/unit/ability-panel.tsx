@@ -124,7 +124,8 @@ export function AbilityPanel({
           <EntityIcon
             src={iconSrc}
             alt=""
-            className={iconClassName ?? "size-11 shrink-0"}
+            size="tile"
+            className={iconClassName ?? "shrink-0"}
           />
         ) : null}
         <div className="min-w-0 flex-1">

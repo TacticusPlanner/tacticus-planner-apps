@@ -29,14 +29,25 @@
     "synced": "Synced {{time}}",
     "notSynced": "Not synced",
     "income": "≈ {{free}} free + {{bonus}} bonus shipment this week",
-    "tba": "Start date TBA"
+    "tba": "Start date TBA",
+    "switcher": {
+      "placeholder": "Choose an event",
+      "empty": "No events in the calendar",
+      "previous": "Previous event",
+      "next": "Next event",
+      "groups": {
+        "running": "Running",
+        "upcoming": "Upcoming",
+        "past": "Past"
+      }
+    }
   },
   "tabs": {
     "label": "Event shop sections",
     "shop": "Shop",
     "milestones": "Milestones",
     "missions": "Missions",
-    "plan": "Plan",
+    "plan": "Shopping list",
     "rewards": "Rewards"
   },
   "days": {
@@ -125,7 +136,7 @@
     "boughtSome": {
       "title": "How many did you buy?",
       "value": "Packs bought",
-      "confirm": "Save"
+      "confirm": "Save purchases"
     },
     "clearWeek": {
       "title": "Clear week {{week}}?",

@@ -1,18 +1,17 @@
-import { useId, useState } from "react"
+import { useId, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@workspace/ui/components/dialog"
 import { Label } from "@workspace/ui/components/label"
 import { Switch } from "@workspace/ui/components/switch"
 
-import { PageSettingsButton } from "@/shared/ui"
+import {
+  PageSettingsButton,
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogDescription,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/shared/ui"
 
 import { useShowPaidOptions } from "../model/use-show-paid-options"
 import { useWatchAds } from "../model/use-watch-ads"
@@ -25,22 +24,39 @@ import { useWatchAds } from "../model/use-watch-ads"
 export function LegendaryEventSettingsButton() {
   const { t } = useTranslation("legendaryEvents")
   const signedIn = useIsAuthenticated()
+  const [open, setOpen] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   // Settings are account preferences, so signed-out players get no button.
   if (!signedIn) return null
   return (
-    <Dialog>
-      {/* The trigger, so closing the dialog returns focus to the button. */}
-      <DialogTrigger asChild>
-        <PageSettingsButton testId="legendary-event-settings" />
-      </DialogTrigger>
-      <DialogContent data-testid="legendary-event-settings-dialog">
-        <DialogHeader>
-          <DialogTitle>{t("settings.title")}</DialogTitle>
-          <DialogDescription>{t("settings.description")}</DialogDescription>
-        </DialogHeader>
-        <LegendaryEventSettingsForm />
-      </DialogContent>
-    </Dialog>
+    <>
+      <PageSettingsButton
+        onClick={() => setOpen(true)}
+        ref={buttonRef}
+        testId="legendary-event-settings"
+      />
+      <ResponsiveDialog
+        data-testid="legendary-event-settings-dialog"
+        width="narrow"
+        // Opened from state, so focus goes back to the Settings button by hand.
+        onCloseAutoFocus={(event) => {
+          event.preventDefault()
+          buttonRef.current?.focus()
+        }}
+        onOpenChange={setOpen}
+        open={open}
+      >
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>{t("settings.title")}</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>
+            {t("settings.description")}
+          </ResponsiveDialogDescription>
+        </ResponsiveDialogHeader>
+        <ResponsiveDialogBody>
+          <LegendaryEventSettingsForm />
+        </ResponsiveDialogBody>
+      </ResponsiveDialog>
+    </>
   )
 }
 

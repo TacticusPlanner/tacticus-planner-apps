@@ -184,6 +184,8 @@ vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
 import { InsightsPage } from ".//insights-page"
 
+vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
+
 const rankGoal = {
   goalId: "goal-1",
   entityType: "Character",
@@ -326,5 +328,46 @@ describe("InsightsPage", () => {
       "on"
     )
     expect(screen.getByTestId("insights-outlook")).toBeInTheDocument()
+  })
+
+  it("preselects the project picked on another page, and all goals when it was deleted", async () => {
+    projectList = [
+      {
+        projectId: "proj-1",
+        name: "My Plan",
+        description: null,
+        color: null,
+        status: "Active",
+        isDefault: true,
+        revision: 0,
+        createdAt: "2026-01-01T00:00:00Z",
+        updatedAt: "2026-01-01T00:00:00Z",
+      },
+    ]
+    listProjects.mockResolvedValue({ projects: projectList })
+    planGoals = []
+    window.localStorage.setItem("tp.session.project.selected.v1", "proj-1")
+
+    const first = render(
+      <TooltipProvider>
+        <InsightsPage />
+      </TooltipProvider>,
+      { auth: { authenticated: true }, route: "/plan/insights" }
+    )
+    expect(screen.getByTestId("insights-project-select")).toHaveTextContent(
+      "My Plan"
+    )
+    first.unmount()
+
+    window.localStorage.setItem("tp.session.project.selected.v1", "deleted")
+    render(
+      <TooltipProvider>
+        <InsightsPage />
+      </TooltipProvider>,
+      { auth: { authenticated: true }, route: "/plan/insights" }
+    )
+    expect(screen.getByTestId("insights-project-select")).toHaveTextContent(
+      "All projects"
+    )
   })
 })

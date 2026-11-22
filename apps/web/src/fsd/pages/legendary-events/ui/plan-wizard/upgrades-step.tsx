@@ -156,7 +156,7 @@ export function UpgradesStep({ draft }: { draft: PlanDraft }) {
             </p>
           ) : null}
           {targetPoints !== null ? (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {t("planWizard.upgrades.ceilingNote")}
             </p>
           ) : null}
@@ -193,8 +193,9 @@ export function UpgradesStep({ draft }: { draft: PlanDraft }) {
                         onCheckedChange={() => draft.toggle(index)}
                       />
                       <EntityIcon
+                        size="portrait-sm"
                         alt=""
-                        className="size-9 shrink-0 rounded-full"
+                        className="shrink-0 rounded-full"
                         src={characterIcon(recommendation.unitId as UnitId)}
                       />
                       <label

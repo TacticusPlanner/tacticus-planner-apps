@@ -1,6 +1,4 @@
 import { useTranslation } from "react-i18next"
-import { FolderKanban } from "lucide-react"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import {
   Select,
   SelectContent,
@@ -18,12 +16,10 @@ import { ProjectColorDot } from "./project-color-dot"
 const ALL_PROJECTS_VALUE = "__all__"
 
 /**
- * The one project-selector implementation every Goals/Dailies subpage with a project selector
- * should use (goals-navigation spec's "Consistent project selector" requirement) — previously
- * duplicated as a hand-rolled `<Select>` in Insights and again inside `ProjectToolbar`. Below the
- * 768px mobile breakpoint it renders icon-only (Decision 4): callers no longer need their own
- * `isMobile ? null : <SelectValue />` conditional, and the accessible name (`aria-label`, falling
- * back to the same text used for the placeholder) is preserved either way.
+ * The one project selector every Goals/Dailies page that scopes by project uses, first in the
+ * toolbar's Find slot (goals-navigation spec's "Consistent project selector" requirement). It
+ * shows the chosen project ("All projects" or its name) on every viewport, never icon-only
+ * (ui-style-guide rule 3).
  */
 export function ProjectSelect({
   projects,
@@ -31,8 +27,10 @@ export function ProjectSelect({
   onProjectIdChange,
   allowAll = false,
   testId,
+  label,
   placeholder,
-  compact,
+  allLabel,
+  counts,
   className,
 }: {
   projects: ProjectSummary[]
@@ -40,16 +38,16 @@ export function ProjectSelect({
   onProjectIdChange: (projectId: string | undefined) => void
   allowAll?: boolean
   testId?: string
+  /** The trigger's accessible name, like the other toolbar selects' filter labels. */
+  label?: string
   placeholder?: string
-  // Overrides the default icon-only-below-768px behavior. Pass `false` when a caller wants the
-  // full name shown regardless of viewport (e.g. its own layout already stacks to a full-width row
-  // on mobile instead of relying on this component to compress itself).
-  compact?: boolean
+  /** The "all" option's text; defaults to "All projects". */
+  allLabel?: string
+  /** Goals per project id, shown after each name; `all` is the "all" option's count. */
+  counts?: { all: number; byProject: ReadonlyMap<string, number> }
   className?: string
 }) {
   const { t } = useTranslation()
-  const isMobile = useIsMobile()
-  const iconOnly = compact ?? isMobile
   const value = projectId ?? (allowAll ? ALL_PROJECTS_VALUE : "")
   const resolvedPlaceholder = placeholder ?? t("goals.insights.selectProject")
 
@@ -63,28 +61,22 @@ export function ProjectSelect({
       value={value}
     >
       <SelectTrigger
-        aria-label={iconOnly ? resolvedPlaceholder : undefined}
-        className={cn(iconOnly ? undefined : "min-w-56", className)}
+        aria-label={label}
+        className={cn("max-w-full min-w-56", className)}
         data-testid={testId}
       >
-        {iconOnly ? (
-          <FolderKanban aria-hidden="true" />
-        ) : (
-          <SelectValue placeholder={resolvedPlaceholder} />
-        )}
+        <SelectValue placeholder={resolvedPlaceholder} />
       </SelectTrigger>
-      {/* `SelectValue` is hidden below 768px (icon-only trigger). Radix's default "item-aligned"
-       *  content positioning depends on measuring that node to align the selected item over the
-       *  trigger — without it, the content renders far off-screen (at the document's full scroll
-       *  height) while the page underneath stays inert (Radix's open-select scroll lock), making
-       *  the trigger look unresponsive. `position="popper"` positions the content relative to the
-       *  trigger itself instead, which doesn't need `SelectValue` to work (same fix as
-       *  `goal-filters.tsx`'s Type/Sort/Group triggers). */}
+      {/* Positioned against the trigger (`position="popper"`). */}
       <SelectContent position="popper">
         <SelectGroup>
           {allowAll ? (
-            <SelectItem value={ALL_PROJECTS_VALUE}>
-              {t("goals.project.filterAll")}
+            <SelectItem
+              data-testid={testId ? `${testId}-option-all` : undefined}
+              value={ALL_PROJECTS_VALUE}
+            >
+              {allLabel ?? t("goals.project.filterAll")}
+              {counts ? <Count value={counts.all} /> : null}
             </SelectItem>
           ) : null}
           {/* Archived projects aren't offered as new destinations to switch to, but the
@@ -98,14 +90,27 @@ export function ProjectSelect({
                 project.status !== "Archived" || project.projectId === projectId
             )
             .map((project) => (
-              <SelectItem key={project.projectId} value={project.projectId}>
+              <SelectItem
+                data-testid={
+                  testId ? `${testId}-option-${project.projectId}` : undefined
+                }
+                key={project.projectId}
+                value={project.projectId}
+              >
                 <ProjectColorDot color={project.color} />
                 {project.name}
                 {projectMarkerSuffix(t, project)}
+                {counts ? (
+                  <Count value={counts.byProject.get(project.projectId) ?? 0} />
+                ) : null}
               </SelectItem>
             ))}
         </SelectGroup>
       </SelectContent>
     </Select>
   )
+}
+
+function Count({ value }: { value: number }) {
+  return <span className="text-muted-foreground tabular-nums">{value}</span>
 }

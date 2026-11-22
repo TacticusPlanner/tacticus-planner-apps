@@ -211,7 +211,8 @@
     "more_other": "Encore {{count}} requis",
     "progress": "{{owned}} sur {{target}} possédés",
     "fullyRaided": "Entièrement attaqué",
-    "battle": "Bataille {{node}}"
+    "battle": "Bataille {{node}}",
+    "noGoals": "Vous n'avez aucun objectif actif. Créez ou reprenez un objectif pour voir combien de jours vos raids vont prendre."
   },
   "bonus": {
     "title": "Raids bonus",
@@ -419,12 +420,12 @@
           "content": "Ouvrez la liste complète des missions. Chacune se déplie sur ses conseils."
         },
         "raids": {
-          "title": "Raids de campagne",
-          "content": "Où raider pour l'objectif de campagne de la mission en cours, l'énergie la moins chère en premier, sans limite d'énergie du jour. Le résumé ci-dessous compte les combats de campagne restants sur tout l'événement."
+          "title": "Prévisions de campagne",
+          "content": "Les batailles de campagne restantes sur tout l'événement face à votre énergie quotidienne aux nœuds les moins chers."
         },
-        "team": {
-          "title": "Équipe de mission",
-          "content": "Une équipe tirée de votre effectif pour les missions qui limitent la composition ou demandent le héros de l'événement."
+        "suggestions": {
+          "title": "Suggestions",
+          "content": "Sous chaque objectif, touchez une ligne pour aller à sa carte sous le rythme de l'événement : où faire des raids, quelles batailles jouer vous-même et avec quelle équipe, aussi en Arène, Onslaught ou Course au pillage si vous avez des jetons en trop."
         },
         "tokens": {
           "title": "Jetons nécessaires",
@@ -433,10 +434,6 @@
         "pace": {
           "title": "Rythme de l'événement",
           "content": "Saisissez vos points d'événement et votre rang, et si vous voulez ce que vous avez maintenant, pour estimer la monnaie, le niveau de coffre et les fragments, et choisissez un objectif pour voir les points par jour nécessaires."
-        },
-        "paceSummary": {
-          "title": "Le rythme en un coup d'œil",
-          "content": "Vos points, où ils mènent et le palier atteint. Touchez Détails pour saisir vos points, votre rang et ce que vous avez, et choisir un objectif."
         }
       }
     },
@@ -519,7 +516,7 @@
           "content": "Ouvrez votre liste d'achats et la couverture. Le bouton indique ce qu'il reste à acheter et combien d'éléments sont à vérifier."
         },
         "planTab": {
-          "title": "Plan",
+          "title": "Liste d'achats",
           "content": "Votre liste d'achats et la couverture. Le badge compte les éléments à vérifier."
         },
         "stillToBuy": {
@@ -548,10 +545,8 @@
     "row": "{{material}} ×{{count}} : {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filtres",
-    "triggerActive": "Filtres, {{count}} actifs",
     "title": "Filtres",
-    "description": "Limitez les lieux de campagne que Aujourd'hui, les raids bonus et l'onglet ÉÉA peuvent utiliser. Le plan et les objectifs ne sont pas affectés.",
+    "description": "S'applique à Aujourd'hui, aux raids bonus et à l'onglet ÉÉA, pas au plan ni aux objectifs.",
     "sections": {
       "allies": "Alliés",
       "enemies": "Ennemis",
@@ -566,7 +561,7 @@
       "enemyTraits": "Traits des ennemis",
       "enemyTypes": "Types d'ennemis",
       "campaignTypes": "Types",
-      "slots": "Emplacements",
+      "slots": "Emplacements de déploiement",
       "rarity": "Rareté"
     },
     "placeholders": {
@@ -592,17 +587,17 @@
     },
     "slotsOption": "{{count}} emplacements",
     "actions": {
-      "close": "Fermer",
-      "reset": "Réinitialiser les filtres",
+      "cancel": "Annuler",
+      "reset": "Effacer les filtres",
       "apply": "Appliquer les filtres"
     },
     "filteredOut": {
       "title": "Les filtres de raids ont retiré certains matériaux",
       "materials_one": "{{count}} matériau n'a aucun lieu autorisé avec ces filtres.",
       "materials_other": "{{count}} matériaux n'ont aucun lieu autorisé avec ces filtres.",
-      "pinned_one": "{{count}} objectif est épinglé sur un lieu exclu par vos filtres de raids. Réinitialisez les filtres ou changez l'épingle.",
-      "pinned_other": "{{count}} objectifs sont épinglés sur un lieu exclu par vos filtres de raids. Réinitialisez les filtres ou changez l'épingle.",
-      "reset": "Réinitialiser les filtres",
+      "pinned_one": "{{count}} objectif est épinglé sur un lieu exclu par vos filtres de raids. Effacez les filtres ou changez l'épingle.",
+      "pinned_other": "{{count}} objectifs sont épinglés sur un lieu exclu par vos filtres de raids. Effacez les filtres ou changez l'épingle.",
+      "reset": "Effacer les filtres",
       "listLabel": "Matériaux ignorés par vos filtres de raids",
       "pinnedBadge": "Épinglé",
       "showAll": "Tout afficher ({{count}})",
@@ -880,7 +875,8 @@
         "syncedAt": "Jetons issus de votre synchronisation {{when}}, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "syncUnknown": "L'heure de votre synchronisation est inconnue, les jetons sont donc comptés à partir de maintenant, en supposant que vous les dépensez avant que vos réserves soient pleines.",
         "upcoming": "Les jetons supposent des réserves pleines au début de l'événement et que vous les dépensez avant qu'elles soient pleines."
-      }
+      },
+      "howWorkedOut": "Comment c’est calculé"
     },
     "teams": {
       "title": "Équipes de l'événement",
@@ -929,7 +925,8 @@
   "battleProgress": {
     "open": "Médailles",
     "title": "Combats sans 3 médailles",
-    "description": "Les raids nécessitent 3 médailles. Les combats gagnés comptent comme le meilleur résultat (3 médailles, victoire éclair, palier maximal) ; modifiez seulement ceux qui n'y sont pas. Un combat sous 3 médailles est prévu en jeu manuel. Votre prochain combat de chaque campagne se joue toujours manuellement.",
+    "description": "Les raids nécessitent 3 médailles. Modifiez seulement les combats qui n'y sont pas.",
+    "note": "Les combats gagnés comptent comme 3 médailles, victoire éclair et palier maximal. Un combat sous 3 médailles et votre prochain combat de chaque campagne se jouent manuellement.",
     "campaign": "Campagne",
     "notStarted": "Vous n'avez encore atteint aucun combat de cette campagne.",
     "notBeaten": "Pas encore vaincu",

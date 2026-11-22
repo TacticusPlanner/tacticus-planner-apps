@@ -470,7 +470,7 @@ describe("TeamEditorDialog", () => {
         within(actions)
           .getAllByRole("button")
           .map((button) => button.textContent)
-      ).toEqual(["Cancel", "Save and add another", "Save team"])
+      ).toEqual(["Save and add another", "Cancel", "Save team"])
     })
 
     it("says at least 3 below three members and shows a manual depth", () => {

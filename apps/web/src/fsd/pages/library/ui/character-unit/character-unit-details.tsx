@@ -14,7 +14,7 @@ import {
 } from "@workspace/ui/components/accordion"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { CompactProgression, RankBadge } from "@/shared/ui"
+import { CompactProgression, HowToRead, RankBadge } from "@/shared/ui"
 
 import type { RadarAxisResult } from "../../model/stat-radar"
 import {
@@ -137,13 +137,8 @@ export function CharacterUnitDetails({
   const compareAt = (
     <span className="inline-flex items-center gap-1.5">
       {t("characterUnit.compare.subtitle")}
-      <CompactProgression iconClassName="size-4" value="Mythic:MythicWings" />
-      <RankBadge
-        iconClassName="size-4"
-        rank={Rank.Adamantine2}
-        showLabel={false}
-        tooltip
-      />
+      <CompactProgression value="Mythic:MythicWings" />
+      <RankBadge rank={Rank.Adamantine2} showLabel={false} tooltip />
     </span>
   )
 
@@ -222,12 +217,7 @@ export function CharacterUnitDetails({
           )}
           {section(
             "stats",
-            <RankBadge
-              rank={shownRank}
-              showLabel={false}
-              tooltip
-              iconClassName="size-4"
-            />,
+            <RankBadge rank={shownRank} showLabel={false} tooltip />,
             t("characterUnit.statsByRank.title"),
             "",
             statsByRank
@@ -304,7 +294,10 @@ export function CharacterUnitDetails({
           data-testid="unit-stats-by-rank"
         >
           {statsByRank}
-          <p className="text-xs text-muted-foreground">
+          <HowToRead
+            summary={t("characterUnit.statsByRank.howToRead")}
+            data-testid="unit-stats-by-rank-how-to-read"
+          >
             {t("characterUnit.statsByRank.footnote", {
               rank: t(`progression:ranks.${shownRank}`),
             })}
@@ -313,7 +306,7 @@ export function CharacterUnitDetails({
                   rank: t(`progression:ranks.${rankCap}`),
                 })}`
               : null}
-          </p>
+          </HowToRead>
         </DetailsCard>
       </div>
       <div

@@ -113,7 +113,19 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex flex-col gap-1.5 p-6", className)}
+      // pr-14 keeps a long title clear of the close button.
+      className={cn("flex flex-col gap-1.5 p-6 pr-14", className)}
+      {...props}
+    />
+  )
+}
+
+/** The scrolling part between header and footer, inset like the header (24px). */
+function SheetBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sheet-body"
+      className={cn("min-h-0 flex-1 overflow-y-auto px-6 pb-6", className)}
       {...props}
     />
   )
@@ -123,7 +135,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-footer"
-      className={cn("mt-auto flex flex-col gap-2 p-6", className)}
+      className={cn("mt-auto flex flex-col-reverse gap-2 p-6", className)}
       {...props}
     />
   )
@@ -160,6 +172,7 @@ function SheetDescription({
 
 export {
   Sheet,
+  SheetBody,
   SheetClose,
   SheetContent,
   SheetDescription,

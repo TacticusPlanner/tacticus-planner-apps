@@ -33,13 +33,14 @@ export function NpcStatSummary({
   return (
     <div className="flex min-w-0 flex-col gap-3" data-testid="npc-stat-summary">
       <div className="flex min-w-0 items-center gap-3">
-        <NpcPortrait className="size-12" name={name} variationId={npc.id} />
+        <NpcPortrait size="portrait-sm" name={name} variationId={npc.id} />
         <div className="flex min-w-0 flex-col gap-1">
           <p className="truncate font-semibold">{name}</p>
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <EntityIcon
+              size="inline"
               alt=""
-              className="size-4"
+
               src={factionIcon(npc.factionId)}
             />
             {factionName(npc.factionId)}
@@ -64,7 +65,7 @@ export function NpcStatSummary({
               key={kind}
             >
               <dt className="flex items-center gap-1 text-xs text-muted-foreground">
-                <EntityIcon alt="" className="size-4" src={statIcon(kind)} />
+                <EntityIcon size="inline" alt="" src={statIcon(kind)} />
                 {t(`library:npcs.stats.${kind}`)}
               </dt>
               <dd
@@ -88,7 +89,7 @@ export function NpcStatSummary({
               className="flex items-center gap-1 rounded-md border bg-card px-1.5 py-1 text-xs"
               key={trait}
             >
-              <EntityIcon alt="" className="size-4" src={traitIcon(trait)} />
+              <EntityIcon size="inline" alt="" src={traitIcon(trait)} />
               {t(`traits:${trait}`, { defaultValue: trait })}
             </li>
           ))}
@@ -128,7 +129,7 @@ function Attacks({ npc }: { npc: NpcRecord }) {
           data-testid={`npc-stat-summary-${attack.kind}`}
           key={attack.kind}
         >
-          <EntityIcon alt="" className="size-5" src={statIcon(attack.kind)} />
+          <EntityIcon size="inline" alt="" src={statIcon(attack.kind)} />
           <span className="font-medium">
             {t(`library:npcs.attacks.${attack.kind}`)}
           </span>
@@ -138,8 +139,9 @@ function Attacks({ npc }: { npc: NpcRecord }) {
             </span>
           ) : null}
           <EntityIcon
+            size="inline"
             alt=""
-            className="size-4"
+
             src={damageTypeIcon(attack.damage)}
           />
           <span className="truncate">

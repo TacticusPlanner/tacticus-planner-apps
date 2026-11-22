@@ -331,6 +331,42 @@ describe("planHookMissionRaids: battles fought by hand", () => {
     expect(result.battles?.moreNeeded).toBe(false)
   })
 
+  it("takes the cheapest node with enough enemies for a few kills, not the biggest, and shows its enemies", () => {
+    const result = plan({
+      calculation: null,
+      request: {
+        battlesToGo: 0,
+        eventOnly: false,
+        manual: manual({ needs: [{ toGo: 5, per: "enemies" }] }),
+      },
+      availableBattles: [node("B12", 8), node("S6", 5), node("F4", 3)],
+      filterBattlesById: new Map([
+        ["B12", { ...filterBattle("Standard"), enemiesTotal: 12 }],
+        ["S6", { ...filterBattle("Standard"), enemiesTotal: 6 }],
+        ["F4", { ...filterBattle("Standard"), enemiesTotal: 4 }],
+      ]),
+    })
+    // B12 has the most enemies per energy, but S6 covers the 5 kills in one battle for 5 energy;
+    // F4 needs 2 battles for 6.
+    expect(result.battles?.rows).toEqual([
+      expect.objectContaining({ battleId: "S6", raids: 1, enemies: 6 }),
+    ])
+  })
+
+  it("shows no enemy count on battles for an objective that is not kills", () => {
+    const result = plan({
+      calculation: null,
+      request: {
+        battlesToGo: 0,
+        eventOnly: false,
+        manual: manual({ needs: [{ toGo: 5, per: "abilityUses" }] }),
+      },
+      availableBattles: [node("S6", 5)],
+      filterBattlesById: new Map([["S6", filterBattle("Standard")]]),
+    })
+    expect(result.battles?.rows[0]).not.toHaveProperty("enemies")
+  })
+
   it("puts lightning-condition nodes first while lightning victories are open", () => {
     const result = plan({
       calculation: null,

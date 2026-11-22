@@ -1,12 +1,17 @@
 import { useId, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
+  campaignIcon,
   damageTypeIcon,
   factionIcon,
+  gameMenuIcon,
+  onslaughtAllianceIcon,
   rarityIcon,
+  statIcon,
   traitIcon,
 } from "@workspace/game-catalog"
 import {
+  campaignIdSchema,
   progressionOrder,
   rankOrder,
   rarityOrder,
@@ -25,26 +30,63 @@ import { cn } from "@workspace/ui/lib/utils"
 import {
   closestOverlayContent,
   EntityIcon,
+  FilterLabelIcon,
   MultiSelect,
   ProgressionBadge,
   RankBadge,
   SearchableSelect,
   progressionText,
 } from "@/shared/ui"
-import type { SelectOption } from "@/shared/ui"
+import type { FilterLabelIconKind, SelectOption } from "@/shared/ui"
 
 import {
   collectionAlliances,
   collectionAttackTypes,
+  collectionSummons,
   collectionKinds,
   isCollectionAlliance,
   isCollectionAttackType,
+  isCollectionSummons,
   isCollectionKind,
 } from "../../model/collection-query"
-import type { CollectionQuery } from "../../model/collection-query"
+import type {
+  CollectionQuery,
+  CollectionShardSource,
+} from "../../model/collection-query"
 import type { CollectionOptions } from "../../model/use-collection-options"
 
 const ANY = "__any__"
+
+const kindIcons = {
+  character: gameMenuIcon("heroes"),
+  mow: gameMenuIcon("machinesOfWar"),
+} as const
+
+const attackTypeIcons = {
+  melee: statIcon("melee"),
+  ranged: statIcon("ranged"),
+} as const
+
+// Each campaign tier by the first storyline's icon for it; Extremis (event campaigns only) by the
+// first event's. "Not in a campaign" has none.
+const shardSourceIcons: Record<CollectionShardSource, string | undefined> = {
+  Standard: campaignIcon(campaignIdSchema.parse("campaign1"), "Standard"),
+  Elite: campaignIcon(campaignIdSchema.parse("elite1"), "Elite"),
+  Mirror: campaignIcon(campaignIdSchema.parse("mirror1"), "Mirror"),
+  EliteMirror: campaignIcon(
+    campaignIdSchema.parse("eliteMirror1"),
+    "EliteMirror"
+  ),
+  Extremis: campaignIcon(campaignIdSchema.parse("eventCampaign1"), "Extremis"),
+  none: undefined,
+}
+
+/** An option's leading game icon, decorative (the option's text names it). */
+function optionIcon(src: string | undefined) {
+  return src ? (
+    <EntityIcon size="inline" src={src} alt="" className="shrink-0" />
+  ) : undefined
+}
 
 // "None" (no stars yet) is never an owned unit's progression, so it is not offered.
 const starSteps = progressionOrder.filter((step) => !step.endsWith(":None"))
@@ -52,7 +94,7 @@ const starSteps = progressionOrder.filter((step) => !step.endsWith(":None"))
 /**
  * The standalone filter controls, shared by the desktop inline panel and the mobile sheet, in two
  * labelled groups: Unit (who the unit is and how far the player has taken it) and Combat (V1's
- * character properties, plus where the shards drop). Rank range and stars range read
+ * character properties, what the unit can summon, and where the shards drop). Rank range and stars range read
  * the synced roster, so without one they are disabled and explained. Each range (rank, stars, hits,
  * attack range) is one cell with both ends side by side, so a pair never splits across rows.
  * `layout="panel"` (desktop) fits as many columns as the width allows and stretches them across
@@ -82,7 +124,7 @@ export function CollectionFilterFields({
   const rankOptions: SelectOption<Rank>[] = rankOrder.map((rank) => ({
     value: rank,
     label: t(`progression:ranks.${rank}`, { defaultValue: rank }),
-    icon: <RankBadge rank={rank} showLabel={false} iconClassName="size-5" />,
+    icon: <RankBadge rank={rank} showLabel={false} />,
   }))
   const starOptions: SelectOption<Progression>[] = starSteps.map((step) => ({
     value: step,
@@ -109,7 +151,7 @@ export function CollectionFilterFields({
       data-testid="collection-filter-fields"
     >
       <FieldGroup title={label("groupUnit")} className={grid}>
-        <Field label={label("alliance")}>
+        <Field label={label("alliance")} icon="alliance">
           {(id) => (
             <PlainSelect
               id={id}
@@ -118,6 +160,7 @@ export function CollectionFilterFields({
               options={collectionAlliances.map((alliance) => ({
                 value: alliance,
                 label: t(`alliances.${alliance}`),
+                icon: optionIcon(onslaughtAllianceIcon(alliance)),
               }))}
               onChange={(value) =>
                 update({
@@ -127,7 +170,7 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <Field label={label("faction")} labelsControl={false}>
+        <Field label={label("faction")} icon="faction" labelsControl={false}>
           {() => (
             <MultiSelect
               label={label("faction")}
@@ -140,9 +183,9 @@ export function CollectionFilterFields({
                 label: faction.name,
                 icon: (
                   <EntityIcon
+                    size="inline"
                     src={factionIcon(faction.id)}
                     alt={faction.name}
-                    className="size-5"
                   />
                 ),
               }))}
@@ -152,7 +195,7 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <Field label={label("rarity")} labelsControl={false}>
+        <Field label={label("rarity")} icon="rarity" labelsControl={false}>
           {() => (
             <MultiSelect
               label={label("rarity")}
@@ -165,13 +208,7 @@ export function CollectionFilterFields({
                 return {
                   value: rarity,
                   label: name,
-                  icon: (
-                    <img
-                      src={rarityIcon(rarity)}
-                      alt={name}
-                      className="size-5"
-                    />
-                  ),
+                  icon: optionIcon(rarityIcon(rarity)),
                 }
               })}
               value={query.rarities}
@@ -182,6 +219,7 @@ export function CollectionFilterFields({
         </Field>
         <RangeField
           label={label("rankRange")}
+          icon="rank"
           describedBy={rosterNote}
           className={wide}
         >
@@ -212,6 +250,7 @@ export function CollectionFilterFields({
         </RangeField>
         <RangeField
           label={label("starsRange")}
+          icon="stars"
           describedBy={rosterNote}
           className={wide}
         >
@@ -240,7 +279,7 @@ export function CollectionFilterFields({
             data-testid="collection-stars-max-filter"
           />
         </RangeField>
-        <Field label={label("kind")}>
+        <Field label={label("kind")} icon="unitType">
           {(id) => (
             <PlainSelect
               id={id}
@@ -249,6 +288,7 @@ export function CollectionFilterFields({
               options={collectionKinds.map((kind) => ({
                 value: kind,
                 label: label(kind),
+                icon: optionIcon(kindIcons[kind]),
               }))}
               onChange={(value) =>
                 update({ kind: isCollectionKind(value) ? value : null })
@@ -266,7 +306,7 @@ export function CollectionFilterFields({
         )}
       </FieldGroup>
       <FieldGroup title={label("groupCombat")} className={grid}>
-        <Field label={label("attackType")}>
+        <Field label={label("attackType")} icon="attackType">
           {(id) => (
             <PlainSelect
               id={id}
@@ -275,6 +315,7 @@ export function CollectionFilterFields({
               options={collectionAttackTypes.map((attack) => ({
                 value: attack,
                 label: label(`attackTypes.${attack}`),
+                icon: optionIcon(attackTypeIcons[attack]),
               }))}
               onChange={(value) =>
                 update({
@@ -284,7 +325,25 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <RangeField label={label("hitsRange")} className={wide}>
+        <Field label={label("summons")} icon="summons">
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={query.summons}
+              anyLabel={label("summonsAny")}
+              options={collectionSummons.map((summons) => ({
+                value: summons,
+                label: label(`summonsTypes.${summons}`),
+              }))}
+              onChange={(value) =>
+                update({
+                  summons: isCollectionSummons(value) ? value : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <RangeField label={label("hitsRange")} icon="hits" className={wide}>
           <PlainSelect
             ariaLabel={label("hitsFrom")}
             value={asText(query.hitsMin)}
@@ -300,7 +359,7 @@ export function CollectionFilterFields({
             onChange={(value) => update({ hitsMax: toNumber(value) })}
           />
         </RangeField>
-        <Field label={label("movement")}>
+        <Field label={label("movement")} icon="movement">
           {(id) => (
             <PlainSelect
               id={id}
@@ -311,7 +370,11 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <RangeField label={label("attackRange")} className={wide}>
+        <RangeField
+          label={label("attackRange")}
+          icon="attackRange"
+          className={wide}
+        >
           <PlainSelect
             ariaLabel={label("rangeFrom")}
             value={asText(query.rangeMin)}
@@ -327,7 +390,11 @@ export function CollectionFilterFields({
             onChange={(value) => update({ rangeMax: toNumber(value) })}
           />
         </RangeField>
-        <Field label={label("damageTypes")} labelsControl={false}>
+        <Field
+          label={label("damageTypes")}
+          icon="damageType"
+          labelsControl={false}
+        >
           {() => (
             <MultiSelect
               label={label("damageTypes")}
@@ -340,9 +407,9 @@ export function CollectionFilterFields({
                 label: type.name,
                 icon: (
                   <EntityIcon
+                    size="inline"
                     src={damageTypeIcon(type.id)}
                     alt={type.name}
-                    className="size-5"
                   />
                 ),
               }))}
@@ -352,7 +419,7 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <Field label={label("traits")} labelsControl={false}>
+        <Field label={label("traits")} icon="trait" labelsControl={false}>
           {() => (
             <MultiSelect
               label={label("traits")}
@@ -365,9 +432,9 @@ export function CollectionFilterFields({
                 label: trait.name,
                 icon: (
                   <EntityIcon
+                    size="inline"
                     src={traitIcon(trait.id)}
                     alt={trait.name}
-                    className="size-5"
                   />
                 ),
               }))}
@@ -377,7 +444,11 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <Field label={label("shardSource")} labelsControl={false}>
+        <Field
+          label={label("shardSource")}
+          icon="shardSource"
+          labelsControl={false}
+        >
           {() => (
             <MultiSelect
               label={label("shardSource")}
@@ -386,6 +457,7 @@ export function CollectionFilterFields({
               options={options.shardSources.map((source) => ({
                 value: source,
                 label: label(`shardSources.${source}`),
+                icon: optionIcon(shardSourceIcons[source]),
               }))}
               value={query.shardSources}
               onChange={(next) => update({ shardSources: next })}
@@ -425,11 +497,13 @@ function FieldGroup({
  */
 function RangeField({
   label,
+  icon,
   describedBy,
   className,
   children,
 }: {
   label: string
+  icon: FilterLabelIconKind
   describedBy?: string
   className?: string
   children: [React.ReactNode, React.ReactNode]
@@ -442,7 +516,11 @@ function RangeField({
       aria-label={label}
       aria-describedby={describedBy}
     >
-      <span aria-hidden="true" className="text-xs text-muted-foreground">
+      <span
+        aria-hidden="true"
+        className="flex items-center gap-1.5 text-xs text-muted-foreground"
+      >
+        <FilterLabelIcon kind={icon} />
         {label}
       </span>
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5">
@@ -460,10 +538,12 @@ function RangeField({
  *  their own accessible name) gets the same visible caption without a `for` pointing nowhere. */
 function Field({
   label,
+  icon,
   labelsControl = true,
   children,
 }: {
   label: string
+  icon: FilterLabelIconKind
   labelsControl?: boolean
   children: (id: string) => React.ReactNode
 }) {
@@ -471,11 +551,19 @@ function Field({
   return (
     <div className="grid min-w-0 gap-1.5">
       {labelsControl ? (
-        <Label htmlFor={id} className="text-xs text-muted-foreground">
+        <Label
+          htmlFor={id}
+          className="gap-1.5 text-xs font-normal text-muted-foreground"
+        >
+          <FilterLabelIcon kind={icon} />
           {label}
         </Label>
       ) : (
-        <span aria-hidden="true" className="text-xs text-muted-foreground">
+        <span
+          aria-hidden="true"
+          className="flex items-center gap-1.5 text-xs text-muted-foreground"
+        >
+          <FilterLabelIcon kind={icon} />
           {label}
         </span>
       )}
@@ -500,7 +588,8 @@ function PlainSelect({
   ariaLabel?: string
   value: string | null
   anyLabel: string
-  options: { value: string; label: string }[]
+  /** `icon` sits inside the row, so the trigger repeats it beside the chosen value. */
+  options: { value: string; label: string; icon?: React.ReactNode }[]
   onChange: (value: string | null) => void
   disabled?: boolean
   describedBy?: string
@@ -521,7 +610,7 @@ function PlainSelect({
         ref={triggerRef}
         id={id}
         // Shrinks to its cell and cuts a long value off, rather than growing over the next one.
-        className="w-full min-w-0 *:data-[slot=select-value]:block *:data-[slot=select-value]:truncate"
+        className="w-full min-w-0 *:data-[slot=select-value]:min-w-0"
         aria-label={ariaLabel}
         aria-describedby={describedBy}
       >
@@ -532,7 +621,8 @@ function PlainSelect({
         <SelectItem value={ANY}>{anyLabel}</SelectItem>
         {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>
-            {option.label}
+            {option.icon}
+            <span className="truncate">{option.label}</span>
           </SelectItem>
         ))}
       </SelectContent>

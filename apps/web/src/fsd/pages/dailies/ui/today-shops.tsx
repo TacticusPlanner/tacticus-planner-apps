@@ -47,7 +47,7 @@ export function TodayShops() {
 
   return (
     <TodayCard testId="today-shops" title={t("title")}>
-      <p className="-mt-2 text-xs text-muted-foreground">
+      <p className="-mt-2 text-sm text-muted-foreground">
         {project ? t("subtitle", { project: project.name }) : t("subtitleAll")}
       </p>
       {body}

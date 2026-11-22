@@ -82,8 +82,6 @@
     "title": "Battle {{number}} · {{tier}}",
     "slots_one": "{{count}} unit, {{hero}} included",
     "slots_other": "{{count}} units, {{hero}} included",
-    "cap": "{{rarity}} cap: up to {{progression}}, {{rank}}, ability level {{ability}}, item level {{item}}",
-    "capNoItems": "{{rarity}} cap: up to {{progression}}, {{rank}}, ability level {{ability}}",
     "lightning_one": "Lightning Victory in {{count}} turn",
     "lightning_other": "Lightning Victory in {{count}} turns",
     "power": "Enemy power {{power}}",
@@ -102,7 +100,11 @@
     "have": "Have {{have}} / need {{need}}",
     "noGoal": "No goal needs this",
     "needError": "Your goal need for this drop could not be read.",
-    "neededBy": "Needed by"
+    "neededBy": "Needed by",
+    "capLabel": "{{rarity}} cap: up to",
+    "capAbility": "ability level {{level}}",
+    "capItem": "item level {{level}}",
+    "jarSummary": "About the odds"
   },
   "rewards": {
     "title": "Rewards",
@@ -199,7 +201,7 @@
     "optionsHint": "Strongest first at the tier cap. Pick units to compare team power; picks are not saved.",
     "optionsSelected": "{{count}} of {{slots}} picked · team power {{power}}",
     "optionsReset": "Reset to suggested",
-    "optionsClose": "Close"
+    "optionsDone": "Done"
   },
   "estimate": {
     "title": "Clear estimate",

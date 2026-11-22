@@ -186,7 +186,9 @@ describe("Schedule page", () => {
       render(page)
 
       const blocker = within(screen.getByTestId("plan-blocker-g1"))
-      expect(blocker.getByText("Bellator · Rank Gold1")).toBeInTheDocument()
+      // The unit leads with its portrait and the target shows as icons (names for assistive tech).
+      expect(blocker.getByRole("img", { name: "Bellator" })).toBeInTheDocument()
+      expect(blocker.getByRole("img", { name: "Gold I" })).toBeInTheDocument()
       expect(
         blocker.getByText(
           /Obtainable work is scheduled; the rest has no supported source/

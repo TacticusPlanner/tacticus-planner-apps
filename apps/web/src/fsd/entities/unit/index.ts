@@ -5,8 +5,10 @@ export {
   unitLibraryPath,
   unitNeighbours,
   unitOriginState,
+  type UnitNeighbours,
   type UnitOrigin,
 } from "./model/unit-origin"
 export { UnitTile } from "./ui/unit-tile"
+export { UnitPortrait } from "./ui/unit-portrait"
 export { UnitRosterRow } from "./ui/unit-roster-row"
-export { buildSummonerIds } from "./model/summoners"
+export { forcedSummonerIds } from "./model/summoners"

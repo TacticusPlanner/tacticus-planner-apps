@@ -1,14 +1,12 @@
 import { useMemo, useState } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
-import { Search } from "lucide-react"
 import { factionIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
 
 import { unitOriginState } from "@/entities/unit"
-import { EntityIcon, PageToolbar } from "@/shared/ui"
+import { EmptyState, EntityIcon, PageToolbar, SearchField } from "@/shared/ui"
 
 import { searchUnits } from "./unit-list.model"
 import type { UnitListItem } from "./unit-list.model"
@@ -38,7 +36,6 @@ export function UnitList({
   labels: {
     title: string
     search: string
-    searchPlaceholder: string
     noMatching: string
     clearSearch: string
   }
@@ -58,42 +55,30 @@ export function UnitList({
     <>
       <PageToolbar
         find={
-          <label
-            className="relative max-w-sm min-w-40 flex-1"
-            data-testid={`${testIdPrefix}-search`}
-          >
-            <span className="sr-only">{labels.search}</span>
-            <Search
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={labels.searchPlaceholder}
-              className="pl-8"
-            />
-          </label>
+          <SearchField
+            label={labels.search}
+            onChange={setQuery}
+            testId={`${testIdPrefix}-search`}
+            value={query}
+          />
         }
       />
 
       {listed.length === 0 ? (
-        <div
-          className="flex flex-col items-center gap-4 py-10 text-center text-muted-foreground"
-          data-testid={`${testIdPrefix}-no-matching`}
-        >
-          <p>
-            {items.length === 0
-              ? t("collections.noRecords")
-              : labels.noMatching}
-          </p>
-          {items.length > 0 ? (
-            <Button variant="outline" onClick={() => setQuery("")}>
-              {labels.clearSearch}
-            </Button>
-          ) : null}
-        </div>
+        <EmptyState
+          actions={
+            items.length > 0 ? (
+              <Button variant="outline" onClick={() => setQuery("")}>
+                {labels.clearSearch}
+              </Button>
+            ) : null
+          }
+          description={
+            items.length === 0 ? t("collections.noRecords") : labels.noMatching
+          }
+          testId={`${testIdPrefix}-no-matching`}
+          variant={items.length === 0 ? "empty" : "no-match"}
+        />
       ) : (
         <ul
           className="flex flex-wrap gap-2"
@@ -113,15 +98,17 @@ export function UnitList({
                 >
                   <span className="relative">
                     <EntityIcon
+                      size="portrait-md"
                       src={iconFor(item.id)}
                       alt=""
-                      className="size-14 rounded-full bg-muted"
+                      className="rounded-full bg-muted"
                     />
                     {emblem ? (
                       <EntityIcon
+                        size="badge-md"
                         src={emblem}
                         alt={item.factionName}
-                        className="absolute -right-1 -bottom-1 size-5 rounded-full bg-background p-0.5"
+                        className="absolute -right-1 -bottom-1 rounded-full bg-background p-0.5"
                       />
                     ) : null}
                   </span>

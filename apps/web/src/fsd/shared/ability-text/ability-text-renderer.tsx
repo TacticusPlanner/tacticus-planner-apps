@@ -17,11 +17,14 @@ import type {
   StyledNode,
   VariableNode,
 } from "./ability-text"
+import { EntityIcon } from "../ui"
 import { useRarityFactor } from "./rarity-factor"
+import { styleIcon } from "./style-icon"
 
-// Ported from V1 `ability-text-renderer.tsx`, minus the per-token `<img>` icons (V2 does not bundle
-// that icon set). Styled tokens keep their color / underline / italic so stat and damage terms still
-// read as distinct from the prose.
+// Ported from V1 `ability-text-renderer.tsx`. Styled tokens keep their color / underline / italic, and
+// a token whose style names a game thing (a damage type, trait, faction, alliance, stat, status effect
+// or hex) gets that thing's inline icon in front, as in the game. The icon is decorative: the word
+// after it names the same thing.
 
 // Level-dependent values, highlighted on request (unit pages): emphasis only, the number is the
 // content.
@@ -64,7 +67,24 @@ function renderStyled(
     highlight
   )
 
-  if (!spec) return <span key={keyPrefix}>{children}</span>
+  const icon = styleIcon(styleName)
+  const iconNode = icon ? (
+    <EntityIcon
+      size="inline"
+      src={icon}
+      alt=""
+      className="mr-0.5 inline-block align-text-bottom"
+    />
+  ) : null
+
+  if (!spec) {
+    return (
+      <span key={keyPrefix}>
+        {iconNode}
+        {children}
+      </span>
+    )
+  }
 
   const outerStyle: CSSProperties = {}
   if (spec.gradient) {
@@ -81,6 +101,7 @@ function renderStyled(
 
   return (
     <span key={keyPrefix} style={outerStyle}>
+      {iconNode}
       {spec.underline ? (
         <span
           style={{

@@ -4,16 +4,9 @@ import { Link } from "react-router"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@workspace/ui/components/sheet"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
+import { DetailsSheet, EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
 import { formatMultiplier } from "./tier-list.view-model"
 import type { TierTileDetails } from "./tier-list.view-model"
@@ -74,7 +67,7 @@ function TierTileDetailsList({ details }: { details: TierTileDetails }) {
         >
           {ownership.state === "owned" ? (
             <>
-              <RarityIcon className="size-5" rarity={ownership.rarity} />
+              <RarityIcon rarity={ownership.rarity} />
               <RankBadge rank={ownership.rank} />
             </>
           ) : null}
@@ -130,8 +123,9 @@ function DetailsHeading({ name, unitId }: { name: string; unitId: string }) {
   return (
     <span className="flex min-w-0 items-center gap-2">
       <EntityIcon
+        size="portrait-sm"
         alt=""
-        className="size-8 shrink-0 rounded-full"
+        className="shrink-0 rounded-full"
         src={characterIcon(unitId as UnitId)}
       />
       <span className="truncate">{name}</span>
@@ -157,7 +151,7 @@ export function TierTileDetailsBody({
   )
 }
 
-/** The mobile bottom sheet with a tile's details; closed while `details` is undefined. */
+/** The phone details sheet (content height) with a tile's details; closed while `details` is undefined. */
 export function TierTileDetailsSheet({
   details,
   name,
@@ -169,29 +163,23 @@ export function TierTileDetailsSheet({
 }) {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <Sheet
+    <DetailsSheet
+      description={t("tierList.details.description")}
+      descriptionHidden
       onOpenChange={(open) => {
         if (!open) onClose()
       }}
       open={details !== undefined}
+      testId="tier-tile-details-sheet"
+      title={
+        details ? (
+          <span data-testid="tier-detail-name">
+            <DetailsHeading name={name} unitId={details.unitId} />
+          </span>
+        ) : null
+      }
     >
-      <SheetContent data-testid="tier-tile-details-sheet" side="bottom">
-        {details ? (
-          <>
-            <SheetHeader>
-              <SheetTitle data-testid="tier-detail-name">
-                <DetailsHeading name={name} unitId={details.unitId} />
-              </SheetTitle>
-              <SheetDescription className="sr-only">
-                {t("tierList.details.description")}
-              </SheetDescription>
-            </SheetHeader>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
-              <TierTileDetailsList details={details} />
-            </div>
-          </>
-        ) : null}
-      </SheetContent>
-    </Sheet>
+      {details ? <TierTileDetailsList details={details} /> : null}
+    </DetailsSheet>
   )
 }

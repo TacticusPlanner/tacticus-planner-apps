@@ -318,9 +318,9 @@ describe("MowUnitPage", () => {
 
   it("shows the MoW's details, not the placeholder", async () => {
     await renderUnit("/library/machines-of-war/ultraDreadnought")
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Galatian"
-    )
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Galatian" })
+    ).toBeInTheDocument()
     expect(screen.getByTestId("unit-tab-details")).toHaveAttribute(
       "aria-selected",
       "true"
@@ -466,9 +466,9 @@ describe("MowUnitPage", () => {
     env.abilityText = {}
     env.rules = { ready: false, failed: false }
     await renderUnit("/library/machines-of-war/ultraDreadnought")
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Galatian"
-    )
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Galatian" })
+    ).toBeInTheDocument()
     expect(env.abilityIds).toEqual([
       "DutyEternal",
       "MacroPlasmaIncinerator",
@@ -607,9 +607,11 @@ describe("MowUnitPage", () => {
         ],
       },
     })
-    expect(screen.getByTestId("unit-not-unlocked")).toHaveTextContent(
-      "Not unlocked. Values start at Common."
-    )
+    const notUnlocked = screen.getByTestId("unit-not-unlocked")
+    expect(notUnlocked).toHaveTextContent("Not unlocked. Values start at")
+    expect(
+      within(notUnlocked).getAllByRole("img", { name: "Common" })
+    ).not.toHaveLength(0)
     expect(screen.getByTestId("unit-shard-progress")).toHaveAttribute(
       "aria-valuemax",
       "40"
@@ -643,9 +645,11 @@ describe("MowUnitPage", () => {
   it("shows the sign-in banner signed out", async () => {
     await renderUnit("/library/machines-of-war/ultraDreadnought")
     expect(screen.queryByTestId("unit-create-goal")).not.toBeInTheDocument()
-    expect(screen.getByTestId("unit-showing-starting")).toHaveTextContent(
-      "Showing Common, abilities level 1."
-    )
+    const showing = screen.getByTestId("unit-showing-starting")
+    expect(showing).toHaveTextContent("Showing ·abilities level 1")
+    expect(
+      within(showing).getAllByRole("img", { name: "Common" })
+    ).not.toHaveLength(0)
     expect(screen.getByTestId("unit-sign-in-banner")).toBeInTheDocument()
   })
 

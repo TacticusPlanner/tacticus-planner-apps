@@ -41,12 +41,17 @@ The page SHALL distinguish: catalog loading (skeleton); catalog load failure (er
 
 ### Requirement: The header names the event and its timing
 
-The page toolbar's Find slot (`app-page-layout`) SHALL show an event picker labelled with the event's name — its calendar `definitionId` through the existing `events` i18n names, followed by its start month and year in the user's locale ("Armageddon Shop · October 2026") — that lists every catalog event, newest first, with its date range. Under the toolbar the page SHALL show a status badge (`Starts in N days` · `Running` · `Ended`), the date range and day count, the daily shop reset in the user's time zone ("shop resets 01:00 your time", the local time of 00:00 UTC), and when the player data was last synced ("Synced 2 h ago"; "Not synced" without player data). When the selected day's week has `estimatedWeeklyIncome`, the header SHALL show "≈ {free} free + {bonusShipment} bonus shipment this week" in the event currency; otherwise nothing.
+The page toolbar's Find slot (`app-page-layout`) SHALL show an event picker labelled with the event's name — its calendar `definitionId` through the existing `events` i18n names, followed by its start month and year in the user's locale ("Armageddon Shop · October 2026") — that lists every catalog event with its date range and status. The picker SHALL be the shared event switcher the HSE and HRE pages use: Previous / Next around a select grouped Running / Upcoming / Past, oldest first under Running and Upcoming and newest first under Past, with an event that has no start date yet listed last under Upcoming. Previous / Next step through the events in date order. Under the toolbar the page SHALL show a status badge (`Starts in N days` · `Running` · `Ended`), the date range and day count, the daily shop reset in the user's time zone ("shop resets 01:00 your time", the local time of 00:00 UTC), and when the player data was last synced ("Synced 2 h ago"; "Not synced" without player data). When the selected day's week has `estimatedWeeklyIncome`, the header SHALL show "≈ {free} free + {bonusShipment} bonus shipment this week" in the event currency; otherwise nothing.
 
 #### Scenario: Event name
 
 - **WHEN** the event has `definitionId` `armageddon-shop` and starts 2026-10-26
 - **THEN** the picker shows "Armageddon Shop · October 2026"
+
+#### Scenario: The picker steps through events
+
+- **WHEN** an event is running and the next one has been announced
+- **THEN** the picker lists the running event under Running and the next under Upcoming, and Next selects the next event
 
 #### Scenario: Reset time follows the user's time zone
 
@@ -235,7 +240,7 @@ Estimate:
 
 ### Requirement: Desktop, tablet and phone layouts differ
 
-The page SHALL have three forms. On desktop (≥ 1024px) the Shop · Milestones · Missions tabs and their content SHALL sit on the left and a side column with the shopping list and Coverage SHALL stay visible beside them while the day changes. On tablet (768–1023px) the tabs and slot cards SHALL use the full width, and a sticky bottom button "Shopping list · {still to buy} to buy · {n} to review" SHALL open the shopping list and Coverage in a drawer from the right. On phone (< 768px) the page SHALL have three tabs — Shop, Plan (the shopping list and Coverage, with a badge counting Needs review entries) and Rewards (milestones, progress chests and missions) — and on Shop a sticky bottom bar "Still to buy {n}" with "{n} to review" that opens Plan. Once the event has ended, the bar and the tablet button SHALL lead with what is left to review and SHALL be hidden when nothing is. `?tab=` SHALL accept `shop`, `milestones`, `missions`, `plan` and `rewards`; a value that the current form lacks SHALL map to its nearest tab (`plan` → `shop` on desktop and tablet; `milestones` and `missions` → `rewards` on phone; `rewards` → `milestones` on desktop and tablet). There SHALL be no cards/rows display switch.
+The page SHALL have three forms. On desktop (≥ 1024px) the Shop · Milestones · Missions tabs and their content SHALL sit on the left and a side column with the shopping list and Coverage SHALL stay visible beside them while the day changes. On tablet (768–1023px) the tabs and slot cards SHALL use the full width, and a sticky bottom button "Shopping list · {still to buy} to buy · {n} to review" SHALL open the shopping list and Coverage in a drawer from the right. On phone (< 768px) the page SHALL have three tabs — Shop, Shopping list (the shopping list and Coverage, with a badge counting Needs review entries; the same name the desktop side column and tablet drawer use) and Rewards (milestones, progress chests and missions) — and on Shop a sticky bottom bar "Still to buy {n}" with "{n} to review" that opens Shopping list. The tab's URL value stays `plan`. Once the event has ended, the bar and the tablet button SHALL lead with what is left to review and SHALL be hidden when nothing is. `?tab=` SHALL accept `shop`, `milestones`, `missions`, `plan` and `rewards`; a value that the current form lacks SHALL map to its nearest tab (`plan` → `shop` on desktop and tablet; `milestones` and `missions` → `rewards` on phone; `rewards` → `milestones` on desktop and tablet). There SHALL be no cards/rows display switch.
 
 #### Scenario: Desktop side column
 
@@ -247,10 +252,10 @@ The page SHALL have three forms. On desktop (≥ 1024px) the Shop · Milestones 
 - **WHEN** the viewport is 900px and the user activates the "Shopping list" button
 - **THEN** a drawer opens from the right with the shopping list and Coverage, and closing it returns focus to the button
 
-#### Scenario: Phone Plan tab
+#### Scenario: Phone Shopping list tab
 
 - **WHEN** the viewport is 390px and the user opens `?tab=plan`
-- **THEN** the shopping list and Coverage fill the page, and the Plan tab shows a badge with the number of Needs review entries
+- **THEN** the shopping list and Coverage fill the page, and the Shopping list tab shows a badge with the number of Needs review entries
 
 ### Requirement: An ended event stays usable
 
@@ -263,12 +268,12 @@ An ended event SHALL keep the same page with an "Ended" badge, its last day sele
 
 ### Requirement: The page has an onboarding tour
 
-The page SHALL register a tour with desktop, tablet and phone steps covering the event picker, the day picker, a slot card or tile and adding to cart, marking bought, the shopping list (side column, drawer button or Plan tab), Coverage, and the reward tabs, with all titles and texts from i18n.
+The page SHALL register a tour with desktop, tablet and phone steps covering the event picker, the day picker, a slot card or tile and adding to cart, marking bought, the shopping list (side column, drawer button or Shopping list tab), Coverage, and the reward tabs, with all titles and texts from i18n.
 
 #### Scenario: Phone tour targets phone controls
 
 - **WHEN** the tour runs below 768px
-- **THEN** its steps target the day chips, a tile's tick box, the Plan tab and the bottom bar, not the desktop side column
+- **THEN** its steps target the day chips, a tile's tick box, the Shopping list tab and the bottom bar, not the desktop side column
 
 ### Requirement: All copy is translated
 

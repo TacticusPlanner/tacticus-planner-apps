@@ -20,6 +20,7 @@ import type { ProjectSummary } from "@/entities/project"
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -90,7 +91,7 @@ export function MoveProjectGoalsDialog({
     <ResponsiveDialog
       contentRef={setPortalContainer}
       data-testid="move-project-goals-dialog"
-      desktopClassName="sm:max-w-md"
+      width="narrow"
       onOpenChange={requestOpenChange}
       open
     >
@@ -98,13 +99,13 @@ export function MoveProjectGoalsDialog({
         <ResponsiveDialogTitle>
           {t("goals.order.projectMove.dialogTitle")}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
+        <ResponsiveDialogDescription>
           {t("goals.order.projectMove.dialogDescription", {
             name: project.name,
           })}
-        </p>
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="flex flex-col gap-4 pb-3">
+      <ResponsiveDialogBody className="flex flex-col gap-4">
         <RadioGroup
           aria-label={t("goals.order.projectMove.dialogTitle")}
           disabled={pending}
@@ -130,7 +131,7 @@ export function MoveProjectGoalsDialog({
                     {t(`goals.order.projectMove.${CHOICE_KEY[option]}`)}
                   </FieldLabel>
                   {disabled ? (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       {option === "top"
                         ? t("goals.order.projectMove.alreadyFirst")
                         : t("goals.order.projectMove.noReference")}

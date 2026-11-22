@@ -96,6 +96,8 @@ const data = {
 
 import { CampaignsPage } from "./campaigns-page"
 
+vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
+
 beforeEach(async () => {
   saved.battles = []
   await seedGameCatalog({

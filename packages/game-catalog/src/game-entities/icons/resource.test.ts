@@ -6,6 +6,7 @@ import {
   forgeBadgeIcon,
   gameModeTokenIcon,
   goldIcon,
+  guildXpIcon,
   salvageIcon,
   energyIcon,
   onslaughtTokenIcon,
@@ -34,6 +35,9 @@ describe("goal resource icons", () => {
     )
     expect(goldIcon()).toBe(
       "/game_catalog/datamines/atlases/ui_icon_resource_coin_small.webp"
+    )
+    expect(guildXpIcon()).toBe(
+      "/game_catalog/datamines/atlases/ui_icon_resource_score_guild_xp_medium.webp"
     )
     expect(salvageIcon()).toBe(
       "/game_catalog/datamines/atlases/ui_icon_resource_salvage.webp"

@@ -1,10 +1,10 @@
 import { createContext } from "react"
 
 /**
- * Height of the Account settings dialog's footer buttons: the 40px touch target on a touch
- * screen, the larger mouse size otherwise.
+ * A tab's main button in the Account settings footer. It is portaled into the footer, so it is not
+ * a direct child there and takes the phone footer's half of the row itself (ui-style-guide rule 8).
  */
-export const dialogActionClassName = "h-10 w-full pointer-fine:h-9"
+export const dialogActionClassName = "max-md:flex-1"
 
-/** The footer element a tab's main button is rendered into, next to Close. */
+/** The footer element a tab's main button is rendered into, next to Cancel. */
 export const DialogActionSlotContext = createContext<HTMLElement | null>(null)

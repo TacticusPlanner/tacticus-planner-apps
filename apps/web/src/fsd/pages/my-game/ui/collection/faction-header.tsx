@@ -28,9 +28,10 @@ export function FactionHeader({
       data-testid="collection-faction-header"
     >
       <EntityIcon
+        size="inline"
         src={factionIcon(group.factionId)}
         alt=""
-        className="size-6 shrink-0"
+        className="shrink-0"
       />
       <h2 className="min-w-0 flex-1 truncate text-sm font-bold">
         {group.factionName}

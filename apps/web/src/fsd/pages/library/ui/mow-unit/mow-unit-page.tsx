@@ -17,7 +17,7 @@ import {
 import { useAbilityText } from "@/shared/ability-text"
 import { useCatalogDataset } from "@/shared/local-data"
 import { useTourPageSteps } from "@/shared/tour"
-import { CompactProgression, ProgressionSelect } from "@/shared/ui"
+import { ProgressionSelect, ProgressionSummary } from "@/shared/ui"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { MOWS_PATH } from "../mows/mows-list-page"
@@ -142,11 +142,15 @@ function MowUnit({
   const shown =
     mode === "custom" ? (custom ?? baseProgression) : baseProgression
   const rarity = progressionRarity(shown)
-  const describe = (progression: Progression) => ({
-    rarity: t(`progression:rarities.${progressionRarity(progression)}`, {
-      defaultValue: progressionRarity(progression),
-    }),
-  })
+  const startingValues = (label: string, details: readonly string[]) => (
+    <>
+      {label}{" "}
+      <ProgressionSummary
+        progression={MOW_STARTING_PROGRESSION}
+        details={details}
+      />
+    </>
+  )
 
   // --- Abilities ---------------------------------------------------------------------------------
   const playerLevels = mowAbilityLevels(player)
@@ -243,14 +247,10 @@ function MowUnit({
   })
   // The rarity and stars as icons (rarity name in a tooltip), then the levels as text.
   const yourUnitLine = player ? (
-    <>
-      <CompactProgression
-        iconClassName="size-4"
-        value={player.progressionIndex}
-      />
-      <span aria-hidden="true">·</span>
-      <span>{t("mowUnit.header.levels", playerLevels)}</span>
-    </>
+    <ProgressionSummary
+      progression={player.progressionIndex}
+      details={[t("mowUnit.header.levels", playerLevels)]}
+    />
   ) : undefined
 
   useTourPageSteps(useMowUnitTutorial({ upgradesOpen: tab === "upgrades" }))
@@ -319,6 +319,7 @@ function MowUnit({
           }
           name={name}
           factionId={mow.faction}
+          allianceId={mow.alliance}
           kindLine={t("mowUnit.header.kind", { alliance: allianceName })}
           ownership={ownership}
           signedIn={isAuthenticated}
@@ -327,14 +328,10 @@ function MowUnit({
               ? { label: t("mowUnit.header.yourUnit"), line: yourUnitLine }
               : undefined
           }
-          notUnlockedText={t(
-            "mowUnit.header.notUnlocked",
-            describe(MOW_STARTING_PROGRESSION)
-          )}
-          showingText={t(
-            "mowUnit.header.showing",
-            describe(MOW_STARTING_PROGRESSION)
-          )}
+          notUnlockedText={startingValues(t("mowUnit.header.notUnlocked"), [])}
+          showingText={startingValues(t("mowUnit.header.showing"), [
+            t("mowUnit.header.abilitiesStart"),
+          ])}
           shards={
             ownership === "notOwned"
               ? {

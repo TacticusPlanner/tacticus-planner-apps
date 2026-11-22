@@ -116,7 +116,8 @@
       "description": "Deine Änderungen am Incursion-Fortschritt wurden nicht gespeichert und gehen verloren.",
       "stay": "Bleiben",
       "leave": "Verlassen"
-    }
+    },
+    "howToSummary": "So erfasst du deine Sterne"
   },
   "team": {
     "title": "Teamvorschlag",
@@ -129,7 +130,8 @@
     "unsynced": "Synchronisiere deinen Kader, um einen Teamvorschlag und die schaffbaren Stufen zu sehen.",
     "noPower": "Machtschätzungen sind gerade nicht verfügbar.",
     "eligible_one": "{{count}} geeigneter Held",
-    "eligible_other": "Alle {{count}} geeigneten Helden"
+    "eligible_other": "Alle {{count}} geeigneten Helden",
+    "hintSummary": "So wird dieses Team gewählt"
   },
   "nav": {
     "label": "Incursion-Navigation",
@@ -166,7 +168,7 @@
     "selected_one": "{{count}} Held · Macht {{power}}",
     "selected_other": "{{count}} Helden · Macht {{power}}",
     "reset": "Zurück zum Vorschlag",
-    "close": "Schließen"
+    "done": "Fertig"
   },
   "estimate": {
     "clears_one": "In 1 Lauf geschafft",

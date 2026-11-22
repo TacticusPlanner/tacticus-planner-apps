@@ -79,7 +79,7 @@
   "runInputs": {
     "button": "Eingaben",
     "title": "Eingaben pro Durchlauf",
-    "description": "Missionen und Pakete, die das Spiel für den aktuellen Lauf nicht meldet. Missionen werden der Reihe nach abgeschlossen, also gib an, wie viele erledigt sind. Sie fließen in die Belohnungsprognose der Karte Laufstatus ein.",
+    "description": "Missionen und Pakete, die das Spiel für den aktuellen Lauf nicht meldet.",
     "run": "Durchlauf {{run}}",
     "phase": {
       "done": "Erledigt",
@@ -195,7 +195,6 @@
   },
   "eventBoard": {
     "title": "Eventübersicht",
-    "description": "Die Ziele jeder angezeigten Bahn, die passenden Einheiten und die Teams der Bahn nebeneinander. Wähle Ziele, um die Einheiten zu sehen, die alle erfüllen, oder eine Einheit, um damit ein Team zu beginnen.",
     "noTeam": "Kein Team",
     "cleared": "In {{cleared}} von {{total}} Kämpfen erfüllt",
     "clearSelection": "Auswahl aufheben",
@@ -284,8 +283,6 @@
       "notAllowedLabel": "{{lane}}: nicht erlaubt",
       "laneFigure": "{{lane}}: {{points}}"
     },
-    "filters": "Filter",
-    "filtersCount": "Filter ({{count}})",
     "lanes": "Bahnen",
     "lanesAll": "Alle Bahnen",
     "lanesCount": "{{count}} Bahnen",
@@ -383,7 +380,7 @@
   },
   "teams": {
     "title": "Teams",
-    "add": "Team hinzufügen",
+    "add": "Team erstellen",
     "empty": "Noch keine Teams auf {{lane}}.",
     "loading": "Teams werden geladen …",
     "loadError": "Deine Teams konnten nicht geladen werden.",
@@ -960,7 +957,6 @@
     },
     "search": {
       "label": "Einheiten suchen",
-      "placeholder": "Einheiten suchen",
       "clear": "Suche leeren"
     },
     "sort": {
@@ -1233,7 +1229,7 @@
       "modeLabel": "Deine Teams",
       "restoreAll": "Alle wiederherstellen",
       "undo": "Rückgängig",
-      "add": "Team hinzufügen",
+      "add": "Team erstellen",
       "editTeam": "{{name}} bearbeiten",
       "lanesLabel": "Lanes",
       "depthOf": "Durchlauf {{run}}: {{depth}} von {{battles}} Kämpfen"
@@ -1243,7 +1239,7 @@
     },
     "review": {
       "project": "Projekt",
-      "newProject": "Neues Projekt",
+      "newProject": "Projekt erstellen",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Zu erstellende Ziele",
       "teams": "Teams",

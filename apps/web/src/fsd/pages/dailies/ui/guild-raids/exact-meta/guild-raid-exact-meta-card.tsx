@@ -43,20 +43,18 @@ function ReadinessBar({
 function UnitPortrait({
   unit,
   missing,
-  className,
 }: {
   unit: GuildRaidExactReadinessUnitView
   missing: boolean
-  className?: string
 }) {
   return (
     <EntityIcon
       src={unit.portraitUrl}
       alt=""
+      size="portrait-sm"
       className={cn(
         "shrink-0 rounded-full border",
-        missing && "border-dashed opacity-40 grayscale",
-        className
+        missing && "border-dashed opacity-40 grayscale"
       )}
     />
   )
@@ -142,11 +140,7 @@ function SlotTile({
       )}
     >
       {isMobile ? null : role}
-      <UnitPortrait
-        unit={shown}
-        missing={empty}
-        className={isMobile ? "size-9" : "size-12"}
-      />
+      <UnitPortrait unit={shown} missing={empty} />
       <span className={cn("flex min-w-0 flex-col", !isMobile && "w-full")}>
         {isMobile ? role : null}
         <span
@@ -197,11 +191,7 @@ function OptionRow({
       className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-2"
       data-testid={`guild-raid-exact-meta-option-${option.unit.id}`}
     >
-      <UnitPortrait
-        unit={option.unit}
-        missing={option.unit.owned === false}
-        className="size-9"
-      />
+      <UnitPortrait unit={option.unit} missing={option.unit.owned === false} />
       <span className="flex min-w-0 flex-col">
         <span className="flex flex-wrap items-center gap-1.5">
           <span className="truncate text-sm font-medium">
@@ -223,7 +213,6 @@ function OptionRow({
             rank={option.unit.investment.rank}
             showLabel={false}
             tooltip
-            iconClassName="size-4"
           />
         ) : null}
         {option.readiness === undefined ? null : (
@@ -382,11 +371,7 @@ export function GuildRaidExactMetaCard({
       </Badge>
       {comps.map((comp) => (
         <Badge key={comp.id} variant="outline" className="gap-1">
-          <EntityIcon
-            src={comp.signature.portraitUrl}
-            alt=""
-            className="size-4"
-          />
+          <EntityIcon size="inline" src={comp.signature.portraitUrl} alt="" />
           {t("guildRaids.exactMeta.comp", { name: comp.id })}
         </Badge>
       ))}
@@ -443,7 +428,7 @@ export function GuildRaidExactMetaCard({
               ))}
             </div>
             {openSlot === null ? (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {t("guildRaids.exactMeta.slotHint")}
               </p>
             ) : (

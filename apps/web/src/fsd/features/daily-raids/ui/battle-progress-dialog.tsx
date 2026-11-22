@@ -37,6 +37,7 @@ import {
   EntityIcon,
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -109,7 +110,7 @@ export function BattleProgressDialog({
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      desktopClassName="sm:max-w-xl"
+      width="form"
       data-testid="battle-progress-dialog"
     >
       {open ? (
@@ -283,6 +284,7 @@ function BattleProgressEditor({
   return (
     <Shell
       title={t("battleProgress.title")}
+      description={t("battleProgress.description")}
       footer={
         <>
           <Button variant="outline" onClick={onClose}>
@@ -298,19 +300,19 @@ function BattleProgressEditor({
         </>
       }
     >
-      <p className="text-sm text-muted-foreground">
-        {t("battleProgress.description")}
-      </p>
       {message ? (
         <Alert
           variant={message === "saveError" ? "destructive" : "default"}
-          className="mt-3"
+          className="mb-4"
           data-testid="battle-progress-message"
         >
           <AlertDescription>{t(`battleProgress.${message}`)}</AlertDescription>
         </Alert>
       ) : null}
-      <div className="mt-4 grid gap-1.5">
+      <p className="mb-4 text-sm text-muted-foreground">
+        {t("battleProgress.note")}
+      </p>
+      <div className="grid gap-1.5">
         <Label htmlFor={pickerId} className="text-xs text-muted-foreground">
           {t("battleProgress.campaign")}
         </Label>
@@ -327,8 +329,9 @@ function BattleProgressEditor({
               <SelectItem key={campaign.key} value={campaign.key}>
                 <span className="inline-flex items-center gap-2">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-4"
+
                     src={campaignIcon(campaign.groupId, campaign.type)}
                   />
                   {campaign.label}
@@ -384,7 +387,7 @@ function BattleProgressEditor({
                       ) : null}
                     </span>
                     <div className="flex items-center gap-1.5">
-                      <EntityIcon alt="" src={medalIcon} className="size-5" />
+                      <EntityIcon size="inline" alt="" src={medalIcon} />
                       <ToggleGroup
                         type="single"
                         variant="outline"
@@ -494,11 +497,7 @@ function ExtraControls({
               className="data-[state=off]:opacity-40 data-[state=off]:grayscale"
               data-testid={`battle-progress-${battleId}-lightning`}
             >
-              <EntityIcon
-                alt=""
-                src={lightningVictoryIcon}
-                className="size-5"
-              />
+              <EntityIcon size="inline" alt="" src={lightningVictoryIcon} />
             </ToggleGroupItem>
           </ToggleGroup>
         ) : null}
@@ -533,11 +532,7 @@ function ExtraControls({
                 className="data-[state=off]:opacity-40 data-[state=off]:grayscale"
                 data-testid={`battle-progress-${battleId}-milestone-${tier}`}
               >
-                <EntityIcon
-                  alt=""
-                  src={milestoneIcons[tier]}
-                  className="size-5"
-                />
+                <EntityIcon size="inline" alt="" src={milestoneIcons[tier]} />
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
@@ -561,10 +556,12 @@ function ExtraControls({
 
 function Shell({
   title,
+  description,
   footer,
   children,
 }: {
   title: string
+  description?: string
   footer?: React.ReactNode
   children: React.ReactNode
 }) {
@@ -572,8 +569,13 @@ function Shell({
     <>
       <ResponsiveDialogHeader>
         <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
+        {description ? (
+          <ResponsiveDialogDescription>
+            {description}
+          </ResponsiveDialogDescription>
+        ) : null}
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="pb-3">{children}</ResponsiveDialogBody>
+      <ResponsiveDialogBody>{children}</ResponsiveDialogBody>
       {hasNode(footer) ? (
         <ResponsiveDialogFooter>{footer}</ResponsiveDialogFooter>
       ) : null}

@@ -24,7 +24,12 @@ import type {
   QuestTierCap,
 } from "@/features/quest-event"
 import type { NpcRecord } from "@/entities/npc"
-import { EntityIcon, UpgradeIcon, progressionText } from "@/shared/ui"
+import {
+  EntityIcon,
+  HowToRead,
+  ProgressionSummary,
+  UpgradeIcon,
+} from "@/shared/ui"
 import { BoardMap, buildEnemyTile, EnemyList } from "@/widgets/battle-preview"
 import type { EnemyNpcs } from "@/widgets/battle-preview"
 
@@ -85,15 +90,12 @@ export function QuestBattleDetail({
       buildEnemyTile(enemy, `${prefix}-${index}`, npcs)
     )
   const tierName = t(`progression:rarities.${battle.tier}`)
-  const capValues = {
-    rarity: tierName,
-    progression: progressionText(t, cap.progression),
-    rank: t(`progression:ranks.${cap.rank}` as never, {
-      defaultValue: cap.rank,
-    }),
-    ability: cap.abilityLevel,
-    item: cap.itemLevel ?? 0,
-  }
+  const capDetails = [
+    t("quest:detail.capAbility", { level: cap.abilityLevel }),
+    ...(cap.itemLevel === null
+      ? []
+      : [t("quest:detail.capItem", { level: cap.itemLevel })]),
+  ]
   const dropName = t(`upgrades:${battle.loot.upgradeId}`, {
     defaultValue: upgrade?.label ?? battle.loot.upgradeId,
   })
@@ -169,9 +171,12 @@ export function QuestBattleDetail({
             })}
           </IconLine>
           <IconLine icon={rarityIcon(battle.tier)} testId="quest-battle-cap">
-            {cap.itemLevel === null
-              ? t("quest:detail.capNoItems", capValues)
-              : t("quest:detail.cap", capValues)}
+            {t("quest:detail.capLabel", { rarity: tierName })}{" "}
+            <ProgressionSummary
+              progression={cap.progression}
+              rank={cap.rank}
+              details={capDetails}
+            />
           </IconLine>
           <IconLine icon={battleGlyphIcon("lightningVictory")}>
             {t("quest:detail.lightning", {
@@ -227,7 +232,7 @@ export function QuestBattleDetail({
         <h4 className="text-sm font-semibold">{t("quest:detail.drop")}</h4>
         <div className="flex items-center gap-3">
           <UpgradeIcon
-            className="size-10"
+            size="tile"
             id={battle.loot.upgradeId}
             rarity={upgrade?.rarity}
           />
@@ -237,7 +242,7 @@ export function QuestBattleDetail({
               className="inline-flex items-center gap-1 text-sm text-muted-foreground tabular-nums"
               data-testid="quest-battle-odds"
             >
-              <EntityIcon alt="" className="size-4" src={chanceIcon()} />
+              <EntityIcon size="inline" alt="" src={chanceIcon()} />
               {t("quest:detail.odds", {
                 numerator: battle.loot.chanceNumerator,
                 denominator: battle.loot.chanceDenominator,
@@ -247,7 +252,12 @@ export function QuestBattleDetail({
           </div>
         </div>
         <DropNeed need={need} />
-        <p className="text-xs text-muted-foreground">{t("quest:detail.jar")}</p>
+        <HowToRead
+          summary={t("quest:detail.jarSummary")}
+          data-testid="quest-battle-jar"
+        >
+          {t("quest:detail.jar")}
+        </HowToRead>
       </section>
     </article>
   )
@@ -267,7 +277,12 @@ function IconLine({
     <li className="flex items-start gap-2" data-testid={testId}>
       <span className="flex size-5 shrink-0 items-center justify-center">
         {typeof icon === "string" ? (
-          <EntityIcon alt="" className="size-5 object-contain" src={icon} />
+          <EntityIcon
+            size="inline"
+            alt=""
+            className="object-contain"
+            src={icon}
+          />
         ) : (
           icon
         )}

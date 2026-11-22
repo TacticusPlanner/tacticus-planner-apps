@@ -6,16 +6,16 @@ import type {
 
 import type { RaidBossAdjustedProps } from "./raid-boss-adjusted-stats"
 
-/** Flat props both sub-pages receive — computed data + callbacks, no `isMobile`. */
+/** Props of a boss or prime's page (the Bosses and primes tab with an entity in the path). */
 export type RaidBossesPageViewProps = {
   bosses: RaidBossListItem[]
   primes: RaidBossListItem[]
-  /** One group per boss, in served boss order — consumed by the mobile picker only. */
-  rosterGroups: { boss: RaidBossListItem; primes: RaidBossListItem[] }[]
-  selectedId: string | undefined
-  selectedUnit: RaidBoss | undefined
+  selectedUnit: RaidBoss
   selectedName: string
-  onSelect: (unitSetId: string) => void
+  /** The page for a boss or prime, keeping the season and comp. */
+  entityPath: (unitSetId: string) => string
+  /** The season reference, on the season the page was opened from. */
+  seasonReferencePath: string
   stepIndex: number
   onStepChange: (index: number) => void
   modifierContext: ModifierContext

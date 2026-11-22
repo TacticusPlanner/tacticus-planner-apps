@@ -9,16 +9,21 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
-import { useGlobalGoalPlan } from "@/entities/goal"
+import { CreateGoalButton, useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
-import { ProjectSelect, useProjects } from "@/entities/project"
+import {
+  ProjectSelect,
+  useProjects,
+  useSelectedProjectId,
+} from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
-import { PageToolbar, SegmentedControl } from "@/shared/ui"
+import { EmptyState, PageToolbar, SegmentedControl } from "@/shared/ui"
 import { InsightsCampaignProgression } from "./insights-campaign-progression"
 import { InsightsEvents } from "./insights-events"
 import { InsightsHoldingBack } from "./insights-holding-back"
 import { InsightsMissing } from "./insights-missing"
 import { InsightsOutlook } from "./insights-outlook"
+import { useInsightsTutorial } from "./insights-page.tutorial"
 import type { InsightsGoalInfo } from "./insights-view"
 
 /** Which nodes "Best campaigns/events to farm" rank over. */
@@ -28,18 +33,20 @@ type InsightsLocations = (typeof INSIGHTS_LOCATIONS)[number]
 /**
  * The Insights view (plan §16 phase 7): when the plan is done and which goals set that date, what
  * holds it back (blockers and farming bottlenecks), where to farm (campaign/event relevance annotated
- * with which entities benefit), and everything still missing. Defaults to every Active goal in the global plan and owns
- * its own optional project filter rather than sharing the goals list's filter via a URL param — kept independent of
- * `GoalsPage`'s existing, separately-tested project-filter state.
+ * with which entities benefit), and everything still missing. Defaults to every Active goal in the global plan; its
+ * optional project filter is the shared, remembered one Dailies and Schedule use, kept independent of `GoalsPage`'s
+ * URL project scope.
  */
 export function InsightsPage() {
   const { t } = useTranslation()
   const projects = useProjects()
   const { settings: planningSettings } = usePlanningSettings()
-  // No selection means the whole plan; a project only narrows what is reported.
-  const [projectId, setProjectId] = useState<string | undefined>(undefined)
+  // No selection means the whole plan; a project only narrows what is reported. The selection is the
+  // one shared, remembered project selection (Dailies, Schedule and Insights).
+  const [projectId, setProjectId] = useSelectedProjectId(projects)
   // Which nodes the farming cards rank: what the player has reached, or every node.
   const [locations, setLocations] = useState<InsightsLocations>("reached")
+  useInsightsTutorial()
 
   const globalPlan = useGlobalGoalPlan()
   // A project only narrows the plan by the goals' `projectIds`; no membership read.
@@ -84,7 +91,6 @@ export function InsightsPage() {
         find={
           <ProjectSelect
             allowAll
-            compact={false}
             onProjectIdChange={setProjectId}
             projectId={projectId}
             projects={projects.projects}
@@ -118,14 +124,12 @@ export function InsightsPage() {
       ) : !projectId &&
         !globalPlan.loading &&
         globalPlan.active.length === 0 ? (
-        <Card data-testid="insights-page-empty">
-          <CardHeader>
-            <CardTitle>{t("goals.insights.noGoalsTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {t("goals.insights.noGoalsDescription")}
-          </CardContent>
-        </Card>
+        <EmptyState
+          actions={<CreateGoalButton />}
+          description={t("goals.insights.noGoalsDescription")}
+          testId="insights-page-empty"
+          title={t("goals.insights.noGoalsTitle")}
+        />
       ) : loading ? (
         <div
           className="flex flex-col gap-3"
@@ -157,7 +161,7 @@ export function InsightsPage() {
                 goalInfoById={goalInfoById}
               />
             </div>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6" data-testid="insights-farming">
               <InsightsEvents
                 benefitingGoalIdsByInsightId={
                   farming.benefitingGoalIdsByInsightId

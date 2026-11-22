@@ -1,24 +1,16 @@
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { ChevronRight } from "lucide-react"
-import {
-  countdownIcon,
-  incursionTokenIcon,
-  mowIcon,
-} from "@workspace/game-catalog"
+import { countdownIcon, mowIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@workspace/ui/components/accordion"
 
 import { useIncursionWindow } from "@/entities/incursion"
 import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEventCountdown } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { EmptyState, EntityIcon, HowToRead } from "@/shared/ui"
+
+import { useIncursionsOverviewTutorial } from "./incursions-overview.tutorial"
 
 import { incursionStarCount } from "../../model/incursion-progress.model"
 import { IncursionStarsBar } from "./incursion-stars-bar"
@@ -34,13 +26,10 @@ export function IncursionsOverview() {
   const nowMs = useMinuteNow()
   const run = useIncursionWindow(nowMs)
   const rules = incursions[0]
+  useIncursionsOverviewTutorial()
 
   if (!rules) {
-    return (
-      <p className="text-muted-foreground" data-testid="incursions-empty">
-        {t("empty")}
-      </p>
-    )
+    return <EmptyState description={t("empty")} testId="incursions-empty" />
   }
 
   return (
@@ -51,7 +40,7 @@ export function IncursionsOverview() {
           data-testid="incursions-countdown"
           data-status={run.status}
         >
-          <EntityIcon alt="" className="size-5" src={countdownIcon()} />
+          <EntityIcon size="inline" alt="" src={countdownIcon()} />
           {t(run.status === "live" ? "event.endsIn" : "event.startsIn", {
             when: formatEventCountdown(
               run.status === "live" ? run.endMs : run.startMs,
@@ -62,51 +51,29 @@ export function IncursionsOverview() {
           })}
         </p>
       ) : null}
-      <Accordion
-        type="single"
-        collapsible
-        className="rounded-lg border bg-card px-4"
-        data-testid="incursions-rules"
-      >
-        <AccordionItem value="rules" className="border-b-0">
-          <AccordionTrigger
-            className="items-center hover:no-underline"
-            data-testid="incursions-rules-toggle"
-          >
-            <span className="flex items-center gap-2 font-semibold">
-              <EntityIcon
-                src={incursionTokenIcon()}
-                alt=""
-                className="size-6"
-              />
-              {t("rules.title")}
-            </span>
-          </AccordionTrigger>
-          <AccordionContent>
-            <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-              <li>
-                {t("rules.tokens", {
-                  start: rules.tokens.start,
-                  max: rules.tokens.max,
-                  hours: Math.round(
-                    rules.tokens.regenSeconds /
-                      rules.tokens.regenAmount /
-                      SECONDS_PER_HOUR
-                  ),
-                  cost: rules.tokens.costPerRun,
-                })}
-              </li>
-              <li>
-                {t("rules.team", {
-                  count: rules.minUnitsOfGrandAllianceNeeded,
-                })}
-              </li>
-              <li>{t("rules.progress")}</li>
-              <li>{t("rules.replay")}</li>
-            </ul>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      <HowToRead data-testid="incursions-rules" summary={t("rules.title")}>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            {t("rules.tokens", {
+              start: rules.tokens.start,
+              max: rules.tokens.max,
+              hours: Math.round(
+                rules.tokens.regenSeconds /
+                  rules.tokens.regenAmount /
+                  SECONDS_PER_HOUR
+              ),
+              cost: rules.tokens.costPerRun,
+            })}
+          </li>
+          <li>
+            {t("rules.team", {
+              count: rules.minUnitsOfGrandAllianceNeeded,
+            })}
+          </li>
+          <li>{t("rules.progress")}</li>
+          <li>{t("rules.replay")}</li>
+        </ul>
+      </HowToRead>
 
       <ul
         className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
@@ -128,9 +95,10 @@ export function IncursionsOverview() {
                 data-testid={`${testId}-open`}
               >
                 <EntityIcon
+                  size="portrait-md"
                   src={mowIcon(incursion.mowId as UnitId)}
                   alt=""
-                  className="size-14 shrink-0 rounded-sm"
+                  className="shrink-0 rounded-sm"
                 />
                 <div className="min-w-0 flex-1 space-y-1.5">
                   <p className="truncate font-semibold">{name}</p>

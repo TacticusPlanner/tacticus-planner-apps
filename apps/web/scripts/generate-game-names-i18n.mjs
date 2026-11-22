@@ -11,6 +11,8 @@
 //   public/locales/{en,de,es,fr}/eventMissions.json     seasonal event mission task templates, chain names,
 //                                                        game modes and event names ({ tasks, chains, gameModes,
 //                                                        events })
+//   public/locales/{en,de,es,fr}/hreTaskHints.json      HRE mission task loca key -> the game's hint
+//                                                        (the in-game task details minus the objective)
 //   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
 //   public/locales/{en,de,es,fr}/progression.json       ranks and rarities (en also keeps its hand-written short forms)
 //
@@ -358,6 +360,61 @@ const progression = Object.fromEntries(
   ])
 )
 tables.progression = progression
+
+// ---- HRE task hints ----------------------------------------------------------------------------------
+
+// The in-game details of each HRE mission task (`MissionQuickLinks/TaskDetails_<locaKey>`), keyed by loca
+// key, with only the hint: the first paragraph restates the objective the tracker already shows, so it
+// is dropped (Severyn, 2026-11). A text in one paragraph drops its first line, or else its first
+// sentence. Every variant of a task name the HRE chains use is kept (`DealDamageOfProfileType_Psychic_
+// description`), since the client falls back from the served key to keys guessed from the task name.
+// `{[TARGET_AMOUNT]}`-style placeholders and `<style>` markup are kept for the page; `<i>` is dropped.
+// A text with no hint left is left out, so its objective shows no game hint.
+const TASK_DETAILS = "MissionQuickLinks/TaskDetails_"
+const hreTaskNames = new Set(
+  Object.entries(config("quests/groups.json"))
+    .filter(([group]) => /^hre\d+$/.test(group))
+    .flatMap(([, group]) => group.quests ?? [])
+    .flatMap((quest) => quest.tasks ?? [])
+    .map((task) => task.name)
+)
+const hreHintKeys = Object.keys(languages.en)
+  .filter((key) => key.startsWith(TASK_DETAILS))
+  .map((key) => key.slice(TASK_DETAILS.length))
+  .filter((id) => [...hreTaskNames].some((name) => id.startsWith(`${name}_`)))
+  .sort()
+
+/** The hint part of a task details text, or undefined when it only restates the objective. */
+function hintOf(text) {
+  const clean = text.replace(/[\u200B-\u200D\uFEFF\r]/g, "").trim()
+  const paragraphs = clean.split(/\n[ \t]*\n/)
+  const lines = clean.split("\n")
+  const rest =
+    paragraphs.length > 1
+      ? paragraphs.slice(1).join("\n\n")
+      : lines.length > 1
+        ? lines.slice(1).join("\n")
+        : /^.*?[.!?]\s+(.+)$/s.exec(clean)?.[1]
+  const hint = rest?.replaceAll(/<\/?i>/g, "").trim()
+  return hint || undefined
+}
+
+tables.hreTaskHints = Object.fromEntries(
+  LOCALES.map((locale) => [
+    locale,
+    Object.fromEntries(
+      hreHintKeys
+        .map((id) => {
+          const text = languages[locale][`${TASK_DETAILS}${id}`]
+          const hint =
+            (text && hintOf(text)) ??
+            hintOf(languages.en[`${TASK_DETAILS}${id}`])
+          return [id, hint]
+        })
+        .filter(([, hint]) => hint)
+    ),
+  ])
+)
 
 // ---- write -------------------------------------------------------------------------------------------
 

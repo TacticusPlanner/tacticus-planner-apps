@@ -447,7 +447,7 @@ function ListRow({
       data-state={entry.state}
       data-testid={`event-shop-row-${entry.dayIndex}-${ref.slotIndex}`}
     >
-      <EntityIcon alt="" className="size-8 shrink-0" src={reward.iconUrl} />
+      <EntityIcon size="row" alt="" className="shrink-0" src={reward.iconUrl} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm">
           {reward.label}

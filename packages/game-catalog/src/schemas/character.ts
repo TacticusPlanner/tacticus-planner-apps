@@ -6,6 +6,7 @@ import {
   characterRankUpSchema,
   equipmentSlotSchema,
   farmLocationSchema,
+  unitSummonsSchema,
 } from "./shared"
 
 export const characterViewSchema = z.looseObject({
@@ -35,4 +36,5 @@ export const characterViewSchema = z.looseObject({
   rankUpUpgrades: z.array(characterRankUpSchema),
   shardLocations: z.array(farmLocationSchema),
   eligibleEquipment: z.array(equipmentSlotSchema),
+  summons: unitSummonsSchema,
 })

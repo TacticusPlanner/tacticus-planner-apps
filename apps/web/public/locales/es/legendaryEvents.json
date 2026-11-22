@@ -79,7 +79,7 @@
   "runInputs": {
     "button": "Datos",
     "title": "Datos por ronda",
-    "description": "Misiones y paquetes que el juego no informa para la ejecución actual. Las misiones se completan en orden, así que indica cuántas están hechas. Alimentan la previsión de recompensas de la tarjeta Estado de la ejecución.",
+    "description": "Misiones y paquetes que el juego no informa para la ejecución actual.",
     "run": "Ronda {{run}}",
     "phase": {
       "done": "Hecha",
@@ -195,7 +195,6 @@
   },
   "eventBoard": {
     "title": "Tablero del evento",
-    "description": "Los objetivos de cada carril mostrado, las unidades que encajan en cada uno y los equipos del carril lado a lado. Elige objetivos para ver las unidades que los cumplen todos, o una unidad para empezar un equipo con ella.",
     "noTeam": "Sin equipo",
     "cleared": "Cumplido en {{cleared}} de {{total}} batallas",
     "clearSelection": "Borrar selección",
@@ -274,7 +273,7 @@
     "noUnlocked": "Ninguna de tus unidades desbloqueadas puede jugar en este carril.",
     "noneInTeams": "Tus equipos aquí aún no tienen unidades.",
     "noneMatch": "Ninguna unidad cumple estos objetivos.",
-    "clearFilter": "Quitar filtro",
+    "clearFilter": "Borrar filtros",
     "rosterNotSynced": "Tu plantilla aún no se ha sincronizado, así que no se muestran la propiedad, la rareza ni el rango.",
     "progressUnavailable": "Progreso sincronizado no disponible, así que nada cuenta como conseguido.",
     "loading": "Cargando unidades…",
@@ -284,8 +283,6 @@
       "notAllowedLabel": "{{lane}}: no permitido",
       "laneFigure": "{{lane}}: {{points}}"
     },
-    "filters": "Filtros",
-    "filtersCount": "Filtros ({{count}})",
     "lanes": "Carriles",
     "lanesAll": "Todos los carriles",
     "lanesCount": "{{count}} carriles",
@@ -383,7 +380,7 @@
   },
   "teams": {
     "title": "Equipos",
-    "add": "Añadir equipo",
+    "add": "Crear equipo",
     "empty": "Aún no hay equipos en {{lane}}.",
     "loading": "Cargando equipos…",
     "loadError": "No se pudieron cargar tus equipos.",
@@ -960,7 +957,6 @@
     },
     "search": {
       "label": "Buscar unidades",
-      "placeholder": "Buscar unidades",
       "clear": "Borrar búsqueda"
     },
     "sort": {
@@ -1233,7 +1229,7 @@
       "modeLabel": "Tus equipos",
       "restoreAll": "Restaurar todos",
       "undo": "Deshacer",
-      "add": "Añadir un equipo",
+      "add": "Crear un equipo",
       "editTeam": "Editar {{name}}",
       "lanesLabel": "Líneas",
       "depthOf": "Ronda {{run}}: {{depth}} de {{battles}} batallas"
@@ -1243,7 +1239,7 @@
     },
     "review": {
       "project": "Proyecto",
-      "newProject": "Proyecto nuevo",
+      "newProject": "Crear proyecto",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Objetivos a crear",
       "teams": "Equipos",

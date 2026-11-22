@@ -86,12 +86,8 @@
     "seasonLabel": "Saison {{season}}",
     "tier": "Palier {{tier}}",
     "set": "Ensemble {{set}}",
-    "viewSeasonReference": "Voir la référence de saison",
+    "seasonReference": "Référence de saison",
     "noSeasonReference": "Aucune donnée de saison de boss de raid n'est disponible.",
-    "bosses": "Boss",
-    "primes": "Primes",
-    "pickerPlaceholder": "Rechercher des boss et des primes…",
-    "pickerEmpty": "Aucun boss ou prime trouvé.",
     "primarch": "Primarque",
     "progression": "Progression",
     "stats": "Statistiques",
@@ -117,18 +113,6 @@
     "noModifiers": "Aucun modificateur.",
     "tour": {
       "steps": {
-        "bosses": {
-          "title": "Boss de raid de guilde",
-          "content": "Tous les boss de raid de guilde. Sélectionnez-en un pour voir ses statistiques, ses capacités et ses modificateurs de rencontre."
-        },
-        "primes": {
-          "title": "Primes",
-          "content": "Les ennemis primes qui combattent aux côtés de chaque boss, consultables individuellement."
-        },
-        "mobilePicker": {
-          "title": "Boss de raid de guilde",
-          "content": "Recherchez et sélectionnez un boss ou un prime : chaque boss est regroupé avec les primes qui combattent à ses côtés."
-        },
         "progression": {
           "title": "Palier de progression",
           "content": "Parcourez l'échelle de progression du boss pour voir comment ses statistiques évoluent."
@@ -227,19 +211,20 @@
       "flex": "Flexible",
       "suitableMows": "Machines de guerre adaptées"
     },
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "encounterTypes": {
+      "Boss": "Boss",
+      "Crystal": "Prime"
+    }
   },
   "npcs": {
     "title": "PNJ",
     "search": "Rechercher des PNJ",
-    "searchPlaceholder": "Rechercher par nom…",
     "faction": "Faction",
     "allFactions": "Toutes les factions",
     "damageType": "Type de dégâts",
     "trait": "Trait",
     "clearFilters": "Effacer les filtres",
-    "filtersCount": "Filtres ({{count}})",
-    "filtersDone": "Terminé",
     "filters": "Filtres",
     "npc": "PNJ",
     "variation": "Variante",
@@ -333,7 +318,6 @@
     "noMatchingOptions": "Aucune option correspondante.",
     "noMatchingVariation": "Aucune variante de ce PNJ ne correspond aux filtres actuels.",
     "loadFailed": "Impossible de charger les données des PNJ.",
-    "selectNpc": "Sélectionner un PNJ",
     "tour": {
       "steps": {
         "filters": {
@@ -343,10 +327,6 @@
         "list": {
           "title": "Choisir un PNJ",
           "content": "Toutes les unités non jouables du jeu, une entrée par unité. Les variantes d’une même unité sont regroupées sous celle-ci."
-        },
-        "picker": {
-          "title": "Choisir un PNJ",
-          "content": "Ouvrez le sélecteur et recherchez une unité. Les variantes d’une même unité sont regroupées sous une seule entrée."
         },
         "variation": {
           "title": "Variante",
@@ -388,7 +368,9 @@
     "minCount": "Min. dans un combat",
     "meleeOnly": "Corps à corps uniquement",
     "hasRanged": "Avec attaque à distance",
-    "clearOne": "Effacer {{name}}"
+    "clearOne": "Effacer {{name}}",
+    "anyDamageType": "N'importe quel type de dégâts",
+    "anyTrait": "N'importe quel trait"
   },
   "unit": {
     "nav": {
@@ -436,7 +418,6 @@
   "charactersList": {
     "title": "Personnages",
     "search": "Rechercher des personnages",
-    "searchPlaceholder": "Rechercher par nom…",
     "noMatching": "Aucun personnage ne correspond à votre recherche.",
     "clearSearch": "Effacer la recherche",
     "tour": {
@@ -475,13 +456,14 @@
       "yourUnit": "Votre unité :",
       "abilities": "capacités {{active}} / {{passive}}",
       "relic": "relique niveau {{level}}",
-      "notUnlocked": "Non débloqué. Les valeurs commencent à {{progression}}, {{rank}}.",
-      "showing": "Affichage : {{progression}}, {{rank}}, capacités au niveau 1.",
+      "notUnlocked": "Non débloqué. Les valeurs commencent à",
+      "showing": "Affichage :",
       "shards": "{{owned}} / {{needed}} fragments",
       "shardProgress": "Fragments pour le déblocage",
       "signInBanner": "Connectez-vous et synchronisez pour ouvrir cette page à vos propres valeurs.",
       "signIn": "Se connecter",
-      "syncBanner": "Synchronisez avec Tacticus (dans l'en-tête) pour ouvrir cette page à vos propres valeurs."
+      "syncBanner": "Synchronisez avec Tacticus (dans l'en-tête) pour ouvrir cette page à vos propres valeurs.",
+      "abilitiesStart": "capacités au niveau 1"
     },
     "glance": {
       "title": "En un coup d'œil",
@@ -547,7 +529,8 @@
       "percent": "{{value}} %",
       "caption": "Centiles : {{values}}.",
       "footnote": "Pointillés = personnage médian. {{value}} % d'armure signifie que {{name}} a plus d'armure que {{value}} % des personnages à Mythic Wings, Adamantium II.",
-      "damageLink": "Fonctionnement des dégâts (wiki Tacticus)"
+      "damageLink": "Fonctionnement des dégâts (wiki Tacticus)",
+      "howToRead": "Comment lire ceci"
     },
     "statsByRank": {
       "title": "Statistiques par rang",
@@ -556,7 +539,8 @@
       "aboveCap": " (au-delà du plafond pour ces étoiles)",
       "capFootnote": "Les rangs estompés dépassent {{rank}}, le plafond pour ces étoiles.",
       "caption": "{{stat}} passe de {{from}} à {{firstRank}} à {{to}} à {{lastRank}}.",
-      "rank": "Rang"
+      "rank": "Rang",
+      "howToRead": "Comment lire ceci"
     },
     "relic": {
       "kind": "Relique",
@@ -615,8 +599,9 @@
       "kind": "{{alliance}} · Machine de guerre",
       "yourUnit": "Votre Machine de guerre :",
       "levels": "principale {{primary}} · secondaire {{secondary}}",
-      "notUnlocked": "Non débloquée. Les valeurs commencent à {{rarity}}.",
-      "showing": "Affichage : {{rarity}}, capacités au niveau 1."
+      "notUnlocked": "Non débloquée. Les valeurs commencent à",
+      "showing": "Affichage :",
+      "abilitiesStart": "capacités au niveau 1"
     },
     "tabs": {
       "upgrades": "Améliorations des capacités"

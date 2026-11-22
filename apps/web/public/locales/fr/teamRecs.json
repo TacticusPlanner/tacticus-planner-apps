@@ -52,7 +52,8 @@
     "eventUnitAny": "Rapporte des points pour l'événement.",
     "strength": "Choisi pour sa puissance de combat ({{power}}).",
     "minimumSize": "Ajouté pour compléter l'équipe.",
-    "random": "Tiré au hasard."
+    "random": "Tiré au hasard.",
+    "eventUnitShort": "Rapporte : {{match}}"
   },
   "track": {
     "shortfallTitle": "Pas assez de personnages {{track}}",

@@ -43,11 +43,9 @@ export function FromToMarks({
  *  stars for promotions. */
 export function ProgressionMark({
   value,
-  large = false,
   emphasis,
 }: {
   value: Progression
-  large?: boolean
   emphasis?: ProgressionPart
 }) {
   return (
@@ -59,40 +57,29 @@ export function ProgressionMark({
             ? "stars"
             : undefined
       }
-      iconClassName={large ? "size-5" : "size-4"}
       value={value}
     />
   )
 }
 
-export function RankMark({
-  rank,
-  large = false,
-}: {
-  rank: Rank
-  large?: boolean
-}) {
+export function RankMark({ rank }: { rank: Rank }) {
   return (
     <EntityIcon
+      size="inline"
       alt=""
       src={rankIcon(rank)}
-      className={cn("shrink-0", large ? "size-5" : "size-4")}
+      className="shrink-0"
     />
   )
 }
 
-export function AbilityMark({
-  abilityId,
-  large = false,
-}: {
-  abilityId: string
-  large?: boolean
-}) {
+export function AbilityMark({ abilityId }: { abilityId: string }) {
   return (
     <EntityIcon
+      size="inline"
       alt=""
       src={abilityIcon(abilityId)}
-      className={cn("shrink-0 rounded-sm", large ? "size-5" : "size-4")}
+      className="shrink-0 rounded-sm"
     />
   )
 }

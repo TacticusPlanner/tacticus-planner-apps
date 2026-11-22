@@ -1,17 +1,9 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@workspace/ui/components/dialog"
 import { chanceIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/entities/shops/reward"
-import { EntityIcon } from "@/shared/ui"
+import { DetailsOverlay, EntityIcon } from "@/shared/ui"
 import type {
   LibraryShopRewardView,
   LibraryShopSlotView,
@@ -38,8 +30,9 @@ function CurrencyAmount({
   return (
     <span className="inline-flex items-center gap-1 align-middle">
       <EntityIcon
+        size="inline"
         alt={label}
-        className="inline size-3.5 shrink-0"
+        className="inline shrink-0"
         src={shopCurrencyIcon(currencyId)}
       />
       <span className="tabular-nums">{amount.toLocaleString()}</span>
@@ -68,8 +61,9 @@ export function ShopSlotCard({
       >
         <div className="flex items-start gap-2">
           <EntityIcon
+            size="tile"
             alt=""
-            className="size-10 shrink-0"
+            className="shrink-0"
             src={reward.iconUrl}
           />
           <h4 className="min-w-0 flex-1 text-sm font-medium">{reward.label}</h4>
@@ -82,89 +76,83 @@ export function ShopSlotCard({
   const preview = slot.rewards.slice(0, PREVIEW_LIMIT)
   const overflow = slot.rewards.length - preview.length
 
+  const trigger = (
+    <button
+      type="button"
+      className="flex w-full flex-col gap-2 rounded-lg border bg-card p-3 text-left text-card-foreground shadow-sm transition-colors hover:border-primary"
+      data-testid={`shop-slot-${index}`}
+      data-random="true"
+    >
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-xs font-medium text-muted-foreground">
+          {t("shops.randomSlot", { count: slot.rewards.length })}
+        </span>
+        <Badge className="shrink-0 gap-1" variant="outline">
+          <EntityIcon size="inline" src={chanceIcon()} alt="" />
+          {t("shops.randomBadge")}
+        </Badge>
+      </div>
+
+      <ul className="flex flex-col gap-1">
+        {preview.map((reward) => (
+          <li key={reward.rewardType} className="flex items-center gap-1.5">
+            <EntityIcon
+              size="inline"
+              alt=""
+              className="shrink-0"
+              src={reward.iconUrl}
+            />
+            <span className="truncate text-xs">{reward.label}</span>
+          </li>
+        ))}
+        {overflow > 0 ? (
+          <li className="text-xs text-muted-foreground">
+            {t("shops.andMore", { count: overflow })}
+          </li>
+        ) : null}
+      </ul>
+
+      <span className="text-xs text-muted-foreground">
+        {slot.uniformCost && slot.costAmount !== undefined ? (
+          <>
+            <CurrencyAmount
+              currencyId={first.cost.currency}
+              amount={slot.costAmount}
+              label={currencyLabel(first.cost.currency)}
+            />{" "}
+            {t("shops.costEachSuffix")}
+          </>
+        ) : (
+          t("shops.costVaries")
+        )}
+      </span>
+    </button>
+  )
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button
-          type="button"
-          className="flex w-full flex-col gap-2 rounded-lg border bg-card p-3 text-left text-card-foreground shadow-sm transition-colors hover:border-primary"
-          data-testid={`shop-slot-${index}`}
-          data-random="true"
-        >
-          <div className="flex items-center justify-between gap-1">
-            <span className="text-xs font-medium text-muted-foreground">
-              {t("shops.randomSlot", { count: slot.rewards.length })}
-            </span>
-            <Badge className="shrink-0 gap-1" variant="outline">
-              <EntityIcon src={chanceIcon()} alt="" className="size-3.5" />
-              {t("shops.randomBadge")}
-            </Badge>
-          </div>
-
-          <ul className="flex flex-col gap-1">
-            {preview.map((reward) => (
-              <li key={reward.rewardType} className="flex items-center gap-1.5">
-                <EntityIcon
-                  alt=""
-                  className="size-5 shrink-0"
-                  src={reward.iconUrl}
-                />
-                <span className="truncate text-xs">{reward.label}</span>
-              </li>
-            ))}
-            {overflow > 0 ? (
-              <li className="text-xs text-muted-foreground">
-                {t("shops.andMore", { count: overflow })}
-              </li>
-            ) : null}
-          </ul>
-
-          <span className="text-xs text-muted-foreground">
-            {slot.uniformCost && slot.costAmount !== undefined ? (
-              <>
-                <CurrencyAmount
-                  currencyId={first.cost.currency}
-                  amount={slot.costAmount}
-                  label={currencyLabel(first.cost.currency)}
-                />{" "}
-                {t("shops.costEachSuffix")}
-              </>
-            ) : (
-              t("shops.costVaries")
-            )}
-          </span>
-        </button>
-      </DialogTrigger>
-
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            {t("shops.randomSlot", { count: slot.rewards.length })}
-          </DialogTitle>
-          <DialogDescription>{t("shops.randomSlotHint")}</DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-2">
-          {slot.rewards.map((reward) => (
-            <div
-              key={reward.rewardType}
-              className="flex flex-col gap-1.5 rounded-lg border bg-card p-3"
-            >
-              <div className="flex items-start gap-2">
-                <EntityIcon
-                  alt=""
-                  className="size-9 shrink-0"
-                  src={reward.iconUrl}
-                />
-                <h4 className="min-w-0 flex-1 text-sm font-medium">
-                  {reward.label}
-                </h4>
-              </div>
+    <DetailsOverlay
+      description={t("shops.randomSlotHint")}
+      testId={`shop-slot-${index}-details`}
+      title={t("shops.randomSlot", { count: slot.rewards.length })}
+      trigger={trigger}
+    >
+      <ul className="flex flex-col gap-3">
+        {slot.rewards.map((reward) => (
+          <li key={reward.rewardType} className="flex items-start gap-2">
+            <EntityIcon
+              size="row"
+              alt=""
+              className="shrink-0"
+              src={reward.iconUrl}
+            />
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span className="text-sm font-medium">{reward.label}</span>
               <RewardMeta reward={reward} currencyLabel={currencyLabel} />
             </div>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
+          </li>
+        ))}
+      </ul>
+    </DetailsOverlay>
   )
 }
 

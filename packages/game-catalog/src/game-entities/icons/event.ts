@@ -66,9 +66,10 @@ const homeScreenEventArt: Record<string, { icon: string; banner?: string }> = {
     icon: "ui_gamemodeicon_fortheemperor",
     banner: "ui_interstitial_fortheemperor",
   },
-  "hse-defeat-waves": {
-    icon: "ui_gamemodeicon_defeatwaves",
-    banner: "ui_interstitial_defeatwaves",
+  // The game's `defeat_waves` events; every current tier uses the `defeat_waves_2` theme.
+  "hse-against-the-tide": {
+    icon: "ui_gamemodeicon_defeatwaves_2",
+    banner: "ui_interstitial_defeatwaves_2",
   },
   "hse-11th-edition-week-1": {
     icon: "ui_gamemodeicon_11th_edition",
@@ -137,7 +138,7 @@ function homeScreenArt(
 
 /**
  * The game's icon for a calendar event: a Home Screen Event's own medallion, else the icon of its
- * definition type. `undefined` when the game has none (e.g. Against the Tide), so callers keep a
+ * definition type. `undefined` when the game has none (an id neither map knows), so callers keep a
  * generic fallback. A Faction Boost for a faction without its own medallion uses that faction's emblem.
  */
 export function eventIcon(
@@ -193,7 +194,7 @@ const homeScreenEventPoints: Record<string, string> = {
   "hse-trait-boost-psyker": "ui_icon_resource_event_trait_boost_psyker",
   "hse-for-the-dark-gods": "ui_icon_resource_event_forthedarkgods",
   "hse-for-the-emperor": "ui_icon_resource_event_fortheemperor",
-  "hse-defeat-waves": "ui_icon_resource_event_defeatwaves",
+  "hse-against-the-tide": "ui_icon_resource_event_defeatwaves_2",
   "hse-11th-edition-week-1": "ui_icon_resource_event_11th_edition",
   "hse-11th-edition-week-2": "ui_icon_resource_event_11th_edition",
   "hse-11th-edition-week-3": "ui_icon_resource_event_11th_edition",

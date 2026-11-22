@@ -68,7 +68,7 @@ export function QuestGoalDrops({
                 key={drop.upgradeId}
               >
                 <UpgradeIcon
-                  className="size-8 shrink-0"
+                  className="shrink-0"
                   id={drop.upgradeId}
                   rarity={upgrade?.rarity}
                 />
@@ -99,8 +99,9 @@ export function QuestGoalDrops({
                         </span>
                         <span className="inline-flex items-center gap-0.5 text-muted-foreground tabular-nums">
                           <EntityIcon
+                            size="inline"
                             alt=""
-                            className="size-3.5"
+
                             src={chanceIcon()}
                           />
                           {percent.format(

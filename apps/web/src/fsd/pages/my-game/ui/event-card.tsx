@@ -46,9 +46,10 @@ function EventSummary({ view }: { view: EventView }) {
   return (
     <div className="flex min-w-0 flex-1 items-center gap-3">
       <EntityIcon
+        size="tile"
         src={campaignIcon(event.definition.groupId, "Standard")}
         alt=""
-        className="size-10 shrink-0"
+        className="shrink-0"
       />
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex flex-wrap items-center gap-2">
@@ -125,10 +126,11 @@ function EventDetails({
                   data-owned={owned ? "true" : "false"}
                 >
                   <EntityIcon
+                    size="portrait-sm"
                     src={characterIcon(id as UnitId)}
                     alt={label}
                     className={cn(
-                      "size-9 rounded-sm",
+                      "rounded-sm",
                       !owned && "opacity-40 grayscale"
                     )}
                   />

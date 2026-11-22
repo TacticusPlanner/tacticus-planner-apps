@@ -52,7 +52,8 @@ export function EventSwitcher({
       renderOption={(instance) => (
         <>
           <EventIcon
-            className="size-6 shrink-0"
+            size="inline"
+            className="shrink-0"
             definitionId={instance.entry.definitionId}
             definitionType="HomeScreenEvent"
             parameters={instance.entry.parameters ?? null}

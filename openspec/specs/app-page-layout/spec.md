@@ -10,6 +10,8 @@ Gives every page of the web app the same header and toolbar, so a page's title, 
 
 The app shell SHALL render the page header above every page: the page's title (its `<h1>`), the help action ("Tour this page") right after it, a one-line description under the title row, then a divider. A page that has settings SHALL show one "Settings" button at the right end of the title row; the page supplies it, and a page without settings shows nothing there. On desktop (at least 768px) the Settings button SHALL show the settings icon and the label "Settings". On mobile (below 768px) it SHALL be an icon button in the mobile header, next to the icon-only tour button, with the accessible name "Settings".
 
+Every page in the navigation SHALL register its own page tour, so the header's "Tour this page" action is present on it. A tour step whose target may be absent (an empty list, a loading report, a control only a guild Leader or Co-Leader sees) SHALL be skipped when its target is not on the page.
+
 #### Scenario: Desktop header with settings
 
 - **GIVEN** a page that has settings, at 1440px
@@ -21,6 +23,12 @@ The app shell SHALL render the page header above every page: the page's title (i
 - **GIVEN** the same page at 390px
 - **WHEN** it renders
 - **THEN** the mobile header shows a Settings icon button named "Settings" beside the tour button
+
+#### Scenario: Tour on Guild Members
+
+- **GIVEN** a guild member who is not a Leader or Co-Leader, on Guild › Members
+- **WHEN** they start "Tour this page"
+- **THEN** the tour covers the guild summary and the member list, and skips the Sync and Delete actions they do not see
 
 #### Scenario: Page without settings
 
@@ -56,3 +64,36 @@ Group by and Layout SHALL each be one labelled segmented control (2 to 4 exclusi
 - **GIVEN** Group by reads Faction
 - **WHEN** the user presses Faction again
 - **THEN** Group by still reads Faction and the list does not change
+
+### Requirement: Search boxes and empty states look the same on every page
+
+A page's name search SHALL be one search box in the Find slot with a search icon, the localized placeholder "Search by name" (unless the page searches something other than names), an accessible name saying what it searches, and a clear button while it holds text that empties it at once. It SHALL grow to fill the row up to a fixed maximum width.
+
+A list or page that has nothing to show SHALL show one empty state: a dashed box with an icon, an optional title, one sentence and at most a few actions, centered and announced as a status. When nothing exists yet it SHALL say what is missing and, where the page cannot already create it, offer the action that does (for example Create goal on Insights, Today's raids and Schedule). When a search or filters match nothing it SHALL say so and offer Clear filters, or Clear search when only the search is set.
+
+#### Scenario: Clearing a search from the box
+
+- **GIVEN** the Characters search holds "zzz"
+- **WHEN** the user presses the search box's clear button
+- **THEN** the box is empty and every character is listed again
+
+#### Scenario: No active goals on Insights
+
+- **GIVEN** a signed-in player with no active goals
+- **WHEN** Insights opens with "All goals"
+- **THEN** it shows the empty state with its title, one sentence and Create goal, which opens goal creation
+
+### Requirement: In-page tabs look the same and come first
+
+Views inside a page or a dialog SHALL be left-aligned underline tabs at their natural width, with no border under the strip, on every viewport. When they don't fit, the strip SHALL scroll sideways; tabs SHALL NOT turn into a select, a grid or wrapped rows on a phone. A page's tabs SHALL sit directly under the header, and each tab SHALL own its toolbar; only a control that scopes every tab (an event picker, the Daily Shops day) SHALL sit above them.
+
+#### Scenario: Daily Shops on a phone
+
+- **GIVEN** a 390px wide viewport
+- **WHEN** the user opens Library › Daily Shops
+- **THEN** the day select sits in the toolbar and the four shops are underline tabs under it, scrolling sideways, not a select
+
+#### Scenario: Account dialog
+
+- **WHEN** the user opens Manage account
+- **THEN** its sections are the same underline tabs as a page's, not pills

@@ -116,7 +116,8 @@
       "description": "Tus cambios en el progreso de Incursión no se han guardado y se perderán.",
       "stay": "Quedarme",
       "leave": "Salir"
-    }
+    },
+    "howToSummary": "Cómo registrar tus estrellas"
   },
   "team": {
     "title": "Equipo sugerido",
@@ -129,7 +130,8 @@
     "unsynced": "Sincroniza tu plantilla para ver un equipo sugerido y qué niveles puede completar.",
     "noPower": "Las estimaciones de poder no están disponibles ahora.",
     "eligible_one": "{{count}} héroe elegible",
-    "eligible_other": "Los {{count}} héroes elegibles"
+    "eligible_other": "Los {{count}} héroes elegibles",
+    "hintSummary": "Cómo se elige este equipo"
   },
   "nav": {
     "label": "Navegación de Incursiones",
@@ -166,7 +168,7 @@
     "selected_one": "{{count}} héroe · poder {{power}}",
     "selected_other": "{{count}} héroes · poder {{power}}",
     "reset": "Volver a la sugerencia",
-    "close": "Cerrar"
+    "done": "Listo"
   },
   "estimate": {
     "clears_one": "Se completa en 1 intento",

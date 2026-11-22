@@ -54,7 +54,6 @@ export function ProjectSummaryRow({
             <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
               {summary.portraitUnits ? (
                 <ProjectUnitPortraits
-                  size="widget"
                   total={summary.units}
                   units={summary.portraitUnits}
                 />

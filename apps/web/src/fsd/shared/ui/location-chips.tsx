@@ -43,7 +43,7 @@ export function LocationChips({
           className="gap-1 font-normal"
         >
           {location.icon ? (
-            <EntityIcon src={location.icon} alt="" className="size-4" />
+            <EntityIcon size="inline" src={location.icon} alt="" />
           ) : null}
           {location.label}
           {location.trailing}

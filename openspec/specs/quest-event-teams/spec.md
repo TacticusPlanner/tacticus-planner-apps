@@ -43,7 +43,7 @@ A unit SHALL be **eligible** for a battle when it is an owned character (not a M
 | `HasRangedAttack`  | it has a ranged weapon                           |
 | `MaxHits` n        | none of its weapons has more than n hits         |
 | `MinHits` n        | at least one of its weapons has n hits or more   |
-| `UseNoSummons`     | it is not in the summoner set                    |
+| `UseNoSummons`     | its catalog `summons` is not `forced`            |
 | `DoNoHealOrRepair` | it has neither the Healer nor the Mechanic trait |
 
 A restriction SHALL be **active** unless the featured hero fails it, in which case the objective is **unreachable** and does not filter anyone. `DamageType` and `NoDamageTakenByAnyHero` SHALL NOT filter units.

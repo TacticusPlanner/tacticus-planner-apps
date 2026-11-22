@@ -59,7 +59,7 @@ export function InstallAppDialog({
 
   return (
     <ResponsiveDialog
-      contentClassName="sm:max-w-lg"
+      width="narrow"
       data-testid="app-install-dialog"
       onOpenChange={onOpenChange}
       open={open}
@@ -72,7 +72,7 @@ export function InstallAppDialog({
           {t("appInstall.dialog.description")}
         </DialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-5 pb-4">
+      <ResponsiveDialogBody className="gap-5">
         {install.installed ? (
           <p className="text-sm">{t("appInstall.dialog.installed")}</p>
         ) : install.canPrompt ? (
@@ -107,7 +107,7 @@ export function InstallAppDialog({
               })}
             </ol>
             {maybeInstalled ? (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {t("appInstall.dialog.maybeInstalled")}
               </p>
             ) : null}
@@ -144,8 +144,8 @@ export function InstallAppDialog({
           </ul>
         </section>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="border-t">
-        <Button onClick={() => onOpenChange(false)} variant="secondary">
+      <ResponsiveDialogFooter>
+        <Button onClick={() => onOpenChange(false)} variant="outline">
           {t("common.close")}
         </Button>
       </ResponsiveDialogFooter>

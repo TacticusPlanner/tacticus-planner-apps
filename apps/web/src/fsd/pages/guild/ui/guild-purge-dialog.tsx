@@ -1,13 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
-import { Button } from "@workspace/ui/components/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
 import {
   Field,
   FieldContent,
@@ -15,10 +8,10 @@ import {
   FieldLabel,
 } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
-import { Spinner } from "@workspace/ui/components/spinner"
 
 import { purgeGuild } from "@/entities/guild"
 import { ApiError } from "@/shared/api"
+import { ConfirmationDialog } from "@/shared/ui"
 
 const PURGE_CONFIRMATION_WORD = "Confirm"
 
@@ -80,63 +73,52 @@ export function GuildPurgeDialog({ open, onOpenChange, onPurged }: Props) {
   }
 
   return (
-    <Dialog
+    <ConfirmationDialog
+      cancelLabel={t("common.cancel")}
+      confirmDisabled={!canPurge}
+      confirmLabel={t("guild.purge.submit")}
+      confirmTestId="guild-purge-submit"
+      data-testid="guild-purge-dialog"
+      onCancel={() => onOpenChange(false)}
+      onConfirm={handlePurge}
       open={open}
-      onOpenChange={(next) => {
-        if (!submitting) {
-          onOpenChange(next)
-        }
-      }}
+      pending={submitting}
+      title={t("guild.purge.title")}
     >
-      <DialogContent className="sm:max-w-lg" data-testid="guild-purge-dialog">
-        <DialogHeader>
-          <DialogTitle>{t("guild.purge.title")}</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <div
-            className="flex flex-col gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
-            role="alert"
-          >
-            <p className="font-medium text-destructive">
-              {t("guild.purge.warningTitle")}
-            </p>
-            <p className="text-muted-foreground">
-              {t("guild.purge.warningDescription")}
-            </p>
-          </div>
-
-          <Field data-invalid={Boolean(errorMessage)}>
-            <FieldLabel htmlFor="guild-purge-confirmation">
-              {t("guild.purge.confirmLabel", { word: PURGE_CONFIRMATION_WORD })}
-            </FieldLabel>
-            <FieldContent>
-              <Input
-                id="guild-purge-confirmation"
-                data-testid="guild-purge-confirmation-input"
-                autoComplete="off"
-                value={confirmation}
-                onChange={(event) => setConfirmation(event.target.value)}
-              />
-            </FieldContent>
-          </Field>
-
-          {errorMessage ? (
-            <FieldError data-testid="guild-purge-error">
-              {errorMessage}
-            </FieldError>
-          ) : null}
-
-          <Button
-            data-testid="guild-purge-submit"
-            disabled={!canPurge || submitting}
-            variant="destructive"
-            onClick={handlePurge}
-          >
-            {submitting ? <Spinner /> : null}
-            {t("guild.purge.submit")}
-          </Button>
+      <div className="flex flex-col gap-4">
+        <div
+          className="flex flex-col gap-2 rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm"
+          role="alert"
+        >
+          <p className="font-medium text-destructive">
+            {t("guild.purge.warningTitle")}
+          </p>
+          <p className="text-muted-foreground">
+            {t("guild.purge.warningDescription")}
+          </p>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        <Field data-invalid={Boolean(errorMessage)}>
+          <FieldLabel htmlFor="guild-purge-confirmation">
+            {t("guild.purge.confirmLabel", { word: PURGE_CONFIRMATION_WORD })}
+          </FieldLabel>
+          <FieldContent>
+            <Input
+              id="guild-purge-confirmation"
+              data-testid="guild-purge-confirmation-input"
+              autoComplete="off"
+              value={confirmation}
+              onChange={(event) => setConfirmation(event.target.value)}
+            />
+          </FieldContent>
+        </Field>
+
+        {errorMessage ? (
+          <FieldError data-testid="guild-purge-error">
+            {errorMessage}
+          </FieldError>
+        ) : null}
+      </div>
+    </ConfirmationDialog>
   )
 }

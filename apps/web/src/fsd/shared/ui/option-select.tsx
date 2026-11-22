@@ -1,8 +1,9 @@
 import { useLayoutEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
-import { ChevronsUpDown, X } from "lucide-react"
+import { ChevronDown, X } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import { selectTriggerClassName } from "@workspace/ui/lib/select-trigger"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { hasNode } from "../lib"
@@ -118,14 +119,16 @@ function SelectShell({
     >
       <div className="relative min-w-0">
         <PopoverTrigger asChild>
-          <Button
+          {/* Styled as a select trigger so it matches the plain selects beside it in a panel. */}
+          <button
             ref={triggerRef}
-            variant="outline"
+            type="button"
             role="combobox"
             aria-expanded={open}
             aria-controls={listId}
             aria-label={ariaLabel}
-            className="h-9 w-full min-w-0 justify-between gap-2 pr-2 font-normal"
+            className={cn(selectTriggerClassName, "w-full min-w-0 gap-2")}
+            data-size="default"
             data-testid={testId}
             disabled={disabled}
           >
@@ -138,8 +141,8 @@ function SelectShell({
             >
               {summary}
             </span>
-            <ChevronsUpDown className="shrink-0 opacity-50" />
-          </Button>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+          </button>
         </PopoverTrigger>
         {trailing}
       </div>
@@ -185,7 +188,7 @@ export function MultiSelect<TValue extends string | number>({
       testId={testId}
       summary={
         selected.length === 0 ? (
-          <span className="truncate text-muted-foreground">{placeholder}</span>
+          <span className="truncate">{placeholder}</span>
         ) : (
           <FittingChips options={selected} />
         )
@@ -360,11 +363,14 @@ export function SearchableSelect<TValue extends string | number>({
       testId={testId}
       summary={
         selected ? (
-          <span className="truncate">{selected.label}</span>
+          <>
+            {selected.icon}
+            <span className="truncate">{selected.label}</span>
+          </>
         ) : value !== undefined ? (
           <span className="truncate">{String(value)}</span>
         ) : (
-          <span className="truncate text-muted-foreground">{placeholder}</span>
+          <span className="truncate">{placeholder}</span>
         )
       }
       trailing={

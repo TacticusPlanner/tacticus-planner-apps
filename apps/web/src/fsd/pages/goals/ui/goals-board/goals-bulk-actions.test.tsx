@@ -20,6 +20,7 @@ function setup(
   extra: {
     reached?: Record<string, boolean>
     pending?: string[]
+    compact?: boolean
   } = {}
 ) {
   const handlers = {
@@ -31,6 +32,7 @@ function setup(
   render(
     <GoalsBulkActions
       {...handlers}
+      compact={extra.compact}
       pendingIds={new Set(extra.pending)}
       reachedByGoalId={new Map(Object.entries(extra.reached ?? {}))}
       selectedRows={selectedRows}
@@ -57,14 +59,25 @@ describe("GoalsBulkActions", () => {
 
   it("enables Resume with the paused count and leaves Pause disabled for two Paused goals", () => {
     setup([row("a", "Paused"), row("b", "Paused")])
-    expect(screen.getByTestId("goals-bulk-resume")).toHaveTextContent(
-      "Resume (2)"
+    // The count is a badge after the label, and the accessible name says it in words.
+    expect(screen.getByTestId("goals-bulk-resume")).toHaveTextContent("Resume2")
+    expect(screen.getByTestId("goals-bulk-resume")).toHaveAccessibleName(
+      "Resume, 2 selected"
     )
     expect(screen.getByTestId("goals-bulk-resume")).toBeEnabled()
     expect(screen.getByTestId("goals-bulk-pause")).toBeDisabled()
-    expect(screen.getByTestId("goals-bulk-delete")).toHaveTextContent(
-      "Delete (2)"
-    )
+    expect(screen.getByTestId("goals-bulk-delete")).toHaveTextContent("Delete2")
+  })
+
+  it("keeps the count badges on the icon-only compact buttons", () => {
+    setup([row("a", "Paused"), row("b", "Paused")], { compact: true })
+    const resume = screen.getByTestId("goals-bulk-resume")
+    // No text label, just the icon and the count badge on its corner.
+    expect(resume).toHaveTextContent(/^2$/)
+    expect(resume).toHaveAccessibleName("Resume, 2 selected")
+    expect(screen.getByTestId("goals-bulk-delete")).toHaveTextContent(/^2$/)
+    // A disabled action has nothing to count.
+    expect(screen.getByTestId("goals-bulk-pause")).toHaveTextContent(/^$/)
   })
 
   it("pauses only Active, non-reached, non-pending goals of a mixed selection", async () => {
@@ -122,7 +135,7 @@ describe("GoalsBulkActions", () => {
         />
       )
       const button = screen.getByTestId("goals-bulk-removeFromProject")
-      expect(button).toHaveTextContent("Remove from project (2)")
+      expect(button).toHaveTextContent("Remove from project2")
       await userEvent.setup().click(button)
       expect(onRemoveFromProject).toHaveBeenCalledWith([rows[0], rows[1]])
     })

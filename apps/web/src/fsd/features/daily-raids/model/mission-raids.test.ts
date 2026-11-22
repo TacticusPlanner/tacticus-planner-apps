@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest"
 import type { BattleId } from "@workspace/game-domain"
 
-import { planMissionRaids } from "./mission-raids"
+import type { Battle } from "@/shared/lib"
+import { buildMissionGoalNodes, planMissionRaids } from "./mission-raids"
 import type {
   MissionGoalNode,
   MissionRaidBattle,
@@ -259,5 +260,149 @@ describe("planMissionRaids quick filters and energy", () => {
     expect(plan.energyBudget).toBe(Infinity)
     expect(plan.totalRaids).toBe(38)
     expect(plan.remainingAfter).toBe(0)
+  })
+})
+
+describe("planMissionRaids with CE nodes first", () => {
+  it("ranks the running campaign event's nodes ahead of cheaper ones", () => {
+    const event = node("E10", 6, 10, { isEvent: true })
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 12,
+        battles: [...indomitus, event],
+        preferredBattleIds: new Set([id("E10")]),
+      })
+    )
+    expect(raidsOf(plan.rows)).toEqual({ E10: 10, I15: 2 })
+  })
+
+  it("still puts a node feeding a goal first", () => {
+    const event = node("E10", 6, 10, { isEvent: true })
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 12,
+        battles: [...indomitus, event],
+        goalNodesByBattle: new Map([[id("I20"), goal("dropI20")]]),
+        preferredBattleIds: new Set([id("E10")]),
+      })
+    )
+    expect(plan.rows.map((row) => row.battleId)).toEqual(["I20", "E10"])
+  })
+})
+
+describe("planMissionRaids stops favouring a covered goal resource", () => {
+  it("takes only the raids that cover the need, then fills by energy", () => {
+    // 6 stimms needed: the 10-energy Extremis node drops one every raid, two 5-energy nodes too.
+    const extremis = node("X14", 10, 5, { drops: [["stimms", 1]] })
+    const mirror = node("M56", 8, 10, { drops: [["stimms", 0.5]] })
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 12,
+        battles: [...indomitus, extremis, mirror],
+        goalNodesByBattle: new Map([
+          [id("X14"), { ...goal("stimms"), need: 6 }],
+          [id("M56"), { ...goal("stimms"), need: 6 }],
+        ]),
+      })
+    )
+    // X14's 5 raids leave 1 stimm, which M56 covers in 2; the other 5 raids go to the cheapest node.
+    expect(raidsOf(plan.rows)).toEqual({ X14: 5, M56: 2, I15: 5 })
+  })
+
+  it("keeps favouring the goal's nodes when its need is unknown", () => {
+    const extremis = node("X14", 10, 5, { drops: [["stimms", 1]] })
+    const mirror = node("M56", 8, 10, { drops: [["stimms", 0.5]] })
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 12,
+        battles: [...indomitus, extremis, mirror],
+        goalNodesByBattle: new Map([
+          [id("X14"), goal("stimms")],
+          [id("M56"), goal("stimms")],
+        ]),
+      })
+    )
+    // Least energy per stimm first (10 at X14, 16 at M56), then the goal's other node.
+    expect(raidsOf(plan.rows)).toEqual({ X14: 5, M56: 7 })
+  })
+})
+
+describe("buildMissionGoalNodes", () => {
+  const battle = (campaignGroupId: string, type: string): Battle => ({
+    campaignGroupId: campaignGroupId as Battle["campaignGroupId"],
+    type,
+    challenge: false,
+    nodeNumber: 1,
+    battleIndex: 0,
+    energyCost: type === "Elite" || type === "Extremis" ? 10 : 6,
+    dailyAttempts: type === "Elite" ? 6 : 10,
+  })
+  const battlesById = new Map<BattleId, Battle>([
+    [id("standard"), battle("campaign2", "Standard")],
+    [id("mirror"), battle("mirror2", "Mirror")],
+    [id("elite"), battle("elite2", "Elite")],
+    [id("eliteMirror"), battle("eliteMirror2", "Elite")],
+    [id("eventStandard"), battle("eventCampaign1", "Standard")],
+    [id("extremis"), battle("eventCampaign1", "Extremis")],
+  ])
+  const upgrade = (resourceId: string) => ({
+    id: resourceId as never,
+    farmLocations: [...battlesById.keys()].map((battleId) => ({
+      battleId,
+      guaranteed: false,
+      effectiveRate: 0.1,
+      numerator: null,
+      denominator: null,
+      isMythic: false,
+    })),
+  })
+  const nodesFor = (
+    rarity: "Rare" | "Epic" | "Legendary",
+    farmingLocationIds?: string[]
+  ) =>
+    [
+      ...buildMissionGoalNodes(
+        [
+          {
+            goalId: "g1",
+            priority: 1,
+            needs: [{ id: "U" as never, count: 5 }],
+            farmingLocationIds,
+          },
+        ],
+        [],
+        new Map([["U" as never, upgrade("U")]]),
+        battlesById,
+        () => rarity
+      ).keys(),
+    ].toSorted((a, b) => a.localeCompare(b))
+
+  it("farms a Rare upgrade on any node", () => {
+    expect(nodesFor("Rare")).toHaveLength(6)
+  })
+
+  it("farms Epic and Legendary upgrades on Elite and Extremis nodes only", () => {
+    for (const rarity of ["Epic", "Legendary"] as const) {
+      expect(nodesFor(rarity)).toEqual(["elite", "eliteMirror", "extremis"])
+    }
+  })
+
+  it("keeps a pinned location whatever its tier", () => {
+    expect(nodesFor("Legendary", ["mirror"])).toEqual(["mirror"])
+  })
+
+  it("carries what every goal still needs of the node's resource", () => {
+    const nodes = buildMissionGoalNodes(
+      [
+        { goalId: "g1", priority: 1, needs: [{ id: "U" as never, count: 5 }] },
+        { goalId: "g2", priority: 2, needs: [{ id: "U" as never, count: 3 }] },
+      ],
+      [],
+      new Map([["U" as never, upgrade("U")]]),
+      battlesById
+    )
+    expect(nodes.get(id("elite"))).toEqual(
+      expect.objectContaining({ goalIds: ["g1", "g2"], need: 8 })
+    )
   })
 })

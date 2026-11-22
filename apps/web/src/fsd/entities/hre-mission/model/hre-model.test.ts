@@ -12,10 +12,12 @@ import {
   nextTokenReserve,
   remainingCampaignBattles,
   selectCampaignPlan,
+  spareTokens,
   tokenNeedRows,
   tokenNeeds,
 } from "./hre-objectives"
-import { arenaSurplus, selectTeamPlans } from "./hre-team-plan"
+import type { HreSpareTokens } from "./hre-objectives"
+import { selectTeamPlans } from "./hre-team-plan"
 import {
   bracketForRank,
   bracketRange,
@@ -233,6 +235,14 @@ describe("progress", () => {
     expect(advanceMission(progress({ mission: 21 }), hreMissions).mission).toBe(
       hreAllDone(hreMissions)
     )
+  })
+
+  it("completes a mission at any progress, keeping it at its targets", () => {
+    const partial = progress({ mission: 5, progress: [1200, 0] })
+    expect(isMissionComplete(partial, hreMissions)).toBe(false)
+    const next = advanceMission(partial, hreMissions)
+    expect(next).toMatchObject({ mission: 6, progress: [0, 0] })
+    expect(next.byMission[5]).toEqual([10_000, 100])
   })
 })
 
@@ -765,10 +775,15 @@ describe("projectHrePace", () => {
 })
 
 describe("selectTeamPlans", () => {
-  const modes = (state: HreProgress, surplus = 0) =>
-    selectTeamPlans(state, hreMissions, surplus).map(
+  const modes = (state: HreProgress, spare: HreSpareTokens = {}) =>
+    selectTeamPlans(state, hreMissions, spare).map(
       (plan) => `${plan.mode}:${plan.rule}`
     )
+  const all = {
+    arena: { held: 15, need: 12 },
+    onslaught: { held: 3, need: 1 },
+    salvageRun: { held: 3, need: 2 },
+  }
 
   it("gives the manual objectives one campaign team with the strictest rule", () => {
     expect(modes(progress({ mission: 14 }))).toEqual(["battle:alliance"])
@@ -811,51 +826,120 @@ describe("selectTeamPlans", () => {
     ])
   })
 
-  it("keeps the Onslaught pool for ranged kills without Arena and for any-unit ability uses", () => {
-    expect(modes(progress({ mission: 4, progress: [4, 0] }))).toEqual([
+  it("plays the manual objectives in the spare-token modes, Arena first, Onslaught first for abilities", () => {
+    // Mission 6: healing and summon-free wins, Arena, Salvage Run, then Onslaught.
+    expect(modes(progress({ mission: 6 }), all)).toEqual([
+      "battle:summonFree",
+      "arena:summonFree",
+      "salvageRun:summonFree",
+      "onslaught:summonFree",
+    ])
+    // Mission 3: ability uses, Onslaught first.
+    expect(modes(progress({ mission: 3, progress: [20, 0] }), all)).toEqual([
+      "battle:abilities",
+      "onslaught:abilities",
+      "arena:abilities",
+      "salvageRun:abilities",
+    ])
+    // Mission 5: ability damage, Guild Raid first, then Onslaught.
+    const withGuildRaid = { ...all, guildRaid: { held: 3, need: 2 } }
+    expect(modes(progress({ mission: 5 }), withGuildRaid)).toEqual([
+      "battle:strongest",
+      "guildRaid:strongest",
+      "onslaught:strongest",
+      "arena:strongest",
+      "salvageRun:strongest",
+    ])
+    // Guild Raid serves only ability damage.
+    expect(
+      modes(progress({ mission: 3, progress: [20, 0] }), withGuildRaid)
+    ).not.toContain("guildRaid:abilities")
+    expect(modes(progress({ mission: 6 }), withGuildRaid)).not.toContain(
+      "guildRaid:summonFree"
+    )
+    // No spare tokens, no spare teams.
+    expect(modes(progress({ mission: 3 }))).toEqual(["battle:abilities"])
+  })
+
+  it("leaves out the overkill modes for kills and stops once the kills are covered", () => {
+    // Mission 1: 5 melee kills. Arena's 3 spare battles cover them; Onslaught is overkill.
+    expect(modes(progress({ mission: 1, progress: [2, 0] }), all)).toEqual([
+      "battle:melee",
+      "arena:melee",
+    ])
+    // Without spare Arena tokens, Salvage Run and Onslaught are still overkill for 5 kills.
+    expect(
+      modes(progress({ mission: 1, progress: [2, 0] }), {
+        onslaught: all.onslaught,
+        salvageRun: all.salvageRun,
+      })
+    ).toEqual(["battle:melee"])
+    // Mission 2: 10 alliance kills, covered by 3 Arena battles.
+    expect(modes(progress({ mission: 2, progress: [5, 0] }), all)).toEqual([
+      "battle:alliance",
+      "arena:alliance",
+    ])
+    // Mission 4 already plays Arena for its token objective; 50 ranged kills take both others.
+    expect(modes(progress({ mission: 4 }), all)).toEqual([
       "battle:ranged",
+      "arena:ranged",
+      "salvageRun:ranged",
       "onslaught:ranged",
     ])
-    expect(modes(progress({ mission: 3 }))).toEqual([
-      "battle:abilities",
-      "onslaught:abilities",
+    // 45 of 50 done: 5 left, so neither Salvage Run nor Onslaught.
+    expect(modes(progress({ mission: 4, progress: [0, 45] }), all)).toEqual([
+      "battle:ranged",
+      "arena:ranged",
     ])
-    expect(modes(progress({ mission: 15 }))).toEqual([
-      "battle:abilities",
-      "arena:abilities",
-      "onslaught:abilities",
-    ])
+  })
+
+  it("names the spare and fields the whole alliance for Onslaught ability uses", () => {
+    const plans = selectTeamPlans(progress({ mission: 3 }), hreMissions, {
+      onslaught: { held: 3, need: 1 },
+    })
+    expect(plans[1]).toMatchObject({
+      mode: "onslaught",
+      rule: "abilities",
+      spare: { held: 3, need: 1 },
+      reserve: null,
+      wholeTrack: true,
+    })
+    expect(plans[0]).toMatchObject({ spare: null, wholeTrack: false })
     expect(
-      selectTeamPlans(progress({ mission: 9 }), hreMissions)[1]
+      selectTeamPlans(progress({ mission: 9 }), hreMissions, {
+        onslaught: { held: 3, need: 1 },
+      })[1]
     ).toMatchObject({
       mode: "onslaught",
       size: 8,
       preferPsychic: true,
-      reserve: { tokens: 1, missionNumber: 12 },
+      wholeTrack: false,
     })
-    expect(
-      selectTeamPlans(
-        progress({ mission: 9, progress: [7500, 0] }),
-        hreMissions
-      )[0]?.preferPsychic
-    ).toBe(false)
   })
+})
 
-  it("plays mission 6 in Arena only with tokens above mission 10's reserve", () => {
-    expect(modes(progress({ mission: 6 }))).toEqual(["battle:summonFree"])
-    expect(modes(progress({ mission: 6 }), 2)).toEqual([
-      "battle:summonFree",
-      "arena:summonFree",
-    ])
+describe("spareTokens", () => {
+  it("keeps the modes with tokens above the remaining missions' need", () => {
+    const state = progress({ mission: 6 })
     expect(
-      selectTeamPlans(progress({ mission: 6 }), hreMissions, 2)[1]
-    ).toMatchObject({
-      support: true,
-      reserve: { tokens: 4, missionNumber: 10 },
+      spareTokens(state, hreMissions, {
+        arena: 20,
+        onslaught: 0,
+        salvageRun: null,
+        guildRaid: 9,
+      })
+    ).toEqual({
+      arena: { held: 20, need: tokenNeeds(state, hreMissions).arena },
+      guildRaid: { held: 9, need: tokenNeeds(state, hreMissions).guildRaid },
     })
-    expect(arenaSurplus(progress({ mission: 6 }), hreMissions, 7)).toBe(3)
-    expect(arenaSurplus(progress({ mission: 6 }), hreMissions, 3)).toBe(0)
-    expect(arenaSurplus(progress({ mission: 6 }), hreMissions, null)).toBe(0)
+    expect(
+      spareTokens(state, hreMissions, {
+        arena: null,
+        onslaught: null,
+        salvageRun: null,
+        guildRaid: null,
+      })
+    ).toEqual({})
   })
 })
 

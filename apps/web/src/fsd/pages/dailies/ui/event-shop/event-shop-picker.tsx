@@ -7,19 +7,21 @@ import {
   isDatedEventShop,
 } from "@workspace/game-catalog"
 import type { GameCatalogEventShopRecord } from "@workspace/game-catalog"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
+
+import { EventInstanceSwitcher } from "@/shared/ui"
 
 import { eventShopStatusLabel, useEventShopName } from "./event-shop-name"
 import type { EventShopFormat } from "./use-event-shop-format"
 
-/** The event picker: newest first (events with no start date yet on top), each with its dates and
- *  status, or "Start date TBA". */
+type EventShopInstance = {
+  key: string
+  status: "running" | "upcoming" | "past"
+  shop: GameCatalogEventShopRecord
+}
+
+/** The event picker: the shared event switcher (ui-style-guide rule 2), a select grouped Running /
+ *  Upcoming / Past between Previous / Next. Each option shows the event's name, dates and status,
+ *  or "Start date TBA" for an event with no start date yet (listed last, under Upcoming). */
 export function EventShopPicker({
   events,
   value,
@@ -38,7 +40,21 @@ export function EventShopPicker({
 }) {
   const { t } = useTranslation("eventShops")
   const eventName = useEventShopName({ short: compact })
-  const newestFirst = events.toSorted((a, b) => compareEventShopsByStart(b, a))
+  const instances: EventShopInstance[] = events
+    .toSorted(compareEventShopsByStart)
+    .map((shop) => {
+      const status = isDatedEventShop(shop) ? eventStatus(shop, now) : null
+      return {
+        key: shop.id,
+        status:
+          status === "running"
+            ? "running"
+            : status === "ended"
+              ? "past"
+              : "upcoming",
+        shop,
+      }
+    })
   const details = (shop: GameCatalogEventShopRecord) =>
     isDatedEventShop(shop)
       ? `${t("header.dates", {
@@ -49,30 +65,32 @@ export function EventShopPicker({
       : t("header.tba")
 
   return (
-    <Select onValueChange={onSelectEvent} value={value}>
-      <SelectTrigger
-        aria-label={t("header.picker")}
-        className="min-w-0 flex-1 text-base font-semibold md:max-w-96 pointer-coarse:h-10"
-        data-testid="event-shop-picker"
-      >
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent position="popper">
-        {newestFirst.map((shop) => (
-          <SelectItem
-            key={shop.id}
-            data-testid={`event-shop-picker-option-${shop.id}`}
-            value={shop.id}
-          >
-            <span className="flex flex-col">
-              <span>{eventName(shop)}</span>
-              <span className="text-xs text-muted-foreground in-data-[slot=select-value]:hidden">
-                {details(shop)}
-              </span>
-            </span>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <EventInstanceSwitcher
+      className="min-w-0 md:max-w-120"
+      instances={instances}
+      labels={{
+        label: t("header.picker"),
+        placeholder: t("header.switcher.placeholder"),
+        empty: t("header.switcher.empty"),
+        previous: t("header.switcher.previous"),
+        next: t("header.switcher.next"),
+        groups: {
+          running: t("header.switcher.groups.running"),
+          upcoming: t("header.switcher.groups.upcoming"),
+          past: t("header.switcher.groups.past"),
+        },
+      }}
+      onSelect={onSelectEvent}
+      renderOption={({ shop }) => (
+        <span className="flex min-w-0 flex-col">
+          <span className="truncate">{eventName(shop)}</span>
+          <span className="text-xs text-muted-foreground in-data-[slot=select-value]:hidden">
+            {details(shop)}
+          </span>
+        </span>
+      )}
+      selectedKey={value}
+      testIdPrefix="event-shop-picker"
+    />
   )
 }

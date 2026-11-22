@@ -18,8 +18,9 @@ function CurrencyAmount({
   return (
     <span className="inline-flex items-center gap-1 align-middle">
       <EntityIcon
+        size="inline"
         alt={label}
-        className="inline size-3.5 shrink-0"
+        className="inline shrink-0"
         src={shopCurrencyIcon(currencyId)}
       />
       <span className="tabular-nums">{amount.toLocaleString()}</span>
@@ -84,7 +85,12 @@ export function ShopRecommendationCard({
       className="flex items-center gap-3 rounded-lg border px-3 py-2"
       data-testid={testId}
     >
-      <EntityIcon alt="" className="size-9 shrink-0" src={card.rewardIconUrl} />
+      <EntityIcon
+        size="row"
+        alt=""
+        className="shrink-0"
+        src={card.rewardIconUrl}
+      />
       <div className="min-w-0 flex-1 leading-tight">
         <div className="flex items-center gap-1.5">
           <span className="truncate text-sm font-medium">
@@ -92,9 +98,10 @@ export function ShopRecommendationCard({
           </span>
           {!card.isGuaranteed ? (
             <EntityIcon
+              size="inline"
               src={chanceIcon()}
               alt={text.randomHint}
-              className="size-4 shrink-0"
+              className="shrink-0"
             />
           ) : null}
         </div>

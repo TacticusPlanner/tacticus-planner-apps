@@ -40,7 +40,6 @@ export {
   fieldNpcIdsForStep,
   maxKnownProgressionIndex,
 } from "./lib/encounters"
-export { buildRaidBossRosterGroups } from "./lib/roster-groups"
 export {
   computeAbilityAdjustments,
   applyAbilityVariableAdjustments,

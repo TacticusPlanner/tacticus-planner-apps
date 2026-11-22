@@ -18,7 +18,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useLongPress } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, portraitClassName } from "@/shared/ui"
 
 import type { EventUnitChipData } from "../lib/event-unit-chip-data"
 import { eventUnitChipLayout } from "../lib/event-unit-chip-layout"
@@ -52,13 +52,13 @@ interface LayoutLooks {
   rank: string
 }
 
-// The parts, the same in every layout: a 32px portrait with an 18px rarity badge on its bottom-left
-// corner and a 24px rank icon.
+// The parts, the same in every layout: a `portrait-sm` (40px) portrait with a `badge-sm` (16px)
+// rarity badge on its bottom-left corner, and an `inline` rank icon (UI style guide, rule 6).
 const PARTS = {
   portraitBox: "mr-1",
-  portrait: "size-8",
-  badge: "-bottom-1 -left-1 size-4.5",
-  rank: "mr-1 size-6",
+  portrait: portraitClassName("sm"),
+  badge: "-bottom-1 -left-1",
+  rank: "mr-1",
 }
 
 // Tailwind only generates classes it finds spelled out, so each layout's are written in full.
@@ -251,6 +251,7 @@ export function EventUnitChip({
         {owned && unit.rank ? (
           <EntityIcon
             alt=""
+            size="inline"
             className={cn(
               "shrink-0 drop-shadow-[0_0_1px_rgb(0_0_0/0.6)] [grid-area:rank]",
               looks.rank
@@ -286,7 +287,8 @@ export function EventUnitChip({
             {unit.supportTraits.map((trait) => (
               <EntityIcon
                 alt=""
-                className="size-5 shrink-0"
+                size="inline"
+                className="shrink-0"
                 data-testid="event-board-unit-trait"
                 data-trait={trait}
                 key={trait}
@@ -346,7 +348,7 @@ export function EventUnitChip({
       aria-haspopup="dialog"
       className={cn(
         "relative flex min-w-0 rounded-md select-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
-        // A 48px hit area for touch on the ~41px chip, reaching into the gap between rows.
+        // A 48px hit area for touch on the ~48px chip, reaching into the gap between rows.
         "pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1",
         fill && "w-full"
       )}
@@ -385,7 +387,6 @@ export function EventUnitChip({
         <Popover onOpenChange={setDetailsOpen} open>
           <PopoverAnchor virtualRef={anchorRef} />
           <PopoverContent
-            className="w-auto max-w-64 rounded-xl p-3"
             onEscapeKeyDown={() => {
               refocusOnClose.current = true
             }}

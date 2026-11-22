@@ -309,6 +309,59 @@ type LegendaryEventTierListUnitOpenedEvent = {
   tier: string
 }
 
+/** An HRE's state on Dailies > HRE: running, a preview of the next one, or past. */
+type HreEventState = "running" | "upcoming" | "past"
+
+/** Dailies > HRE was opened (once per visit and shown event). */
+type HreTabViewedEvent = {
+  type: "hre_tab_viewed"
+  eventState: HreEventState
+  /** The current mission of a running event; null for a preview or a past event. */
+  mission: number | null
+}
+
+/** Another HRE was picked in the event switcher. */
+type HreEventSwitchedEvent = {
+  type: "hre_event_switched"
+  eventState: HreEventState
+}
+
+/** An objective's progress was stepped ("+1", "+10") or marked done; typing is not reported. */
+type HreObjectiveProgressChangedEvent = {
+  type: "hre_objective_progress_changed"
+  mission: number
+  objectiveKind: string
+  method: "step" | "markDone"
+}
+
+/** An objective's suggestion fold was opened: the raids, the battles by hand, or a token mode's
+ *  team (`spare`: a manual objective played with spare tokens). */
+type HreFoldOpenedEvent = {
+  type: "hre_fold_opened"
+  mission: number
+  objectiveKind: string
+  suggestion:
+    "raids" | "battles" | "arena" | "onslaught" | "salvageRun" | "guildRaid"
+  spare: boolean
+}
+
+/** An objective's 'i' (the game's hint and our tip) was opened. */
+type HreObjectiveInfoOpenedEvent = {
+  type: "hre_objective_info_opened"
+  objectiveKind: string
+}
+
+/** A suggested battle's enemies were opened from the HRE tab. */
+type HreLocationOpenedEvent = {
+  type: "hre_location_opened"
+}
+
+/** "Mission complete" was pressed. */
+type HreMissionCompletedEvent = {
+  type: "hre_mission_completed"
+  mission: number
+}
+
 /** Where the install offer was opened from. */
 type AppInstallSource = "homeCard" | "accountMenu"
 
@@ -442,6 +495,13 @@ export type AnalyticsEvent =
   | LegendaryEventEarlierRunsExpandedEvent
   | LegendaryEventTierListViewedEvent
   | LegendaryEventTierListUnitOpenedEvent
+  | HreTabViewedEvent
+  | HreEventSwitchedEvent
+  | HreObjectiveProgressChangedEvent
+  | HreFoldOpenedEvent
+  | HreObjectiveInfoOpenedEvent
+  | HreLocationOpenedEvent
+  | HreMissionCompletedEvent
   | AppInstallGuideOpenedEvent
   | AppInstallPromptAnsweredEvent
   | AppInstallCardDismissedEvent

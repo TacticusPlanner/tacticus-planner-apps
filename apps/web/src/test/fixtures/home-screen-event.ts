@@ -10,8 +10,8 @@ import { hseDefinitionConfig } from "./home-screen-event-scoring"
 import scoring from "./home-screen-event-scoring.json"
 import type { HseFixtureId } from "./home-screen-event-scoring"
 
-/** An HSE definition as the catalog serves it: its fixture `config.hse`, or no config (Against the
- * Tide). */
+/** An HSE definition as the catalog serves it: its fixture `config.hse`, or no config (e.g.
+ * `hse-unscored`, a stand-in for an event the catalog has no scoring for). */
 export function homeScreenEventDefinition(id: string) {
   return {
     type: "HomeScreenEvent",
@@ -36,7 +36,7 @@ const homeScreenEventDefinitions = new Map(
     "hse-faction-focus",
     "hse-global-operation-imperator",
     "hse-arsenal-of-war",
-    "hse-defeat-waves",
+    "hse-unscored",
     "hse-squig-smash",
     "hse-for-the-emperor",
     "hse-training-rush",

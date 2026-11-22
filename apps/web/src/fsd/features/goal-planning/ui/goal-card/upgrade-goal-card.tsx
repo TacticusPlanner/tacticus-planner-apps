@@ -126,7 +126,7 @@ export function UpgradeGoalCard({
             )
           })
         ) : (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {t("goals.create.upgrade.empty")}
           </p>
         )}
@@ -145,7 +145,7 @@ export function UpgradeGoalCard({
               const upgrade = upgradesById.get(id)
               return (
                 <UpgradeIcon
-                  className="size-6 shrink-0"
+                  className="shrink-0"
                   crafted={upgrade?.crafted}
                   id={id}
                   rarity={upgrade?.rarity}

@@ -8,23 +8,28 @@ import { EntityIcon } from "@/shared/ui"
 import type { HreMission, HreObjective } from "@/entities/hre-mission"
 import { missionStatus } from "@/entities/hre-mission"
 import { missionName } from "./mission-name"
-import { ObjectiveTips } from "./objective-tips"
+import { ObjectiveGuidance } from "./objective-guidance"
+import { ReserveTip } from "./reserve-tip"
 
 /**
- * Every mission with both objectives. Each one expands to its tips; done missions carry a check and
- * locked ones a lock. `current` null lists them read-only for a preview.
+ * Every mission with both objectives. Each one expands to each objective's game hint and our tip,
+ * then the tokens to keep for a later mission; done missions carry a check and locked ones a lock.
+ * `current` null lists them read-only for a preview.
  */
 export function MissionList({
   current,
   missions,
   objectiveText,
   objectiveIcon,
+  objectiveHint,
 }: {
   current: number | null
   missions: readonly HreMission[]
   objectiveText: (objective: HreObjective) => string
   /** The game glyph shown before each objective. */
   objectiveIcon?: (objective: HreObjective) => string | undefined
+  /** The game's hint for an objective. */
+  objectiveHint?: (objective: HreObjective) => string | undefined
 }) {
   const { t } = useTranslation("hre")
   return (
@@ -52,8 +57,9 @@ export function MissionList({
                       className="flex items-center gap-1.5"
                     >
                       <EntityIcon
+                        size="inline"
                         alt=""
-                        className="size-4 shrink-0"
+                        className="shrink-0"
                         src={objectiveIcon?.(objective)}
                       />
                       {objectiveText(objective)}
@@ -68,18 +74,26 @@ export function MissionList({
                   />
                 ) : status === "locked" ? (
                   <EntityIcon
+                    size="inline"
                     alt={t("tracker.locked")}
-                    className="size-4 shrink-0"
+                    className="shrink-0"
                     src={lockIcon()}
                   />
                 ) : null}
               </summary>
-              <div className="mt-2 pl-24">
-                <ObjectiveTips
+              <div className="mt-2 space-y-2 pl-24">
+                {mission.objectives.map((objective, index) => (
+                  <ObjectiveGuidance
+                    hint={objectiveHint?.(objective)}
+                    key={index}
+                    objective={objective}
+                    testId={`${testId}-guidance-${index}`}
+                  />
+                ))}
+                <ReserveTip
                   missionNumber={mission.number}
                   missions={missions}
-                  objectives={mission.objectives}
-                  testId={`${testId}-tips`}
+                  testId={`${testId}-reserve`}
                 />
               </div>
             </details>

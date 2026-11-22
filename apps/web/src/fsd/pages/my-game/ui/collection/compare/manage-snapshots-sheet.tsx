@@ -7,6 +7,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import {
   Sheet,
+  SheetBody,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -31,12 +32,7 @@ import type {
 } from "@/entities/roster-snapshot"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { formatRelativeTime } from "@/shared/lib"
-import {
-  ResponsiveDialog,
-  ResponsiveDialogFooter,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
-} from "@/shared/ui"
+import { ConfirmationDialog } from "@/shared/ui"
 
 import { canKeep, manageSections } from "../../../model/manage-snapshots"
 import { isValidSnapshotRename } from "../../../model/take-snapshot"
@@ -64,7 +60,18 @@ export function ManageSnapshotsSheet({
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent data-testid="manage-snapshots-sheet">
+        <SheetContent
+          className="sm:data-[side=right]:max-w-md"
+          data-testid="manage-snapshots-sheet"
+          onOpenAutoFocus={(event) => {
+            // Focus the sheet itself, not the first row's keep button, which would show a focus
+            // ring on a phone for no reason.
+            event.preventDefault()
+            if (event.currentTarget instanceof HTMLElement) {
+              event.currentTarget.focus()
+            }
+          }}
+        >
           <SheetHeader>
             <SheetTitle>
               {t("myGame.collection.snapshots.manageTitle")}
@@ -78,7 +85,7 @@ export function ManageSnapshotsSheet({
                 : null}
             </SheetDescription>
           </SheetHeader>
-          <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-4">
+          <SheetBody className="flex flex-col gap-6">
             <section data-testid="manage-snapshots-manual">
               {list && sections.manual.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
@@ -113,7 +120,7 @@ export function ManageSnapshotsSheet({
                 ) : null}
               </div>
               {list ? (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {t("myGame.collection.snapshots.autoHint", {
                     limit: list.autoLimit,
                   })}
@@ -130,7 +137,7 @@ export function ManageSnapshotsSheet({
                 ))}
               </ul>
             </section>
-          </div>
+          </SheetBody>
         </SheetContent>
       </Sheet>
       <DeleteSnapshotDialog
@@ -299,49 +306,29 @@ function DeleteSnapshotDialog({
   const { captureEvent } = useAnalyticsActions()
 
   return (
-    <ResponsiveDialog
-      open={snapshot !== null}
-      onOpenChange={(open) => {
-        if (!open) onClose()
-      }}
-      desktopClassName="sm:max-w-md"
+    <ConfirmationDialog
+      cancelLabel={t("myGame.collection.snapshots.cancel")}
+      confirmLabel={t("myGame.collection.snapshots.deleteConfirm")}
+      confirmTestId="delete-snapshot-confirm"
       data-testid="delete-snapshot-dialog"
-    >
-      <ResponsiveDialogHeader>
-        <ResponsiveDialogTitle>
-          {t("myGame.collection.snapshots.deleteTitle", {
-            name: snapshot
-              ? snapshotLabel(snapshot, i18n.language, labels)
-              : "",
-          })}
-        </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
-          {t("myGame.collection.snapshots.deleteBody")}
-        </p>
-      </ResponsiveDialogHeader>
-      <ResponsiveDialogFooter>
-        <Button variant="outline" onClick={onClose}>
-          {t("myGame.collection.snapshots.cancel")}
-        </Button>
-        <Button
-          variant="destructive"
-          disabled={remove.isPending}
-          onClick={() => {
-            if (!snapshot) return
-            remove.mutate(snapshot.id, {
-              onSuccess: () => {
-                captureEvent({ type: "roster_snapshot_deleted" })
-                onClose()
-              },
-              onError: () =>
-                toast.error(t("myGame.collection.snapshots.deleteFailed")),
-            })
-          }}
-          data-testid="delete-snapshot-confirm"
-        >
-          {t("myGame.collection.snapshots.deleteConfirm")}
-        </Button>
-      </ResponsiveDialogFooter>
-    </ResponsiveDialog>
+      description={t("myGame.collection.snapshots.deleteBody")}
+      onCancel={onClose}
+      onConfirm={() => {
+        if (!snapshot) return
+        remove.mutate(snapshot.id, {
+          onSuccess: () => {
+            captureEvent({ type: "roster_snapshot_deleted" })
+            onClose()
+          },
+          onError: () =>
+            toast.error(t("myGame.collection.snapshots.deleteFailed")),
+        })
+      }}
+      open={snapshot !== null}
+      pending={remove.isPending}
+      title={t("myGame.collection.snapshots.deleteTitle", {
+        name: snapshot ? snapshotLabel(snapshot, i18n.language, labels) : "",
+      })}
+    />
   )
 }

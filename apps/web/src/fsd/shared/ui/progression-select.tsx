@@ -71,7 +71,7 @@ export function ProgressionBadge({
 
   return (
     <span className="inline-flex items-center gap-1.5">
-      <RarityIcon rarity={rarity} className={large ? "size-6" : "size-4"} />
+      <RarityIcon rarity={rarity} size={large ? "row" : "inline"} />
       {visual.kind === "none" ? null : visual.kind === "wings" ? (
         <EntityIcon
           src={visual.icon}
@@ -82,10 +82,10 @@ export function ProgressionBadge({
         <span className="inline-flex items-center gap-0.5">
           {Array.from({ length: visual.count }, (_, index) => (
             <EntityIcon
+              size="inline"
               key={index}
               src={visual.icon}
               alt={index === 0 ? starsLabel : ""}
-              className={large ? "size-5" : "size-3.5"}
             />
           ))}
         </span>

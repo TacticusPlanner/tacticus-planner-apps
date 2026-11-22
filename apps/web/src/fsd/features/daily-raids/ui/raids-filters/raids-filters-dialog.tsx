@@ -1,20 +1,25 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { X } from "lucide-react"
 import {
+  campaignIcon,
   factionIcon,
+  gameMenuIcon,
   onslaughtAllianceIcon,
   rarityIcon,
   traitIcon,
 } from "@workspace/game-catalog"
-import { factionOrder } from "@workspace/game-domain"
+import { campaignIdSchema, factionOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   EntityIcon,
   MultiSelect,
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -30,7 +35,10 @@ import {
   RAIDS_SLOT_OPTIONS,
   RAIDS_UPGRADE_RARITIES,
 } from "../../model/raids-filters/raids-filters.domain"
-import type { RaidsFilters } from "../../model/raids-filters/raids-filters.domain"
+import type {
+  RaidsCampaignType,
+  RaidsFilters,
+} from "../../model/raids-filters/raids-filters.domain"
 import {
   pruneFactions,
   toFactionAlliance,
@@ -39,6 +47,18 @@ import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { LabeledField, Section } from "./raids-filters-fields"
 
 const ALLIANCES = ["Imperial", "Chaos", "Xenos"] as const
+
+// Each campaign type by its game icon: storyline tiers by Indomitus' (where Normal and Early
+// nodes live), an event's Standard tier by the campaign event mode, Extremis by the first event's.
+const indomitus = campaignIdSchema.parse("campaign1")
+const campaignTypeIcons: Record<RaidsCampaignType, string | undefined> = {
+  Elite: campaignIcon(campaignIdSchema.parse("elite1"), "Elite"),
+  Extremis: campaignIcon(campaignIdSchema.parse("eventCampaign1"), "Extremis"),
+  Standard: gameMenuIcon("campaignEvent"),
+  Mirror: campaignIcon(campaignIdSchema.parse("mirror1"), "Mirror"),
+  Normal: campaignIcon(indomitus, "Standard"),
+  Early: campaignIcon(indomitus, "Standard"),
+}
 
 const noFactionAlliance: ReadonlyMap<string, string> = new Map()
 
@@ -64,6 +84,7 @@ export function RaidsFiltersDialog({
     "progression",
     "traits",
   ])
+  const isMobile = useIsMobile()
   const [applied, setApplied] = useRaidsFilters()
   const [draft, setDraft] = useState<RaidsFilters>(applied)
   // The option lists fill in once each dataset is read; the dialog has no loading state of its own.
@@ -83,7 +104,7 @@ export function RaidsFiltersDialog({
         icon: (
           <EntityIcon
             alt=""
-            className="h-5 w-auto"
+            size="inline"
             src={onslaughtAllianceIcon(alliance)}
           />
         ),
@@ -109,9 +130,7 @@ export function RaidsFiltersDialog({
       .map((faction) => ({
         value: faction,
         label: t(`factions:${faction}`, { defaultValue: faction }),
-        icon: (
-          <EntityIcon alt="" className="size-5" src={factionIcon(faction)} />
-        ),
+        icon: <EntityIcon size="inline" alt="" src={factionIcon(faction)} />,
       }))
   const alliesFactionOptions = factionOptions(draft.alliesAlliances)
   const enemiesFactionOptions = factionOptions(draft.enemiesAlliances)
@@ -131,7 +150,7 @@ export function RaidsFiltersDialog({
         .map((trait) => ({
           value: trait,
           label: t(`traits:${trait}`, { defaultValue: humanizeId(trait) }),
-          icon: <EntityIcon alt="" className="size-5" src={traitIcon(trait)} />,
+          icon: <EntityIcon size="inline" alt="" src={traitIcon(trait)} />,
         }))
         .toSorted((a, b) => a.label.localeCompare(b.label)),
     [battles, npcs, t]
@@ -146,6 +165,7 @@ export function RaidsFiltersDialog({
   const campaignTypeOptions = RAIDS_CAMPAIGN_TYPES.map((type) => ({
     value: type,
     label: t(`dailies:raidsFilters.campaignTypes.${type}`),
+    icon: <EntityIcon size="inline" alt="" src={campaignTypeIcons[type]} />,
   }))
   const slotOptions = RAIDS_SLOT_OPTIONS.map((slots) => ({
     value: slots,
@@ -154,7 +174,7 @@ export function RaidsFiltersDialog({
   const rarityOptions = RAIDS_UPGRADE_RARITIES.map((rarity) => ({
     value: rarity,
     label: t(`progression:rarities.${rarity}`, { defaultValue: rarity }),
-    icon: <EntityIcon alt="" className="size-5" src={rarityIcon(rarity)} />,
+    icon: <EntityIcon size="inline" alt="" src={rarityIcon(rarity)} />,
   }))
 
   const loading = battles === undefined
@@ -192,10 +212,26 @@ export function RaidsFiltersDialog({
   })
 
   const close = () => onOpenChange(false)
+  // A third, secondary button: in the footer at the left on desktop, at the top of the body on a
+  // phone so the footer keeps one row (ui-style-guide rule 8).
+  const clearButton = (
+    <Button
+      className="max-md:self-start md:mr-auto"
+      data-testid="raids-filters-reset"
+      onClick={() => {
+        setApplied(emptyRaidsFilters)
+        close()
+      }}
+      variant="ghost"
+    >
+      <X data-icon="inline-start" />
+      {t("dailies:raidsFilters.actions.reset")}
+    </Button>
+  )
 
   return (
     <ResponsiveDialog
-      contentClassName="sm:max-w-3xl"
+      width="form"
       data-testid="raids-filters-dialog"
       onOpenChange={onOpenChange}
       open={open}
@@ -204,13 +240,17 @@ export function RaidsFiltersDialog({
         <ResponsiveDialogTitle>
           {t("dailies:raidsFilters.title")}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
+        <ResponsiveDialogDescription>
           {t("dailies:raidsFilters.description")}
-        </p>
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-5 pt-2 pb-4">
+      <ResponsiveDialogBody className="gap-5">
+        {isMobile ? clearButton : null}
         <Section title={t("dailies:raidsFilters.sections.allies")}>
-          <LabeledField label={t("dailies:raidsFilters.fields.alliances")}>
+          <LabeledField
+            icon="alliance"
+            label={t("dailies:raidsFilters.fields.alliances")}
+          >
             <MultiSelect
               {...placeholders}
               data-testid="raids-filters-allies-alliances"
@@ -230,7 +270,10 @@ export function RaidsFiltersDialog({
               value={draft.alliesAlliances}
             />
           </LabeledField>
-          <LabeledField label={t("dailies:raidsFilters.fields.factions")}>
+          <LabeledField
+            icon="faction"
+            label={t("dailies:raidsFilters.fields.factions")}
+          >
             <MultiSelect
               {...placeholders}
               data-testid="raids-filters-allies-factions"
@@ -244,7 +287,10 @@ export function RaidsFiltersDialog({
         </Section>
 
         <Section title={t("dailies:raidsFilters.sections.enemies")}>
-          <LabeledField label={t("dailies:raidsFilters.fields.alliances")}>
+          <LabeledField
+            icon="alliance"
+            label={t("dailies:raidsFilters.fields.alliances")}
+          >
             <MultiSelect
               {...placeholders}
               data-testid="raids-filters-enemies-alliances"
@@ -264,7 +310,10 @@ export function RaidsFiltersDialog({
               value={draft.enemiesAlliances}
             />
           </LabeledField>
-          <LabeledField label={t("dailies:raidsFilters.fields.factions")}>
+          <LabeledField
+            icon="faction"
+            label={t("dailies:raidsFilters.fields.factions")}
+          >
             <MultiSelect
               {...placeholders}
               data-testid="raids-filters-enemies-factions"
@@ -277,6 +326,7 @@ export function RaidsFiltersDialog({
           </LabeledField>
           <LabeledField
             className="col-span-2"
+            icon="trait"
             label={t("dailies:raidsFilters.fields.enemyTraits")}
           >
             <MultiSelect
@@ -290,7 +340,10 @@ export function RaidsFiltersDialog({
               value={draft.enemiesTraits}
             />
           </LabeledField>
-          <LabeledField label={t("dailies:raidsFilters.fields.minEnemies")}>
+          <LabeledField
+            icon="enemies"
+            label={t("dailies:raidsFilters.fields.minEnemies")}
+          >
             <SearchableSelect
               {...placeholders}
               clearLabel={t("dailies:raidsFilters.placeholders.clear")}
@@ -303,7 +356,10 @@ export function RaidsFiltersDialog({
               value={draft.enemiesMin}
             />
           </LabeledField>
-          <LabeledField label={t("dailies:raidsFilters.fields.maxEnemies")}>
+          <LabeledField
+            icon="enemies"
+            label={t("dailies:raidsFilters.fields.maxEnemies")}
+          >
             <SearchableSelect
               {...placeholders}
               clearLabel={t("dailies:raidsFilters.placeholders.clear")}
@@ -318,6 +374,7 @@ export function RaidsFiltersDialog({
           </LabeledField>
           <LabeledField
             className="col-span-2"
+            icon="enemies"
             label={t("dailies:raidsFilters.fields.enemyTypes")}
           >
             <MultiSelect
@@ -334,7 +391,10 @@ export function RaidsFiltersDialog({
         </Section>
 
         <Section title={t("dailies:raidsFilters.sections.locations")}>
-          <LabeledField label={t("dailies:raidsFilters.fields.campaignTypes")}>
+          <LabeledField
+            icon="campaignType"
+            label={t("dailies:raidsFilters.fields.campaignTypes")}
+          >
             <MultiSelect
               {...placeholders}
               data-testid="raids-filters-campaign-types"
@@ -347,7 +407,10 @@ export function RaidsFiltersDialog({
               value={draft.campaignTypes}
             />
           </LabeledField>
-          <LabeledField label={t("dailies:raidsFilters.fields.slots")}>
+          <LabeledField
+            icon="deploymentSlots"
+            label={t("dailies:raidsFilters.fields.slots")}
+          >
             <MultiSelect
               {...placeholders}
               data-testid="raids-filters-slots"
@@ -361,7 +424,10 @@ export function RaidsFiltersDialog({
         </Section>
 
         <Section title={t("dailies:raidsFilters.sections.upgrades")}>
-          <LabeledField label={t("dailies:raidsFilters.fields.rarity")}>
+          <LabeledField
+            icon="rarity"
+            label={t("dailies:raidsFilters.fields.rarity")}
+          >
             <MultiSelect<Rarity>
               {...placeholders}
               data-testid="raids-filters-rarities"
@@ -374,23 +440,14 @@ export function RaidsFiltersDialog({
           </LabeledField>
         </Section>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="border-t">
+      <ResponsiveDialogFooter>
+        {isMobile ? null : clearButton}
         <Button
           data-testid="raids-filters-close"
           onClick={close}
           variant="outline"
         >
-          {t("dailies:raidsFilters.actions.close")}
-        </Button>
-        <Button
-          data-testid="raids-filters-reset"
-          onClick={() => {
-            setApplied(emptyRaidsFilters)
-            close()
-          }}
-          variant="outline"
-        >
-          {t("dailies:raidsFilters.actions.reset")}
+          {t("dailies:raidsFilters.actions.cancel")}
         </Button>
         <Button
           data-testid="raids-filters-apply"

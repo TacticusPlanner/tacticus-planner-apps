@@ -334,7 +334,7 @@ describe("GoalRowActions", () => {
     const field = within(dialog).getByRole("spinbutton", {
       name: "Priority (1–4)",
     })
-    const move = within(dialog).getByRole("button", { name: "Move" })
+    const move = within(dialog).getByRole("button", { name: "Move goal" })
     // Prefilled with the current priority, which is not a move.
     expect(field).toHaveValue(3)
     expect(move).toBeDisabled()

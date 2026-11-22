@@ -142,14 +142,15 @@ function PriorityOption({
           title={`${name} · ${t(`goals.create.goalTypes.${occupant.goalType}`)}`}
         >
           <GoalUnitIcon
-            className="size-5"
+            size="inline"
             entityId={occupant.entityId}
             entityType={occupant.entityType}
             name={name}
           />
           <EntityIcon
+            size="inline"
             alt={t(`goals.create.goalTypes.${occupant.goalType}`)}
-            className="size-5"
+
             src={goalTypeIcon(occupant.goalType, occupant.entityType)}
           />
         </span>

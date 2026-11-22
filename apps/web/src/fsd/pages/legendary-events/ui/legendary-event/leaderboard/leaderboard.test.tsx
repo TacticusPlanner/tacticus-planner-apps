@@ -173,10 +173,25 @@ const objectivesCount = (entry: HTMLElement) =>
       .getByTestId("leaderboard-objectives")
       .textContent.replaceAll(/\D/g, "")
   )
-const chip = (key: string) =>
-  screen
+/** The filters live in the Filters dialog: open it (once) before reaching a filter. */
+const openFilters = () => {
+  if (!screen.queryByTestId("leaderboard-filters-panel"))
+    fireEvent.click(screen.getByRole("button", { name: /^Filters/ }))
+}
+const filter = (testId: string) => {
+  openFilters()
+  return screen.getByTestId(testId)
+}
+const filterSwitch = (name: string) => {
+  openFilters()
+  return screen.getByRole("switch", { name })
+}
+const chip = (key: string) => {
+  openFilters()
+  return screen
     .getAllByTestId("leaderboard-objective-chip")
     .find((element) => element.dataset.objective === key)!
+}
 const flyingKey = objectiveFilterKey({
   kind: "Trait",
   target: "Flying",
@@ -363,7 +378,7 @@ describe("LeaderboardSection", () => {
 
   it("turns Deduct scored points off to show and order by points per battle", () => {
     renderLeaderboard()
-    const toggle = screen.getByTestId("leaderboard-deduct-scored")
+    const toggle = filterSwitch("Deduct scored points")
     expect(toggle).toHaveAttribute("aria-checked", "true")
 
     act(() => {
@@ -385,19 +400,30 @@ describe("LeaderboardSection", () => {
 
   it("hides locked units with Only unlocked", () => {
     renderLeaderboard()
-    act(() => {
-      fireEvent.click(screen.getByTestId("leaderboard-only-unlocked"))
-    })
+    fireEvent.click(filterSwitch("Only unlocked"))
     expect(units()).toEqual(["bloodDante", "ultraCalgar"])
   })
 
   it("shows the no-unlocked body on a lane none of the owned units can play", () => {
     renderLeaderboard({ laneId: "beta" })
-    act(() => {
-      fireEvent.click(screen.getByTestId("leaderboard-only-unlocked"))
-    })
+    fireEvent.click(filterSwitch("Only unlocked"))
     expect(rows()).toHaveLength(0)
     expect(screen.getByTestId("leaderboard-no-unlocked")).toBeInTheDocument()
+
+    act(() => {
+      fireEvent.click(
+        within(screen.getByTestId("leaderboard-no-unlocked")).getByRole(
+          "button",
+          // The Filters dialog is still open, so the page behind it is aria-hidden.
+          { name: "Clear filters", hidden: true }
+        )
+      )
+    })
+    expect(rows().length).toBeGreaterThan(0)
+    expect(filterSwitch("Only unlocked")).toHaveAttribute(
+      "aria-checked",
+      "false"
+    )
   })
 
   it("keeps only the units the lane's teams use with Only in my teams", () => {
@@ -408,7 +434,7 @@ describe("LeaderboardSection", () => {
         gamma: new Set(),
       },
     })
-    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    openFilters()
     act(() => {
       fireEvent.click(screen.getByRole("switch", { name: "Only in my teams" }))
     })
@@ -424,7 +450,7 @@ describe("LeaderboardSection", () => {
         gamma: new Set(),
       },
     })
-    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    openFilters()
     act(() => {
       fireEvent.click(screen.getByRole("switch", { name: "Only in my teams" }))
     })
@@ -436,7 +462,7 @@ describe("LeaderboardSection", () => {
 
   it("disables Only in my teams while the plan is unavailable", () => {
     renderLeaderboard()
-    fireEvent.click(screen.getByRole("button", { name: "Filters" }))
+    openFilters()
     expect(
       screen.getByRole("switch", { name: "Only in my teams" })
     ).toBeDisabled()
@@ -445,16 +471,12 @@ describe("LeaderboardSection", () => {
   it("narrows the rows to units satisfying every selected objective", () => {
     renderLeaderboard()
     const before = rows().length
-    act(() => {
-      fireEvent.click(chip(flyingKey))
-    })
+    fireEvent.click(chip(flyingKey))
     expect(rows().length).toBeLessThan(before)
     expect(units()).toContain("bloodDante")
     expect(chip(flyingKey)).toHaveAttribute("data-state", "on")
 
-    act(() => {
-      fireEvent.click(chip(noResilientKey))
-    })
+    fireEvent.click(chip(noResilientKey))
     expect(units()).toContain("bloodDante")
     for (const entry of rows()) {
       const met = within(entry)
@@ -468,12 +490,8 @@ describe("LeaderboardSection", () => {
   it("shows the empty body with a clear action when no unit matches", () => {
     renderLeaderboard()
     // No fixture unit both flies and deals Eviscerate damage.
-    act(() => {
-      fireEvent.click(chip(flyingKey))
-    })
-    act(() => {
-      fireEvent.click(chip(eviscerateKey))
-    })
+    fireEvent.click(chip(flyingKey))
+    fireEvent.click(chip(eviscerateKey))
     expect(rows()).toHaveLength(0)
     expect(screen.getByTestId("leaderboard-none-match")).toHaveTextContent(
       "No unit satisfies these objectives."
@@ -492,9 +510,7 @@ describe("LeaderboardSection", () => {
 
   it("marks a selected objective chip as pressed with the thick primary border and tint", () => {
     renderLeaderboard()
-    act(() => {
-      fireEvent.click(chip(flyingKey))
-    })
+    fireEvent.click(chip(flyingKey))
     expect(chip(flyingKey)).toHaveAttribute("aria-pressed", "true")
     expect(chip(flyingKey)).toHaveClass(
       "data-[state=on]:border-2",
@@ -516,7 +532,7 @@ describe("LeaderboardSection", () => {
     expect(
       screen.getByTestId("leaderboard-roster-not-synced")
     ).toHaveTextContent("Your roster hasn't synced yet")
-    expect(screen.getByTestId("leaderboard-only-unlocked")).toBeDisabled()
+    expect(filterSwitch("Only unlocked")).toBeDisabled()
     expect(screen.queryAllByTestId("leaderboard-locked")).toHaveLength(0)
     expect(screen.queryAllByTestId("leaderboard-rank")).toHaveLength(0)
     expect(rows().every((entry) => entry.dataset.ownership === "unknown")).toBe(
@@ -550,6 +566,7 @@ describe("LeaderboardSection", () => {
 
   it("lists one unlabeled chip row for the lane, each chip with its cleared count", () => {
     renderLeaderboard()
+    openFilters()
     expect(screen.getAllByTestId("leaderboard-objective-group")).toHaveLength(1)
     expect(screen.queryByTestId("leaderboard-objective-group-label")).toBeNull()
     expect(
@@ -601,9 +618,7 @@ describe("LeaderboardSection", () => {
       within(dante).getByTestId("leaderboard-objectives")
     ).toHaveTextContent("Objectives: 2")
 
-    act(() => {
-      fireEvent.click(screen.getByTestId("leaderboard-deduct-scored"))
-    })
+    fireEvent.click(filterSwitch("Deduct scored points"))
     expect(within(dante).getByTestId("leaderboard-points")).toHaveTextContent(
       "152 per battle"
     )
@@ -668,21 +683,21 @@ describe("LeaderboardSection", () => {
 
     it("disables the Goals Preview switch with the reason", () => {
       renderLeaderboard({ goals: { ...noGoals, availability: "failed" } })
-      expect(screen.getByTestId("leaderboard-goals-preview")).toBeDisabled()
-      expect(
-        screen.getByTestId("leaderboard-goals-preview-hint")
-      ).toHaveTextContent("Goals unavailable")
+      expect(filterSwitch("Goals preview")).toBeDisabled()
+      expect(filter("leaderboard-goals-preview-hint")).toHaveTextContent(
+        "Goals unavailable"
+      )
       cleanupRender()
       renderLeaderboard()
-      expect(
-        screen.getByTestId("leaderboard-goals-preview-hint")
-      ).toHaveTextContent("No active goals for this event's units")
+      expect(filter("leaderboard-goals-preview-hint")).toHaveTextContent(
+        "No active goals for this event's units"
+      )
       cleanupRender()
       renderLeaderboard({ goals: { ...noGoals, availability: "noRoster" } })
-      expect(screen.getByTestId("leaderboard-goals-preview")).toBeDisabled()
-      expect(
-        screen.getByTestId("leaderboard-goals-preview-hint")
-      ).toHaveTextContent("Sync your roster to preview goals")
+      expect(filterSwitch("Goals preview")).toBeDisabled()
+      expect(filter("leaderboard-goals-preview-hint")).toHaveTextContent(
+        "Sync your roster to preview goals"
+      )
     })
 
     it("turns Goals Preview on through the page", () => {
@@ -690,7 +705,7 @@ describe("LeaderboardSection", () => {
       renderLeaderboard({
         goals: { ...noGoals, availability: "ready", onPreviewChange },
       })
-      fireEvent.click(screen.getByTestId("leaderboard-goals-preview"))
+      fireEvent.click(filterSwitch("Goals preview"))
       expect(onPreviewChange).toHaveBeenCalledWith(true)
     })
   })

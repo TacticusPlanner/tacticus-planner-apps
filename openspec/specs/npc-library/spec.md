@@ -47,11 +47,11 @@ The page SHALL list only records whose served `kind` is `unit`. Records with `ki
 #### Scenario: NPC with only all-zero variations is not listed
 
 - **WHEN** `genesDecoy` has `kind` `unit` and every stat row is all zeros and it is the only variation of its group
-- **THEN** the group is not listed and `/library/npcs/decoy` is canonicalized to the first listed NPC per the shared Library route contract
+- **THEN** the group is not listed and `/library/npcs/decoy` is replaced with the list at `/library/npcs`
 
 ### Requirement: The route carries the NPC group and the query carries variation and level
 
-The page SHALL use `/library/npcs/{groupId}` as the entity route under the shared Library route contract, with `variation` (a variation id) and `level` (a zero-based integer index into the selected variation's served stat ladder, in served order) as secondary query parameters. Opening a URL SHALL restore all three. Selecting a different NPC SHALL navigate to that group's URL and drop `variation` and `level`. Changing the variation SHALL replace `variation` and drop `level`. Changing the level SHALL replace `level`. Browser back/forward SHALL restore the selection encoded in the URL reached.
+The page SHALL use `/library/npcs/{groupId}` as the entity route under the shared Library route contract, with `variation` (a variation id) and `level` (a zero-based integer index into the selected variation's served stat ladder, in served order) as secondary query parameters. Opening a URL SHALL restore all three. `/library/npcs` SHALL show the NPC list, and an unknown group id SHALL be replaced with it. Opening a different NPC (from a tile, or with Previous / Next on an NPC's page) SHALL navigate to that group's URL and drop `variation` and `level`. Changing the variation SHALL replace `variation` and drop `level`. Changing the level SHALL replace `level`. Browser back/forward SHALL restore the selection encoded in the URL reached.
 
 When `variation` is absent or names a variation that is not in the selected group (or is unavailable), the page SHALL select the **default variation**: the group's available variation whose id carries no mode suffix (`necroNpcWarden` over `necroBossWardenLHE`), determined as the available variation whose id is the shortest, with ties broken by served order; when `level` is absent or out of range for the selected variation, the page SHALL select the first level in display order. A default selection SHALL NOT be written back to the URL until the user changes it.
 
@@ -62,7 +62,7 @@ When `variation` is absent or names a variation that is not in the selected grou
 
 #### Scenario: Selecting an NPC resets variation and level
 
-- **WHEN** a user viewing `/library/npcs/makhotep?variation=necroBossWardenLHE&level=3` selects `Imospekh`
+- **WHEN** a user viewing `/library/npcs/makhotep?variation=necroBossWardenLHE&level=3` presses Next and `Imospekh` follows `Makhotep` in the list
 - **THEN** the URL becomes `/library/npcs/imospekh` and the default variation and first level are shown
 
 #### Scenario: Changing variation resets level
@@ -84,7 +84,9 @@ When `variation` is absent or names a variation that is not in the selected grou
 
 The page SHALL offer a name search plus faction, alliance, attack-type, game-mode, damage-type and trait
 filters. The name search SHALL remain visible at all times and SHALL NOT be counted as a filter; the
-remaining controls MAY be collapsed behind a toggle that reports how many are active. Faction, alliance,
+remaining controls SHALL sit, each with a visible label, in the shared Filters panel (a popover on
+desktop, a bottom sheet on mobile) behind a Filters button whose badge reports how many are active; the
+panel ends with Clear filters and Done. Faction, alliance,
 attack type and game mode SHALL be single-select; damage type and trait SHALL be multi-select, and each
 multi-select SHALL offer its own clear control that resets only that control. Filter options SHALL be
 derived from the listed catalog, and an option whose id is blank SHALL NOT be offered. The game-mode
@@ -366,10 +368,10 @@ Each Variation option SHALL show a human-readable mode label derived from the va
 
 The page SHALL distinguish: the dataset still loading (loading state, no redirect), the dataset failed to load (failure state), the dataset loaded with no listable NPC (no-records state on the collection URL), filters matching no NPC (no-matching-NPCs state with the list), and the selected group having no matching variation under the active filters (no-matching-variation state in place of the detail). It SHALL never render a stat card with a `0` value for an unavailable variation, because unavailable variations are not selectable. The encounters section SHALL separately distinguish its own data states without affecting the rest of the detail: `npc-encounters` loading (a placeholder in the section), absent or failed (a short "encounter data unavailable" note), and present with no record for the variation (the no-recorded-encounters state).
 
-#### Scenario: Unknown group id is canonicalized
+#### Scenario: Unknown group id goes back to the list
 
 - **WHEN** a user opens `/library/npcs/not-a-real-npc` after the dataset has loaded
-- **THEN** the URL is replaced with `/library/npcs/{firstListedGroupId}` per the shared Library route contract, and no not-found state is shown
+- **THEN** the URL is replaced with `/library/npcs`, the NPC list is shown, and no not-found state is shown
 
 #### Scenario: Selected NPC has no matching variation
 
@@ -387,38 +389,33 @@ The page SHALL distinguish: the dataset still loading (loading state, no redirec
 - **WHEN** `npc-encounters` is still loading and an NPC is selected
 - **THEN** the rest of the detail renders and the encounters section shows a placeholder
 
-### Requirement: Desktop and mobile present distinct layouts
+### Requirement: The list opens each NPC on its own page
 
-On desktop (≥ 768px), the page SHALL show a two-column layout with the filter controls stacked at the top of the left column above the NPC list, remaining visible while the list scrolls: the NPC list (portrait tiles with localized name and faction icon, selected tile highlighted) beside the detail panel, with the Variation and Level selectors inside the detail panel header. On mobile (< 768px), the page SHALL replace the tile list with a searchable combobox (trigger shows the selected NPC's portrait and name; list shows portrait, name, and faction) above the filter controls, and SHALL stack the detail below with the Variation and Level selectors as full-width controls; stat cards SHALL use the two-column card grid and long labels SHALL truncate without overflowing the viewport. On both, every selector SHALL be keyboard navigable, SHALL scroll the selected option into view when opened, and SHALL keep the selection when closed without a choice.
+`/library/npcs` SHALL show the page toolbar (name search and Filters) and the NPC list as portrait tiles with the localized name and faction icon, wrapping to the width of the page, on every viewport. Each tile SHALL be a link to that NPC's page. An NPC's page (`/library/npcs/{groupId}`) SHALL show the shared Library unit top bar (Back to NPCs, the breadcrumb on desktop, and Previous / Next with "N of M"), then the Filters button, then the detail at full width with the Variation and Level selectors in its header. Previous / Next SHALL step through the list as filtered when the NPC was opened (search and filters kept while moving between the list and an NPC's page), or through every NPC when the filters leave the current one out. Filters stay on an NPC's page because they also narrow its variations and encounter rows; the name search does not. On mobile the detail SHALL stack, with the Variation and Level selectors as full-width controls; stat cards SHALL use the two-column card grid and long labels SHALL truncate without overflowing the viewport. Every selector SHALL be keyboard navigable, SHALL scroll the selected option into view when opened, and SHALL keep the selection when closed without a choice.
 
-#### Scenario: Desktop layout
+#### Scenario: Opening an NPC from the list
 
-- **WHEN** the viewport is 1280px wide and `Makhotep` is selected
-- **THEN** the NPC tile list is beside the detail panel and the Variation and Level selectors sit in the detail header
+- **WHEN** the user opens `/library/npcs` and activates the `Makhotep` tile
+- **THEN** the URL becomes `/library/npcs/makhotep`, the list is replaced by Makhotep's page, and the top bar shows Back to NPCs and its position in the list
+
+#### Scenario: Previous / Next follow the filtered list
+
+- **WHEN** the user searches `term` on the list and opens `Termagant`
+- **THEN** its page shows "1 of 1" and Previous and Next are disabled
 
 #### Scenario: Mobile layout
 
-- **WHEN** the viewport is 390px wide and `Makhotep` is selected
-- **THEN** a combobox trigger showing Makhotep's portrait and name is above the detail, no tile list is rendered, and no horizontal scrolling occurs
-
-#### Scenario: Mobile combobox search
-
-- **WHEN** on mobile the user opens the combobox and types `makh`
-- **THEN** the list narrows to `Makhotep` and selecting it navigates to `/library/npcs/makhotep`
+- **WHEN** the viewport is 390px wide
+- **THEN** `/library/npcs` shows the same tile list as desktop, an NPC's page stacks its detail under the top bar, and no horizontal scrolling occurs
 
 ### Requirement: The page has an onboarding tour covering both platforms
 
-The page SHALL register a Joyride tour with desktop steps for the filter bar, the NPC list, the Variation and Level selectors, the stats/attacks area, and the encounters section, and mobile steps for the combobox, the selectors, the stats area, and the encounters section. Step titles and content SHALL come from i18n.
+The page SHALL register a Joyride tour. On the list its steps SHALL cover the toolbar and the NPC tiles; on an NPC's page they SHALL cover the Variation and Level selectors, the stats/attacks area, and the encounters section. Desktop and mobile SHALL use the same steps. Step titles and content SHALL come from i18n.
 
-#### Scenario: Desktop tour targets exist
+#### Scenario: Tour targets exist
 
-- **WHEN** the desktop page renders with an NPC selected
-- **THEN** every desktop tour step's target selector matches an element
-
-#### Scenario: Mobile tour targets exist
-
-- **WHEN** the mobile page renders with an NPC selected
-- **THEN** every mobile tour step's target selector matches an element
+- **WHEN** the list or an NPC's page renders, on desktop or mobile
+- **THEN** every tour step's target selector matches an element
 
 ### Requirement: NPC names, factions, damage types, and traits are localized by id
 

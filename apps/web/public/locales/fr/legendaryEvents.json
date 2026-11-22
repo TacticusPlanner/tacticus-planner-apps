@@ -79,7 +79,7 @@
   "runInputs": {
     "button": "Saisies",
     "title": "Saisies par manche",
-    "description": "Missions et packs que le jeu ne signale pas pour la session en cours. Les missions se terminent dans l'ordre : indiquez combien sont terminées. Ils alimentent les prévisions de récompenses de la carte État de la session.",
+    "description": "Missions et packs que le jeu ne signale pas pour la session en cours.",
     "run": "Manche {{run}}",
     "phase": {
       "done": "Terminée",
@@ -195,7 +195,6 @@
   },
   "eventBoard": {
     "title": "Tableau de l'événement",
-    "description": "Les objectifs de chaque voie affichée, les unités qui conviennent à chacun et les équipes de la voie côte à côte. Choisissez des objectifs pour voir les unités qui les remplissent tous, ou une unité pour commencer une équipe avec elle.",
     "noTeam": "Aucune équipe",
     "cleared": "Rempli dans {{cleared}} combats sur {{total}}",
     "clearSelection": "Effacer la sélection",
@@ -274,7 +273,7 @@
     "noUnlocked": "Aucune de vos unités débloquées ne peut jouer dans cette voie.",
     "noneInTeams": "Vos équipes ici n’ont encore aucune unité.",
     "noneMatch": "Aucune unité ne remplit ces objectifs.",
-    "clearFilter": "Effacer le filtre",
+    "clearFilter": "Effacer les filtres",
     "rosterNotSynced": "Votre effectif n'est pas encore synchronisé : la possession, la rareté et le rang ne sont pas affichés.",
     "progressUnavailable": "Progression synchronisée indisponible : rien n'est compté comme marqué.",
     "loading": "Chargement des unités…",
@@ -284,8 +283,6 @@
       "notAllowedLabel": "{{lane}} : non autorisé",
       "laneFigure": "{{lane}} : {{points}}"
     },
-    "filters": "Filtres",
-    "filtersCount": "Filtres ({{count}})",
     "lanes": "Voies",
     "lanesAll": "Toutes les voies",
     "lanesCount": "{{count}} voies",
@@ -383,7 +380,7 @@
   },
   "teams": {
     "title": "Équipes",
-    "add": "Ajouter une équipe",
+    "add": "Créer une équipe",
     "empty": "Aucune équipe sur {{lane}} pour l'instant.",
     "loading": "Chargement des équipes…",
     "loadError": "Impossible de charger tes équipes.",
@@ -960,7 +957,6 @@
     },
     "search": {
       "label": "Rechercher des unités",
-      "placeholder": "Rechercher des unités",
       "clear": "Effacer la recherche"
     },
     "sort": {
@@ -1233,7 +1229,7 @@
       "modeLabel": "Vos équipes",
       "restoreAll": "Tout restaurer",
       "undo": "Annuler",
-      "add": "Ajouter une équipe",
+      "add": "Créer une équipe",
       "editTeam": "Modifier {{name}}",
       "lanesLabel": "Voies",
       "depthOf": "Manche {{run}} : {{depth}} combats sur {{battles}}"
@@ -1243,7 +1239,7 @@
     },
     "review": {
       "project": "Projet",
-      "newProject": "Nouveau projet",
+      "newProject": "Créer le projet",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Objectifs à créer",
       "teams": "Équipes",

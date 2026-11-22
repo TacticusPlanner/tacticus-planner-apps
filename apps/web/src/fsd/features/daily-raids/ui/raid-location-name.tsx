@@ -58,7 +58,7 @@ export function RaidLocationName({
 
   const icon =
     nodeOnly && lone && location?.icon ? (
-      <EntityIcon alt="" className="size-10 shrink-0" src={location.icon} />
+      <EntityIcon size="tile" alt="" className="shrink-0" src={location.icon} />
     ) : null
   const withIcon = (line: ReactNode) =>
     icon ? (

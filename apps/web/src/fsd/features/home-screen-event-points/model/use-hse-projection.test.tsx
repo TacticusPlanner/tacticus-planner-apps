@@ -100,7 +100,7 @@ beforeEach(async () => {
         "hse-global-operation-imperator",
         hseDefinitionConfig("hse-global-operation-imperator")
       ),
-      definition("hse-against-the-tide"),
+      definition("hse-unscored"),
     ],
   })
   spyOnStoreReads()
@@ -197,9 +197,9 @@ describe("useHseProjection", () => {
   })
 
   it("has no data for a definition without config.hse or unknown to the catalog", async () => {
-    expect(
-      (await settle(instance("hse-against-the-tide", "running"))).status
-    ).toBe("no-data")
+    expect((await settle(instance("hse-unscored", "running"))).status).toBe(
+      "no-data"
+    )
     expect((await settle(instance("hse-unknown", "running"))).status).toBe(
       "no-data"
     )

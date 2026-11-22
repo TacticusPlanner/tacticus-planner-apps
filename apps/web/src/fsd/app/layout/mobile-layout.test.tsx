@@ -40,7 +40,10 @@ vi.mock("@/shared/auth", () => ({
 
 // Mirrors desktop-layout.test.tsx's reasoning: nav-items.ts reads `isUiKitEnabled` from the real
 // `@/shared/config` module, which also calls `initReactI18next` at import time.
-vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
+vi.mock("@/shared/config", () => ({
+  appEnvironment: "production",
+  isUiKitEnabled: true,
+}))
 
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
 // The card's own rows are covered by the account-menu tests; here only the header's wiring matters.
@@ -198,7 +201,7 @@ describe("MobileBottomNav actions", () => {
     expect(sync.tagName).toBe("BUTTON")
     expect(createGoal.querySelector(".rounded-full")).toBeInTheDocument()
     expect(sync.querySelector(".rounded-full")).toBeInTheDocument()
-    expect(createGoal).toHaveTextContent("nav.addGoal")
+    expect(createGoal).toHaveTextContent("nav.createGoal")
     expect(sync).toHaveTextContent("nav.sync")
   })
 
@@ -234,7 +237,7 @@ describe("MobileBottomNav actions", () => {
     ).toEqual([
       "nav.home",
       "nav.goals",
-      "nav.addGoal",
+      "nav.createGoal",
       "nav.sync",
       "nav.dailies",
       "nav.menu",

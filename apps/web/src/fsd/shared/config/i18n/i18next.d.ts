@@ -60,12 +60,12 @@ declare module "i18next" {
       // with `npcAbilityTextGaps` listing the ids without one), loaded by `useRulesText`, which
       // names them as plain strings, so they are not listed here.
       npcTraitText: Record<string, unknown>
-      // Sorted ability ids whose English rules text summons a unit (generated with the rules text);
-      // read via `i18n.getResourceBundle` by the HRE team recommender.
-      npcAbilitySummoners: Record<string, unknown>
       // Mythic quest task templates (loca key -> template), generated from the datamine; read via
       // `i18n.getResource` — see the library character unit page.
       mythicQuestTasks: Record<string, string>
+      // HRE mission task hints (loca key -> the game's hint, objective sentence dropped), generated from
+      // the datamine; read via `i18n.getResource` — see the HRE tab's objective guidance.
+      hreTaskHints: Record<string, string>
       // Seasonal event mission game text, generated from the datamine: task templates by task name,
       // chain name templates by chain key, game-mode names; read via `i18n.getResource` — see the
       // event shop's Missions. `events` names a seasonal event by its event key (`November2026`), for

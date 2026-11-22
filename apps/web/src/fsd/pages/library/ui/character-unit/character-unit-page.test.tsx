@@ -420,9 +420,15 @@ describe("CharacterUnitPage", () => {
       "data-greyed",
       "true"
     )
-    expect(screen.getByTestId("unit-not-unlocked")).toHaveTextContent(
-      "Not unlocked. Values start at Uncommon 2★, Stone I."
-    )
+    const notUnlocked = screen.getByTestId("unit-not-unlocked")
+    expect(notUnlocked).toHaveTextContent("Not unlocked. Values start at")
+    // The starting values show as icons, named for assistive technology.
+    expect(
+      within(notUnlocked).getByRole("img", { name: "Uncommon 2★" })
+    ).toBeInTheDocument()
+    expect(
+      within(notUnlocked).getByRole("img", { name: "Stone I" })
+    ).toBeInTheDocument()
     const progress = screen.getByRole("progressbar", {
       name: "Shards towards unlocking",
     })
@@ -580,9 +586,14 @@ describe("CharacterUnitPage", () => {
     expect(screen.getByTestId("unit-portrait")).not.toHaveAttribute(
       "data-greyed"
     )
-    expect(screen.getByTestId("unit-showing-starting")).toHaveTextContent(
-      "Showing Uncommon 2★, Stone I, abilities level 1."
-    )
+    const showing = screen.getByTestId("unit-showing-starting")
+    expect(showing).toHaveTextContent("Showing 2··abilities level 1")
+    expect(
+      within(showing).getByRole("img", { name: "Uncommon 2★" })
+    ).toBeInTheDocument()
+    expect(
+      within(showing).getByRole("img", { name: "Stone I" })
+    ).toBeInTheDocument()
     expect(
       within(screen.getByTestId("unit-sign-in-banner")).getByRole("button", {
         name: "Sign in",
@@ -820,15 +831,16 @@ describe("CharacterUnitPage", () => {
       expect(first).toHaveTextContent(
         "Defeat 8 enemies that have the Emplacement trait with Abaddon in one battle"
       )
-      expect(
-        within(first)
-          .getAllByRole("listitem")
-          .map((chip) => chip.textContent)
-      ).toEqual([
-        "4 × Abaddon mythic shards",
-        "2 × Mythic Chaos ascension orb",
-        "1 × Mythic XP book",
+      // Icon and count on screen; each chip's button is named by the reward and its count (the name
+      // is also its tooltip), so a keyboard can reach it.
+      const chips = within(first).getAllByRole("listitem")
+      expect(chips).toHaveLength(3)
+      for (const name of [
+        "Abaddon mythic shards ×4",
+        "Mythic Chaos ascension orb ×2",
+        "Mythic XP book ×1",
       ])
+        expect(within(first).getByRole("button", { name })).toBeInTheDocument()
     })
 
     it("has no card for a character the dataset has no record for", async () => {
@@ -1132,9 +1144,9 @@ describe("CharacterUnitPage", () => {
     requestedNamespaces.length = 0
     const release = holdNamespaceLoads()
     await renderUnit("/library/characters/ultraTigurius")
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Tigurius"
-    )
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Tigurius" })
+    ).toBeInTheDocument()
     expect(
       screen.getByTestId("unit-ability-active-text-loading")
     ).toHaveTextContent("Loading rules text…")

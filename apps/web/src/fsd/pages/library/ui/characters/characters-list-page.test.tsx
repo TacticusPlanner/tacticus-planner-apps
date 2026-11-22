@@ -106,7 +106,11 @@ describe("CharactersListPage", () => {
     expect(screen.getByTestId("characters-no-matching")).toHaveTextContent(
       "No characters match your search."
     )
-    fireEvent.click(screen.getByRole("button", { name: "Clear search" }))
+    fireEvent.click(
+      within(screen.getByTestId("characters-no-matching")).getByRole("button", {
+        name: "Clear search",
+      })
+    )
     expect(screen.getByTestId("characters-list")).toBeInTheDocument()
   })
 

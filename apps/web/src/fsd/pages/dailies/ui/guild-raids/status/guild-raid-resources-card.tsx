@@ -52,7 +52,7 @@ function ResourceRow({
   return (
     <div className="flex flex-col gap-0.5" data-testid={testId}>
       <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
+        <EntityIcon size="inline" alt="" className="shrink-0" src={icon} />
         {label}
       </span>
       <span className="text-lg font-semibold">

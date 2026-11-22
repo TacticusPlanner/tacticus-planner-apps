@@ -146,7 +146,7 @@ describe("ProjectsWidget", () => {
     expect(screen.queryByTestId("home-projects-more")).not.toBeInTheDocument()
   })
 
-  it("shows the card's unit portraits at the widget size with +N", () => {
+  it("shows the card's unit portraits at the inline icon size with +N", () => {
     useHomeProjectsMock.mockReturnValue({
       status: "ready",
       projects: [project({ projectId: "p1" })],
@@ -172,7 +172,7 @@ describe("ProjectsWidget", () => {
     const portraits = screen.getByTestId("project-unit-portraits")
     const images = portraits.querySelectorAll("img")
     expect(images).toHaveLength(4)
-    expect(images[0]).toHaveClass("size-5")
+    expect(images[0]).toHaveClass("size-4", "pointer-coarse:size-5")
     expect(portraits).toHaveTextContent("+2")
   })
 

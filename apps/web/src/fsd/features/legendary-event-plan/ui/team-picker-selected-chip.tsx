@@ -31,8 +31,9 @@ export function SelectedChip({
       data-unit={unitId}
     >
       <EntityIcon
+        size="inline"
         alt=""
-        className="size-5 rounded-full"
+        className="rounded-full"
         src={characterIcon(unitId as UnitId)}
       />
       <span className="max-w-32 truncate">{label}</span>

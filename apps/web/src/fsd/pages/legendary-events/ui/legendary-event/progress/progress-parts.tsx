@@ -158,7 +158,7 @@ export function MarksLegend() {
           <span>{t("annotations.legend.stopHere")}</span>
         </li>
       </ul>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-sm text-muted-foreground">
         {t("annotations.legend.note")}
       </p>
     </div>

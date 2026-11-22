@@ -70,8 +70,9 @@ function EventPortrait({ eventId }: { eventId: string }) {
   const portrait = characterIcon(eventId as UnitId)
   return portrait ? (
     <EntityIcon
+      size="inline"
       alt=""
-      className="size-5 shrink-0 rounded-full object-cover"
+      className="shrink-0 rounded-full object-cover"
       src={portrait}
     />
   ) : (

@@ -106,7 +106,7 @@ Assumptions:
 
 ### Requirement: Suggest teams dialog
 
-Each lane's Teams section SHALL offer a **Suggest teams** button beside Add team, and in its empty state. It SHALL open a dialog on desktop and a bottom sheet on mobile. The dialog SHALL show the two toggles and the first three proposals, with **Show more** revealing up to ten. Each proposal SHALL show:
+Each lane's Teams section SHALL offer a **Suggest teams** button beside Create team, and in its empty state. It SHALL open a dialog on desktop and a bottom sheet on mobile. The dialog SHALL show the two toggles and the first three proposals, with **Show more** revealing up to ten. Each proposal SHALL show:
 
 - its members as portraits in order, each with its goal badge and locked styling, then its reserve, if any, with a dashed outline and a "Reserve" label;
 - its covered objectives as chips;

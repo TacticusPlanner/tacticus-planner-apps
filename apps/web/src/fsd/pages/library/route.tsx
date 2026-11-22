@@ -72,9 +72,10 @@ export const routes: RouteObject[] = [
     element: <MowUnitPage />,
     loader: preloadOnMatch(loadMowUnitPage),
   },
-  { path: "npcs", element: <NpcsPage />, loader: preloadOnMatch(loadNpcsPage) },
+  // One route for the list and an NPC's page, so the list's filters survive opening an NPC and
+  // coming back.
   {
-    path: "npcs/:entityId",
+    path: "npcs/:entityId?",
     element: <NpcsPage />,
     loader: preloadOnMatch(loadNpcsPage),
   },

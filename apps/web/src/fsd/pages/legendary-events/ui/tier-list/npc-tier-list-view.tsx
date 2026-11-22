@@ -13,14 +13,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@workspace/ui/components/sheet"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -34,7 +26,7 @@ import {
 import type { NpcTierTile } from "@/entities/legendary-event"
 import { NpcPortrait, useNpcLabels, useNpcsById } from "@/entities/npc"
 import { useTourPageSteps } from "@/shared/tour"
-import { PageToolbar } from "@/shared/ui"
+import { DetailsSheet, EmptyState, PageToolbar } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { useNpcThreatText } from "../../model/use-npc-threat-text"
@@ -139,12 +131,10 @@ export function NpcTierListView() {
   }
   if (eventIds.length === 0) {
     return (
-      <p
-        className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground"
-        data-testid="npc-tier-list-no-event"
-      >
-        {t("npcTierList.noEvent")}
-      </p>
+      <EmptyState
+        description={t("npcTierList.noEvent")}
+        testId="npc-tier-list-no-event"
+      />
     )
   }
   if (tiers.data === null) {
@@ -270,11 +260,7 @@ function NpcTile({
       data-testid="npc-tier-tile"
       type="button"
     >
-      <NpcPortrait
-        className={isMobile ? "size-12" : "size-14"}
-        name={name}
-        variationId={tile.npcId}
-      />
+      <NpcPortrait size="portrait-md" name={name} variationId={tile.npcId} />
       <span className="line-clamp-2 w-16 text-xs/tight">{name}</span>
       <span className="text-xs text-muted-foreground tabular-nums">
         {multiplier}
@@ -287,18 +273,15 @@ function NpcTile({
   )
   if (isMobile) {
     return (
-      <Sheet>
-        <SheetTrigger asChild>{trigger}</SheetTrigger>
-        <SheetContent data-testid="npc-tier-sheet" side="bottom">
-          <SheetHeader>
-            <SheetTitle>{name}</SheetTitle>
-            <SheetDescription className="sr-only">
-              {t("npcTierList.details.description")}
-            </SheetDescription>
-          </SheetHeader>
-          <div className="px-4 pb-4">{details}</div>
-        </SheetContent>
-      </Sheet>
+      <DetailsSheet
+        description={t("npcTierList.details.description")}
+        descriptionHidden
+        testId="npc-tier-sheet"
+        title={name}
+        trigger={trigger}
+      >
+        {details}
+      </DetailsSheet>
     )
   }
   return (

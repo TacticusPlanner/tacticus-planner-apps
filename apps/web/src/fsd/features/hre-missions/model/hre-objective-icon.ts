@@ -3,25 +3,12 @@ import {
   damageTypeIcon,
   factionIcon,
   gameModeTokenIcon,
-  onslaughtAllianceIcon,
+  allianceIcon,
   raidTicketIcon,
   statIcon,
 } from "@workspace/game-catalog"
-import type { OnslaughtAllianceIcon } from "@workspace/game-catalog"
 
 import type { HreObjective } from "@/entities/hre-mission"
-
-const ALLIANCES: ReadonlySet<string> = new Set<OnslaughtAllianceIcon>([
-  "Imperial",
-  "Chaos",
-  "Xenos",
-])
-
-function allianceIcon(alliance: string | null): string | undefined {
-  return alliance && ALLIANCES.has(alliance)
-    ? onslaughtAllianceIcon(alliance as OnslaughtAllianceIcon)
-    : undefined
-}
 
 /**
  * The game's glyph for what an objective counts: the mode's token for a mode objective, the

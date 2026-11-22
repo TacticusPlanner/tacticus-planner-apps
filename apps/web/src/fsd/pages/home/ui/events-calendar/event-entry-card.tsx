@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
+import { eventIcon } from "@workspace/game-catalog"
 
 import {
   eventFamilyStripeClass,
@@ -21,14 +22,17 @@ import {
   resolveEventFamily,
 } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
-import { EventIcon } from "@/shared/ui"
+import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import type {
   EventEntryViewModel,
   EventPhase,
   PositionedEventEntry,
 } from "../../model/events-calendar.types"
-import { resolveEventDisplayName } from "../../model/resolve-event-display"
+import {
+  eventSubjectIcons,
+  resolveEventDisplayName,
+} from "../../model/resolve-event-display"
 import { resolveEventWikiUrl } from "../../model/event-wiki-links"
 import {
   eventShopIdForOccurrence,
@@ -40,6 +44,23 @@ const NAMESPACES = ["events", "characters", "factions", "progression"] as const
 function useEventDisplayName(entry: EventEntryViewModel): string {
   const { t } = useTranslation(NAMESPACES)
   return resolveEventDisplayName(t, entry)
+}
+
+/** The faction, featured unit and rarity cap the entry's name spells out, as icons after it (the
+ *  entry's own game icon, e.g. a Faction Boost's emblem, is not repeated). */
+function SubjectIcons({ entry }: { entry: EventEntryViewModel }) {
+  const icons = eventSubjectIcons(
+    entry,
+    eventIcon(entry.definitionId, entry.definitionType, entry.parameters)
+  )
+  if (icons.length === 0) return null
+  return (
+    <span className="flex shrink-0 items-center gap-0.5">
+      {icons.map((icon) => (
+        <EntityIcon key={icon} size="inline" alt="" src={icon} />
+      ))}
+    </span>
+  )
 }
 
 /** Shared look of every calendar entry: family-tinted surface with a family-colored left stripe,
@@ -141,12 +162,14 @@ function EventDetailsPopover({
         <PopoverHeader>
           <div className="flex items-center gap-3">
             <EventIcon
-              className="size-10 shrink-0"
+              size="tile"
+              className="shrink-0"
               definitionId={entry.definitionId}
               definitionType={entry.definitionType}
               parameters={entry.parameters}
             />
             <PopoverTitle>{displayName}</PopoverTitle>
+            <SubjectIcons entry={entry} />
           </div>
           <PopoverDescription>{range}</PopoverDescription>
         </PopoverHeader>
@@ -283,10 +306,8 @@ export function EventBar({
       >
         {entry.phases.length > 0 ? <PhaseOverlay entry={entry} /> : null}
         <EventIcon
-          className={cn(
-            "shrink-0",
-            isBreak ? "size-3.5" : compact ? "size-5" : "size-7"
-          )}
+          size={isBreak || compact ? "inline" : "row"}
+          className="shrink-0"
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}
@@ -299,11 +320,12 @@ export function EventBar({
             <span className="sr-only">{displayName}</span>
           </>
         ) : (
-          <span
-            className={showIconOnly ? "sr-only" : "min-w-0 flex-1 truncate"}
-          >
-            {displayName}
-          </span>
+          <>
+            <span className={showIconOnly ? "sr-only" : "min-w-0 truncate"}>
+              {displayName}
+            </span>
+            {showIconOnly ? null : <SubjectIcons entry={entry} />}
+          </>
         )}
         <EntryStateText entry={entry} />
       </button>
@@ -328,7 +350,7 @@ export function EventAgendaRow({
     <EventDetailsPopover entry={entry}>
       <button
         className={cn(
-          "flex w-full min-w-0 items-center gap-2 rounded-lg py-1 pr-2 pl-1 text-left text-sm",
+          "flex w-full min-w-0 items-center gap-2 rounded-lg py-1 pr-2 pl-1 text-left text-sm pointer-coarse:min-h-11",
           entrySurfaceClass(entry)
         )}
         data-active={entry.isActiveNow}
@@ -337,13 +359,15 @@ export function EventAgendaRow({
         type="button"
       >
         <EventIcon
-          className="size-8 shrink-0"
+          size="row"
+          className="shrink-0"
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}
         />
-        <span className="min-w-0 flex-1 truncate font-medium">
-          {displayName}
+        <span className="flex min-w-0 flex-1 items-center gap-1.5">
+          <span className="min-w-0 truncate font-medium">{displayName}</span>
+          <SubjectIcons entry={entry} />
         </span>
         {isOccurrenceStart ? (
           <span
@@ -390,7 +414,7 @@ export function OngoingEventTile({
         type="button"
       >
         <EventIcon
-          className="size-10"
+          size="tile"
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}

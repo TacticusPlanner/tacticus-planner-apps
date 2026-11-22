@@ -29,6 +29,7 @@ import {
 } from "@workspace/ui/components/select"
 import {
   Sheet,
+  SheetBody,
   SheetContent,
   SheetFooter,
   SheetHeader,
@@ -188,15 +189,15 @@ export function CompareControls(props: CompareControlsProps) {
         <SheetHeader>
           <SheetTitle>{t("myGame.collection.compare.options")}</SheetTitle>
         </SheetHeader>
-        <div className="flex flex-col gap-3 overflow-y-auto px-4">
+        <SheetBody className="flex flex-col gap-3">
           <CompareFields {...props} />
-        </div>
-        <SheetFooter className="px-4 pt-2 pb-4">
+        </SheetBody>
+        <SheetFooter>
           <Button
             onClick={() => setOpen(false)}
             data-testid="compare-options-close"
           >
-            {t("myGame.collection.compare.closeOptions")}
+            {t("myGame.collection.compare.optionsDone")}
           </Button>
         </SheetFooter>
       </SheetContent>

@@ -37,7 +37,7 @@ describe("useShopsBrowseTutorial", () => {
       "A “N possible rewards” card means the slot is randomized — only one of the listed rewards is actually offered that day.",
     ])
 
-    // The controls differ per viewport (segmented toggles vs. dropdowns); the copy is shared.
+    // The day select and the shop tabs are the same on every viewport.
     expect(steps.desktop.map((step) => step.target)).toEqual([
       '[data-testid="shops-day-select"]',
       '[data-testid="shops-shop-toggle"]',
@@ -45,7 +45,7 @@ describe("useShopsBrowseTutorial", () => {
     ])
     expect(steps.mobile.map((step) => step.target)).toEqual([
       '[data-testid="shops-day-select"]',
-      '[data-testid="shops-shop-select"]',
+      '[data-testid="shops-shop-toggle"]',
       '[data-testid="shop-slot-0"]',
     ])
     expect(steps.desktop.map((step) => step.title)).toEqual(

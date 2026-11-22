@@ -29,14 +29,25 @@
     "synced": "Synchronisiert {{time}}",
     "notSynced": "Nicht synchronisiert",
     "income": "≈ {{free}} gratis + {{bonus}} Bonuslieferung diese Woche",
-    "tba": "Startdatum folgt"
+    "tba": "Startdatum folgt",
+    "switcher": {
+      "placeholder": "Event auswählen",
+      "empty": "Keine Events im Kalender",
+      "previous": "Vorheriges Event",
+      "next": "Nächstes Event",
+      "groups": {
+        "running": "Läuft",
+        "upcoming": "Demnächst",
+        "past": "Vergangen"
+      }
+    }
   },
   "tabs": {
     "label": "Bereiche des Event-Shops",
     "shop": "Shop",
     "milestones": "Meilensteine",
     "missions": "Missionen",
-    "plan": "Plan",
+    "plan": "Einkaufsliste",
     "rewards": "Belohnungen"
   },
   "days": {
@@ -125,7 +136,7 @@
     "boughtSome": {
       "title": "Wie viele hast du gekauft?",
       "value": "Gekaufte Pakete",
-      "confirm": "Speichern"
+      "confirm": "Käufe speichern"
     },
     "clearWeek": {
       "title": "Woche {{week}} leeren?",

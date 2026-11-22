@@ -83,7 +83,7 @@ export function RelicPanel({
       iconSrc={icon}
       // The relic's ability art is round, so its frame is too.
       iconClassName={cn(
-        "size-11 shrink-0 rounded-full border-2",
+        "shrink-0 rounded-full border-2",
         RARITY_BORDER[relic.rarity]
       )}
       text={text}

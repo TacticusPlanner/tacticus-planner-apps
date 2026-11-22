@@ -42,6 +42,7 @@ import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
 
+import { useCampaignsTutorial } from "./campaigns-page.tutorial"
 import { ProgressSummary } from "./progress-summary"
 
 type Story = {
@@ -63,6 +64,7 @@ export function CampaignsPage() {
     read.status === "ready" ? read.data : []
   const [medalsGroupId, setMedalsGroupId] = useState<string | null>(null)
   const overrides = useSavedBattleProgress()
+  useCampaignsTutorial()
 
   // Keyed on each read's data (each referentially stable while unchanged), not on the combined tuple.
   const model = useMemo(
@@ -84,7 +86,7 @@ export function CampaignsPage() {
 
   return (
     <div className="space-y-8" data-testid="campaigns-page">
-      <div className="flex flex-wrap gap-8">
+      <div className="flex flex-wrap gap-8" data-testid="campaigns-summary">
         <ProgressSummary
           label={t("progress.campaigns.normal")}
           {...model.normalSummary}
@@ -94,7 +96,10 @@ export function CampaignsPage() {
           {...model.mirrorSummary}
         />
       </div>
-      <div className="grid items-start gap-6 lg:grid-cols-2">
+      <div
+        className="grid items-start gap-6 lg:grid-cols-2"
+        data-testid="campaigns-stories"
+      >
         <StorySection
           title={t("progress.campaigns.normal")}
           stories={model.normal}
@@ -292,9 +297,9 @@ function StoryCard({
       {/* `flex` replaces the header's default grid, so icon, title and percent share one row. */}
       <CardHeader className="flex flex-row items-center gap-3">
         <EntityIcon
+          size="tile"
           src={first && campaignIcon(first.definition.groupId, first.type)}
           alt=""
-          className="size-10"
         />
         <div className="min-w-0 flex-1">
           <CardTitle>
@@ -311,10 +316,11 @@ function StoryCard({
           <div className="flex gap-2">
             {story.coreCharacters.map((id) => (
               <EntityIcon
+                size="portrait-sm"
                 key={id}
                 src={characterIcon(id as UnitId)}
                 alt={id}
-                className="size-10 rounded-sm"
+                className="rounded-sm"
               />
             ))}
           </div>
@@ -345,7 +351,7 @@ function StoryCard({
                 {track.medals ? (
                   <MedalStats stats={track.medals} />
                 ) : (
-                  <EntityIcon alt="" src={medalIcon} className="size-4" />
+                  <EntityIcon size="inline" alt="" src={medalIcon} />
                 )}
                 <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap">
                   {t("dailies:battleProgress.edit")}

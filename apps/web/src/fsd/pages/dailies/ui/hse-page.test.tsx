@@ -439,7 +439,7 @@ describe("HSE tab header", () => {
     expect(within(find).getByTestId("hse-event-switcher")).toBeInTheDocument()
     expect(within(find).getByTestId("hse-project-select")).toBeInTheDocument()
     expect(within(find).getByTestId("hse-raids-filters")).toHaveTextContent(
-      "raidsFilters.trigger"
+      "filtersControl.button"
     )
     expect(screen.queryByTestId("hse-planning-settings")).toBeNull()
   })
@@ -1183,11 +1183,8 @@ describe("HSE event details and projection", () => {
     expect(screen.queryByTestId("hse-projection")).not.toBeInTheDocument()
   })
 
-  it("says milestone data is not available for Against the Tide", () => {
-    mocks.event = readyAt(
-      [entryOf("hse-against-the-tide", now - DAY, now + DAY)],
-      now
-    )
+  it("says milestone data is not available for an event without scoring data", () => {
+    mocks.event = readyAt([entryOf("hse-unscored", now - DAY, now + DAY)], now)
     renderHse()
 
     expect(screen.getByTestId("hse-event-details-no-data")).toHaveTextContent(

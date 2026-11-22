@@ -78,8 +78,9 @@ export function HseTeamCard({
         <CardTitle className="flex items-center gap-2">
           {team.alliance ? (
             <EntityIcon
+              size="inline"
               alt=""
-              className="size-5 shrink-0"
+              className="shrink-0"
               src={onslaughtAllianceIcon(team.alliance)}
             />
           ) : null}
@@ -106,7 +107,7 @@ export function HseTeamCard({
       <CardContent className="space-y-3">
         {category.broadened ? (
           <p
-            className="text-xs text-muted-foreground"
+            className="text-sm text-muted-foreground"
             data-testid={`${testId}-broadened`}
           >
             {pick.kind === "faction"
@@ -120,7 +121,7 @@ export function HseTeamCard({
         ) : null}
         {category.deliveredSize < category.requestedSize ? (
           <p
-            className="text-xs text-muted-foreground"
+            className="text-sm text-muted-foreground"
             data-testid={`${testId}-shortfall`}
           >
             {t("teamRecs:category.fewerThanRequested", {

@@ -2,13 +2,10 @@ import { useState } from "react"
 import type { RefObject } from "react"
 import { Link, useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
-import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
@@ -58,7 +55,7 @@ export function DesktopNavigationDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="flex max-h-[80vh] flex-col sm:max-w-xl"
+        className="flex max-h-[80vh] flex-col sm:max-w-2xl"
         data-testid="desktop-navigation-dialog"
         onCloseAutoFocus={(event) => {
           if (returnFocusRef?.current) {
@@ -163,13 +160,6 @@ export function DesktopNavigationDialog({
             </p>
           )}
         </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button className="w-full" variant="secondary">
-              {t("common.close")}
-            </Button>
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

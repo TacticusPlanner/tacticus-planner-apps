@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next"
 
+import { HowToRead } from "@/shared/ui"
+
 import {
   clearedTierCount,
   remainingShards,
@@ -44,7 +46,12 @@ export function IncursionProgressControl({
             ? t("progress.remainingMythic", left)
             : t("progress.remaining", { shards: left.shards })}
       </p>
-      <p className="text-xs text-muted-foreground">{t("progress.howTo")}</p>
+      <HowToRead
+        summary={t("progress.howToSummary")}
+        data-testid="incursion-progress-how-to"
+      >
+        {t("progress.howTo")}
+      </HowToRead>
     </div>
   )
 }

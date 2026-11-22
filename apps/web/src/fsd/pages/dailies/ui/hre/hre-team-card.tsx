@@ -12,6 +12,7 @@ import type { HreMission, HreTeamPlan } from "@/entities/hre-mission"
 
 import { HRE_TEAM_SIZE } from "@/features/team-recommendations"
 import type { HreTeam, HreTeamViewModel } from "@/features/team-recommendations"
+import type { HreTeamHint } from "../../model/hre-team-hints"
 import { TeamList } from "../team-recs/team-list"
 import { TeamRecsState } from "../team-recs/team-recs-state"
 
@@ -20,8 +21,10 @@ type RuledTeam = Exclude<HreTeam, { status: "locked-hero" }>
 /**
  * An HRE mission team for one of the current mission's team plans: the strongest all-alliance,
  * summon-free, ranged, melee, featured-hero-led or any-unit team, titled by where it plays (campaign
- * battles by hand, Arena, Salvage Run, Onslaught, Guild Raid), with notes on the healer, Psychic damage dealers, a running HSE's units and the tokens to keep for a later
- * mission, or why there is no team (too few units, the featured hero still locked).
+ * battles by hand, Arena, Salvage Run, Onslaught, Guild Raid), with notes on the healer, Psychic damage dealers, a running HSE's units and its stat boost, the tokens to keep for a later
+ * mission or the spare tokens it plays on, the Arena picks for kills, the Onslaught order for
+ * ability uses and the modes that earn no event points, or why there is no team (too few units,
+ * the featured hero still locked).
  */
 export function HreTeamCard({
   view,
@@ -34,9 +37,14 @@ export function HreTeamCard({
   testId = "hre-team",
   title,
   note,
+  hints = [],
+  statBoost = null,
 }: {
   view: HreTeamViewModel
-  plan: Pick<HreTeamPlan, "mode" | "reserve" | "preferPsychic"> | null
+  plan:
+    | (Pick<HreTeamPlan, "mode" | "reserve" | "preferPsychic"> &
+        Partial<Pick<HreTeamPlan, "wholeTrack">>)
+    | null
   /** The event's missions, for naming the reserve's mission. */
   missions: readonly HreMission[]
   /** Synced tokens of the plan's mode, or null when unknown. */
@@ -52,8 +60,12 @@ export function HreTeamCard({
   title?: string
   /** A hint over the members (some of a by-hand team's nodes deploy fewer units). */
   note?: string | null
+  /** The token-mode hints (`hreTeamHints`). */
+  hints?: readonly HreTeamHint[]
+  /** The running HSE's stat boost in this mode, e.g. Faction Boost's +20% in Arena. */
+  statBoost?: { health: number; damage: number; armour: number } | null
 }) {
-  const { t } = useTranslation(["hre", "teamRecs", "common"])
+  const { t } = useTranslation(["hre", "teamRecs", "common", "factions"])
   if (view.status === "hidden") return null
   const mode = plan && plan.mode !== "battle" ? plan.mode : null
   const modeName = mode ? t(`hre:tokens.modes.${mode}`) : ""
@@ -72,14 +84,19 @@ export function HreTeamCard({
         </CardTitle>
         {view.status === "ready" && view.team.status !== "locked-hero" ? (
           <CardDescription data-testid="hre-team-rule">
-            <RuleText alliance={alliance} hero={hero} team={view.team} />
+            <RuleText
+              alliance={alliance}
+              hero={hero}
+              team={view.team}
+              wholeTrack={plan?.wholeTrack ?? false}
+            />
           </CardDescription>
         ) : null}
       </CardHeader>
       <CardContent className="space-y-3">
         {reserve ? (
           <p
-            className="text-xs text-muted-foreground"
+            className="text-sm text-muted-foreground"
             data-testid="hre-team-reserve"
           >
             {t("hre:teams.reserve", {
@@ -103,6 +120,28 @@ export function HreTeamCard({
             {note}
           </p>
         ) : null}
+        {hints.map((hint) => (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid={`hre-team-hint-${hint.key}`}
+            key={hint.key}
+          >
+            {hint.key === "spare"
+              ? t("hre:teams.hints.spare", {
+                  count: hint.play,
+                  held: hint.held,
+                  need: hint.need,
+                  mode: modeName,
+                })
+              : hint.key === "arenaFaction"
+                ? t("hre:teams.hints.arenaFaction", {
+                    faction: t(`factions:${hint.faction}` as never, {
+                      defaultValue: hint.faction,
+                    }),
+                  })
+                : t(`hre:teams.hints.${hint.key}`)}
+          </p>
+        ))}
         {view.status === "loading" ? (
           <TeamRecsState state="loading" testIdPrefix="hre-team" />
         ) : view.status === "error" ? (
@@ -130,7 +169,7 @@ export function HreTeamCard({
             {view.team.rule === "alliance" &&
             view.team.eligibleCount < HRE_TEAM_SIZE ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid="hre-team-few"
               >
                 {t("hre:teams.fewAlliance", {
@@ -141,7 +180,7 @@ export function HreTeamCard({
             ) : null}
             {view.team.support ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid={`hre-team-support-${view.team.support}`}
               >
                 {view.team.support === "included"
@@ -151,7 +190,7 @@ export function HreTeamCard({
             ) : null}
             {plan?.preferPsychic ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid="hre-team-psychic"
               >
                 {t("hre:teams.psychic")}
@@ -159,7 +198,7 @@ export function HreTeamCard({
             ) : null}
             {view.team.hseUnits !== null && hseEvent ? (
               <p
-                className="text-xs text-muted-foreground"
+                className="text-sm text-muted-foreground"
                 data-testid="hre-team-hse"
               >
                 {view.team.hseUnits > 0
@@ -168,6 +207,9 @@ export function HreTeamCard({
                       event: hseEvent,
                     })
                   : t("hre:teams.hseNone", { event: hseEvent })}
+                {view.team.hseUnits > 0 && statBoost
+                  ? ` ${t("hre:teams.hseBoost", statBoost)}`
+                  : null}
               </p>
             ) : null}
             <TeamList
@@ -187,10 +229,13 @@ function RuleText({
   team,
   alliance,
   hero,
+  wholeTrack,
 }: {
   team: RuledTeam
   alliance: string | null
   hero: string
+  /** The whole alliance, weakest first (Onslaught ability uses). */
+  wholeTrack: boolean
 }) {
   const { t } = useTranslation(["hre", "common"])
   const ready = team.status === "ready" ? team : null
@@ -200,14 +245,19 @@ function RuleText({
       }) as string)
     : null
   const size = ready?.team.deliveredSize ?? 0
+  // A team the roster or a node's slots keep below five names its real size (issue 7).
+  const fielded = ready ? size : HRE_TEAM_SIZE
+  if (wholeTrack && trackAlliance) {
+    return t("hre:teams.wholeTrack", { size, alliance: trackAlliance })
+  }
   switch (team.rule) {
     case "alliance": {
       return alliance
-        ? t("hre:teams.alliance", { alliance })
-        : t("hre:teams.allianceGeneric")
+        ? t("hre:teams.alliance", { alliance, size: fielded })
+        : t("hre:teams.allianceGeneric", { size: fielded })
     }
     case "summonFree": {
-      return t("hre:teams.summonFree")
+      return t("hre:teams.summonFree", { size: fielded })
     }
     case "ranged": {
       return trackAlliance
@@ -217,7 +267,7 @@ function RuleText({
               : "hre:teams.rangedTrack",
             { size, alliance: trackAlliance }
           )
-        : t("hre:teams.ranged")
+        : t("hre:teams.ranged", { size: fielded })
     }
     case "featured": {
       return t("hre:teams.featured", { hero })
@@ -230,10 +280,10 @@ function RuleText({
               : "hre:teams.abilitiesTrack",
             { size, alliance: trackAlliance }
           )
-        : t("hre:teams.abilities")
+        : t("hre:teams.abilities", { size: fielded })
     }
     case "melee": {
-      return t("hre:teams.melee")
+      return t("hre:teams.melee", { size: fielded })
     }
     case "strongest": {
       return trackAlliance
@@ -243,7 +293,7 @@ function RuleText({
               : "hre:teams.strongestTrack",
             { size, alliance: trackAlliance }
           )
-        : t("hre:teams.strongest")
+        : t("hre:teams.strongest", { size: fielded })
     }
   }
 }

@@ -349,11 +349,11 @@ function ExpandedPanel({
               }
             >
               <EntityIcon
+                size="inline"
                 src={shardIcon(
                   usesMythicShards(owned.progression) ? "Mythic" : "Regular"
                 )}
                 alt=""
-                className="size-4"
               />
               {usesMythicShards(owned.progression)
                 ? owned.mythicShards

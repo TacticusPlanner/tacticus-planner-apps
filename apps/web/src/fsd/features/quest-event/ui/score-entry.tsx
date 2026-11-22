@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { medalIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
@@ -7,13 +8,15 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
-import { NumberStepper } from "@/shared/ui"
+import { EntityIcon, NumberStepper } from "@/shared/ui"
 
 import type { QuestBattle } from "../model/quest-battles"
 import type { QuestProgressActions } from "../model/use-quest-progress"
 import { EMPTY_BATTLE_ENTRY, MAX_MEDALS } from "../model/quest-score"
 import type { QuestBattleEntry, QuestScoring } from "../model/quest-score"
+import { objectiveIcon } from "../model/quest-objectives"
 import { useObjectiveWording } from "./use-objective-wording"
+import type { Objective } from "./use-objective-wording"
 
 const MEDAL_VALUES = Array.from({ length: MAX_MEDALS + 1 }, (_, value) => value)
 
@@ -48,7 +51,11 @@ export function ScoreEntry({
     >
       <legend className="px-1 text-sm font-semibold">{t("entry.title")}</legend>
       <div className="flex flex-col gap-1.5">
-        <span className="text-sm font-medium" id={`${idBase}-medals`}>
+        <span
+          className="inline-flex items-center gap-1 text-sm font-medium"
+          id={`${idBase}-medals`}
+        >
+          <EntityIcon size="inline" alt="" src={medalIcon()} />
           {t("entry.medals")}
         </span>
         <ToggleGroup
@@ -126,6 +133,7 @@ export function ScoreEntry({
                     }
                   />
                   <Label className="text-sm font-normal" htmlFor={id}>
+                    <ObjectiveIcon objective={objective} />
                     {word(objective)}
                     <span className="text-muted-foreground tabular-nums">
                       {" · "}
@@ -139,8 +147,22 @@ export function ScoreEntry({
         </div>
       ) : null}
       {!won && !readOnly ? (
-        <p className="text-xs text-muted-foreground">{t("entry.notWon")}</p>
+        <p className="text-sm text-muted-foreground">{t("entry.notWon")}</p>
       ) : null}
     </fieldset>
+  )
+}
+
+/** The objective's subject icon (trait, damage type, hits…), when it has one. */
+function ObjectiveIcon({ objective }: { objective: Objective }) {
+  const icon = objectiveIcon(objective)
+  if (icon === undefined) return null
+  return (
+    <EntityIcon
+      size="inline"
+      alt=""
+      className="mr-1 inline-block align-text-bottom"
+      src={icon}
+    />
   )
 }

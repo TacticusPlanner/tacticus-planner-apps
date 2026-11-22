@@ -116,7 +116,8 @@
       "description": "Vos modifications de la progression d'Incursion n'ont pas été enregistrées et seront perdues.",
       "stay": "Rester",
       "leave": "Quitter"
-    }
+    },
+    "howToSummary": "Comment suivre tes étoiles"
   },
   "team": {
     "title": "Équipe suggérée",
@@ -129,7 +130,8 @@
     "unsynced": "Synchronisez votre roster pour voir une équipe suggérée et les paliers qu'elle peut terminer.",
     "noPower": "Les estimations de puissance sont indisponibles pour le moment.",
     "eligible_one": "{{count}} héros éligible",
-    "eligible_other": "Les {{count}} héros éligibles"
+    "eligible_other": "Les {{count}} héros éligibles",
+    "hintSummary": "Comment cette équipe est choisie"
   },
   "nav": {
     "label": "Navigation des Incursions",
@@ -166,7 +168,7 @@
     "selected_one": "{{count}} héros · puissance {{power}}",
     "selected_other": "{{count}} héros · puissance {{power}}",
     "reset": "Revenir à la suggestion",
-    "close": "Fermer"
+    "done": "Terminé"
   },
   "estimate": {
     "clears_one": "Terminé en 1 run",

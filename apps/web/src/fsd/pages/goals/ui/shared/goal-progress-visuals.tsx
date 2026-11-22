@@ -15,11 +15,15 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { ProgressionBadge, RankBadge } from "@/shared/ui"
+import { abilityIcon } from "@workspace/game-catalog"
+
+import { EntityIcon, ProgressionBadge, RankBadge } from "@/shared/ui"
+import type { EntityIconSize } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/entities/goal-farming"
 import type { GoalProgress, GoalTargetPreview } from "@/features/goal-planning"
 import { reachableCeilingLabel } from "./ceiling-marker"
+import type { GoalAbilityIds } from "./goal-ability-ids"
 import {
   formatGenericRemainingText,
   formatGoalRemainingText,
@@ -47,10 +51,12 @@ function displayPercent(ratio: number): number {
  *  the emphasised target. A Machine of War's tracks are Primary/Secondary, a Character's are
  *  Active/Passive (`active*` fields hold the first track, `passive*` the second, for both). A track at
  *  or above its target gets no pill. `blocks` draws them as V1's goal card did: soft blocks sharing the
- *  row's width, label left and levels right. */
+ *  row's width, label left and levels right. With `abilityIds`, each pill leads with its ability's
+ *  icon. */
 function AbilityTargetPills({
   progress,
   entityType,
+  abilityIds,
   blocks = false,
 }: {
   progress: Pick<
@@ -58,6 +64,7 @@ function AbilityTargetPills({
     "currentActive" | "targetActive" | "currentPassive" | "targetPassive"
   >
   entityType?: string
+  abilityIds?: GoalAbilityIds
   blocks?: boolean
 }) {
   const { t } = useTranslation()
@@ -65,11 +72,13 @@ function AbilityTargetPills({
   const tracks = [
     {
       key: mow ? ("primary" as const) : ("active" as const),
+      abilityId: abilityIds?.[0],
       current: progress.currentActive,
       target: progress.targetActive,
     },
     {
       key: mow ? ("secondary" as const) : ("passive" as const),
+      abilityId: abilityIds?.[1],
       current: progress.currentPassive,
       target: progress.targetPassive,
     },
@@ -88,7 +97,15 @@ function AbilityTargetPills({
           data-testid={`goal-ability-pill-${track.key}`}
           key={track.key}
         >
-          <span className="font-medium text-muted-foreground">
+          <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
+            {track.abilityId ? (
+              <EntityIcon
+                size="inline"
+                alt=""
+                src={abilityIcon(track.abilityId)}
+                className="rounded-sm"
+              />
+            ) : null}
             {t(`goals.overview.abilityTrack.${track.key}`)}
           </span>
           <span className="inline-flex items-center gap-1">
@@ -126,14 +143,16 @@ function ProgressSwatch({ variant }: { variant: "actual" | "potential" }) {
 function GoalTargetPreviewDisplay({
   preview,
   entityType,
+  abilityIds,
   size,
-  rankIconClass,
+  rankIconSize,
   arrowClass,
 }: {
   preview: GoalTargetPreview
   entityType?: string
+  abilityIds?: GoalAbilityIds
   size: "md" | "lg"
-  rankIconClass?: string
+  rankIconSize: EntityIconSize
   arrowClass: string
 }) {
   switch (preview.kind) {
@@ -144,14 +163,14 @@ function GoalTargetPreviewDisplay({
           data-testid="goal-target-preview"
         >
           <RankBadge
-            iconClassName={rankIconClass}
+            size={rankIconSize}
             rank={preview.start}
             showLabel={false}
             tooltip
           />
           <ArrowRight className={arrowClass} />
           <RankBadge
-            iconClassName={rankIconClass}
+            size={rankIconSize}
             rank={preview.target}
             showLabel={false}
             tooltip
@@ -178,6 +197,7 @@ function GoalTargetPreviewDisplay({
       return (
         <span data-testid="goal-target-preview">
           <AbilityTargetPills
+            abilityIds={abilityIds}
             entityType={entityType}
             progress={{
               currentActive: preview.startActive,
@@ -223,12 +243,15 @@ export function ProgressLegend({ className }: { className?: string }) {
 export function GoalTargetDisplay({
   progress,
   entityType,
+  abilityIds,
   size = "md",
   abilityBlocks = false,
 }: {
   progress: GoalProgress
   /** Picks the Ability track labels (Machine of War: Primary/Secondary; otherwise Active/Passive). */
   entityType?: string
+  /** An Ability goal's unit abilities, for each track's icon (see `goalAbilityIds`). */
+  abilityIds?: GoalAbilityIds
   /** `lg` (desktop table) enlarges the rank and rarity emblems so the target reads at a glance. */
   size?: "md" | "lg"
   /** Ability tracks as full-width blocks (the goal card) instead of compact pills (the table). */
@@ -236,7 +259,7 @@ export function GoalTargetDisplay({
 }) {
   const { t } = useTranslation()
   const large = size === "lg"
-  const rankIconClass = large ? "size-8" : undefined
+  const rankIconSize: EntityIconSize = large ? "row" : "inline"
   // `w-max` on each target row: the Goal column shrinks to its content's minimum width, and Tailwind's
   // `max-width: 100%` on images gives a row of icons almost none, which squashed them into the next cell.
   const arrowClass = cn("text-muted-foreground", large ? "size-4" : "size-3.5")
@@ -244,10 +267,11 @@ export function GoalTargetDisplay({
   if (progress.kind === "Unknown") {
     return progress.preview ? (
       <GoalTargetPreviewDisplay
+        abilityIds={abilityIds}
         arrowClass={arrowClass}
         entityType={entityType}
         preview={progress.preview}
-        rankIconClass={rankIconClass}
+        rankIconSize={rankIconSize}
         size={size}
       />
     ) : null
@@ -256,7 +280,7 @@ export function GoalTargetDisplay({
   return progress.kind === "Rank" ? (
     <span className="flex w-max items-center gap-1.5">
       <RankBadge
-        iconClassName={rankIconClass}
+        size={rankIconSize}
         rank={progress.current}
         showLabel={false}
         tooltip
@@ -265,7 +289,7 @@ export function GoalTargetDisplay({
       {/* Emblems only: the rank name is each emblem's tooltip and accessible name. The `(n/6)` marker
           below is a target modifier, so it stays. */}
       <RankBadge
-        iconClassName={rankIconClass}
+        size={rankIconSize}
         rank={progress.target}
         showLabel={false}
         tooltip
@@ -284,6 +308,7 @@ export function GoalTargetDisplay({
     </span>
   ) : progress.kind === "Ability" ? (
     <AbilityTargetPills
+      abilityIds={abilityIds}
       blocks={abilityBlocks}
       entityType={entityType}
       progress={progress}

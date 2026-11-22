@@ -1,6 +1,11 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { damageTypeIcon, statIcon, traitIcon } from "@workspace/game-catalog"
+import {
+  damageTypeIcon,
+  rankIcon,
+  statIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import type {
   CharacterStorageModel,
   EquipmentStorageModel,
@@ -90,7 +95,7 @@ function AttackRow({
       data-testid={`unit-attack-${kind}`}
     >
       <dt className="flex w-24 items-center gap-1.5 text-sm text-muted-foreground">
-        <EntityIcon src={statIcon(kind)} alt="" className="size-4" />
+        <EntityIcon size="inline" src={statIcon(kind)} alt="" />
         {t(`characterUnit.glance.${kind}`)}
       </dt>
       <dd className="flex flex-wrap items-center gap-1.5">
@@ -98,18 +103,14 @@ function AttackRow({
           {t("characterUnit.glance.hits", { count: hits })}
         </span>
         <span className={chip}>
-          <EntityIcon
-            src={damageTypeIcon(damageType)}
-            alt=""
-            className="size-4"
-          />
+          <EntityIcon size="inline" src={damageTypeIcon(damageType)} alt="" />
           {t(`damageTypes:${damageType}`, { defaultValue: damageType })}
           {pierce !== undefined ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className="ml-0.5 border-l pl-1.5 text-muted-foreground underline decoration-dotted underline-offset-2"
+                  className="relative ml-0.5 border-l pl-1.5 text-muted-foreground underline decoration-dotted underline-offset-2 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-3"
                   data-testid={`unit-attack-${kind}-pierce`}
                 >
                   {t("characterUnit.glance.pierce", {
@@ -180,9 +181,10 @@ export function AtAGlance({
           >
             <dt className="flex items-center gap-1 text-xs text-muted-foreground">
               <EntityIcon
+                size="inline"
                 src={statIcon(box.key)}
                 alt=""
-                className="size-4 shrink-0"
+                className="shrink-0"
               />
               <span className="truncate">
                 {t(`characterUnit.glance.${box.key}`, {
@@ -266,7 +268,7 @@ export function TraitsList({ traits }: { traits: readonly string[] }) {
             data-testid={`unit-trait-${trait}`}
           >
             <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
-              <EntityIcon src={traitIcon(trait)} alt="" className="size-7" />
+              <EntityIcon size="row" src={traitIcon(trait)} alt="" />
             </span>
             <div className="min-w-0">
               <p className="text-base font-semibold">
@@ -347,7 +349,10 @@ export function StatsByRank({
             </th>
             {statKeys.map((key) => (
               <th key={key} scope="col" className="py-1 text-right font-normal">
-                {t(`characterUnit.glance.${key}`, { defaultValue: key })}
+                <span className="inline-flex items-center gap-1">
+                  <EntityIcon size="inline" src={statIcon(key)} alt="" />
+                  {t(`characterUnit.glance.${key}`, { defaultValue: key })}
+                </span>
               </th>
             ))}
           </tr>
@@ -365,7 +370,10 @@ export function StatsByRank({
               data-above-cap={aboveCap(index) || undefined}
             >
               <th scope="row" className="py-1 text-left font-normal">
-                {rankLabel(rank)}
+                <span className="inline-flex items-center gap-1.5 align-middle">
+                  <EntityIcon size="inline" src={rankIcon(rank)} alt="" />
+                  {rankLabel(rank)}
+                </span>
                 {aboveCap(index) ? (
                   <span className="sr-only">
                     {t("characterUnit.statsByRank.aboveCap")}
@@ -393,12 +401,20 @@ export function StatsByRank({
         return (
           <LevelChart
             key={key}
-            title={stat}
+            title={
+              <span className="inline-flex items-center gap-1">
+                <EntityIcon size="inline" src={statIcon(key)} alt="" />
+                {stat}
+              </span>
+            }
             points={points}
             xLabels={xLabels}
             xTicks={xTicks}
-            // Tier initials (St, Ir, Br …) under narrow charts; the readout names the full rank.
-            tickLabel={(index) => xLabels[index]?.slice(0, 2) ?? ""}
+            // Each tier's badge under the axis; the readout leads with the rank's badge and names it.
+            xIcon={(index) => {
+              const rank = ladderRanks[index]
+              return rank ? rankIcon(rank) : undefined
+            }}
             markerIndex={markerIndex}
             readoutSuffix={
               owned ? t("characterUnit.statsByRank.yours") : undefined

@@ -2,6 +2,7 @@ import { useOutletContext } from "react-router"
 
 import type { GuildOutletContext } from "./guild-outlet-context"
 import { GuildMembersList } from "./guild-members-list"
+import { useGuildTutorial } from "./guild.tutorial"
 
 /**
  * Route element for `/guild/members`, rendered inside GuildRegisteredView's `<Outlet/>`. Reads the
@@ -10,6 +11,7 @@ import { GuildMembersList } from "./guild-members-list"
  */
 export function GuildMembersRoute() {
   const { guild } = useOutletContext<GuildOutletContext>()
+  useGuildTutorial("members")
 
   return <GuildMembersList members={guild.members} />
 }

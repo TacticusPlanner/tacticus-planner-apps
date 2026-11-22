@@ -8,9 +8,11 @@ import { useRaidBossLabels } from "@/entities/raid-boss"
 import { useCampaignDisplay } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
 
+import { survivalSeasonName } from "./survival-season-name"
+
 /** The localized name of an encounter's group: its row name and its Location filter option. */
 export function useEncounterGroupName() {
-  const { t } = useTranslation("library")
+  const { t, i18n } = useTranslation("library")
   const { name: campaignName, fullLabel } = useCampaignDisplay()
   const unitName = useUnitName()
   const { bossName } = useRaidBossLabels()
@@ -38,12 +40,14 @@ export function useEncounterGroupName() {
           return bossName(encounter.groupId)
         case "survival":
           return t(`npcs.encounters.survivalSeason.${encounter.groupId}`, {
-            defaultValue: encounter.groupId,
+            defaultValue:
+              survivalSeasonName(encounter.groupId, i18n.language) ??
+              encounter.groupId,
           })
         case "onslaught":
           return t("npcs.encounters.source.onslaught")
       }
     },
-    [bossName, campaignName, fullLabel, t, unitName]
+    [bossName, campaignName, fullLabel, i18n.language, t, unitName]
   )
 }

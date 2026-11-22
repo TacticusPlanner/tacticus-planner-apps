@@ -184,9 +184,10 @@ function CalendarDay({
           const reward = format.reward(item.rewardType)
           return (
             <EntityIcon
+              size="inline"
               key={`${item.slotIndex}-${item.rewardType}`}
               alt={reward.label}
-              className={cn("size-5 rounded-sm ring-2", STATE_RING[item.state])}
+              className={cn("rounded-sm ring-2", STATE_RING[item.state])}
               src={reward.iconUrl}
             />
           )

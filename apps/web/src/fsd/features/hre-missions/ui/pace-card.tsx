@@ -233,8 +233,9 @@ export function PaceCard({
                 data-testid="hre-pace-next-milestone"
               >
                 <EntityIcon
+                  size="inline"
                   alt=""
-                  className="size-4 shrink-0"
+                  className="shrink-0"
                   src={heroReleaseEventResourceIcon("points")}
                 />
                 {pace.nextMilestone
@@ -250,8 +251,9 @@ export function PaceCard({
                   data-testid="hre-pace-next-chest"
                 >
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-6 shrink-0"
+                    className="shrink-0"
                     src={chestIcon}
                   />
                   {pace.nextChest.missing > 0
@@ -395,7 +397,16 @@ export function PaceCard({
               ))}
             </SelectContent>
           </Select>
-          {pace?.target ? <TargetNeeds n={n} target={pace.target} /> : null}
+          {pace?.target ? (
+            <TargetNeeds n={n} target={pace.target} />
+          ) : state.target && !pace ? (
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid="hre-pace-target-needs-points"
+            >
+              {t("pace.targetNeedsPoints")}
+            </p>
+          ) : null}
         </div>
       </CardContent>
     </Card>
@@ -490,7 +501,7 @@ function NumberField({
   return (
     <div className="space-y-1">
       <Label className="flex items-center gap-1.5" htmlFor={id}>
-        <EntityIcon alt="" className="size-4 shrink-0" src={icon} />
+        <EntityIcon size="inline" alt="" className="shrink-0" src={icon} />
         {label}
       </Label>
       <Input
@@ -524,7 +535,7 @@ function PaceRow({
     <div className="grid gap-0.5 sm:grid-cols-[8rem_1fr]" data-testid={testId}>
       <dt className="flex items-center gap-1.5 text-muted-foreground">
         {icon ? (
-          <EntityIcon alt="" className="size-4 shrink-0" src={icon} />
+          <EntityIcon size="inline" alt="" className="shrink-0" src={icon} />
         ) : null}
         {label}
       </dt>

@@ -19,9 +19,10 @@ export function MasterTableUnit({
   return (
     <span className="flex min-w-0 items-center gap-2">
       <EntityIcon
+        size="portrait-sm"
         alt=""
         className={cn(
-          "size-8 shrink-0 rounded-full",
+          "shrink-0 rounded-full",
           row.owned === false && "opacity-50 grayscale"
         )}
         src={characterIcon(row.unit.id)}
@@ -35,18 +36,10 @@ export function MasterTableUnit({
         </span>
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
           {row.progression ? (
-            <RarityIcon
-              className="size-4"
-              rarity={progressionRarity(row.progression)}
-            />
+            <RarityIcon rarity={progressionRarity(row.progression)} />
           ) : null}
           {row.rank ? (
-            <RankBadge
-              iconClassName="size-4"
-              rank={row.rank}
-              showLabel={false}
-              tooltip
-            />
+            <RankBadge rank={row.rank} showLabel={false} tooltip />
           ) : null}
           {row.owned === false ? (
             <span

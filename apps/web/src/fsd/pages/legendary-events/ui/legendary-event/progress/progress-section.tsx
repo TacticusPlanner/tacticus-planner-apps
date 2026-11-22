@@ -10,6 +10,7 @@ import type {
   LegendaryEvent,
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
+import { HowToRead } from "@/shared/ui"
 
 import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
 import { ProgressGrid } from "./progress-grid"
@@ -83,17 +84,12 @@ export function ProgressSection({
         ) : null}
       </div>
       <div className="grid gap-3 md:grid-cols-2 md:items-start">
-        <details
-          className="rounded-xl border p-3 text-sm"
+        <HowToRead
           data-testid="progress-how-points"
+          summary={t("progress.howPoints.title")}
         >
-          <summary className="cursor-pointer font-medium">
-            {t("progress.howPoints.title")}
-          </summary>
-          <p className="mt-2 text-muted-foreground">
-            {t("progress.howPoints.body")}
-          </p>
-        </details>
+          {t("progress.howPoints.body")}
+        </HowToRead>
         {laneMarksOn ? <MarksLegend /> : null}
       </div>
       {progressGrid.kind === "loading" ? (

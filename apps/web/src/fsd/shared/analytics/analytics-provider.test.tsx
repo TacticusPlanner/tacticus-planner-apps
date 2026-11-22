@@ -318,6 +318,93 @@ describe("useAnalyticsActions", () => {
     )
   })
 
+  it("captures the HRE tab events with only the declared properties", async () => {
+    const { result } = await renderReady()
+
+    result.current.captureEvent({
+      type: "hre_tab_viewed",
+      eventState: "running",
+      mission: 5,
+    })
+    result.current.captureEvent({
+      type: "hre_fold_opened",
+      mission: 2,
+      objectiveKind: "killWithAlliance",
+      suggestion: "arena",
+      spare: true,
+    })
+    result.current.captureEvent({
+      type: "hre_objective_progress_changed",
+      mission: 2,
+      objectiveKind: "campaignRaids",
+      method: "markDone",
+    })
+    result.current.captureEvent({ type: "hre_location_opened" })
+
+    expect(sdk.client.capture).toHaveBeenCalledWith("hre_tab_viewed", {
+      event_state: "running",
+      mission: 5,
+    })
+    expect(sdk.client.capture).toHaveBeenCalledWith("hre_fold_opened", {
+      mission: 2,
+      objective_kind: "killWithAlliance",
+      suggestion: "arena",
+      spare: true,
+    })
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "hre_objective_progress_changed",
+      { mission: 2, objective_kind: "campaignRaids", method: "markDone" }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith("hre_location_opened", {})
+  })
+
+  it("captures the other HRE events, a preview's null mission and a non-spare fold", async () => {
+    const { result } = await renderReady()
+
+    result.current.captureEvent({
+      type: "hre_tab_viewed",
+      eventState: "upcoming",
+      mission: null,
+    })
+    result.current.captureEvent({
+      type: "hre_event_switched",
+      eventState: "past",
+    })
+    result.current.captureEvent({
+      type: "hre_fold_opened",
+      mission: 5,
+      objectiveKind: "campaignWins",
+      suggestion: "raids",
+      spare: false,
+    })
+    result.current.captureEvent({
+      type: "hre_objective_info_opened",
+      objectiveKind: "killFaction",
+    })
+    result.current.captureEvent({ type: "hre_mission_completed", mission: 5 })
+
+    expect(sdk.client.capture).toHaveBeenCalledWith("hre_tab_viewed", {
+      event_state: "upcoming",
+      mission: null,
+    })
+    expect(sdk.client.capture).toHaveBeenCalledWith("hre_event_switched", {
+      event_state: "past",
+    })
+    expect(sdk.client.capture).toHaveBeenCalledWith("hre_fold_opened", {
+      mission: 5,
+      objective_kind: "campaignWins",
+      suggestion: "raids",
+      spare: false,
+    })
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "hre_objective_info_opened",
+      { objective_kind: "killFaction" }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith("hre_mission_completed", {
+      mission: 5,
+    })
+  })
+
   it("captures Collection's bulk goal creation with only the declared properties", async () => {
     const { result } = await renderReady()
 

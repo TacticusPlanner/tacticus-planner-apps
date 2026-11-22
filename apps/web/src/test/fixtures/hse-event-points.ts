@@ -54,7 +54,7 @@ export function hseFixturePlayer(
   }
 }
 
-/** The catalog read of a definition: its fixture `config.hse`, or no config (Against the Tide). */
+/** The catalog read of a definition: its fixture `config.hse`, or no config (e.g. `hse-unscored`). */
 function hseFixtureCatalog(definitionId: string): HseCatalogRead {
   return {
     status: "ready",

@@ -68,7 +68,6 @@ describe("Library translations", () => {
           `${code}:npcs.${key}`
         ).toBe(true)
       }
-      expect(locale.npcs.filtersCount).toContain("{{count}}")
       expect(locale.npcs.attacks.hits_other).toContain("{{count}}")
       expect(locale.npcs.attacks.range).toContain("{{range}}")
       expect(locale.npcs.healthAtLevel).toContain("{{health}}")
@@ -78,7 +77,6 @@ describe("Library translations", () => {
       expect(Object.keys(locale.npcs.tour.steps)).toEqual([
         "filters",
         "list",
-        "picker",
         "variation",
         "level",
         "stats",

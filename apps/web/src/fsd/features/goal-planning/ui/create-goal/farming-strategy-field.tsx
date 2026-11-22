@@ -204,7 +204,6 @@ function renderStageChain(
       ) : context === "rank" ? (
         <RankBadge
           className="shrink-0"
-          iconClassName="size-6"
           key={`stage-${index}`}
           rank={rankAt(point)}
           showLabel={false}

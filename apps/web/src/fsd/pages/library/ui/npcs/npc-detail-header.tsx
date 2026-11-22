@@ -54,16 +54,14 @@ export function NpcDetailHeader({
         <NpcPortrait
           variationId={selectedVariationId}
           name={name}
-          className="size-16"
+          size="portrait-md"
         />
         <div className="min-w-0">
           <h2 className="truncate text-lg font-semibold" data-testid="npc-name">
             {name}
           </h2>
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            {emblem ? (
-              <EntityIcon src={emblem} alt="" className="size-4" />
-            ) : null}
+            {emblem ? <EntityIcon size="inline" src={emblem} alt="" /> : null}
             <span className="truncate">{factionName}</span>
           </p>
           {selectedLevel ? (
@@ -98,16 +96,7 @@ export function NpcDetailHeader({
               <SelectGroup>
                 {variationOptions.map((option) => (
                   <SelectItem key={option.id} value={option.id}>
-                    <span className="flex min-w-0 flex-col items-start text-left leading-tight">
-                      <span className="max-w-full truncate">
-                        {option.label}
-                      </span>
-                      {option.label !== option.id ? (
-                        <span className="max-w-full truncate text-xs text-muted-foreground">
-                          {option.id}
-                        </span>
-                      ) : null}
-                    </span>
+                    <span className="max-w-full truncate">{option.label}</span>
                   </SelectItem>
                 ))}
               </SelectGroup>

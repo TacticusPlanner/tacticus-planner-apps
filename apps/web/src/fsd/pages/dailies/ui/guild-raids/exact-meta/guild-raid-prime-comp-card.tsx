@@ -60,9 +60,10 @@ export function GuildRaidPrimeCompCard({
                   data-testid="guild-raid-prime-comp-hero"
                 >
                   <EntityIcon
+                    size="portrait-sm"
                     src={slot.hero.portraitUrl}
                     alt={slot.hero.name}
-                    className="size-10 rounded-full border"
+                    className="rounded-full border"
                   />
                   <span className="w-full truncate text-xs">
                     {slot.hero.name}
@@ -77,9 +78,10 @@ export function GuildRaidPrimeCompCard({
                 data-testid="guild-raid-prime-comp-mow"
               >
                 <EntityIcon
+                  size="portrait-sm"
                   src={resolved.mow.portraitUrl}
                   alt={resolved.mow.name}
-                  className="size-10 rounded-full border"
+                  className="rounded-full border"
                 />
                 <span className="w-full truncate text-xs">
                   {resolved.mow.name}

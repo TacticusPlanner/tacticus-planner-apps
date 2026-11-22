@@ -151,3 +151,64 @@ describe("HreTeamCard", () => {
     expect(screen.queryByTestId("hre-team-hse")).not.toBeInTheDocument()
   })
 })
+
+describe("HreTeamCard notes", () => {
+  const melee = (
+    deliveredSize: number
+  ): Extract<HreTeam, { status: "ready" }> => ({
+    ...ready(deliveredSize),
+    rule: "melee",
+    alliance: null,
+  })
+
+  it("names the real size of a team kept below five (issue 7)", () => {
+    render(
+      <HreTeamCard
+        alliance="Xenos"
+        hero="Zapspitta"
+        missions={[]}
+        plan={{ mode: "battle", preferPsychic: false, reserve: null }}
+        tokens={null}
+        view={{ status: "ready", team: melee(4) }}
+      />
+    )
+    expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
+      "hre:teams.melee|size=4"
+    )
+  })
+
+  it("words the spare tokens, the Arena picks and the HSE's stat boost", () => {
+    render(
+      <HreTeamCard
+        alliance="Xenos"
+        hero="Zapspitta"
+        hints={[
+          { key: "spare", held: 11, need: 8, play: 3 },
+          { key: "arenaFaction", faction: "Necrons" },
+          { key: "arenaSummoners" },
+        ]}
+        hseEvent="Faction Boost"
+        missions={[]}
+        plan={{ mode: "arena", preferPsychic: false, reserve: null }}
+        statBoost={{ health: 20, damage: 20, armour: 20 }}
+        tokens={11}
+        view={{
+          status: "ready",
+          team: { ...melee(5), rule: "strongest", hseUnits: 5 },
+        }}
+      />
+    )
+    expect(screen.getByTestId("hre-team-hint-spare")).toHaveTextContent(
+      "hre:teams.hints.spare|count=3,held=11,need=8,mode=hre:tokens.modes.arena"
+    )
+    expect(screen.getByTestId("hre-team-hint-arenaFaction")).toHaveTextContent(
+      "faction=factions:Necrons"
+    )
+    expect(
+      screen.getByTestId("hre-team-hint-arenaSummoners")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("hre-team-hse")).toHaveTextContent(
+      "hre:teams.hseBoost|health=20,damage=20,armour=20"
+    )
+  })
+})

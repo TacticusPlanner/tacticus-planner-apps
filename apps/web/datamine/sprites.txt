@@ -626,6 +626,7 @@ atlases/ui_icon_faction_votann_01.webp
 atlases/ui_icon_faction_votann_simple_01.webp
 atlases/ui_icon_faction_world_eaters_01.webp
 atlases/ui_icon_guildwars.webp
+atlases/ui_icon_herocount.webp
 atlases/ui_icon_itemtype_block.webp
 atlases/ui_icon_itemtype_booster_block.webp
 atlases/ui_icon_itemtype_booster_crit.webp
@@ -650,6 +651,7 @@ atlases/ui_icon_resource_machines_of_war_ammo_small.webp
 atlases/ui_icon_resource_mythic_salvage.webp
 atlases/ui_icon_resource_raid_large.webp
 atlases/ui_icon_resource_salvage.webp
+atlases/ui_icon_resource_score_guild_xp_medium.webp
 atlases/ui_icon_resource_stamina_small.webp
 atlases/ui_icon_resource_summoning_special.webp
 atlases/ui_icon_resource_summoning_token.webp
@@ -677,6 +679,10 @@ atlases/ui_icon_tabs_heroes.webp
 atlases/ui_icon_tabs_home.webp
 atlases/ui_icon_tabs_shop.webp
 atlases/ui_icon_tabs_social.webp
+atlases/ui_icon_tile_effect_contaminated.webp
+atlases/ui_icon_tile_effect_despoiled_ground.webp
+atlases/ui_icon_tile_effect_fire.webp
+atlases/ui_icon_tile_ice.webp
 atlases/ui_icon_timer.webp
 atlases/ui_icon_trait_2_man_team_01.webp
 atlases/ui_icon_trait_act_of_faith_01.webp
@@ -765,7 +771,18 @@ atlases/ui_icon_trait_tile_trench.webp
 atlases/ui_icon_trait_unknown_01.webp
 atlases/ui_icon_trait_vehicle_01.webp
 atlases/ui_icon_trait_weavers_of_fate_01.webp
+atlases/ui_icon_uniteffect_buffed_01.webp
+atlases/ui_icon_uniteffect_infiltrate_01.webp
+atlases/ui_icon_uniteffect_machine_vengeance_01.webp
+atlases/ui_icon_uniteffect_markerlight_01.webp
+atlases/ui_icon_uniteffect_neuroparasite_01.webp
+atlases/ui_icon_uniteffect_overwatch_01.webp
 atlases/ui_icon_uniteffect_poisoned.webp
+atlases/ui_icon_uniteffect_reveal_01.webp
+atlases/ui_icon_uniteffect_shield_01.webp
+atlases/ui_icon_uniteffect_stunned_01.webp
+atlases/ui_icon_uniteffect_supressed_01.webp
+atlases/ui_icon_uniteffect_taunted_01.webp
 atlases/ui_icon_upgrade.webp
 atlases/ui_icon_upgrade_frame_unapplied.webp
 atlases/ui_icon_upgrade_generic.webp
@@ -1787,7 +1804,7 @@ liveevents/ui_gamemodeicon_11th_edition.webp
 liveevents/ui_gamemodeicon_anniversary.webp
 liveevents/ui_gamemodeicon_arsenalofwar.webp
 liveevents/ui_gamemodeicon_conflictoperations.webp
-liveevents/ui_gamemodeicon_defeatwaves.webp
+liveevents/ui_gamemodeicon_defeatwaves_2.webp
 liveevents/ui_gamemodeicon_faction_boost_adeptus_mechanicus.webp
 liveevents/ui_gamemodeicon_faction_boost_dark_angels.webp
 liveevents/ui_gamemodeicon_faction_boost_space_wolves.webp
@@ -1822,7 +1839,7 @@ liveevents/ui_icon_resource_event_currency_february_2026.webp
 liveevents/ui_icon_resource_event_currency_may_2026.webp
 liveevents/ui_icon_resource_event_currency_november_2026.webp
 liveevents/ui_icon_resource_event_currency_september_2026.webp
-liveevents/ui_icon_resource_event_defeatwaves.webp
+liveevents/ui_icon_resource_event_defeatwaves_2.webp
 liveevents/ui_icon_resource_event_faction_boost_adeptus_mechanicus.webp
 liveevents/ui_icon_resource_event_faction_boost_dark_angels.webp
 liveevents/ui_icon_resource_event_faction_boost_space_wolves.webp
@@ -1850,7 +1867,7 @@ liveevents/ui_interstitial_11th_edition.webp
 liveevents/ui_interstitial_arsenal_of_war.webp
 liveevents/ui_interstitial_conflict_operations.webp
 liveevents/ui_interstitial_dark_angels.webp
-liveevents/ui_interstitial_defeatwaves.webp
+liveevents/ui_interstitial_defeatwaves_2.webp
 liveevents/ui_interstitial_faction_boost_world_eaters.webp
 liveevents/ui_interstitial_factionfocus.webp
 liveevents/ui_interstitial_forthedarkgods.webp

@@ -1,14 +1,13 @@
 // Generator for the ability rules-text game data, one file (and i18next namespace) per ability id:
 //   public/locales/{en,de,es,fr}/npcAbilityText/<abilityId>.json
 //     { <abilityId>: { description, variables, constants, scaled } }
-//   public/locales/en/npcAbilitySummoners.json  sorted ids whose English text summons a unit
 //   public/locales/en/npcAbilityTextGaps.json   sorted referenced ids with no rules text (never fetched)
 //
 // Covers every ability id the game config references: NPC active/passive abilities (all npc records),
 // character active/passive abilities, each MoW's active (primary, secondary) and mythic abilities, and
 // relic abilities (`abilityId` of relic items). Source: the pinned data-mines commit (datamine/REF, see
 // scripts/datamine.mjs): the game config's ability tables and the game's own language files. Re-run
-// after every `pnpm datamine:pull` and commit the four locale directories and the two lists. Each locale
+// after every `pnpm datamine:pull` and commit the four locale directories and the gap list. Each locale
 // directory is emptied first, so a dropped ability's file disappears.
 //
 // An entry is written only when the English description resolves completely: every `{[token]}` is one of
@@ -188,22 +187,6 @@ for (const id of [...referenced].sort()) {
   }
 }
 
-// ---- summoners ---------------------------------------------------------------------------------------
-
-// Kept equal to `SUMMON_PATTERNS` in the app's `entities/unit/model/summoners.ts`
-// (this script cannot import TypeScript); the apps parity test checks the committed list against them.
-const SUMMON_SPAN = String.raw`<style="Summon">(?:<style=[^>]*>)?[^<]*(?:</style>)?</style>`
-const SUMMON_PATTERNS = [
-  /\bsummons?\b[^.]{0,60}?<style="Summon">/i,
-  new RegExp(`${SUMMON_SPAN}\\s+(?:is summoned|appears)`, "i"),
-  /\bcalls in an? <style="Summon">/i,
-]
-const summoners = Object.keys(text.en)
-  .filter((id) =>
-    SUMMON_PATTERNS.some((pattern) => pattern.test(text.en[id].description))
-  )
-  .sort()
-
 // ---- write -------------------------------------------------------------------------------------------
 
 // Every id becomes a file name: keep them portable and collision-free on case-insensitive file systems.
@@ -237,7 +220,6 @@ for (const locale of LOCALES) {
     await writeJson(`${dir}/${id}.json`, { [id]: text[locale][id] })
   }
 }
-await writeJson(`${localesDir}/en/npcAbilitySummoners.json`, summoners)
 await writeJson(
   `${localesDir}/en/npcAbilityTextGaps.json`,
   [...uncovered.keys()].sort()
@@ -260,7 +242,7 @@ const newGaps = [...uncovered.keys()].filter((id) => !KNOWN_GAPS.has(id))
 const closedGaps = [...KNOWN_GAPS].filter((id) => !uncovered.has(id))
 
 console.log(
-  `npcAbilityText: ${Object.keys(text.en).length} files per locale from ${referenced.size} referenced ids, ${summoners.length} summoners`
+  `npcAbilityText: ${Object.keys(text.en).length} files per locale from ${referenced.size} referenced ids`
 )
 for (const [id, reason] of uncovered) {
   console.log(

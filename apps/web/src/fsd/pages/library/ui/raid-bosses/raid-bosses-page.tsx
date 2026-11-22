@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from "react"
 import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import { Tabs } from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
@@ -15,12 +15,12 @@ import {
 import type { ResolvedRaidBossEncounterLocation } from "@/entities/raid-boss"
 import { useGuildRaidMetaCatalog } from "@/entities/guild-raid-meta"
 import { useTourPageSteps } from "@/shared/tour"
+import { PageTabsList, PageTabsTrigger } from "@/shared/ui"
 
-import { RaidBossesDesktopPage } from "./desktop/raid-bosses-desktop-page"
-import { RaidBossesMobilePage } from "./mobile/raid-bosses-mobile-page"
 import { useRaidBossDetail } from "../../model/raid-bosses/use-raid-boss-detail"
 import { useRaidBossesCatalog } from "../../model/raid-bosses/use-raid-bosses-catalog"
 import { GuildRaidMetaView, GuildRaidSeasonsView } from "./guild-raid-views"
+import { RaidBossDetailPage } from "./raid-boss-detail-page"
 import { useRaidBossesTutorial } from "./raid-bosses.tutorial"
 import type { RaidBossesPageViewProps } from "./raid-bosses-page.view-model"
 import { RaidBossSeasonReference } from "./raid-boss-season-reference"
@@ -33,6 +33,11 @@ import {
   seasonReferenceSearch,
   updateSearch,
 } from "./raid-bosses-search"
+
+function withSearch(pathname: string, search: URLSearchParams) {
+  const query = search.toString()
+  return query ? `${pathname}?${query}` : pathname
+}
 
 export function RaidBossesPage() {
   const { t } = useTranslation("library")
@@ -193,22 +198,16 @@ export function RaidBossesPage() {
     [navigate, search]
   )
 
-  const onEntitySelect = useCallback(
+  // A tile or Previous / Next keeps the season and comp but drops any encounter context.
+  const entityPath = useCallback(
     (id: string) =>
-      void navigate({
-        pathname: `/library/raid-bosses/${id}`,
-        search: entitySearch(search).toString(),
-      }),
-    [navigate, search]
+      withSearch(`/library/raid-bosses/${id}`, entitySearch(search)),
+    [search]
   )
-
-  const onViewSeasonReference = useCallback(
-    () =>
-      void navigate({
-        pathname: "/library/raid-bosses",
-        search: seasonReferenceSearch(search, seasonId, seasonIds).toString(),
-      }),
-    [navigate, search, seasonId, seasonIds]
+  // A boss's page goes back to the season reference, on the season it was opened from.
+  const seasonReferencePath = withSearch(
+    "/library/raid-bosses",
+    seasonReferenceSearch(search, seasonId, seasonIds)
   )
 
   if (catalog.status === "loading") {
@@ -249,65 +248,44 @@ export function RaidBossesPage() {
     )
   }
 
-  const viewProps: RaidBossesPageViewProps = {
-    bosses: catalog.bosses,
-    primes: catalog.primes,
-    rosterGroups: catalog.rosterGroups,
-    selectedId: selectedUnit?.unitSetId,
-    selectedUnit,
-    selectedName,
-    onSelect: onEntitySelect,
-    stepIndex,
-    onStepChange: setStepIndex,
-    modifierContext,
-    fieldEnemies,
-    adjusted,
-  }
+  const viewProps: RaidBossesPageViewProps | undefined = selectedUnit
+    ? {
+        bosses: catalog.bosses,
+        primes: catalog.primes,
+        selectedUnit,
+        selectedName,
+        entityPath,
+        seasonReferencePath,
+        stepIndex,
+        onStepChange: setStepIndex,
+        modifierContext,
+        fieldEnemies,
+        adjusted,
+      }
+    : undefined
 
   return (
     <div className="flex flex-col gap-6" data-testid="raid-bosses-library-page">
       {/* The page header already carries the title and description; the views are underline tabs. */}
       <Tabs value={tab} onValueChange={(value) => updateQuery({ tab: value })}>
-        {/* The padding keeps the active tab's underline and the 48px touch hit area inside the scroll
-            box. */}
-        <div
-          className="overflow-x-auto pt-1 pb-1.5"
-          data-testid="raid-boss-tabs-scroll"
+        <PageTabsList
+          data-testid="raid-boss-tabs"
+          scrollTestId="raid-boss-tabs-scroll"
         >
-          <TabsList
-            className="w-max min-w-full justify-start"
-            data-testid="raid-boss-tabs"
-            variant="line"
-          >
-            <TabsTrigger className="flex-none px-2.5" value="seasons">
-              {t("raidBosses.tabs.seasons")}
-            </TabsTrigger>
-            <TabsTrigger className="flex-none px-2.5" value="meta">
-              {t("raidBosses.tabs.meta")}
-            </TabsTrigger>
-            <TabsTrigger className="flex-none px-2.5" value="details">
-              {t("raidBosses.tabs.details")}
-            </TabsTrigger>
-          </TabsList>
-        </div>
+          <PageTabsTrigger value="seasons">
+            {t("raidBosses.tabs.seasons")}
+          </PageTabsTrigger>
+          <PageTabsTrigger value="meta">
+            {t("raidBosses.tabs.meta")}
+          </PageTabsTrigger>
+          <PageTabsTrigger value="details">
+            {t("raidBosses.tabs.details")}
+          </PageTabsTrigger>
+        </PageTabsList>
       </Tabs>
       {tab === "details" ? (
-        entityId && selectedUnit ? (
-          <>
-            <Button
-              className="w-fit"
-              data-testid="raid-boss-view-season-reference"
-              onClick={onViewSeasonReference}
-              variant="outline"
-            >
-              {t("raidBosses.viewSeasonReference")}
-            </Button>
-            {isMobile ? (
-              <RaidBossesMobilePage {...viewProps} />
-            ) : (
-              <RaidBossesDesktopPage {...viewProps} />
-            )}
-          </>
+        entityId && viewProps ? (
+          <RaidBossDetailPage {...viewProps} />
         ) : seasonReference ? (
           <RaidBossSeasonReference
             viewModel={seasonReference}

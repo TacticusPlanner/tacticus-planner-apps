@@ -211,7 +211,8 @@
     "more_other": "Noch {{count}} nötig",
     "progress": "{{owned}} von {{target}} im Besitz",
     "fullyRaided": "Vollständig geraidet",
-    "battle": "Kampf {{node}}"
+    "battle": "Kampf {{node}}",
+    "noGoals": "Du hast keine aktiven Ziele. Erstelle oder setze ein Ziel fort, um zu sehen, wie viele Tage deine Raids dauern."
   },
   "bonus": {
     "title": "Bonus-Raids",
@@ -419,12 +420,12 @@
           "content": "Öffne die vollständige Missionsliste. Jede Mission klappt zu ihren Tipps auf."
         },
         "raids": {
-          "title": "Kampagnenraids",
-          "content": "Wo du für das Kampagnenziel der aktuellen Mission raidest, günstigste Energie zuerst, ohne Begrenzung auf die heutige Energie. Die Übersicht unten zählt die verbleibenden Kampagnenkämpfe des ganzen Events."
+          "title": "Kampagnen-Ausblick",
+          "content": "Die Kampagnenschlachten, die im ganzen Event noch fehlen, gegen deine tägliche Energie an den günstigsten Knoten."
         },
-        "team": {
-          "title": "Missionsteam",
-          "content": "Ein Team aus deinem Kader für Missionen, die die Aufstellung einschränken oder den Event-Helden brauchen."
+        "suggestions": {
+          "title": "Vorschläge",
+          "content": "Tippe unter jedem Ziel auf eine Zeile, um zu ihrer Karte unter dem Event-Tempo zu springen: wo du raiden kannst, welche Schlachten du selbst spielst und mit welchem Team, auch in Arena, Onslaught oder Plünderungslauf, wenn du Marken übrig hast."
         },
         "tokens": {
           "title": "Benötigte Marken",
@@ -433,10 +434,6 @@
         "pace": {
           "title": "Event-Tempo",
           "content": "Gib deine Eventpunkte und deinen Rang ein, optional auch, was du jetzt hast, um Währung, Truhenstufe und Splitter zu schätzen, und wähle ein Ziel, um die nötigen Punkte pro Tag zu sehen."
-        },
-        "paceSummary": {
-          "title": "Tempo auf einen Blick",
-          "content": "Deine Punkte, wo sie landen und welche Stufe sie erreichen. Tippe auf Details, um Punkte, Rang und deinen Besitz einzutragen und ein Ziel zu wählen."
         }
       }
     },
@@ -519,7 +516,7 @@
           "content": "Öffne deine Einkaufsliste und die Abdeckung. Die Schaltfläche zeigt, was noch zu kaufen ist und wie viele Einträge zu prüfen sind."
         },
         "planTab": {
-          "title": "Plan",
+          "title": "Einkaufsliste",
           "content": "Deine Einkaufsliste und die Abdeckung. Das Abzeichen zählt die Einträge, die zu prüfen sind."
         },
         "stillToBuy": {
@@ -548,10 +545,8 @@
     "row": "{{material}} ×{{count}}: {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filter",
-    "triggerActive": "Filter, {{count}} aktiv",
     "title": "Filter",
-    "description": "Begrenze, welche Kampagnenorte Heute, Bonus-Raids und der SBE-Tab nutzen dürfen. Plan und Ziele sind nicht betroffen.",
+    "description": "Gilt für Heute, Bonus-Raids und den SBE-Tab, nicht für Plan und Ziele.",
     "sections": {
       "allies": "Verbündete",
       "enemies": "Gegner",
@@ -566,7 +561,7 @@
       "enemyTraits": "Gegnereigenschaften",
       "enemyTypes": "Gegnertypen",
       "campaignTypes": "Typen",
-      "slots": "Slots",
+      "slots": "Einsatzplätze",
       "rarity": "Seltenheit"
     },
     "placeholders": {
@@ -592,7 +587,7 @@
     },
     "slotsOption": "{{count}} Slots",
     "actions": {
-      "close": "Schließen",
+      "cancel": "Abbrechen",
       "reset": "Filter zurücksetzen",
       "apply": "Filter anwenden"
     },
@@ -880,7 +875,8 @@
         "syncedAt": "Marken aus deiner Synchronisierung {{when}}, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
         "syncUnknown": "Der Zeitpunkt deiner Synchronisierung ist unbekannt, daher werden Marken ab jetzt gezählt, vorausgesetzt du verbrauchst sie, bevor deine Speicher voll sind.",
         "upcoming": "Die Marken setzen volle Speicher zu Event-Beginn voraus und dass du sie verbrauchst, bevor sie voll sind."
-      }
+      },
+      "howWorkedOut": "So wird das berechnet"
     },
     "teams": {
       "title": "Event-Teams",
@@ -929,7 +925,8 @@
   "battleProgress": {
     "open": "Medaillen",
     "title": "Kämpfe ohne 3 Medaillen",
-    "description": "Raids benötigen 3 Medaillen. Geschlagene Kämpfe zählen als bestes Ergebnis (3 Medaillen, Blitzsieg, höchster Meilenstein); ändere nur die, die darunter liegen. Ein Kampf unter 3 Medaillen wird als manueller Kampf geplant. Dein nächster Kampf in jeder Kampagne wird immer manuell gespielt.",
+    "description": "Raids benötigen 3 Medaillen. Ändere nur die Kämpfe, die darunter liegen.",
+    "note": "Geschlagene Kämpfe zählen als 3 Medaillen, Blitzsieg und höchster Meilenstein. Ein Kampf unter 3 Medaillen und dein nächster Kampf in jeder Kampagne werden manuell gespielt.",
     "campaign": "Kampagne",
     "notStarted": "Du hast in dieser Kampagne noch keinen Kampf erreicht.",
     "notBeaten": "Noch nicht besiegt",

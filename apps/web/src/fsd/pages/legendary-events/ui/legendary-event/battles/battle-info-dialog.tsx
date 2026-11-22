@@ -56,7 +56,7 @@ export function BattleInfoDialog({
   return (
     <ResponsiveDialog
       data-testid="battle-info-dialog"
-      desktopClassName="sm:max-w-3xl"
+      width="form"
       onOpenChange={(open) => {
         if (!open) onClose()
       }}
@@ -72,7 +72,7 @@ export function BattleInfoDialog({
             : null}
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="flex min-w-0 flex-col gap-3 pb-6">
+      <ResponsiveDialogBody className="flex min-w-0 flex-col gap-3">
         {target && lane && battle && state?.kind === "ready" ? (
           <BattlePreview
             battle={battle}
@@ -128,7 +128,7 @@ function BattleInfoNav({
   const previous = adjacentBattle(target, battleCount, -1)
   const next = adjacentBattle(target, battleCount, 1)
   return (
-    <ResponsiveDialogFooter className="flex-row flex-wrap items-center justify-between gap-2 border-t md:justify-between">
+    <ResponsiveDialogFooter className="flex-row flex-wrap items-center justify-between gap-2 md:justify-between">
       <Button
         data-testid="battle-info-previous"
         disabled={!previous}
@@ -145,7 +145,7 @@ function BattleInfoNav({
           data-testid="battle-info-close"
           onClick={onClose}
           type="button"
-          variant="secondary"
+          variant="outline"
         >
           {t("battleInfo.close")}
         </Button>

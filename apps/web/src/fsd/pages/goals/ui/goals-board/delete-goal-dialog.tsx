@@ -1,13 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { Button } from "@workspace/ui/components/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
-import { Spinner } from "@workspace/ui/components/spinner"
+
+import { ConfirmationDialog } from "@/shared/ui"
 
 type Props = {
   open: boolean
@@ -23,8 +16,7 @@ type Props = {
 
 /**
  * Hard-delete confirmation for one or several goals. A delete's blast radius is far smaller than the guild
- * purge's, so this skips `guild-purge-dialog.tsx`'s type-to-confirm-word gate but keeps its destructive
- * warning + pending-state shape.
+ * purge's, so this skips `guild-purge-dialog.tsx`'s type-to-confirm-word gate.
  */
 export function DeleteGoalDialog({
   open,
@@ -37,51 +29,29 @@ export function DeleteGoalDialog({
   const { t } = useTranslation()
 
   return (
-    <Dialog
+    <ConfirmationDialog
+      cancelLabel={t("goals.delete.cancel")}
+      confirmLabel={t("goals.delete.confirm", { count })}
+      confirmTestId="delete-goal-confirm"
+      data-testid="delete-goal-dialog"
+      description={t("goals.delete.description", { count })}
+      onCancel={() => onOpenChange(false)}
+      onConfirm={onConfirm}
       open={open}
-      onOpenChange={(next) => {
-        if (!pending) {
-          onOpenChange(next)
-        }
-      }}
+      pending={pending}
+      title={t("goals.delete.title", { count })}
     >
-      <DialogContent className="sm:max-w-md" data-testid="delete-goal-dialog">
-        <DialogHeader>
-          <DialogTitle>{t("goals.delete.title", { count })}</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          {t("goals.delete.description", { count })}
+      {projectName ? (
+        <p
+          className="text-sm text-muted-foreground"
+          data-testid="delete-goal-project-alternative"
+        >
+          {t("goals.delete.projectAlternative", {
+            count,
+            project: projectName,
+          })}
         </p>
-        {projectName ? (
-          <p
-            className="text-sm text-muted-foreground"
-            data-testid="delete-goal-project-alternative"
-          >
-            {t("goals.delete.projectAlternative", {
-              count,
-              project: projectName,
-            })}
-          </p>
-        ) : null}
-        <DialogFooter>
-          <Button
-            disabled={pending}
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            {t("goals.delete.cancel")}
-          </Button>
-          <Button
-            data-testid="delete-goal-confirm"
-            disabled={pending}
-            variant="destructive"
-            onClick={onConfirm}
-          >
-            {pending ? <Spinner /> : null}
-            {t("goals.delete.confirm", { count })}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      ) : null}
+    </ConfirmationDialog>
   )
 }

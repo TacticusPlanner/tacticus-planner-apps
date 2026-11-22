@@ -211,7 +211,8 @@
     "more_other": "Faltan {{count}}",
     "progress": "{{owned}} de {{target}} en posesión",
     "fullyRaided": "Completado",
-    "battle": "Batalla {{node}}"
+    "battle": "Batalla {{node}}",
+    "noGoals": "No tienes objetivos activos. Crea o reanuda un objetivo para ver cuántos días te llevarán las incursiones."
   },
   "bonus": {
     "title": "Incursiones extra",
@@ -419,12 +420,12 @@
           "content": "Abre la lista completa de misiones. Cada una se despliega con sus consejos."
         },
         "raids": {
-          "title": "Incursiones de campaña",
-          "content": "Dónde hacer incursiones para el objetivo de campaña de la misión actual, primero la energía más barata, sin límite de la energía de hoy. El resumen de abajo cuenta las batallas de campaña restantes de todo el evento."
+          "title": "Previsión de campaña",
+          "content": "Las batallas de campaña que faltan en todo el evento frente a tu energía diaria en los nodos más baratos."
         },
-        "team": {
-          "title": "Equipo de misión",
-          "content": "Un equipo de tu plantilla para misiones que limitan la alineación o necesitan al héroe del evento."
+        "suggestions": {
+          "title": "Sugerencias",
+          "content": "Bajo cada objetivo, toca una fila para ir a su tarjeta bajo el ritmo del evento: dónde hacer incursiones, qué batallas jugar a mano y con qué equipo, también en Arena, Onslaught o Carrera de Saqueo si te sobran fichas."
         },
         "tokens": {
           "title": "Fichas necesarias",
@@ -433,10 +434,6 @@
         "pace": {
           "title": "Ritmo del evento",
           "content": "Introduce tus puntos del evento y tu puesto, y si quieres lo que tienes ahora, para estimar moneda, nivel de cofre y fragmentos, y elige un objetivo para ver los puntos al día que necesita."
-        },
-        "paceSummary": {
-          "title": "El ritmo de un vistazo",
-          "content": "Tus puntos, dónde acaban y el paso que alcanzan. Toca Detalles para introducir puntos, puesto y lo que tienes, y para elegir un objetivo."
         }
       }
     },
@@ -519,7 +516,7 @@
           "content": "Abre tu lista de compras y la cobertura. El botón muestra lo que queda por comprar y cuántos elementos hay que revisar."
         },
         "planTab": {
-          "title": "Plan",
+          "title": "Lista de compras",
           "content": "Tu lista de compras y la cobertura. La insignia cuenta los elementos por revisar."
         },
         "stillToBuy": {
@@ -548,10 +545,8 @@
     "row": "{{material}} ×{{count}}: {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filtros",
-    "triggerActive": "Filtros, {{count}} activos",
     "title": "Filtros",
-    "description": "Limita qué ubicaciones de campaña pueden usar Hoy, las incursiones extra y la pestaña EPI. El plan y los objetivos no se ven afectados.",
+    "description": "Se aplica a Hoy, las incursiones extra y la pestaña EPI, no al plan ni a los objetivos.",
     "sections": {
       "allies": "Aliados",
       "enemies": "Enemigos",
@@ -566,7 +561,7 @@
       "enemyTraits": "Rasgos de enemigo",
       "enemyTypes": "Tipos de enemigo",
       "campaignTypes": "Tipos",
-      "slots": "Espacios",
+      "slots": "Espacios de despliegue",
       "rarity": "Rareza"
     },
     "placeholders": {
@@ -592,17 +587,17 @@
     },
     "slotsOption": "{{count}} espacios",
     "actions": {
-      "close": "Cerrar",
-      "reset": "Restablecer filtros",
+      "cancel": "Cancelar",
+      "reset": "Borrar filtros",
       "apply": "Aplicar filtros"
     },
     "filteredOut": {
       "title": "Los filtros de incursiones quitaron algunos materiales",
       "materials_one": "{{count}} material no tiene ninguna ubicación permitida con estos filtros.",
       "materials_other": "{{count}} materiales no tienen ninguna ubicación permitida con estos filtros.",
-      "pinned_one": "{{count}} objetivo está fijado a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
-      "pinned_other": "{{count}} objetivos están fijados a una ubicación excluida por tus filtros de incursiones. Restablece los filtros o cambia la ubicación fijada.",
-      "reset": "Restablecer filtros",
+      "pinned_one": "{{count}} objetivo está fijado a una ubicación excluida por tus filtros de incursiones. Borra los filtros o cambia la ubicación fijada.",
+      "pinned_other": "{{count}} objetivos están fijados a una ubicación excluida por tus filtros de incursiones. Borra los filtros o cambia la ubicación fijada.",
+      "reset": "Borrar filtros",
       "listLabel": "Materiales que tus filtros de incursiones omiten",
       "pinnedBadge": "Fijado",
       "showAll": "Mostrar los {{count}}",
@@ -880,7 +875,8 @@
         "syncedAt": "Fichas de tu sincronización {{when}}, suponiendo que las gastas antes de que tus reservas se llenen.",
         "syncUnknown": "Se desconoce la hora de tu sincronización, así que las fichas se cuentan desde ahora, suponiendo que las gastas antes de que tus reservas se llenen.",
         "upcoming": "Las fichas suponen reservas llenas al empezar el evento y que las gastas antes de que se llenen."
-      }
+      },
+      "howWorkedOut": "Cómo se calcula"
     },
     "teams": {
       "title": "Equipos del evento",
@@ -929,7 +925,8 @@
   "battleProgress": {
     "open": "Medallas",
     "title": "Batallas sin 3 medallas",
-    "description": "Las incursiones requieren 3 medallas. Las batallas ganadas cuentan como el mejor resultado (3 medallas, victoria relámpago, hito máximo); cambia solo las que se quedaron cortas. Una batalla con menos de 3 medallas se planifica para jugarla manualmente. Tu siguiente batalla en cada campaña siempre se juega manualmente.",
+    "description": "Las incursiones requieren 3 medallas. Cambia solo las batallas que se quedaron cortas.",
+    "note": "Las batallas ganadas cuentan como 3 medallas, victoria relámpago e hito máximo. Una batalla con menos de 3 medallas y tu siguiente batalla en cada campaña se juegan manualmente.",
     "campaign": "Campaña",
     "notStarted": "Aún no has llegado a ninguna batalla de esta campaña.",
     "notBeaten": "Aún no superada",

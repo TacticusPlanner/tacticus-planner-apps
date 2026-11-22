@@ -63,8 +63,20 @@ describe("eventIcon", () => {
     )
   })
 
+  it("uses the Against the Tide medallion from the game's defeat_waves_2 theme", () => {
+    expect(eventIcon("hse-against-the-tide", "HomeScreenEvent")).toBe(
+      `${base}/liveevents/ui_gamemodeicon_defeatwaves_2.webp`
+    )
+    expect(homeScreenEventBanner("hse-against-the-tide")).toBe(
+      `${base}/liveevents/ui_interstitial_defeatwaves_2.webp`
+    )
+    expect(homeScreenEventPointsIcon("hse-against-the-tide")).toBe(
+      `${base}/liveevents/ui_icon_resource_event_defeatwaves_2.webp`
+    )
+  })
+
   it("has no icon where the game has none", () => {
-    expect(eventIcon("hse-against-the-tide", "HomeScreenEvent")).toBeUndefined()
+    expect(eventIcon("hse-unknown", "HomeScreenEvent")).toBeUndefined()
     expect(eventIcon("something-new", undefined)).toBeUndefined()
   })
 })
@@ -111,7 +123,7 @@ describe("homeScreenEventPointsIcon", () => {
     expect(
       homeScreenEventPointsIcon("hse-faction-boost", { targetFactionId: "Tau" })
     ).toBe(`${base}/liveevents/ui_icon_resource_event_points_generic.webp`)
-    expect(homeScreenEventPointsIcon("hse-against-the-tide")).toBe(
+    expect(homeScreenEventPointsIcon("hse-unknown")).toBe(
       `${base}/liveevents/ui_icon_resource_event_points_generic.webp`
     )
   })

@@ -7,18 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@workspace/ui/components/dialog"
 import { Badge } from "@workspace/ui/components/badge"
 import { Progress } from "@workspace/ui/components/progress"
 
 import { RaidBossPortrait } from "@/entities/raid-boss"
+import { DetailsOverlay } from "@/shared/ui"
 
 import {
   countActivatedModifiers,
@@ -78,7 +71,6 @@ function ModifierRow({ modifier }: { modifier: GuildRaidModifierView }) {
 function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
   const { t } = useTranslation("dailies")
   const { modifiers } = prime
-
   if (modifiers.length === 0) {
     return null
   }
@@ -87,21 +79,29 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
   const activatedCount = countActivatedModifiers(modifiers)
 
   return (
-    <Dialog>
-      <div
-        className="flex flex-col gap-1.5"
-        data-testid="guild-raid-prime-modifiers"
+    <div
+      className="flex flex-col gap-1.5"
+      data-testid="guild-raid-prime-modifiers"
+    >
+      <span
+        className="text-xs text-muted-foreground"
+        data-testid="guild-raid-modifiers-count"
       >
-        <span
-          className="text-xs text-muted-foreground"
-          data-testid="guild-raid-modifiers-count"
-        >
-          {t("guildRaids.status.modifiersHit", {
-            active: activatedCount,
-            total: modifiers.length,
-          })}
-        </span>
-        <DialogTrigger asChild>
+        {t("guildRaids.status.modifiersHit", {
+          active: activatedCount,
+          total: modifiers.length,
+        })}
+      </span>
+      <DetailsOverlay
+        description={t("guildRaids.status.modifiersHit", {
+          active: activatedCount,
+          total: modifiers.length,
+        })}
+        testId="guild-raid-modifiers-dialog"
+        title={t("guildRaids.status.modifiersDialogTitle", {
+          name: prime.name,
+        })}
+        trigger={
           <button
             className="flex w-full items-center justify-between gap-2 rounded-lg border bg-muted/40 px-3 py-2 text-left hover:bg-muted"
             data-testid="guild-raid-next-modifier-trigger"
@@ -119,24 +119,9 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
               className="size-4 shrink-0 text-muted-foreground"
             />
           </button>
-        </DialogTrigger>
-      </div>
-      <DialogContent
-        className="max-h-[85vh] overflow-y-auto sm:max-w-md"
-        data-testid="guild-raid-modifiers-dialog"
+        }
       >
-        <DialogHeader>
-          <DialogTitle>
-            {t("guildRaids.status.modifiersDialogTitle", { name: prime.name })}
-          </DialogTitle>
-          <DialogDescription>
-            {t("guildRaids.status.modifiersHit", {
-              active: activatedCount,
-              total: modifiers.length,
-            })}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-2">
           {modifiers.map((modifier, index) => (
             <ModifierRow
               key={`${modifier.modifierId}-${index}`}
@@ -144,8 +129,8 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
             />
           ))}
         </div>
-      </DialogContent>
-    </Dialog>
+      </DetailsOverlay>
+    </div>
   )
 }
 
@@ -182,7 +167,8 @@ export function GuildRaidPrimeCard({
         <CardContent className="flex flex-col gap-3 p-3">
           <div className="flex items-center gap-3">
             <RaidBossPortrait
-              className="size-10 shrink-0"
+              size="portrait-sm"
+              className="shrink-0"
               name={prime.name}
               src={prime.portraitSrc}
             />
@@ -220,7 +206,7 @@ export function GuildRaidPrimeCard({
         <RaidBossPortrait
           name={prime.name}
           src={prime.portraitSrc}
-          className="size-14"
+          size="portrait-md"
         />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <CardDescription>{positionLabel}</CardDescription>

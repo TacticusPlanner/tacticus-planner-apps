@@ -4,14 +4,6 @@ import { useTranslation } from "react-i18next"
 import { SlidersHorizontal } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@workspace/ui/components/drawer"
 import { Label } from "@workspace/ui/components/label"
 import {
   Sheet,
@@ -45,8 +37,8 @@ const RUNS: readonly LegendaryEventRun[] = [1, 2, 3]
 const CLOSE_SHARDS_STEP = 25
 
 /**
- * The Run status card's Inputs button and its drawer (design D5): a right-side sheet at or above
- * 768px and a swipe-to-dismiss bottom drawer (90% of the height) below it. It edits the current
+ * The Run status card's Inputs button and its sheet (design D5; UI style guide rule 8): a right-side
+ * sheet at or above 768px and a full-screen bottom sheet below it. It edits the current
  * run (else the next one; every run while the run is unknown), labelled Now / Planned; the Plan
  * tab's Run forecast edits each run in place. Paid fields show only with the account's Show paid
  * options on (Legendary Event settings). Closing returns focus to the Inputs button.
@@ -88,30 +80,13 @@ export function RunInputsDrawer({
     />
   )
 
-  if (isMobile) {
-    return (
-      <Drawer direction="bottom">
-        <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-        <DrawerContent
-          className="h-[90dvh] max-h-[90dvh] p-0"
-          data-testid="run-inputs-drawer"
-        >
-          <DrawerHeader className="px-6 text-left">
-            <DrawerTitle>{t("runInputs.title")}</DrawerTitle>
-            <DrawerDescription>{t("runInputs.description")}</DrawerDescription>
-          </DrawerHeader>
-          {body}
-        </DrawerContent>
-      </Drawer>
-    )
-  }
   return (
     <Sheet>
       <SheetTrigger asChild>{trigger}</SheetTrigger>
       <SheetContent
-        className="w-105 sm:data-[side=right]:max-w-105"
+        className="sm:data-[side=right]:max-w-md"
         data-testid="run-inputs-drawer"
-        side="right"
+        side={isMobile ? "bottom" : "right"}
       >
         <SheetHeader className="pr-14">
           <SheetTitle>{t("runInputs.title")}</SheetTitle>
@@ -286,7 +261,7 @@ function RunInputsFields({
     <div className="flex flex-col gap-3">
       {phase === "now" ? (
         <p
-          className="text-xs text-muted-foreground"
+          className="text-sm text-muted-foreground"
           data-testid="run-inputs-now-hint"
         >
           {t("runInputs.nowHint")}

@@ -55,7 +55,12 @@ export function InsightsCampaignProgression({
               >
                 <span className="flex items-center gap-2.5">
                   {icon ? (
-                    <EntityIcon alt="" className="size-9 shrink-0" src={icon} />
+                    <EntityIcon
+                      size="row"
+                      alt=""
+                      className="shrink-0"
+                      src={icon}
+                    />
                   ) : null}
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate font-medium">
@@ -77,8 +82,9 @@ export function InsightsCampaignProgression({
                       variant="secondary"
                     >
                       <EntityIcon
+                        size="inline"
                         alt=""
-                        className="size-3.5 shrink-0"
+                        className="shrink-0"
                         src={energyIconUrl}
                       />
                       {t("goals.insights.energySaved", {
@@ -94,10 +100,7 @@ export function InsightsCampaignProgression({
                         className="flex items-center gap-2"
                         key={unblock.resourceId}
                       >
-                        <GoalResourceIcon
-                          className="size-6"
-                          resourceId={unblock.resourceId}
-                        />
+                        <GoalResourceIcon resourceId={unblock.resourceId} />
                         {t("goals.insights.unblocks", {
                           material: unblock.label,
                           count: unblock.battlesToGo,

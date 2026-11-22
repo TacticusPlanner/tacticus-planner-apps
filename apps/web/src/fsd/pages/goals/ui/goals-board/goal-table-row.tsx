@@ -17,6 +17,7 @@ import {
   GoalProgressDisplay,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
+import { goalAbilityIds } from "../shared/goal-ability-ids"
 import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
@@ -97,7 +98,8 @@ export const GoalRowCells = memo(function GoalRowCells({
   setOpenPopoverGoalId,
 }: GoalRowCellsProps) {
   const { t, i18n } = useTranslation()
-  const { getEntityName } = useGoalCatalog()
+  const catalog = useGoalCatalog()
+  const { getEntityName } = catalog
   const {
     progress,
     remaining,
@@ -158,7 +160,6 @@ export const GoalRowCells = memo(function GoalRowCells({
             actions button out of the cell and under the Projects column. */}
         <div className="flex w-max min-w-full items-center gap-3">
           <GoalUnitIcon
-            className="size-12"
             entityId={row.entityId}
             entityType={row.entityType}
             name={getEntityName(row.entityType, row.entityId)}
@@ -214,6 +215,7 @@ export const GoalRowCells = memo(function GoalRowCells({
       </TableCell>
       <TableCell>
         <GoalTargetDisplay
+          abilityIds={goalAbilityIds(row.entityType, row.entityId, catalog)}
           entityType={row.entityType}
           progress={progress}
           size="lg"

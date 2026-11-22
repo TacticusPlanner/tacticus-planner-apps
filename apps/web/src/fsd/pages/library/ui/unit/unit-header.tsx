@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { factionIcon } from "@workspace/game-catalog"
+import { allianceIcon, factionIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -10,10 +10,10 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useSignInRedirect } from "@/shared/auth"
+import { UnitPortrait } from "@/entities/unit"
 import { EntityIcon } from "@/shared/ui"
 
 import type { UnitOwnership } from "./unit-ownership"
-import { UnitPortrait } from "./unit-portrait"
 import { hasNode } from "@/shared/lib"
 
 export type ValuesMode = "base" | "custom"
@@ -30,6 +30,7 @@ export function UnitHeader({
   portraitRarity,
   name,
   factionId,
+  allianceId,
   kindLine,
   ownership,
   signedIn,
@@ -48,16 +49,18 @@ export function UnitHeader({
   portraitRarity: Rarity
   name: string
   factionId: string
+  /** The unit's alliance ("Imperial", "Chaos", "Xenos"); its emblem leads the kind line. */
+  allianceId: string
   /** Shown after the faction chip, e.g. the alliance, or "<alliance> · Machine of War". */
   kindLine: string
   ownership: UnitOwnership
   signedIn: boolean
   /** "Your unit:" label and its details, for an owned unit. */
   yourUnit?: { label: string; line: ReactNode }
-  /** Header state (b): what the values start at. */
-  notUnlockedText: string
-  /** Header state (c): what the values are. */
-  showingText: string
+  /** Header state (b): what the values start at (a label and a `ProgressionSummary`). */
+  notUnlockedText: ReactNode
+  /** Header state (c): what the values are (a label and a `ProgressionSummary`). */
+  showingText: ReactNode
   /** Shard progress towards unlocking, for a unit the player doesn't own. */
   shards?: { owned: number; needed: number }
   mode: ValuesMode
@@ -83,27 +86,23 @@ export function UnitHeader({
           src={portraitSrc}
           rarity={portraitRarity}
           greyed={ownership === "notOwned"}
-          size={isMobile ? 84 : 112}
+          size={isMobile ? "lg" : "hero"}
         />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <h1
+          <h2
             className={cn(
               "font-heading leading-tight font-bold",
               isMobile ? "text-2xl" : "text-4xl"
             )}
           >
             {name}
-          </h1>
+          </h2>
           <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1 rounded-sm bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
-              <EntityIcon
-                src={factionIcon(factionId)}
-                alt=""
-                className="size-4"
-              />
+              <EntityIcon size="inline" src={factionIcon(factionId)} alt="" />
               {t(`factions:${factionId}`, { defaultValue: factionId })}
             </span>
-            {kindLine}
+            <KindLine allianceId={allianceId} text={kindLine} />
           </p>
           {ownership === "owned" && yourUnit ? (
             <p
@@ -216,5 +215,16 @@ function UnitSignInButton() {
         ? t("common:auth.checkingSignIn")
         : t("characterUnit.header.signIn")}
     </Button>
+  )
+}
+
+/** The kind line after the faction chip, led by the alliance emblem when the alliance is known. */
+function KindLine({ allianceId, text }: { allianceId: string; text: string }) {
+  const emblem = allianceIcon(allianceId)
+  return (
+    <span className="inline-flex items-center gap-1">
+      {emblem ? <EntityIcon size="inline" src={emblem} alt="" /> : null}
+      {text}
+    </span>
   )
 }

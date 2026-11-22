@@ -1,6 +1,4 @@
 import { useTranslation } from "react-i18next"
-import { Filter } from "lucide-react"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import {
   Select,
   SelectContent,
@@ -9,8 +7,9 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { GroupByControl, SegmentedControl } from "@/shared/ui"
+import { EntityIcon, GroupByControl, SegmentedControl } from "@/shared/ui"
 
+import { goalTypeIcon } from "../model/goal-type-icon"
 import { GOAL_TYPE_VALUES } from "../model/types"
 import type { GoalKind } from "../model/types"
 
@@ -43,17 +42,16 @@ export function GoalFilters({
   onGoalTypeChange: (value: GoalTypeFilterValue) => void
 }) {
   const { t } = useTranslation()
-  const isMobile = useIsMobile()
 
   const goalTypeLabel =
     goalType === "all"
       ? t("goals.filters.allTypes")
       : t(`goals.create.goalTypes.${goalType}`)
 
-  // Mobile hides `SelectValue`, so the trigger keeps a stable purpose name and says the value
-  // through `aria-describedby`. Radix's default "item-aligned" positioning measures `SelectValue`
-  // to place the list (without it the list renders off-screen behind the scroll lock), so the
-  // content uses `position="popper"`, which positions against the trigger instead.
+  // Each type leads with its game icon, which the trigger repeats beside the chosen one.
+  // The trigger shows the chosen type on every viewport (no icon-only select: ui-style-guide rule
+  // 3). Its name stays the stable purpose ("Goal type filter") and the value is also said through
+  // `aria-describedby`. The list is positioned against the trigger (`position="popper"`).
   return (
     <Select
       onValueChange={(value) => onGoalTypeChange(value as GoalTypeFilterValue)}
@@ -64,8 +62,7 @@ export function GoalFilters({
         aria-label={t("goals.filters.typeFilterLabel")}
         data-testid="goals-type-filter"
       >
-        <Filter />
-        {isMobile ? null : <SelectValue />}
+        <SelectValue />
         <span className="sr-only" id="goals-type-filter-value">
           {goalTypeLabel}
         </span>
@@ -74,6 +71,7 @@ export function GoalFilters({
         <SelectItem value="all">{t("goals.filters.allTypes")}</SelectItem>
         {GOAL_TYPE_VALUES.map((type) => (
           <SelectItem key={type} value={type}>
+            <EntityIcon alt="" size="inline" src={goalTypeIcon(type)} />
             {t(`goals.create.goalTypes.${type}`)}
           </SelectItem>
         ))}

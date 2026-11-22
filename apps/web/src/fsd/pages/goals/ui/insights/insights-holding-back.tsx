@@ -76,7 +76,7 @@ export function InsightsHoldingBack({
                 {t("goals.insights.blockersTitle")}
               </h3>
               {allNoFarmLocation ? (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {t("goals.estimate.blocked.NoFarmLocation")}
                 </p>
               ) : null}
@@ -93,7 +93,7 @@ export function InsightsHoldingBack({
                 >
                   {blocker.resourceId !== null ? (
                     <GoalResourceIcon
-                      className="size-10"
+                      size="tile"
                       resourceId={blocker.resourceId}
                     />
                   ) : null}
@@ -154,10 +154,7 @@ export function InsightsHoldingBack({
                   data-testid="insights-bottleneck"
                   key={bottleneck.id}
                 >
-                  <GoalResourceIcon
-                    className="size-10"
-                    resourceId={bottleneck.id}
-                  />
+                  <GoalResourceIcon size="tile" resourceId={bottleneck.id} />
                   <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
                       <span className="min-w-0 font-medium">
@@ -169,8 +166,9 @@ export function InsightsHoldingBack({
                       </span>
                       <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground tabular-nums">
                         <EntityIcon
+                          size="inline"
                           alt=""
-                          className="size-4 shrink-0"
+                          className="shrink-0"
                           src={energyIconUrl}
                         />
                         {fmt(bottleneck.energyToClear)}

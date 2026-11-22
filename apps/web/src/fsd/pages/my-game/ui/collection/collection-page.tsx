@@ -8,7 +8,6 @@ import {
   ListChecks,
   LogIn,
   RefreshCw,
-  SearchX,
   X,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -30,6 +29,7 @@ import { BulkGoalDialog } from "@/features/goal-planning"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
+import { EmptyState } from "@/shared/ui"
 
 import type {
   CollectionFactionGroup,
@@ -362,23 +362,18 @@ function NoMatches({ onClear }: { onClear: () => void }) {
   const { t } = useTranslation("common")
 
   return (
-    <div
-      className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center"
-      role="status"
-      data-testid="collection-empty"
-    >
-      <SearchX aria-hidden className="size-8 text-muted-foreground" />
-      <div className="space-y-1">
-        <p className="font-semibold">{t("myGame.collection.empty.title")}</p>
-        <p className="text-sm text-muted-foreground">
-          {t("myGame.collection.empty.body")}
-        </p>
-      </div>
-      <Button variant="outline" size="sm" onClick={onClear}>
-        <X aria-hidden />
-        {t("myGame.collection.toolbar.clearFilters")}
-      </Button>
-    </div>
+    <EmptyState
+      actions={
+        <Button variant="outline" onClick={onClear}>
+          <X aria-hidden />
+          {t("myGame.collection.toolbar.clearFilters")}
+        </Button>
+      }
+      description={t("myGame.collection.empty.body")}
+      testId="collection-empty"
+      title={t("myGame.collection.empty.title")}
+      variant="no-match"
+    />
   )
 }
 
@@ -395,33 +390,27 @@ function AllHidden({
   const { t } = useTranslation("common")
 
   return (
-    <div
-      className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center"
-      role="status"
-      data-testid="collection-all-hidden"
-    >
-      <EyeOff aria-hidden className="size-8 text-muted-foreground" />
-      <div className="space-y-1">
-        <p className="font-semibold">
-          {t("myGame.collection.empty.hiddenTitle")}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {t("myGame.collection.empty.hiddenBody")}
-        </p>
-      </div>
-      <div className="flex flex-wrap justify-center gap-2">
-        <Button variant="outline" size="sm" onClick={onShowUnowned}>
-          <Eye aria-hidden />
-          {t("myGame.collection.empty.showUnowned")}
-        </Button>
-        {filtered ? (
-          <Button variant="outline" size="sm" onClick={onClear}>
-            <X aria-hidden />
-            {t("myGame.collection.toolbar.clearFilters")}
+    <EmptyState
+      actions={
+        <>
+          <Button variant="outline" onClick={onShowUnowned}>
+            <Eye aria-hidden />
+            {t("myGame.collection.empty.showUnowned")}
           </Button>
-        ) : null}
-      </div>
-    </div>
+          {filtered ? (
+            <Button variant="outline" onClick={onClear}>
+              <X aria-hidden />
+              {t("myGame.collection.toolbar.clearFilters")}
+            </Button>
+          ) : null}
+        </>
+      }
+      description={t("myGame.collection.empty.hiddenBody")}
+      icon={EyeOff}
+      testId="collection-all-hidden"
+      title={t("myGame.collection.empty.hiddenTitle")}
+      variant="no-match"
+    />
   )
 }
 

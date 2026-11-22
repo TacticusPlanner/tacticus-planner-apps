@@ -102,6 +102,7 @@ function LandingHero({
           <p className="text-xs font-semibold text-chart-4">
             {t("hero.eyebrow")}
           </p>
+          {/* eslint-disable-next-line no-restricted-syntax -- The landing page runs outside the app shell. */}
           <h1
             className="font-heading text-4xl leading-[1.05] font-semibold tracking-tight text-balance md:text-6xl"
             id="landing-title"

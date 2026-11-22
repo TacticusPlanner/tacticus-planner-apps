@@ -4,6 +4,7 @@
     "beta": "Beta"
   },
   "common": {
+    "cancel": "Cancelar",
     "close": "Cerrar",
     "back": "Atrás",
     "loading": "Cargando…"
@@ -274,7 +275,6 @@
     }
   },
   "nav": {
-    "addGoal": "Añadir objetivo",
     "dailies": "Diarias",
     "dailiesDescription": "Tareas diarias y periódicas del juego.",
     "eventLive": "Evento activo",
@@ -395,7 +395,6 @@
       "toolbar": {
         "label": "Buscar, ordenar y filtrar unidades",
         "search": "Buscar unidades",
-        "searchPlaceholder": "Buscar por nombre",
         "sort": "Orden",
         "sortOptions": {
           "rarity": "Rareza",
@@ -415,10 +414,7 @@
         "ownedOnly": "Solo desbloqueadas",
         "hideUnownedNeedsRoster": "Para ocultar las unidades no desbloqueadas hace falta una plantilla sincronizada.",
         "filters": "Filtros",
-        "filtersCount_one": "Filtros ({{count}})",
-        "filtersCount_other": "Filtros ({{count}})",
         "clearFilters": "Borrar filtros",
-        "done": "Listo",
         "alliance": "Alianza",
         "allAlliances": "Todas las alianzas",
         "faction": "Facción",
@@ -480,6 +476,14 @@
         "attackTypes": {
           "melee": "Solo cuerpo a cuerpo",
           "ranged": "A distancia"
+        },
+        "summons": "Invocaciones",
+        "summonsAny": "Todas",
+        "summonsTypes": {
+          "none": "Sin invocaciones",
+          "optional": "Invocación opcional",
+          "conditional": "Invocación condicional",
+          "forced": "Invocación forzada"
         },
         "hitsFrom": "Golpes mínimos",
         "hitsTo": "Golpes máximos",
@@ -610,7 +614,7 @@
             "I_Defensive": "Objeto defensivo"
           }
         },
-        "closeOptions": "Cerrar",
+        "optionsDone": "Listo",
         "menuItem": "Comparar con una instantánea"
       },
       "snapshots": {
@@ -969,8 +973,7 @@
       "dailyEnergy": "Energía por día",
       "xpBookRarity": "Rareza de libro de XP",
       "xpBookRarityHint": "La guía de nivel requerido muestra su cantidad adicional de libros en esta rareza.",
-      "save": "Guardar ajustes",
-      "cancel": "Cancelar",
+      "done": "Listo",
       "error": "No se pudieron guardar los ajustes de planificación."
     },
     "v1Import": {
@@ -1264,28 +1267,23 @@
       "moveToPriorityTitle": "Mover a prioridad",
       "moveToPriorityLabel": "Prioridad (1–{{total}})",
       "moveToPriorityDescription": "Introduce la prioridad que debe tener este objetivo, de 1 a {{total}}.",
-      "moveToPriorityConfirm": "Mover",
+      "moveToPriorityConfirm": "Mover objetivo",
       "moveToPriorityCancel": "Cancelar",
       "movedTo": "Movido a la prioridad {{position}} de {{total}}.",
       "edit": "Editar"
     },
     "bulk": {
       "pause": "Pausar",
-      "pauseCount": "Pausar ({{count}})",
       "resume": "Reanudar",
-      "resumeCount": "Reanudar ({{count}})",
       "addToProject": "Añadir al proyecto",
-      "addToProjectCount": "Añadir al proyecto ({{count}})",
       "delete": "Eliminar",
-      "deleteCount": "Eliminar ({{count}})",
       "selected_one": "{{count}} seleccionado",
       "selected_other": "{{count}} seleccionados",
       "selectAll": "Seleccionar todos los objetivos",
       "selectRow": "Seleccionar {{entity}}",
       "selectMode": "Seleccionar objetivos",
       "selectDone": "Listo",
-      "removeFromProject": "Quitar del proyecto",
-      "removeFromProjectCount": "Quitar del proyecto ({{count}})"
+      "removeFromProject": "Quitar del proyecto"
     },
     "delete": {
       "title_one": "¿Eliminar este objetivo?",
@@ -1337,9 +1335,9 @@
       "cancel": "Cancelar",
       "edit": "Editar",
       "editTitle": "Editar proyecto",
-      "newProjectTitle": "Nuevo proyecto",
+      "newProjectTitle": "Crear proyecto",
       "formDescription": "Asigna nombre, descripción y color a este proyecto.",
-      "newProject": "Nuevo proyecto",
+      "newProject": "Crear proyecto",
       "name": "Nombre",
       "description": "Descripción",
       "color": "Color",
@@ -1360,7 +1358,6 @@
       "dashboardIntro": "Un proyecto es una selección de tus objetivos con nombre. Ten varios para agrupar cosas distintas (ampliar la plantilla, un evento, una mejora a largo plazo) y consulta cada uno por separado. La prioridad es un único orden para todos los objetivos y se gestiona en la página Objetivos.",
       "emptyProjectTitle": "Este proyecto aún no tiene objetivos",
       "emptyProjectDescription": "Usa «Gestionar objetivos» en la página de Proyectos para añadir objetivos existentes, o «Crear objetivo» para crear uno nuevo.",
-      "scopeLabel": "Alcance por proyecto",
       "scopeAll": "Todos los objetivos",
       "reorderGoals": "Reordenar",
       "reorderDone": "Listo",
@@ -1409,7 +1406,8 @@
       "projectsSaveFailed": "No se pudieron guardar los proyectos. Revisa tu conexión e inténtalo de nuevo.",
       "addToProjectsDescription": "Elige uno o varios proyectos para añadir los objetivos seleccionados, o crea uno nuevo.",
       "addToProjectsConfirm": "Añadir a proyectos",
-      "addToProjectsConfirmCount": "Añadir a {{count}} proyectos"
+      "addToProjectsConfirmCount": "Añadir a {{count}} proyectos",
+      "saveProjects": "Guardar proyectos"
     },
     "toasts": {
       "statusConflict": "No se pudo cambiar {{goal}}: {{reason}}",
@@ -1742,6 +1740,7 @@
       "groupByUnit": "Agrupar por unidad",
       "reachedIndicatorLabel": "Hay objetivos alcanzados esperando ser vistos",
       "statusFilterLabel": "Filtro de estado de objetivos",
+      "projectFilterLabel": "Filtro de proyecto de objetivos",
       "groupCount_one": "{{count}} objetivo",
       "groupCount_other": "{{count}} objetivos",
       "collapseAllGroups": "Contraer todo",
@@ -2032,7 +2031,7 @@
         "projectLabel": "Proyecto",
         "projectPlaceholder": "Elige un proyecto",
         "noReference": "No hay otro proyecto con el que ordenarlos",
-        "confirm": "Mover",
+        "confirm": "Mover objetivos",
         "cancel": "Cancelar"
       },
       "sortBlocksReorder": "Los objetivos están ordenados por fecha de fin, así que no puedes arrastrarlos para cambiar su prioridad.",
@@ -2040,7 +2039,7 @@
     },
     "edit": {
       "title": "Editar objetivo",
-      "save": "Guardar",
+      "save": "Guardar objetivo",
       "cancel": "Cancelar",
       "close": "Cerrar",
       "loadError": "No se pudo cargar este objetivo. Puede que ya no exista.",
@@ -2216,7 +2215,7 @@
       },
       "bottomNavigation": {
         "addGoal": {
-          "title": "Añadir objetivo",
+          "title": "Crear objetivo",
           "content": "Crea objetivos de Personaje o Máquina de Guerra y elige uno o varios proyectos. El proyecto predeterminado se selecciona automáticamente."
         },
         "sync": {
@@ -2485,6 +2484,74 @@
           "content": "En cuanto edites algo, aparece abajo una barra con Guardar y Descartar. Se te preguntará antes de salir con cambios sin guardar."
         }
       }
+    },
+    "campaigns": {
+      "steps": {
+        "summary": {
+          "title": "Progreso de campañas",
+          "content": "Cuánto llevas de las campañas normales y espejo, según tu progreso sincronizado."
+        },
+        "stories": {
+          "title": "Historias y recorridos",
+          "content": "Cada historia muestra sus recorridos Estándar y Élite y las batallas que has superado. Usa «Editar medallas» en un recorrido para marcar las batallas que ganaste con menos de 3 medallas, y las incursiones diarias las planificarán como batallas para jugar a mano."
+        }
+      }
+    },
+    "incursions": {
+      "steps": {
+        "rules": {
+          "title": "Cómo funcionan las Incursiones",
+          "content": "Ábrelo para ver las fichas de partida, quién puede unirse a un equipo y cómo se desarrolla una partida."
+        },
+        "list": {
+          "title": "Máquinas de guerra",
+          "content": "Una tarjeta por cada máquina de guerra de Incursión, la más nueva primero, con si la tienes y las estrellas que has ganado. Abre una tarjeta para ver sus niveles, mapas y equipos."
+        }
+      }
+    },
+    "insights": {
+      "steps": {
+        "toolbar": {
+          "title": "Alcance",
+          "content": "Informa sobre todos tus objetivos activos o sobre un proyecto. Lugares decide si el farmeo ordena solo las batallas que has alcanzado o todas."
+        },
+        "outlook": {
+          "title": "Previsión del plan",
+          "content": "Cuándo termina el plan con tu energía diaria, qué objetivos marcan esa fecha y cuáles quedan fuera de ella."
+        },
+        "holdingBack": {
+          "title": "Qué te frena",
+          "content": "Lo que ningún farmeo resuelve y, después, los recursos que más energía cuestan en los nodos elegidos."
+        },
+        "farming": {
+          "title": "Dónde farmear",
+          "content": "Las campañas y eventos cuyas batallas sueltan más de lo que necesitan tus objetivos, y las campañas que conviene avanzar."
+        },
+        "missing": {
+          "title": "Aún falta",
+          "content": "Todo lo que tus objetivos necesitan más allá de tu inventario actual, gastando tus existencias en orden de prioridad."
+        }
+      }
+    },
+    "guild": {
+      "steps": {
+        "summary": {
+          "title": "Tu gremio",
+          "content": "El nombre, la etiqueta y el nivel del gremio, y cuándo se sincronizó por última vez."
+        },
+        "actions": {
+          "title": "Sincronizar y eliminar",
+          "content": "Un Líder o Colíder puede sincronizar el gremio para actualizar sus miembros, o eliminarlo de Planner."
+        },
+        "members": {
+          "title": "Miembros",
+          "content": "Todos los del gremio, con su rol, nivel, última actividad en el juego y en Planner, y si han vinculado una cuenta de Planner."
+        },
+        "apiKey": {
+          "title": "Clave API del gremio",
+          "content": "Planner sincroniza el gremio con esta clave. Un Líder o Colíder puede sustituirla aquí tras regenerarla o revocarla."
+        }
+      }
     }
   },
   "uiKit": {
@@ -2622,5 +2689,16 @@
     "layout": "Diseño",
     "done": "Listo",
     "none": "Ninguno"
+  },
+  "filtersControl": {
+    "button": "Filtros",
+    "buttonActive": "Filtros, {{count}} activos",
+    "title": "Filtros",
+    "clear": "Borrar filtros",
+    "done": "Listo"
+  },
+  "searchField": {
+    "placeholder": "Buscar por nombre",
+    "clear": "Borrar búsqueda"
   }
 }

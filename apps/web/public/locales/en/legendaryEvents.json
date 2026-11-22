@@ -79,7 +79,7 @@
   "runInputs": {
     "button": "Inputs",
     "title": "Run inputs",
-    "description": "Missions and packs the game does not report for the current run. Missions finish in order, so set how many are done. They feed the reward outlook on the Run status card.",
+    "description": "Missions and packs the game does not report for the current run.",
     "run": "Run {{run}}",
     "phase": {
       "done": "Done",
@@ -195,7 +195,6 @@
   },
   "eventBoard": {
     "title": "Event board",
-    "description": "Each shown lane's objectives, the units that fit each and the lane's teams side by side. Pick objectives to see the units that fit all of them, or a unit to start a team with it.",
     "noTeam": "No team",
     "cleared": "Cleared in {{cleared}} of {{total}} battles",
     "clearSelection": "Clear selection",
@@ -274,7 +273,7 @@
     "noUnlocked": "None of your unlocked units can play in this lane.",
     "noneInTeams": "Your teams here have no units yet.",
     "noneMatch": "No unit satisfies these objectives.",
-    "clearFilter": "Clear filter",
+    "clearFilter": "Clear filters",
     "rosterNotSynced": "Your roster hasn't synced yet, so ownership, rarity and rank aren't shown.",
     "progressUnavailable": "Synced progress unavailable, so nothing counts as scored.",
     "loading": "Loading units…",
@@ -284,8 +283,6 @@
       "notAllowedLabel": "{{lane}}: not allowed",
       "laneFigure": "{{lane}}: {{points}}"
     },
-    "filters": "Filters",
-    "filtersCount": "Filters ({{count}})",
     "lanes": "Lanes",
     "lanesAll": "All lanes",
     "lanesCount": "{{count}} lanes",
@@ -383,7 +380,7 @@
   },
   "teams": {
     "title": "Teams",
-    "add": "Add team",
+    "add": "Create team",
     "empty": "No teams on {{lane}} yet.",
     "loading": "Loading teams…",
     "loadError": "Your teams could not be loaded.",
@@ -960,7 +957,6 @@
     },
     "search": {
       "label": "Search units",
-      "placeholder": "Search units",
       "clear": "Clear search"
     },
     "sort": {
@@ -1233,7 +1229,7 @@
       "modeLabel": "Your teams",
       "restoreAll": "Restore all",
       "undo": "Undo",
-      "add": "Add a team",
+      "add": "Create a team",
       "editTeam": "Edit {{name}}",
       "lanesLabel": "Lanes",
       "depthOf": "Run {{run}}: {{depth}} of {{battles}} battles"
@@ -1243,7 +1239,7 @@
     },
     "review": {
       "project": "Project",
-      "newProject": "New project",
+      "newProject": "Create project",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Goals to create",
       "teams": "Teams",

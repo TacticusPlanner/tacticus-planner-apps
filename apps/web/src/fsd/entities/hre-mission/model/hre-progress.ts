@@ -174,14 +174,20 @@ export function isMissionComplete(
   return state.progress[0] >= first.target && state.progress[1] >= second.target
 }
 
-/** "Mission complete": keeps the finished values, then the next mission with both values at 0. */
+/**
+ * "Mission complete", allowed at any progress: the finished mission is kept with both objectives at
+ * their targets, then the next mission with both values at 0.
+ */
 export function advanceMission(
   state: HreProgress,
   missions: readonly HreMission[]
 ): HreProgress {
   const allDone = hreAllDone(missions)
   const byMission = { ...state.byMission }
-  if (state.mission < allDone) byMission[state.mission] = state.progress
+  if (state.mission < allDone) {
+    const [first, second] = hreMission(missions, state.mission).objectives
+    byMission[state.mission] = [first.target, second.target]
+  }
   return {
     ...state,
     mission: Math.min(state.mission + 1, allDone),

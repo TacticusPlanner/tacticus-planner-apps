@@ -4,6 +4,7 @@
     "beta": "Beta"
   },
   "common": {
+    "cancel": "Abbrechen",
     "close": "Schließen",
     "back": "Zurück",
     "loading": "Wird geladen…"
@@ -274,7 +275,6 @@
     }
   },
   "nav": {
-    "addGoal": "Ziel hinzufügen",
     "dailies": "Tägliches",
     "dailiesDescription": "Tägliche und wiederkehrende Spielaufgaben.",
     "eventLive": "Event aktiv",
@@ -395,7 +395,6 @@
       "toolbar": {
         "label": "Einheiten suchen, sortieren und filtern",
         "search": "Einheiten suchen",
-        "searchPlaceholder": "Nach Namen suchen",
         "sort": "Sortierung",
         "sortOptions": {
           "rarity": "Seltenheit",
@@ -415,10 +414,7 @@
         "ownedOnly": "Nur freigeschaltete",
         "hideUnownedNeedsRoster": "Zum Ausblenden nicht freigeschalteter Einheiten braucht es einen synchronisierten Kader.",
         "filters": "Filter",
-        "filtersCount_one": "Filter ({{count}})",
-        "filtersCount_other": "Filter ({{count}})",
         "clearFilters": "Filter zurücksetzen",
-        "done": "Fertig",
         "alliance": "Allianz",
         "allAlliances": "Alle Allianzen",
         "faction": "Fraktion",
@@ -480,6 +476,14 @@
         "attackTypes": {
           "melee": "Nur Nahkampf",
           "ranged": "Fernkampf"
+        },
+        "summons": "Beschwörungen",
+        "summonsAny": "Alle",
+        "summonsTypes": {
+          "none": "Keine Beschwörung",
+          "optional": "Optionale Beschwörung",
+          "conditional": "Bedingte Beschwörung",
+          "forced": "Erzwungene Beschwörung"
         },
         "hitsFrom": "Wenigste Treffer",
         "hitsTo": "Meiste Treffer",
@@ -610,7 +614,7 @@
             "I_Defensive": "Defensiv-Gegenstand"
           }
         },
-        "closeOptions": "Schließen",
+        "optionsDone": "Fertig",
         "menuItem": "Mit einem Snapshot vergleichen"
       },
       "snapshots": {
@@ -969,8 +973,7 @@
       "dailyEnergy": "Energie pro Tag",
       "xpBookRarity": "XP-Buch-Seltenheit",
       "xpBookRarityHint": "Die Anforderungen zum Levelaufstieg zeigen die zusätzliche Buchanzahl in dieser Seltenheit.",
-      "save": "Einstellungen speichern",
-      "cancel": "Abbrechen",
+      "done": "Fertig",
       "error": "Die Planungseinstellungen konnten nicht gespeichert werden."
     },
     "v1Import": {
@@ -1264,28 +1267,23 @@
       "moveToPriorityTitle": "Auf Priorität verschieben",
       "moveToPriorityLabel": "Priorität (1–{{total}})",
       "moveToPriorityDescription": "Gib die Priorität ein, die dieses Ziel erhalten soll, von 1 bis {{total}}.",
-      "moveToPriorityConfirm": "Verschieben",
+      "moveToPriorityConfirm": "Ziel verschieben",
       "moveToPriorityCancel": "Abbrechen",
       "movedTo": "Auf Priorität {{position}} von {{total}} verschoben.",
       "edit": "Bearbeiten"
     },
     "bulk": {
       "pause": "Pausieren",
-      "pauseCount": "Pausieren ({{count}})",
       "resume": "Fortsetzen",
-      "resumeCount": "Fortsetzen ({{count}})",
       "addToProject": "Zu Projekt hinzufügen",
-      "addToProjectCount": "Zu Projekt hinzufügen ({{count}})",
       "delete": "Löschen",
-      "deleteCount": "Löschen ({{count}})",
       "selected_one": "{{count}} ausgewählt",
       "selected_other": "{{count}} ausgewählt",
       "selectAll": "Alle Ziele auswählen",
       "selectRow": "{{entity}} auswählen",
       "selectMode": "Ziele auswählen",
       "selectDone": "Fertig",
-      "removeFromProject": "Aus Projekt entfernen",
-      "removeFromProjectCount": "Aus Projekt entfernen ({{count}})"
+      "removeFromProject": "Aus Projekt entfernen"
     },
     "delete": {
       "title_one": "Dieses Ziel löschen?",
@@ -1337,9 +1335,9 @@
       "cancel": "Abbrechen",
       "edit": "Bearbeiten",
       "editTitle": "Projekt bearbeiten",
-      "newProjectTitle": "Neues Projekt",
+      "newProjectTitle": "Projekt erstellen",
       "formDescription": "Benenne, beschreibe und färbe dieses Projekt.",
-      "newProject": "Neues Projekt",
+      "newProject": "Projekt erstellen",
       "name": "Name",
       "description": "Beschreibung",
       "color": "Farbe",
@@ -1360,7 +1358,6 @@
       "dashboardIntro": "Ein Projekt ist eine benannte Auswahl deiner Ziele. Lege mehrere an, um Verschiedenes zu bündeln – einen Kaderausbau, ein Event, einen langfristigen Aufbau – und durchsuche jedes für sich. Die Priorität ist eine einzige Reihenfolge für alle Ziele und wird auf der Seite „Ziele“ verwaltet.",
       "emptyProjectTitle": "Dieses Projekt hat noch keine Ziele",
       "emptyProjectDescription": "Füge über „Ziele verwalten“ auf der Projektseite vorhandene Ziele hinzu oder erstelle mit „Ziel erstellen“ ein neues.",
-      "scopeLabel": "Projektbereich",
       "scopeAll": "Alle Ziele",
       "reorderGoals": "Neu anordnen",
       "reorderDone": "Fertig",
@@ -1409,7 +1406,8 @@
       "projectsSaveFailed": "Die Projekte konnten nicht gespeichert werden. Prüfe deine Verbindung und versuche es erneut.",
       "addToProjectsDescription": "Wähle ein oder mehrere Projekte für die ausgewählten Ziele oder erstelle ein neues.",
       "addToProjectsConfirm": "Zu Projekten hinzufügen",
-      "addToProjectsConfirmCount": "Zu {{count}} Projekten hinzufügen"
+      "addToProjectsConfirmCount": "Zu {{count}} Projekten hinzufügen",
+      "saveProjects": "Projekte speichern"
     },
     "toasts": {
       "statusConflict": "{{goal}} konnte nicht geändert werden: {{reason}}",
@@ -1742,6 +1740,7 @@
       "groupByUnit": "Nach Einheit gruppieren",
       "reachedIndicatorLabel": "Erreichte Ziele warten darauf, angesehen zu werden",
       "statusFilterLabel": "Zielstatus-Filter",
+      "projectFilterLabel": "Zielprojekt-Filter",
       "groupCount_one": "{{count}} Ziel",
       "groupCount_other": "{{count}} Ziele",
       "collapseAllGroups": "Alle einklappen",
@@ -2032,7 +2031,7 @@
         "projectLabel": "Projekt",
         "projectPlaceholder": "Projekt wählen",
         "noReference": "Kein anderes Projekt zum Einordnen",
-        "confirm": "Verschieben",
+        "confirm": "Ziele verschieben",
         "cancel": "Abbrechen"
       },
       "sortBlocksReorder": "Die Ziele sind nach Fertigstellung sortiert, daher kannst du sie nicht ziehen, um ihre Priorität zu ändern.",
@@ -2040,7 +2039,7 @@
     },
     "edit": {
       "title": "Ziel bearbeiten",
-      "save": "Speichern",
+      "save": "Ziel speichern",
       "cancel": "Abbrechen",
       "close": "Schließen",
       "loadError": "Dieses Ziel konnte nicht geladen werden. Möglicherweise existiert es nicht mehr.",
@@ -2216,7 +2215,7 @@
       },
       "bottomNavigation": {
         "addGoal": {
-          "title": "Ziel hinzufügen",
+          "title": "Ziel erstellen",
           "content": "Erstelle Ziele für Charaktere oder Kriegsmaschinen und wähle ein oder mehrere Projekte. Das Standardprojekt ist automatisch ausgewählt."
         },
         "sync": {
@@ -2485,6 +2484,74 @@
           "content": "Sobald du etwas änderst, erscheint unten eine Leiste mit Speichern und Verwerfen. Vor dem Verlassen mit ungespeicherten Änderungen wirst du gefragt."
         }
       }
+    },
+    "campaigns": {
+      "steps": {
+        "summary": {
+          "title": "Kampagnenfortschritt",
+          "content": "Wie weit du in den normalen Kampagnen und Spiegelkampagnen bist, laut deinem synchronisierten Fortschritt."
+        },
+        "stories": {
+          "title": "Geschichten und Strecken",
+          "content": "Jede Geschichte zeigt ihre Standard- und Elite-Strecken und die Kämpfe, die du geschafft hast. Mit „Medaillen bearbeiten“ markierst du Kämpfe mit weniger als 3 Medaillen, damit die täglichen Raids sie als manuell zu spielende Kämpfe planen."
+        }
+      }
+    },
+    "incursions": {
+      "steps": {
+        "rules": {
+          "title": "So funktionieren Incursions",
+          "content": "Hier stehen die Lauf-Tokens, wer einem Team beitreten kann und wie ein Lauf abläuft."
+        },
+        "list": {
+          "title": "Kriegsmaschinen",
+          "content": "Eine Karte pro Incursion-Kriegsmaschine, die neueste zuerst, mit Besitz und verdienten Sternen. Öffne eine Karte für Stufen, Laufkarten und Teams."
+        }
+      }
+    },
+    "insights": {
+      "steps": {
+        "toolbar": {
+          "title": "Umfang",
+          "content": "Berichte über alle aktiven Ziele oder ein Projekt. „Orte“ legt fest, ob beim Farmen nur erreichte Kämpfe oder alle Kämpfe gewertet werden."
+        },
+        "outlook": {
+          "title": "Planausblick",
+          "content": "Wann der Plan bei deiner täglichen Energie fertig ist, welche Ziele das Datum bestimmen und welche nicht darin enthalten sind."
+        },
+        "holdingBack": {
+          "title": "Was dich aufhält",
+          "content": "Was kein Farmen löst, dann die Ressourcen, die an deinen gewählten Knoten die meiste Energie kosten."
+        },
+        "farming": {
+          "title": "Wo farmen",
+          "content": "Die Kampagnen und Events, deren Kämpfe am meisten von dem droppen, was deine Ziele brauchen, und die Kampagnen, die sich als Nächstes lohnen."
+        },
+        "missing": {
+          "title": "Noch fehlend",
+          "content": "Alles, was deine Ziele über dein aktuelles Inventar hinaus brauchen, wobei dein Bestand in Prioritätsreihenfolge verbraucht wird."
+        }
+      }
+    },
+    "guild": {
+      "steps": {
+        "summary": {
+          "title": "Deine Gilde",
+          "content": "Name, Kürzel und Stufe der Gilde und wann sie zuletzt synchronisiert wurde."
+        },
+        "actions": {
+          "title": "Synchronisieren und löschen",
+          "content": "Ein Anführer oder Ko-Anführer kann die Gilde synchronisieren, um die Mitglieder zu aktualisieren, oder sie aus Planner löschen."
+        },
+        "members": {
+          "title": "Mitglieder",
+          "content": "Alle in der Gilde mit Rolle, Stufe, letzter Aktivität im Spiel und in Planner und ob sie ein Planner-Konto verknüpft haben."
+        },
+        "apiKey": {
+          "title": "Gilden-API-Schlüssel",
+          "content": "Planner synchronisiert die Gilde mit diesem Schlüssel. Ein Anführer oder Ko-Anführer kann ihn hier ersetzen, nachdem er neu erstellt oder widerrufen wurde."
+        }
+      }
     }
   },
   "uiKit": {
@@ -2622,5 +2689,16 @@
     "layout": "Layout",
     "done": "Fertig",
     "none": "Keine"
+  },
+  "filtersControl": {
+    "button": "Filter",
+    "buttonActive": "Filter, {{count}} aktiv",
+    "title": "Filter",
+    "clear": "Filter zurücksetzen",
+    "done": "Fertig"
+  },
+  "searchField": {
+    "placeholder": "Nach Namen suchen",
+    "clear": "Suche zurücksetzen"
   }
 }

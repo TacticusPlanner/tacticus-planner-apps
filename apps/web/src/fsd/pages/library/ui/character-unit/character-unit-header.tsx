@@ -10,7 +10,7 @@ import {
   rankOrder,
 } from "@workspace/game-domain"
 import type { Progression, Rank, UnitId } from "@workspace/game-domain"
-import { ProgressionSelect, RankSelect, progressionText } from "@/shared/ui"
+import { ProgressionSelect, ProgressionSummary, RankSelect } from "@/shared/ui"
 
 import { UnitHeader } from "../unit/unit-header"
 import type { ValuesMode } from "../unit/unit-header"
@@ -25,6 +25,7 @@ export function CharacterUnitHeader({
   name,
   factionId,
   alliance,
+  allianceId,
   ownership,
   signedIn,
   baseValues,
@@ -42,6 +43,7 @@ export function CharacterUnitHeader({
   name: string
   factionId: string
   alliance: string
+  allianceId: string
   ownership: UnitOwnership
   signedIn: boolean
   /** The player's values (owned) or the starting values (otherwise). */
@@ -63,10 +65,16 @@ export function CharacterUnitHeader({
   const { t } = useTranslation(["library", "factions", "progression"])
   const rarity = progressionRarity(shown.progression)
   const baseRarity = progressionRarity(baseValues.progression)
-  const describe = (values: ShownValues) => ({
-    progression: progressionText(t, values.progression),
-    rank: t(`progression:ranks.${values.rank}`, { defaultValue: values.rank }),
-  })
+  const startingValues = (label: string, details: readonly string[]) => (
+    <>
+      {label}{" "}
+      <ProgressionSummary
+        progression={baseValues.progression}
+        rank={baseValues.rank}
+        details={details}
+      />
+    </>
+  )
   const rankOptions = rankOrder.filter(
     (rank) =>
       rankIndex(rank) <= rankIndex(lastRank) &&
@@ -86,6 +94,7 @@ export function CharacterUnitHeader({
       portraitRarity={ownership === "notOwned" ? baseRarity : rarity}
       name={name}
       factionId={factionId}
+      allianceId={allianceId}
       kindLine={alliance}
       ownership={ownership}
       signedIn={signedIn}
@@ -94,11 +103,13 @@ export function CharacterUnitHeader({
           ? { label: t("characterUnit.header.yourUnit"), line: yourUnitLine }
           : undefined
       }
-      notUnlockedText={t(
-        "characterUnit.header.notUnlocked",
-        describe(baseValues)
+      notUnlockedText={startingValues(
+        t("characterUnit.header.notUnlocked"),
+        []
       )}
-      showingText={t("characterUnit.header.showing", describe(baseValues))}
+      showingText={startingValues(t("characterUnit.header.showing"), [
+        t("characterUnit.header.abilitiesStart"),
+      ])}
       shards={shards}
       mode={mode}
       onModeChange={onModeChange}

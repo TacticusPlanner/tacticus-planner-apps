@@ -39,11 +39,12 @@ query parameter SHALL NOT be supported as canonical Library URLs.
 ### Requirement: Collection routes without an entity resolve safely
 
 When a Library collection route is opened without an entity ID, the
-Characters collection (`/library/characters`) SHALL show the characters list
-page and the Machines of War collection (`/library/machines-of-war`) SHALL show
-the Machines of War list page; neither SHALL redirect to an entity. Every other
-collection with available records SHALL replace its URL with the canonical URL
-for the first available entity. While records are loading, no collection SHALL
+Characters collection (`/library/characters`), the Machines of War collection
+(`/library/machines-of-war`) and the NPCs collection (`/library/npcs`) SHALL
+show their list page, and the Raid Bosses collection (`/library/raid-bosses`)
+SHALL show its season reference; none SHALL redirect to an entity. Each item
+opens its own page with back and Previous / Next; no collection shows a list
+and an item side by side. While records are loading, no collection SHALL
 select or navigate to an arbitrary ID. When a collection has no available
 records, it SHALL remain on the collection URL and present the collection's
 no-records state rather than fabricating a selection.
@@ -62,10 +63,10 @@ no-records state rather than fabricating a selection.
 - **THEN** the URL stays `/library/machines-of-war` and the Machines of War list
   page is shown, with each MoW linking to `/library/machines-of-war/{mowId}`
 
-#### Scenario: Another collection selects its first available entity
+#### Scenario: NPCs collection shows the NPC list
 
 - **WHEN** a user opens `/library/npcs` after the NPC collection is available
-- **THEN** the browser is redirected to `/library/npcs/{firstAvailableNpcId}`
+- **THEN** the URL stays `/library/npcs` and the NPC list is shown, with each NPC linking to `/library/npcs/{groupId}`
 
 #### Scenario: A collection remains stable while loading
 

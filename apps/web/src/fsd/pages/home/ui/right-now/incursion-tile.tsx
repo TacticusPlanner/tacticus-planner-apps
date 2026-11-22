@@ -34,8 +34,9 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
       to={INCURSIONS_PATH}
     >
       <EntityIcon
+        size="tile"
         alt=""
-        className="size-12 shrink-0"
+        className="shrink-0"
         src={eventIcon("incursion", "Incursion")}
       />
       <span className="min-w-0 flex-1 space-y-1">
@@ -72,8 +73,9 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
             data-testid="home-incursion-mow"
           >
             <EntityIcon
+              size="inline"
               alt=""
-              className="size-5 rounded-sm"
+              className="rounded-sm"
               src={mowIcon(featured.mowId as UnitId)}
             />
             {featured.arrivesMs === null

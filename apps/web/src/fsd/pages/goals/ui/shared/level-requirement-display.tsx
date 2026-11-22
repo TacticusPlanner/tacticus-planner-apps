@@ -73,7 +73,7 @@ export function LevelRequirementLine({
       role="img"
       title={bookLabel}
     >
-      <EntityIcon alt="" className="size-4" src={xpBookIcon(book.rarity)} />
+      <EntityIcon size="inline" alt="" src={xpBookIcon(book.rarity)} />
       <span aria-hidden>{bookText}</span>
     </span>
   ) : null

@@ -28,6 +28,8 @@ import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName, useUnitSearchNames } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
+import { EmptyState, HowToRead } from "@/shared/ui"
+
 import { MasterTableControls } from "./master-table-controls"
 import { MasterTableList } from "./master-table-list"
 import { MasterTableTable } from "./master-table-table"
@@ -377,19 +379,18 @@ export function MasterTablePage() {
           <Skeleton className="h-12 w-full rounded-xl" />
         </div>
       ) : rows.length === 0 ? (
-        <div
-          className="flex flex-col items-start gap-2 rounded-xl border border-dashed p-4"
-          data-testid="master-table-no-rows"
-        >
-          <p className="text-sm text-muted-foreground">
-            {t("masterTable.noRows")}
-          </p>
-          {q ? (
-            <Button onClick={() => commitQuery("")} size="sm" variant="outline">
-              {t("masterTable.search.clear")}
-            </Button>
-          ) : null}
-        </div>
+        <EmptyState
+          actions={
+            q ? (
+              <Button onClick={() => commitQuery("")} variant="outline">
+                {t("masterTable.search.clear")}
+              </Button>
+            ) : null
+          }
+          description={t("masterTable.noRows")}
+          testId="master-table-no-rows"
+          variant={q ? "no-match" : "empty"}
+        />
       ) : isMobile ? (
         <MasterTableList
           eventIds={state.selectedEventIds}
@@ -471,19 +472,16 @@ function MasterTableNotes({
 function PointsExplanation() {
   const { t } = useTranslation("legendaryEvents")
   return (
-    <details
-      className="rounded-xl border px-3 py-2 text-sm"
+    <HowToRead
       data-testid="master-table-explanation"
+      summary={t("masterTable.explanation.title")}
     >
-      <summary className="cursor-pointer font-medium">
-        {t("masterTable.explanation.title")}
-      </summary>
-      <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-muted-foreground">
+      <ul className="flex list-disc flex-col gap-1 pl-5">
         <li>{t("masterTable.explanation.remaining")}</li>
         <li>{t("masterTable.explanation.all")}</li>
         <li>{t("masterTable.explanation.estimated")}</li>
         <li>{t("masterTable.explanation.inTeams")}</li>
       </ul>
-    </details>
+    </HowToRead>
   )
 }

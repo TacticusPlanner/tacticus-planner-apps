@@ -7,14 +7,6 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import { Plus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@workspace/ui/components/sheet"
 import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
@@ -32,7 +24,16 @@ import {
 } from "@/entities/project"
 import type { ProjectSummary } from "@/entities/project"
 import { ApiError } from "@/shared/api"
-import { RankBadge } from "@/shared/ui"
+import {
+  GroupByControl,
+  RankBadge,
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
@@ -193,7 +194,6 @@ export function AddGoalsToProjectSheet({
         {text} ·{" "}
         <RankBadge
           className="align-text-bottom"
-          iconClassName="size-4"
           rank={target.rank}
           showLabel={false}
           tooltip
@@ -346,123 +346,123 @@ export function AddGoalsToProjectSheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        className="overflow-y-auto"
-        data-testid="add-goals-to-project-sheet"
-      >
-        <SheetHeader>
-          <SheetTitle>{t("goals.project.addGoalsTitle")}</SheetTitle>
-          <SheetDescription>
-            {t("goals.project.addGoalsDescription", { project: project.name })}
-          </SheetDescription>
-        </SheetHeader>
+    <ResponsiveDialog
+      data-testid="add-goals-to-project-sheet"
+      open={open}
+      onOpenChange={onOpenChange}
+      width="form"
+    >
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>
+          {t("goals.project.addGoalsTitle")}
+        </ResponsiveDialogTitle>
+        <ResponsiveDialogDescription>
+          {t("goals.project.addGoalsDescription", { project: project.name })}
+        </ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
 
-        <div className="grid gap-3 px-4">
-          <Button
-            data-testid="add-goals-create-new"
-            onClick={() => {
-              setDraftSuspended(true)
-              onOpenChange(false)
-              onCreateGoal()
-            }}
-            variant="outline"
-          >
-            <Plus />
-            {t("goals.project.createNewGoal")}
-          </Button>
-          <Input
-            aria-label={t("goals.project.addGoalsSearch")}
-            data-testid="add-goals-search"
-            placeholder={t("goals.project.addGoalsSearch")}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
+      <ResponsiveDialogBody className="gap-3">
+        <Button
+          data-testid="add-goals-create-new"
+          onClick={() => {
+            setDraftSuspended(true)
+            onOpenChange(false)
+            onCreateGoal()
+          }}
+          variant="outline"
+        >
+          <Plus />
+          {t("goals.project.createNewGoal")}
+        </Button>
+        <Input
+          aria-label={t("goals.project.addGoalsSearch")}
+          data-testid="add-goals-search"
+          placeholder={t("goals.project.addGoalsSearch")}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+        <GroupByControl
+          onValueChange={setGroup}
+          options={GROUP_OPTIONS.map((option) => ({
+            value: option,
+            testId: `add-goals-group-${option}`,
+            label:
+              option === "none"
+                ? t("goals.filters.groupNone")
+                : option === "unit"
+                  ? t("goals.filters.groupByUnit")
+                  : t("goals.filters.groupByType"),
+          }))}
+          value={group}
+        />
+
+        {conflict ? (
+          <MembershipConflictBanner
+            baselineIds={baselineIds}
+            conflict={conflict}
+            goalName={goalName}
+            onRefresh={refreshMembership}
           />
-          <div
-            aria-label={t("goals.filters.groupByLabel")}
-            className="flex flex-wrap gap-1"
-            role="group"
-          >
-            {GROUP_OPTIONS.map((option) => (
-              <Button
-                aria-pressed={group === option}
-                data-testid={`add-goals-group-${option}`}
-                key={option}
-                onClick={() => setGroup(option)}
-                size="sm"
-                variant={group === option ? "secondary" : "outline"}
+        ) : null}
+
+        {baseline === null ? (
+          <div className="flex justify-center py-6">
+            <Spinner />
+          </div>
+        ) : groups.length === 0 ? (
+          <p className="py-6 text-center text-sm text-muted-foreground">
+            {t("goals.project.addGoalsEmpty")}
+          </p>
+        ) : (
+          <div className="grid gap-3">
+            {groups.map((entry) => (
+              <section
+                className="grid gap-1"
+                data-testid={`add-goals-group-section-${entry.key}`}
+                key={entry.key}
               >
-                {option === "none"
-                  ? t("goals.filters.groupNone")
-                  : option === "unit"
-                    ? t("goals.filters.groupByUnit")
-                    : t("goals.filters.groupByType")}
-              </Button>
+                {entry.heading ? (
+                  <h3 className="px-1 text-xs font-medium text-muted-foreground">
+                    {entry.heading}
+                  </h3>
+                ) : null}
+                <ul className="grid gap-1">{entry.rows.map(renderRow)}</ul>
+              </section>
             ))}
           </div>
+        )}
+      </ResponsiveDialogBody>
 
-          {conflict ? (
-            <MembershipConflictBanner
-              baselineIds={baselineIds}
-              conflict={conflict}
-              goalName={goalName}
-              onRefresh={refreshMembership}
-            />
-          ) : null}
-
-          {baseline === null ? (
-            <div className="flex justify-center py-6">
-              <Spinner />
-            </div>
-          ) : groups.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              {t("goals.project.addGoalsEmpty")}
-            </p>
-          ) : (
-            <div className="grid gap-3">
-              {groups.map((entry) => (
-                <section
-                  className="grid gap-1"
-                  data-testid={`add-goals-group-section-${entry.key}`}
-                  key={entry.key}
-                >
-                  {entry.heading ? (
-                    <h3 className="px-1 text-xs font-medium text-muted-foreground">
-                      {entry.heading}
-                    </h3>
-                  ) : null}
-                  <ul className="grid gap-1">{entry.rows.map(renderRow)}</ul>
-                </section>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <SheetFooter className="sticky bottom-0 border-t bg-background">
-          <MembershipReview draft={draft} goalName={goalName} />
-          <Button
-            data-testid="add-goals-save"
-            disabled={
-              baseline === null ||
-              pendingCount === 0 ||
-              save.isPending ||
-              conflict?.kind === "stale"
-            }
-            onClick={() =>
-              baseline &&
-              save.mutate({
-                desired: desiredIds,
-                expected: baseline,
-                added: draft.adds.length,
-                removed: draft.removes.length,
-              })
-            }
-          >
-            {save.isPending ? <Spinner /> : null}
-            {t("goals.project.assemblySave", { count: pendingCount })}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+      {/* The pending changes stay in view under the list while it scrolls. */}
+      <div className="shrink-0 border-t px-6 pt-3 pb-1">
+        <MembershipReview draft={draft} goalName={goalName} />
+      </div>
+      <ResponsiveDialogFooter>
+        <Button onClick={() => onOpenChange(false)} variant="outline">
+          {t("goals.project.cancel")}
+        </Button>
+        <Button
+          data-testid="add-goals-save"
+          disabled={
+            baseline === null ||
+            pendingCount === 0 ||
+            save.isPending ||
+            conflict?.kind === "stale"
+          }
+          onClick={() =>
+            baseline &&
+            save.mutate({
+              desired: desiredIds,
+              expected: baseline,
+              added: draft.adds.length,
+              removed: draft.removes.length,
+            })
+          }
+        >
+          {save.isPending ? <Spinner /> : null}
+          {t("goals.project.assemblySave", { count: pendingCount })}
+        </Button>
+      </ResponsiveDialogFooter>
+    </ResponsiveDialog>
   )
 }

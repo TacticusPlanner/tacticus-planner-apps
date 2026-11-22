@@ -18,37 +18,102 @@ describe("toHreRules", () => {
       bonus: false,
       currency: 100,
       objectives: [
-        { kind: "lightningVictories", target: 2 },
-        { kind: "killWithMelee", target: 5 },
+        {
+          kind: "lightningVictories",
+          target: 2,
+          hintKeys: ["WinLightningVictories_description"],
+        },
+        {
+          kind: "killWithMelee",
+          target: 5,
+          hintKeys: ["SlayEnemiesWithMeleeAttacks_description"],
+        },
       ],
     })
     expect(rules.missions[6]?.objectives).toEqual([
-      { kind: "useAbilitiesAlliance", target: 20 },
-      { kind: "salvageRuns", target: 2 },
+      {
+        kind: "useAbilitiesAlliance",
+        target: 20,
+        hintKeys: ["UseAbilityWithFactionTrait_description"],
+      },
+      {
+        kind: "salvageRuns",
+        target: 2,
+        hintKeys: ["PlayBattlesInGameMode_description"],
+      },
     ])
     expect(rules.missions[8]?.objectives[0]).toEqual({
       kind: "damageType",
       target: 7500,
       qualifier: "Psychic",
+      hintKeys: [
+        "DealDamageOfProfileType_Psychic_description",
+        "DealDamageOfProfileType_description",
+      ],
     })
     expect(rules.missions[10]?.objectives[1]).toEqual({
       kind: "killFaction",
       target: 100,
       qualifier: "Necrons",
+      hintKeys: [
+        "SlayEnemiesOfFaction_Necrons_description",
+        "SlayEnemiesOfFaction_description",
+      ],
     })
     expect(rules.missions[11]?.objectives[1]).toEqual({
       kind: "onslaught",
       target: 1,
+      hintKeys: ["PlayBattlesInGameMode_description"],
     })
-    expect(rules.missions[20]).toMatchObject({
+    expect(rules.missions[20]).toEqual({
       number: 21,
       bonus: true,
       currency: 0,
       objectives: [
-        { kind: "featuredDamage", target: 15_000 },
-        { kind: "campaignWins", target: 250 },
+        {
+          kind: "featuredDamage",
+          target: 15_000,
+          hintKeys: ["DealDamageWithHero_description"],
+        },
+        {
+          kind: "campaignWins",
+          target: 250,
+          hintKeys: ["WinCampaignBattles_description"],
+        },
       ],
     })
+  })
+
+  it("names each objective's in-game hint, the served loca key first", () => {
+    expect(rules.missions[8]?.objectives[0]?.hintKeys).toEqual([
+      "DealDamageOfProfileType_Psychic_description",
+      "DealDamageOfProfileType_description",
+    ])
+    const served = toHreRules(
+      [
+        {
+          ...weirdboy,
+          missions: weirdboy.missions.map((mission, index) =>
+            index === 0
+              ? {
+                  ...mission,
+                  tasks: mission.tasks.map((task, taskIndex) =>
+                    taskIndex === 0
+                      ? { ...task, locaKey: "WinLightningVictories_v2" }
+                      : task
+                  ),
+                }
+              : mission
+          ),
+        },
+      ],
+      progression,
+      "orksWeirdboy"
+    )
+    expect(served?.missions[0]?.objectives.map((o) => o.hintKeys)).toEqual([
+      ["WinLightningVictories_v2", "WinLightningVictories_description"],
+      ["SlayEnemiesWithMeleeAttacks_description"],
+    ])
   })
 
   it("sums the milestones into the wiki's cumulative ladder", () => {

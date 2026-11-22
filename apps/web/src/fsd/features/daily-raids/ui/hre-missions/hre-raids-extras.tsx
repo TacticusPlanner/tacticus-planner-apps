@@ -11,14 +11,13 @@ import { EntityIcon } from "@/shared/ui"
 
 import { campaignOutlook } from "../../model/campaign-outlook"
 import type {
-  DailyRaidGoalViewModel,
   DailyRaidLocationViewModel,
+  DailyRaidResourceVisual,
   DailyRaidsReadyViewModel,
 } from "../../model/daily-raids.domain"
 import type { MissionRaidPlan } from "../../model/mission-raids"
 import { CampaignGroupedList } from "../campaign-group"
 import type { RaidLocationTarget } from "../raid-location-name"
-import { EventGoalIcons } from "../home-screen-event/event-goal-icons"
 import { EventLocationRow } from "../home-screen-event/event-location-row"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
@@ -31,16 +30,74 @@ export type RaidRowsView = {
   view: DailyRaidsReadyViewModel | null
   /** Makes each battle's name open its enemies. */
   onShowLocation?: (target: RaidLocationTarget) => void
+  /** A node's catalog drop with what the player holds of it, for a row that feeds no goal. */
+  nodeDrop?: (battleId: BattleId) => HreNodeDrop | undefined
 }
 
-/** One row per suggested node: its battle (opening its enemies), the goals it feeds (as on the HSE
- * farm list), the goal drop with "owned/target" and the running Home Screen Event's points. Like the
- * HSE list, a raid row shows no raid count or energy; a by-hand battle row keeps its battle count,
- * and an open-ended row shows its energy per battle. */
+/** A node's own drop and the player's inventory of it. */
+type HreNodeDrop = {
+  label: string
+  visual: DailyRaidResourceVisual
+  owned: number
+}
+
+/** A node's drop as a row shows it: the goal's resource with "owned/target", else the node's own
+ * drop with what the player holds. */
+export function RowDrop({
+  battleId,
+  resourceId,
+  view: { view, nodeDrop },
+  testId,
+}: {
+  battleId: BattleId
+  resourceId: string | undefined
+  view: RaidRowsView
+  testId: string
+}) {
+  const { t } = useTranslation("dailies")
+  if (resourceId !== undefined && view) {
+    return (
+      <span className="flex shrink-0 items-center gap-1">
+        <ResourceIconWithTooltip
+          size="row"
+          label={view.resourceLabels.get(resourceId) ?? resourceId}
+          visual={view.resourceVisuals.get(resourceId)}
+        />
+        <ResourceStock
+          progress={view.resourceTotals.get(resourceId)}
+          testId={`${testId}-stock`}
+        />
+      </span>
+    )
+  }
+  const drop = nodeDrop?.(battleId)
+  if (!drop) return null
+  return (
+    <span className="flex shrink-0 items-center gap-1">
+      <ResourceIconWithTooltip
+        size="row"
+        label={drop.label}
+        visual={drop.visual}
+      />
+      <span
+        className="text-xs text-muted-foreground tabular-nums"
+        data-testid={`${testId}-owned`}
+      >
+        {t("hse.raids.owned", { count: drop.owned })}
+      </span>
+    </span>
+  )
+}
+
+/** One row per suggested node, as a regular raid card row: its battle (opening its enemies), the
+ * goal drop with "owned/target" (or the node's own drop with what the player holds), the enemies a
+ * battle defeats on a row fought by hand for kills, and the running Home Screen Event's points. A raid row shows no raid
+ * count or energy; a by-hand battle row keeps its battle count, and an open-ended row shows its
+ * energy per battle. */
 export function RaidRows({
   rows,
   testId,
-  view: { locations, view, onShowLocation },
+  view: rowsView,
   battles = false,
   openEnded = false,
 }: {
@@ -53,6 +110,7 @@ export function RaidRows({
   openEnded?: boolean
 }) {
   const { t } = useTranslation("hre")
+  const { locations, onShowLocation } = rowsView
   const paging = useListPaging(rows)
   return (
     <>
@@ -62,10 +120,6 @@ export function RaidRows({
         rows={paging.visible}
         testId={testId}
         renderRow={(row) => {
-          const resourceId = row.goal?.resourceId
-          const goals = (row.goal?.goalIds ?? [])
-            .map((goalId) => view?.goalsById.get(goalId))
-            .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
           return (
             <EventLocationRow
               key={row.battleId}
@@ -75,23 +129,21 @@ export function RaidRows({
               location={locations?.get(row.battleId)}
               testId={`hre-raid-${row.battleId}`}
             >
-              <EventGoalIcons
-                goals={goals}
-                testId={`hre-raid-${row.battleId}-goals`}
+              <RowDrop
+                battleId={row.battleId}
+                resourceId={row.goal?.resourceId}
+                testId={`hre-raid-${row.battleId}`}
+                view={rowsView}
               />
-              {resourceId !== undefined && view ? (
-                <span className="flex items-center gap-1">
-                  <ResourceIconWithTooltip
-                    className="size-8"
-                    label={view.resourceLabels.get(resourceId) ?? resourceId}
-                    visual={view.resourceVisuals.get(resourceId)}
-                  />
-                  <ResourceStock
-                    progress={view.resourceTotals.get(resourceId)}
-                    testId={`hre-raid-${row.battleId}-stock`}
-                  />
-                </span>
-              ) : null}
+              {row.enemies === undefined ? null : (
+                <Badge
+                  className="tabular-nums"
+                  data-testid={`hre-raid-${row.battleId}-enemies`}
+                  variant="outline"
+                >
+                  {t("raids.enemyCount", { count: row.enemies })}
+                </Badge>
+              )}
               {row.eventPoints > 0 ? (
                 <Badge
                   className="tabular-nums"
@@ -103,14 +155,14 @@ export function RaidRows({
               ) : null}
               {openEnded ? (
                 <Badge className="tabular-nums" variant="secondary">
-                  <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
+                  <EntityIcon size="inline" alt="" src={energyIcon()} />
                   {t("raids.energyPerBattle", { energy: row.energyCost })}
                 </Badge>
               ) : battles ? (
                 <Badge className="tabular-nums" variant="outline">
                   <EntityIcon
+                    size="inline"
                     alt=""
-                    className="size-3.5"
                     src={battleGlyphIcon("campaignBattle")}
                   />
                   {t("raids.battleCount", { count: row.raids })}
@@ -149,11 +201,11 @@ export function HreNoDropRaids({
         data-testid="hre-raids-no-drop-totals"
       >
         <Badge variant="secondary">
-          <EntityIcon alt="" className="size-3.5" src={raidTicketIcon()} />
+          <EntityIcon size="inline" alt="" src={raidTicketIcon()} />
           {t("raids.raidCount", { count: raids })}
         </Badge>
         <Badge variant="outline">
-          <EntityIcon alt="" className="size-3.5" src={energyIcon()} />
+          <EntityIcon size="inline" alt="" src={energyIcon()} />
           {t("raids.energy", { energy })}
         </Badge>
       </div>
@@ -183,33 +235,51 @@ export function HreCampaignOutlook({
     daysLeft
   )
   const noNodes = (plan?.outlookNodes.length ?? 0) === 0
-  const text = !outlook
-    ? t("raids.summary.none")
-    : !noNodes && outlook.shortfall > 0
-      ? t("raids.summary.short", {
-          count: outlook.daysLeft,
-          battles: n(outlook.battles),
-          max: n(outlook.maxPerDay),
-          short: n(outlook.shortfall),
-        })
-      : noNodes || outlook.perDayEnergy === null
-        ? t("raids.summary.perDay", {
-            count: outlook.daysLeft,
-            battles: n(outlook.battles),
-            perDay: n(outlook.perDay),
-          })
-        : t("raids.summary.fits", {
-            count: outlook.daysLeft,
-            battles: n(outlook.battles),
-            perDay: n(outlook.perDay),
-            energy: n(outlook.perDayEnergy),
-          })
+  if (!outlook || (!noNodes && outlook.shortfall > 0)) {
+    return (
+      <p
+        className="rounded-lg border px-3 py-2 text-sm"
+        data-testid="hre-campaign-summary"
+      >
+        {outlook
+          ? t("raids.summary.short", {
+              count: outlook.daysLeft,
+              battles: n(outlook.battles),
+              max: n(outlook.maxPerDay),
+              short: n(outlook.shortfall),
+            })
+          : t("raids.summary.none")}
+      </p>
+    )
+  }
+  // Fits: the battles, the daily pace and its energy as chips instead of a sentence.
+  const energy = noNodes ? null : outlook.perDayEnergy
   return (
-    <p
-      className="rounded-lg border px-3 py-2 text-sm"
+    <div
+      className="flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-sm"
       data-testid="hre-campaign-summary"
     >
-      {text}
-    </p>
+      <span className="text-muted-foreground">{t("raids.summary.label")}</span>
+      <Badge variant="secondary">
+        <EntityIcon
+          size="inline"
+          alt=""
+          src={battleGlyphIcon("campaignBattle")}
+        />
+        {t("raids.summary.chipBattles", { battles: n(outlook.battles) })}
+      </Badge>
+      <Badge variant="outline">
+        {t("raids.summary.chipPerDay", {
+          count: outlook.daysLeft,
+          perDay: n(outlook.perDay),
+        })}
+      </Badge>
+      {energy === null ? null : (
+        <Badge variant="outline">
+          <EntityIcon size="inline" alt="" src={energyIcon()} />
+          {t("raids.summary.chipEnergy", { energy: n(energy) })}
+        </Badge>
+      )}
+    </div>
   )
 }

@@ -59,6 +59,8 @@ export function planHookMissionRaids(input: {
   enemyStatsByBattleId?: ReadonlyMap<BattleId, BattleEnemyStats>
   /** Today's "Combine goals": goal priority no longer breaks ties between nodes. */
   combineGoals?: boolean
+  /** "CE nodes first": the running campaign event's reached nodes, ranked first. */
+  preferredBattleIds?: ReadonlySet<BattleId>
   /** Today's "Raidable only": the battles to play manually, left out of the raid suggestions (they
    * stay available for the battles fought by hand). */
   raidableOnly?: ReadonlySet<string>
@@ -112,6 +114,7 @@ export function planHookMissionRaids(input: {
     goalNodesByBattle: input.calculation?.missionGoalNodes ?? new Map(),
     eventPointsByBattle: input.eventPointsByBattleId,
     combineGoals: input.combineGoals,
+    preferredBattleIds: input.preferredBattleIds,
     // The HRE list is not bound to today's energy: the player may refill, so only attempts and the
     // objective cap it.
     unlimitedEnergy: true,

@@ -6,7 +6,13 @@ import { NpcPortrait } from "./npc-portrait"
 
 describe("NpcPortrait", () => {
   it("renders the mapped portrait image for a known variation id", () => {
-    render(<NpcPortrait variationId="necroBossWarden" name="Makhotep" />)
+    render(
+      <NpcPortrait
+        name="Makhotep"
+        size="portrait-sm"
+        variationId="necroBossWarden"
+      />
+    )
 
     const img = screen.getByRole("img", { name: "Makhotep" })
     expect(img).toHaveAttribute(
@@ -16,7 +22,13 @@ describe("NpcPortrait", () => {
   })
 
   it("renders an initials badge when no portrait is mapped", () => {
-    render(<NpcPortrait variationId="notAnNpc" name="Winged Prime" />)
+    render(
+      <NpcPortrait
+        name="Winged Prime"
+        size="portrait-sm"
+        variationId="notAnNpc"
+      />
+    )
 
     expect(screen.queryByRole("img")).toBeNull()
     expect(screen.getByTestId("npc-portrait")).toHaveAttribute(
@@ -27,7 +39,13 @@ describe("NpcPortrait", () => {
   })
 
   it("falls back to initials when the mapped image fails to load", () => {
-    render(<NpcPortrait variationId="necroBossWarden" name="Makhotep" />)
+    render(
+      <NpcPortrait
+        name="Makhotep"
+        size="portrait-sm"
+        variationId="necroBossWarden"
+      />
+    )
 
     fireEvent.error(screen.getByRole("img", { name: "Makhotep" }))
 

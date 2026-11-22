@@ -93,6 +93,14 @@ The player SHALL be able to pick a target step: unlock, a star, or an ascension,
 - the event points needed: the lowest milestone whose cumulative currency covers the tier cost minus missions, payouts and crates
 - the points per day still needed over the days left
 
+The needs come from the projection, so before any event points are entered, a picked target SHALL show "Enter your event points above to see what this target needs." under it instead of nothing (Severyn, 2026-11).
+
+#### Scenario: Target picked before any points
+
+- **GIVEN** no event points entered
+- **WHEN** the player picks a target
+- **THEN** the message to enter event points shows under the target, and the needs show once points are entered
+
 #### Scenario: Worked example for Epic 1 red star
 
 - **GIVEN** target Epic 1 red star (460), the 2,501 to 5,000 bracket, and 0 points on day 1
@@ -214,16 +222,16 @@ With points entered, the card SHALL name the next milestone above the points now
 - **GIVEN** 7,464 points, 26 owned and next chest tier 14
 - **THEN** the card reads "Next milestone: 8,000 points, +140" and "Next chest: tier 14, 360 · 334 more to open"
 
-### Requirement: Mobile shows a pace summary under the current mission
+### Requirement: The pace card leads the side column
 
-On mobile, once points are entered on a running event, a one-line summary SHALL sit right under the current mission card. It shows the points now, the projected points, and the projected step, with a button that scrolls to the full pace card. With no points entered, it SHALL ask for them and scroll to the card. On desktop the summary SHALL NOT be shown, because the pace card sits in the right column next to the tracker. The mobile tour's pace step SHALL point at the summary.
+On desktop, the Event pace card SHALL be the first card of the right column, above the tokens card and the Campaign battles section. On mobile, it SHALL sit right under the current mission card, so no separate pace summary is shown. The tour's pace step SHALL point at the pace card.
 
 #### Scenario: On mobile
 
-- **GIVEN** the day 8 state above on a phone
-- **THEN** under the current mission it reads "15,657 points → 31,314 · Rare, 1 red star" with a "Details" button that scrolls to the Event pace card
+- **GIVEN** a running event on a phone
+- **THEN** the Event pace card follows the current mission card, before the tokens card
 
 #### Scenario: On desktop
 
 - **GIVEN** the same state on desktop
-- **THEN** no summary is shown, and the pace card stays in the right column
+- **THEN** the Event pace card heads the right column, next to the tracker

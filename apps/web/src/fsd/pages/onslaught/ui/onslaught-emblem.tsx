@@ -18,18 +18,16 @@ import {
 export function OnslaughtEmblem({
   sector,
   tier,
-  className = "size-7",
 }: {
   sector: OnslaughtSector
   tier: OnslaughtTier
-  className?: string
 }) {
   const positionLabel = useOnslaughtPositionLabel()
   return (
     <EntityIcon
       src={onslaughtTierIcon(sector, tier)}
       alt={positionLabel(sector, tier)}
-      className={className}
+      size="row"
     />
   )
 }

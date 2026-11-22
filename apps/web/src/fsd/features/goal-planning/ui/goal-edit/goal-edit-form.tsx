@@ -337,7 +337,7 @@ export function GoalEditForm({
 
       <ResponsiveDialogFooter>
         {saver.error ? (
-          <div className="md:mr-auto">
+          <div className="max-md:basis-full md:mr-auto">
             <GoalEditError
               error={saver.error}
               onOpenGoal={onOpenGoal}

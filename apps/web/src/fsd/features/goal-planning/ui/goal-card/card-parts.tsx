@@ -42,7 +42,7 @@ function ResourcesNeededList({
       <ul className="grid gap-0.5 text-muted-foreground">
         {visible.map((entry) => (
           <li className="flex items-center gap-1.5" key={entry.id}>
-            <UpgradeIcon className="size-6" id={entry.id as UpgradeId} />
+            <UpgradeIcon id={entry.id as UpgradeId} />
             {entry.label} × {entry.missing}
           </li>
         ))}

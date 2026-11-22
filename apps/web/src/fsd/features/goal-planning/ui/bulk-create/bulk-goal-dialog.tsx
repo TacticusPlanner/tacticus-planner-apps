@@ -6,9 +6,11 @@ import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import { cn } from "@workspace/ui/lib/utils"
-import { maxAbilityLevel } from "@workspace/game-domain"
+import { characterIcon, mowIcon } from "@workspace/game-catalog"
+import { maxAbilityLevel, progressionRarity } from "@workspace/game-domain"
 
 import { MAX_GOALS_PER_TYPE } from "@/entities/goal"
+import { UnitPortrait } from "@/entities/unit"
 import {
   NumberStepper,
   ProgressionSelect,
@@ -79,7 +81,7 @@ export function BulkGoalDialog({
     <ResponsiveDialog
       contentRef={setPortalContainer}
       data-testid="bulk-goal-dialog"
-      desktopClassName="sm:max-w-2xl"
+      width="form"
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
       open={open}
       preventOutsideClose
@@ -139,7 +141,7 @@ function BulkGoalDialogContent({
           {t("goals.bulkCreate.title", { count: units.length })}
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-4 pb-4">
+      <ResponsiveDialogBody className="gap-4">
         {sent === null ? (
           <TargetFields form={form} portalContainer={portalContainer} />
         ) : null}
@@ -158,10 +160,10 @@ function BulkGoalDialogContent({
           ))}
         </ul>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="flex-col items-stretch gap-2 md:flex-row md:items-center">
+      <ResponsiveDialogFooter>
         <p
           aria-live="polite"
-          className="text-sm text-muted-foreground md:mr-auto"
+          className="text-sm text-muted-foreground max-md:basis-full md:mr-auto"
           data-testid="bulk-goal-summary"
         >
           {allDone && sent
@@ -180,7 +182,7 @@ function BulkGoalDialogContent({
         </p>
         {sent === null && form.overLimit.length > 0 ? (
           <p
-            className="text-sm text-destructive"
+            className="text-sm text-destructive max-md:basis-full"
             data-testid="bulk-goal-over-limit"
             role="alert"
           >
@@ -394,6 +396,17 @@ function UnitRow({
       {Icon ? (
         <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
       ) : null}
+      <UnitPortrait
+        size="sm"
+        src={
+          (plan.unit.kind === "mow"
+            ? mowIcon(plan.unit.unitId)
+            : characterIcon(plan.unit.unitId)) ?? ""
+        }
+        rarity={progressionRarity(
+          plan.unit.owned ? plan.unit.progression : plan.unit.startProgression
+        )}
+      />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="font-medium">
           {plan.unit.name}

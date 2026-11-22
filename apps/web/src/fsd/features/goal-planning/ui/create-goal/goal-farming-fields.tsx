@@ -20,7 +20,7 @@ export function ProgressionPreview({
     >
       <p className="font-medium">{t("goals.create.previewTitle")}</p>
       <p className="flex items-center gap-1.5">
-        <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
+        <EntityIcon size="inline" alt="" src={shardIcon("Regular")} />
         {t("goals.create.ascension.shards", {
           regular: preview.regularShards,
           mythic: preview.mythicShards,
@@ -29,8 +29,9 @@ export function ProgressionPreview({
       {Object.entries(preview.orbsByType).map(([rarity, count]) => (
         <p className="flex items-center gap-1.5" key={rarity}>
           <EntityIcon
+            size="inline"
             alt=""
-            className="size-6"
+
             src={datamineAssetUrl(
               `atlases/ui_hero_ascension_orbs_${rarity.toLowerCase()}.webp`
             )}
@@ -46,7 +47,7 @@ export function ProgressionPreview({
           className="flex items-center gap-1.5"
           data-testid="create-goal-preview-onslaught-tokens"
         >
-          <EntityIcon alt="" className="size-5" src={shardIcon("Regular")} />
+          <EntityIcon size="inline" alt="" src={shardIcon("Regular")} />
           {t("goals.create.acquisitionSources.onslaughtTokens", {
             count: preview.onslaughtTokens,
           })}
@@ -61,7 +62,12 @@ export function ProgressionPreview({
             key={currency}
           >
             {icon ? (
-              <EntityIcon alt="" className="size-5 shrink-0" src={icon} />
+              <EntityIcon
+                size="inline"
+                alt=""
+                className="shrink-0"
+                src={icon}
+              />
             ) : null}
             {t("goals.create.acquisitionSources.shopCurrencySpend", {
               amount,
@@ -80,7 +86,12 @@ export function ProgressionPreview({
           className="flex items-center gap-1.5 font-medium"
           data-testid="create-goal-progression-resource-line"
         >
-          <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
+          <EntityIcon
+            size="inline"
+            alt=""
+            className="shrink-0"
+            src={energyIconUrl}
+          />
           {t("goals.create.ascension.resourceLine", {
             energy: preview.combined.energyTotal,
             raids: preview.combined.raidsTotal,
@@ -93,7 +104,12 @@ export function ProgressionPreview({
         </p>
       ) : preview.ascensionShardEnergy ? (
         <p className="flex items-center gap-1.5 text-muted-foreground">
-          <EntityIcon alt="" className="size-5 shrink-0" src={energyIconUrl} />
+          <EntityIcon
+            size="inline"
+            alt=""
+            className="shrink-0"
+            src={energyIconUrl}
+          />
           {preview.ascensionShardEnergy.status === "Blocked"
             ? t(`goals.estimate.blocked.${preview.ascensionShardEnergy.reason}`)
             : t("goals.create.shardLocations.remainingEnergy", {

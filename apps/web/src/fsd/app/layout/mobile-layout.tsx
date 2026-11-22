@@ -146,16 +146,16 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
     <>
       <button
         type="button"
-        aria-label={t("nav.addGoal")}
+        aria-label={t("nav.createGoal")}
         className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-semibold text-primary"
         data-testid="mobile-create-goal-button"
         onClick={onCreateGoal}
-        title={t("nav.addGoal")}
+        title={t("nav.createGoal")}
       >
         <span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
           <PlusCircle className="size-6" aria-hidden="true" />
         </span>
-        <span>{t("nav.addGoal")}</span>
+        <span>{t("nav.createGoal")}</span>
       </button>
       <button
         type="button"
@@ -438,7 +438,7 @@ function MobileBottomNav({
               value={search}
             />
             <DrawerClose asChild>
-              <Button className="w-full" variant="secondary">
+              <Button className="w-full" variant="outline">
                 {t("common.close")}
               </Button>
             </DrawerClose>

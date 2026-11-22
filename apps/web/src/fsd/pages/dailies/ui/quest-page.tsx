@@ -4,6 +4,7 @@ import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
   Sheet,
+  SheetBody,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -520,11 +521,11 @@ export function QuestPage() {
                 </SheetDescription>
               </SheetHeader>
               {selected ? (
-                <div className="flex flex-col gap-4 overflow-y-auto px-4 pb-4">
+                <SheetBody className="flex flex-col gap-4">
                   {scoreEntry(selected, quest.scorePoints)}
                   {team}
                   {detail(selected, quest.scorePoints)}
-                </div>
+                </SheetBody>
               ) : null}
             </SheetContent>
           </Sheet>

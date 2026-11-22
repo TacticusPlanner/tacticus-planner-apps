@@ -126,10 +126,8 @@ describe("useHseTeamRecommendations", () => {
     expect(result.current.status).toBe("hidden")
   })
 
-  it("is hidden for an event without scoring data (Against the Tide)", () => {
-    const { result } = renderTeams(
-      hseInstance("hse-against-the-tide", "upcoming")
-    )
+  it("is hidden for an event without scoring data", () => {
+    const { result } = renderTeams(hseInstance("hse-unscored", "upcoming"))
     expect(result.current.status).toBe("hidden")
   })
 

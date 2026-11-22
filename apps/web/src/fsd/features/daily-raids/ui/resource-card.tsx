@@ -28,6 +28,7 @@ import {
   LocationChips,
   RankBadge,
 } from "@/shared/ui"
+import type { EntityIconSize } from "@/shared/ui"
 
 /** A goal's target, icon-led: Rank goals pair the goal-type icon with the rank icon (its name in a
  * tooltip), Ascension goals with the compact progression; every other kind pairs its goal-type icon
@@ -37,8 +38,9 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
     return (
       <span className="inline-flex items-center gap-1">
         <EntityIcon
+          size="inline"
           alt=""
-          className="size-3.5 shrink-0"
+          className="shrink-0"
           src={goalTypeIcon(goal.goalKind, goal.unitType)}
         />
         <RankBadge rank={goal.targetRank} showLabel={false} tooltip />
@@ -49,22 +51,21 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
     return (
       <span className="inline-flex items-center gap-1">
         <EntityIcon
+          size="inline"
           alt=""
-          className="size-3.5 shrink-0"
+          className="shrink-0"
           src={goalTypeIcon(goal.goalKind, goal.unitType)}
         />
-        <CompactProgression
-          iconClassName="size-4"
-          value={goal.targetProgression}
-        />
+        <CompactProgression value={goal.targetProgression} />
       </span>
     )
   }
   return (
     <span className="inline-flex items-center gap-1">
       <EntityIcon
+        size="inline"
         alt=""
-        className="size-3.5 shrink-0"
+        className="shrink-0"
         src={goalTypeIcon(goal.goalKind, goal.unitType)}
       />
       {goal.targetLabel}
@@ -125,7 +126,7 @@ export function ResourceCard({
       >
         <CardContent className="flex min-w-0 items-start gap-2 px-3 md:px-4">
           {goal ? (
-            <UnitIcon goal={goal} className="size-10 md:size-12" />
+            <UnitIcon goal={goal} />
           ) : (
             <div className="flex shrink-0 flex-col items-center gap-0.5">
               <ResourceIconWithTooltip label={label} visual={visual} />
@@ -157,8 +158,9 @@ export function ResourceCard({
                   >
                     {location?.icon ? (
                       <EntityIcon
+                        size="inline"
                         alt=""
-                        className="size-6 shrink-0"
+                        className="shrink-0"
                         src={location.icon}
                       />
                     ) : null}
@@ -200,7 +202,7 @@ export function ResourceCard({
     >
       <CardContent className="grid grid-cols-[auto_minmax(0,1fr)] gap-2 px-3 md:gap-3 md:px-4">
         {goal ? (
-          <UnitIcon goal={goal} className="size-10 md:size-12" />
+          <UnitIcon goal={goal} />
         ) : (
           <ResourceIcon label={label} visual={visual} />
         )}
@@ -295,14 +297,17 @@ function ResourceProgress({
 }
 
 export function UnitIcon({
+  size = "portrait-sm",
   className,
   goal,
 }: {
-  className: string
+  size?: EntityIconSize
+  className?: string
   goal: DailyRaidGoalViewModel
 }) {
   return (
     <EntityIcon
+      size={size}
       alt={goal.unitLabel}
       className={cn("shrink-0", className)}
       src={

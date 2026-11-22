@@ -371,7 +371,13 @@ export function calculateDailyRaids(
       })
     : undefined
   const missionGoalNodes = params.missionGoalNodes
-    ? buildMissionGoalNodes(goals, inventory, upgradesById, params.battlesById)
+    ? buildMissionGoalNodes(
+        goals,
+        inventory,
+        upgradesById,
+        params.battlesById,
+        (id) => params.upgradesById.get(id as UpgradeId)?.rarity
+      )
     : undefined
   const blockedGoals = blockedGoalsOf(goals, plan.outcomes)
   // Nothing to raid and nothing to explain: no plan. A goal blocked outright still gets a plan view

@@ -27,7 +27,12 @@ export function IncursionStarsBar({
       data-testid={testId}
       data-full={full || undefined}
     >
-      <EntityIcon src={heroStarIcon()} alt="" className="size-4 shrink-0" />
+      <EntityIcon
+        size="inline"
+        src={heroStarIcon()}
+        alt=""
+        className="shrink-0"
+      />
       <div
         className="h-2.5 min-w-16 flex-1 overflow-hidden rounded-full bg-muted"
         role="progressbar"

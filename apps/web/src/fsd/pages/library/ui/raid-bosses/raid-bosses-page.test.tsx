@@ -356,7 +356,7 @@ describe("RaidBossesPage", () => {
     )
 
     await screen.findByTestId("raid-boss-detail")
-    await user.click(screen.getByTestId("raid-boss-view-season-reference"))
+    await user.click(screen.getByTestId("unit-nav-back"))
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -372,7 +372,7 @@ describe("RaidBossesPage", () => {
     await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     await screen.findByTestId("raid-boss-detail")
-    await user.click(screen.getByTestId("raid-boss-view-season-reference"))
+    await user.click(screen.getByTestId("unit-nav-back"))
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -435,31 +435,35 @@ describe("RaidBossesPage", () => {
     ).toBeInTheDocument()
   })
 
-  it("retains the compact mobile entity detail form", async () => {
+  it("shows a boss's page at full width with back and Previous / Next on mobile too", async () => {
     useIsMobileMock.mockReturnValue(true)
     await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     await screen.findByTestId("raid-boss-detail")
-    expect(screen.getByTestId("raid-boss-mobile-picker")).toBeInTheDocument()
+    expect(screen.getByTestId("raid-boss-detail-page")).toBeInTheDocument()
+    expect(screen.getByTestId("unit-nav-back")).toHaveAccessibleName(
+      "Back to Season reference"
+    )
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent(/^1 of /)
+    expect(screen.queryByTestId("raid-boss-mobile-picker")).toBeNull()
   })
 
-  it("selects an entity from the mobile picker and shows its detail", async () => {
-    useIsMobileMock.mockReturnValue(true)
+  it("steps to the next boss or prime with Next", async () => {
+    const user = userEvent.setup()
     await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
 
     await screen.findByTestId("raid-boss-detail")
-    fireEvent.click(screen.getByTestId("raid-boss-mobile-picker"))
-    fireEvent.change(screen.getByPlaceholderText("Search bosses and primes…"), {
-      target: { value: "Warrior" },
-    })
-    fireEvent.click(await screen.findByRole("option"))
+    await user.click(screen.getByTestId("unit-nav-next"))
 
     await waitFor(() =>
-      expect(screen.getByTestId("location")).toHaveTextContent(
-        "/library/raid-bosses/GuildBoss1MiniBoss1Warrior"
+      expect(screen.getByTestId("location")).not.toHaveTextContent(
+        "GuildBoss1Boss1Tervigon"
       )
     )
-    await screen.findByTestId("raid-boss-detail")
+    expect(screen.getByTestId("unit-nav-previous")).toHaveAttribute(
+      "href",
+      "/library/raid-bosses/GuildBoss1Boss1Tervigon"
+    )
   })
 
   it("switches to Season Config and keeps its selected season in the shareable URL", async () => {
@@ -475,6 +479,13 @@ describe("RaidBossesPage", () => {
       )
     )
     expect(screen.getByTestId("raid-boss-seasons")).toBeInTheDocument()
+    // the rotation position, never the raw season config id
+    expect(screen.getByTestId("raid-boss-season-select")).toHaveTextContent(
+      "Season 1"
+    )
+    expect(screen.getByTestId("raid-boss-season-select")).not.toHaveTextContent(
+      "s1"
+    )
     expect(
       screen.getByTestId("raid-boss-season-desktop-table")
     ).toHaveTextContent("chest-0")
@@ -555,10 +566,8 @@ describe("RaidBossesPage", () => {
       "admech"
     )
 
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "Filter by comp" }),
-      "admech"
-    )
+    await user.click(screen.getByRole("combobox", { name: "Filter by comp" }))
+    await user.click(await screen.findByRole("option", { name: "admech" }))
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
@@ -683,17 +692,21 @@ describe("RaidBossesPage", () => {
     expect(within(adjusted).getByText("10")).toBeInTheDocument()
   })
 
-  it("selecting a prime navigates to its detail route", async () => {
-    await renderPage("/library/raid-bosses/GuildBoss1Boss1Tervigon")
+  it("opens a prime's page from the season reference, the same way as a boss's", async () => {
+    const user = userEvent.setup()
+    await renderPage()
 
-    const primes = await screen.findByTestId("raid-boss-list-primes")
-    fireEvent.click(within(primes).getByText("GuildBoss1MiniBoss1Warrior"))
+    await screen.findByTestId("raid-boss-season-reference")
+    await user.click(
+      screen.getByRole("button", { name: "GuildBoss1MiniBoss1Warrior" })
+    )
 
     await waitFor(() =>
       expect(screen.getByTestId("location")).toHaveTextContent(
         "/library/raid-bosses/GuildBoss1MiniBoss1Warrior"
       )
     )
+    expect(screen.getByTestId("raid-boss-detail-page")).toBeInTheDocument()
   })
 
   it("returns an unknown detail id to the season reference", async () => {

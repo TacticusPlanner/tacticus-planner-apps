@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
 import {
+  battleGlyphIcon,
   characterIcon,
   factionIcon,
   powerIcon,
@@ -17,6 +18,7 @@ import {
   RankBadge,
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -68,16 +70,18 @@ export function IncursionEligibleDialog({
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      desktopClassName="sm:max-w-3xl"
+      width="form"
       data-testid="incursion-eligible-dialog"
     >
       <ResponsiveDialogHeader>
         <ResponsiveDialogTitle>
           {t("eligible.title", { mow: mowName })}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">{t("eligible.hint")}</p>
+        <ResponsiveDialogDescription>
+          {t("eligible.hint")}
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="pb-3">
+      <ResponsiveDialogBody>
         <ol className="grid gap-1.5 @xl:grid-cols-2">
           {eligible.map((unit, at) => {
             const name = t(`characters:${unit.id}`, { defaultValue: unit.id })
@@ -108,9 +112,10 @@ export function IncursionEligibleDialog({
                     )}
                   </span>
                   <EntityIcon
+                    size="portrait-sm"
                     src={characterIcon(unit.id as UnitId)}
                     alt=""
-                    className="size-8 shrink-0 rounded-sm"
+                    className="shrink-0 rounded-sm"
                   />
                   <span className="min-w-0 flex-1 space-y-0.5">
                     <span className="block truncate">{name}</span>
@@ -124,7 +129,6 @@ export function IncursionEligibleDialog({
                             rank={unit.rank}
                             showLabel={false}
                             tooltip
-                            iconClassName="size-4"
                           />
                         ) : null}
                       </span>
@@ -134,21 +138,23 @@ export function IncursionEligibleDialog({
                     unit.traits.includes(trait)
                   ).map((trait) => (
                     <EntityIcon
+                      size="inline"
                       key={trait}
                       src={traitIcon(trait)}
                       alt={trait}
-                      className="size-5 shrink-0"
+                      className="shrink-0"
                     />
                   ))}
                   <EntityIcon
+                    size="inline"
                     src={factionIcon(unit.faction)}
                     alt={t(`factions:${unit.faction}`, {
                       defaultValue: unit.faction,
                     })}
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                   />
                   <span className="flex w-24 shrink-0 items-center justify-end gap-1 tabular-nums">
-                    <EntityIcon src={powerIcon()} alt="" className="size-4" />
+                    <EntityIcon size="inline" src={powerIcon()} alt="" />
                     {number.format(Math.round(unit.power))}
                   </span>
                 </button>
@@ -157,28 +163,33 @@ export function IncursionEligibleDialog({
           })}
         </ol>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="border-t md:justify-between">
+      <ResponsiveDialogFooter>
         <p
-          className="text-sm tabular-nums"
+          className="inline-flex flex-wrap items-center gap-1 text-sm tabular-nums max-md:basis-full md:mr-auto"
           data-testid="incursion-eligible-power"
         >
+          <EntityIcon size="inline" alt="" src={powerIcon()} />
           {t("eligible.selected", {
             count: team.length,
             power: number.format(Math.round(teamPowerOf(team))),
           })}
-          {hasSustain(team) ? ` · ${t("team.sustain")}` : ""}
+          {hasSustain(team) ? (
+            <>
+              {" · "}
+              <EntityIcon size="inline" alt="" src={battleGlyphIcon("heal")} />
+              {t("team.sustain")}
+            </>
+          ) : null}
         </p>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setPicked(suggested.map((member) => member.id))}
-          >
-            {t("eligible.reset")}
-          </Button>
-          <Button onClick={() => onOpenChange(false)}>
-            {t("eligible.close")}
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => setPicked(suggested.map((member) => member.id))}
+        >
+          {t("eligible.reset")}
+        </Button>
+        <Button onClick={() => onOpenChange(false)}>
+          {t("eligible.done")}
+        </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>
   )

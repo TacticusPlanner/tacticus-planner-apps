@@ -112,14 +112,14 @@ function PlannedRow({
 function ProgressionIcons({ progression }: { progression: Progression }) {
   return (
     <span className="flex items-center gap-1">
-      <RarityIcon className="size-5" rarity={progressionRarity(progression)} />
+      <RarityIcon rarity={progressionRarity(progression)} />
       <CompactStars progression={progression} />
     </span>
   )
 }
 
 function RankIcon({ rank }: { rank: Rank }) {
-  return <EntityIcon alt="" className="size-6" src={rankIcon(rank)} />
+  return <EntityIcon size="inline" alt="" src={rankIcon(rank)} />
 }
 
 function Level({ value }: { value: number }) {

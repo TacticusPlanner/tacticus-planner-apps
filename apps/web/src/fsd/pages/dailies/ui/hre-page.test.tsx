@@ -20,7 +20,7 @@ const { mocks } = vi.hoisted(() => ({
     team: { status: "hidden" } as unknown,
     tourSteps: undefined as unknown,
     homeScreenEvent: { status: "loading" } as unknown,
-    hse: null as unknown,
+    hses: [] as unknown[],
     teamArgs: [] as unknown[],
     toasts: [] as [string, { action: { onClick: () => void } }][],
   },
@@ -38,7 +38,11 @@ vi.mock("sonner", () => ({
 vi.mock("react-i18next", () => {
   // One `t` for every render, as react-i18next keeps it between language changes.
   const translation = {
-    i18n: { language: "en", getResource: () => undefined },
+    i18n: {
+      language: "en",
+      languages: ["en"],
+      getResource: () => undefined,
+    },
     t: (key: string, values?: Record<string, unknown>) =>
       values
         ? `${key}|${Object.entries(values)
@@ -93,7 +97,7 @@ vi.mock(
   })
 )
 vi.mock("../model/use-running-hse", () => ({
-  useRunningHse: () => mocks.hse,
+  useRunningHses: () => mocks.hses,
 }))
 
 const DAY = 86_400_000
@@ -239,11 +243,18 @@ beforeEach(() => {
   mocks.tokens = null
   mocks.team = { status: "hidden" }
   mocks.homeScreenEvent = { status: "loading" }
-  mocks.hse = null
+  mocks.hses = []
   mocks.teamArgs = []
   mocks.toasts = []
   act(() => {})
 })
+
+/** Taps an objective's suggestion row by its id (raids, battles or a mode), jumping to its details. */
+async function openFold(id: string) {
+  await userEvent.click(
+    screen.getByTestId(new RegExp(`-suggestion-${id}-trigger$`))
+  )
+}
 
 describe("HRE tab", () => {
   it("does not repeat the page title, which the shell header owns", () => {
@@ -267,7 +278,7 @@ describe("HRE tab", () => {
     expect(screen.queryByTestId("raids-filters")).toBeNull()
   })
 
-  it("ranks the raids by a running HSE's points too, and says so", () => {
+  it("ranks the raids by a running HSE's points too, and says so", async () => {
     mocks.homeScreenEvent = {
       status: "ready",
       active: { definitionId: "hse-machine-hunt" },
@@ -279,11 +290,12 @@ describe("HRE tab", () => {
       locationsByBattleId: new Map(),
     }
     renderHre()
+    await openFold("raids")
     expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
       homeScreenEventRule: homeScreenEventRaidRuleOf("hse-machine-hunt"),
       eventFarm: false,
     })
-    expect(screen.getByTestId("hre-raids-budget")).toHaveTextContent(
+    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
       "raids.noteHomeScreenEvent|event=events:definitions.hse-machine-hunt"
     )
     expect(screen.getByTestId("hre-raid-I22-event-points")).toHaveTextContent(
@@ -291,14 +303,15 @@ describe("HRE tab", () => {
     )
   })
 
-  it("leaves the HSE out of the note when no suggested row earns its points", () => {
+  it("leaves the HSE out of the note when no suggested row earns its points", async () => {
     mocks.homeScreenEvent = {
       status: "ready",
       active: { definitionId: "hse-machine-hunt" },
       activeRaidRule: homeScreenEventRaidRuleOf("hse-machine-hunt"),
     }
     renderHre()
-    expect(screen.getByTestId("hre-raids-budget")).not.toHaveTextContent(
+    await openFold("raids")
+    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
       "raids.noteHomeScreenEvent"
     )
   })
@@ -336,7 +349,23 @@ describe("HRE tab", () => {
     expect(screen.queryByTestId("hre-planning-settings")).toBeNull()
   })
 
-  it("ignores a running HSE that earns no raid points", () => {
+  it("offers CE nodes first while a campaign event runs, and passes it to the raids", async () => {
+    const { unmount } = renderHre()
+    expect(screen.queryByTestId("today-quick-filter-preferEvent")).toBeNull()
+    expect(screen.queryByTestId("today-quick-filter-fewerRaids")).toBeNull()
+    unmount()
+    mocks.raids = {
+      ...(mocks.raids as Record<string, unknown>),
+      hasActiveEventBattles: true,
+    }
+    renderHre()
+    await userEvent.click(screen.getByTestId("today-quick-filter-preferEvent"))
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      quickFilters: { preferEvent: true },
+    })
+  })
+
+  it("ignores a running HSE that earns no raid points", async () => {
     mocks.homeScreenEvent = {
       status: "ready",
       active: { definitionId: "hse-faction-boost" },
@@ -347,7 +376,8 @@ describe("HRE tab", () => {
       "homeScreenEventRule",
       undefined
     )
-    expect(screen.getByTestId("hre-raids-budget")).not.toHaveTextContent(
+    await openFold("raids")
+    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
       "raids.noteHomeScreenEvent"
     )
   })
@@ -401,13 +431,16 @@ describe("HRE tab", () => {
       "hre:raids.notice.preview"
     )
     // The whole 14 days of a preview: 725 battles, 52 a day (27 at 3 energy, 25 at 5).
-    expect(screen.getByTestId("hre-campaign-summary")).toHaveTextContent(
-      "raids.summary.fits|count=14,battles=725,perDay=52,energy=206"
+    const summary = screen.getByTestId("hre-campaign-summary")
+    expect(summary).toHaveTextContent("raids.summary.chipBattles|battles=725")
+    expect(summary).toHaveTextContent(
+      "raids.summary.chipPerDay|count=14,perDay=52"
     )
+    expect(summary).toHaveTextContent("raids.summary.chipEnergy|energy=206")
     expect(screen.queryByTestId("hre-pace")).toBeNull()
   })
 
-  it("tracks mission 5 at 37 / 100 and suggests its raids and open-ended ability-damage battles", () => {
+  it("tracks mission 5 at 37 / 100 and suggests its raids and open-ended ability-damage battles", async () => {
     seed({ mission: 5, progress: [6000, 37] })
     renderHre()
     expect(screen.getByTestId("hre-objective-0-input")).toHaveValue(6000)
@@ -426,7 +459,9 @@ describe("HRE tab", () => {
       "data-status",
       "locked"
     )
-    expect(screen.getByTestId("hre-mission-complete")).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: "tracker.complete" })
+    ).toBeEnabled()
 
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
       quickFilters: {
@@ -442,7 +477,11 @@ describe("HRE tab", () => {
         manual: {
           needs: [
             {
-              objective: { kind: "abilityDamage", target: 10_000 },
+              objective: {
+                kind: "abilityDamage",
+                target: 10_000,
+                hintKeys: ["DealAbilityDamage_description"],
+              },
               toGo: 4000,
               per: null,
             },
@@ -452,15 +491,32 @@ describe("HRE tab", () => {
         },
       },
     })
-    const raids = screen.getByTestId("hre-raids")
-    expect(within(raids).getByRole("heading", { level: 2 })).toHaveTextContent(
-      "raids.title|mission=missions.number|number=5"
+    // A row each: the raids under the campaign objective, the battles under the damage one; their
+    // details below the pace, each with the id its row scrolls to.
+    expect(
+      screen.getByTestId("hre-objective-1-suggestion-raids")
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId("hre-objective-0-suggestion-battles")
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("hre-raids-summary")).toHaveTextContent(
+      "raids.raidCount|count=37"
     )
-    expect(screen.getByTestId("hre-raids-to-go")).toHaveTextContent("count=63")
-    expect(screen.getByTestId("hre-raids-note")).not.toHaveTextContent(
-      "raids.planned"
+    const details = screen.getByTestId("hre-details")
+    expect(
+      within(details).getByTestId("hre-objective-1-detail-raids")
+    ).toHaveAttribute("id", "hre-objective-1-detail-raids")
+    expect(
+      within(details).getByTestId("hre-objective-0-detail-battles")
+    ).toBeInTheDocument()
+    const scrolled = vi.spyOn(HTMLElement.prototype, "scrollIntoView")
+    await openFold("raids")
+    expect(scrolled).toHaveBeenCalledTimes(1)
+    expect(scrolled.mock.instances[0]).toBe(
+      screen.getByTestId("hre-objective-1-detail-raids")
     )
-    expect(screen.getByTestId("hre-raids-budget")).toHaveTextContent(
+    scrolled.mockRestore()
+    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
       "raids.unlimitedEnergy"
     )
     expect(
@@ -479,12 +535,15 @@ describe("HRE tab", () => {
       "count=27"
     )
     // 20 hours into the 14 days: 14 days left, 48 a day (27 at 3 energy, 21 at 5).
-    expect(screen.getByTestId("hre-campaign-summary")).toHaveTextContent(
-      "raids.summary.fits|count=14,battles=663,perDay=48,energy=186"
+    const summary = screen.getByTestId("hre-campaign-summary")
+    expect(summary).toHaveTextContent("raids.summary.chipBattles|battles=663")
+    expect(summary).toHaveTextContent(
+      "raids.summary.chipPerDay|count=14,perDay=48"
     )
+    expect(summary).toHaveTextContent("raids.summary.chipEnergy|energy=186")
   })
 
-  it("suggests alliance ability uses as 5-slot battles by hand, from progress saved in the old order", () => {
+  it("suggests alliance ability uses as 5-slot battles by hand, from progress saved in the old order", async () => {
     mocks.raids = {
       status: "no-goals",
       missionRaids: plan({ rows: [], battlesLeft: 0, battles: battles() }),
@@ -508,7 +567,11 @@ describe("HRE tab", () => {
         manual: {
           needs: [
             {
-              objective: { kind: "useAbilitiesAlliance", target: 20 },
+              objective: {
+                kind: "useAbilitiesAlliance",
+                target: 20,
+                hintKeys: expect.any(Array),
+              },
               toGo: 8,
               per: "abilityUses",
             },
@@ -520,6 +583,10 @@ describe("HRE tab", () => {
         },
       },
     })
+    expect(screen.getByTestId("hre-battles-summary")).toHaveTextContent(
+      "raids.battleCount|count=4"
+    )
+    await openFold("battles")
     const note = screen.getByTestId("hre-battles-rules")
     expect(note).toHaveTextContent("raids.battles.slots|slots=5")
     expect(note).toHaveTextContent(
@@ -548,8 +615,9 @@ describe("HRE tab", () => {
     })
   })
 
-  it("suggests 5-slot battles, then an Arena team and an Onslaught pool for mission 15", () => {
+  it("suggests 5-slot battles, an Arena team and, on spare Onslaught tokens, the whole alliance for mission 15", async () => {
     mocks.team = { status: "loading" }
+    mocks.tokens = { arena: 0, guildRaid: 0, onslaught: 3, salvageRun: 0 }
     seed({ mission: 15, progress: [0, 0], order: 2 })
     renderHre()
     expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
@@ -558,28 +626,65 @@ describe("HRE tab", () => {
         manual: { needs: [{ toGo: 150, per: "abilityUses" }], slots: 5 },
       },
     })
-    expect(screen.getByTestId("hre-team")).toHaveTextContent(
+    expect(mocks.teamArgs.at(-1)).toMatchObject({
+      plans: [
+        { mode: "arena", spare: null },
+        { mode: "onslaught", spare: { held: 3 }, wholeTrack: true },
+      ],
+    })
+    expect(screen.getByTestId("hre-team-onslaught-summary")).toHaveTextContent(
+      "teams.upTo|count=3"
+    )
+    await openFold("arena")
+    await openFold("onslaught")
+    expect(screen.getByTestId("hre-team-arena")).toHaveTextContent(
       "hre:teams.titleMode|mode=hre:tokens.modes.arena"
     )
-    expect(screen.getByTestId("hre-team-onslaught")).toHaveTextContent(
+    const onslaught = screen.getByTestId("hre-team-onslaught")
+    expect(onslaught).toHaveTextContent(
       "hre:teams.titleMode|mode=hre:tokens.modes.onslaught"
     )
+    expect(
+      within(onslaught).getByTestId("hre-team-hint-spare")
+    ).toHaveTextContent("hre:teams.hints.spare|count=3,held=3,need=0")
+    expect(
+      within(onslaught).getByTestId("hre-team-hint-noEventPoints")
+    ).toBeInTheDocument()
   })
 
-  it("plays mission 6's summon-free wins in Arena only with tokens above mission 10's reserve", () => {
+  it("plays mission 6's summon-free wins in Arena with tokens above the event's remaining need", async () => {
     mocks.team = { status: "loading" }
-    mocks.tokens = { arena: 7, guildRaid: 2, onslaught: 3, salvageRun: 1 }
+    // The missions from 6 on need 8 Arena battles: 11 held leave 3 spare.
+    mocks.tokens = { arena: 11, guildRaid: 2, onslaught: 0, salvageRun: 0 }
     seed({ mission: 6, progress: [2500, 0] })
     renderHre()
     expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
       missionRaids: { manual: { needs: [{ toGo: 7, per: "battle" }] } },
     })
+    await openFold("arena")
     expect(
-      within(screen.getByTestId("hre-team")).getByTestId("hre-team-reserve")
-    ).toHaveTextContent("hre:teams.reservePlay|have=7,play=3")
+      within(screen.getByTestId("hre-team-arena")).getByTestId(
+        "hre-team-hint-spare"
+      )
+    ).toHaveTextContent("hre:teams.hints.spare|count=3,held=11,need=8")
+    expect(screen.queryByTestId("hre-team-reserve")).toBeNull()
   })
 
-  it("builds one campaign team per group of by-hand nodes, from only the factions they allow", () => {
+  it("keeps mission 6's Arena tokens for later missions when none are spare", () => {
+    mocks.team = { status: "loading" }
+    // 7 held against the 8 Arena battles the missions from 6 on need: nothing spare, so all 10
+    // summon-free wins stay campaign battles.
+    mocks.tokens = { arena: 7, guildRaid: 2, onslaught: 0, salvageRun: 0 }
+    seed({ mission: 6, progress: [2500, 0] })
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      missionRaids: { manual: { needs: [{ toGo: 10, per: "battle" }] } },
+    })
+    expect(screen.queryByTestId(/-suggestion-arena-trigger$/)).toBeNull()
+    expect(screen.queryByTestId("hre-team-arena")).toBeNull()
+  })
+
+  it("builds one campaign team per group of by-hand nodes, from only the factions they allow", async () => {
     mocks.team = { status: "loading" }
     mocks.raids = {
       status: "no-goals",
@@ -603,6 +708,7 @@ describe("HRE tab", () => {
     }
     seed({ mission: 17, progress: [0, 0] })
     renderHre()
+    await openFold("battles")
     expect(mocks.teamArgs.at(-1)).toMatchObject({
       plans: [
         { mode: "battle", factions: ["Ultramarines"], size: 5 },
@@ -617,9 +723,18 @@ describe("HRE tab", () => {
     )
   })
 
-  it("hands a running HSE's trackers to the mission teams and names it on them", () => {
-    const trackers = [{ kind: "KillUnits" }]
-    mocks.hse = { name: "Psyker Boost", trackers }
+  it("hands the running personal HSE that scores in a team's mode to it and names it", async () => {
+    const trackers = [
+      {
+        kind: "KillUnits",
+        points: 1,
+        pointsByRarity: null,
+        gameModes: { allowed: ["Arena"], disallowed: null },
+        enemy: null,
+        player: null,
+      },
+    ]
+    mocks.hses = [{ name: "Psyker Boost", trackers, statBoosts: [] }]
     mocks.team = {
       status: "ready",
       team: {
@@ -634,13 +749,18 @@ describe("HRE tab", () => {
     }
     seed({ mission: 15, progress: [0, 0] })
     renderHre()
-    expect(mocks.teamArgs.at(-1)).toMatchObject({ hseTrackers: trackers })
-    expect(screen.getByTestId("hre-team")).toHaveTextContent(
+    const input = mocks.teamArgs.at(-1) as {
+      hseTrackersFor: (mode: string) => unknown
+    }
+    expect(input.hseTrackersFor("arena")).toBe(trackers)
+    expect(input.hseTrackersFor("battle")).toBeNull()
+    await openFold("arena")
+    expect(screen.getByTestId("hre-team-arena")).toHaveTextContent(
       "hre:teams.hse|count=5,event=Psyker Boost"
     )
   })
 
-  it("fights mission 11's Necrons by hand, lightning nodes first, beside its lightning raids", () => {
+  it("fights mission 11's Necrons by hand, lightning nodes first, beside its lightning raids", async () => {
     mocks.raids = {
       status: "no-goals",
       missionRaids: plan({ battles: battles({ rows: [row("N05", 6, 4)] }) }),
@@ -659,6 +779,8 @@ describe("HRE tab", () => {
         },
       },
     })
+    await openFold("battles")
+    await openFold("raids")
     const note = screen.getByTestId("hre-battles-rules")
     expect(note).toHaveTextContent(
       "raids.battles.faction|faction=factions:Necrons"
@@ -667,12 +789,12 @@ describe("HRE tab", () => {
     expect(
       within(screen.getByTestId("hre-battles-list")).getAllByRole("listitem")
     ).toHaveLength(1)
-    expect(screen.getByTestId("hre-raids-main")).toHaveTextContent(
-      "raids.raidsTitle"
+    expect(screen.getByTestId("hre-raids-note")).toHaveTextContent(
+      "raids.noteLightning"
     )
   })
 
-  it("keeps the featured hero's battles to nodes where the hero's faction deploys", () => {
+  it("keeps the featured hero's battles to nodes where the hero's faction deploys", async () => {
     mocks.raids = {
       status: "no-goals",
       missionRaids: plan({ rows: [], battlesLeft: 0, battles: battles() }),
@@ -683,6 +805,7 @@ describe("HRE tab", () => {
     expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
       missionRaids: { manual: { alliance: "Xenos", heroFaction: "Orks" } },
     })
+    await openFold("battles")
     expect(screen.getByTestId("hre-battles-note")).toHaveTextContent(
       "raids.battles.note"
     )
@@ -695,7 +818,7 @@ describe("HRE tab", () => {
     expect(rules).not.toHaveTextContent("raids.battles.alliance")
   })
 
-  it("lists open-ended battles with their energy per battle", () => {
+  it("lists open-ended battles with their energy per battle", async () => {
     mocks.raids = {
       status: "no-goals",
       missionRaids: plan({
@@ -705,6 +828,7 @@ describe("HRE tab", () => {
     }
     seed({ mission: 8, progress: [2, 0] })
     renderHre()
+    await openFold("battles")
     expect(screen.getByTestId("hre-battles-rules")).toHaveTextContent(
       "raids.battles.openEnded"
     )
@@ -718,10 +842,10 @@ describe("HRE tab", () => {
     mocks.instance = { ...running(), hero: null }
     seed({ mission: 7, progress: [12, 0], order: 2 })
     renderHre()
-    expect(screen.queryByTestId("hre-battles")).toBeNull()
-    expect(screen.getByTestId("hre-battles-notice")).toHaveTextContent(
-      "hre:raids.notice.noHero"
-    )
+    expect(screen.queryByTestId(/-suggestion-battles$/)).toBeNull()
+    expect(
+      screen.getByTestId("hre-objective-0-suggestions-note")
+    ).toHaveTextContent("hre:raids.notice.noHero")
   })
 
   it("clamps an entry to the target and completes the mission", async () => {
@@ -786,7 +910,7 @@ describe("HRE tab", () => {
     )
   })
 
-  it("asks to win lightning victories manually without a campaign event", () => {
+  it("asks to win lightning victories manually without a campaign event", async () => {
     mocks.raids = {
       status: "no-goals",
       missionRaids: plan({ rows: [], empty: "no-event", battlesLeft: 2 }),
@@ -801,12 +925,13 @@ describe("HRE tab", () => {
         manual: { needs: [{ toGo: 5, per: "enemies" }], preferLightning: true },
       },
     })
+    await openFold("raids")
     expect(screen.getByTestId("hre-raids-empty-no-event")).toHaveTextContent(
       "count=2"
     )
   })
 
-  it("offers to reset the Raids Filters when they hide every node", () => {
+  it("offers to reset the Raids Filters when they hide every node", async () => {
     seed({ mission: 5, progress: [0, 37] })
     mocks.raids = {
       status: "no-goals",
@@ -814,6 +939,7 @@ describe("HRE tab", () => {
       locationsByBattleId: new Map(),
     }
     renderHre()
+    await openFold("raids")
     expect(screen.getByTestId("hre-raids-empty-filtered")).toHaveTextContent(
       "hre:raids.empty.noCandidates"
     )
@@ -844,6 +970,14 @@ describe("HRE tab", () => {
     expect(screen.getByTestId("hre-pace-currency")).toHaveTextContent(
       "daily=826,crates=720"
     )
+  })
+
+  it("asks for points when a target is picked before any are entered", async () => {
+    seed({ mission: 1, progress: [0, 0], target: "epic-red-1" })
+    renderHre()
+    expect(screen.getByText("pace.targetNeedsPoints")).toBeInTheDocument()
+    await userEvent.type(screen.getByTestId("hre-pace-points"), "30000")
+    expect(screen.queryByText("pace.targetNeedsPoints")).toBeNull()
   })
 
   it("keeps the raids request while only points, rank or target change", async () => {
@@ -894,7 +1028,7 @@ describe("HRE tab", () => {
     )
   })
 
-  it("points the mobile tour's pace step at the summary, and renders every mobile target", () => {
+  it("points the mobile tour's pace step at the card under the tracker, and renders every mobile target", () => {
     mocks.isMobile = true
     renderHre()
     const steps = mocks.tourSteps as { mobile: { target: string }[] }
@@ -902,8 +1036,10 @@ describe("HRE tab", () => {
       expect(document.querySelector(step.target), step.target).not.toBeNull()
     }
     const targets = steps.mobile.map((step) => step.target)
-    expect(targets).toContain('[data-testid="hre-pace-summary"]')
-    expect(targets).not.toContain('[data-testid="hre-pace"]')
+    expect(targets).toContain('[data-testid="hre-pace"]')
+    expect(targets.indexOf('[data-testid="hre-pace"]')).toBeLessThan(
+      targets.indexOf('[data-testid="hre-raids"]')
+    )
   })
 
   describe("pace from what the player holds", () => {
@@ -1057,49 +1193,39 @@ describe("HRE tab", () => {
     })
   })
 
-  describe("mobile pace summary", () => {
-    it("sits under the current mission and asks for points without them", async () => {
+  describe("side column", () => {
+    it("puts the pace first, then the suggestions, tokens and the campaign outlook, on both layouts", () => {
+      seed({ mission: 5, progress: [0, 37] })
+      mocks.tokens = { arena: 8, guildRaid: 2, onslaught: 3, salvageRun: 1 }
+      const { unmount } = renderHre()
+      const side = (root: Element) =>
+        [...root.children].map((child) => child.getAttribute("data-testid"))
+      const desktop = screen.getByTestId("hre-sections").children[1]
+      expect(desktop && side(desktop)).toEqual([
+        "hre-pace-section",
+        "hre-details",
+        "hre-tokens",
+        "hre-raids",
+      ])
+      unmount()
       mocks.isMobile = true
       renderHre()
-      const order = [...screen.getByTestId("hre-sections").children].map(
-        (child) => child.getAttribute("data-testid")
-      )
-      expect(order.indexOf("hre-pace-summary")).toBe(
-        order.indexOf("hre-tracker") + 1
-      )
-      expect(screen.getByTestId("hre-pace-summary")).toHaveTextContent(
-        "pace.summaryEmpty"
-      )
-      const scroll = vi.spyOn(HTMLElement.prototype, "scrollIntoView")
-      await userEvent.click(screen.getByTestId("hre-pace-summary-details"))
-      expect(scroll).toHaveBeenCalled()
-      expect(scroll.mock.contexts.at(-1)).toBe(
-        screen.getByTestId("hre-pace-section")
-      )
+      expect(side(screen.getByTestId("hre-sections"))).toEqual([
+        "hre-tracker",
+        "hre-pace-section",
+        "hre-details",
+        "hre-tokens",
+        "hre-raids",
+        "hre-all-missions",
+      ])
     })
 
-    it("summarises day 8 in one line", () => {
-      mocks.isMobile = true
-      mocks.instance = { ...running(), nowMs: START + 7 * DAY }
-      seed({
-        mission: 20,
-        progress: [0, 70],
-        points: 15_657,
-        rank: 26_602,
-        owned: { currency: 372, nextTier: 17, step: "rare-4", toNext: 17 },
-        order: 2,
-      })
+    it("previews the whole event's tokens and campaign outlook", () => {
+      mocks.instance = preview()
       renderHre()
-      expect(screen.getByTestId("hre-pace-summary")).toHaveTextContent(
-        "pace.summary|points=15,657,projected=31,314,step=pace.steps.rare-red-1"
-      )
-    })
-
-    it("is not shown on desktop", () => {
-      seed({ points: 15_657 })
-      renderHre()
-      expect(screen.queryByTestId("hre-pace-summary")).toBeNull()
-      expect(screen.getByTestId("hre-pace")).toBeInTheDocument()
+      expect(screen.getByTestId("hre-tokens")).toBeInTheDocument()
+      expect(screen.getByTestId("hre-campaign-summary")).toBeInTheDocument()
+      expect(screen.queryByTestId("hre-pace")).toBeNull()
     })
   })
 })

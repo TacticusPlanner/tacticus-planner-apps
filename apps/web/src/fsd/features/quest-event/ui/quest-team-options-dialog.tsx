@@ -11,6 +11,7 @@ import {
   EntityIcon,
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -48,7 +49,7 @@ export function QuestTeamOptionsDialog({
   return (
     <ResponsiveDialog
       data-testid="quest-team-options"
-      desktopClassName="sm:max-w-xl"
+      width="form"
       onOpenChange={onOpenChange}
       open={open}
     >
@@ -56,9 +57,11 @@ export function QuestTeamOptionsDialog({
         <ResponsiveDialogTitle>
           {t("team.optionsTitle", { number: battleNumber ?? "" })}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">{t("team.optionsHint")}</p>
+        <ResponsiveDialogDescription>
+          {t("team.optionsHint")}
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="pb-3">
+      <ResponsiveDialogBody>
         <ol className="flex flex-col gap-1.5">
           {featured ? (
             <li>
@@ -104,26 +107,24 @@ export function QuestTeamOptionsDialog({
           })}
         </ol>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="border-t md:justify-between">
+      <ResponsiveDialogFooter>
         <p
-          className="inline-flex items-center gap-1 text-sm tabular-nums"
+          className="inline-flex items-center gap-1 text-sm tabular-nums max-md:basis-full md:mr-auto"
           data-testid="quest-team-options-power"
         >
-          <EntityIcon alt="" className="size-4" src={powerIcon()} />
+          <EntityIcon size="inline" alt="" src={powerIcon()} />
           {t("team.optionsSelected", {
             count: picked.length,
             slots: team.openSlots,
             power: power === null ? "–" : number.format(power),
           })}
         </p>
-        <div className="flex gap-2">
-          <Button onClick={() => setPicked(suggested)} variant="outline">
-            {t("team.optionsReset")}
-          </Button>
-          <Button onClick={() => onOpenChange(false)}>
-            {t("team.optionsClose")}
-          </Button>
-        </div>
+        <Button onClick={() => setPicked(suggested)} variant="ghost">
+          {t("team.optionsReset")}
+        </Button>
+        <Button onClick={() => onOpenChange(false)}>
+          {t("team.optionsDone")}
+        </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>
   )
@@ -154,14 +155,15 @@ function OptionRow({
         {lead}
       </span>
       <EntityIcon
+        size="portrait-sm"
         alt=""
-        className="size-8 shrink-0 rounded-full bg-portrait"
+        className="shrink-0 rounded-full bg-portrait"
         src={characterIcon(unitId as UnitId)}
       />
       <span className="min-w-0 flex-1 truncate">{name}</span>
       {power === null ? null : (
         <span className="inline-flex items-center gap-1 tabular-nums">
-          <EntityIcon alt="" className="size-4" src={powerIcon()} />
+          <EntityIcon size="inline" alt="" src={powerIcon()} />
           {number.format(power)}
         </span>
       )}

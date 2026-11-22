@@ -9,6 +9,7 @@ import { useProjects } from "@/entities/project"
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -72,7 +73,7 @@ export function AddToAnotherProjectDialog({
     <ResponsiveDialog
       contentRef={setPortalContainer}
       data-testid="add-to-another-project-dialog"
-      desktopClassName="sm:max-w-md"
+      width="narrow"
       onOpenChange={onOpenChange}
       open
     >
@@ -80,13 +81,13 @@ export function AddToAnotherProjectDialog({
         <ResponsiveDialogTitle>
           {t("goals.project.addToAnotherTitle")}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
+        <ResponsiveDialogDescription>
           {unitName(goal.entityType, goal.entityId)}
           {" · "}
           {t(`goals.create.goalTypes.${goal.goalType}`)}
-        </p>
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="pb-3">
+      <ResponsiveDialogBody>
         <GoalProjectsField
           onSelectionChange={setSelected}
           portalContainer={portalContainer}
@@ -113,7 +114,7 @@ export function AddToAnotherProjectDialog({
           onClick={() => void saver.save({ projectIds: selected })}
         >
           {saver.isSaving ? <Spinner /> : null}
-          {t("goals.edit.save")}
+          {t("goals.project.saveProjects")}
         </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>

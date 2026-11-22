@@ -80,7 +80,7 @@ export function RaidBossSeasonReference({
                       <RaidBossPortrait
                         name={located.item.name}
                         src={located.item.portraitSrc}
-                        className="size-14"
+                        size="portrait-md"
                       />
                       <span className="line-clamp-2 text-xs font-medium">
                         {located.item.name}

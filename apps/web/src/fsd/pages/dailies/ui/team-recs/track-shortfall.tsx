@@ -63,15 +63,16 @@ export function TrackShortfall({
                   className="flex items-center gap-3 rounded-lg border p-2"
                 >
                   <EntityIcon
+                    size="portrait-sm"
                     alt={name}
                     src={characterIcon(character.unitId)}
-                    className="size-10 shrink-0"
+                    className="shrink-0"
                   />
                   <p className="min-w-0 flex-1 truncate text-sm font-medium">
                     {name}
                   </p>
                   <div className="flex shrink-0 items-center gap-2">
-                    <RarityIcon rarity={character.rarity} className="size-5" />
+                    <RarityIcon rarity={character.rarity} />
                     <RankBadge
                       rank={character.rank}
                       showLabel={false}

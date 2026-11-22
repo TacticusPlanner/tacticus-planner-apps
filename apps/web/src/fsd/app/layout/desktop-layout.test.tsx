@@ -18,6 +18,7 @@ vi.mock("react-i18next", () => ({
 // `useTranslation` mock above. `true` matches the non-production default so `navItems` keeps its
 // UI Kit entry.
 vi.mock("@/shared/config", () => ({
+  appEnvironment: "production",
   BUY_ME_A_COFFEE_URL: "https://coffee.example",
   DISCORD_INVITE_URL: "https://discord.example",
   isUiKitEnabled: true,

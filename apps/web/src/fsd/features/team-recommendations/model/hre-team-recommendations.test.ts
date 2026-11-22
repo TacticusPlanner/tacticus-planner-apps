@@ -176,6 +176,19 @@ describe("buildHreTeam", () => {
     expect(team?.status === "ready" ? team.alliance : null).not.toBeNull()
   })
 
+  it("fields the whole alliance, weakest first, for Onslaught ability uses", () => {
+    const pool = build({
+      plan: { rule: "abilities", mode: "onslaught", size: 8 },
+    })
+    const whole = build({
+      plan: { rule: "abilities", mode: "onslaught", size: 8, wholeTrack: true },
+    })
+    expect(whole?.status).toBe("ready")
+    if (whole?.status !== "ready" || pool?.status !== "ready") return
+    expect(ids(whole)).toHaveLength(whole.eligibleCount)
+    expect(ids(whole).at(-1)).toBe(ids(pool)[0])
+  })
+
   it("fields an Onslaught pool of the alliance with the most ranged units", () => {
     const team = build({
       plan: { rule: "ranged", mode: "onslaught", size: 8 },
@@ -265,6 +278,54 @@ describe("buildHreTeam with a running HSE", () => {
       hseUnits: 5,
     })
     expect(build({ plan })).toMatchObject({ alliance: "Imperial" })
+  })
+
+  it("deploys a whole track's event units first, each group weakest first", () => {
+    const plan = { rule: "abilities", mode: "onslaught", size: 8 } as const
+    const pool = build({ plan, hseTrackers: psykers })
+    const whole = build({
+      plan: { ...plan, wholeTrack: true },
+      hseTrackers: psykers,
+    })
+    expect(whole).toMatchObject({ status: "ready", hseUnits: 5 })
+    const order = ids(whole)
+    expect(order.slice(0, 5).every((id) => psykerIds.has(id))).toBe(true)
+    expect(order.slice(5).some((id) => psykerIds.has(id))).toBe(false)
+    // The engine ranks the event's units strongest first; the whole track turns that around.
+    expect(order.slice(0, 5)).toEqual(
+      ids(pool)
+        .filter((id) => psykerIds.has(id))
+        .toReversed()
+    )
+  })
+
+  it("orders a whole track's event units by power, not by how many trackers they match", () => {
+    // Faction Boost (Dark Angels): Asmodai matches twice (faction and alliance), so the engine ranks
+    // it above stronger Imperial units; deployed weakest first, it still goes first.
+    const whole = build({
+      plan: { rule: "abilities", mode: "onslaught", size: 8, wholeTrack: true },
+      characters: [
+        ...hseTeamsFixtureCharacters,
+        {
+          unitId: "darkaAsmodai",
+          rank: "Bronze1",
+          alliance: "Imperial",
+          faction: "DarkAngels",
+          traits: [],
+        },
+      ],
+      hseTrackers: hseVariant("hse-faction-boost", "DarkAngels").trackers,
+    })
+    expect(whole).toMatchObject({ status: "ready", alliance: "Imperial" })
+    expect(ids(whole)).toEqual([
+      "darkaAsmodai",
+      "astraPrimarisPsy",
+      "spaceStormcaller",
+      "ultraTigurius",
+      "bloodMephiston",
+      "darkaAzrael",
+      "ultraCalgar",
+    ])
   })
 
   it("ranks the event's units after the mission's own rule", () => {

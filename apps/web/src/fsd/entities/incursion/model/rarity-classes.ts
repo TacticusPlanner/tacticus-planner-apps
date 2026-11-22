@@ -8,15 +8,6 @@ export const RARITY_BORDER: Record<string, string> = {
   Mythic: "border-(--rarity-mythic)",
 }
 
-export const RARITY_TEXT: Record<string, string> = {
-  Common: "text-(--rarity-common)",
-  Uncommon: "text-(--rarity-uncommon)",
-  Rare: "text-(--rarity-rare)",
-  Epic: "text-(--rarity-epic)",
-  Legendary: "text-(--rarity-legendary)",
-  Mythic: "text-(--rarity-mythic)",
-}
-
 /** Solid fill for a cleared tier; the faint one marks a tier still to clear. */
 export const RARITY_FILL: Record<string, string> = {
   Common: "bg-(--rarity-common)",

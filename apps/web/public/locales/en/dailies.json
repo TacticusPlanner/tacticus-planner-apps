@@ -211,7 +211,8 @@
     "more_other": "{{count}} still needed",
     "progress": "{{owned}} of {{target}} owned",
     "fullyRaided": "Fully raided",
-    "battle": "Battle {{node}}"
+    "battle": "Battle {{node}}",
+    "noGoals": "You have no active goals. Create or resume a goal to see the days your raids will take."
   },
   "bonus": {
     "title": "Bonus raids",
@@ -419,12 +420,12 @@
           "content": "Open the full list of missions. Each one expands to its tips."
         },
         "raids": {
-          "title": "Campaign raids",
-          "content": "Where to raid for the current mission's campaign objective, cheapest energy first, not limited to today's energy. The summary below counts the campaign battles left over the whole event."
+          "title": "Campaign outlook",
+          "content": "The campaign battles left over the whole event against your daily energy at the cheapest nodes."
         },
-        "team": {
-          "title": "Mission team",
-          "content": "A team from your roster for missions that restrict the lineup or need the featured hero."
+        "suggestions": {
+          "title": "Suggestions",
+          "content": "Under each objective, tap a row to jump to its card below Event pace: where to raid, the battles to fight by hand, and the team to play them with, also in Arena, Onslaught or Salvage Run when you have tokens to spare."
         },
         "tokens": {
           "title": "Tokens needed",
@@ -433,10 +434,6 @@
         "pace": {
           "title": "Event pace",
           "content": "Enter your event points and rank, and optionally what you hold now, to project currency, chest tier and shards, and pick a target to see the points a day it needs."
-        },
-        "paceSummary": {
-          "title": "Pace at a glance",
-          "content": "Your points, where they end up and the step they reach. Tap Details to enter points, rank and what you hold, and to pick a target."
         }
       }
     },
@@ -519,7 +516,7 @@
           "content": "Open your shopping list and Coverage. The button shows what is still to buy and how many items need review."
         },
         "planTab": {
-          "title": "Plan",
+          "title": "Shopping list",
           "content": "Your shopping list and Coverage. The badge counts items that need review."
         },
         "stillToBuy": {
@@ -548,10 +545,8 @@
     "row": "{{material}} ×{{count}}: {{reason}}"
   },
   "raidsFilters": {
-    "trigger": "Filters",
-    "triggerActive": "Filters, {{count}} active",
     "title": "Filters",
-    "description": "Limit which campaign locations Today, Bonus Raids and the HSE tab may use. Plan and Goals are not affected.",
+    "description": "Applies to Today, Bonus Raids and the HSE tab, not to Plan or Goals.",
     "sections": {
       "allies": "Allies",
       "enemies": "Enemies",
@@ -566,7 +561,7 @@
       "enemyTraits": "Enemy traits",
       "enemyTypes": "Enemy types",
       "campaignTypes": "Types",
-      "slots": "Slots",
+      "slots": "Deployment slots",
       "rarity": "Rarity"
     },
     "placeholders": {
@@ -592,17 +587,17 @@
     },
     "slotsOption": "{{count}} slots",
     "actions": {
-      "close": "Close",
-      "reset": "Reset filters",
+      "cancel": "Cancel",
+      "reset": "Clear filters",
       "apply": "Apply filters"
     },
     "filteredOut": {
       "title": "Filters removed some materials",
       "materials_one": "{{count}} material has no allowed location with these filters.",
       "materials_other": "{{count}} materials have no allowed location with these filters.",
-      "pinned_one": "{{count}} goal is pinned to a location excluded by your raid filters. Reset the filters or change the pin.",
-      "pinned_other": "{{count}} goals are pinned to a location excluded by your raid filters. Reset the filters or change the pin.",
-      "reset": "Reset filters",
+      "pinned_one": "{{count}} goal is pinned to a location excluded by your raid filters. Clear the filters or change the pin.",
+      "pinned_other": "{{count}} goals are pinned to a location excluded by your raid filters. Clear the filters or change the pin.",
+      "reset": "Clear filters",
       "listLabel": "Materials your raid filters skip",
       "pinnedBadge": "Pinned",
       "showAll": "Show all {{count}}",
@@ -880,7 +875,8 @@
         "syncedAt": "Tokens from your sync {{when}}, assuming you spend them before your buckets fill up.",
         "syncUnknown": "Your sync time is unknown, so tokens are counted from now, assuming you spend them before your buckets fill up.",
         "upcoming": "Tokens assume full buckets when the event starts and that you spend them before they fill up."
-      }
+      },
+      "howWorkedOut": "How this is worked out"
     },
     "teams": {
       "title": "Event teams",
@@ -929,7 +925,8 @@
   "battleProgress": {
     "open": "Medals",
     "title": "Battles without 3 medals",
-    "description": "Raids need 3 medals. Beaten battles count as the best result (3 medals, Lightning Victory, top milestone); change only the ones that fell short. A battle below 3 medals is planned as one to play manually. Your next battle in each campaign is always played manually.",
+    "description": "Raids need 3 medals. Change only the battles that fell short.",
+    "note": "Beaten battles count as 3 medals, Lightning Victory and the top milestone. A battle below 3 medals, and your next battle in each campaign, is played manually.",
     "campaign": "Campaign",
     "notStarted": "You haven't reached any battle in this campaign yet.",
     "notBeaten": "Not beaten yet",

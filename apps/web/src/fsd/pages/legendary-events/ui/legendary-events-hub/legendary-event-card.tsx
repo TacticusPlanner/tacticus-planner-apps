@@ -66,8 +66,9 @@ export function LegendaryEventCard({
     >
       {portrait ? (
         <EntityIcon
+          size="portrait-sm"
           alt=""
-          className="size-12 shrink-0 rounded-full object-cover"
+          className="shrink-0 rounded-full object-cover"
           src={portrait}
         />
       ) : (

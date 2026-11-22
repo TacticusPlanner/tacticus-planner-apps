@@ -97,7 +97,7 @@ export function TokenPlanCard({
               {t("tokens.bankFull", { time: time(plan.bankFullMs) })}
             </p>
           ) : null}
-          <p className="text-xs text-muted-foreground">{t("tokens.tip")}</p>
+          <p className="text-sm text-muted-foreground">{t("tokens.tip")}</p>
         </>
       )}
     </section>

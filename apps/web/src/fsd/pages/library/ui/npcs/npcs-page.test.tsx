@@ -215,7 +215,20 @@ const powerValue = () => screen.getByTestId("npc-stat-power-value")
 
 /** Filters are collapsed behind a toggle on both platforms; open them before driving a control. */
 const openFilters = (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByTestId("npcs-filters-toggle"))
+  user.click(screen.getByTestId("npcs-filters"))
+
+/** Filters is a dialog on desktop too: close it with Done before using the page behind it. */
+const closeFilters = (user: ReturnType<typeof userEvent.setup>) =>
+  user.click(
+    within(screen.getByTestId("npcs-filters-panel")).getByRole("button", {
+      name: "Done",
+    })
+  )
+
+/** The listed NPC tiles. While the Filters dialog is open it hides the page from the
+ *  accessibility tree, so the list is read with `hidden: true`. */
+const listedNpcs = () =>
+  within(screen.getByTestId("npcs-list")).getAllByRole("link", { hidden: true })
 
 /** `toLocaleString` grouping differs per machine locale; match digits regardless of separators. */
 const numberText = (value: number) =>
@@ -273,28 +286,47 @@ describe("NpcsPage", () => {
     expect(location()).toBe("/library/npcs")
   })
 
-  it("redirects the collection URL to the first listed NPC", async () => {
+  it("shows the list at the collection URL, without redirecting to an NPC", async () => {
     await renderPage("/library/npcs")
 
-    // The catalog store returns rows by id, so `blackNpc4HavocSurv` lists first.
-    await waitFor(() => expect(location()).toBe("/library/npcs/havoc"))
-    expect(screen.getByTestId("npc-name")).toHaveTextContent("Havoc")
+    expect(await screen.findByTestId("npcs-list-page")).toBeVisible()
+    expect(location()).toBe("/library/npcs")
+    expect(screen.queryByTestId("npc-name")).toBeNull()
   })
 
-  it("replaces an unknown group id with the first listed NPC", async () => {
+  it("sends an unknown group id back to the list", async () => {
     await renderPage("/library/npcs/not-a-real-npc?variation=x")
 
-    await waitFor(() =>
-      expect(location()).toBe("/library/npcs/havoc?variation=x")
+    await waitFor(() => expect(location()).toBe("/library/npcs"))
+    expect(screen.getByTestId("npcs-list-page")).toBeVisible()
+  })
+
+  it("opens an NPC's page from its tile, with back and Previous / Next", async () => {
+    const user = userEvent.setup()
+    await renderPage("/library/npcs")
+
+    await user.click(await screen.findByTestId("npc-tile-makhotep"))
+
+    await waitFor(() => expect(location()).toBe("/library/npcs/makhotep"))
+    expect(screen.getByTestId("npc-name")).toHaveTextContent("Makhotep")
+    expect(screen.queryByTestId("npcs-list")).toBeNull()
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("2 of 4")
+    expect(screen.getByTestId("unit-nav-back")).toHaveAttribute(
+      "href",
+      "/library/npcs"
     )
+
+    await user.click(screen.getByTestId("unit-nav-next"))
+    await waitFor(() => expect(location()).toBe("/library/npcs/imospekh"))
+    expect(screen.getByTestId("npc-name")).toHaveTextContent("Imospekh")
   })
 
   it("excludes Machines of War and loot objects from the list", async () => {
-    await renderPage("/library/npcs/makhotep")
+    await renderPage("/library/npcs")
 
     const list = await screen.findByTestId("npcs-list")
     const names = within(list)
-      .getAllByRole("button")
+      .getAllByRole("link")
       .map((tile) => tile.textContent)
     // Store order (by id) and localized names from the `npcs` namespace.
     expect(names).toEqual(["Havoc", "Makhotep", "Imospekh", "Termagant"])
@@ -346,14 +378,14 @@ describe("NpcsPage", () => {
     expect(screen.getByTestId("npc-stat-health")).toHaveTextContent("140")
   })
 
-  it("selecting another NPC drops variation and level", async () => {
+  it("Previous / Next drop variation and level", async () => {
     const user = userEvent.setup()
     await renderPage(
       "/library/npcs/makhotep?variation=necroBossWardenLHE&level=1"
     )
     await screen.findByTestId("npc-name")
 
-    await user.click(screen.getByTestId("npc-tile-imospekh"))
+    await user.click(screen.getByTestId("unit-nav-next"))
 
     await waitFor(() => expect(location()).toBe("/library/npcs/imospekh"))
     expect(screen.getByTestId("npc-name")).toHaveTextContent("Imospekh")
@@ -369,9 +401,7 @@ describe("NpcsPage", () => {
     await user.click(screen.getByTestId("npcs-variation-select"))
     const options = await screen.findAllByRole("option")
     expect(options).toHaveLength(5)
-    await user.click(
-      options.find((o) => o.textContent.includes("necroBossWardenLEG"))!
-    )
+    await user.click(options.find((o) => o.textContent === "Legendary Event")!)
 
     await waitFor(() =>
       expect(location()).toBe(
@@ -474,35 +504,36 @@ describe("NpcsPage", () => {
     expect(screen.queryByTestId("npc-attack-ranged")).not.toBeInTheDocument()
   })
 
-  it("filters the list by search without touching the selected URL", async () => {
+  it("filters the list by search, and Previous / Next follow the filtered list", async () => {
     const user = userEvent.setup()
-    await renderPage("/library/npcs/makhotep")
-    await screen.findByTestId("npc-name")
+    await renderPage("/library/npcs")
+    await screen.findByTestId("npcs-list")
 
-    await openFilters(user)
     await user.type(screen.getByTestId("npcs-search"), "term")
 
     const list = screen.getByTestId("npcs-list")
-    expect(within(list).getAllByRole("button")).toHaveLength(1)
-    expect(location()).toBe("/library/npcs/makhotep")
-    expect(screen.getByTestId("npc-name")).toHaveTextContent("Makhotep")
+    expect(within(list).getAllByRole("link")).toHaveLength(1)
+    expect(location()).toBe("/library/npcs")
+
+    await user.click(screen.getByTestId("npc-tile-termagant"))
+    await waitFor(() => expect(location()).toBe("/library/npcs/termagant"))
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("1 of 1")
+    expect(screen.getByRole("button", { name: "Previous" })).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Next" })).toBeDisabled()
   })
 
   it("shows the no-matching-NPCs state with a clear control", async () => {
     const user = userEvent.setup()
-    await renderPage("/library/npcs/makhotep")
-    await screen.findByTestId("npc-name")
+    await renderPage("/library/npcs")
+    await screen.findByTestId("npcs-list")
 
-    await openFilters(user)
     await user.type(screen.getByTestId("npcs-search"), "zzz")
     expect(screen.getByTestId("npcs-no-matching")).toBeVisible()
 
     await user.click(
       within(screen.getByTestId("npcs-no-matching")).getByRole("button")
     )
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("button")
-    ).toHaveLength(4)
+    expect(listedNpcs()).toHaveLength(4)
   })
 
   it("moves the URL to the first matching variation when the selected one stops matching", async () => {
@@ -539,11 +570,22 @@ describe("NpcsPage", () => {
     await openFilters(user)
     await user.click(screen.getByTestId("npcs-trait-filter"))
     await user.click(await screen.findByRole("option", { name: /Swarm/ }))
+    await closeFilters(user)
 
     expect(
       await screen.findByTestId("npcs-no-matching-variation")
     ).toBeVisible()
     expect(location()).toBe("/library/npcs/makhotep")
+    // Filtered out of the list, the NPC steps through every NPC instead.
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("2 of 4")
+    expect(screen.getByRole("link", { name: /Havoc/ })).toHaveAttribute(
+      "href",
+      "/library/npcs/havoc"
+    )
+    expect(screen.getByRole("link", { name: /Imospekh/ })).toHaveAttribute(
+      "href",
+      "/library/npcs/imospekh"
+    )
   })
 
   it("links an open filter combobox to its listbox via aria-controls", async () => {
@@ -562,23 +604,21 @@ describe("NpcsPage", () => {
     ).toBe(await screen.findByRole("listbox"))
   })
 
-  it("resets filters when the user leaves and returns", async () => {
+  it("keeps filters across an NPC's page, and resets them when the user leaves and returns", async () => {
     const user = userEvent.setup()
-    const view = await renderPage("/library/npcs/makhotep")
-    await screen.findByTestId("npc-name")
-    await openFilters(user)
+    const view = await renderPage("/library/npcs")
+    await screen.findByTestId("npcs-list")
     await user.type(screen.getByTestId("npcs-search"), "term")
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("button")
-    ).toHaveLength(1)
+    await user.click(screen.getByTestId("npc-tile-termagant"))
+    await user.click(await screen.findByTestId("unit-nav-back"))
+    expect(await screen.findByTestId("npcs-search")).toHaveValue("term")
+    expect(listedNpcs()).toHaveLength(1)
 
     view.unmount()
-    await renderPage("/library/npcs/makhotep")
-    await screen.findByTestId("npc-name")
+    await renderPage("/library/npcs")
+    await screen.findByTestId("npcs-list")
 
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("button")
-    ).toHaveLength(4)
+    expect(listedNpcs()).toHaveLength(4)
   })
 
   describe("mobile", () => {
@@ -593,40 +633,30 @@ describe("NpcsPage", () => {
 
       const toggle = screen.getByRole("button", { name: "Filters" })
       await user.click(toggle)
-      const sheet = await screen.findByTestId("npcs-filter-sheet")
+      const sheet = await screen.findByTestId("npcs-filters-panel")
       expect(within(sheet).getByTestId("npcs-filter-bar")).toBeVisible()
 
       await user.click(within(sheet).getByRole("button", { name: "Done" }))
       await waitFor(() =>
-        expect(screen.queryByTestId("npcs-filter-sheet")).toBeNull()
+        expect(screen.queryByTestId("npcs-filters-panel")).toBeNull()
       )
       expect(toggle).toHaveFocus()
     })
 
-    it("renders the combobox instead of the tile list and navigates on pick", async () => {
+    it("shows the same tile list as desktop and opens an NPC's page", async () => {
       const user = userEvent.setup()
-      await renderPage("/library/npcs/makhotep")
-      await screen.findByTestId("npc-name")
+      await renderPage("/library/npcs")
 
-      expect(screen.queryByTestId("npcs-list")).not.toBeInTheDocument()
-      const combobox = within(screen.getByTestId("npcs-combobox")).getByRole(
-        "combobox"
-      )
-      expect(combobox).toHaveTextContent("Makhotep")
-
-      await user.click(combobox)
-      await user.type(screen.getByPlaceholderText("Select an NPC"), "makh")
-      const options = await screen.findAllByRole("option")
-      expect(options).toHaveLength(1)
-      await user.click(at(options, 0))
+      await user.click(await screen.findByTestId("npc-tile-makhotep"))
 
       await waitFor(() => expect(location()).toBe("/library/npcs/makhotep"))
+      expect(screen.getByTestId("npc-name")).toHaveTextContent("Makhotep")
     })
 
     it("stacks the detail with the compact stat grid and full-width selectors", async () => {
       await renderPage("/library/npcs/makhotep")
 
-      expect(await screen.findByTestId("npcs-mobile-page")).toBeVisible()
+      expect(await screen.findByTestId("npc-detail-page")).toBeVisible()
       expect(screen.getByTestId("npcs-stats")).toHaveClass("grid-cols-2")
       expect(screen.getByTestId("npcs-variation-select")).toBeVisible()
       expect(screen.getByTestId("npcs-level-select")).toBeVisible()
@@ -640,58 +670,45 @@ describe("NpcsPage desktop layout and filters", () => {
     seededNpcs = dataset
   })
 
-  it("marks the selected tile pressed and renders the list beside the detail", async () => {
+  it("shows an NPC's page at full width with Filters but no search or list", async () => {
     await renderPage("/library/npcs/imospekh")
     await screen.findByTestId("npc-name")
 
-    expect(screen.getByTestId("npc-tile-imospekh")).toHaveAttribute(
-      "aria-pressed",
-      "true"
-    )
-    expect(screen.getByTestId("npc-tile-makhotep")).toHaveAttribute(
-      "aria-pressed",
-      "false"
-    )
-    expect(screen.getByTestId("npcs-desktop-page")).toBeVisible()
-    const columns = screen.getByTestId("npcs-columns")
-    expect(within(columns).getByTestId("npcs-list")).toBeVisible()
-    expect(within(columns).getByTestId("npc-detail")).toBeVisible()
+    expect(screen.getByTestId("npc-detail-page")).toBeVisible()
+    expect(screen.getByTestId("npc-detail")).toBeVisible()
+    expect(screen.getByTestId("npcs-filters")).toBeVisible()
+    expect(screen.queryByTestId("npcs-search")).toBeNull()
+    expect(screen.queryByTestId("npcs-list")).toBeNull()
   })
 
   it("keeps name search outside the collapsible filters", async () => {
     const user = userEvent.setup()
-    await renderPage("/library/npcs/makhotep")
-    await screen.findByTestId("npc-name")
+    await renderPage("/library/npcs")
+    await screen.findByTestId("npcs-list")
 
     // Search is usable without opening the panel, and is not counted as a filter.
     expect(screen.queryByTestId("npcs-filter-bar")).toBeNull()
     await user.type(screen.getByTestId("npcs-search"), "term")
 
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("button")
-    ).toHaveLength(1)
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters"
-    )
+    expect(listedNpcs()).toHaveLength(1)
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName("Filters")
   })
 
   it("narrows by alliance and by attack type", async () => {
     const user = userEvent.setup()
-    await renderPage("/library/npcs/makhotep")
-    await screen.findByTestId("npc-name")
+    await renderPage("/library/npcs")
+    await screen.findByTestId("npcs-list")
     await openFilters(user)
 
     await user.click(screen.getByTestId("npcs-alliance-filter"))
     await user.click(await screen.findByRole("option", { name: /Xenos/ }))
-    const afterAlliance = within(screen.getByTestId("npcs-list")).getAllByRole(
-      "button"
-    ).length
+    const afterAlliance = listedNpcs().length
     expect(afterAlliance).toBeGreaterThan(0)
 
     await user.click(screen.getByTestId("npcs-attack-filter"))
     await user.click(await screen.findByRole("option", { name: "Melee only" }))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
   })
 
@@ -707,15 +724,15 @@ describe("NpcsPage desktop layout and filters", () => {
     await user.click(
       await screen.findByRole("option", { name: "Living Metal" })
     )
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
 
     await user.click(screen.getByTestId("npcs-damage-type-filter-clear"))
 
     // Only the damage-type facet is reset; the trait facet survives.
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
     expect(screen.queryByTestId("npcs-damage-type-filter-clear")).toBeNull()
     expect(screen.getByTestId("npcs-trait-filter-clear")).toBeVisible()
@@ -748,30 +765,26 @@ describe("NpcsPage desktop layout and filters", () => {
 
   it("narrows by faction and by damage type, and the clear button reports the active count", async () => {
     const user = userEvent.setup()
-    await renderPage("/library/npcs/makhotep")
-    await screen.findByTestId("npc-name")
+    await renderPage("/library/npcs")
+    await screen.findByTestId("npcs-list")
 
     await openFilters(user)
     await user.click(screen.getByTestId("npcs-faction-filter"))
     await user.click(await screen.findByRole("option", { name: "Tyranids" }))
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("button")
-    ).toHaveLength(1)
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(listedNpcs()).toHaveLength(1)
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
 
     await user.click(screen.getByTestId("npcs-damage-type-filter"))
     await user.click(await screen.findByRole("option", { name: "Piercing" }))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
 
-    await user.click(screen.getByTestId("npcs-clear-filters"))
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("button")
-    ).toHaveLength(4)
-    expect(screen.getByTestId("npcs-clear-filters")).toBeDisabled()
+    await user.click(screen.getByTestId("npcs-filters-clear"))
+    expect(listedNpcs()).toHaveLength(4)
+    expect(screen.getByTestId("npcs-filters-clear")).toBeDisabled()
   })
 })
 
@@ -1092,18 +1105,16 @@ describe("NpcsPage encounters", () => {
     await user.click(screen.getByTestId("npcs-game-mode-filter"))
     await user.click(await screen.findByRole("option", { name: "Survival" }))
 
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("button")
-    ).toHaveLength(1)
     await waitFor(() =>
       expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-        "necroBossWardenLEG"
+        "Legendary Event"
       )
     )
     expect(screen.getByTestId("npcs-variation-select")).toBeDisabled()
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("1 of 1")
   })
 
   it("offers the locations of the chosen game mode and clears them with it", async () => {
@@ -1127,19 +1138,19 @@ describe("NpcsPage encounters", () => {
     const elite = locations.find((option) => /elite/i.test(option.textContent))
     await user.click(elite as HTMLElement)
 
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
     await waitFor(() =>
       expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-        "necroBossWardenLEG"
+        "Legendary Event"
       )
     )
 
     await user.click(screen.getByTestId("npcs-game-mode-filter"))
     await user.click(await screen.findByRole("option", { name: "Survival" }))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
   })
 
@@ -1199,6 +1210,7 @@ describe("NpcsPage encounters", () => {
     await screen.findByTestId(id)
     await openFilters(user)
     await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    await closeFilters(user)
     await user.click(await screen.findByTestId(`${id}-toggle`))
     await user.click(screen.getByTestId(`${id}-place-I03`))
 
@@ -1212,9 +1224,9 @@ describe("NpcsPage encounters", () => {
     await waitFor(() =>
       expect(location()).toContain("variation=necroBossWardenLEG&level=0")
     )
-    expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent("(")
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName("Filters")
     expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-      "necroBossWardenLEG"
+      "Legendary Event"
     )
   })
 
@@ -1233,6 +1245,7 @@ describe("NpcsPage encounters", () => {
     await screen.findByTestId(id)
     await openFilters(user)
     await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
+    await closeFilters(user)
     await user.click(await screen.findByTestId(`${id}-toggle`))
     await user.click(screen.getByTestId(`${id}-place-I03`))
     const chip = within(screen.getByTestId(`${id}-place-I03-npcs`))
@@ -1246,8 +1259,8 @@ describe("NpcsPage encounters", () => {
     await user.click(chip as HTMLElement)
     await user.keyboard("{/Control}")
 
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
     expect(location()).toBe(urlBefore)
   })
@@ -1259,8 +1272,8 @@ describe("NpcsPage encounters", () => {
     await openFilters(user)
     await user.click(screen.getByTestId("npcs-game-mode-filter"))
     await user.click(await screen.findByRole("option", { name: "Survival" }))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
 
     await seedGameCatalog({
@@ -1273,9 +1286,7 @@ describe("NpcsPage encounters", () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId("npcs-filters-toggle")).not.toHaveTextContent(
-        "("
-      )
+      expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName("Filters")
     )
     expect(screen.getByTestId("npc-name")).toBeInTheDocument()
   })
@@ -1299,8 +1310,8 @@ describe("NpcsPage encounters", () => {
     const options = await screen.findAllByRole("option")
     const elite = options.find((option) => /elite/i.test(option.textContent))
     await user.click(elite as HTMLElement)
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (2)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 2 active"
     )
 
     await seedGameCatalog({ "npc-encounters": wardenEncounters })
@@ -1309,8 +1320,8 @@ describe("NpcsPage encounters", () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-        "Filters (1)"
+      expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+        "Filters, 1 active"
       )
     )
     expect(screen.queryByTestId("npcs-location-filter")).not.toBeInTheDocument()
@@ -1345,12 +1356,10 @@ describe("NpcsPage encounters", () => {
     await openFilters(user)
 
     await user.click(screen.getByTestId("npcs-running-filter"))
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
-    expect(
-      within(screen.getByTestId("npcs-list")).getAllByRole("button")
-    ).toHaveLength(1)
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("1 of 1")
   })
 
   it("narrows the list and the encounters to battles meeting a mission count", async () => {
@@ -1366,14 +1375,16 @@ describe("NpcsPage encounters", () => {
     await openFilters(user)
 
     await user.type(screen.getByTestId("npcs-min-count-filter"), "5")
-    expect(screen.getByTestId("npcs-filters-toggle")).toHaveTextContent(
-      "Filters (1)"
+    expect(screen.getByTestId("npcs-filters")).toHaveAccessibleName(
+      "Filters, 1 active"
     )
     await waitFor(() =>
       expect(screen.getByTestId("npcs-variation-select")).toHaveTextContent(
-        "necroBossWardenLEG"
+        "Legendary Event"
       )
     )
+
+    await closeFilters(user)
 
     const id = "npc-encounter-campaign-elite1"
     expect(
@@ -1550,7 +1561,7 @@ describe("NpcsPage encounters", () => {
     expect(screen.getByTestId(id)).not.toHaveTextContent(/battles 0/i)
   })
 
-  it("names and colours Incursion tiers by rarity, as the Incursions page does", async () => {
+  it("names Incursion tiers by rarity, with its icon, as the Incursions page does", async () => {
     const user = userEvent.setup()
     await seedGameCatalog({
       incursions: incursionsFixture,
@@ -1574,8 +1585,9 @@ describe("NpcsPage encounters", () => {
     await user.click(screen.getByTestId(`${id}-toggle`))
     const mythic = screen.getByTestId(`${id}-group-12`)
     expect(mythic).toHaveTextContent("Mythic 1")
-    expect(within(mythic).getByText("Mythic 1")).toHaveClass(
-      "text-(--rarity-mythic)"
+    expect(within(mythic).getByRole("presentation")).toHaveAttribute(
+      "src",
+      expect.stringContaining("rarity/mythic")
     )
   })
 
@@ -1662,7 +1674,7 @@ describe("NpcsPage encounters", () => {
     isMobileMock.value = true
     await renderWithEncounters("/library/npcs/makhotep")
 
-    expect(await screen.findByTestId("npcs-mobile-page")).toBeVisible()
+    expect(await screen.findByTestId("npc-detail-page")).toBeVisible()
     const id = "npc-encounter-legendaryEvent-astarLysander"
     // Column on narrow screens; the row only goes horizontal from md (768px) up.
     await screen.findByTestId(id)

@@ -1,22 +1,11 @@
-import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, ChevronsUpDown, X } from "lucide-react"
-import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
-import { Button } from "@workspace/ui/components/button"
+import {
+  damageTypeIcon,
+  factionIcon,
+  statIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import { Input } from "@workspace/ui/components/input"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@workspace/ui/components/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover"
 import {
   Select,
   SelectContent,
@@ -26,14 +15,10 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { Switch } from "@workspace/ui/components/switch"
-import { cn } from "@workspace/ui/lib/utils"
 
 import type { NpcAttackFilter, NpcFilters } from "@/entities/npc"
-import {
-  closestOverlayContent,
-  EntityIcon,
-  useCommandListId,
-} from "@/shared/ui"
+import { EntityIcon, FilterField, MultiSelect } from "@/shared/ui"
+import type { SelectOption } from "@/shared/ui"
 
 import type { NpcFilterOptions } from "./npcs-page.view-model"
 
@@ -41,125 +26,15 @@ const ANY = "__any__"
 
 type Option = { id: string; name: string; icon?: string }
 
-/** A searchable multi-select over id/name options, each shown with its game icon. */
-function MultiSelect({
-  label,
-  clearLabel,
-  options,
-  value,
-  onChange,
-  testId,
-}: {
-  label: string
-  clearLabel: string
-  options: Option[]
-  value: readonly string[]
-  onChange: (next: string[]) => void
-  testId: string
-}) {
-  const { t } = useTranslation("library")
-  const [open, setOpen] = useState(false)
-  const [listId, listRef] = useCommandListId()
-  // Inside the mobile filter sheet the list must portal into the sheet: Radix's scroll lock blocks
-  // scrolling in a popover portaled to `body`. Elsewhere it keeps the default portal.
-  const triggerRef = useRef<HTMLButtonElement>(null)
-  const [portalContainer, setPortalContainer] = useState<HTMLElement>()
-  const selectedNames = options
-    .filter((option) => value.includes(option.id))
-    .map((option) => option.name)
-
-  const toggle = (id: string) =>
-    onChange(
-      value.includes(id) ? value.filter((v) => v !== id) : [...value, id]
-    )
-
-  return (
-    <Popover
-      open={open}
-      onOpenChange={(next) => {
-        if (next) setPortalContainer(closestOverlayContent(triggerRef.current))
-        setOpen(next)
-      }}
-    >
-      <div className="relative flex items-center">
-        <PopoverTrigger asChild>
-          <Button
-            ref={triggerRef}
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            aria-controls={listId}
-            aria-label={label}
-            className="w-full justify-between font-normal"
-            data-testid={testId}
-          >
-            <span className="truncate">
-              {selectedNames.length > 0 ? selectedNames.join(", ") : label}
-            </span>
-            {/* The X replaces the chevron rather than sitting beside it — two trailing affordances
-                on one control read as clutter, and the trigger body still opens the list. */}
-            <ChevronsUpDown
-              className={cn(
-                "shrink-0 opacity-50",
-                value.length > 0 && "invisible"
-              )}
-            />
-          </Button>
-        </PopoverTrigger>
-        {/* Clearing one facet should not mean clearing them all: this resets just this control. */}
-        {value.length > 0 ? (
-          <button
-            type="button"
-            onClick={() => onChange([])}
-            aria-label={clearLabel}
-            data-testid={`${testId}-clear`}
-            className="absolute right-2.5 flex size-5 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary"
-          >
-            <X className="size-4" />
-          </button>
-        ) : null}
-      </div>
-      <PopoverContent
-        className="w-64 p-0"
-        align="start"
-        container={portalContainer}
-      >
-        <Command>
-          <CommandInput placeholder={label} />
-          <CommandList ref={listRef}>
-            {/* This list holds filter options, not NPCs — an empty search here means no option
-                matched, which is a different statement from "no NPCs match". */}
-            <CommandEmpty>{t("npcs.noMatchingOptions")}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.id}
-                  value={option.name}
-                  onSelect={() => toggle(option.id)}
-                  aria-selected={value.includes(option.id)}
-                >
-                  <Check
-                    className={cn(
-                      "size-4 shrink-0",
-                      value.includes(option.id) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.icon ? (
-                    <EntityIcon
-                      src={option.icon}
-                      alt=""
-                      className="size-5 shrink-0"
-                    />
-                  ) : null}
-                  <span className="truncate">{option.name}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
+/** Id/name options as the shared selects take them, each with its game icon. */
+function toSelectOptions(options: Option[]): SelectOption<string>[] {
+  return options.map((option) => ({
+    value: option.id,
+    label: option.name,
+    icon: option.icon ? (
+      <EntityIcon size="inline" src={option.icon} alt="" className="shrink-0" />
+    ) : undefined,
+  }))
 }
 
 /** A single-select whose options carry an icon, with an "any" reset row. */
@@ -194,9 +69,10 @@ function IconSelect({
               <span className="flex items-center gap-2">
                 {option.icon ? (
                   <EntityIcon
+                    size="inline"
                     src={option.icon}
                     alt=""
-                    className="size-5 shrink-0"
+                    className="shrink-0"
                   />
                 ) : null}
                 {option.name}
@@ -210,165 +86,185 @@ function IconSelect({
 }
 
 /**
- * The filter controls behind the toolbar's "Filters" button. Name search is not here — it is a separate, always-visible input
- * (see `NpcsToolbar`): searching by name is how you find a unit you already have in mind, while
- * these narrow a roster you are browsing.
+ * The filter controls inside the toolbar's Filters panel (`FiltersControl`), each with its visible
+ * label. Name search is not here — it is a separate, always-visible input (see `NpcsToolbar`):
+ * searching by name is how you find a unit you already have in mind, while these narrow a roster
+ * you are browsing. "Clear filters" sits in the panel's footer.
  */
 export function NpcsFilterBar({
   filters,
   options,
-  activeCount,
   onChange,
-  onClear,
-  hideClear = false,
-  className,
 }: {
   filters: NpcFilters
   options: NpcFilterOptions
-  activeCount: number
   onChange: (filters: NpcFilters) => void
-  onClear: () => void
-  /** The mobile sheet puts "Clear filters" in its footer instead. */
-  hideClear?: boolean
-  className?: string
 }) {
   const { t } = useTranslation("library")
 
   return (
     <div
-      className={cn("grid grid-cols-1 gap-3", className)}
+      className="grid grid-cols-1 gap-3 @lg:grid-cols-2"
       data-testid="npcs-filter-bar"
       role="group"
       aria-label={t("npcs.filters")}
     >
-      <IconSelect
-        label={t("npcs.faction")}
-        anyLabel={t("npcs.allFactions")}
-        options={options.factions.map((faction) => ({
-          ...faction,
-          icon: factionIcon(faction.id),
-        }))}
-        value={filters.factionId}
-        onChange={(factionId) => onChange({ ...filters, factionId })}
-        testId="npcs-faction-filter"
-      />
-      <IconSelect
-        label={t("npcs.alliance")}
-        anyLabel={t("npcs.allAlliances")}
-        options={options.alliances}
-        value={filters.alliance}
-        onChange={(alliance) => onChange({ ...filters, alliance })}
-        testId="npcs-alliance-filter"
-      />
+      <FilterField icon="faction" label={t("npcs.faction")}>
+        <IconSelect
+          label={t("npcs.faction")}
+          anyLabel={t("npcs.allFactions")}
+          options={options.factions.map((faction) => ({
+            ...faction,
+            icon: factionIcon(faction.id),
+          }))}
+          value={filters.factionId}
+          onChange={(factionId) => onChange({ ...filters, factionId })}
+          testId="npcs-faction-filter"
+        />
+      </FilterField>
+      <FilterField icon="alliance" label={t("npcs.alliance")}>
+        <IconSelect
+          label={t("npcs.alliance")}
+          anyLabel={t("npcs.allAlliances")}
+          options={options.alliances}
+          value={filters.alliance}
+          onChange={(alliance) => onChange({ ...filters, alliance })}
+          testId="npcs-alliance-filter"
+        />
+      </FilterField>
       {/* Offered only while the encounter data is present (the orchestrator leaves no modes otherwise). */}
       {options.gameModes.length > 0 ? (
-        <IconSelect
-          label={t("npcs.gameMode")}
-          anyLabel={t("npcs.anyGameMode")}
-          options={options.gameModes}
-          value={filters.gameMode}
-          onChange={(gameMode) =>
-            onChange({
-              ...filters,
-              gameMode: gameMode as NpcFilters["gameMode"],
-              // A location belongs to the mode it was chosen under.
-              encounterGroup: null,
-            })
-          }
-          testId="npcs-game-mode-filter"
-        />
+        <FilterField icon="gameMode" label={t("npcs.gameMode")}>
+          <IconSelect
+            label={t("npcs.gameMode")}
+            anyLabel={t("npcs.anyGameMode")}
+            options={options.gameModes}
+            value={filters.gameMode}
+            onChange={(gameMode) =>
+              onChange({
+                ...filters,
+                gameMode: gameMode as NpcFilters["gameMode"],
+                // A location belongs to the mode it was chosen under.
+                encounterGroup: null,
+              })
+            }
+            testId="npcs-game-mode-filter"
+          />
+        </FilterField>
       ) : null}
       {/* A single location (Onslaught) would only repeat the game mode. */}
       {options.locations.length > 1 ? (
-        <IconSelect
-          label={t("npcs.location")}
-          anyLabel={t("npcs.anyLocation")}
-          options={options.locations}
-          value={filters.encounterGroup}
-          onChange={(encounterGroup) =>
-            onChange({ ...filters, encounterGroup })
-          }
-          testId="npcs-location-filter"
-        />
+        <FilterField icon="campaignType" label={t("npcs.location")}>
+          <IconSelect
+            label={t("npcs.location")}
+            anyLabel={t("npcs.anyLocation")}
+            options={options.locations}
+            value={filters.encounterGroup}
+            onChange={(encounterGroup) =>
+              onChange({ ...filters, encounterGroup })
+            }
+            testId="npcs-location-filter"
+          />
+        </FilterField>
       ) : null}
       {options.gameModes.length > 0 ? (
-        <label className="flex items-center justify-between gap-2 px-1 text-sm">
-          {t("npcs.minCount")}
-          <Input
-            type="number"
-            min={1}
-            inputMode="numeric"
-            className="w-20"
-            value={filters.minCount ?? ""}
-            onChange={({ target: { valueAsNumber: count } }) =>
-              onChange({
-                ...filters,
-                minCount: Number.isInteger(count) && count > 0 ? count : null,
-              })
-            }
-            data-testid="npcs-min-count-filter"
-          />
-        </label>
+        <FilterField icon="enemies" inline label={t("npcs.minCount")}>
+          {({ id }) => (
+            <Input
+              id={id}
+              type="number"
+              min={1}
+              inputMode="numeric"
+              className="w-20"
+              value={filters.minCount ?? ""}
+              onChange={({ target: { valueAsNumber: count } }) =>
+                onChange({
+                  ...filters,
+                  minCount: Number.isInteger(count) && count > 0 ? count : null,
+                })
+              }
+              data-testid="npcs-min-count-filter"
+            />
+          )}
+        </FilterField>
       ) : null}
       {options.canFilterRunning ? (
-        <label className="flex items-center justify-between gap-2 px-1 text-sm">
-          {t("npcs.encounters.timing.running")}
-          <Switch
-            checked={filters.runningNow}
-            onCheckedChange={(runningNow) =>
-              onChange({ ...filters, runningNow })
-            }
-            data-testid="npcs-running-filter"
-          />
-        </label>
-      ) : null}
-      <IconSelect
-        label={t("npcs.attack")}
-        anyLabel={t("npcs.anyAttack")}
-        options={[
-          { id: "meleeOnly", name: t("npcs.meleeOnly") },
-          { id: "ranged", name: t("npcs.hasRanged") },
-        ]}
-        value={filters.attack}
-        onChange={(attack) =>
-          onChange({ ...filters, attack: attack as NpcAttackFilter | null })
-        }
-        testId="npcs-attack-filter"
-      />
-      <MultiSelect
-        label={t("npcs.damageType")}
-        clearLabel={t("npcs.clearOne", { name: t("npcs.damageType") })}
-        options={options.damageTypes.map((type) => ({
-          ...type,
-          icon: damageTypeIcon(type.id),
-        }))}
-        value={filters.damageTypes}
-        onChange={(damageTypes) => onChange({ ...filters, damageTypes })}
-        testId="npcs-damage-type-filter"
-      />
-      <MultiSelect
-        label={t("npcs.trait")}
-        clearLabel={t("npcs.clearOne", { name: t("npcs.trait") })}
-        options={options.traits.map((trait) => ({
-          ...trait,
-          icon: traitIcon(trait.id),
-        }))}
-        value={filters.traits}
-        onChange={(traits) => onChange({ ...filters, traits })}
-        testId="npcs-trait-filter"
-      />
-      {hideClear ? null : (
-        <Button
-          variant="ghost"
-          onClick={onClear}
-          disabled={activeCount === 0}
-          data-testid="npcs-clear-filters"
-          className="justify-self-start"
+        <FilterField
+          icon="runningNow"
+          inline
+          label={t("npcs.encounters.timing.running")}
         >
-          <X aria-hidden />
-          {t("npcs.clearFilters")}
-        </Button>
-      )}
+          {({ id }) => (
+            <Switch
+              id={id}
+              checked={filters.runningNow}
+              onCheckedChange={(runningNow) =>
+                onChange({ ...filters, runningNow })
+              }
+              data-testid="npcs-running-filter"
+            />
+          )}
+        </FilterField>
+      ) : null}
+      <FilterField icon="attackType" label={t("npcs.attack")}>
+        <IconSelect
+          label={t("npcs.attack")}
+          anyLabel={t("npcs.anyAttack")}
+          options={[
+            {
+              id: "meleeOnly",
+              name: t("npcs.meleeOnly"),
+              icon: statIcon("melee"),
+            },
+            {
+              id: "ranged",
+              name: t("npcs.hasRanged"),
+              icon: statIcon("ranged"),
+            },
+          ]}
+          value={filters.attack}
+          onChange={(attack) =>
+            onChange({ ...filters, attack: attack as NpcAttackFilter | null })
+          }
+          testId="npcs-attack-filter"
+        />
+      </FilterField>
+      <FilterField icon="damageType" label={t("npcs.damageType")}>
+        <MultiSelect
+          label={t("npcs.damageType")}
+          placeholder={t("npcs.anyDamageType")}
+          searchPlaceholder={t("npcs.damageType")}
+          emptyText={t("npcs.noMatchingOptions")}
+          clearLabel={t("npcs.clearOne", { name: t("npcs.damageType") })}
+          options={toSelectOptions(
+            options.damageTypes.map((type) => ({
+              ...type,
+              icon: damageTypeIcon(type.id),
+            }))
+          )}
+          value={filters.damageTypes}
+          onChange={(damageTypes) => onChange({ ...filters, damageTypes })}
+          data-testid="npcs-damage-type-filter"
+        />
+      </FilterField>
+      <FilterField icon="trait" label={t("npcs.trait")}>
+        <MultiSelect
+          label={t("npcs.trait")}
+          placeholder={t("npcs.anyTrait")}
+          searchPlaceholder={t("npcs.trait")}
+          emptyText={t("npcs.noMatchingOptions")}
+          clearLabel={t("npcs.clearOne", { name: t("npcs.trait") })}
+          options={toSelectOptions(
+            options.traits.map((trait) => ({
+              ...trait,
+              icon: traitIcon(trait.id),
+            }))
+          )}
+          value={filters.traits}
+          onChange={(traits) => onChange({ ...filters, traits })}
+          data-testid="npcs-trait-filter"
+        />
+      </FilterField>
     </div>
   )
 }

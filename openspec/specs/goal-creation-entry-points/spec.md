@@ -11,7 +11,7 @@ a project context preselects that project.
 
 ### Requirement: A project-scoped goal-creation launch preselects that project
 
-When goal creation is launched from a project context — a Projects row's Create goal menu action, the Create new goal action inside that row's Manage goals sheet, Goals' contextual Create Goal action while a project scope is selected, or a global entry point (the sidebar button, bottom-nav button, or keyboard shortcut) used while the Goals page is scoped to a project (`/plan/goals?project={id}`) — the creation sheet SHALL preselect that project as the goal's membership before the user has chosen an entity or goal type. The user MAY still change or clear that selection before saving, the same as any other project selection in the creation sheet. Launching creation with no project context (Goals with "All goals" selected, the Projects page's New project flow, or a global entry point used anywhere else) SHALL be unaffected by this requirement and SHALL keep falling back to the user's Default project when no consecutive-creation context is remembered. Remembered membership and its precedence follow `goal-creation` ("Consecutive creation retains compatible context").
+When goal creation is launched from a project context — a Projects row's Create goal menu action, the Create new goal action inside that row's Manage goals dialog, Goals' contextual Create Goal action while a project scope is selected, or a global entry point (the sidebar button, bottom-nav button, or keyboard shortcut) used while the Goals page is scoped to a project (`/plan/goals?project={id}`) — the creation sheet SHALL preselect that project as the goal's membership before the user has chosen an entity or goal type. The user MAY still change or clear that selection before saving, the same as any other project selection in the creation sheet. Launching creation with no project context (Goals with "All goals" selected, the Projects page's New project flow, or a global entry point used anywhere else) SHALL be unaffected by this requirement and SHALL keep falling back to the user's Default project when no consecutive-creation context is remembered. Remembered membership and its precedence follow `goal-creation` ("Consecutive creation retains compatible context").
 
 #### Scenario: Creating from a non-default project preselects it
 
@@ -44,7 +44,7 @@ When goal creation is launched from a project context — a Projects row's Creat
 
 ### Requirement: Existing project controls can start a new goal
 
-A Projects row's overflow menu and its Manage goals sheet SHALL each offer a
+A Projects row's overflow menu and its Manage goals dialog SHALL each offer a
 distinct Create goal / Create new goal action. Activating either SHALL launch the
 normal goal-creation sheet with that row's project preselected. Manage goals
 SHALL remain an existing-goal assignment flow; choosing Create new goal SHALL not
@@ -71,7 +71,7 @@ submit pending existing-goal selections or silently discard them.
 
 ### Requirement: Goals offers a contextual Create Goal entry point
 
-At or above the 768px breakpoint the Goals page (`/plan/goals`) SHALL render a filled, labelled Create Goal action in its page toolbar's Actions slot, in addition to the app's existing global entry points (the desktop sidebar button, the mobile bottom-nav button, and the keyboard shortcut). Below 768px the toolbar SHALL NOT repeat it: the bottom navigation's Add goal button is the page's create action there, and it SHALL preselect the scoped project the same way. The action SHALL be visible without hovering, focusing, or opening another control, and SHALL open the same creation sheet the global entry points open — with no prefill while "All goals" is selected, and with the scoped project preselected while a project scope is selected.
+At or above the 768px breakpoint the Goals page (`/plan/goals`) SHALL render a filled, labelled Create Goal action in its page toolbar's Actions slot, in addition to the app's existing global entry points (the desktop sidebar button, the mobile bottom-nav button, and the keyboard shortcut). Below 768px the toolbar SHALL NOT repeat it: the bottom navigation's Create goal button is the page's create action there, and it SHALL preselect the scoped project the same way. The action SHALL be visible without hovering, focusing, or opening another control, and SHALL open the same creation sheet the global entry points open — with no prefill while "All goals" is selected, and with the scoped project preselected while a project scope is selected.
 
 #### Scenario: Desktop Goals shows the contextual entry point
 
@@ -81,7 +81,7 @@ At or above the 768px breakpoint the Goals page (`/plan/goals`) SHALL render a f
 #### Scenario: Mobile Goals uses the bottom navigation entry point
 
 - **GIVEN** a project scope is selected
-- **WHEN** Goals is viewed below the 768px breakpoint and the user taps the bottom navigation's Add goal button
+- **WHEN** Goals is viewed below the 768px breakpoint and the user taps the bottom navigation's Create goal button
 - **THEN** the toolbar shows no Create Goal action, and the goal-creation sheet opens with the scoped project preselected
 
 #### Scenario: Activating the contextual entry point opens creation

@@ -403,8 +403,9 @@ function TeamRow({
       <div className="flex flex-wrap gap-1">
         {team.memberUnitIds.map((unitId) => (
           <EntityIcon
+            size="portrait-sm"
             alt={draft.inputs.nameOf(unitId)}
-            className="size-9 rounded-full"
+            className="rounded-full"
             key={unitId}
             src={characterIcon(unitId as UnitId)}
           />
@@ -461,8 +462,9 @@ function TeamRow({
               <div className="flex flex-wrap gap-1" key={replacement.key}>
                 {replacement.memberUnitIds.map((unitId) => (
                   <EntityIcon
+                    size="portrait-sm"
                     alt={draft.inputs.nameOf(unitId)}
-                    className="size-7 rounded-full"
+                    className="rounded-full"
                     key={unitId}
                     src={characterIcon(unitId as UnitId)}
                   />

@@ -4,6 +4,7 @@
     "beta": "Bêta"
   },
   "common": {
+    "cancel": "Annuler",
     "close": "Fermer",
     "back": "Retour",
     "loading": "Chargement…"
@@ -274,7 +275,6 @@
     }
   },
   "nav": {
-    "addGoal": "Ajouter un objectif",
     "dailies": "Quotidiennes",
     "dailiesDescription": "Tâches quotidiennes et périodiques du jeu.",
     "eventLive": "Événement en cours",
@@ -395,7 +395,6 @@
       "toolbar": {
         "label": "Rechercher, trier et filtrer les unités",
         "search": "Rechercher des unités",
-        "searchPlaceholder": "Rechercher par nom",
         "sort": "Tri",
         "sortOptions": {
           "rarity": "Rareté",
@@ -415,10 +414,7 @@
         "ownedOnly": "Débloquées uniquement",
         "hideUnownedNeedsRoster": "Masquer les unités non débloquées nécessite un effectif synchronisé.",
         "filters": "Filtres",
-        "filtersCount_one": "Filtres ({{count}})",
-        "filtersCount_other": "Filtres ({{count}})",
         "clearFilters": "Effacer les filtres",
-        "done": "Terminé",
         "alliance": "Alliance",
         "allAlliances": "Toutes les alliances",
         "faction": "Faction",
@@ -480,6 +476,14 @@
         "attackTypes": {
           "melee": "Corps à corps uniquement",
           "ranged": "À distance"
+        },
+        "summons": "Invocations",
+        "summonsAny": "Toutes",
+        "summonsTypes": {
+          "none": "Aucune invocation",
+          "optional": "Invocation facultative",
+          "conditional": "Invocation conditionnelle",
+          "forced": "Invocation forcée"
         },
         "hitsFrom": "Coups minimum",
         "hitsTo": "Coups maximum",
@@ -610,7 +614,7 @@
             "I_Defensive": "Objet défensif"
           }
         },
-        "closeOptions": "Fermer",
+        "optionsDone": "Terminé",
         "menuItem": "Comparer avec un instantané"
       },
       "snapshots": {
@@ -969,8 +973,7 @@
       "dailyEnergy": "Énergie par jour",
       "xpBookRarity": "Rareté du livre d'XP",
       "xpBookRarityHint": "Le guide de niveau requis affiche son nombre de livres supplémentaires dans cette rareté.",
-      "save": "Enregistrer les paramètres",
-      "cancel": "Annuler",
+      "done": "Terminé",
       "error": "Les paramètres de planification n'ont pas pu être enregistrés."
     },
     "v1Import": {
@@ -1264,28 +1267,23 @@
       "moveToPriorityTitle": "Déplacer à la priorité",
       "moveToPriorityLabel": "Priorité (1–{{total}})",
       "moveToPriorityDescription": "Saisissez la priorité que cet objectif doit prendre, de 1 à {{total}}.",
-      "moveToPriorityConfirm": "Déplacer",
+      "moveToPriorityConfirm": "Déplacer l'objectif",
       "moveToPriorityCancel": "Annuler",
       "movedTo": "Déplacé en priorité {{position}} sur {{total}}.",
       "edit": "Modifier"
     },
     "bulk": {
       "pause": "Mettre en pause",
-      "pauseCount": "Mettre en pause ({{count}})",
       "resume": "Reprendre",
-      "resumeCount": "Reprendre ({{count}})",
       "addToProject": "Ajouter à un projet",
-      "addToProjectCount": "Ajouter à un projet ({{count}})",
       "delete": "Supprimer",
-      "deleteCount": "Supprimer ({{count}})",
       "selected_one": "{{count}} sélectionné",
       "selected_other": "{{count}} sélectionnés",
       "selectAll": "Sélectionner tous les objectifs",
       "selectRow": "Sélectionner {{entity}}",
       "selectMode": "Sélectionner des objectifs",
       "selectDone": "Terminé",
-      "removeFromProject": "Retirer du projet",
-      "removeFromProjectCount": "Retirer du projet ({{count}})"
+      "removeFromProject": "Retirer du projet"
     },
     "delete": {
       "title_one": "Supprimer cet objectif ?",
@@ -1337,9 +1335,9 @@
       "cancel": "Annuler",
       "edit": "Modifier",
       "editTitle": "Modifier le projet",
-      "newProjectTitle": "Nouveau projet",
+      "newProjectTitle": "Créer le projet",
       "formDescription": "Nommez, décrivez et colorez ce projet.",
-      "newProject": "Nouveau projet",
+      "newProject": "Créer le projet",
       "name": "Nom",
       "description": "Description",
       "color": "Couleur",
@@ -1360,7 +1358,6 @@
       "dashboardIntro": "Un projet est une sélection nommée de vos objectifs. Gardez-en plusieurs pour regrouper des choses différentes (un renfort d'effectif, un événement, une progression de longue haleine) et parcourez chacun séparément. La priorité est un ordre unique pour tous les objectifs, géré sur la page Objectifs.",
       "emptyProjectTitle": "Ce projet n'a pas encore d'objectifs",
       "emptyProjectDescription": "Utilisez « Gérer les objectifs » sur la page Projets pour y ajouter des objectifs existants, ou « Créer un objectif » pour en créer un nouveau.",
-      "scopeLabel": "Portée par projet",
       "scopeAll": "Tous les objectifs",
       "reorderGoals": "Réorganiser",
       "reorderDone": "Terminé",
@@ -1409,7 +1406,8 @@
       "projectsSaveFailed": "Impossible d'enregistrer les projets. Vérifiez votre connexion et réessayez.",
       "addToProjectsDescription": "Choisissez un ou plusieurs projets auxquels ajouter les objectifs sélectionnés, ou créez-en un nouveau.",
       "addToProjectsConfirm": "Ajouter aux projets",
-      "addToProjectsConfirmCount": "Ajouter à {{count}} projets"
+      "addToProjectsConfirmCount": "Ajouter à {{count}} projets",
+      "saveProjects": "Enregistrer les projets"
     },
     "toasts": {
       "statusConflict": "{{goal}} n'a pas pu être modifié : {{reason}}",
@@ -1742,6 +1740,7 @@
       "groupByUnit": "Regrouper par unité",
       "reachedIndicatorLabel": "Des objectifs atteints attendent d'être consultés",
       "statusFilterLabel": "Filtre de statut des objectifs",
+      "projectFilterLabel": "Filtre de projet des objectifs",
       "groupCount_one": "{{count}} objectif",
       "groupCount_other": "{{count}} objectifs",
       "collapseAllGroups": "Tout réduire",
@@ -2032,7 +2031,7 @@
         "projectLabel": "Projet",
         "projectPlaceholder": "Choisir un projet",
         "noReference": "Aucun autre projet par rapport auquel placer",
-        "confirm": "Déplacer",
+        "confirm": "Déplacer les objectifs",
         "cancel": "Annuler"
       },
       "sortBlocksReorder": "Les objectifs sont triés par date de fin, vous ne pouvez donc pas les faire glisser pour changer leur priorité.",
@@ -2040,7 +2039,7 @@
     },
     "edit": {
       "title": "Modifier l'objectif",
-      "save": "Enregistrer",
+      "save": "Enregistrer l'objectif",
       "cancel": "Annuler",
       "close": "Fermer",
       "loadError": "Impossible de charger cet objectif. Il n'existe peut-être plus.",
@@ -2216,7 +2215,7 @@
       },
       "bottomNavigation": {
         "addGoal": {
-          "title": "Ajouter un objectif",
+          "title": "Créer un objectif",
           "content": "Créez des objectifs de personnage ou de machine de guerre, puis choisissez un ou plusieurs projets. Le projet par défaut est sélectionné automatiquement."
         },
         "sync": {
@@ -2485,6 +2484,74 @@
           "content": "Dès que vous modifiez quelque chose, une barre avec Enregistrer et Annuler apparaît en bas. Une confirmation vous est demandée avant de quitter avec des modifications non enregistrées."
         }
       }
+    },
+    "campaigns": {
+      "steps": {
+        "summary": {
+          "title": "Progression des campagnes",
+          "content": "Votre avancée dans les campagnes normales et miroir, d’après votre progression synchronisée."
+        },
+        "stories": {
+          "title": "Histoires et parcours",
+          "content": "Chaque histoire affiche ses parcours Standard et Élite et les combats que vous avez terminés. Utilisez « Modifier les médailles » sur un parcours pour signaler les combats gagnés avec moins de 3 médailles : les raids quotidiens les prévoient alors comme combats à jouer manuellement."
+        }
+      }
+    },
+    "incursions": {
+      "steps": {
+        "rules": {
+          "title": "Fonctionnement des Incursions",
+          "content": "Ouvrez ceci pour les jetons de partie, qui peut rejoindre une équipe et le déroulement d’une partie."
+        },
+        "list": {
+          "title": "Machines de guerre",
+          "content": "Une carte par machine de guerre d’Incursion, la plus récente d’abord, avec sa possession et les étoiles gagnées. Ouvrez une carte pour ses paliers, cartes de partie et équipes."
+        }
+      }
+    },
+    "insights": {
+      "steps": {
+        "toolbar": {
+          "title": "Portée",
+          "content": "Analysez tous vos objectifs actifs ou un seul projet. Lieux indique si le farm classe seulement les combats atteints ou tous les combats."
+        },
+        "outlook": {
+          "title": "Prévision du plan",
+          "content": "Quand le plan sera terminé avec votre énergie quotidienne, quels objectifs fixent cette date et lesquels en sont exclus."
+        },
+        "holdingBack": {
+          "title": "Ce qui vous freine",
+          "content": "Ce qu’aucun farm ne débloque, puis les ressources qui coûtent le plus d’énergie aux nœuds choisis."
+        },
+        "farming": {
+          "title": "Où farmer",
+          "content": "Les campagnes et événements dont les combats donnent le plus de ce dont vos objectifs ont besoin, et les campagnes à faire avancer ensuite."
+        },
+        "missing": {
+          "title": "Encore manquant",
+          "content": "Tout ce dont vos objectifs ont besoin au-delà de votre inventaire actuel, votre stock étant dépensé par ordre de priorité."
+        }
+      }
+    },
+    "guild": {
+      "steps": {
+        "summary": {
+          "title": "Votre guilde",
+          "content": "Le nom, le tag et le niveau de la guilde, et sa dernière synchronisation."
+        },
+        "actions": {
+          "title": "Synchroniser et supprimer",
+          "content": "Un Chef ou Co-chef peut synchroniser la guilde pour mettre à jour ses membres, ou la supprimer de Planner."
+        },
+        "members": {
+          "title": "Membres",
+          "content": "Tous les membres de la guilde, avec leur rôle, leur niveau, leur dernière activité dans le jeu et dans Planner, et s’ils ont lié un compte Planner."
+        },
+        "apiKey": {
+          "title": "Clé API de guilde",
+          "content": "Planner synchronise la guilde avec cette clé. Un Chef ou Co-chef peut la remplacer ici après l’avoir régénérée ou révoquée."
+        }
+      }
     }
   },
   "uiKit": {
@@ -2622,5 +2689,16 @@
     "layout": "Disposition",
     "done": "Terminé",
     "none": "Aucun"
+  },
+  "filtersControl": {
+    "button": "Filtres",
+    "buttonActive": "Filtres, {{count}} actifs",
+    "title": "Filtres",
+    "clear": "Effacer les filtres",
+    "done": "Terminé"
+  },
+  "searchField": {
+    "placeholder": "Rechercher par nom",
+    "clear": "Effacer la recherche"
   }
 }

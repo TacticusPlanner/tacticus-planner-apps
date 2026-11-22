@@ -68,7 +68,7 @@ The tab SHALL show the one fixed list of 21 missions (1 to 20, then "Bonus"), ea
 
 ### Requirement: The player records their current mission and its progress
 
-On a running event, the player SHALL be able to choose the current mission (1 to 20, or Bonus, which is mission 21; 22 stands for all missions done) and to enter a whole-number progress from 0 to the target for each of its two objectives. A progress of 0 SHALL show as an empty input with a "0" placeholder, so typing never adds to a leading 0. Each objective below its target SHALL offer a one-click "Mark done" that sets its progress to the target, and a "+1" button. Objectives with a target of 20 or more SHALL also offer "+10". Missions before the current one SHALL show as done. Later missions SHALL show as locked. Progress SHALL be clamped to the target, and an objective at its target SHALL show as complete. A "Mission complete" action, available once both objectives are at target, SHALL advance to the next mission with both progress values at 0. It SHALL then offer Undo for a few seconds, which restores the previous mission and its progress. Progress SHALL be kept per mission: choosing another mission SHALL keep the current mission's values, and choosing it again SHALL restore them. A mission never visited starts at 0 and 0. With no stored progress, the current mission SHALL be 1 with progress 0 and 0.
+On a running event, the player SHALL be able to choose the current mission (1 to 20, or Bonus, which is mission 21; 22 stands for all missions done) and to enter a whole-number progress from 0 to the target for each of its two objectives. A progress of 0 SHALL show as an empty input with a "0" placeholder, so typing never adds to a leading 0. Each objective below its target SHALL offer a one-click "Mark done" that sets its progress to the target, and a "+1" button. Objectives with a target of 20 or more SHALL also offer "+10". Missions before the current one SHALL show as done. Later missions SHALL show as locked. Progress SHALL be clamped to the target, and an objective at its target SHALL show as complete. A "Mission complete" action, always available, SHALL keep the mission with both objectives at target and advance to the next mission with both progress values at 0, so the player need not mark each objective first (Severyn, 2026-11). It SHALL then offer Undo for a few seconds, which restores the previous mission and its progress. Progress SHALL be kept per mission: choosing another mission SHALL keep the current mission's values, and choosing it again SHALL restore them. A mission never visited starts at 0 and 0. With no stored progress, the current mission SHALL be 1 with progress 0 and 0.
 
 #### Scenario: Setting mission 5 progress
 
@@ -104,6 +104,12 @@ On a running event, the player SHALL be able to choose the current mission (1 to
 - **GIVEN** mission 5 has both objectives at target
 - **WHEN** the player presses "Mission complete"
 - **THEN** mission 6 becomes current with progress 0 and 0
+
+#### Scenario: Completing a mission before its objectives are marked
+
+- **GIVEN** mission 5 at 1,200 / 10,000 ability damage and 0 / 100 campaign wins
+- **WHEN** the player presses "Mission complete"
+- **THEN** mission 6 becomes current with progress 0 and 0, and picking mission 5 again shows 10,000 / 10,000 and 100 / 100
 
 #### Scenario: Undo a completion
 
@@ -190,3 +196,35 @@ A selected upcoming instance SHALL render as the preview does. A past instance S
 
 - **GIVEN** the URL holds `?event=gone`
 - **THEN** the tab shows the default event and removes the parameter
+
+### Requirement: The HRE tab lays out the tracker first
+
+On desktop, the left column SHALL hold the current mission card, with each objective's 'i' and suggestion rows, and then the mission list; the right column SHALL hold the Event pace card, the Suggestions section, the tokens card and the Campaign battles section, in that order. On mobile, the tab SHALL show one column in this order: the current mission card, the Event pace card, the Suggestions section, the tokens card, the Campaign battles section and the mission list, which starts folded. Every control SHALL stay usable at phone width without horizontal scrolling.
+
+#### Scenario: Phone
+
+- **GIVEN** a running event on a phone
+- **THEN** the current mission card comes first and the Event pace card right after it
+
+#### Scenario: Desktop
+
+- **GIVEN** a running event on desktop
+- **THEN** the tracker and mission list sit on the left, and the pace, tokens and Campaign battles cards on the right
+
+### Requirement: The HRE tab reports how it is used
+
+The tab SHALL report these analytics events, without progress values, points or ranks:
+
+- `hre_tab_viewed` once per visit and shown event, with the event's state (running, upcoming or past) and the current mission of a running event
+- `hre_event_switched` when another event is picked, with its state
+- `hre_objective_progress_changed` when "+1", "+10" or "Mark done" is pressed, with the mission, the objective kind and the method; typing is not reported
+- `hre_fold_opened` when a suggestion row is tapped to jump to its card (the name predates the rows), with the mission, the objective kind, the suggestion (raids, battles, or a token mode) and whether it is a spare-token team
+- `hre_objective_info_opened` when an objective's 'i' opens, with the objective kind
+- `hre_location_opened` when a suggested battle's enemies are opened
+- `hre_mission_completed` when "Mission complete" is pressed, with the mission
+
+#### Scenario: Tapping a suggestion row
+
+- **GIVEN** mission 5 is current
+- **WHEN** the player taps the Raids row under the campaign wins
+- **THEN** `hre_fold_opened` is reported with mission 5, kind `campaignWins`, suggestion `raids` and spare false

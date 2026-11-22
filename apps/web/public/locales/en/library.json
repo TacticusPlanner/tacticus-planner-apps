@@ -86,12 +86,8 @@
     "seasonLabel": "Season {{season}}",
     "tier": "Tier {{tier}}",
     "set": "Set {{set}}",
-    "viewSeasonReference": "View season reference",
+    "seasonReference": "Season reference",
     "noSeasonReference": "No raid-boss season data is available.",
-    "bosses": "Bosses",
-    "primes": "Primes",
-    "pickerPlaceholder": "Search bosses and primes…",
-    "pickerEmpty": "No boss or prime found.",
     "primarch": "Primarch",
     "progression": "Progression",
     "stats": "Stats",
@@ -117,18 +113,6 @@
     "noModifiers": "No modifiers.",
     "tour": {
       "steps": {
-        "bosses": {
-          "title": "Guild Raid Bosses",
-          "content": "Every guild raid boss. Pick one to see its stats, abilities, and encounter modifiers."
-        },
-        "primes": {
-          "title": "Primes",
-          "content": "The prime enemies fought alongside each boss — browsable in their own right."
-        },
-        "mobilePicker": {
-          "title": "Guild Raid Bosses",
-          "content": "Search and select a boss or prime — each boss is grouped with the primes fought alongside it."
-        },
         "progression": {
           "title": "Progression step",
           "content": "Step through the boss's progression ladder to see how its stats scale."
@@ -227,19 +211,20 @@
       "flex": "Flex",
       "suitableMows": "Suitable Machines of War"
     },
-    "retry": "Retry"
+    "retry": "Retry",
+    "encounterTypes": {
+      "Boss": "Boss",
+      "Crystal": "Prime"
+    }
   },
   "npcs": {
     "title": "NPCs",
     "search": "Search NPCs",
-    "searchPlaceholder": "Search by name…",
     "faction": "Faction",
     "allFactions": "All factions",
     "damageType": "Damage type",
     "trait": "Trait",
     "clearFilters": "Clear filters",
-    "filtersCount": "Filters ({{count}})",
-    "filtersDone": "Done",
     "filters": "Filters",
     "npc": "NPC",
     "variation": "Variation",
@@ -333,7 +318,6 @@
     "noMatchingOptions": "No matching options.",
     "noMatchingVariation": "None of this NPC’s variations match the current filters.",
     "loadFailed": "NPC data could not be loaded.",
-    "selectNpc": "Select an NPC",
     "tour": {
       "steps": {
         "filters": {
@@ -343,10 +327,6 @@
         "list": {
           "title": "Pick an NPC",
           "content": "Every non-playable unit in the game, one entry per unit. Variations of the same unit are grouped under it."
-        },
-        "picker": {
-          "title": "Pick an NPC",
-          "content": "Open the picker and search for a unit. Variations of the same unit are grouped under one entry."
         },
         "variation": {
           "title": "Variation",
@@ -388,7 +368,9 @@
     "minCount": "Min. in one battle",
     "meleeOnly": "Melee only",
     "hasRanged": "Has ranged",
-    "clearOne": "Clear {{name}}"
+    "clearOne": "Clear {{name}}",
+    "anyDamageType": "Any damage type",
+    "anyTrait": "Any trait"
   },
   "unit": {
     "nav": {
@@ -436,7 +418,6 @@
   "charactersList": {
     "title": "Characters",
     "search": "Search characters",
-    "searchPlaceholder": "Search by name…",
     "noMatching": "No characters match your search.",
     "clearSearch": "Clear search",
     "tour": {
@@ -475,13 +456,14 @@
       "yourUnit": "Your unit:",
       "abilities": "abilities {{active}} / {{passive}}",
       "relic": "relic level {{level}}",
-      "notUnlocked": "Not unlocked. Values start at {{progression}}, {{rank}}.",
-      "showing": "Showing {{progression}}, {{rank}}, abilities level 1.",
+      "notUnlocked": "Not unlocked. Values start at",
+      "showing": "Showing",
       "shards": "{{owned}} / {{needed}} shards",
       "shardProgress": "Shards towards unlocking",
       "signInBanner": "Sign in and sync to open this page at your own levels.",
       "signIn": "Sign in",
-      "syncBanner": "Sync with Tacticus (in the header) to open this page at your own levels."
+      "syncBanner": "Sync with Tacticus (in the header) to open this page at your own levels.",
+      "abilitiesStart": "abilities level 1"
     },
     "glance": {
       "title": "At a glance",
@@ -545,11 +527,13 @@
       },
       "percent": "{{value}}%",
       "caption": "Percentiles: {{values}}.",
+      "howToRead": "How to read this",
       "footnote": "Dashed = median character. {{value}}% armour means {{name}} has more armour than {{value}}% of characters at Mythic Wings, Adamantine II.",
       "damageLink": "How damage works (Tacticus wiki)"
     },
     "statsByRank": {
       "title": "Stats by rank",
+      "howToRead": "How to read this",
       "footnote": "Dashed line = the rank shown ({{rank}}). Hover a chart to read any rank.",
       "yours": " (yours)",
       "aboveCap": " (above the cap for these stars)",
@@ -613,8 +597,9 @@
       "kind": "{{alliance}} · Machine of War",
       "yourUnit": "Your Machine of War:",
       "levels": "primary {{primary}} · secondary {{secondary}}",
-      "notUnlocked": "Not unlocked. Values start at {{rarity}}.",
-      "showing": "Showing {{rarity}}, abilities level 1."
+      "notUnlocked": "Not unlocked. Values start at",
+      "showing": "Showing",
+      "abilitiesStart": "abilities level 1"
     },
     "tabs": {
       "upgrades": "Ability upgrades"

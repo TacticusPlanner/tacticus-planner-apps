@@ -1,5 +1,4 @@
 import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
 import type { GameCatalogHseTracker } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
@@ -7,7 +6,7 @@ import type { HreTeamPlan } from "@/entities/hre-mission"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
-import { buildSummonerIds } from "@/entities/unit"
+import { forcedSummonerIds } from "@/entities/unit"
 import { buildHreTeam } from "./hre-team-recommendations"
 import type { HreTeam } from "./hre-team-recommendations"
 import { useTeamUnitPower } from "./use-team-unit-power"
@@ -23,15 +22,17 @@ export type HreTeamViewModel =
 
 /**
  * One HRE mission team per team plan of the current mission (`selectTeamPlans`), in plan order.
- * Summoners come from the generated `npcAbilitySummoners` list (the abilities whose English rules
- * text summons a unit). A running HSE's
- * `hseTrackers` put its scoring units first in the token-mode teams.
+ * A summon-free team leaves out the forced summoners (catalog `summons`): they summon on their
+ * own, as the LRE "No Summons" rule reads it. `hseTrackersFor` gives the running personal
+ * HSE that scores in a plan's mode, whose units come first.
  */
 export function useHreTeamRecommendations(input: {
   plans: readonly (HreTeamPlan & { factions?: readonly string[] })[]
   alliance: string | null
   featuredCharacterId: string | null
-  hseTrackers?: readonly GameCatalogHseTracker[] | null
+  hseTrackersFor?: (
+    mode: HreTeamPlan["mode"]
+  ) => readonly GameCatalogHseTracker[] | null
 }): HreTeamViewModel[] {
   const roster = usePlayerChunk("characters", toRoster)
   const catalog = useCatalogDataset("characters", toById)
@@ -40,22 +41,13 @@ export function useHreTeamRecommendations(input: {
     [roster, catalog]
   )
   const { loading: unitPowerLoading, unitPower } = useTeamUnitPower()
-  const { i18n } = useTranslation("npcAbilitySummoners")
-
-  const summoners = useMemo(() => {
-    if (read.status !== "ready") return new Set<never>()
-    const summoning = new Set(
-      Object.values(
-        (i18n.getResourceBundle("en", "npcAbilitySummoners") ?? {}) as Record<
-          string,
-          string
-        >
-      )
-    )
-    return buildSummonerIds(read.data[1].values(), (abilityId) =>
-      summoning.has(abilityId)
-    )
-  }, [read, i18n])
+  const summoners = useMemo(
+    () =>
+      read.status === "ready"
+        ? forcedSummonerIds(read.data[1].values())
+        : new Set<never>(),
+    [read]
+  )
 
   return input.plans.map((plan): HreTeamViewModel => {
     if (read.status === "loading" || unitPowerLoading)
@@ -69,7 +61,7 @@ export function useHreTeamRecommendations(input: {
       catalog: read.data[1],
       summoners,
       unitPower,
-      hseTrackers: input.hseTrackers,
+      hseTrackers: input.hseTrackersFor?.(plan.mode) ?? null,
     })
     return team ? { status: "ready", team } : { status: "hidden" }
   })

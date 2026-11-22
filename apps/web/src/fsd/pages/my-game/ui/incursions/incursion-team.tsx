@@ -1,12 +1,16 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Users } from "lucide-react"
-import { characterIcon } from "@workspace/game-catalog"
+import {
+  battleGlyphIcon,
+  characterIcon,
+  powerIcon,
+} from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HowToRead } from "@/shared/ui"
 
 import type { IncursionPlans } from "../../model/use-incursion-plans"
 import type { Incursion } from "../../model/incursions.model"
@@ -86,15 +90,17 @@ export function IncursionTeam({
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="text-sm font-medium">{t("team.title")}</h3>
         <span
-          className="text-xs text-muted-foreground tabular-nums"
+          className="inline-flex items-center gap-1 text-xs text-muted-foreground tabular-nums"
           data-testid={`${testId}-power`}
         >
+          <EntityIcon size="inline" alt="" src={powerIcon()} />
           {t("team.power", {
             power: number.format(Math.round(plan.teamPower)),
           })}
         </span>
         {plan.sustained ? (
           <Badge variant="secondary" title={t("team.sustainHint")}>
+            <EntityIcon size="inline" alt="" src={battleGlyphIcon("heal")} />
             {t("team.sustain")}
           </Badge>
         ) : null}
@@ -111,16 +117,22 @@ export function IncursionTeam({
               data-unit-id={member.id}
             >
               <EntityIcon
+                size="portrait-sm"
                 src={characterIcon(member.id as UnitId)}
                 alt=""
-                className="size-7 rounded-sm"
+                className="rounded-sm"
               />
               <span className="max-w-28 truncate">{name}</span>
             </li>
           )
         })}
       </ul>
-      <p className="text-xs text-muted-foreground">{t("team.hint")}</p>
+      <HowToRead
+        summary={t("team.hintSummary")}
+        data-testid="incursion-team-hint"
+      >
+        {t("team.hint")}
+      </HowToRead>
     </section>
   )
 }

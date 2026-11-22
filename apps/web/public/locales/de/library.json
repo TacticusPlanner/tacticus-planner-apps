@@ -86,12 +86,8 @@
     "seasonLabel": "Saison {{season}}",
     "tier": "Stufe {{tier}}",
     "set": "Satz {{set}}",
-    "viewSeasonReference": "Saisonübersicht anzeigen",
+    "seasonReference": "Saisonübersicht",
     "noSeasonReference": "Keine Raid-Boss-Saisondaten verfügbar.",
-    "bosses": "Bosse",
-    "primes": "Prime",
-    "pickerPlaceholder": "Bosse und Prime suchen…",
-    "pickerEmpty": "Kein Boss oder Prime gefunden.",
     "primarch": "Primarch",
     "progression": "Fortschritt",
     "stats": "Werte",
@@ -117,18 +113,6 @@
     "noModifiers": "Keine Modifikatoren.",
     "tour": {
       "steps": {
-        "bosses": {
-          "title": "Gildenraid-Bosse",
-          "content": "Jeder Gildenraid-Boss. Wähle einen aus, um seine Werte, Fähigkeiten und Begegnungsmodifikatoren zu sehen."
-        },
-        "primes": {
-          "title": "Prime",
-          "content": "Die Prime-Gegner, die neben jedem Boss kämpfen – auch einzeln durchsuchbar."
-        },
-        "mobilePicker": {
-          "title": "Gildenraid-Bosse",
-          "content": "Suche und wähle einen Boss oder Prime – jeder Boss ist mit den Prime-Gegnern gruppiert, die an seiner Seite kämpfen."
-        },
         "progression": {
           "title": "Fortschrittsstufe",
           "content": "Gehe die Fortschrittsleiter des Bosses durch, um zu sehen, wie seine Werte skalieren."
@@ -227,19 +211,20 @@
       "flex": "Flexibel",
       "suitableMows": "Geeignete Kriegsmaschinen"
     },
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "encounterTypes": {
+      "Boss": "Boss",
+      "Crystal": "Prime"
+    }
   },
   "npcs": {
     "title": "NPCs",
     "search": "NPCs suchen",
-    "searchPlaceholder": "Nach Name suchen…",
     "faction": "Fraktion",
     "allFactions": "Alle Fraktionen",
     "damageType": "Schadensart",
     "trait": "Eigenschaft",
     "clearFilters": "Filter zurücksetzen",
-    "filtersCount": "Filter ({{count}})",
-    "filtersDone": "Fertig",
     "filters": "Filter",
     "npc": "NPC",
     "variation": "Variante",
@@ -333,7 +318,6 @@
     "noMatchingOptions": "Keine passenden Optionen.",
     "noMatchingVariation": "Keine Variante dieses NPCs entspricht den aktuellen Filtern.",
     "loadFailed": "NPC-Daten konnten nicht geladen werden.",
-    "selectNpc": "NPC auswählen",
     "tour": {
       "steps": {
         "filters": {
@@ -343,10 +327,6 @@
         "list": {
           "title": "NPC auswählen",
           "content": "Jede nicht spielbare Einheit des Spiels, ein Eintrag pro Einheit. Varianten derselben Einheit sind darunter gruppiert."
-        },
-        "picker": {
-          "title": "NPC auswählen",
-          "content": "Öffne die Auswahl und suche nach einer Einheit. Varianten derselben Einheit sind unter einem Eintrag gruppiert."
         },
         "variation": {
           "title": "Variante",
@@ -388,7 +368,9 @@
     "minCount": "Min. in einem Kampf",
     "meleeOnly": "Nur Nahkampf",
     "hasRanged": "Mit Fernkampf",
-    "clearOne": "{{name}} zurücksetzen"
+    "clearOne": "{{name}} zurücksetzen",
+    "anyDamageType": "Beliebige Schadensart",
+    "anyTrait": "Beliebige Eigenschaft"
   },
   "unit": {
     "nav": {
@@ -436,7 +418,6 @@
   "charactersList": {
     "title": "Charaktere",
     "search": "Charaktere suchen",
-    "searchPlaceholder": "Nach Name suchen…",
     "noMatching": "Keine Charaktere passen zu deiner Suche.",
     "clearSearch": "Suche zurücksetzen",
     "tour": {
@@ -475,13 +456,14 @@
       "yourUnit": "Deine Einheit:",
       "abilities": "Fähigkeiten {{active}} / {{passive}}",
       "relic": "Relikt Stufe {{level}}",
-      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{progression}}, {{rank}}.",
-      "showing": "Angezeigt: {{progression}}, {{rank}}, Fähigkeiten auf Stufe 1.",
+      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei",
+      "showing": "Angezeigt:",
       "shards": "{{owned}} / {{needed}} Splitter",
       "shardProgress": "Splitter bis zur Freischaltung",
       "signInBanner": "Melde dich an und synchronisiere, um diese Seite mit deinen eigenen Werten zu öffnen.",
       "signIn": "Anmelden",
-      "syncBanner": "Synchronisiere mit Tacticus (in der Kopfzeile), um diese Seite mit deinen eigenen Werten zu öffnen."
+      "syncBanner": "Synchronisiere mit Tacticus (in der Kopfzeile), um diese Seite mit deinen eigenen Werten zu öffnen.",
+      "abilitiesStart": "Fähigkeiten auf Stufe 1"
     },
     "glance": {
       "title": "Auf einen Blick",
@@ -546,7 +528,8 @@
       "percent": "{{value}} %",
       "caption": "Perzentile: {{values}}.",
       "footnote": "Gestrichelt = mittlerer Charakter. {{value}} % Rüstung heißt: {{name}} hat mehr Rüstung als {{value}} % der Charaktere bei Mythic Wings, Adamant II.",
-      "damageLink": "So funktioniert Schaden (Tacticus-Wiki)"
+      "damageLink": "So funktioniert Schaden (Tacticus-Wiki)",
+      "howToRead": "So liest du das"
     },
     "statsByRank": {
       "title": "Werte nach Rang",
@@ -555,7 +538,8 @@
       "aboveCap": " (über der Obergrenze für diese Sterne)",
       "capFootnote": "Blasse Ränge liegen über {{rank}}, der Obergrenze für diese Sterne.",
       "caption": "{{stat}} steigt von {{from}} bei {{firstRank}} auf {{to}} bei {{lastRank}}.",
-      "rank": "Rang"
+      "rank": "Rang",
+      "howToRead": "So liest du das"
     },
     "relic": {
       "kind": "Relikt",
@@ -613,8 +597,9 @@
       "kind": "{{alliance}} · Kriegsmaschine",
       "yourUnit": "Deine Kriegsmaschine:",
       "levels": "primär {{primary}} · sekundär {{secondary}}",
-      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei {{rarity}}.",
-      "showing": "Angezeigt: {{rarity}}, Fähigkeiten auf Stufe 1."
+      "notUnlocked": "Nicht freigeschaltet. Die Werte beginnen bei",
+      "showing": "Angezeigt:",
+      "abilitiesStart": "Fähigkeiten auf Stufe 1"
     },
     "tabs": {
       "upgrades": "Fähigkeits-Upgrades"

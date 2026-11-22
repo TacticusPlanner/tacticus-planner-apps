@@ -9,6 +9,7 @@ import type { ProjectSummary } from "@/entities/project"
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -47,7 +48,7 @@ export function ProjectMultiPickerDialog({
   return (
     <ResponsiveDialog
       data-testid="project-picker-dialog"
-      desktopClassName="sm:max-w-md"
+      width="narrow"
       onOpenChange={onOpenChange}
       open
     >
@@ -55,9 +56,9 @@ export function ProjectMultiPickerDialog({
         <ResponsiveDialogTitle>
           {t("goals.project.addToProjectTitle")}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
+        <ResponsiveDialogDescription>
           {t("goals.project.addToProjectsDescription")}
-        </p>
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody>
         <ul className="grid gap-1 pb-3">
@@ -88,7 +89,7 @@ export function ProjectMultiPickerDialog({
           className="md:mr-auto"
           data-testid="project-picker-create-new"
           onClick={onCreateNew}
-          variant="outline"
+          variant="ghost"
         >
           <FolderPlus />
           {t("goals.project.createNewProject")}

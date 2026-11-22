@@ -15,6 +15,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
+import { rationaleIcon } from "./rationale-icon"
 
 import type {
   EventUnitMatch,
@@ -77,7 +78,7 @@ export function TeamList({
               preference.matched ? "bg-primary/15" : "opacity-40 grayscale"
             )}
           >
-            <EntityIcon src={iconOf(preference.id)} alt="" className="size-4" />
+            <EntityIcon size="inline" src={iconOf(preference.id)} alt="" />
           </span>
         </TooltipTrigger>
         <TooltipContent>
@@ -112,6 +113,21 @@ export function TeamList({
     }
   }
 
+  // The visible short form where an icon carries the reason: the matched name, or the power.
+  const rationaleShort = (
+    rationale: TeamMemberRationale
+  ): string | undefined => {
+    if (rationale.kind === "event-unit" && rationale.match) {
+      return t("rationale.eventUnitShort", {
+        match: eventUnitMatchName(rationale.match),
+      })
+    }
+    if (rationale.kind === "strength") {
+      return rationale.combatPower.toLocaleString()
+    }
+    return undefined
+  }
+
   return (
     <ul className="flex flex-col gap-2" data-testid={testId}>
       {members.map((member) => {
@@ -124,15 +140,18 @@ export function TeamList({
             className="flex items-center gap-3 rounded-lg border p-2"
           >
             <EntityIcon
+              size="portrait-sm"
               alt={name}
               src={characterIcon(member.unitId)}
-              className="size-10 shrink-0"
+              className="shrink-0"
             />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">{name}</p>
-              <p className="truncate text-xs text-muted-foreground">
-                {rationaleText(member.rationale)}
-              </p>
+              <RationaleLine
+                icon={rationaleIcon(member.rationale)}
+                short={rationaleShort(member.rationale)}
+                text={rationaleText(member.rationale)}
+              />
             </div>
             <div
               className="flex shrink-0 items-center gap-2"
@@ -152,7 +171,7 @@ export function TeamList({
                 "preferences.matchesDamageType",
                 "preferences.missingDamageType"
               )}
-              <RarityIcon rarity={member.rarity} className="size-5" />
+              <RarityIcon rarity={member.rarity} />
               <RankBadge rank={member.rank} showLabel={false} tooltip />
             </div>
             {onToggleLock ? (
@@ -185,5 +204,43 @@ export function TeamList({
         )
       })}
     </ul>
+  )
+}
+
+/**
+ * A member's why-chosen line. Where the reason has an icon (an event unit's matched trait, alliance
+ * or faction; power for combat strength) the row shows the icon and a short value, with the full
+ * sentence in a tooltip and for assistive technology; any other reason shows its sentence.
+ */
+function RationaleLine({
+  icon,
+  short,
+  text,
+}: {
+  icon: string | undefined
+  short: string | undefined
+  text: string
+}) {
+  if (icon === undefined || short === undefined) {
+    return <p className="truncate text-xs text-muted-foreground">{text}</p>
+  }
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        {/* A button, so a keyboard user can open the tooltip with the full reason. */}
+        <button
+          type="button"
+          className="flex max-w-full min-w-0 items-center gap-1 rounded-sm text-left text-xs text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          data-testid="team-member-rationale"
+        >
+          <span className="sr-only">{text}</span>
+          <EntityIcon size="inline" src={icon} alt="" className="shrink-0" />
+          <span aria-hidden="true" className="truncate tabular-nums">
+            {short}
+          </span>
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{text}</TooltipContent>
+    </Tooltip>
   )
 }
