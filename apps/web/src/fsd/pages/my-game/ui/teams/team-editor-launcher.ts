@@ -1,8 +1,11 @@
 import { useEffect, useState, useSyncExternalStore } from "react"
 
-/** The open editor: the team id to edit (null to create), with a fresh key per opening. */
+import type { Team } from "@/entities/team"
+
+/** The open editor: the team to edit as it was when opened (null to create), with a fresh key per
+ *  opening. */
 export interface OpenTeamEditor {
-  teamId: string | null
+  team: Team | null
   key: number
 }
 
@@ -11,7 +14,7 @@ export interface OpenTeamEditor {
  * closing it re-renders only the editor host, not the page and its cards.
  */
 export interface TeamEditorLauncher {
-  open: (teamId: string | null) => void
+  open: (team: Team | null) => void
   close: () => void
   get: () => OpenTeamEditor | null
   subscribe: (listener: () => void) => () => void
@@ -29,13 +32,13 @@ function createLauncher(): TeamEditorLauncher {
     for (const listener of listeners) listener()
   }
   return {
-    open: (teamId) => {
+    open: (team) => {
       opener =
         document.activeElement instanceof HTMLElement
           ? document.activeElement
           : null
       count += 1
-      set({ teamId, key: count })
+      set({ team, key: count })
     },
     close: () => {
       if (editor) set(null)

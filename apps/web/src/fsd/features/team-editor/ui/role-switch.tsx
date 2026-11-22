@@ -10,13 +10,15 @@ export type LineupRole = "core" | "flex"
 /**
  * A lineup unit's role as a two-option switch, Core and Flex, both always shown with the current
  * one selected (the handoff's segmented control). A role the unit cannot take is unavailable: Flex
- * for a team's only core character or a chosen campaign's core.
+ * for a team's only core character or a chosen campaign's core, Core while a selected mode's core is
+ * full.
  */
 export function RoleSwitch({
   name,
   role,
   onChange,
   flexDisabled = false,
+  coreDisabled = false,
   className,
 }: {
   /** The unit's name, for the switch's accessible name. */
@@ -24,6 +26,7 @@ export function RoleSwitch({
   role: LineupRole
   onChange: (role: LineupRole) => void
   flexDisabled?: boolean
+  coreDisabled?: boolean
   className?: string
 }) {
   const { t } = useTranslation("teams")
@@ -44,6 +47,7 @@ export function RoleSwitch({
     >
       <ToggleGroupItem
         className="flex-1 px-2 text-xs data-[state=on]:bg-primary! data-[state=on]:font-semibold data-[state=on]:text-primary-foreground!"
+        disabled={coreDisabled && role !== "core"}
         value="core"
       >
         {t("lineup.core")}

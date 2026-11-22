@@ -78,6 +78,15 @@ describe("teams API", () => {
     expect(await lastRequest(fetch)).toMatchObject({ method: "GET", url: BASE })
   })
 
+  it("drops rule codes this build does not know from a team's issues", async () => {
+    answer({
+      teams: [{ ...team(), issues: ["tooFewCharacters", "addedLater"] }],
+    })
+    expect(await listTeams()).toEqual({
+      teams: [{ ...team(), issues: ["tooFewCharacters"] }],
+    })
+  })
+
   it("creates a team from its fields", async () => {
     const fetch = answer(team())
     expect(await createTeam(fields)).toEqual(team())

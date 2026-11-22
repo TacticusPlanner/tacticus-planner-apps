@@ -6,7 +6,6 @@ import {
   useMemo,
   useState,
 } from "react"
-import type { ReactNode } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
@@ -36,7 +35,7 @@ import {
 } from "@/entities/team"
 import type { Team, TeamMode, TeamRoster } from "@/entities/team"
 import { usePersistedSelection } from "@/shared/lib"
-import { ConfirmationDialog, SortableList } from "@/shared/ui"
+import { ConfirmationDialog, EmptyState, SortableList } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
@@ -113,17 +112,23 @@ function TeamEditorHost({
 }) {
   const editor = useOpenTeamEditor(launcher)
   if (!editor) return null
-  const team =
-    editor.teamId === null
+  const opened = editor.team
+  // The team as it now stands (a fresher revision after a refetch). Once it has left the list
+  // (deleted on another device) the editor keeps the team it opened with and says it is gone,
+  // so an edit never turns into a create.
+  const current =
+    opened === null
       ? null
-      : (teams.find((entry) => entry.id === editor.teamId) ?? null)
+      : (teams.find((entry) => entry.id === opened.id) ?? null)
+  const deleted = opened !== null && current === null
   // Its own boundary: a copy namespace still loading suspends the editor, never the page.
   return (
     <Suspense fallback={null}>
       <TeamEditorDialog
+        deleted={deleted}
         key={editor.key}
         onClose={launcher.close}
-        team={team}
+        team={current ?? opened}
         teams={teams}
       />
     </Suspense>
@@ -216,23 +221,6 @@ function TeamsBody({
   )
 }
 
-function EmptyCard({
-  testId,
-  children,
-}: {
-  testId: string
-  children: ReactNode
-}) {
-  return (
-    <div
-      className="flex flex-col items-start gap-3 rounded-xl border border-dashed p-6"
-      data-testid={testId}
-    >
-      {children}
-    </div>
-  )
-}
-
 /**
  * My Game's Teams page (personal-teams): the player's teams as cards or a table, found by search,
  * Mode and quick-filter chips, and optionally grouped by mode. As on the Goals board, every team
@@ -241,7 +229,7 @@ function EmptyCard({
  * chips and its Edit and Delete buttons; opening it edits it too.
  */
 export function TeamsPage() {
-  const { t, i18n } = useTranslation("teams")
+  const { t, i18n } = useTranslation(["teams", "common"])
   const isPhone = useIsMobile()
   const unitName = useUnitName()
   const teamsQuery = useTeams()
@@ -314,7 +302,7 @@ export function TeamsPage() {
   )
   const actions = useMemo<TeamActions>(
     () => ({
-      onEdit: (teamId) => launcher.open(teamId),
+      onEdit: (team) => launcher.open(team),
       onDelete: (team) => setDeleting(team),
     }),
     [launcher]
@@ -330,7 +318,7 @@ export function TeamsPage() {
     })
   }
 
-  const showAll = () => {
+  const clearFilters = () => {
     setSearch("")
     setMode("all")
     setQuick(NO_QUICK_FILTERS)
@@ -402,31 +390,49 @@ export function TeamsPage() {
     )
   } else if (teams.length === 0) {
     content = (
-      <EmptyCard testId="teams-empty">
-        <p className="font-medium">{t("page.empty")}</p>
-        <Button onClick={() => launcher.open(null)}>
-          <Plus data-icon="inline-start" />
-          {t("page.create")}
-        </Button>
-        <p className="text-sm text-muted-foreground">
-          {t("page.importHint")}{" "}
-          <Link
-            className="underline underline-offset-4"
-            to="/account/v1-import"
-          >
-            {t("page.importLink")}
-          </Link>
-        </p>
-      </EmptyCard>
+      <EmptyState
+        actions={
+          <Button onClick={() => launcher.open(null)} variant="outline">
+            <Plus data-icon="inline-start" />
+            {t("page.create")}
+          </Button>
+        }
+        description={
+          <>
+            {t("page.importHint")}{" "}
+            <Link
+              className="underline underline-offset-4"
+              to="/account/v1-import"
+            >
+              {t("page.importLink")}
+            </Link>
+          </>
+        }
+        testId="teams-empty"
+        title={t("page.empty")}
+        variant="empty"
+      />
     )
   } else if (listed.length === 0) {
+    // Only the search narrows the list: clearing it is the way back; otherwise clear every filter.
+    const onlySearch =
+      search.trim() !== "" &&
+      mode === "all" &&
+      !quick.needsFixes &&
+      !quick.shared
     content = (
-      <EmptyCard testId="teams-no-match">
-        <p>{t("page.noMatchAny")}</p>
-        <Button onClick={showAll} variant="outline">
-          {t("page.showAll")}
-        </Button>
-      </EmptyCard>
+      <EmptyState
+        actions={
+          <Button onClick={clearFilters} variant="outline">
+            {onlySearch
+              ? t("common:searchField.clear")
+              : t("common:filtersControl.clear")}
+          </Button>
+        }
+        testId="teams-no-match"
+        title={t("page.noMatchAny")}
+        variant="no-match"
+      />
     )
   } else if (groupBy === "mode") {
     content = (

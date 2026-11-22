@@ -19,6 +19,7 @@ export function SearchField({
   label,
   placeholder,
   debounceMs = 0,
+  disabled = false,
   className,
   testId,
 }: {
@@ -29,6 +30,7 @@ export function SearchField({
   /** Defaults to "Search by name". */
   placeholder?: string
   debounceMs?: number
+  disabled?: boolean
   className?: string
   /** On the input. */
   testId?: string
@@ -75,12 +77,13 @@ export function SearchField({
         aria-label={label}
         className="pr-9 pl-8 [&::-webkit-search-cancel-button]:hidden"
         data-testid={testId}
+        disabled={disabled}
         onChange={(event) => change(event.target.value)}
         placeholder={placeholder ?? t("searchField.placeholder")}
         type="search"
         value={shown}
       />
-      {shown === "" ? null : (
+      {shown === "" || disabled ? null : (
         <button
           aria-label={t("searchField.clear")}
           className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary pointer-coarse:after:absolute pointer-coarse:after:-inset-3"

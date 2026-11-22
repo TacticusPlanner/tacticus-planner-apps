@@ -8,7 +8,7 @@ import type { Progression, Rank, Rarity } from "@workspace/game-domain"
 
 import type { TeamRosterUnit } from "../model/use-team-roster"
 
-/** A rarity's caps, as V1's team editor applies them (spec assumption). */
+/** A rarity's caps, as V1's team editor applies them (spec assumption), except Mythic (below). */
 interface RarityCaps {
   rank: Rank
   level: number
@@ -25,8 +25,9 @@ const RARITY_CAPS: Record<Rarity, RarityCaps> = {
     level: 50,
     progression: "Legendary:OneBlueStar",
   },
-  // V1 caps Mythic at Adamantine 3 and level 65; nothing in V2 goes past either, so Mythic caps
-  // nothing.
+  // V2 differs from V1 on purpose here. V1's `rarityCaps` caps Mythic at Adamantine 1 and ability
+  // level 55, but Mythic is also V2's default cap (a team with none), which must show every unit
+  // as it is. So Mythic caps at the last rank and the highest level, which caps nothing.
   Mythic: { rank: lastRank, level: 65, progression: "Mythic:MythicWings" },
 }
 
@@ -35,7 +36,8 @@ export const DEFAULT_RARITY_CAP: Rarity = "Mythic"
 
 /**
  * A roster unit as it shows under the cap: a unit above the cap's rarity has its progression,
- * rank, level and ability levels capped. Display only; the team never stores a cap.
+ * rank, level and ability levels capped. Display only: the team saves which cap it is prepared for
+ * (`rarityCap`), never the capped values.
  */
 export function capRosterUnit(
   unit: TeamRosterUnit,

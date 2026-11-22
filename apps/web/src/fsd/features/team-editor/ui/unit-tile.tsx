@@ -14,7 +14,7 @@ import type { PickerUnit } from "../model/unit-picker"
 import { UnitAbilities } from "./unit-abilities"
 
 /**
- * One unit tile (handoff 5.10): a toggle that adds or removes the unit, with its capped state and
+ * One unit tile (handoff 5.10): a checkbox that adds or removes the unit, with its capped state and
  * flags. One Tab stop per grid: the grid owns `tabIndex` and the arrow keys (`useRovingGrid`). A unit in
  * the team is filled and carries a check mark, so it reads as selected apart from the focus ring.
  */
@@ -60,8 +60,8 @@ export const UnitTile = memo(function UnitTile({
     >
       <button
         aria-describedby={usedIn ? usedId : undefined}
+        aria-checked={selected}
         aria-label={unit.name}
-        aria-pressed={selected}
         className={cn(
           "relative flex w-full min-w-0 flex-col items-center justify-start gap-1 rounded-xl border bg-card p-1.5 text-center outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50",
           selected && "border-primary bg-primary/25 hover:bg-primary/35"
@@ -71,6 +71,9 @@ export const UnitTile = memo(function UnitTile({
         onClick={() => onToggle(unit)}
         onFocus={() => onFocus(unit.id)}
         onKeyDown={onKeyDown}
+        // The picker is a multi-select, so each tile is a checkbox (ui-style-guide rule 3 bans a
+        // hand-written aria-pressed).
+        role="checkbox"
         tabIndex={tabIndex}
         type="button"
       >

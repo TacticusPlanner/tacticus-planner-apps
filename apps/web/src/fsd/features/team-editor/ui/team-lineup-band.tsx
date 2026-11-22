@@ -13,7 +13,9 @@ import { useUnitName } from "@/shared/unit-name"
 import { cappedView, lineupUnitCap } from "../model/capped-view"
 import {
   FLEX_DIVIDER,
+  canMakeCore,
   canMakeFlex,
+  canMakeMowCore,
   lineupSections,
   mowSections,
 } from "../model/team-draft"
@@ -37,6 +39,7 @@ function BandSlot({
   dragHandle,
   props,
   canFlex,
+  canCore,
   onToggleRole,
   onRemove,
 }: {
@@ -49,6 +52,7 @@ function BandSlot({
   dragHandle: SortableRenderProps["dragHandle"]
   props: LineupUnitProps
   canFlex: boolean
+  canCore: boolean
   onToggleRole: () => void
   onRemove: () => void
 }) {
@@ -119,6 +123,7 @@ function BandSlot({
       ))}
       <RoleSwitch
         className="mt-auto w-full"
+        coreDisabled={!canCore}
         flexDisabled={locked || !canFlex}
         name={name}
         onChange={(next) => {
@@ -205,6 +210,7 @@ function BandRow({
   flex,
   props,
   canFlex,
+  canCore,
   onArrange,
   onToggleRole,
   onRemove,
@@ -216,6 +222,7 @@ function BandRow({
   flex: readonly string[]
   props: LineupUnitProps
   canFlex: (unitId: string) => boolean
+  canCore: (unitId: string) => boolean
   onArrange: (order: string[]) => void
   onToggleRole: (unitId: string, section: "core" | "flex") => void
   onRemove: (unitId: string) => void
@@ -257,6 +264,7 @@ function BandRow({
               />
             ) : (
               <BandSlot
+                canCore={canCore(id)}
                 canFlex={canFlex(id)}
                 key={id}
                 kind={kind}
@@ -330,6 +338,7 @@ export function TeamLineupBand({
         <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
           {draft.characterIds.length > 0 ? (
             <BandRow
+              canCore={(unitId) => canMakeCore(draft, unitId)}
               canFlex={(unitId) => canMakeFlex(draft, unitId)}
               core={characters.core}
               count={coreCount(
@@ -350,6 +359,7 @@ export function TeamLineupBand({
           {/* Shown whenever there are MoWs, also an imported team's in a mode that takes none, so they can be removed. */}
           {draft.mowIds.length > 0 ? (
             <BandRow
+              canCore={(unitId) => canMakeMowCore(draft, unitId)}
               canFlex={() => true}
               core={mowLineup.core}
               count={coreCount(

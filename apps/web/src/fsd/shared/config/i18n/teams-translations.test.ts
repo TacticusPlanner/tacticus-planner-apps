@@ -58,6 +58,8 @@ const SAME_AS_ENGLISH = new Set([
   "table.status",
   "table.actions",
   "page.groupByMode",
+  // German uses the same word.
+  "editor.tabDetails",
   "editor.notesCount",
   "editor.name",
   "editor.notes",

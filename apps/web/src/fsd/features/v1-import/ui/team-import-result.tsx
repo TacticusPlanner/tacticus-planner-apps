@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 
@@ -60,13 +61,26 @@ function TeamOutcomeRow({ outcome }: { outcome: V1TeamOutcome }) {
  * The teams part's per-team report (design D8): the goal buckets with their counts, each
  * expandable to the V1 team name, the reason, and its issues as translated lines with the value
  * concerned, never raw codes. A team that breaks a team rule says it can be fixed on the Teams
- * page and links there. Each starts collapsed except Failed.
+ * page and links there. Each starts collapsed except Failed. The rule reasons come from the `teams`
+ * namespace, which nothing on the import pages preloads, so the buckets wait for it in their own
+ * `Suspense` instead of suspending the whole page.
  */
 export function TeamImportResult({ buckets }: { buckets: TeamBuckets }) {
   const { t } = useTranslation()
   return (
     <section className="grid gap-2" data-testid="v1-import-teams-result">
       <p className="font-medium">{t("goals.v1Import.teams.title")}</p>
+      <Suspense fallback={null}>
+        <TeamBucketList buckets={buckets} />
+      </Suspense>
+    </section>
+  )
+}
+
+function TeamBucketList({ buckets }: { buckets: TeamBuckets }) {
+  const { t } = useTranslation()
+  return (
+    <>
       {BUCKET_ORDER.filter((bucket) => buckets[bucket].length > 0).map(
         (bucket) => (
           <details
@@ -89,6 +103,6 @@ export function TeamImportResult({ buckets }: { buckets: TeamBuckets }) {
           </details>
         )
       )}
-    </section>
+    </>
   )
 }

@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { LayoutGrid, Plus, Rows3, Search } from "lucide-react"
+import { LayoutGrid, Plus, Rows3 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
 import {
   Select,
   SelectContent,
@@ -16,9 +15,11 @@ import {
 
 import { TEAM_LIMITS, TEAM_MODES, useTeamModeLabel } from "@/entities/team"
 import {
+  CountBadge,
   FILTER_CHIP_CLASS_NAME,
   GroupByControl,
   PageToolbar,
+  SearchField,
   SegmentedControl,
 } from "@/shared/ui"
 
@@ -76,10 +77,71 @@ function ModeSelect({
   )
 }
 
+/** The quick-filter chips: each hidden while its count is 0, unless it is on, so an active filter
+ *  never disappears from under the player. */
+function QuickFilterChips({
+  quick,
+  onQuick,
+  needsFixesCount,
+  sharedCount,
+  disabled,
+}: {
+  quick: TeamsQuickFilters
+  onQuick: (value: TeamsQuickFilters) => void
+  needsFixesCount: number
+  sharedCount: number
+  disabled: boolean
+}) {
+  const { t } = useTranslation("teams")
+  const showNeedsFixes = needsFixesCount > 0 || quick.needsFixes
+  const showShared = sharedCount > 0 || quick.shared
+  return showNeedsFixes || showShared ? (
+    <ToggleGroup
+      aria-label={t("page.quickFilters")}
+      className="flex-wrap"
+      disabled={disabled}
+      onValueChange={(values) =>
+        onQuick({
+          needsFixes: values.includes("needsFixes"),
+          shared: values.includes("shared"),
+        })
+      }
+      type="multiple"
+      value={[
+        ...(quick.needsFixes ? ["needsFixes"] : []),
+        ...(quick.shared ? ["shared"] : []),
+      ]}
+      variant="outline"
+    >
+      {showNeedsFixes ? (
+        <ToggleGroupItem
+          className={FILTER_CHIP_CLASS_NAME}
+          data-testid="teams-chip-needs-fixes"
+          value="needsFixes"
+        >
+          {t("page.needsFixes")}
+          <CountBadge count={needsFixesCount} showZero />
+        </ToggleGroupItem>
+      ) : null}
+      {showShared ? (
+        <ToggleGroupItem
+          className={FILTER_CHIP_CLASS_NAME}
+          data-testid="teams-chip-shared"
+          value="shared"
+        >
+          {t("page.sharedUnits")}
+          <CountBadge count={sharedCount} showZero />
+        </ToggleGroupItem>
+      ) : null}
+    </ToggleGroup>
+  ) : null
+}
+
 /**
  * The Teams toolbar (ui-style-guide rule 2, handoff 5.2). Find: search over team and unit names,
- * the Mode select, and the quick-filter chips (each hidden while its count is 0). View: Group by
- * (None or Mode) and the layout (Cards or Table; Cards or List on a phone). Actions: Reorder, the
+ * the Mode select, and the quick-filter chips (each hidden while its count is 0, unless it is on,
+ * so an active filter never disappears). View: the layout (Cards or Table; Cards or List on a phone),
+ * then Group by (None or Mode). Actions: Reorder, the
  * team count against the limit, and Create team.
  */
 export function TeamsToolbar({
@@ -122,47 +184,15 @@ export function TeamsToolbar({
   const { t } = useTranslation(["teams", "common"])
   const atLimit = teamCount >= TEAM_LIMITS.maxTeams
   const countId = "teams-count"
-  const chips =
-    needsFixesCount > 0 || sharedCount > 0 ? (
-      <ToggleGroup
-        aria-label={t("page.quickFilters")}
-        className="flex-wrap"
-        disabled={controlsDisabled}
-        onValueChange={(values) =>
-          onQuick({
-            needsFixes: values.includes("needsFixes"),
-            shared: values.includes("shared"),
-          })
-        }
-        type="multiple"
-        value={[
-          ...(quick.needsFixes ? ["needsFixes"] : []),
-          ...(quick.shared ? ["shared"] : []),
-        ]}
-        variant="outline"
-      >
-        {needsFixesCount > 0 ? (
-          <ToggleGroupItem
-            className={FILTER_CHIP_CLASS_NAME}
-            data-testid="teams-chip-needs-fixes"
-            value="needsFixes"
-          >
-            {t("page.needsFixes")}
-            <span className="tabular-nums">{needsFixesCount}</span>
-          </ToggleGroupItem>
-        ) : null}
-        {sharedCount > 0 ? (
-          <ToggleGroupItem
-            className={FILTER_CHIP_CLASS_NAME}
-            data-testid="teams-chip-shared"
-            value="shared"
-          >
-            {t("page.sharedUnits")}
-            <span className="tabular-nums">{sharedCount}</span>
-          </ToggleGroupItem>
-        ) : null}
-      </ToggleGroup>
-    ) : null
+  const chips = (
+    <QuickFilterChips
+      disabled={controlsDisabled}
+      needsFixesCount={needsFixesCount}
+      onQuick={onQuick}
+      quick={quick}
+      sharedCount={sharedCount}
+    />
+  )
 
   return (
     <PageToolbar
@@ -198,22 +228,14 @@ export function TeamsToolbar({
       chips={chips}
       find={
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <div className="relative min-w-0 flex-1 basis-36 md:max-w-60">
-            <Search
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              aria-label={t("page.search")}
-              className="pl-8"
-              data-testid="teams-search"
-              disabled={controlsDisabled}
-              onChange={(event) => onSearch(event.target.value)}
-              placeholder={t("page.searchPlaceholder")}
-              type="search"
-              value={search}
-            />
-          </div>
+          <SearchField
+            className="basis-36"
+            disabled={controlsDisabled}
+            label={t("page.search")}
+            onChange={onSearch}
+            placeholder={t("page.searchPlaceholder")}
+            value={search}
+          />
           <ModeSelect
             disabled={controlsDisabled}
             onChange={onMode}
@@ -225,16 +247,6 @@ export function TeamsToolbar({
       testId="teams-toolbar"
       view={
         <>
-          <GroupByControl
-            disabled={controlsDisabled}
-            onValueChange={onGroupBy}
-            options={[
-              { value: "none", label: t("common:pageToolbar.none") },
-              { value: "mode", label: t("page.groupByMode") },
-            ]}
-            testId="teams-group-by"
-            value={groupBy}
-          />
           <SegmentedControl
             disabled={controlsDisabled}
             label={t("common:pageToolbar.layout")}
@@ -255,6 +267,16 @@ export function TeamsToolbar({
             ]}
             testId="teams-layout"
             value={layout}
+          />
+          <GroupByControl
+            disabled={controlsDisabled}
+            onValueChange={onGroupBy}
+            options={[
+              { value: "none", label: t("common:pageToolbar.none") },
+              { value: "mode", label: t("page.groupByMode") },
+            ]}
+            testId="teams-group-by"
+            value={groupBy}
           />
         </>
       }

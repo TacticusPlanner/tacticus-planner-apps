@@ -34,6 +34,21 @@ export function isTeamMode(value: unknown): value is TeamMode {
   return (TEAM_MODES as readonly unknown[]).includes(value)
 }
 
+function isTeamRuleCode(value: unknown): value is TeamRuleCode {
+  return (TEAM_RULE_CODES as readonly unknown[]).includes(value)
+}
+
+/** The team with only the rule codes this build knows under `issues`. The client deploys apart from
+ *  the API, so a code the API adds later is dropped instead of reaching copy lookups that have no
+ *  entry for it. */
+export function withKnownIssues<T extends { issues: readonly unknown[] }>(
+  team: T
+): T {
+  return team.issues.every(isTeamRuleCode)
+    ? team
+    : { ...team, issues: team.issues.filter(isTeamRuleCode) }
+}
+
 /** The API's limits (personal-teams): the rules mirror them, the API enforces them. */
 export const TEAM_LIMITS = {
   minNameLength: 3,

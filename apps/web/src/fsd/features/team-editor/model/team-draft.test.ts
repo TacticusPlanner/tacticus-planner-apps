@@ -8,7 +8,9 @@ import {
   addCharacter,
   arrangeCharacters,
   arrangeMows,
+  canMakeCore,
   canMakeFlex,
+  canMakeMowCore,
   chooseCampaign,
   draftFromTeam,
   draftToFields,
@@ -26,6 +28,7 @@ import {
   takesMows,
   toggleMode,
   toggleMow,
+  undoToggle,
   unitPlacement,
 } from "./team-draft"
 import type { TeamDraft } from "./team-draft"
@@ -112,6 +115,80 @@ describe("core and flex", () => {
     const horde = draft({ characterIds: ["A", "B", "C", "D", "E"] })
     expect(sections(addCharacter(horde, "F")).core).toHaveLength(6)
   })
+})
+
+describe("core limits", () => {
+  const war = (overrides: Partial<TeamDraft> = {}) =>
+    draft({ modes: ["warOffense"], ...overrides })
+
+  it("keeps a flex character flex while a war core is full", () => {
+    const full = war({
+      characterIds: ["A", "B", "C", "D", "E", "F"],
+      flexStartIndex: 5,
+    })
+    expect(canMakeCore(full, "F")).toBe(false)
+    expect(makeCore(full, "F")).toBe(full)
+  })
+
+  it("makes a flex character core while the war core has room, and always outside war", () => {
+    const room = war({ characterIds: ["A", "B", "C"], flexStartIndex: 2 })
+    expect(canMakeCore(room, "C")).toBe(true)
+    const horde = draft({
+      characterIds: ["A", "B", "C", "D", "E", "F"],
+      flexStartIndex: 5,
+    })
+    expect(canMakeCore(horde, "F")).toBe(true)
+    expect(sections(makeCore(horde, "F")).flex).toEqual([])
+  })
+
+  it("keeps a flex MoW flex while the war core MoW slot is taken", () => {
+    const full = war({ mowIds: ["M", "N"], mowFlexStartIndex: 1 })
+    expect(canMakeMowCore(full, "N")).toBe(false)
+    expect(makeMowCore(full, "N")).toBe(full)
+  })
+})
+
+describe("undo", () => {
+  it("restores the lineup exactly while nothing changed since", () => {
+    const before = war()
+    const after = addCharacter(before, "F")
+    expect(
+      undoToggle(after, before, after, { kind: "character", id: "F" })
+    ).toEqual(before)
+  })
+
+  it("reverses only its own unit after later changes", () => {
+    const before = draft({ characterIds: ["A", "B", "C"] })
+    const afterX = addCharacter(before, "X")
+    const afterY = addCharacter(afterX, "Y")
+    const flexed = makeFlex(afterY, "A")
+    const undone = undoToggle(flexed, before, afterX, {
+      kind: "character",
+      id: "X",
+    })
+    expect(sections(undone)).toEqual({ core: ["B", "C", "Y"], flex: ["A"] })
+  })
+
+  it("puts back a removed MoW, and does nothing once the unit is already back", () => {
+    const before = draft({ mowIds: ["M"] })
+    const afterRemove = toggleMow(before, "M")
+    const later = { ...afterRemove, name: "Renamed", mowIds: ["N"] }
+    expect(
+      undoToggle(later, before, afterRemove, { kind: "mow", id: "M" }).mowIds
+    ).toEqual(["N", "M"])
+    const back = { ...later, mowIds: ["N", "M"] }
+    expect(
+      undoToggle(back, before, afterRemove, { kind: "mow", id: "M" })
+    ).toBe(back)
+  })
+
+  function war(overrides: Partial<TeamDraft> = {}) {
+    return draft({
+      modes: ["warOffense"],
+      characterIds: ["A", "B", "C", "D", "E"],
+      ...overrides,
+    })
+  }
 })
 
 describe("MoW core and flex", () => {

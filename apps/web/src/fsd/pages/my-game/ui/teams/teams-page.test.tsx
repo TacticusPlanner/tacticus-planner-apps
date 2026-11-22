@@ -129,7 +129,7 @@ describe("TeamsPage", () => {
       await screen.findAllByTestId("team-card")
       const toolbar = screen.getByTestId("teams-toolbar")
       const slot = (name: string) =>
-        // eslint-disable-next-line testing-library/no-node-access
+        // eslint-disable-next-line testing-library/no-node-access -- the toolbar slots have no role or name to query by
         toolbar.querySelector<HTMLElement>(`[data-slot="page-toolbar-${name}"]`)
       const find = slot("find")
       expect(
@@ -187,6 +187,49 @@ describe("TeamsPage", () => {
       await user.click(chip)
       expect(cardNames()).toEqual(["Team B"])
     })
+
+    it("keeps an active quick-filter chip once its count reaches 0, and offers Clear filters", async () => {
+      api.list
+        .mockResolvedValueOnce(
+          list(team("A"), team("B", { issues: ["tooFewCharacters"] }))
+        )
+        .mockResolvedValue(list(team("A")))
+      api.remove.mockResolvedValue(undefined)
+      const user = userEvent.setup()
+      await renderPage()
+      await user.click(await screen.findByTestId("teams-chip-needs-fixes"))
+      await user.click(screen.getByRole("button", { name: "Delete Team B" }))
+      await user.click(
+        within(await screen.findByRole("dialog")).getByRole("button", {
+          name: "Delete team",
+        })
+      )
+      expect(await screen.findByText("No teams match.")).toBeInTheDocument()
+      const chip = screen.getByTestId("teams-chip-needs-fixes")
+      expect(chip).toHaveTextContent("Needs fixes0")
+      expect(chip).toHaveAttribute("data-state", "on")
+      await user.click(screen.getByRole("button", { name: "Clear filters" }))
+      expect(cardNames()).toEqual(["Team A"])
+      expect(screen.queryByTestId("teams-chip-needs-fixes")).toBeNull()
+    })
+
+    it("offers Clear search when only the search hides every team", async () => {
+      api.list.mockResolvedValue(list(team("A")))
+      const user = userEvent.setup()
+      await renderPage()
+      await screen.findAllByTestId("team-card")
+      await user.type(
+        screen.getByRole("searchbox", { name: "Search teams or units" }),
+        "zzz"
+      )
+      await user.click(
+        within(await screen.findByTestId("teams-no-match")).getByRole(
+          "button",
+          { name: "Clear search" }
+        )
+      )
+      expect(cardNames()).toEqual(["Team A"])
+    })
   })
 
   describe("states", () => {
@@ -234,7 +277,7 @@ describe("TeamsPage", () => {
       await renderPage()
       expect(await screen.findByTestId("teams-sync-prompt")).toBeInTheDocument()
       const card = screen.getByRole("listitem", { name: "Team A" })
-      // eslint-disable-next-line testing-library/no-node-access
+      // eslint-disable-next-line testing-library/no-node-access -- the portraits are decorative (aria-hidden), so only their data attributes say locked
       expect(card.querySelector('[data-locked="true"]')).toBeNull()
     })
 
@@ -263,12 +306,12 @@ describe("TeamsPage", () => {
       const card = await screen.findByRole("listitem", { name: "Team A" })
       await waitFor(() =>
         expect(
-          // eslint-disable-next-line testing-library/no-node-access
+          // eslint-disable-next-line testing-library/no-node-access -- a unit's list item is found by its unit id, which is not its accessible name
           card.querySelector('li[data-unit="ultraTitus"]')
         ).toHaveAttribute("data-locked", "true")
       )
       expect(
-        // eslint-disable-next-line testing-library/no-node-access
+        // eslint-disable-next-line testing-library/no-node-access -- a unit's list item is found by its unit id, which is not its accessible name
         card.querySelector('li[data-unit="ultraCalgar"]')
       ).not.toHaveAttribute("data-locked")
       expect(screen.queryByTestId("teams-sync-prompt")).not.toBeInTheDocument()
@@ -303,8 +346,12 @@ describe("TeamsPage", () => {
           "listitem"
         )
       ).toHaveLength(5)
-      // eslint-disable-next-line testing-library/no-node-access
-      expect(flex.querySelectorAll(".size-10")).toHaveLength(3)
+      const portraits = within(flex).getAllByTestId("unit-portrait")
+      expect(portraits.map((portrait) => portrait.dataset.size)).toEqual([
+        "sm",
+        "sm",
+        "sm",
+      ])
     })
 
     it("shows a broken rule as an error chip, with the reason and its fix on hover", async () => {
@@ -478,13 +525,13 @@ describe("TeamsPage", () => {
       vi.restoreAllMocks()
     })
 
-    it("says when no team matches and shows all again", async () => {
+    it("says when no team matches and clears the filters", async () => {
       window.localStorage.setItem(TEAMS_MODE_STORAGE_KEY, "incursion")
       api.list.mockResolvedValue(three())
       await renderPage()
       expect(await screen.findByText("No teams match.")).toBeInTheDocument()
       await userEvent.click(
-        screen.getByRole("button", { name: "Show all teams" })
+        screen.getByRole("button", { name: "Clear filters" })
       )
       expect(cardNames()).toHaveLength(3)
     })

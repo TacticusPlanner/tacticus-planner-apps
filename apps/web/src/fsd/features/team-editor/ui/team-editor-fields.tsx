@@ -161,7 +161,7 @@ export function TeamNotesField({
 }
 
 /** A button opening its fields in a popover, marked when they hold something. */
-export function TeamPopoverButton({
+function TeamPopoverButton({
   label,
   marked = false,
   markLabel,

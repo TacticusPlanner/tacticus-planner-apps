@@ -14,7 +14,9 @@ import { useUnitName } from "@/shared/unit-name"
 import { cappedView, lineupUnitCap } from "../model/capped-view"
 import {
   FLEX_DIVIDER,
+  canMakeCore,
   canMakeFlex,
+  canMakeMowCore,
   lineupSections,
   mowSections,
 } from "../model/team-draft"
@@ -183,6 +185,7 @@ export function TeamEditorLineup({
   const characterActions = (unitId: string, isFlex: boolean) => (
     <>
       <RoleSwitch
+        coreDisabled={isFlex && !canMakeCore(draft, unitId)}
         flexDisabled={lockedIds.has(unitId) || !canMakeFlex(draft, unitId)}
         name={unitName("Character", unitId)}
         onChange={(role) => (role === "flex" ? onMakeFlex : onMakeCore)(unitId)}
@@ -195,6 +198,7 @@ export function TeamEditorLineup({
   const mowActions = (unitId: string, isFlex: boolean) => (
     <>
       <RoleSwitch
+        coreDisabled={isFlex && !canMakeMowCore(draft, unitId)}
         name={unitName("Mow", unitId)}
         onChange={(role) =>
           (role === "flex" ? onMakeMowFlex : onMakeMowCore)(unitId)

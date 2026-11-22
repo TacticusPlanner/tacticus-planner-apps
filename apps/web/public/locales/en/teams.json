@@ -21,7 +21,6 @@
     "importHint": "Coming from the old planner?",
     "importLink": "Import your V1 teams",
     "noMatch": "No team has the {{mode}} mode.",
-    "showAll": "Show all teams",
     "noRoster": "Sync your roster to see which units you've unlocked and how far each one has progressed.",
     "listLabel": "Your teams",
     "search": "Search teams or units",
@@ -89,6 +88,7 @@
     "saved": "Saved {{name}}.",
     "saveFailed": "The team wasn't saved. Your changes are still here; try again.",
     "stale": "This team changed on another device, so your save wasn't applied. Save again to replace it with your version.",
+    "deleted": "This team was deleted on another device, so it can't be saved.",
     "nameTaken": "Another team already has this name.",
     "limitReached": "You already have {{count}} teams. Delete one to make room.",
     "refused": "The planner didn't accept this team:",
@@ -99,7 +99,6 @@
       "discard": "Discard changes"
     },
     "hasNotes": "Has notes",
-    "nameAndNotes": "Name and notes",
     "newTeam": "New team",
     "toSave": "To save this team:",
     "addedCore": "{{name}} added to core.",
@@ -107,6 +106,7 @@
     "removed": "{{name}} removed.",
     "undo": "Undo",
     "tabsLabel": "Edit the lineup",
+    "tabDetails": "Details",
     "tabLineup": "Lineup"
   },
   "modeReasons": {
@@ -150,9 +150,6 @@
   "picker": {
     "label": "Add units",
     "search": "Search units",
-    "searchPlaceholder": "Search by name…",
-    "filters": "Filters",
-    "filtersTitle": "Filters",
     "lockedUnits": "Locked units",
     "characters": "Characters",
     "mows": "Machines of War",
@@ -179,8 +176,6 @@
     "any": "Any",
     "damageType": "Damage type",
     "allDamageTypes": "All damage types",
-    "reset": "Reset filters",
-    "done": "Done",
     "abilities": "Abilities {{first}} and {{second}}",
     "underCap": "Under {{rarity}}: {{parts}}",
     "capParts": {

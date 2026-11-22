@@ -21,7 +21,6 @@
     "importHint": "Du kommst vom alten Planner?",
     "importLink": "Importiere deine V1-Teams",
     "noMatch": "Kein Team hat den Modus {{mode}}.",
-    "showAll": "Alle Teams anzeigen",
     "noRoster": "Synchronisiere dein Roster, um zu sehen, welche Einheiten du freigeschaltet hast und wie weit jede fortgeschritten ist.",
     "listLabel": "Deine Teams",
     "search": "Teams oder Einheiten suchen",
@@ -89,6 +88,7 @@
     "saved": "{{name}} gespeichert.",
     "saveFailed": "Das Team wurde nicht gespeichert. Deine Änderungen sind noch da; versuche es erneut.",
     "stale": "Dieses Team wurde auf einem anderen Gerät geändert, daher wurde dein Speichern nicht übernommen. Speichere erneut, um es durch deine Version zu ersetzen.",
+    "deleted": "Dieses Team wurde auf einem anderen Gerät gelöscht und kann daher nicht gespeichert werden.",
     "nameTaken": "Ein anderes Team hat bereits diesen Namen.",
     "limitReached": "Du hast bereits {{count}} Teams. Lösche eines, um Platz zu schaffen.",
     "refused": "Der Planner hat dieses Team nicht angenommen:",
@@ -99,7 +99,6 @@
       "discard": "Änderungen verwerfen"
     },
     "hasNotes": "Hat Notizen",
-    "nameAndNotes": "Name und Notizen",
     "newTeam": "Neues Team",
     "toSave": "Zum Speichern:",
     "addedCore": "{{name}} zum Kern hinzugefügt.",
@@ -107,6 +106,7 @@
     "removed": "{{name}} entfernt.",
     "undo": "Rückgängig",
     "tabsLabel": "Aufstellung bearbeiten",
+    "tabDetails": "Details",
     "tabLineup": "Aufstellung"
   },
   "modeReasons": {
@@ -150,9 +150,6 @@
   "picker": {
     "label": "Einheiten hinzufügen",
     "search": "Einheiten suchen",
-    "searchPlaceholder": "Nach Namen suchen…",
-    "filters": "Filter",
-    "filtersTitle": "Filter",
     "lockedUnits": "Gesperrte Einheiten",
     "characters": "Charaktere",
     "mows": "Kriegsmaschinen",
@@ -179,8 +176,6 @@
     "any": "Beliebig",
     "damageType": "Schadensart",
     "allDamageTypes": "Alle Schadensarten",
-    "reset": "Filter zurücksetzen",
-    "done": "Fertig",
     "abilities": "Fähigkeiten {{first}} und {{second}}",
     "underCap": "Unter {{rarity}}: {{parts}}",
     "capParts": {

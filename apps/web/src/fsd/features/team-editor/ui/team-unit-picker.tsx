@@ -1,7 +1,6 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rarity } from "@workspace/game-domain"
-import { Input } from "@workspace/ui/components/input"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -9,7 +8,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { TeamRoster } from "@/entities/team"
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import { FILTER_CHIP_CLASS_NAME, SearchField } from "@/shared/ui"
 
 import { filterPickerUnits, pickerFilterOptions } from "../model/unit-picker"
 import type { PickerFilters, PickerUnit } from "../model/unit-picker"
@@ -152,13 +151,10 @@ export function TeamUnitPicker({
       data-testid="team-unit-picker"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <Input
-          aria-label={t("picker.search")}
-          className="min-w-40 flex-1"
-          data-testid="team-picker-search"
-          onChange={(event) => onFiltersChange({ search: event.target.value })}
-          placeholder={t("picker.searchPlaceholder")}
-          type="search"
+        <SearchField
+          className="sm:max-w-none"
+          label={t("picker.search")}
+          onChange={(search) => onFiltersChange({ search })}
           value={filters.search}
         />
         <TeamPickerFilters

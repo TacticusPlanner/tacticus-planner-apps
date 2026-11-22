@@ -156,10 +156,19 @@ export function makeFlex(draft: TeamDraft, unitId: string): TeamDraft {
   )
 }
 
-/** Moves a flex character to the end of the core. */
-export function makeCore(draft: TeamDraft, unitId: string): TeamDraft {
+/** Whether a flex character can be made core: not while a selected mode's core is full. */
+export function canMakeCore(draft: TeamDraft, unitId: string) {
   const { core, flex } = lineupSections(draft)
-  if (!flex.includes(unitId)) return draft
+  return (
+    flex.includes(unitId) &&
+    (!sizeLimited(draft) || core.length < TEAM_LIMITS.maxWarCoreCharacters)
+  )
+}
+
+/** Moves a flex character to the end of the core, unless a selected mode's core is full. */
+export function makeCore(draft: TeamDraft, unitId: string): TeamDraft {
+  if (!canMakeCore(draft, unitId)) return draft
+  const { core, flex } = lineupSections(draft)
   return withSections(
     draft,
     [...core, unitId],
@@ -226,10 +235,19 @@ export function makeMowFlex(draft: TeamDraft, unitId: string): TeamDraft {
   )
 }
 
-/** Moves a flex MoW to the end of the core MoWs. */
-export function makeMowCore(draft: TeamDraft, unitId: string): TeamDraft {
+/** Whether a flex MoW can be made core: not while a selected mode's core MoW slot is taken. */
+export function canMakeMowCore(draft: TeamDraft, unitId: string) {
   const { core, flex } = mowSections(draft)
-  if (!flex.includes(unitId)) return draft
+  return (
+    flex.includes(unitId) &&
+    (!sizeLimited(draft) || core.length < TEAM_LIMITS.maxWarCoreMows)
+  )
+}
+
+/** Moves a flex MoW to the end of the core MoWs, unless a selected mode's core is full. */
+export function makeMowCore(draft: TeamDraft, unitId: string): TeamDraft {
+  if (!canMakeMowCore(draft, unitId)) return draft
+  const { core, flex } = mowSections(draft)
   return withMowSections(
     draft,
     [...core, unitId],
@@ -241,6 +259,42 @@ export function toggleMow(draft: TeamDraft, unitId: string): TeamDraft {
   return draft.mowIds.includes(unitId)
     ? removeMow(draft, unitId)
     : addMow(draft, unitId)
+}
+
+const sameLineup = (a: TeamDraft, b: TeamDraft) =>
+  a.characterIds === b.characterIds &&
+  a.flexStartIndex === b.flexStartIndex &&
+  a.mowIds === b.mowIds &&
+  a.mowFlexStartIndex === b.mowFlexStartIndex
+
+/**
+ * Undo for one added or removed unit (`before` → `after`). While the lineup is still as that change
+ * left it, the lineup goes back exactly, the unit's old place included; after later changes only
+ * this unit's toggle is reversed, so Undo never takes back anything else.
+ */
+export function undoToggle(
+  current: TeamDraft,
+  before: TeamDraft,
+  after: TeamDraft,
+  unit: { kind: "character" | "mow"; id: string }
+): TeamDraft {
+  if (sameLineup(current, after)) {
+    return {
+      ...current,
+      characterIds: before.characterIds,
+      flexStartIndex: before.flexStartIndex,
+      mowIds: before.mowIds,
+      mowFlexStartIndex: before.mowFlexStartIndex,
+    }
+  }
+  const ids = (draft: TeamDraft) =>
+    unit.kind === "mow" ? draft.mowIds : draft.characterIds
+  const wasIn = ids(before).includes(unit.id)
+  if (wasIn === ids(current).includes(unit.id)) return current
+  if (unit.kind === "mow") return toggleMow(current, unit.id)
+  return wasIn
+    ? addCharacter(current, unit.id)
+    : removeCharacter(current, unit.id)
 }
 
 /**

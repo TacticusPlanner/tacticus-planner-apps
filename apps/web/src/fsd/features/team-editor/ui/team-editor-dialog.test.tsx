@@ -221,7 +221,7 @@ const lineupIds = (section: "core" | "flex" | "mows") =>
     })
     .map((element) => element.getAttribute("data-unit"))
 const pickButton = (unitId: string) =>
-  within(required(tile(unitId))).getByRole("button")
+  within(required(tile(unitId))).getByRole("checkbox")
 const save = () => screen.getByRole("button", { name: "Save team" })
 /** One option of a lineup unit's Core/Flex switch. */
 const roleOption = (name: string, option: "Core" | "Flex") => {
@@ -269,28 +269,42 @@ describe("TeamEditorDialog", () => {
       expect(screen.getByTestId("team-unit-picker")).toBeInTheDocument()
       await user.click(screen.getByRole("button", { name: "Filters" }))
       expect(
-        await screen.findByTestId("team-picker-filters-popover")
+        await screen.findByTestId("team-picker-filters-panel")
       ).toBeInTheDocument()
     })
 
-    it("is a bottom sheet on a phone with Lineup, Characters and Machines of War tabs, and Filters in a sheet", async () => {
+    it("is a bottom sheet on a phone with Details, Lineup, Characters and Machines of War tabs, and Filters inline", async () => {
       setViewportWidth(390)
       const user = userEvent.setup()
       render(<TeamEditorDialog onClose={onClose} team={null} teams={[]} />)
       const tabs = await screen.findAllByRole("tab")
       expect(tabs.map((tab) => tab.textContent)).toEqual([
-        "Lineup0",
-        "Characters0",
-        "Machines of War0",
+        "Details",
+        "Lineup",
+        "Characters",
+        "Machines of War",
       ])
+      // A new team starts on its details, which sit in the sheet itself (no popovers).
+      expect(screen.getByRole("tab", { name: "Details" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
+      expect(screen.getByLabelText("Name")).toBeInTheDocument()
+      expect(screen.getByLabelText("Notes")).toBeInTheDocument()
+      expect(
+        screen.getByRole("combobox", { name: "Rarity cap" })
+      ).toBeInTheDocument()
+      await user.click(screen.getByRole("tab", { name: /Lineup/ }))
       expect(screen.getByTestId("team-editor-lineup")).toBeInTheDocument()
       await user.click(screen.getByRole("tab", { name: /Characters/ }))
       expect(screen.getByTestId("team-picker-characters")).toBeInTheDocument()
       expect(screen.queryByTestId("team-picker-mows")).toBeNull()
       await user.click(screen.getByRole("button", { name: "Filters" }))
+      // No second sheet on top of the editor: the filters open in the tab.
       expect(
-        await screen.findByTestId("team-picker-filters-sheet")
+        screen.getByTestId("team-picker-filters-panel")
       ).toBeInTheDocument()
+      expect(screen.getAllByRole("dialog")).toHaveLength(1)
     })
 
     it("lists a new team's missing pieces as steps, and a saved team's broken rules as errors", async () => {
@@ -526,27 +540,9 @@ describe("TeamEditorDialog", () => {
       expect(
         await screen.findByRole("tab", { name: /Machines of War/ })
       ).toBeInTheDocument()
-      await user.click(screen.getByTestId("team-modes-button"))
+      await user.click(screen.getByRole("tab", { name: "Details" }))
       await user.click(await screen.findByRole("button", { name: "Campaign" }))
       expect(screen.queryByRole("tab", { name: /Machines of War/ })).toBeNull()
-      expect(screen.getByTestId("team-modes-button")).toHaveTextContent(
-        "Campaign"
-      )
-    })
-
-    it("goes back to the Lineup tab when the open Machines of War tab goes", async () => {
-      setViewportWidth(390)
-      const user = userEvent.setup()
-      render(<TeamEditorDialog onClose={onClose} team={null} teams={[]} />)
-      await user.click(
-        await screen.findByRole("tab", { name: /Machines of War/ })
-      )
-      await user.click(screen.getByTestId("team-modes-button"))
-      await user.click(await screen.findByRole("button", { name: "Campaign" }))
-      expect(screen.getByRole("tab", { name: /Lineup/ })).toHaveAttribute(
-        "aria-selected",
-        "true"
-      )
     })
 
     it("adds a character as core, makes it flex and back, and removes it", async () => {
@@ -580,7 +576,7 @@ describe("TeamEditorDialog", () => {
         )
       ).toBeNull()
       await user.click(pickButton("ultraCalgar"))
-      expect(pickButton("ultraCalgar")).toHaveAttribute("aria-pressed", "true")
+      expect(pickButton("ultraCalgar")).toHaveAttribute("aria-checked", "true")
       expect(
         within(required(tile("ultraCalgar"))).getByTestId(
           "team-picker-selected"
@@ -591,7 +587,7 @@ describe("TeamEditorDialog", () => {
     it("is one Tab stop per grid, moved through with the arrow keys", async () => {
       const user = await openEditor()
       const grid = screen.getByTestId("team-picker-characters")
-      const buttons = within(grid).getAllByRole("button")
+      const buttons = within(grid).getAllByRole("checkbox")
       expect(buttons.filter((button) => button.tabIndex === 0)).toHaveLength(1)
       const [first, second] = buttons
       first?.focus()
@@ -600,7 +596,7 @@ describe("TeamEditorDialog", () => {
       expect(second).toHaveAttribute("tabindex", "0")
       expect(first).toHaveAttribute("tabindex", "-1")
       await user.keyboard("{Enter}")
-      expect(second).toHaveAttribute("aria-pressed", "true")
+      expect(second).toHaveAttribute("aria-checked", "true")
       await user.keyboard("{End}")
       expect(buttons.at(-1)).toHaveFocus()
       await user.keyboard("{Home}")
@@ -644,7 +640,7 @@ describe("TeamEditorDialog", () => {
         await screen.findByTestId("team-filter-faction"),
         "Ultramarines"
       )
-      expect(screen.getByTestId("team-picker-filters-count")).toHaveTextContent(
+      expect(screen.getByTestId("team-picker-filters-badge")).toHaveTextContent(
         "1"
       )
     })
@@ -752,7 +748,11 @@ describe("TeamEditorDialog", () => {
       )
       expect(tile("ultraCalgar")).not.toHaveTextContent("Diamond III")
       expect(screen.queryByTestId("team-rarity-cap-hint")).toBeNull()
-      await chooseOption(user, screen.getByTestId("team-rarity-cap"), "Epic")
+      await chooseOption(
+        user,
+        screen.getByRole("combobox", { name: "Rarity cap" }),
+        "Epic"
+      )
       expect(screen.getByTestId("team-rarity-cap-hint")).toHaveTextContent(
         "Units shown capped at Epic."
       )
@@ -803,11 +803,17 @@ describe("TeamEditorDialog", () => {
 
     it("opens a team at its saved cap, and None clears it", async () => {
       const user = await openEditor(savedTeam({ rarityCap: "Epic" }))
-      expect(screen.getByTestId("team-rarity-cap")).toHaveTextContent("Epic")
+      expect(
+        screen.getByRole("combobox", { name: "Rarity cap" })
+      ).toHaveTextContent("Epic")
       expect(screen.getByTestId("team-rarity-cap-hint")).toHaveTextContent(
         "Units shown capped at Epic."
       )
-      await chooseOption(user, screen.getByTestId("team-rarity-cap"), "None")
+      await chooseOption(
+        user,
+        screen.getByRole("combobox", { name: "Rarity cap" }),
+        "None"
+      )
       expect(screen.queryByTestId("team-rarity-cap-hint")).toBeNull()
     })
   })
@@ -941,6 +947,60 @@ describe("TeamEditorDialog", () => {
         "true"
       )
       expect(screen.getByLabelText("Name")).toHaveValue("Renamed")
+    })
+
+    it("on a phone, says a taken name in the footer and opens the Details tab on the field", async () => {
+      setViewportWidth(390)
+      api.update.mockRejectedValue(
+        new ApiError(400, "taken", { issueCode: "teamNameTaken" })
+      )
+      const user = userEvent.setup()
+      render(
+        <TeamEditorDialog
+          onClose={onClose}
+          team={savedTeam()}
+          teams={[savedTeam()]}
+        />
+      )
+      // An existing team opens on its lineup.
+      expect(
+        await screen.findByRole("tab", { name: /Lineup/ })
+      ).toHaveAttribute("aria-selected", "true")
+      await user.click(screen.getByRole("tab", { name: "Details" }))
+      await user.clear(screen.getByLabelText("Name"))
+      await user.type(screen.getByLabelText("Name"), "Renamed")
+      await user.click(screen.getByRole("tab", { name: /Lineup/ }))
+      await user.click(save())
+      expect(
+        await screen.findByTestId("team-editor-message")
+      ).toHaveTextContent("Another team already has this name.")
+      expect(screen.getByRole("tab", { name: /Details/ })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      )
+      expect(screen.getByLabelText("Name")).toHaveAttribute(
+        "aria-invalid",
+        "true"
+      )
+    })
+
+    it("keeps an edit of a team deleted elsewhere as an edit, with Save off", async () => {
+      render(
+        <TeamEditorDialog
+          deleted
+          onClose={onClose}
+          team={savedTeam()}
+          teams={[]}
+        />
+      )
+      await screen.findByTestId("team-unit-picker")
+      expect(
+        screen.getByRole("dialog", { name: "Edit Saved team" })
+      ).toBeInTheDocument()
+      expect(screen.getByTestId("team-editor-deleted")).toHaveTextContent(
+        "This team was deleted on another device"
+      )
+      expect(save()).toBeDisabled()
     })
 
     it("shows the server's rule codes as translated reasons", async () => {

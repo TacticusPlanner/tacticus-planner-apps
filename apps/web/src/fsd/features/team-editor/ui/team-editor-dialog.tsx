@@ -1,16 +1,10 @@
 import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Gauge, Layers, NotebookPen } from "lucide-react"
 import { toast } from "sonner"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs"
+import { Tabs, TabsContent } from "@workspace/ui/components/tabs"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -27,12 +21,14 @@ import {
   staleRevision,
   teamRulesBroken,
   useCreateTeam,
-  useTeamModeLabel,
   useUpdateTeam,
 } from "@/entities/team"
 import type { Team, TeamFields, TeamMode, TeamRuleCode } from "@/entities/team"
 import {
   ConfirmationDialog,
+  CountBadge,
+  PageTabsList,
+  PageTabsTrigger,
   ResponsiveDialog,
   ResponsiveDialogBody,
   ResponsiveDialogFooter,
@@ -60,6 +56,7 @@ import {
   takesMows,
   toggleMode,
   toggleMow,
+  undoToggle,
   unitPlacement,
 } from "../model/team-draft"
 import type { TeamDraft } from "../model/team-draft"
@@ -74,7 +71,6 @@ import {
   TeamNameField,
   TeamNotesButton,
   TeamNotesField,
-  TeamPopoverButton,
   TeamRarityCapField,
 } from "./team-editor-fields"
 import { TeamLineupBand } from "./team-lineup-band"
@@ -86,15 +82,7 @@ type SaveMessage =
   | { kind: "stale" | "failed" | "limit" }
   | { kind: "refused"; rules: TeamRuleCode[] }
 
-type PhoneTab = "lineup" | "character" | "mow"
-
-/** The lineup fields Undo puts back exactly. */
-const lineupOf = (draft: TeamDraft) => ({
-  characterIds: draft.characterIds,
-  flexStartIndex: draft.flexStartIndex,
-  mowIds: draft.mowIds,
-  mowFlexStartIndex: draft.mowFlexStartIndex,
-})
+type PhoneTab = "details" | "lineup" | "character" | "mow"
 
 function EditorBody({
   team,
@@ -103,6 +91,8 @@ function EditorBody({
   draft,
   setDraft,
   nameError,
+  tab,
+  onTabChange,
 }: {
   team: Team | null
   teams: readonly Team[]
@@ -110,15 +100,16 @@ function EditorBody({
   draft: TeamDraft
   setDraft: (update: (draft: TeamDraft) => TeamDraft) => void
   nameError: string | null
+  /** The phone tab; the dialog holds it so a refused name can show its field. */
+  tab: PhoneTab
+  onTabChange: (tab: PhoneTab) => void
 }) {
   const { t } = useTranslation("teams")
   const isMobile = useIsMobile()
   const unitName = useUnitName()
-  const modeLabel = useTeamModeLabel()
   // The cap is saved with the team (null = none); with none, units show as they are (Mythic).
   const rarityCap = draft.rarityCap ?? DEFAULT_RARITY_CAP
   const [filters, setFilters] = useState<PickerFilters>(defaultPickerFilters)
-  const [tab, setTab] = useState<PhoneTab>("lineup")
   // Where the last added or removed unit went, for screen readers on desktop (a phone shows it).
   const [announcement, setAnnouncement] = useState("")
   const { facts } = data
@@ -144,7 +135,7 @@ function EditorBody({
     [draft.characterIds, draft.mowIds]
   )
 
-  // Adding or removing a unit says where it went; on a phone, with Undo restoring the lineup.
+  // Adding or removing a unit says where it went; on a phone, with Undo reversing that change.
   const onToggle = (unit: PickerUnit) => {
     const before = draft
     const next =
@@ -168,7 +159,7 @@ function EditorBody({
         action: {
           label: t("editor.undo"),
           onClick: () =>
-            setDraft((current) => ({ ...current, ...lineupOf(before) })),
+            setDraft((current) => undoToggle(current, before, next, unit)),
         },
       })
     } else {
@@ -256,110 +247,89 @@ function EditorBody({
   if (isMobile) {
     const characterCount = draft.characterIds.length
     const mowCount = draft.mowIds.length
-    const modeSummary = draft.modes.map(modeLabel).join(", ")
     return (
-      <div className="flex min-h-0 flex-1 flex-col gap-3">
-        <div className="flex flex-wrap gap-2">
-          <TeamPopoverButton
-            icon={<NotebookPen data-icon="inline-start" />}
-            label={t("editor.nameAndNotes")}
-            markLabel={t("editor.hasNotes")}
-            marked={draft.notes.trim().length > 0}
-            testId="team-name-notes-button"
-          >
-            <TeamNameField
-              name={draft.name}
-              nameError={nameError}
-              onNameChange={(name) =>
-                setDraft((current) => ({ ...current, name }))
-              }
-            />
-            <TeamNotesField
-              notes={draft.notes}
-              onNotesChange={(notes) =>
-                setDraft((current) => ({ ...current, notes }))
-              }
-            />
-          </TeamPopoverButton>
-          <TeamPopoverButton
-            icon={<Layers data-icon="inline-start" />}
-            label={modeSummary || t("editor.modes")}
-            testId="team-modes-button"
-          >
-            {modes}
-            {context}
-          </TeamPopoverButton>
-          <TeamPopoverButton
-            icon={<Gauge data-icon="inline-start" />}
-            label={t("rarityCap.label")}
-            markLabel={draft.rarityCap ?? undefined}
-            marked={draft.rarityCap !== null}
-            testId="team-cap-button"
-          >
-            {cap}
-          </TeamPopoverButton>
-        </div>
-        <Tabs
-          className="flex min-h-0 flex-1 flex-col gap-3"
-          onValueChange={(value) => setTab(value as PhoneTab)}
-          // The Machines of War tab goes when a mode takes none; its panel goes with it.
-          value={tab === "mow" && !mows ? "lineup" : tab}
-        >
-          <TabsList
-            aria-label={t("editor.tabsLabel")}
-            className="h-auto w-full"
-          >
-            <TabsTrigger className="min-h-10" value="lineup">
-              {t("editor.tabLineup")}
-              <span className="text-muted-foreground tabular-nums">
-                {characterCount + mowCount}
-              </span>
-            </TabsTrigger>
-            <TabsTrigger className="min-h-10" value="character">
-              {t("picker.characters")}
-              <span className="text-muted-foreground tabular-nums">
-                {characterCount}
-              </span>
-            </TabsTrigger>
-            {mows ? (
-              <TabsTrigger className="min-h-10" value="mow">
-                {t("lineup.mows")}
-                <span className="text-muted-foreground tabular-nums">
-                  {mowCount}
-                </span>
-              </TabsTrigger>
+      <Tabs
+        className="flex min-h-0 flex-1 flex-col gap-3"
+        onValueChange={(value) => onTabChange(value as PhoneTab)}
+        // The Machines of War tab goes when a mode takes none; its panel goes with it.
+        value={tab === "mow" && !mows ? "lineup" : tab}
+      >
+        <PageTabsList aria-label={t("editor.tabsLabel")}>
+          <PageTabsTrigger value="details">
+            {t("editor.tabDetails")}
+            {nameError ? (
+              <span
+                aria-label={nameError}
+                className="size-2 rounded-full bg-destructive"
+                data-testid="team-editor-details-error"
+                role="img"
+              />
             ) : null}
-          </TabsList>
-          <TabsContent className="flex flex-col gap-3" value="lineup">
-            <TeamEditorLineup
-              draft={draft}
-              knownUnit={knownUnit}
-              lockedIds={campaignCore}
-              missingCore={concerned.missingCore}
-              notAllowed={concerned.notAllowed}
-              onArrangeCharacters={(order) =>
-                setDraft((current) =>
-                  arrangeCharacters(current, order, campaignCore)
-                )
-              }
-              onArrangeMows={(order) =>
-                setDraft((current) => arrangeMows(current, order))
-              }
-              rarityCap={rarityCap}
-              roster={data.roster}
-              {...lineupActions}
-            />
-          </TabsContent>
-          <TabsContent className="flex min-h-0 flex-col" value="character">
-            {picker("character")}
-          </TabsContent>
+          </PageTabsTrigger>
+          <PageTabsTrigger value="lineup">
+            {t("editor.tabLineup")}
+            <CountBadge count={characterCount + mowCount} />
+          </PageTabsTrigger>
+          <PageTabsTrigger value="character">
+            {t("picker.characters")}
+            <CountBadge count={characterCount} />
+          </PageTabsTrigger>
           {mows ? (
-            <TabsContent className="flex min-h-0 flex-col" value="mow">
-              {picker("mow")}
-            </TabsContent>
+            <PageTabsTrigger value="mow">
+              {t("lineup.mows")}
+              <CountBadge count={mowCount} />
+            </PageTabsTrigger>
           ) : null}
-        </Tabs>
-      </div>
+        </PageTabsList>
+        {/* The details are fields to fill, so they sit in the sheet itself, never in a popover
+            on top of it (ui-style-guide rule 8). */}
+        <TabsContent className="flex flex-col gap-4" value="details">
+          <TeamNameField
+            name={draft.name}
+            nameError={nameError}
+            onNameChange={(name) =>
+              setDraft((current) => ({ ...current, name }))
+            }
+          />
+          <TeamNotesField
+            notes={draft.notes}
+            onNotesChange={(notes) =>
+              setDraft((current) => ({ ...current, notes }))
+            }
+          />
+          {modes}
+          {context}
+          {cap}
+        </TabsContent>
+        <TabsContent className="flex flex-col gap-3" value="lineup">
+          <TeamEditorLineup
+            draft={draft}
+            knownUnit={knownUnit}
+            lockedIds={campaignCore}
+            missingCore={concerned.missingCore}
+            notAllowed={concerned.notAllowed}
+            onArrangeCharacters={(order) =>
+              setDraft((current) =>
+                arrangeCharacters(current, order, campaignCore)
+              )
+            }
+            onArrangeMows={(order) =>
+              setDraft((current) => arrangeMows(current, order))
+            }
+            rarityCap={rarityCap}
+            roster={data.roster}
+            {...lineupActions}
+          />
+        </TabsContent>
+        <TabsContent className="flex min-h-0 flex-col" value="character">
+          {picker("character")}
+        </TabsContent>
+        {mows ? (
+          <TabsContent className="flex min-h-0 flex-col" value="mow">
+            {picker("mow")}
+          </TabsContent>
+        ) : null}
+      </Tabs>
     )
   }
 
@@ -433,12 +403,27 @@ function EditorLoadState({
 /** Why the last save did not go through, translated. */
 function SaveMessageText({
   message,
+  nameError,
   team,
 }: {
   message: SaveMessage | null
+  /** A save refused because the name is taken; said here too, as a phone shows the field on
+   *  another tab. */
+  nameError: string | null
   team: TeamFields
 }) {
   const { t } = useTranslation("teams")
+  if (nameError) {
+    return (
+      <div
+        className="text-sm text-destructive"
+        data-testid="team-editor-message"
+        role="alert"
+      >
+        {nameError}
+      </div>
+    )
+  }
   if (!message) return null
   const text = {
     stale: () => t("editor.stale"),
@@ -466,8 +451,8 @@ function SaveMessageText({
 /**
  * The team editor (design D6): a large centered dialog on desktop, with the name and Notes in its
  * header, the modes and cap, a lineup band that stays in view and the picker below it; a bottom
- * sheet on a phone, with Name and notes, Modes and Cap buttons and Lineup, Characters and Machines
- * of War tabs. It holds the draft, evaluates the rules after every change and keeps Save
+ * sheet on a phone, with Details (name, notes, modes, cap), Lineup, Characters and Machines of War
+ * tabs. It holds the draft, evaluates the rules after every change and keeps Save
  * unavailable, with the reasons, while any is broken. It closes only once a save succeeds; a
  * failed save keeps the draft, and a stale one keeps it on top of the team as it now stands, so
  * saving again replaces that version. The picker filters reset when it closes. Mount it only while
@@ -477,9 +462,12 @@ export function TeamEditorDialog({
   team,
   teams,
   onClose,
+  deleted = false,
 }: {
   /** The team to edit, or null to create one. */
   team: Team | null
+  /** The team was deleted elsewhere while open: the editor keeps showing it, and Save is off. */
+  deleted?: boolean
   /** Every saved team, for the same-mode flags. */
   teams: readonly Team[]
   onClose: () => void
@@ -496,6 +484,8 @@ export function TeamEditorDialog({
   const [revision, setRevision] = useState(team?.revision ?? 0)
   const [message, setMessage] = useState<SaveMessage | null>(null)
   const [nameTaken, setNameTaken] = useState(false)
+  // A new team starts on its details (it needs a name); an existing one on its lineup.
+  const [tab, setTab] = useState<PhoneTab>(team ? "lineup" : "details")
   const create = useCreateTeam()
   const update = useUpdateTeam()
   const saving = create.isPending || update.isPending
@@ -508,7 +498,8 @@ export function TeamEditorDialog({
   const data = editorData.status === "ready" ? editorData.data : undefined
   const fields = draftToFields(draft)
   const broken = data ? evaluateTeamRules(fields, data.facts) : []
-  const canSave = data !== undefined && broken.length === 0 && !saving
+  const canSave =
+    data !== undefined && broken.length === 0 && !saving && !deleted
 
   const save = async () => {
     if (!canSave) return
@@ -528,6 +519,7 @@ export function TeamEditorDialog({
         setMessage({ kind: "stale" })
       } else if (isTeamNameTaken(error)) {
         setNameTaken(true)
+        setTab("details")
       } else if (isTeamLimitReached(error)) {
         setMessage({ kind: "limit" })
       } else {
@@ -557,7 +549,7 @@ export function TeamEditorDialog({
     <ResponsiveDialog
       contentClassName="motion-reduce:data-closed:animate-none motion-reduce:data-open:animate-none"
       data-testid="team-editor"
-      desktopClassName="h-[calc(100vh-4rem)] sm:max-w-[min(88rem,calc(100vw-4rem))]"
+      desktopClassName="h-[calc(100vh-4rem)]"
       onOpenChange={(open) => {
         if (!open) requestClose()
       }}
@@ -603,7 +595,9 @@ export function TeamEditorDialog({
             data={editorData.data}
             draft={draft}
             nameError={nameError}
+            onTabChange={setTab}
             setDraft={setDraft}
+            tab={tab}
             team={team}
             teams={teams}
           />
@@ -614,8 +608,23 @@ export function TeamEditorDialog({
           />
         )}
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="flex-col items-stretch gap-2 border-t md:flex-col md:items-stretch">
-        <SaveMessageText message={message} team={fields} />
+      <ResponsiveDialogFooter className="flex-col items-stretch gap-2 md:flex-col md:items-stretch">
+        {deleted ? (
+          <div
+            className="text-sm text-destructive"
+            data-testid="team-editor-deleted"
+            role="alert"
+          >
+            {t("editor.deleted")}
+          </div>
+        ) : (
+          <SaveMessageText
+            message={message}
+            // Desktop shows the name field, and its error, in the header at all times.
+            nameError={isMobile ? nameError : null}
+            team={fields}
+          />
+        )}
         {data && broken.length > 0 ? (
           <div
             className="max-h-28 overflow-y-auto"
@@ -655,7 +664,6 @@ export function TeamEditorDialog({
           )}
           <Button
             className="max-md:h-12 max-md:flex-1"
-            data-testid="team-editor-save"
             disabled={!canSave}
             onClick={() => void save()}
             type="button"

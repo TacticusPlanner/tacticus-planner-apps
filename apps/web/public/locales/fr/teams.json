@@ -21,7 +21,6 @@
     "importHint": "Vous venez de l'ancien planificateur ?",
     "importLink": "Importer vos équipes V1",
     "noMatch": "Aucune équipe n'a le mode {{mode}}.",
-    "showAll": "Afficher toutes les équipes",
     "noRoster": "Synchronisez votre effectif pour voir quelles unités vous avez débloquées et où en est chacune.",
     "listLabel": "Vos équipes",
     "search": "Rechercher des équipes ou des unités",
@@ -89,6 +88,7 @@
     "saved": "{{name}} enregistrée.",
     "saveFailed": "L'équipe n'a pas été enregistrée. Vos modifications sont toujours là ; réessayez.",
     "stale": "Cette équipe a changé sur un autre appareil, votre enregistrement n'a donc pas été appliqué. Enregistrez à nouveau pour la remplacer par votre version.",
+    "deleted": "Cette équipe a été supprimée sur un autre appareil, elle ne peut donc pas être enregistrée.",
     "nameTaken": "Une autre équipe porte déjà ce nom.",
     "limitReached": "Vous avez déjà {{count}} équipes. Supprimez-en une pour faire de la place.",
     "refused": "Le planificateur n'a pas accepté cette équipe :",
@@ -99,7 +99,6 @@
       "discard": "Abandonner les modifications"
     },
     "hasNotes": "Contient des notes",
-    "nameAndNotes": "Nom et notes",
     "newTeam": "Nouvelle équipe",
     "toSave": "Pour enregistrer cette équipe :",
     "addedCore": "{{name}} ajouté aux principaux.",
@@ -107,6 +106,7 @@
     "removed": "{{name}} retiré.",
     "undo": "Annuler",
     "tabsLabel": "Modifier la composition",
+    "tabDetails": "Détails",
     "tabLineup": "Composition"
   },
   "modeReasons": {
@@ -150,9 +150,6 @@
   "picker": {
     "label": "Ajouter des unités",
     "search": "Rechercher des unités",
-    "searchPlaceholder": "Rechercher par nom…",
-    "filters": "Filtres",
-    "filtersTitle": "Filtres",
     "lockedUnits": "Unités verrouillées",
     "characters": "Personnages",
     "mows": "Machines de guerre",
@@ -179,8 +176,6 @@
     "any": "Tous",
     "damageType": "Type de dégâts",
     "allDamageTypes": "Tous les types de dégâts",
-    "reset": "Réinitialiser les filtres",
-    "done": "Terminé",
     "abilities": "Capacités {{first}} et {{second}}",
     "underCap": "Sous {{rarity}} : {{parts}}",
     "capParts": {

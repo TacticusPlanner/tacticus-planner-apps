@@ -236,7 +236,7 @@ export const TeamCard = memo(function TeamCard({
       ) : null}
       {team.notes ? (
         <p
-          className="line-clamp-2 text-xs wrap-break-word text-muted-foreground italic"
+          className="line-clamp-2 text-sm wrap-break-word text-muted-foreground italic"
           data-testid="team-card-notes"
           title={team.notes}
         >

@@ -63,7 +63,11 @@ export function useTeamRuleText() {
         "characterIds" | "flexStartIndex" | "mowIds" | "mowFlexStartIndex"
       >
     ): TeamRuleText => {
-      const counted = RULE_COPY[code].counted
+      // `issues` are filtered to known codes when read (`withKnownIssues`); this guard keeps an
+      // unknown code from throwing while rendering if one still gets through.
+      const counted =
+        (RULE_COPY as Partial<Record<string, { counted: boolean }>>)[code]
+          ?.counted ?? false
       return {
         code,
         reason: t(`rules.${code}.reason`),

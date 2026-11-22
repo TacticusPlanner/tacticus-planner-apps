@@ -7,7 +7,8 @@ import type { Team } from "@/entities/team"
 
 /** What a card or row can do with its team; moving is by its drag grip. */
 export interface TeamActions {
-  onEdit: (teamId: string) => void
+  /** Opens the editor on the team as it is now; the editor keeps it if the team is deleted meanwhile. */
+  onEdit: (team: Team) => void
   onDelete: (team: Team) => void
 }
 
@@ -35,8 +36,7 @@ export function TeamActionButtons({
       <Button
         aria-label={edit}
         className="text-muted-foreground hover:text-foreground pointer-coarse:size-12"
-        data-testid="team-actions-edit"
-        onClick={() => actions.onEdit(team.id)}
+        onClick={() => actions.onEdit(team)}
         size="icon-sm"
         title={edit}
         type="button"
@@ -47,7 +47,6 @@ export function TeamActionButtons({
       <Button
         aria-label={remove}
         className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive pointer-coarse:size-12"
-        data-testid="team-actions-delete"
         onClick={() => actions.onDelete(team)}
         size="icon-sm"
         title={remove}

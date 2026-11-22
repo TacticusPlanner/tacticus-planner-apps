@@ -21,7 +21,6 @@
     "importHint": "¿Vienes del planificador anterior?",
     "importLink": "Importa tus equipos de V1",
     "noMatch": "Ningún equipo tiene el modo {{mode}}.",
-    "showAll": "Mostrar todos los equipos",
     "noRoster": "Sincroniza tu plantel para ver qué unidades has desbloqueado y cuánto ha progresado cada una.",
     "listLabel": "Tus equipos",
     "search": "Buscar equipos o unidades",
@@ -89,6 +88,7 @@
     "saved": "Se guardó {{name}}.",
     "saveFailed": "No se guardó el equipo. Tus cambios siguen aquí; inténtalo de nuevo.",
     "stale": "Este equipo cambió en otro dispositivo, así que no se aplicó lo que guardaste. Vuelve a guardar para sustituirlo por tu versión.",
+    "deleted": "Este equipo se eliminó en otro dispositivo, así que no se puede guardar.",
     "nameTaken": "Otro equipo ya tiene este nombre.",
     "limitReached": "Ya tienes {{count}} equipos. Elimina uno para hacer sitio.",
     "refused": "El planificador no aceptó este equipo:",
@@ -99,7 +99,6 @@
       "discard": "Descartar cambios"
     },
     "hasNotes": "Tiene notas",
-    "nameAndNotes": "Nombre y notas",
     "newTeam": "Nuevo equipo",
     "toSave": "Para guardar este equipo:",
     "addedCore": "{{name}} añadido a los principales.",
@@ -107,6 +106,7 @@
     "removed": "{{name}} quitado.",
     "undo": "Deshacer",
     "tabsLabel": "Editar la alineación",
+    "tabDetails": "Detalles",
     "tabLineup": "Alineación"
   },
   "modeReasons": {
@@ -150,9 +150,6 @@
   "picker": {
     "label": "Añadir unidades",
     "search": "Buscar unidades",
-    "searchPlaceholder": "Buscar por nombre…",
-    "filters": "Filtros",
-    "filtersTitle": "Filtros",
     "lockedUnits": "Unidades bloqueadas",
     "characters": "Personajes",
     "mows": "Máquinas de Guerra",
@@ -179,8 +176,6 @@
     "any": "Cualquiera",
     "damageType": "Tipo de daño",
     "allDamageTypes": "Todos los tipos de daño",
-    "reset": "Restablecer filtros",
-    "done": "Listo",
     "abilities": "Habilidades {{first}} y {{second}}",
     "underCap": "Por debajo de {{rarity}}: {{parts}}",
     "capParts": {

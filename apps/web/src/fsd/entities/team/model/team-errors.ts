@@ -1,6 +1,6 @@
 import { apiIssue } from "@/shared/api"
 
-import { isTeamMode, TEAM_RULE_CODES } from "./team-modes"
+import { isTeamMode, TEAM_RULE_CODES, withKnownIssues } from "./team-modes"
 import { teamIssues } from "./types"
 import type { Team, TeamList, TeamRuleCode } from "./types"
 
@@ -61,7 +61,7 @@ function isTeam(value: unknown): value is Team {
  *  dropped, and the normal refetch recovers. */
 export function staleTeam(error: unknown): Team | null {
   const current = apiIssue(error, teamIssues.revisionStale)?.current
-  return isTeam(current) ? current : null
+  return isTeam(current) ? withKnownIssues(current) : null
 }
 
 /** The team's current revision from a stale update (409 `teamRevisionStale`), else null. Read even when the rest
@@ -80,6 +80,6 @@ export function staleTeamOrder(error: unknown): TeamList | null {
   return isRecord(current) &&
     Array.isArray(current.teams) &&
     current.teams.every(isTeam)
-    ? (current as TeamList)
+    ? { ...current, teams: current.teams.map(withKnownIssues) }
     : null
 }
