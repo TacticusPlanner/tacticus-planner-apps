@@ -81,11 +81,12 @@ describe("useCollectionQuery", () => {
 
   it("reads the stars range and the combat filters", () => {
     const { result } = renderAt(
-      "/my-game/collection?starsMin=Legendary:RedThreeStars&attack=ranged&hitsMin=2&hitsMax=3&move=3&rangeMax=2&damage=Bolter,Psychic&trait=Psyker&source=Elite,none"
+      "/my-game/collection?starsMin=Legendary:RedThreeStars&summons=passive&attack=ranged&hitsMin=2&hitsMax=3&move=3&rangeMax=2&damage=Bolter,Psychic&trait=Psyker&source=Elite,none"
     )
     expect(result.current.state.query).toMatchObject({
       starsMin: "Legendary:RedThreeStars",
       starsMax: null,
+      summons: "passive",
       attack: "ranged",
       hitsMin: 2,
       hitsMax: 3,
@@ -101,9 +102,10 @@ describe("useCollectionQuery", () => {
 
   it("drops an unknown trait and a number the catalog does not offer", () => {
     const { result } = renderAt(
-      "/my-game/collection?trait=Psyker,Teleporter&move=9&hitsMin=x"
+      "/my-game/collection?trait=Psyker,Teleporter&move=9&hitsMin=x&summons=sometimes"
     )
     expect(result.current.state.query).toMatchObject({
+      summons: null,
       traits: ["Psyker"],
       movement: null,
       hitsMin: null,

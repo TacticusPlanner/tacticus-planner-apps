@@ -475,6 +475,13 @@
           "melee": "Melee only",
           "ranged": "Ranged"
         },
+        "summons": "Summons",
+        "summonsAny": "Any",
+        "summonsTypes": {
+          "none": "No summons",
+          "active": "Active summon",
+          "passive": "Passive summon"
+        },
         "hitsFrom": "Fewest hits",
         "hitsTo": "Most hits",
         "movement": "Movement",

@@ -105,6 +105,7 @@ describe("activeFilterCount", () => {
       starsMax: "Legendary:RedThreeStars",
       hideUnowned: true,
       kind: "character",
+      summons: "passive",
       attack: "ranged",
       hitsMin: 2,
       hitsMax: 4,

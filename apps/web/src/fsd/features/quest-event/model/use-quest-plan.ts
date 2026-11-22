@@ -1,10 +1,9 @@
 import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
 import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { useNpcsById } from "@/entities/npc"
-import { buildSummonerIds } from "@/entities/unit"
+import { passiveSummonerIds } from "@/entities/unit"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
@@ -63,7 +62,7 @@ export function questTeamView(
 /**
  * Every battle's suggested team (spec: quest-event-teams) and clear estimates (spec:
  * quest-event-clear-estimates) from the synced roster, every unit's power taken at the battle tier's
- * rarity cap. Summoners come from the generated `npcAbilitySummoners` list, as for HRE teams.
+ * rarity cap. "Use no summons" leaves out the passive summoners (catalog `summons`), as for HRE teams.
  * Recomputed live from the datasets and never stored.
  */
 export function useQuestPlan(input: {
@@ -78,26 +77,18 @@ export function useQuestPlan(input: {
   const catalog = useCatalogDataset("characters", toById)
   const unitPower = useUnitPowerContext()
   const npcs = useNpcsById()
-  const { i18n } = useTranslation("npcAbilitySummoners")
   const read = useMemo(
     () => combineReadStates(roster, catalog),
     [roster, catalog]
   )
 
-  const summoners = useMemo(() => {
-    if (read.status !== "ready") return new Set<string>()
-    const summoning = new Set(
-      Object.values(
-        (i18n.getResourceBundle("en", "npcAbilitySummoners") ?? {}) as Record<
-          string,
-          string
-        >
-      )
-    )
-    return buildSummonerIds(read.data[1].values(), (abilityId) =>
-      summoning.has(abilityId)
-    )
-  }, [read, i18n])
+  const summoners = useMemo(
+    () =>
+      read.status === "ready"
+        ? passiveSummonerIds(read.data[1].values())
+        : new Set<string>(),
+    [read]
+  )
 
   const {
     battles,

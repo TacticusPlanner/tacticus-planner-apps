@@ -41,6 +41,7 @@ const FILTER_LABEL_ICONS = {
   stars: [heroStarIcon()],
   unitType: [gameMenuIcon("heroes")],
   attackType: [statIcon("melee")],
+  summons: [battleGlyphIcon("summon")],
   hits: [statIcon("hits")],
   movement: [statIcon("movement")],
   attackRange: [statIcon("ranged")],

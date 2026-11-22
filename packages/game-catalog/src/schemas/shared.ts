@@ -27,6 +27,16 @@ export const farmLocationSchema = z.looseObject({
   expectedGold: z.number().nullable().optional(),
 })
 
+/**
+ * Whether a character or MoW can summon: `none`; `active` (only an active ability summons, so the player can
+ * leave it unused); `passive` (a passive ability can summon on its own, so the player cannot prevent it).
+ */
+export const unitSummons = ["none", "active", "passive"] as const
+export type UnitSummons = (typeof unitSummons)[number]
+
+// Defaults to `none` for a server that predates the field.
+export const unitSummonsSchema = z.enum(unitSummons).default("none")
+
 export const equipmentSlotSchema = z.looseObject({
   slot: z.string(),
   equipmentIds: z.array(equipmentIdSchema),

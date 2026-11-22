@@ -22,6 +22,12 @@ type PlayerMow = PlayerDataChunkDto<"mows">[number]
 // Real catalog characters (id, faction, alliance). The fixture carries no initial rarity, so every
 // character starts Epic here except the few the tests pin explicitly.
 const initialRarity: Record<string, Rarity> = { ultraCalgar: "Legendary" }
+// A few real summoners; every other character has none.
+const summons: Record<string, "active" | "passive"> = {
+  blackPossession: "passive",
+  adeptCelestine: "passive",
+  necroSpyder: "active",
+}
 const characters = legendaryEventCharacters.map((character) => ({
   ...character,
   id: character.id as UnitId,
@@ -32,17 +38,20 @@ const characters = legendaryEventCharacters.map((character) => ({
   movement: 3,
   shardLocations: [],
   equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],
+  summons: summons[character.id] ?? "none",
 })) as unknown as CollectionCatalog["characters"]
 const mows = [
   {
     id: "ultraDreadnought" as UnitId,
     faction: "Ultramarines",
     alliance: "Imperial",
+    summons: "active",
   },
   {
     id: "blackForgefiend" as UnitId,
     faction: "BlackLegion",
     alliance: "Chaos",
+    summons: "none",
   },
 ] as CollectionCatalog["mows"]
 
@@ -713,6 +722,23 @@ describe("buildCollectionView with a query", () => {
 
     expect(ids(view)).toEqual(["ultraDreadnought"])
     expect(view).toMatchObject({ owned: 1, total: 1, filtered: true })
+  })
+
+  it("lists characters and Machines of War by what they can summon", () => {
+    const view = (summons: CollectionQuery["summons"]) =>
+      ids(
+        buildCollectionView(
+          catalog,
+          { state: "anonymous" },
+          labels,
+          query({ summons })
+        )
+      ).toSorted(compareCodeUnits)
+
+    expect(view("passive")).toEqual(["adeptCelestine", "blackPossession"])
+    expect(view("active")).toEqual(["necroSpyder", "ultraDreadnought"])
+    expect(view("none")).toContain("blackForgefiend")
+    expect(view("none")).not.toContain("blackPossession")
   })
 
   it("matches an unowned character's starting rarity and never an unowned Machine of War", () => {

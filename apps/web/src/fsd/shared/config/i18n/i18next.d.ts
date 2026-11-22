@@ -58,9 +58,6 @@ declare module "i18next" {
       // with `npcAbilityTextGaps` listing the ids without one), loaded by `useRulesText`, which
       // names them as plain strings, so they are not listed here.
       npcTraitText: Record<string, unknown>
-      // Sorted ability ids whose English rules text summons a unit (generated with the rules text);
-      // read via `i18n.getResourceBundle` by the HRE team recommender.
-      npcAbilitySummoners: Record<string, unknown>
       // Mythic quest task templates (loca key -> template), generated from the datamine; read via
       // `i18n.getResource` — see the library character unit page.
       mythicQuestTasks: Record<string, string>
