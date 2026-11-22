@@ -46,6 +46,7 @@ export {
   underCap,
   type UnderCap,
 } from "./lib/rarity-cap"
+export { teamModeIcon } from "./lib/team-mode-icon"
 export { useTeamRuleFacts } from "./model/use-team-rule-facts"
 export { useTeamModeLabel, useTeamRuleText } from "./model/use-team-copy"
 export {

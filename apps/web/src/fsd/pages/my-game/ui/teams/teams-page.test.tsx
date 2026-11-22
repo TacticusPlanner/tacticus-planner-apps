@@ -146,7 +146,7 @@ describe("TeamsPage", () => {
         within(actions!).getByRole("button", { name: "Create team" })
       ).toBeInTheDocument()
       expect(within(actions!).getByTestId("teams-limit")).toHaveTextContent(
-        "1 of 20"
+        "1 of 50"
       )
     })
 
@@ -803,15 +803,15 @@ describe("TeamsPage", () => {
       await waitFor(() => expect(cardNames()).toEqual(["Team B"]))
     })
 
-    it("makes Create team unavailable at 20 teams and says the limit is reached", async () => {
+    it("makes Create team unavailable at 50 teams and says the limit is reached", async () => {
       api.list.mockResolvedValue(
-        list(...Array.from({ length: 20 }, (_, index) => team(`T${index}`)))
+        list(...Array.from({ length: 50 }, (_, index) => team(`T${index}`)))
       )
       await renderPage()
       await screen.findAllByTestId("team-card")
       expect(screen.getByRole("button", { name: "Create team" })).toBeDisabled()
       expect(screen.getByTestId("teams-limit")).toHaveTextContent(
-        "Limit reached · 20 of 20"
+        "Limit reached · 50 of 50"
       )
     })
   })

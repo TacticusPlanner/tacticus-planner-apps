@@ -1018,7 +1018,7 @@
         "guildKey": "Wird nur genutzt, wenn du Anführer oder Ko-Anführer deiner Gilde bist: Er registriert deine Gilde im Planer, damit alle Mitglieder die Gildenfunktionen nutzen können.",
         "legendaryEventPlans": "Selbst erstellte Teams, Notizen, Missions- und Paketeingaben pro Durchlauf sowie „Vielleicht schaffbar“-/„Hier aufhören“-Markierungen für die Events, die der Planer kennt. Der Event-Fortschritt wird nicht importiert.",
         "rosterSnapshots": "Deine V1-Kader-Snapshots, die neuesten zuerst, bis zum Snapshot-Limit. Gesamt-EP und angewendete Upgrades wurden in V1 nicht gespeichert, daher lassen Vergleiche sie aus.",
-        "teams": "Deine Teams von der V1-Teamseite, bis zu 20. Teams, die bereits im Planer sind, bleiben erhalten. Die Gildenkrieg-Pläne für Verteidigung und Angriff aus V1 werden nicht importiert."
+        "teams": "Deine Teams von der V1-Teamseite, bis zu 50. Teams, die bereits im Planer sind, bleiben erhalten. Die Gildenkrieg-Pläne für Verteidigung und Angriff aus V1 werden nicht importiert."
       },
       "submit": "Ausgewählte importieren",
       "submitting": "Wird importiert …",

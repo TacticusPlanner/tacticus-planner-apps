@@ -13,9 +13,15 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
-import { TEAM_LIMITS, TEAM_MODES, useTeamModeLabel } from "@/entities/team"
+import {
+  TEAM_LIMITS,
+  TEAM_MODES,
+  teamModeIcon,
+  useTeamModeLabel,
+} from "@/entities/team"
 import {
   CountBadge,
+  EntityIcon,
   FILTER_CHIP_CLASS_NAME,
   GroupByControl,
   PageToolbar,
@@ -68,6 +74,7 @@ function ModeSelect({
           <SelectItem value="all">{t("page.allModes")}</SelectItem>
           {TEAM_MODES.map((mode) => (
             <SelectItem key={mode} value={mode}>
+              <EntityIcon alt="" size="inline" src={teamModeIcon(mode)} />
               {modeLabel(mode)}
             </SelectItem>
           ))}

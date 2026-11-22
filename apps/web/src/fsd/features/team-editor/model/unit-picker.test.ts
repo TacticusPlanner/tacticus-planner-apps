@@ -117,8 +117,8 @@ describe("picker units", () => {
     expect(listed({ search: "titus" })).toEqual(["ultraTitus"])
   })
 
-  it("hides locked units when the chip is off", () => {
-    expect(listed({ lockedUnits: false })).toEqual([
+  it("lists only owned units when Owned only is on", () => {
+    expect(listed({ ownedOnly: true })).toEqual([
       "ultraCalgar",
       "ultraTitus",
       "ultraDreadnought",
@@ -128,7 +128,7 @@ describe("picker units", () => {
   it("lists every unit as available without a synced roster", () => {
     const units = filterPickerUnits(
       build(null),
-      { ...defaultPickerFilters, lockedUnits: false },
+      { ...defaultPickerFilters, ownedOnly: true },
       { mows: true }
     )
     expect(units).toHaveLength(6)
@@ -186,7 +186,7 @@ describe("picker units", () => {
       activeFilterCount({
         ...defaultPickerFilters,
         search: "x",
-        lockedUnits: false,
+        ownedOnly: true,
         rankMin: "Iron1",
         rankMax: "Gold1",
         faction: "Orks",

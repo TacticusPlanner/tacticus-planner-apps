@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useId, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rarity } from "@workspace/game-domain"
 import {
@@ -71,8 +71,52 @@ function PickerGrid({
 }
 
 /**
- * The editor's unit picker (design D2): a name search, the "Filters" button and the "Locked
- * units" chip, then the characters and MoWs that fit, in V1's order. A tap adds or removes a unit.
+ * "Owned only", as on Collection: lists only the units the player owns. Without a synced roster
+ * nothing can be owned, so it is off and disabled and says why on hover and to screen readers.
+ */
+function OwnedOnlyChip({
+  on,
+  onChange,
+  rosterAvailable,
+}: {
+  on: boolean
+  onChange: (on: boolean) => void
+  rosterAvailable: boolean
+}) {
+  const { t } = useTranslation("teams")
+  const hintId = useId()
+  const hint = rosterAvailable ? undefined : t("picker.ownedOnlyNeedsRoster")
+  return (
+    <>
+      <ToggleGroup
+        disabled={!rosterAvailable}
+        onValueChange={(values) => onChange(values.includes("owned"))}
+        type="multiple"
+        value={rosterAvailable && on ? ["owned"] : []}
+        variant="outline"
+      >
+        <ToggleGroupItem
+          aria-describedby={hint ? hintId : undefined}
+          className={FILTER_CHIP_CLASS_NAME}
+          data-testid="team-picker-owned-only"
+          title={hint}
+          value="owned"
+        >
+          {t("picker.ownedOnly")}
+        </ToggleGroupItem>
+      </ToggleGroup>
+      {hint ? (
+        <span className="sr-only" id={hintId}>
+          {hint}
+        </span>
+      ) : null}
+    </>
+  )
+}
+
+/**
+ * The editor's unit picker (design D2): a name search, the "Filters" button and the "Owned only"
+ * chip (as on Collection), then the characters and MoWs that fit, in V1's order. A tap adds or removes a unit.
  * A unit in another team of a selected Guild War mode is flagged and stays selectable. Without a
  * synced roster every unit is listed. On desktop the characters and MoWs are two columns that
  * scroll on their own; on a phone the editor's tabs show one of them (`show`).
@@ -147,7 +191,12 @@ export function TeamUnitPicker({
   return (
     <section
       aria-label={t("picker.label")}
-      className="flex min-h-0 min-w-0 flex-1 flex-col gap-3"
+      className={cn(
+        "flex min-w-0 flex-1 flex-col gap-3",
+        // On desktop the picker keeps room for about two rows of units however full the lineup
+        // is; when the dialog is too short for that, its body scrolls.
+        show === "all" ? "min-h-60" : "min-h-0"
+      )}
       data-testid="team-unit-picker"
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -162,22 +211,11 @@ export function TeamUnitPicker({
           onChange={onFiltersChange}
           options={options}
         />
-        <ToggleGroup
-          onValueChange={(values) =>
-            onFiltersChange({ lockedUnits: values.includes("locked") })
-          }
-          type="multiple"
-          value={filters.lockedUnits ? ["locked"] : []}
-          variant="outline"
-        >
-          <ToggleGroupItem
-            className={FILTER_CHIP_CLASS_NAME}
-            data-testid="team-picker-locked"
-            value="locked"
-          >
-            {t("picker.lockedUnits")}
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <OwnedOnlyChip
+          on={filters.ownedOnly}
+          onChange={(ownedOnly) => onFiltersChange({ ownedOnly })}
+          rosterAvailable={roster !== null}
+        />
       </div>
       {roster ? null : (
         <p

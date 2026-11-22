@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { campaignDescriptor } from "@workspace/game-catalog"
+import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 
 import {
   isEliteCampaign,
@@ -18,6 +18,8 @@ import type { PickerUnit } from "./unit-picker"
 export interface CampaignOption {
   groupId: string
   label: string
+  /** The campaign's game icon (its Standard tier's), when it has one. */
+  icon: string | undefined
 }
 
 /** Storylines first (each before its Mirror), then the event campaigns, as the game lists them. */
@@ -94,6 +96,7 @@ export function useTeamEditorData() {
         return {
           groupId: definition.groupId,
           label: descriptor ? campaignName(descriptor) : definition.groupId,
+          icon: campaignIcon(definition.groupId, "Standard"),
         }
       })
       .toSorted((a, b) => campaignOrder(a.groupId) - campaignOrder(b.groupId))

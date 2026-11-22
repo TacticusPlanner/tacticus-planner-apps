@@ -100,7 +100,6 @@
     },
     "hasNotes": "Hat Notizen",
     "newTeam": "Neues Team",
-    "toSave": "Zum Speichern:",
     "addedCore": "{{name}} zum Kern hinzugefügt.",
     "addedFlex": "{{name}} als Flex hinzugefügt.",
     "removed": "{{name}} entfernt.",
@@ -136,21 +135,22 @@
   "campaign": {
     "label": "Kampagne",
     "placeholder": "Kampagne wählen",
-    "allowed": "Erlaubte Fraktionen: {{factions}}",
+    "allowed": "Erlaubte Fraktionen",
     "replaces": "Die Wahl einer Kampagne ersetzt die Aufstellung durch ihre Kern-Charaktere."
   },
   "incursion": {
     "label": "Incursions",
     "addPlaceholder": "Incursion hinzufügen",
     "remove": "{{name}} entfernen",
-    "allowed": "Erlaubte Fraktionen: {{factions}}",
+    "allowed": "Erlaubte Fraktionen",
     "noShared": "Diese Incursions haben keine gemeinsame Fraktion.",
     "clears": "Eine Änderung der Incursions leert die Aufstellung."
   },
   "picker": {
     "label": "Einheiten hinzufügen",
     "search": "Einheiten suchen",
-    "lockedUnits": "Gesperrte Einheiten",
+    "ownedOnly": "Nur freigeschaltete",
+    "ownedOnlyNeedsRoster": "„Nur freigeschaltete“ braucht einen synchronisierten Kader.",
     "characters": "Charaktere",
     "mows": "Kriegsmaschinen",
     "empty": "Keine Einheit passt zu diesen Filtern.",
@@ -268,7 +268,7 @@
         },
         "create": {
           "title": "Ein Team erstellen",
-          "content": "Stelle eine Aufstellung für einen oder mehrere Modi zusammen. Du kannst bis zu 20 Teams behalten."
+          "content": "Stelle eine Aufstellung für einen oder mehrere Modi zusammen. Du kannst bis zu 50 Teams behalten."
         },
         "card": {
           "title": "Ein Team",

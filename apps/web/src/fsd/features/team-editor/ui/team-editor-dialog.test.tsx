@@ -307,12 +307,20 @@ describe("TeamEditorDialog", () => {
       expect(screen.getAllByRole("dialog")).toHaveLength(1)
     })
 
-    it("lists a new team's missing pieces as steps, and a saved team's broken rules as errors", async () => {
-      await openEditor()
-      const steps = screen.getByTestId("team-editor-issues")
-      expect(steps).toHaveAttribute("data-kind", "steps")
-      expect(steps).toHaveTextContent("To save this team:")
-      expect(steps).toHaveTextContent("A team needs at least 3 characters.")
+    it("keeps Save available and lists what to fix only once a save is tried", async () => {
+      const user = await openEditor()
+      expect(screen.queryByTestId("team-editor-issues")).toBeNull()
+      expect(save()).toBeEnabled()
+      await user.click(save())
+      const issues = screen.getByTestId("team-editor-issues")
+      expect(issues).toHaveTextContent("Fix these to save:")
+      expect(issues).toHaveTextContent("A team needs at least 3 characters.")
+      expect(api.create).not.toHaveBeenCalled()
+      // The list then follows the draft.
+      await user.type(screen.getByLabelText("Name"), "Boss team")
+      expect(screen.getByTestId("team-editor-issues")).not.toHaveTextContent(
+        "The name must be"
+      )
     })
 
     it("shows the name limits, the notes count and the lineup count", async () => {
@@ -419,7 +427,7 @@ describe("TeamEditorDialog", () => {
       // A campaign's core character can't be made flex.
       expect(roleOption("Tigurius", "Flex")).toBeDisabled()
       expect(screen.getByTestId("team-allowed-factions")).toHaveTextContent(
-        "Allowed factions: Ultramarines"
+        /Allowed factions\s*Ultramarines/
       )
       expect(tile("orksNob")).toBeNull()
       expect(screen.queryByTestId("team-picker-mows")).toBeNull()
@@ -630,7 +638,7 @@ describe("TeamEditorDialog", () => {
       expect(tile("ultraCalgar")).toBeNull()
       await user.clear(screen.getByRole("searchbox", { name: "Search units" }))
 
-      await user.click(screen.getByTestId("team-picker-locked"))
+      await user.click(screen.getByRole("button", { name: "Owned only" }))
       await waitFor(() => expect(tile("ultraTitus")).toBeNull())
       expect(tile("ultraCalgar")).not.toBeNull()
 
@@ -668,14 +676,14 @@ describe("TeamEditorDialog", () => {
       expect(editor().querySelectorAll('[data-locked="true"]')).toHaveLength(0)
     })
 
-    it("shows picker and lineup band portraits at the md size", async () => {
+    it("shows picker portraits at the md size and the lineup strip's at sm", async () => {
       const user = await openEditor()
       await user.click(pickButton("ultraCalgar"))
       expect(
         required(tile("ultraCalgar")).querySelector(".size-16")
       ).not.toBeNull()
       expect(
-        editor().querySelector('[data-testid="team-lineup-unit"] .size-16')
+        editor().querySelector('[data-testid="team-lineup-unit"] .size-10')
       ).not.toBeNull()
     })
   })
@@ -1019,7 +1027,7 @@ describe("TeamEditorDialog", () => {
   })
 
   describe("issues", () => {
-    it("opens an imported war team with two core MoWs as imported, with Save unavailable", async () => {
+    it("opens an imported war team with two core MoWs as imported, and saving lists the fix", async () => {
       const user = await openEditor(
         savedTeam({
           modes: ["warOffense"],
@@ -1028,14 +1036,15 @@ describe("TeamEditorDialog", () => {
         })
       )
       expect(lineupIds("mows")).toEqual(["ultraDreadnought", "tauBroadside"])
-      expect(save()).toBeDisabled()
+      await user.click(save())
+      expect(api.update).not.toHaveBeenCalled()
       expect(screen.getByTestId("team-editor-issues")).toHaveTextContent(
         "Make 1 Machine of War flex."
       )
       await user.click(roleOption("Tson'ji", "Flex"))
       expect(lineupIds("mows")).toEqual(["ultraDreadnought"])
       expect(lineupIds("flex")).toEqual(["tauBroadside"])
-      expect(save()).toBeEnabled()
+      expect(screen.queryByTestId("team-editor-issues")).toBeNull()
     })
 
     it("shows an imported Campaign team's MoWs on desktop, so they can be removed", async () => {
@@ -1072,9 +1081,10 @@ describe("TeamEditorDialog", () => {
       )
       expect(marked).toHaveAttribute("data-marked", "true")
       expect(within(marked).getByText("Not allowed")).toBeInTheDocument()
-      expect(save()).toBeDisabled()
+      await user.click(save())
+      expect(screen.getByTestId("team-editor-issues")).toBeInTheDocument()
       await user.click(screen.getByRole("button", { name: "Remove Roswitha" }))
-      expect(save()).toBeEnabled()
+      expect(screen.queryByTestId("team-editor-issues")).toBeNull()
     })
   })
 })

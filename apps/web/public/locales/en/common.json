@@ -1018,7 +1018,7 @@
         "guildKey": "Used only if you're your guild's Leader or Co-Leader: it registers your guild in the planner so every member can use guild features.",
         "legendaryEventPlans": "Hand-built teams, notes, per-run mission and pack inputs, and Maybe clear / Stop here marks for the events the planner knows. Event progress is not imported.",
         "rosterSnapshots": "Your V1 roster snapshots, newest first, up to the snapshot limit. Total XP and applied upgrades were not recorded in V1, so comparisons leave them out.",
-        "teams": "Your teams from V1's Teams page, up to 20. Teams already in the planner are kept. V1's War Defense and War Offense plans are not imported."
+        "teams": "Your teams from V1's Teams page, up to 50. Teams already in the planner are kept. V1's War Defense and War Offense plans are not imported."
       },
       "submit": "Import selected",
       "submitting": "Importing…",

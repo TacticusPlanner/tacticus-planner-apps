@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
+import { v1ImportReturnState } from "@/features/v1-import"
 import type { V1ImportSelection } from "@/features/v1-import"
 
 vi.mock("react-i18next", async (importOriginal) => ({
@@ -16,7 +17,8 @@ const { lastDefaultSelection } = vi.hoisted(() => ({
 
 // The panel's own submit/report behavior is covered by `v1-import-panel.test.tsx`; this page only
 // owns the header, the back affordance, and which default selection it hands the panel.
-vi.mock("@/features/v1-import", () => ({
+vi.mock("@/features/v1-import", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/v1-import")>()),
   V1ImportPanel: ({
     defaultSelection,
   }: {
@@ -34,12 +36,13 @@ function Probe() {
   return <div data-testid="probe">{location.pathname}</div>
 }
 
-function renderPage() {
+function renderPage(state?: unknown) {
   return render(
-    <MemoryRouter initialEntries={["/account/v1-import"]}>
+    <MemoryRouter initialEntries={[{ pathname: "/account/v1-import", state }]}>
       <Routes>
         <Route element={<V1ImportPage />} path="/account/v1-import" />
         <Route element={<Probe />} path="/home" />
+        <Route element={<Probe />} path="/my-game/teams" />
       </Routes>
     </MemoryRouter>
   )
@@ -80,5 +83,18 @@ describe("V1ImportPage", () => {
     )
 
     expect(await screen.findByTestId("probe")).toHaveTextContent("/home")
+  })
+
+  it("goes back to the page that linked here", async () => {
+    const user = userEvent.setup()
+    renderPage(v1ImportReturnState("/my-game/teams"))
+
+    await user.click(
+      screen.getByRole("button", { name: "goals.v1Import.back" })
+    )
+
+    expect(await screen.findByTestId("probe")).toHaveTextContent(
+      "/my-game/teams"
+    )
   })
 })

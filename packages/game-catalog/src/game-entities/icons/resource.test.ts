@@ -104,5 +104,11 @@ describe("gameModeTokenIcon", () => {
     expect(gameModeTokenIcon("bombTokens")).toBe(
       "/game_catalog/datamines/atlases/ui_icon_bomb.webp"
     )
+    expect(gameModeTokenIcon("guildWar")).toBe(
+      "/game_catalog/datamines/ui/ui_icon_resource_token_guildwars.webp"
+    )
+    expect(gameModeTokenIcon("tournamentArena")).toBe(
+      "/game_catalog/datamines/atlases/ui_icon_resource_token_sync_pvp.webp"
+    )
   })
 })

@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react"
-import { Link } from "react-router"
+import { Link, useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Plus, RefreshCw } from "lucide-react"
@@ -25,6 +25,7 @@ import {
   TEAM_EDITOR_NAMESPACES,
   TeamEditorDialog,
 } from "@/features/team-editor"
+import { v1ImportReturnState } from "@/features/v1-import"
 import {
   TEAM_LIMITS,
   staleTeamOrder,
@@ -232,6 +233,7 @@ export function TeamsPage() {
   const { t, i18n } = useTranslation(["teams", "common"])
   const isPhone = useIsMobile()
   const unitName = useUnitName()
+  const location = useLocation()
   const teamsQuery = useTeams()
   // The editor's copy loads with the page, so the first opening does not wait for it.
   useEffect(() => {
@@ -402,6 +404,9 @@ export function TeamsPage() {
             {t("page.importHint")}{" "}
             <Link
               className="underline underline-offset-4"
+              state={v1ImportReturnState(
+                `${location.pathname}${location.search}`
+              )}
               to="/account/v1-import"
             >
               {t("page.importLink")}

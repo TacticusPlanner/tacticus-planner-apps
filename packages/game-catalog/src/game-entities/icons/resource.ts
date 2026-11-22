@@ -122,18 +122,30 @@ export function raidTicketIcon(): string {
 }
 
 const GAME_MODE_TOKEN_FILES = {
-  arena: "ui_icon_resource_token_battle_pvp",
-  guildRaid: "ui_icon_resource_token_battle_guildboss",
-  bombTokens: "ui_icon_bomb",
-  onslaught: "ui_icon_resource_token_battle_waves",
-  salvageRun: "ui_icon_resource_token_battle_treasureBeach",
+  arena: "atlases/ui_icon_resource_token_battle_pvp",
+  guildRaid: "atlases/ui_icon_resource_token_battle_guildboss",
+  bombTokens: "atlases/ui_icon_bomb",
+  onslaught: "atlases/ui_icon_resource_token_battle_waves",
+  salvageRun: "atlases/ui_icon_resource_token_battle_treasureBeach",
 } as const
 
+/** The modes whose tokens the home screen tracks. */
 export type GameModeToken = keyof typeof GAME_MODE_TOKEN_FILES
 
+// Battle tokens of modes the home screen does not track. Survival spends the game's standard
+// battle token, which is the art its own token shows.
+const BATTLE_TOKEN_FILES = {
+  ...GAME_MODE_TOKEN_FILES,
+  tournamentArena: "atlases/ui_icon_resource_token_sync_pvp",
+  guildWar: "ui/ui_icon_resource_token_guildwars",
+  survival: "atlases/ui_icon_resource_token_battle_standard",
+} as const
+
+type BattleToken = keyof typeof BATTLE_TOKEN_FILES
+
 /** The battle-token icon of a game mode, and the guild-raid bomb. */
-export function gameModeTokenIcon(token: GameModeToken): string {
-  return datamineAssetUrl(`atlases/${GAME_MODE_TOKEN_FILES[token]}.webp`)
+export function gameModeTokenIcon(token: BattleToken): string {
+  return datamineAssetUrl(`${BATTLE_TOKEN_FILES[token]}.webp`)
 }
 
 export function salvageIcon(): string {

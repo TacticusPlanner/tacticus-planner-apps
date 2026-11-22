@@ -54,7 +54,7 @@ export const TEAM_LIMITS = {
   minNameLength: 3,
   maxNameLength: 40,
   maxNotesLength: 300,
-  maxTeams: 20,
+  maxTeams: 50,
   /** Every mode: MoWs do not count. */
   minCharacters: 3,
   maxWarCoreCharacters: 5,
