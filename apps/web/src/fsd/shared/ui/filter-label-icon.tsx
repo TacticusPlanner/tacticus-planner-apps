@@ -1,8 +1,11 @@
 import {
+  battleGlyphIcon,
   campaignIcon,
+  countdownIcon,
   factionIcon,
   gameMenuIcon,
   heroStarIcon,
+  itemPoolIcon,
   onslaughtAllianceIcon,
   rankIcon,
   rarityIcon,
@@ -44,6 +47,10 @@ const FILTER_LABEL_ICONS = {
   damageType: [statIcon("damage")],
   trait: [traitIcon("Flying"), traitIcon("Psyker"), traitIcon("Mechanical")],
   shardSource: [shardIcon("Regular")],
+  enemies: [battleGlyphIcon("kill")],
+  itemSlots: [itemPoolIcon("Rare")],
+  gameMode: [gameMenuIcon("battle")],
+  runningNow: [countdownIcon()],
   campaignType: [campaignIcon(campaignIdSchema.parse("campaign1"), "Standard")],
 } satisfies Record<string, (GameIcon | undefined)[]>
 

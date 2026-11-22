@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { encounterGroupIcon } from "./encounter-group-icon"
+import { encounterGroupIcon, encounterSourceIcon } from "./encounter-group-icon"
 
 const row = (
   source: Parameters<typeof encounterGroupIcon>[0]["source"],
@@ -37,5 +37,13 @@ describe("encounterGroupIcon", () => {
     expect(
       encounterGroupIcon(row("survival", "survival_crescendo_01"))
     ).toBeUndefined()
+  })
+})
+
+describe("encounterSourceIcon", () => {
+  it("uses each game mode's menu icon, and nothing for Survival", () => {
+    expect(encounterSourceIcon("guildRaid")).toContain("ui_icon_menu_guildboss")
+    expect(encounterSourceIcon("legendaryEvent")).toContain("ui_icon_event_lhe")
+    expect(encounterSourceIcon("survival")).toBeUndefined()
   })
 })

@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next"
-import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
+import {
+  damageTypeIcon,
+  factionIcon,
+  statIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import { Input } from "@workspace/ui/components/input"
 import {
   Select,
@@ -104,7 +109,7 @@ export function NpcsFilterBar({
       role="group"
       aria-label={t("npcs.filters")}
     >
-      <FilterField label={t("npcs.faction")}>
+      <FilterField icon="faction" label={t("npcs.faction")}>
         <IconSelect
           label={t("npcs.faction")}
           anyLabel={t("npcs.allFactions")}
@@ -117,7 +122,7 @@ export function NpcsFilterBar({
           testId="npcs-faction-filter"
         />
       </FilterField>
-      <FilterField label={t("npcs.alliance")}>
+      <FilterField icon="alliance" label={t("npcs.alliance")}>
         <IconSelect
           label={t("npcs.alliance")}
           anyLabel={t("npcs.allAlliances")}
@@ -129,7 +134,7 @@ export function NpcsFilterBar({
       </FilterField>
       {/* Offered only while the encounter data is present (the orchestrator leaves no modes otherwise). */}
       {options.gameModes.length > 0 ? (
-        <FilterField label={t("npcs.gameMode")}>
+        <FilterField icon="gameMode" label={t("npcs.gameMode")}>
           <IconSelect
             label={t("npcs.gameMode")}
             anyLabel={t("npcs.anyGameMode")}
@@ -149,7 +154,7 @@ export function NpcsFilterBar({
       ) : null}
       {/* A single location (Onslaught) would only repeat the game mode. */}
       {options.locations.length > 1 ? (
-        <FilterField label={t("npcs.location")}>
+        <FilterField icon="campaignType" label={t("npcs.location")}>
           <IconSelect
             label={t("npcs.location")}
             anyLabel={t("npcs.anyLocation")}
@@ -163,7 +168,7 @@ export function NpcsFilterBar({
         </FilterField>
       ) : null}
       {options.gameModes.length > 0 ? (
-        <FilterField inline label={t("npcs.minCount")}>
+        <FilterField icon="enemies" inline label={t("npcs.minCount")}>
           {({ id }) => (
             <Input
               id={id}
@@ -184,7 +189,11 @@ export function NpcsFilterBar({
         </FilterField>
       ) : null}
       {options.canFilterRunning ? (
-        <FilterField inline label={t("npcs.encounters.timing.running")}>
+        <FilterField
+          icon="runningNow"
+          inline
+          label={t("npcs.encounters.timing.running")}
+        >
           {({ id }) => (
             <Switch
               id={id}
@@ -197,13 +206,21 @@ export function NpcsFilterBar({
           )}
         </FilterField>
       ) : null}
-      <FilterField label={t("npcs.attack")}>
+      <FilterField icon="attackType" label={t("npcs.attack")}>
         <IconSelect
           label={t("npcs.attack")}
           anyLabel={t("npcs.anyAttack")}
           options={[
-            { id: "meleeOnly", name: t("npcs.meleeOnly") },
-            { id: "ranged", name: t("npcs.hasRanged") },
+            {
+              id: "meleeOnly",
+              name: t("npcs.meleeOnly"),
+              icon: statIcon("melee"),
+            },
+            {
+              id: "ranged",
+              name: t("npcs.hasRanged"),
+              icon: statIcon("ranged"),
+            },
           ]}
           value={filters.attack}
           onChange={(attack) =>
@@ -212,7 +229,7 @@ export function NpcsFilterBar({
           testId="npcs-attack-filter"
         />
       </FilterField>
-      <FilterField label={t("npcs.damageType")}>
+      <FilterField icon="damageType" label={t("npcs.damageType")}>
         <MultiSelect
           label={t("npcs.damageType")}
           placeholder={t("npcs.anyDamageType")}
@@ -230,7 +247,7 @@ export function NpcsFilterBar({
           data-testid="npcs-damage-type-filter"
         />
       </FilterField>
-      <FilterField label={t("npcs.trait")}>
+      <FilterField icon="trait" label={t("npcs.trait")}>
         <MultiSelect
           label={t("npcs.trait")}
           placeholder={t("npcs.anyTrait")}
