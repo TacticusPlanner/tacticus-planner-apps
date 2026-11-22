@@ -85,9 +85,9 @@ Assumptions:
 
 The suggestions SHALL use only candidates that drop something. Candidates SHALL be ordered as follows:
 
-1. A node that drops a resource an in-scope goal still needs SHALL come first, whatever its energy cost (Severyn, 2026-10). An Epic or higher upgrade SHALL count only on Elite nodes (a storyline Elite or Elite Mirror node, or an event's Extremis node): a standard or Mirror node drops it too rarely to farm it there, so for that upgrade it is not a goal node (Severyn, 2026-11). A goal's pinned farm locations keep counting whatever their tier.
+1. A node that drops a resource an in-scope goal still needs SHALL come first, whatever its energy cost (Severyn, 2026-10). An Epic or higher upgrade SHALL count only on Elite nodes (a storyline Elite or Elite Mirror node, or an event's Extremis node): a standard or Mirror node drops it too rarely to farm it there, so for that upgrade it is not a goal node (Severyn, 2026-11). A goal's pinned farm locations keep counting whatever their tier. A node feeds its goal only until the raids already suggested are expected to drop what the in-scope goals still need of its resource (raids times drop rate): it SHALL get no more raids for the goal than that, and once the resource is covered every node dropping it SHALL rank as a node that feeds no goal (Severyn, 2026-11).
 2. With "CE nodes first" on (see "The HRE tab has raid list controls"), the running campaign event's reached nodes SHALL come next, ahead of cheaper nodes, among goal nodes and among the others alike.
-3. Then energy cost ascending, then the event-point tie-breaks (see "Event points break ties among equal costs").
+3. Among nodes still feeding a goal, the least energy per expected drop of the goal's resource (energy cost divided by drop rate) SHALL come next (Severyn, 2026-11). Then energy cost ascending, then the event-point tie-breaks (see "Event points break ties among equal costs").
 4. Among goal nodes, a higher drop rate for the goal's resource SHALL come next, because common and uncommon materials drop more often. A higher average guaranteed gold comes next, then the goal's best priority.
 5. Other nodes SHALL be ordered by average guaranteed gold, descending.
 6. Battle id breaks any remaining tie.
@@ -99,6 +99,11 @@ Each node, in order, SHALL get as many raids as its attempts left, the remaining
 - **GIVEN** the "Energy spent today" case (38 battles to go, 188 energy budget), with Indomitus unlocked, none of it used today, and no goals
 - **THEN** I15, I16 and I17 (5 energy, cap 10) get 10 raids each and I18 gets 7
 - **AND** the totals read 37 raids and 185 energy, and the section notes "1 battle left after today's energy"
+
+#### Scenario: A covered material stops pulling raids
+
+- **GIVEN** a goal that needs 6 Combat Stimms, dropped by a Tyranids Extremis node (one per raid on average, 5 attempts) and by Fall of Cadia Mirror and standard nodes at lower rates
+- **THEN** the Extremis node is suggested first with its 5 raids, a Mirror node gets only the raids expected to drop the last Stimm, and the battles still left go to the cheapest nodes, not to every node that drops Combat Stimms
 
 #### Scenario: Goal tie-break among equal costs
 

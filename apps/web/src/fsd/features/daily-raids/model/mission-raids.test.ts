@@ -290,6 +290,43 @@ describe("planMissionRaids with CE nodes first", () => {
   })
 })
 
+describe("planMissionRaids stops favouring a covered goal resource", () => {
+  it("takes only the raids that cover the need, then fills by energy", () => {
+    // 6 stimms needed: the 10-energy Extremis node drops one every raid, two 5-energy nodes too.
+    const extremis = node("X14", 10, 5, { drops: [["stimms", 1]] })
+    const mirror = node("M56", 8, 10, { drops: [["stimms", 0.5]] })
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 12,
+        battles: [...indomitus, extremis, mirror],
+        goalNodesByBattle: new Map([
+          [id("X14"), { ...goal("stimms"), need: 6 }],
+          [id("M56"), { ...goal("stimms"), need: 6 }],
+        ]),
+      })
+    )
+    // X14's 5 raids leave 1 stimm, which M56 covers in 2; the other 5 raids go to the cheapest node.
+    expect(raidsOf(plan.rows)).toEqual({ X14: 5, M56: 2, I15: 5 })
+  })
+
+  it("keeps favouring the goal's nodes when its need is unknown", () => {
+    const extremis = node("X14", 10, 5, { drops: [["stimms", 1]] })
+    const mirror = node("M56", 8, 10, { drops: [["stimms", 0.5]] })
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 12,
+        battles: [...indomitus, extremis, mirror],
+        goalNodesByBattle: new Map([
+          [id("X14"), goal("stimms")],
+          [id("M56"), goal("stimms")],
+        ]),
+      })
+    )
+    // Least energy per stimm first (10 at X14, 16 at M56), then the goal's other node.
+    expect(raidsOf(plan.rows)).toEqual({ X14: 5, M56: 7 })
+  })
+})
+
 describe("buildMissionGoalNodes", () => {
   const battle = (campaignGroupId: string, type: string): Battle => ({
     campaignGroupId: campaignGroupId as Battle["campaignGroupId"],
@@ -352,5 +389,20 @@ describe("buildMissionGoalNodes", () => {
 
   it("keeps a pinned location whatever its tier", () => {
     expect(nodesFor("Legendary", ["mirror"])).toEqual(["mirror"])
+  })
+
+  it("carries what every goal still needs of the node's resource", () => {
+    const nodes = buildMissionGoalNodes(
+      [
+        { goalId: "g1", priority: 1, needs: [{ id: "U" as never, count: 5 }] },
+        { goalId: "g2", priority: 2, needs: [{ id: "U" as never, count: 3 }] },
+      ],
+      [],
+      new Map([["U" as never, upgrade("U")]]),
+      battlesById
+    )
+    expect(nodes.get(id("elite"))).toEqual(
+      expect.objectContaining({ goalIds: ["g1", "g2"], need: 8 })
+    )
   })
 })
