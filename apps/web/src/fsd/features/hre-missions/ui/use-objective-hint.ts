@@ -24,9 +24,16 @@ export function useObjectiveHint(
   ])
   return useCallback(
     (objective: HreObjective) => {
+      // `i18n.languages` is the resolved chain ("es-ES", "es", …), so a region locale finds the
+      // language's hints; English is the last resort.
       const lookup = (key: string) =>
-        (i18n.getResource(i18n.language, "hreTaskHints", key) ??
-          i18n.getResource("en", "hreTaskHints", key)) as string | undefined
+        [...i18n.languages, "en"]
+          .map(
+            (language) =>
+              i18n.getResource(language, "hreTaskHints", key) as
+                string | undefined
+          )
+          .find((hint) => hint !== undefined)
       const mode = hintGameMode(objective)
       const qualifier = objective.qualifier ?? ""
       return objectiveHint(objective, lookup, {

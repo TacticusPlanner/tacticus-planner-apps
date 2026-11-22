@@ -52,4 +52,14 @@ describe("hreTeamHints", () => {
       { key: "noEventPoints" },
     ])
   })
+
+  it("gives a token objective's own team no spare hint", () => {
+    // Mission 4: "Play 4 Arena battles" needs its tokens; its ranged kills ride along.
+    expect(hintKeys(4, "arena")).toEqual([{ key: "arenaSummoners" }])
+  })
+
+  it("notes only the event points on an Onslaught token objective", () => {
+    // Mission 12: "Play 1 Onslaught battle".
+    expect(hintKeys(12, "onslaught")).toEqual([{ key: "noEventPoints" }])
+  })
 })

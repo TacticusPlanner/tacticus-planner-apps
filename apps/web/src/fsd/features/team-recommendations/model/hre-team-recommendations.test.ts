@@ -280,6 +280,25 @@ describe("buildHreTeam with a running HSE", () => {
     expect(build({ plan })).toMatchObject({ alliance: "Imperial" })
   })
 
+  it("deploys a whole track's event units first, each group weakest first", () => {
+    const plan = { rule: "abilities", mode: "onslaught", size: 8 } as const
+    const pool = build({ plan, hseTrackers: psykers })
+    const whole = build({
+      plan: { ...plan, wholeTrack: true },
+      hseTrackers: psykers,
+    })
+    expect(whole).toMatchObject({ status: "ready", hseUnits: 5 })
+    const order = ids(whole)
+    expect(order.slice(0, 5).every((id) => psykerIds.has(id))).toBe(true)
+    expect(order.slice(5).some((id) => psykerIds.has(id))).toBe(false)
+    // The engine ranks the event's units strongest first; the whole track turns that around.
+    expect(order.slice(0, 5)).toEqual(
+      ids(pool)
+        .filter((id) => psykerIds.has(id))
+        .toReversed()
+    )
+  })
+
   it("ranks the event's units after the mission's own rule", () => {
     const team = build({
       plan: { rule: "featured", mode: "arena" },

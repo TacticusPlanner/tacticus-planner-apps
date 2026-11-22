@@ -233,11 +233,20 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     recommendations.categories.find((category) => category.id === "plan"),
     "the plan team"
   )
-  // Strongest first from the engine; a whole track deploys its weakest first.
-  const team = plan.wholeTrack
-    ? { ...planTeam, members: planTeam.members.toReversed() }
-    : planTeam
   const hseIds = hseUnitIds(hse)
+  // Strongest first from the engine; a whole track deploys its weakest first, with the units that
+  // score for the running HSE still ahead of the rest (a stable sort keeps weakest first in each).
+  const team = plan.wholeTrack
+    ? {
+        ...planTeam,
+        members: planTeam.members
+          .toReversed()
+          .toSorted(
+            (a, b) =>
+              Number(hseIds.has(b.unitId)) - Number(hseIds.has(a.unitId))
+          ),
+      }
+    : planTeam
   return {
     status: "ready",
     rule: plan.rule,

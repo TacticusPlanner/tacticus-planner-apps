@@ -217,6 +217,8 @@ export function CurrentMissionCard({
               <Progress value={(value / objective.target) * 100} />
               {suggestions ? (
                 <ObjectiveFolds
+                  // A new mission starts with every fold closed.
+                  key={`${state.mission}-${objective.kind}`}
                   suggestions={suggestions}
                   onOpen={(fold) =>
                     captureEvent({

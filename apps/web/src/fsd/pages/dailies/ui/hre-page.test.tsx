@@ -38,7 +38,11 @@ vi.mock("sonner", () => ({
 vi.mock("react-i18next", () => {
   // One `t` for every render, as react-i18next keeps it between language changes.
   const translation = {
-    i18n: { language: "en", getResource: () => undefined },
+    i18n: {
+      language: "en",
+      languages: ["en"],
+      getResource: () => undefined,
+    },
     t: (key: string, values?: Record<string, unknown>) =>
       values
         ? `${key}|${Object.entries(values)
@@ -629,6 +633,20 @@ describe("HRE tab", () => {
       )
     ).toHaveTextContent("hre:teams.hints.spare|count=3,held=11,need=8")
     expect(screen.queryByTestId("hre-team-reserve")).toBeNull()
+  })
+
+  it("keeps mission 6's Arena tokens for later missions when none are spare", () => {
+    mocks.team = { status: "loading" }
+    // 7 held against the 8 Arena battles the missions from 6 on need: nothing spare, so all 10
+    // summon-free wins stay campaign battles.
+    mocks.tokens = { arena: 7, guildRaid: 2, onslaught: 0, salvageRun: 0 }
+    seed({ mission: 6, progress: [2500, 0] })
+    renderHre()
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      missionRaids: { manual: { needs: [{ toGo: 10, per: "battle" }] } },
+    })
+    expect(screen.queryByTestId(/-fold-arena-trigger$/)).toBeNull()
+    expect(screen.queryByTestId("hre-team-arena")).toBeNull()
   })
 
   it("builds one campaign team per group of by-hand nodes, from only the factions they allow", async () => {
