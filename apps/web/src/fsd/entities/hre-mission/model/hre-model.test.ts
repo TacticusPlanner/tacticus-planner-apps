@@ -247,7 +247,7 @@ describe("progress", () => {
 })
 
 describe("objectives", () => {
-  it("selects mission 5's campaign wins with 63 to go, and its ability damage open-ended", () => {
+  it("selects mission 5's campaign wins with 63 to go, and its ability damage by enemy health", () => {
     expect(
       selectCampaignPlan(
         progress({ mission: 5, progress: [0, 37] }),
@@ -257,7 +257,13 @@ describe("objectives", () => {
       missionNumber: 5,
       raids: { battlesToGo: 63, eventOnly: false },
       battles: {
-        needs: [{ objective: { kind: "abilityDamage" }, per: null }],
+        needs: [
+          {
+            objective: { kind: "abilityDamage" },
+            toGo: 10_000,
+            per: "enemyHealth",
+          },
+        ],
         countsAsWins: true,
       },
     })

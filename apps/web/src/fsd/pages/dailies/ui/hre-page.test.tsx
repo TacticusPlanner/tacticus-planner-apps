@@ -483,7 +483,7 @@ describe("HRE tab", () => {
                 hintKeys: ["DealAbilityDamage_description"],
               },
               toGo: 4000,
-              per: null,
+              per: "enemyHealth",
             },
           ],
           preferLightning: false,
