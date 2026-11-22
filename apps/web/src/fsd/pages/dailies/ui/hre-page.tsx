@@ -69,8 +69,8 @@ import { DailiesEventToolbar } from "./dailies-event-toolbar"
 import { useHreTutorial } from "./hre-page.tutorial"
 
 const NO_MISSIONS: readonly HreMission[] = []
-/** The raids count battles, so "Fewer raids" changes nothing here; "CE nodes first" is Today's. */
-const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids", "preferEvent"] as const
+/** The raids count battles, so "Fewer raids" changes nothing here. */
+const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids"] as const
 /** The HRE tab's search parameter holding the selected instance key (HRE-only, never carried over). */
 const EVENT_PARAM = "event"
 
@@ -85,7 +85,7 @@ const EVENT_PARAM = "event"
  * personal HSE that scores in its mode). Beside it the event pace, the tokens the remaining
  * missions need and the campaign outlook; a preview shows the tokens and the outlook for the whole
  * event. Every event lists all missions. The raids follow the Dailies project, Filters and the
- * quick filters, picked in the page toolbar with the event picker.
+ * quick filters ("CE nodes first" among them), picked in the page toolbar with the event picker.
  * Desktop: missions on the left, the rest on the right, the pace first. Mobile: one column in the
  * same order, the mission list last, collapsed behind "All missions".
  */
@@ -303,10 +303,7 @@ export function HrePage() {
   const raids = useHreRaids({
     request: event && !past ? request : null,
     projectId: context.projectId,
-    quickFilters: {
-      ...todayQuickFilterOptions(quickFilters),
-      preferEvent: false,
-    },
+    quickFilters: todayQuickFilterOptions(quickFilters),
     onShowLocation: (target) => {
       battleDialog.show(target)
       captureEvent({ type: "hre_location_opened" })
@@ -535,7 +532,12 @@ export function HrePage() {
             ? {
                 quickFilters,
                 onQuickFiltersChange: setQuickFilters,
-                hiddenQuickFilters: HRE_HIDDEN_QUICK_FILTERS,
+                // "CE nodes first" only while a campaign event with reached nodes runs, or while on.
+                hiddenQuickFilters:
+                  raids.hasActiveEventBattles ||
+                  quickFilters.includes("preferEvent")
+                    ? HRE_HIDDEN_QUICK_FILTERS
+                    : [...HRE_HIDDEN_QUICK_FILTERS, "preferEvent"],
               }
             : null
         }

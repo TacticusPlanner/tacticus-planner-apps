@@ -347,6 +347,19 @@ describe("HRE tab", () => {
     expect(screen.queryByTestId("hre-planning-settings")).toBeNull()
   })
 
+  it("offers CE nodes first while a campaign event runs, and passes it to the raids", async () => {
+    const { unmount } = renderHre()
+    expect(screen.queryByTestId("today-quick-filter-preferEvent")).toBeNull()
+    expect(screen.queryByTestId("today-quick-filter-fewerRaids")).toBeNull()
+    unmount()
+    mocks.raids = { ...mocks.raids, hasActiveEventBattles: true }
+    renderHre()
+    await userEvent.click(screen.getByTestId("today-quick-filter-preferEvent"))
+    expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
+      quickFilters: { preferEvent: true },
+    })
+  })
+
   it("ignores a running HSE that earns no raid points", async () => {
     mocks.homeScreenEvent = {
       status: "ready",
@@ -441,7 +454,9 @@ describe("HRE tab", () => {
       "data-status",
       "locked"
     )
-    expect(screen.getByTestId("hre-mission-complete")).toBeDisabled()
+    expect(
+      screen.getByRole("button", { name: "tracker.complete" })
+    ).toBeEnabled()
 
     expect(mocks.raidsArgs.at(-1)?.[1]).toEqual({
       quickFilters: {
@@ -935,6 +950,14 @@ describe("HRE tab", () => {
     expect(screen.getByTestId("hre-pace-currency")).toHaveTextContent(
       "daily=826,crates=720"
     )
+  })
+
+  it("asks for points when a target is picked before any are entered", async () => {
+    seed({ mission: 1, progress: [0, 0], target: "epic-red-1" })
+    renderHre()
+    expect(screen.getByText("pace.targetNeedsPoints")).toBeInTheDocument()
+    await userEvent.type(screen.getByTestId("hre-pace-points"), "30000")
+    expect(screen.queryByText("pace.targetNeedsPoints")).toBeNull()
   })
 
   it("keeps the raids request while only points, rank or target change", async () => {

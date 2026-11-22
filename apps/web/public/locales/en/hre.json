@@ -200,6 +200,7 @@
     "ohSoClose": "The Oh So Close offer should cover the gap for blackstone.",
     "target": "Target",
     "targetPlaceholder": "Choose a target",
+    "targetNeedsPoints": "Enter your event points above to see what this target needs.",
     "needs": "{{shards}} shards: chest tier {{tier}} ({{currency}} currency), {{points}} event points.",
     "needsOutOfReach": "{{shards}} shards is beyond what the chests can give at this rank.",
     "perDay": "{{points}} points a day needed for the rest of the event.",

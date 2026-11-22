@@ -200,6 +200,7 @@
     "ohSoClose": "La oferta «Oh So Close» debería cubrir la diferencia a cambio de piedra negra.",
     "target": "Objetivo",
     "targetPlaceholder": "Elige un objetivo",
+    "targetNeedsPoints": "Introduce arriba tus puntos del evento para ver qué necesita este objetivo.",
     "needs": "{{shards}} fragmentos: nivel de cofre {{tier}} ({{currency}} de moneda), {{points}} puntos del evento.",
     "needsOutOfReach": "{{shards}} fragmentos superan lo que pueden dar los cofres en este puesto.",
     "perDay": "Se necesitan {{points}} puntos al día durante el resto del evento.",

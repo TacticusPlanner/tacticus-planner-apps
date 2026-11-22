@@ -372,6 +372,10 @@ export function useDailyRaids(
             eventPointsByBattleId,
             enemyStatsByBattleId,
             combineGoals,
+            preferredBattleIds:
+              preferEvent && activeEventBattleIds.size > 0
+                ? activeEventBattleIds
+                : undefined,
             raidableOnly: raidableOnly ? manualBattleIds : undefined,
           })
         : undefined
@@ -384,6 +388,7 @@ export function useDailyRaids(
         status: "no-goals",
         missionRaids: planMission(null),
         locationsByBattleId,
+        hasActiveEventBattles: activeEventBattleIds.size > 0,
       }
     }
 
@@ -462,6 +467,7 @@ export function useDailyRaids(
           status: "no-farmable",
           missionRaids: planMission(null),
           locationsByBattleId,
+          hasActiveEventBattles: activeEventBattleIds.size > 0,
         }
   }, [
     activeEventBattleIds,

@@ -397,7 +397,16 @@ export function PaceCard({
               ))}
             </SelectContent>
           </Select>
-          {pace?.target ? <TargetNeeds n={n} target={pace.target} /> : null}
+          {pace?.target ? (
+            <TargetNeeds n={n} target={pace.target} />
+          ) : state.target && !pace ? (
+            <p
+              className="text-sm text-muted-foreground"
+              data-testid="hre-pace-target-needs-points"
+            >
+              {t("pace.targetNeedsPoints")}
+            </p>
+          ) : null}
         </div>
       </CardContent>
     </Card>

@@ -200,6 +200,7 @@
     "ohSoClose": "L'offre « Oh So Close » devrait combler l'écart contre de la pierre noire.",
     "target": "Objectif",
     "targetPlaceholder": "Choisir un objectif",
+    "targetNeedsPoints": "Saisissez vos points d'événement ci-dessus pour voir ce que demande cet objectif.",
     "needs": "{{shards}} fragments : coffre de niveau {{tier}} ({{currency}} de monnaie), {{points}} points d'événement.",
     "needsOutOfReach": "{{shards}} fragments dépassent ce que les coffres peuvent donner à ce rang.",
     "perDay": "{{points}} points par jour nécessaires pour le reste de l'événement.",

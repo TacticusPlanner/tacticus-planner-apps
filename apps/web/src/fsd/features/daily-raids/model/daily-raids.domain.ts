@@ -258,6 +258,8 @@ export type DailyRaidsCalculationViewModel = Omit<
 type MissionRaidsOnly = {
   missionRaids?: MissionRaidPlan
   locationsByBattleId?: ReadonlyMap<BattleId, DailyRaidLocationViewModel>
+  /** As on the ready view: HRE offers "CE nodes first" without a goal plan too. */
+  hasActiveEventBattles?: boolean
 }
 
 export type DailyRaidsViewModel =

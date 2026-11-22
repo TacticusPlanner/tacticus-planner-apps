@@ -200,6 +200,7 @@
     "ohSoClose": "Das „Oh So Close“-Angebot sollte die Lücke gegen Blackstone schließen.",
     "target": "Ziel",
     "targetPlaceholder": "Ziel wählen",
+    "targetNeedsPoints": "Gib oben deine Eventpunkte ein, um zu sehen, was dieses Ziel braucht.",
     "needs": "{{shards}} Splitter: Truhenstufe {{tier}} ({{currency}} Währung), {{points}} Eventpunkte.",
     "needsOutOfReach": "{{shards}} Splitter sind bei diesem Rang mehr, als die Truhen hergeben.",
     "perDay": "{{points}} Punkte pro Tag für den Rest des Events nötig.",

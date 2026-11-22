@@ -1,3 +1,5 @@
+import { campaignDescriptor } from "@workspace/game-catalog"
+import { Rarity, rarityRank } from "@workspace/game-domain"
 import type { BattleId } from "@workspace/game-domain"
 
 import {
@@ -141,6 +143,9 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   eventPointsByBattle?: ReadonlyMap<BattleId, number>
   /** Today's "Combine goals": goal priority no longer breaks ties between nodes. */
   combineGoals?: boolean
+  /** "CE nodes first": the running campaign event's reached nodes, ranked ahead of the others that
+   * feed a goal the same way (or none), even when they cost more energy. */
+  preferredBattleIds?: ReadonlySet<BattleId>
   /** Plan as if energy were unlimited: only attempts and the objective bound the suggestions. */
   unlimitedEnergy?: boolean
   /** Whether a node may be fought by hand for `battles` (the Raids Filters plus its slots, alliance
@@ -153,7 +158,8 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
 const descending = (a: number, b: number) => b - a
 
 /**
- * Suggestion order: energy cost; then more points in a running Home Screen Event; then more HRE
+ * Suggestion order: a node feeding an in-scope goal first; then, with "CE nodes first", the running
+ * campaign event's nodes; then energy cost; then more points in a running Home Screen Event; then more HRE
  * points (a lightning-victory condition, then more enemy power); then a node feeding an in-scope goal; among those, the higher drop rate of the goal's resource (common and
  * uncommon drop more often), then more gold, then the goal's priority (skipped with `combineGoals`);
  * other nodes by gold; then battle id.
@@ -161,8 +167,11 @@ const descending = (a: number, b: number) => b - a
 function compareCandidates(
   goalNodes: ReadonlyMap<BattleId, MissionGoalNode>,
   eventPoints: ReadonlyMap<BattleId, number> | undefined,
-  combineGoals = false
+  combineGoals = false,
+  preferred: ReadonlySet<BattleId> | undefined = undefined
 ): (a: MissionRaidBattle, b: MissionRaidBattle) => number {
+  const later = (battle: MissionRaidBattle) =>
+    preferred ? Number(!preferred.has(battle.id)) : 0
   const points = (battle: MissionRaidBattle) => eventPoints?.get(battle.id) ?? 0
   const rate = (
     battle: MissionRaidBattle,
@@ -174,6 +183,7 @@ function compareCandidates(
     // Nodes that feed a goal come first of all (Severyn, 2026-10), then the cheapest.
     return firstDifference(
       Number(!goalA) - Number(!goalB),
+      later(a) - later(b),
       a.energyCost - b.energyCost,
       descending(points(a), points(b)),
       Number(a.lightningCondition === false) -
@@ -208,7 +218,8 @@ export function planMissionRaids(
   const sort = compareCandidates(
     input.goalNodesByBattle,
     input.eventPointsByBattle,
-    input.combineGoals
+    input.combineGoals,
+    input.preferredBattleIds
   )
   const battles = input.manual
     ? planMissionBattles(input, input.manual, energyBudget, sort)
@@ -438,15 +449,36 @@ function fill(
 }
 
 /**
+ * Whether a node is an Elite tier: a storyline Elite or Elite Mirror node, or an event's Extremis
+ * node. Only these drop Epic and higher upgrades often enough to farm them.
+ */
+function isEliteBattle(
+  battle: Pick<Battle, "campaignGroupId" | "type">
+): boolean {
+  const token = campaignDescriptor(
+    battle.campaignGroupId,
+    battle.type
+  )?.difficultyToken
+  return token === "elite" || token === "eventExtremis"
+}
+
+/** An Epic or higher upgrade, farmed for HRE only on Elite nodes (see `isEliteBattle`). */
+const eliteOnlyRarity = (rarity: Rarity | undefined) =>
+  rarity !== undefined && rarityRank(rarity) >= rarityRank(Rarity.Epic)
+
+/**
  * Per node, the best-priority in-scope goal it feeds: a node drops a resource some goal still needs
  * over its whole schedule (after the Plan's priority-ordered inventory allocation). A goal with
- * pinned farm locations is served only by them, as on the HSE farm list.
+ * pinned farm locations is served only by them, as on the HSE farm list. Otherwise an Epic or higher
+ * upgrade counts only on Elite nodes (`rarityOf` gives an upgrade's rarity): a standard or Mirror
+ * node drops it too rarely to farm it there (Severyn, 2026-11).
  */
 export function buildMissionGoalNodes(
   goals: readonly GoalNeed[],
   inventory: EstimatePlanParams["inventory"],
   upgradesById: ReadonlyMap<EstimateResourceId, EstimateUpgrade>,
-  battlesById: ReadonlyMap<BattleId, Battle>
+  battlesById: ReadonlyMap<BattleId, Battle>,
+  rarityOf: (id: EstimateResourceId) => Rarity | undefined = () => undefined
 ): Map<BattleId, MissionGoalNode> {
   const sorted = goals.toSorted((a, b) => a.priority - b.priority)
   const allocations = allocatePlanInventory(sorted, inventory)
@@ -461,7 +493,13 @@ export function buildMissionGoalNodes(
         if (need.count <= 0) continue
         const upgrade = upgradesById.get(need.id)
         if (!upgrade) continue
+        // A pinned location is the player's own pick, kept whatever its tier.
+        const eliteOnly = !pins && eliteOnlyRarity(rarityOf(need.id))
         for (const node of collectFarmNodes(upgrade, battlesById, pins)) {
+          if (eliteOnly) {
+            const battle = battlesById.get(node.battleId)
+            if (!battle || !isEliteBattle(battle)) continue
+          }
           const existing = nodes.get(node.battleId)
           if (!existing) {
             nodes.set(node.battleId, {

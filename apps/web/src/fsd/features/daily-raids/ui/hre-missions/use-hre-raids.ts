@@ -42,14 +42,17 @@ export type HreRaids = {
   rowsView: RaidRowsView
   /** "{event} is running too", when a running HSE ranks some of the suggested nodes. */
   hseNote: string | null
+  /** The player has reached nodes of a running campaign event: "CE nodes first" is offered. */
+  hasActiveEventBattles: boolean
 }
 
 /**
  * Dailies > HRE campaign suggestions for the current mission, with the least of today's energy
  * left, Today's plan aside (`planMissionRaids`): the battles to fight by hand for its manual
  * objectives and the raids for its campaign-win, campaign-raid or lightning objective. A running
- * Home Screen Event with a raid rule ranks the nodes too, so both events progress. Without a request
- * the plan still runs for the campaign outlook.
+ * Home Screen Event with a raid rule ranks the nodes too, so both events progress, and "CE nodes
+ * first" ranks the running campaign event's nodes first. Without a request the plan still runs for
+ * the campaign outlook.
  */
 export function useHreRaids({
   request,
@@ -128,5 +131,6 @@ export function useHreRaids({
     plan,
     rowsView: { locations, view, onShowLocation },
     hseNote,
+    hasActiveEventBattles: loaded && (raids.hasActiveEventBattles ?? false),
   }
 }

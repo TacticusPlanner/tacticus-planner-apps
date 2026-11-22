@@ -236,6 +236,14 @@ describe("progress", () => {
       hreAllDone(hreMissions)
     )
   })
+
+  it("completes a mission at any progress, keeping it at its targets", () => {
+    const partial = progress({ mission: 5, progress: [1200, 0] })
+    expect(isMissionComplete(partial, hreMissions)).toBe(false)
+    const next = advanceMission(partial, hreMissions)
+    expect(next).toMatchObject({ mission: 6, progress: [0, 0] })
+    expect(next.byMission[5]).toEqual([10_000, 100])
+  })
 })
 
 describe("objectives", () => {

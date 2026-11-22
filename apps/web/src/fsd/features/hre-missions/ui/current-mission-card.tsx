@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { hreMission, isMissionComplete } from "@/entities/hre-mission"
+import { hreMission } from "@/entities/hre-mission"
 import type {
   HreMission,
   HreObjective,
@@ -41,8 +41,8 @@ const steps = (target: number) => (target >= 20 ? [1, 10] : [1])
  * The current mission: the mission picker, each objective with its progress input (clamped to the
  * target, empty rather than a leading 0 so typing never reads "033"), "+1" (and "+10"), a one-click
  * "Mark done" and its bar, an 'i' button with the game's hint and our tip, the objective's
- * suggestions folded under it, the tokens to keep for a later mission, and "Mission complete" once
- * both are at target, followed by an Undo toast.
+ * suggestions folded under it, the tokens to keep for a later mission, and "Mission complete",
+ * always enabled (it fills both objectives), followed by an Undo toast.
  */
 export function CurrentMissionCard({
   state,
@@ -80,7 +80,6 @@ export function CurrentMissionCard({
       method,
     })
   const mission = hreMission(missions, state.mission)
-  const complete = isMissionComplete(state, missions)
 
   return (
     <Card data-testid="hre-current-mission">
@@ -242,7 +241,6 @@ export function CurrentMissionCard({
         />
         <Button
           data-testid="hre-mission-complete"
-          disabled={!complete}
           onClick={() => {
             // Undo lives in this toast only (design D3), never in storage.
             const previous = state
