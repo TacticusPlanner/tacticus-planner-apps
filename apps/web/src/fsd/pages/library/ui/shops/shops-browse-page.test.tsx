@@ -129,7 +129,7 @@ describe("ShopsBrowsePage", () => {
     expect(screen.queryByTestId("shop-slot-2")).not.toBeInTheDocument()
   })
 
-  it("renders a distinct mobile layout with dropdown controls", () => {
+  it("renders the mobile list under the same day select and shop tabs", () => {
     useIsMobileMock.mockReturnValue(true)
     useLibraryShops.mockReturnValue(ready())
     render(<ShopsBrowsePage />)
@@ -137,9 +137,47 @@ describe("ShopsBrowsePage", () => {
     expect(screen.getByTestId("shops-browse-mobile")).toBeInTheDocument()
     expect(screen.queryByTestId("shops-browse-desktop")).not.toBeInTheDocument()
     expect(screen.getByTestId("shops-day-select")).toBeInTheDocument()
-    expect(screen.getByTestId("shops-shop-select")).toBeInTheDocument()
+    expect(screen.getByRole("tablist", { name: "Shop" })).toBeInTheDocument()
     expect(screen.getByTestId("shop-slot-0")).toHaveTextContent(
       "Farseer shards"
     )
+  })
+
+  it("switches shop from the tabs on mobile, keeping the day, with the slots as the tab's panel", async () => {
+    const user = userEvent.setup()
+    useIsMobileMock.mockReturnValue(true)
+    const setShopId = vi.fn()
+    useLibraryShops.mockReturnValue(ready({ setShopId }))
+    const { rerender } = render(<ShopsBrowsePage />)
+
+    const guildTab = screen.getByRole("tab", { name: "Guild Shop" })
+    expect(guildTab).toHaveAttribute("aria-selected", "true")
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "aria-labelledby",
+      guildTab.id
+    )
+
+    await user.click(screen.getByRole("tab", { name: "Guild War Shop" }))
+    expect(setShopId).toHaveBeenCalledWith("war")
+
+    useLibraryShops.mockReturnValue(
+      ready({ setShopId, shopId: "war", slots: [randomSlot] })
+    )
+    rerender(<ShopsBrowsePage />)
+
+    const warTab = screen.getByRole("tab", { name: "Guild War Shop" })
+    expect(warTab).toHaveAttribute("aria-selected", "true")
+    expect(screen.getByRole("tab", { name: "Guild Shop" })).toHaveAttribute(
+      "aria-selected",
+      "false"
+    )
+    const panel = screen.getByRole("tabpanel")
+    expect(panel).toHaveAttribute("aria-labelledby", warTab.id)
+    expect(panel).toContainElement(screen.getByTestId("shops-browse-mobile"))
+    expect(screen.getByTestId("shop-slot-0")).toHaveTextContent("A shards")
+    expect(screen.queryByText("Farseer shards")).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("combobox", { name: "Day: Monday" })
+    ).toBeInTheDocument()
   })
 })

@@ -74,3 +74,18 @@ A list or page that has nothing to show SHALL show one empty state: a dashed box
 - **GIVEN** a signed-in player with no active goals
 - **WHEN** Insights opens with "All goals"
 - **THEN** it shows the empty state with its title, one sentence and Create goal, which opens goal creation
+
+### Requirement: In-page tabs look the same and come first
+
+Views inside a page or a dialog SHALL be left-aligned underline tabs at their natural width, with no border under the strip, on every viewport. When they don't fit, the strip SHALL scroll sideways; tabs SHALL NOT turn into a select, a grid or wrapped rows on a phone. A page's tabs SHALL sit directly under the header, and each tab SHALL own its toolbar; only a control that scopes every tab (an event picker, the Daily Shops day) SHALL sit above them.
+
+#### Scenario: Daily Shops on a phone
+
+- **GIVEN** a 390px wide viewport
+- **WHEN** the user opens Library › Daily Shops
+- **THEN** the day select sits in the toolbar and the four shops are underline tabs under it, scrolling sideways, not a select
+
+#### Scenario: Account dialog
+
+- **WHEN** the user opens Manage account
+- **THEN** its sections are the same underline tabs as a page's, not pills

@@ -4,6 +4,7 @@ import { ShopsBrowseDesktop } from "./desktop/shops-browse-desktop"
 import { useLibraryShops } from "../../model/shops/use-library-shops"
 import { ShopsBrowseMobile } from "./mobile/shops-browse-mobile"
 import { ShopsBrowseState } from "./shops-browse-state"
+import { ShopTabs } from "./shop-tabs"
 import { useShopsBrowseTutorial } from "./shops-browse-page.tutorial"
 import { ShopsToolbar } from "./shops-toolbar"
 
@@ -25,27 +26,22 @@ export function ShopsBrowsePage() {
         <ShopsBrowseState state="error" onRetry={view.retry} />
       ) : (
         <>
-          <ShopsToolbar
-            day={view.day}
-            setDay={view.setDay}
-            shopId={view.shopId}
-            setShopId={view.setShopId}
-            showShopSelect={isMobile}
-          />
-          {isMobile ? (
-            <ShopsBrowseMobile
-              day={view.day}
-              shopId={view.shopId}
-              slots={view.slots}
-            />
-          ) : (
-            <ShopsBrowseDesktop
-              day={view.day}
-              shopId={view.shopId}
-              setShopId={view.setShopId}
-              slots={view.slots}
-            />
-          )}
+          <ShopsToolbar day={view.day} setDay={view.setDay} />
+          <ShopTabs setShopId={view.setShopId} shopId={view.shopId}>
+            {isMobile ? (
+              <ShopsBrowseMobile
+                day={view.day}
+                shopId={view.shopId}
+                slots={view.slots}
+              />
+            ) : (
+              <ShopsBrowseDesktop
+                day={view.day}
+                shopId={view.shopId}
+                slots={view.slots}
+              />
+            )}
+          </ShopTabs>
         </>
       )}
     </div>
