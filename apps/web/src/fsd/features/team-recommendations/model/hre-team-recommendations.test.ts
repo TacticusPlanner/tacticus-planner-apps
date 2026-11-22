@@ -299,6 +299,35 @@ describe("buildHreTeam with a running HSE", () => {
     )
   })
 
+  it("orders a whole track's event units by power, not by how many trackers they match", () => {
+    // Faction Boost (Dark Angels): Asmodai matches twice (faction and alliance), so the engine ranks
+    // it above stronger Imperial units; deployed weakest first, it still goes first.
+    const whole = build({
+      plan: { rule: "abilities", mode: "onslaught", size: 8, wholeTrack: true },
+      characters: [
+        ...hseTeamsFixtureCharacters,
+        {
+          unitId: "darkaAsmodai",
+          rank: "Bronze1",
+          alliance: "Imperial",
+          faction: "DarkAngels",
+          traits: [],
+        },
+      ],
+      hseTrackers: hseVariant("hse-faction-boost", "DarkAngels").trackers,
+    })
+    expect(whole).toMatchObject({ status: "ready", alliance: "Imperial" })
+    expect(ids(whole)).toEqual([
+      "darkaAsmodai",
+      "astraPrimarisPsy",
+      "spaceStormcaller",
+      "ultraTigurius",
+      "bloodMephiston",
+      "darkaAzrael",
+      "ultraCalgar",
+    ])
+  })
+
   it("ranks the event's units after the mission's own rule", () => {
     const team = build({
       plan: { rule: "featured", mode: "arena" },

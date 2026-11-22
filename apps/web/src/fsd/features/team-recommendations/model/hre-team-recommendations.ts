@@ -234,17 +234,15 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     "the plan team"
   )
   const hseIds = hseUnitIds(hse)
-  // Strongest first from the engine; a whole track deploys its weakest first, with the units that
-  // score for the running HSE still ahead of the rest (a stable sort keeps weakest first in each).
   const team = plan.wholeTrack
     ? {
         ...planTeam,
-        members: planTeam.members
-          .toReversed()
-          .toSorted(
-            (a, b) =>
-              Number(hseIds.has(b.unitId)) - Number(hseIds.has(a.unitId))
-          ),
+        members: wholeTrackOrder(
+          planTeam.members,
+          hseIds,
+          roster,
+          input.unitPower
+        ),
       }
     : planTeam
   return {
@@ -328,6 +326,32 @@ function largestAlliance(
     }
   }
   return best
+}
+
+/**
+ * A whole track deploys every unit: the units that score for the running HSE first, then the rest,
+ * each group weakest first by power. The engine's order also weighs how many HSE trackers a unit
+ * matches, so it is not a power order to reverse; reversing it only breaks power ties.
+ */
+function wholeTrackOrder<Member extends { unitId: UnitId }>(
+  members: readonly Member[],
+  hseIds: ReadonlySet<UnitId>,
+  roster: readonly TeamRosterCharacter[],
+  unitPower: UnitPowerContext | null
+): Member[] {
+  const power = new Map(
+    roster.map((character) => [
+      character.unitId,
+      combatPowerOf(character, unitPower),
+    ])
+  )
+  const powerOf = (member: Member) => power.get(member.unitId) ?? 0
+  const group = (member: Member) => (hseIds.has(member.unitId) ? 0 : 1)
+  return members
+    .toReversed()
+    .toSorted((a, b) =>
+      group(a) === group(b) ? powerOf(a) - powerOf(b) : group(a) - group(b)
+    )
 }
 
 function strongest(
