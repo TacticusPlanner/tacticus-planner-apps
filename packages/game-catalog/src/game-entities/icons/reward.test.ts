@@ -1,3 +1,6 @@
+// @vitest-environment node
+import { readdirSync } from "node:fs"
+import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
 
 import {
@@ -11,6 +14,13 @@ import {
 
 const base = "/game_catalog/datamines"
 
+const LIVE_EVENTS_DIR = fileURLToPath(
+  new URL(
+    "../../../../../apps/web/public/game_catalog/datamines/liveevents/",
+    import.meta.url
+  )
+)
+
 describe("seasonalEventCurrencyIcon", () => {
   it("uses the season's own art, else the generic event currency", () => {
     expect(seasonalEventCurrencyIcon("seasonalEventCurrencyApril2026")).toBe(
@@ -22,6 +32,21 @@ describe("seasonalEventCurrencyIcon", () => {
     expect(seasonalEventCurrencyIcon("seasonalEventCurrencyMarch2026")).toBe(
       `${base}/liveevents/ui_icon_resource_event_currency.webp`
     )
+  })
+
+  it("uses every shipped month-and-year currency icon", () => {
+    const shipped = readdirSync(LIVE_EVENTS_DIR)
+      .map((file) =>
+        /^ui_icon_resource_event_currency_([a-z]+)_(\d{4})\.webp$/.exec(file)
+      )
+      .filter((match) => match !== null)
+    expect(shipped.length).toBeGreaterThan(0)
+    for (const [file, month, year] of shipped) {
+      const season = `${month.charAt(0).toUpperCase()}${month.slice(1)}${year}`
+      expect(seasonalEventCurrencyIcon(`seasonalEventCurrency${season}`)).toBe(
+        `${base}/liveevents/${file}`
+      )
+    }
   })
 })
 
