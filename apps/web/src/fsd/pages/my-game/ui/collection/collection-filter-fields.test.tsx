@@ -90,6 +90,9 @@ describe("CollectionFilterFields", () => {
     choose(screen.getByLabelText("Attack type"), "Ranged")
     expect(update).toHaveBeenLastCalledWith({ attack: "ranged" })
 
+    choose(screen.getByLabelText("Summons"), "Forced summons")
+    expect(update).toHaveBeenLastCalledWith({ summons: "forced" })
+
     choose(screen.getByLabelText("Fewest hits"), "2")
     expect(update).toHaveBeenLastCalledWith({ hitsMin: 2 })
 
@@ -183,6 +186,7 @@ describe("CollectionFilterFields", () => {
     renderFields()
     const combat = screen.getByRole("region", { name: "Combat" })
     expect(within(combat).getByLabelText("Attack type")).toBeInTheDocument()
+    expect(within(combat).getByLabelText("Summons")).toBeInTheDocument()
     const unit = screen.getByRole("region", { name: "Unit" })
     expect(within(unit).getByLabelText("Alliance")).toBeInTheDocument()
   })

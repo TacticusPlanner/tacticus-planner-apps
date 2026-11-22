@@ -2,6 +2,7 @@ import type {
   CharacterStorageModel,
   EquipmentStorageModel,
   MowStorageModel,
+  UnitSummons,
   UnlockShardCostStorageModel,
 } from "@workspace/game-catalog"
 import {
@@ -66,8 +67,12 @@ type CatalogCharacter = Pick<
   | "passiveAbilityDamage"
   | "shardLocations"
   | "equipmentSlots"
+  | "summons"
 >
-type CatalogMow = Pick<MowStorageModel, "id" | "name" | "faction" | "alliance">
+type CatalogMow = Pick<
+  MowStorageModel,
+  "id" | "name" | "faction" | "alliance" | "summons"
+>
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
@@ -167,6 +172,9 @@ export interface CollectionView {
   quickCounts: Record<CollectionQuickFilter, number>
 }
 
+/** A row before its catalog `summons` is added. */
+type UnsummonedRow = Omit<CollectionRow, "summons">
+
 interface CollectionRow {
   unit: UnitTileUnit
   factionId: string
@@ -186,6 +194,8 @@ interface CollectionRow {
   shardCount: number
   /** Unowned rows sort by this, descending: the share of the unlock cost already held, or -1. */
   unlock: number
+  /** What its abilities can summon (catalog `summons`); the Summons filter reads it. */
+  summons: UnitSummons
   /** Owned rows only: what the quick filters read. */
   quick?: QuickFilterUnit
   /** Characters only (owned or not): what the combat filters read. */
@@ -302,14 +312,19 @@ export function buildCollectionView(
             unlockShards: unlockCost.get(character.initialRarity),
             shards,
           })
-      return { ...row, combat: combatProfile(character) }
+      return {
+        ...row,
+        summons: character.summons,
+        combat: combatProfile(character),
+      }
     }),
     ...catalog.mows.map((mow) => {
       const record = ownedMows.get(mow.id)
       const name = labels.unitName("mow", mow.id, mow.name)
-      return record
+      const row = record
         ? ownedMowRow(mow, record, name, extras.power?.mow(record) ?? -1)
         : unownedRow("mow", mow, name, { shards })
+      return { ...row, summons: mow.summons }
     }),
   ]
 
@@ -473,6 +488,7 @@ function rowMatcher(
     if (matchesCombat && (!row.combat || !matchesCombat(row.combat)))
       return false
     if (query.kind !== null && row.unit.kind !== query.kind) return false
+    if (query.summons !== null && row.summons !== query.summons) return false
     if (query.quick !== null && !matchesQuick(row, query.quick, extras))
       return false
     return true
@@ -661,7 +677,7 @@ function ownedCharacterRow(
   name: string,
   catalog: CollectionCatalog,
   power: number
-): CollectionRow {
+): UnsummonedRow {
   const { abilityLevels, ...keys } = ownedKeys(record)
   return {
     ...keys,
@@ -709,7 +725,7 @@ function ownedMowRow(
   record: PlayerMow,
   name: string,
   power: number
-): CollectionRow {
+): UnsummonedRow {
   const { abilityLevels, ...keys } = ownedKeys(record)
   return {
     ...keys,
@@ -754,7 +770,7 @@ function unownedRow(
     unlockShards?: number
     shards: Map<string, InventoryShard> | undefined
   }
-): CollectionRow {
+): UnsummonedRow {
   const inventory = shards?.get(unit.id)
   const held = inventory?.amount ?? 0
   return {

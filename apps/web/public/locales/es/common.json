@@ -475,6 +475,14 @@
           "melee": "Solo cuerpo a cuerpo",
           "ranged": "A distancia"
         },
+        "summons": "Invocaciones",
+        "summonsAny": "Todas",
+        "summonsTypes": {
+          "none": "Sin invocaciones",
+          "optional": "Invocación opcional",
+          "conditional": "Invocación condicional",
+          "forced": "Invocación forzada"
+        },
         "hitsFrom": "Golpes mínimos",
         "hitsTo": "Golpes máximos",
         "movement": "Movimiento",

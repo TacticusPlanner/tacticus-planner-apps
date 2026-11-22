@@ -27,6 +27,23 @@ export const farmLocationSchema = z.looseObject({
   expectedGold: z.number().nullable().optional(),
 })
 
+/**
+ * Whether a character or MoW can summon: `none`; `optional` (only an active ability summons, so the player decides
+ * whether it summons); `conditional` (a passive summons, but only while the player keeps up a condition they can
+ * avoid, such as Tan Gi'da's active or Vynn repairing, so it is easy to summon by accident); `forced` (a passive
+ * ability summons on its own, so the player cannot prevent it).
+ */
+export const unitSummons = [
+  "none",
+  "optional",
+  "conditional",
+  "forced",
+] as const
+export type UnitSummons = (typeof unitSummons)[number]
+
+// Defaults to `none` for a server that predates the field.
+export const unitSummonsSchema = z.enum(unitSummons).default("none")
+
 export const equipmentSlotSchema = z.looseObject({
   slot: z.string(),
   equipmentIds: z.array(equipmentIdSchema),

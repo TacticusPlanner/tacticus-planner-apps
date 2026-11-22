@@ -475,6 +475,14 @@
           "melee": "Melee only",
           "ranged": "Ranged"
         },
+        "summons": "Summons",
+        "summonsAny": "Any",
+        "summonsTypes": {
+          "none": "No summons",
+          "optional": "Optional summons",
+          "conditional": "Conditional summons",
+          "forced": "Forced summons"
+        },
         "hitsFrom": "Fewest hits",
         "hitsTo": "Most hits",
         "movement": "Movement",

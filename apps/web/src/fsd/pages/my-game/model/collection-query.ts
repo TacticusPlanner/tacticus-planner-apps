@@ -6,6 +6,9 @@ import type {
   Rarity,
 } from "@workspace/game-domain"
 
+import { unitSummons } from "@workspace/game-catalog"
+import type { UnitSummons } from "@workspace/game-catalog"
+
 import type { UnitKind } from "@/entities/unit"
 
 export const collectionSorts = [
@@ -48,6 +51,9 @@ export const collectionKinds = [
   "mow",
 ] as const satisfies readonly UnitKind[]
 
+/** What a unit's abilities can summon (catalog `summons`), characters and MoWs alike. */
+export const collectionSummons = unitSummons
+
 export const collectionAttackTypes = ["melee", "ranged"] as const
 type CollectionAttackType = (typeof collectionAttackTypes)[number]
 
@@ -76,6 +82,8 @@ export interface CollectionQuery {
   /** Lists owned units only: a display setting, kept in `?owned=owned`; the counts are unchanged. */
   hideUnowned: boolean
   kind: UnitKind | null
+  /** No summons, optional, conditional or forced summons; characters and MoWs alike. */
+  summons: UnitSummons | null
   // The combat filters: catalog properties of characters, so they apply signed out too.
   attack: CollectionAttackType | null
   hitsMin: number | null
@@ -105,6 +113,7 @@ export const defaultCollectionQuery: CollectionQuery = {
   starsMax: null,
   hideUnowned: false,
   kind: null,
+  summons: null,
   attack: null,
   hitsMin: null,
   hitsMax: null,
@@ -133,6 +142,7 @@ export const isCollectionAlliance = includes(collectionAlliances)
 export const isCollectionKind = includes(collectionKinds)
 export const isCollectionRarity = includes(rarityOrder)
 export const isCollectionAttackType = includes(collectionAttackTypes)
+export const isCollectionSummons = includes(collectionSummons)
 export const isCollectionShardSource = includes(collectionShardSources)
 export const isCollectionProgression = (value: unknown): value is Progression =>
   typeof value === "string" && isProgression(value)
@@ -152,6 +162,7 @@ export function activeFilterCount(query: CollectionQuery): number {
     query.rankMin !== null || query.rankMax !== null,
     query.starsMin !== null || query.starsMax !== null,
     query.kind !== null,
+    query.summons !== null,
     query.attack !== null,
     query.hitsMin !== null || query.hitsMax !== null,
     query.movement !== null,
@@ -176,6 +187,7 @@ export const clearedStandaloneFilters: Partial<CollectionQuery> = {
   starsMin: null,
   starsMax: null,
   kind: null,
+  summons: null,
   attack: null,
   hitsMin: null,
   hitsMax: null,

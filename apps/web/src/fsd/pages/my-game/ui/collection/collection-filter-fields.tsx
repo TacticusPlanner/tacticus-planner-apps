@@ -42,9 +42,11 @@ import type { FilterLabelIconKind, SelectOption } from "@/shared/ui"
 import {
   collectionAlliances,
   collectionAttackTypes,
+  collectionSummons,
   collectionKinds,
   isCollectionAlliance,
   isCollectionAttackType,
+  isCollectionSummons,
   isCollectionKind,
 } from "../../model/collection-query"
 import type {
@@ -92,7 +94,7 @@ const starSteps = progressionOrder.filter((step) => !step.endsWith(":None"))
 /**
  * The standalone filter controls, shared by the desktop inline panel and the mobile sheet, in two
  * labelled groups: Unit (who the unit is and how far the player has taken it) and Combat (V1's
- * character properties, plus where the shards drop). Rank range and stars range read
+ * character properties, what the unit can summon, and where the shards drop). Rank range and stars range read
  * the synced roster, so without one they are disabled and explained. Each range (rank, stars, hits,
  * attack range) is one cell with both ends side by side, so a pair never splits across rows.
  * `layout="panel"` (desktop) fits as many columns as the width allows and stretches them across
@@ -318,6 +320,24 @@ export function CollectionFilterFields({
               onChange={(value) =>
                 update({
                   attack: isCollectionAttackType(value) ? value : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <Field label={label("summons")} icon="summons">
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={query.summons}
+              anyLabel={label("summonsAny")}
+              options={collectionSummons.map((summons) => ({
+                value: summons,
+                label: label(`summonsTypes.${summons}`),
+              }))}
+              onChange={(value) =>
+                update({
+                  summons: isCollectionSummons(value) ? value : null,
                 })
               }
             />

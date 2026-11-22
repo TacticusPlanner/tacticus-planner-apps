@@ -475,6 +475,14 @@
           "melee": "Nur Nahkampf",
           "ranged": "Fernkampf"
         },
+        "summons": "Beschwörungen",
+        "summonsAny": "Alle",
+        "summonsTypes": {
+          "none": "Keine Beschwörung",
+          "optional": "Optionale Beschwörung",
+          "conditional": "Bedingte Beschwörung",
+          "forced": "Erzwungene Beschwörung"
+        },
         "hitsFrom": "Wenigste Treffer",
         "hitsTo": "Meiste Treffer",
         "movement": "Bewegung",
