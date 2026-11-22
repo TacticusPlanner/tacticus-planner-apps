@@ -11,7 +11,11 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import { CreateGoalButton, useGlobalGoalPlan } from "@/entities/goal"
 import { usePlanningSettings } from "@/entities/planning-setting"
-import { ProjectSelect, useProjects } from "@/entities/project"
+import {
+  ProjectSelect,
+  useProjects,
+  useSelectedProjectId,
+} from "@/entities/project"
 import { usePlanInsights } from "@/features/goal-planning"
 import { EmptyState, PageToolbar, SegmentedControl } from "@/shared/ui"
 import { InsightsCampaignProgression } from "./insights-campaign-progression"
@@ -29,16 +33,17 @@ type InsightsLocations = (typeof INSIGHTS_LOCATIONS)[number]
 /**
  * The Insights view (plan §16 phase 7): when the plan is done and which goals set that date, what
  * holds it back (blockers and farming bottlenecks), where to farm (campaign/event relevance annotated
- * with which entities benefit), and everything still missing. Defaults to every Active goal in the global plan and owns
- * its own optional project filter rather than sharing the goals list's filter via a URL param — kept independent of
- * `GoalsPage`'s existing, separately-tested project-filter state.
+ * with which entities benefit), and everything still missing. Defaults to every Active goal in the global plan; its
+ * optional project filter is the shared, remembered one Dailies and Schedule use, kept independent of `GoalsPage`'s
+ * URL project scope.
  */
 export function InsightsPage() {
   const { t } = useTranslation()
   const projects = useProjects()
   const { settings: planningSettings } = usePlanningSettings()
-  // No selection means the whole plan; a project only narrows what is reported.
-  const [projectId, setProjectId] = useState<string | undefined>(undefined)
+  // No selection means the whole plan; a project only narrows what is reported. The selection is the
+  // one shared, remembered project selection (Dailies, Schedule and Insights).
+  const [projectId, setProjectId] = useSelectedProjectId(projects)
   // Which nodes the farming cards rank: what the player has reached, or every node.
   const [locations, setLocations] = useState<InsightsLocations>("reached")
   useInsightsTutorial()

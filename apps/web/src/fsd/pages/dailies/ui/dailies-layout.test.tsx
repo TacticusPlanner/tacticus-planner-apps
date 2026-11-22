@@ -222,6 +222,32 @@ describe("Dailies navigation", () => {
     expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
   })
 
+  it("remembers the picked project for the next visit", async () => {
+    const user = userEvent.setup()
+    const first = renderDailies("/dailies/raids")
+    await findRouteContent("dailies-no-farmable")
+    await user.click(screen.getByTestId("raids-project-select"))
+    await user.click(
+      await screen.findByRole("option", { name: /Active project/ })
+    )
+    first.unmount()
+    useDailyRaids.mockClear()
+
+    renderDailies("/dailies/raids")
+    await findRouteContent("dailies-no-farmable")
+    expect(screen.getByTestId("raids-project-select")).toHaveTextContent(
+      /Active project/
+    )
+    expect(useDailyRaids).toHaveBeenLastCalledWith("p1")
+  })
+
+  it("falls back to all goals when the remembered project was deleted", async () => {
+    window.localStorage.setItem("tp.session.project.selected.v1", "deleted")
+    renderDailies("/dailies/raids")
+    await findRouteContent("dailies-no-farmable")
+    expect(useDailyRaids).toHaveBeenLastCalledWith(undefined)
+  })
+
   it("shows the project selector's value on desktop and on mobile (never icon-only)", async () => {
     renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
