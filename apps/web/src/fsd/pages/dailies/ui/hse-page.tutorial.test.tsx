@@ -269,7 +269,7 @@ describe("HSE tour targets", () => {
     (_viewport, width) => {
       setViewportWidth(width)
       mocks.event = readyWith(
-        "hse-against-the-tide",
+        "hse-unscored",
         Date.now() - HOUR,
         Date.now() + 10 * HOUR
       )

@@ -7,7 +7,7 @@ import type {
 
 /**
  * Reads `config.hse` from a served event definition's `config`: the parsed scoring, or null when the
- * definition has none (Against the Tide, any non-HSE definition) or it does not match the contract.
+ * definition has none (any non-HSE definition) or it does not match the contract.
  */
 export function parseHseConfig(config: unknown): GameCatalogHseConfig | null {
   if (typeof config !== "object" || config === null) return null

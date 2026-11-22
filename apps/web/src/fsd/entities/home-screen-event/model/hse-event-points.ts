@@ -92,7 +92,7 @@ export type HseEventPointsState =
   /** `projectionPending`: the instance may get a projection (it is not past). */
   | { status: "loading"; projectionPending: boolean }
   | { status: "error" }
-  /** No `config.hse` (Against the Tide) or no variant for this occurrence. */
+  /** No `config.hse` or no variant for this occurrence. */
   | { status: "no-data" }
   | { status: "ready"; details: HseDetailsView; projection: HseProjectionView }
 

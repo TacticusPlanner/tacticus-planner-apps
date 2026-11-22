@@ -126,9 +126,9 @@ describe("hseDescriptionLines", () => {
     expect(everyModeBut?.values?.modes).toMatchObject({
       key: "dailies:hse.details.phrase.modesExcept",
     })
-    expect(keys(hseDescriptionLines(hseVariant("hse-defeat-waves")))).toEqual([
-      "lines.waves",
-    ])
+    expect(
+      keys(hseDescriptionLines(hseVariant("hse-against-the-tide")))
+    ).toEqual(["lines.waves"])
     expect(
       keys(hseDescriptionLines(hseVariant("hse-faction-focus", "october-2026")))
     ).toEqual([
