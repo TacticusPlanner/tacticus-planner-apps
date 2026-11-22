@@ -74,6 +74,21 @@ const TASK_KINDS: Readonly<Record<string, HreObjectiveKind>> = {
   WinBattlesWithFactionTraitLineup: "winWithAllianceLineup",
 }
 
+/**
+ * The task's hint keys, best first: its served loca key, then the game's own key pattern guessed from
+ * the task name, the variant for its faction or damage type (`DealDamageOfProfileType_Psychic_
+ * description`) ahead of the generic one. The guesses cover an API that serves no loca key yet.
+ */
+export function hreHintKeys(task: HreTask): string[] {
+  const variant = task.parameters.damageProfileType ?? task.parameters.factionId
+  const keys = [
+    task.locaKey,
+    variant ? `${task.name}_${variant}_description` : undefined,
+    `${task.name}_description`,
+  ]
+  return [...new Set(keys.filter((key): key is string => !!key))]
+}
+
 /** A game task as a mission objective, or undefined for a task the tracker does not know. The
  *  alliance and the featured hero are read at render time, so only a faction or damage type is kept. */
 function toObjective(task: HreTask): HreObjective | undefined {
@@ -88,9 +103,10 @@ function toObjective(task: HreTask): HreObjective | undefined {
       : kind === "damageType"
         ? task.parameters.damageProfileType
         : undefined
+  const hintKeys = hreHintKeys(task)
   return qualifier
-    ? { kind, target: task.target, qualifier }
-    : { kind, target: task.target }
+    ? { kind, target: task.target, qualifier, hintKeys }
+    : { kind, target: task.target, hintKeys }
 }
 
 function toMissions(

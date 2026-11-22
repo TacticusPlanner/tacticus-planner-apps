@@ -19,6 +19,7 @@ export function MissionTracker({
   actions,
   objectiveText,
   objectiveIcon,
+  objectiveHint,
 }: {
   state: HreProgress
   missions: readonly HreMission[]
@@ -26,6 +27,8 @@ export function MissionTracker({
   objectiveText: (objective: HreObjective) => string
   /** The game glyph shown before each objective. */
   objectiveIcon?: (objective: HreObjective) => string | undefined
+  /** The game's hint for an objective. */
+  objectiveHint?: (objective: HreObjective) => string | undefined
 }) {
   const { t } = useTranslation("hre")
   if (state.mission >= hreAllDone(missions)) {
@@ -44,6 +47,7 @@ export function MissionTracker({
       missions={missions}
       objectiveText={objectiveText}
       objectiveIcon={objectiveIcon}
+      objectiveHint={objectiveHint}
       state={state}
     />
   )
@@ -59,6 +63,7 @@ export function AllMissions({
   missions,
   objectiveText,
   objectiveIcon,
+  objectiveHint,
 }: {
   current: number | null
   collapsed: boolean
@@ -66,6 +71,8 @@ export function AllMissions({
   objectiveText: (objective: HreObjective) => string
   /** The game glyph shown before each objective. */
   objectiveIcon?: (objective: HreObjective) => string | undefined
+  /** The game's hint for an objective. */
+  objectiveHint?: (objective: HreObjective) => string | undefined
 }) {
   const { t } = useTranslation("hre")
   const list = (
@@ -74,6 +81,7 @@ export function AllMissions({
       missions={missions}
       objectiveText={objectiveText}
       objectiveIcon={objectiveIcon}
+      objectiveHint={objectiveHint}
     />
   )
   return collapsed ? (

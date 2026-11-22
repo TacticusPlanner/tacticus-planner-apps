@@ -21,6 +21,7 @@ import {
   useHreInstance,
   useHreProgress,
   useHreTokens,
+  useObjectiveHint,
   useObjectiveText,
 } from "@/features/hre-missions"
 import {
@@ -101,6 +102,10 @@ export function HrePage() {
   )
   const shown = running ? progress : DEFAULT_HRE_PROGRESS
   const objectiveText = useObjectiveText(
+    hero,
+    instance?.featuredCharacterId ?? null
+  )
+  const objectiveHint = useObjectiveHint(
     hero,
     instance?.featuredCharacterId ?? null
   )
@@ -388,6 +393,7 @@ export function HrePage() {
         missions={missions}
         objectiveText={objectiveText}
         objectiveIcon={objectiveIcon}
+        objectiveHint={objectiveHint}
         state={progress}
       />
     </div>
@@ -399,6 +405,7 @@ export function HrePage() {
       missions={missions}
       objectiveText={objectiveText}
       objectiveIcon={objectiveIcon}
+      objectiveHint={objectiveHint}
     />
   ) : null
 

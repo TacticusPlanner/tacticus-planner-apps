@@ -3,11 +3,14 @@ import { z } from "zod"
 const countSchema = z.number().int().nonnegative()
 
 // One task of a mission: the game's task name, its target and its parameters (a faction trait, a
-// game mode, a damage profile, a faction or a hero id, by the game's parameter name).
+// game mode, a damage profile, a faction or a hero id, by the game's parameter name), and its loca
+// key, which names the task's in-game hint (`MissionQuickLinks/TaskDetails_<locaKey>`). The API
+// serves the key from tacticus-planner-api#241 on; until then it is absent.
 const hreMissionTaskSchema = z.looseObject({
   name: z.string(),
   target: z.number().int().positive(),
   parameters: z.record(z.string(), z.string()),
+  locaKey: z.string().nullish(),
 })
 
 // One mission of the chain, in chain order (`index` from 1); the last one is the Bonus mission.

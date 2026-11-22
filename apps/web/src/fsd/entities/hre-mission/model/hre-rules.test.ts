@@ -13,7 +13,7 @@ const rules = toHreRules(hreFixture, progression, "orksWeirdboy")!
 describe("toHreRules", () => {
   it("reads the 20 paid missions and the Bonus in the game's order", () => {
     expect(rules.missions).toHaveLength(21)
-    expect(rules.missions[0]).toEqual({
+    expect(rules.missions[0]).toMatchObject({
       number: 1,
       bonus: false,
       currency: 100,
@@ -22,21 +22,21 @@ describe("toHreRules", () => {
         { kind: "killWithMelee", target: 5 },
       ],
     })
-    expect(rules.missions[6]?.objectives).toEqual([
+    expect(rules.missions[6]?.objectives).toMatchObject([
       { kind: "useAbilitiesAlliance", target: 20 },
       { kind: "salvageRuns", target: 2 },
     ])
-    expect(rules.missions[8]?.objectives[0]).toEqual({
+    expect(rules.missions[8]?.objectives[0]).toMatchObject({
       kind: "damageType",
       target: 7500,
       qualifier: "Psychic",
     })
-    expect(rules.missions[10]?.objectives[1]).toEqual({
+    expect(rules.missions[10]?.objectives[1]).toMatchObject({
       kind: "killFaction",
       target: 100,
       qualifier: "Necrons",
     })
-    expect(rules.missions[11]?.objectives[1]).toEqual({
+    expect(rules.missions[11]?.objectives[1]).toMatchObject({
       kind: "onslaught",
       target: 1,
     })
@@ -49,6 +49,38 @@ describe("toHreRules", () => {
         { kind: "campaignWins", target: 250 },
       ],
     })
+  })
+
+  it("names each objective's in-game hint, the served loca key first", () => {
+    expect(rules.missions[8]?.objectives[0]?.hintKeys).toEqual([
+      "DealDamageOfProfileType_Psychic_description",
+      "DealDamageOfProfileType_description",
+    ])
+    const served = toHreRules(
+      [
+        {
+          ...weirdboy,
+          missions: weirdboy.missions.map((mission, index) =>
+            index === 0
+              ? {
+                  ...mission,
+                  tasks: mission.tasks.map((task, taskIndex) =>
+                    taskIndex === 0
+                      ? { ...task, locaKey: "WinLightningVictories_v2" }
+                      : task
+                  ),
+                }
+              : mission
+          ),
+        },
+      ],
+      progression,
+      "orksWeirdboy"
+    )
+    expect(served?.missions[0]?.objectives.map((o) => o.hintKeys)).toEqual([
+      ["WinLightningVictories_v2", "WinLightningVictories_description"],
+      ["SlayEnemiesWithMeleeAttacks_description"],
+    ])
   })
 
   it("sums the milestones into the wiki's cumulative ladder", () => {
