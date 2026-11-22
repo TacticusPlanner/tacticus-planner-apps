@@ -43,10 +43,16 @@ import {
   collectionAlliances,
   collectionAttackTypes,
   collectionSummons,
+  collectionAbilityAttacks,
+  collectionAbilityRoles,
+  collectionAbilityTargets,
   collectionKinds,
   isCollectionAlliance,
   isCollectionAttackType,
   isCollectionSummons,
+  isCollectionAbilityAttack,
+  isCollectionAbilityRole,
+  isCollectionAbilityTarget,
   isCollectionKind,
 } from "../../model/collection-query"
 import type {
@@ -338,6 +344,65 @@ export function CollectionFilterFields({
               onChange={(value) =>
                 update({
                   summons: isCollectionSummons(value) ? value : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <Field label={label("abilityRole")} icon="abilityRole">
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={query.abilityRole}
+              anyLabel={label("abilityAny")}
+              options={collectionAbilityRoles.map((role) => ({
+                value: role,
+                label: label(`abilityRoles.${role}`),
+              }))}
+              onChange={(value) =>
+                update({
+                  abilityRole: isCollectionAbilityRole(value) ? value : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <Field label={label("abilityTarget")} icon="abilityTarget">
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={query.abilityTarget}
+              anyLabel={label("abilityAny")}
+              options={collectionAbilityTargets.map((target) => ({
+                value: target,
+                label: label(`abilityTargets.${target}`),
+              }))}
+              onChange={(value) =>
+                update({
+                  abilityTarget: isCollectionAbilityTarget(value)
+                    ? value
+                    : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <Field label={label("abilityAttack")} icon="abilityAttack">
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={query.abilityAttack}
+              anyLabel={label("abilityAny")}
+              options={collectionAbilityAttacks.map((attack) => ({
+                value: attack,
+                label: label(`abilityAttacks.${attack}`),
+                icon: optionIcon(attackTypeIcons[attack]),
+              }))}
+              onChange={(value) =>
+                update({
+                  abilityAttack: isCollectionAbilityAttack(value)
+                    ? value
+                    : null,
                 })
               }
             />

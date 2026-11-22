@@ -247,7 +247,7 @@ describe("progress", () => {
 })
 
 describe("objectives", () => {
-  it("selects mission 5's campaign wins with 63 to go, and its ability damage open-ended", () => {
+  it("selects mission 5's campaign wins with 63 to go, and its ability damage by enemy health", () => {
     expect(
       selectCampaignPlan(
         progress({ mission: 5, progress: [0, 37] }),
@@ -257,7 +257,13 @@ describe("objectives", () => {
       missionNumber: 5,
       raids: { battlesToGo: 63, eventOnly: false },
       battles: {
-        needs: [{ objective: { kind: "abilityDamage" }, per: null }],
+        needs: [
+          {
+            objective: { kind: "abilityDamage" },
+            toGo: 10_000,
+            per: "enemyHealth",
+          },
+        ],
         countsAsWins: true,
       },
     })
@@ -903,6 +909,7 @@ describe("selectTeamPlans", () => {
       spare: { held: 3, need: 1 },
       reserve: null,
       wholeTrack: true,
+      abilityFocus: "uses",
     })
     expect(plans[0]).toMatchObject({ spare: null, wholeTrack: false })
     expect(
@@ -915,6 +922,20 @@ describe("selectTeamPlans", () => {
       preferPsychic: true,
       wholeTrack: false,
     })
+  })
+})
+
+const abilityFocusOf = (mission: number) =>
+  selectTeamPlans(progress({ mission }), hreMissions).map(
+    (plan) => plan.abilityFocus
+  )
+
+describe("abilityFocus", () => {
+  it("shapes every team for ability damage, then ability uses, else not at all", () => {
+    expect(abilityFocusOf(5)).toContain("damage")
+    expect(new Set(abilityFocusOf(5))).toEqual(new Set(["damage"]))
+    expect(new Set(abilityFocusOf(3))).toEqual(new Set(["uses"]))
+    expect(new Set(abilityFocusOf(1))).toEqual(new Set([null]))
   })
 })
 

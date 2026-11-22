@@ -65,6 +65,25 @@ const renderCard = (
     />
   )
 
+const abilityFocusCard = (abilityFocus: "damage" | "uses") => (
+  <HreTeamCard
+    alliance="Xenos"
+    hero="Zapspitta"
+    missions={[]}
+    plan={{
+      mode: "battle",
+      preferPsychic: false,
+      reserve: null,
+      abilityFocus,
+    }}
+    tokens={null}
+    view={{
+      status: "ready",
+      team: { ...ready(5), rule: "strongest", alliance: null },
+    }}
+  />
+)
+
 describe("HreTeamCard", () => {
   it("titles an Onslaught pool by its mode and counts the units it holds", () => {
     renderCard(ready(6))
@@ -116,6 +135,17 @@ describe("HreTeamCard", () => {
     expect(screen.getByText("hre:teams.titleBattle")).toBeInTheDocument()
     expect(screen.getByTestId("hre-team-rule")).toHaveTextContent(
       "hre:teams.strongest"
+    )
+  })
+
+  it("notes how an ability objective shaped the team", () => {
+    const { rerender } = render(abilityFocusCard("damage"))
+    expect(screen.getByTestId("hre-team-ability-damage")).toHaveTextContent(
+      "hre:teams.abilityDamage"
+    )
+    rerender(abilityFocusCard("uses"))
+    expect(screen.getByTestId("hre-team-ability-uses")).toHaveTextContent(
+      "hre:teams.abilityUses"
     )
   })
 

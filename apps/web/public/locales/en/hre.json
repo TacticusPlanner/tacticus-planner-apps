@@ -267,6 +267,8 @@
     "supportIncluded": "Your strongest Healer or Mechanic is in, for the heal objective.",
     "supportMissing": "You own no Healer or Mechanic for the heal objective.",
     "psychic": "Psychic damage dealers come first, for the Psychic damage objective.",
+    "abilityDamage": "Units whose abilities deal area damage come first, and units whose abilities deal no damage are left out, for the ability damage objective.",
+    "abilityUses": "Units with a single-target or no-target active come first, so an area ability doesn't clear the enemies the others need for their abilities.",
     "reserve_one": "Keep {{count}} {{mode}} token for {{mission}}.",
     "reserve_other": "Keep {{count}} {{mode}} tokens for {{mission}}.",
     "reservePlay": "With {{have}} now, play up to {{play}}.",

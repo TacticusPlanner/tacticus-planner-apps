@@ -16,6 +16,8 @@ export type HreTeamRule =
   /** Any units, strongest first (kills, damage, healing, or a token objective alone). */
   | "strongest"
 
+type HreAbilityFocus = "damage" | "uses"
+
 /** Where the team plays: campaign battles by hand, or a token mode. */
 type HreTeamMode = "battle" | "arena" | "salvageRun" | "onslaught" | "guildRaid"
 
@@ -30,6 +32,13 @@ export type HreTeamPlan = {
   support: boolean
   /** Rank Psychic damage dealers first, while the mission's Psychic damage objective is open. */
   preferPsychic: boolean
+  /**
+   * How the mission's ability objectives shape the team, read from the catalog's curated ability
+   * tags: `damage` (ability damage open) fields only units whose abilities deal damage, AoE damage
+   * first; `uses` (ability uses open) puts units whose active needs no target or one target first,
+   * so an AoE active does not clear the enemies the others need. Null without either.
+   */
+  abilityFocus: HreAbilityFocus | null
   /** Tokens of `mode` a later mission needs, to keep rather than spend now. */
   reserve: { tokens: number; missionNumber: number } | null
   /** A manual objective played with spare tokens: the tokens held against the remaining missions'
@@ -198,6 +207,7 @@ export function selectTeamPlans(
     preferPsychic: open.some(
       (item) => item.kind === "damageType" && item.qualifier === "Psychic"
     ),
+    abilityFocus: abilityFocusFor(open),
     // Spare tokens are already what the later missions leave over.
     reserve: extra.spare ? null : reserveFor(mode, state.mission, missions),
     spare: extra.spare ?? null,
@@ -234,6 +244,17 @@ export function selectTeamPlans(
     )
   }
   return plans
+}
+
+/** Ability damage wins over ability uses when both are open: a damage ability is used too. */
+function abilityFocusFor(
+  open: readonly HreObjective[]
+): HreAbilityFocus | null {
+  if (open.some((objective) => objective.kind === "abilityDamage"))
+    return "damage"
+  return open.some((objective) => ABILITY_USE_KINDS.has(objective.kind))
+    ? "uses"
+    : null
 }
 
 /** The next later mission's need for `mode`'s tokens (mission 6's Arena: 4 for mission 10). */

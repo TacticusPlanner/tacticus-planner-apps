@@ -6,8 +6,18 @@ import type {
   Rarity,
 } from "@workspace/game-domain"
 
-import { unitSummons } from "@workspace/game-catalog"
-import type { UnitSummons } from "@workspace/game-catalog"
+import {
+  abilityAttacks,
+  abilityRoles,
+  abilityTargets,
+  unitSummons,
+} from "@workspace/game-catalog"
+import type {
+  AbilityAttack,
+  AbilityRole,
+  AbilityTarget,
+  UnitSummons,
+} from "@workspace/game-catalog"
 
 import type { UnitKind } from "@/entities/unit"
 
@@ -54,6 +64,11 @@ export const collectionKinds = [
 /** What a unit's abilities can summon (catalog `summons`), characters and MoWs alike. */
 export const collectionSummons = unitSummons
 
+/** The curated ability tags (catalog `abilities`) the Ability filters match, characters and MoWs alike. */
+export const collectionAbilityRoles = abilityRoles
+export const collectionAbilityTargets = abilityTargets
+export const collectionAbilityAttacks = abilityAttacks
+
 export const collectionAttackTypes = ["melee", "ranged"] as const
 type CollectionAttackType = (typeof collectionAttackTypes)[number]
 
@@ -84,6 +99,13 @@ export interface CollectionQuery {
   kind: UnitKind | null
   /** No summons, optional, conditional or forced summons; characters and MoWs alike. */
   summons: UnitSummons | null
+  /**
+   * The Ability filters: one of the unit's abilities must carry every set tag (so damage plus AoE finds
+   * an AoE damage ability, not a unit with one damage ability and another AoE one).
+   */
+  abilityRole: AbilityRole | null
+  abilityTarget: AbilityTarget | null
+  abilityAttack: AbilityAttack | null
   // The combat filters: catalog properties of characters, so they apply signed out too.
   attack: CollectionAttackType | null
   hitsMin: number | null
@@ -114,6 +136,9 @@ export const defaultCollectionQuery: CollectionQuery = {
   hideUnowned: false,
   kind: null,
   summons: null,
+  abilityRole: null,
+  abilityTarget: null,
+  abilityAttack: null,
   attack: null,
   hitsMin: null,
   hitsMax: null,
@@ -143,6 +168,9 @@ export const isCollectionKind = includes(collectionKinds)
 export const isCollectionRarity = includes(rarityOrder)
 export const isCollectionAttackType = includes(collectionAttackTypes)
 export const isCollectionSummons = includes(collectionSummons)
+export const isCollectionAbilityRole = includes(collectionAbilityRoles)
+export const isCollectionAbilityTarget = includes(collectionAbilityTargets)
+export const isCollectionAbilityAttack = includes(collectionAbilityAttacks)
 export const isCollectionShardSource = includes(collectionShardSources)
 export const isCollectionProgression = (value: unknown): value is Progression =>
   typeof value === "string" && isProgression(value)
@@ -163,6 +191,9 @@ export function activeFilterCount(query: CollectionQuery): number {
     query.starsMin !== null || query.starsMax !== null,
     query.kind !== null,
     query.summons !== null,
+    query.abilityRole !== null,
+    query.abilityTarget !== null,
+    query.abilityAttack !== null,
     query.attack !== null,
     query.hitsMin !== null || query.hitsMax !== null,
     query.movement !== null,
@@ -188,6 +219,9 @@ export const clearedStandaloneFilters: Partial<CollectionQuery> = {
   starsMax: null,
   kind: null,
   summons: null,
+  abilityRole: null,
+  abilityTarget: null,
+  abilityAttack: null,
   attack: null,
   hitsMin: null,
   hitsMax: null,

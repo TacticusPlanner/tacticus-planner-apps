@@ -13,8 +13,8 @@ When the current mission has open objectives that only progress in battles playe
 1. **Featured hero** (`useAbilitiesFeatured`, `featuredDamage`): the featured hero leads the team when the player has unlocked them.
 2. **Alliance** (`winWithAllianceLineup`, `useAbilitiesAlliance`, `killWithAlliance`): only units of the featured hero's alliance.
 3. **Summon-free** (`winWithoutSummons`): follows the LRE "No Summons" rule (Severyn, 2026-11): excludes every unit whose catalog `summons` is `forced`, since those summon on their own. An `optional` or `conditional` unit stays (its summon is the player's choice), and the card says not to use an ability that summons.
-4. **Ranged** (`killWithRanged`): only units with a ranged attack.
-5. **Melee** (`killWithMelee`): only units without a ranged attack, so every kill is a melee one; this is stricter than the objective, since ranged units can also attack in melee.
+4. **Ranged** (`killWithRanged`): only units with a ranged attack, or whose active is itself a ranged attack (the catalog's curated ability `attack`).
+5. **Melee** (`killWithMelee`): only units without a ranged attack, so every kill is a melee one, plus units whose active is itself a melee attack; this is stricter than the objective, since ranged units can also attack in melee.
 6. **Abilities** (`useAbilities`): the strongest units, and the card says every ability use counts.
 7. **Strongest** (kills, damage, ability damage, a damage type, healing): the strongest units.
 
@@ -172,6 +172,24 @@ While the current mission's `heal` objective is open, the team SHALL include the
 
 - **GIVEN** mission 9 with 7,500 / 7,500 Psychic damage
 - **THEN** the ranged team is ordered by power only
+
+### Requirement: Ability objectives read the curated ability tags
+
+The teams SHALL read the catalog's hand-curated ability tags (each ability's roles: damage, support, utility; its target: none, single, AoE) for the mission's ability objectives, in every team of the mission, after the heal and Psychic preferences:
+
+- While `abilityDamage` is open, only units with an ability that deals damage SHALL be fielded (Bellator's and Incisus's abilities deal none), unless fewer than the minimum team size own one, and units with an AoE damage ability SHALL lead, since one AoE use hits several enemies.
+- Otherwise, while `useAbilities` or `useAbilitiesAlliance` is open, units whose active needs no target or one target SHALL lead: they are quick to use, and an AoE damage active can clear the enemies the rest of the team needs for their own abilities.
+- The card SHALL say which of the two shaped the team.
+
+#### Scenario: Ability damage leaves out abilities that deal no damage
+
+- **GIVEN** mission 5 with its ability damage open, and Bellator, Incisus and five units with damage abilities owned, one of them with an AoE damage active
+- **THEN** the team holds no Bellator or Incisus, the AoE damage unit leads, and the card says units whose abilities deal area damage come first
+
+#### Scenario: Ability uses prefer single-target actives
+
+- **GIVEN** mission 3 with its ability uses open, and two weaker units with a single-target or no-target active among stronger AoE damage units
+- **THEN** those two lead the team
 
 ### Requirement: HRE teams take a running HSE into account
 

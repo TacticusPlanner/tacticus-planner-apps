@@ -29,6 +29,23 @@ const summons: Record<string, "optional" | "conditional" | "forced"> = {
   necroSpyder: "optional",
   admecMarshall: "conditional",
 }
+// A few real ability tags; every other character has no tagged ability.
+const ability = (
+  kind: "active" | "passive" | "primary" | "secondary",
+  roles: string[],
+  target: string,
+  attack: string | null = null
+) => ({ id: `${kind}Ability`, kind, roles, target, attack })
+const abilities: Record<string, ReturnType<typeof ability>[]> = {
+  ultraTitus: [
+    ability("active", ["damage"], "single", "melee"),
+    ability("passive", ["support"], "none"),
+  ],
+  ultraCalgar: [
+    ability("active", ["damage"], "aoe", "ranged"),
+    ability("passive", ["support"], "aoe"),
+  ],
+}
 const characters = legendaryEventCharacters.map((character) => ({
   ...character,
   id: character.id as UnitId,
@@ -40,6 +57,7 @@ const characters = legendaryEventCharacters.map((character) => ({
   shardLocations: [],
   equipmentSlots: ["I_Crit", "I_Block", "I_Defensive"],
   summons: summons[character.id] ?? "none",
+  abilities: abilities[character.id] ?? [],
 })) as unknown as CollectionCatalog["characters"]
 const mows = [
   {
@@ -47,12 +65,17 @@ const mows = [
     faction: "Ultramarines",
     alliance: "Imperial",
     summons: "optional",
+    abilities: [
+      ability("primary", ["utility"], "single"),
+      ability("secondary", ["damage", "utility"], "aoe"),
+    ],
   },
   {
     id: "blackForgefiend" as UnitId,
     faction: "BlackLegion",
     alliance: "Chaos",
     summons: "none",
+    abilities: [],
   },
 ] as CollectionCatalog["mows"]
 
@@ -744,6 +767,32 @@ describe("buildCollectionView with a query", () => {
     expect(optional).toEqual(["necroSpyder", "ultraDreadnought"])
     expect(none).toContain("blackForgefiend")
     expect(none).not.toContain("blackPossession")
+  })
+
+  it("lists units with one ability carrying every picked ability tag", () => {
+    const [aoeDamage, damage, noTargetDamage, melee] = (
+      [
+        { abilityRole: "damage", abilityTarget: "aoe" },
+        { abilityRole: "damage" },
+        { abilityRole: "damage", abilityTarget: "none" },
+        { abilityAttack: "melee" },
+      ] as const
+    ).map((patch) =>
+      ids(
+        buildCollectionView(
+          catalog,
+          { state: "anonymous" },
+          labels,
+          query(patch)
+        )
+      ).toSorted(compareCodeUnits)
+    )
+
+    expect(aoeDamage).toEqual(["ultraCalgar", "ultraDreadnought"])
+    expect(damage).toEqual(["ultraCalgar", "ultraDreadnought", "ultraTitus"])
+    // Titus's single-target ability deals damage, but his no-target one does not.
+    expect(noTargetDamage).toEqual([])
+    expect(melee).toEqual(["ultraTitus"])
   })
 
   it("matches an unowned character's starting rarity and never an unowned Machine of War", () => {

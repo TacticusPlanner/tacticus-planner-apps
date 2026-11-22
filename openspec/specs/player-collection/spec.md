@@ -400,6 +400,7 @@ The Filters control SHALL offer these standalone filters; every set filter SHALL
 - **Stars range:** a lowest and a highest progression step (rarity and stars, inclusive, either end optional); only owned units, characters and Machines of War, can match while it is set. A range set backwards is read with its ends swapped.
 - **Unit kind:** characters, Machines of War, or all.
 - **Summons:** no summons, optional summons, conditional summons, forced summons, or any. A unit, character or Machine of War, matches when its catalog `summons` equals the picked value: `optional` when only an active ability summons, `conditional` when a passive summons only while the player keeps up a condition they can avoid (Tan Gi'da's active switched on, Vynn repairing), `forced` when a passive ability summons on its own. It sits in the Combat group but, unlike the combat filters below, also applies to Machines of War.
+- **Ability role, Ability target and Ability attack:** each one value or any. Role is damage, support or utility; target is no target, single target or area (AoE); attack is melee or ranged. They read the catalog's hand-curated `abilities` (each active and passive, or a Machine of War's primary and secondary, with its roles, its target and whether it is a melee or ranged attack). A unit, character or Machine of War, matches when one of its abilities carries every set value, so damage with area finds a unit with an AoE damage ability, not one whose damage ability is single target and whose other ability is AoE. They sit in the Combat group and, like Summons, also apply to Machines of War.
 
 There is no Ownership filter: hiding unowned units is the toolbar's Owned only chip, a display setting (see "Owned only shows or hides units the player does not own"), and listing only unowned units is not offered.
 
@@ -468,6 +469,12 @@ Assumption: a character's damage types come from the catalog's melee and ranged 
 - **GIVEN** Archimatos (`forced`), Tan Gi'da (`conditional`), Aleph-Null (`optional`), the Biovore (`optional`) and Marneus Calgar (`none`)
 - **WHEN** the user picks forced summons, then conditional summons, then optional summons, then no summons
 - **THEN** first only Archimatos is listed, then Tan Gi'da, then Aleph-Null and the Biovore, then Marneus Calgar
+
+#### Scenario: Ability tags on one ability
+
+- **GIVEN** Marneus Calgar's active deals area damage, Titus's active deals single-target damage and his passive has no target, and the Galatian's secondary deals area damage
+- **WHEN** the user picks Ability role damage with Ability target area, then instead Ability role damage with Ability target no target
+- **THEN** first Marneus Calgar and the Galatian are listed and Titus is not, then none of them is
 
 #### Scenario: Shard source
 
@@ -612,7 +619,7 @@ The search text, every standalone filter and the sort SHALL be held in the page 
 
 Invalid query values SHALL be handled as follows:
 
-- An invalid value SHALL be dropped from the URL and treated as unset. This covers an unknown faction, rarity, rank, progression step, kind, summon type, damage type, trait, shard source or sort, and a number the catalog does not offer.
+- An invalid value SHALL be dropped from the URL and treated as unset. This covers an unknown faction, rarity, rank, progression step, kind, summon type, ability role, ability target, ability attack, damage type, trait, shard source or sort, and a number the catalog does not offer.
 - In a list of factions, rarities, damage types, traits or shard sources, only the unknown items SHALL be dropped, and the valid ones SHALL still apply.
 - A range set backwards SHALL be rewritten in the URL with its ends swapped.
 

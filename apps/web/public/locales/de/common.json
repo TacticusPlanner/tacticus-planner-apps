@@ -483,6 +483,24 @@
           "conditional": "Bedingte Beschwörung",
           "forced": "Erzwungene Beschwörung"
         },
+        "abilityRole": "Fähigkeitsrolle",
+        "abilityTarget": "Fähigkeitsziel",
+        "abilityAttack": "Fähigkeitsangriff",
+        "abilityAny": "Alle",
+        "abilityRoles": {
+          "damage": "Schaden",
+          "support": "Unterstützung",
+          "utility": "Nutzen"
+        },
+        "abilityTargets": {
+          "none": "Kein Ziel",
+          "single": "Einzelziel",
+          "aoe": "Fläche (AoE)"
+        },
+        "abilityAttacks": {
+          "melee": "Nahkampf",
+          "ranged": "Fernkampf"
+        },
         "hitsFrom": "Wenigste Treffer",
         "hitsTo": "Meiste Treffer",
         "movement": "Bewegung",

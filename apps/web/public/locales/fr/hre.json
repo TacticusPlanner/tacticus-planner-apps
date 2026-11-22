@@ -267,6 +267,8 @@
     "supportIncluded": "Votre Soigneur ou Mécanicien le plus fort est inclus, pour l'objectif de soin.",
     "supportMissing": "Vous n'avez aucun Soigneur ni Mécanicien pour l'objectif de soin.",
     "psychic": "Les unités à dégâts psychiques passent d'abord, pour l'objectif de dégâts psychiques.",
+    "abilityDamage": "Les unités dont les capacités infligent des dégâts de zone passent d'abord, et celles dont les capacités n'infligent aucun dégât sont exclues, pour l'objectif de dégâts de capacité.",
+    "abilityUses": "Les unités dont la capacité active n'a pas de cible ou vise une seule cible passent d'abord, pour qu'une capacité de zone n'élimine pas les ennemis dont les autres ont besoin pour leurs capacités.",
     "reserve_one": "Gardez {{count}} jeton {{mode}} pour {{mission}}.",
     "reserve_other": "Gardez {{count}} jetons {{mode}} pour {{mission}}.",
     "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}.",

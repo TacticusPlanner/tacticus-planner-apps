@@ -267,6 +267,8 @@
     "supportIncluded": "Tu Sanador o Mecánico más fuerte está incluido, para el objetivo de curación.",
     "supportMissing": "No tienes ningún Sanador ni Mecánico para el objetivo de curación.",
     "psychic": "Las unidades con daño psíquico van primero, para el objetivo de daño psíquico.",
+    "abilityDamage": "Las unidades cuyas habilidades hacen daño en área van primero y se excluyen las que no hacen daño con habilidades, para el objetivo de daño con habilidades.",
+    "abilityUses": "Las unidades con una habilidad activa sin objetivo o de objetivo único van primero, para que una habilidad de área no elimine a los enemigos que los demás necesitan para sus habilidades.",
     "reserve_one": "Guarda {{count}} ficha de {{mode}} para {{mission}}.",
     "reserve_other": "Guarda {{count}} fichas de {{mode}} para {{mission}}.",
     "reservePlay": "Con {{have}} ahora, juega hasta {{play}}.",

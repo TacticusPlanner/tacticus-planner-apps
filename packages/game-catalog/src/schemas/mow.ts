@@ -6,7 +6,11 @@ import {
   upgradeIdSchema,
 } from "@workspace/game-domain/schemas"
 
-import { amountByRaritySchema, unitSummonsSchema } from "./shared"
+import {
+  amountByRaritySchema,
+  unitAbilitiesSchema,
+  unitSummonsSchema,
+} from "./shared"
 
 const mowAbilitySchema = z.looseObject({
   name: z.string(),
@@ -22,6 +26,8 @@ export const mowSchema = z.looseObject({
   primaryAbility: mowAbilitySchema,
   secondaryAbility: mowAbilitySchema,
   summons: unitSummonsSchema,
+  // The primary then secondary abilities with their curated roles, target and attack.
+  abilities: unitAbilitiesSchema,
   // The MoW's mythic ability, unlocked at Mythic and levelled by blue stars (not by upgrade materials, so
   // no recipes). Omitted by a server that predates it.
   mythicAbility: z.looseObject({ name: z.string() }).optional(),

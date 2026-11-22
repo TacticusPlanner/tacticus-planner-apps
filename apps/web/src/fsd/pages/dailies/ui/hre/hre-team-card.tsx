@@ -43,7 +43,7 @@ export function HreTeamCard({
   view: HreTeamViewModel
   plan:
     | (Pick<HreTeamPlan, "mode" | "reserve" | "preferPsychic"> &
-        Partial<Pick<HreTeamPlan, "wholeTrack">>)
+        Partial<Pick<HreTeamPlan, "wholeTrack" | "abilityFocus">>)
     | null
   /** The event's missions, for naming the reserve's mission. */
   missions: readonly HreMission[]
@@ -194,6 +194,16 @@ export function HreTeamCard({
                 data-testid="hre-team-psychic"
               >
                 {t("hre:teams.psychic")}
+              </p>
+            ) : null}
+            {plan?.abilityFocus ? (
+              <p
+                className="text-sm text-muted-foreground"
+                data-testid={`hre-team-ability-${plan.abilityFocus}`}
+              >
+                {plan.abilityFocus === "damage"
+                  ? t("hre:teams.abilityDamage")
+                  : t("hre:teams.abilityUses")}
               </p>
             ) : null}
             {view.team.hseUnits !== null && hseEvent ? (

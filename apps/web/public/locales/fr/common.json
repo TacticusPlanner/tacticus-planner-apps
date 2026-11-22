@@ -483,6 +483,24 @@
           "conditional": "Invocation conditionnelle",
           "forced": "Invocation forcée"
         },
+        "abilityRole": "Rôle de la capacité",
+        "abilityTarget": "Cible de la capacité",
+        "abilityAttack": "Attaque de la capacité",
+        "abilityAny": "Toutes",
+        "abilityRoles": {
+          "damage": "Dégâts",
+          "support": "Soutien",
+          "utility": "Utilitaire"
+        },
+        "abilityTargets": {
+          "none": "Aucune cible",
+          "single": "Cible unique",
+          "aoe": "Zone (AoE)"
+        },
+        "abilityAttacks": {
+          "melee": "Mêlée",
+          "ranged": "À distance"
+        },
         "hitsFrom": "Coups minimum",
         "hitsTo": "Coups maximum",
         "movement": "Déplacement",

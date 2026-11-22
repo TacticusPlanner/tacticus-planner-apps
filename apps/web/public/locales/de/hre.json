@@ -267,6 +267,8 @@
     "supportIncluded": "Dein stärkster Heiler oder Mechaniker ist dabei, für das Heilungsziel.",
     "supportMissing": "Du besitzt keinen Heiler oder Mechaniker für das Heilungsziel.",
     "psychic": "Einheiten mit psychischem Schaden kommen zuerst, für das Ziel mit psychischem Schaden.",
+    "abilityDamage": "Einheiten, deren Fähigkeiten Flächenschaden verursachen, kommen zuerst; Einheiten ohne Fähigkeitsschaden bleiben draußen, für das Ziel mit Fähigkeitsschaden.",
+    "abilityUses": "Einheiten mit einer aktiven Fähigkeit ohne Ziel oder mit Einzelziel kommen zuerst, damit eine Flächenfähigkeit nicht die Gegner beseitigt, die die anderen für ihre Fähigkeiten brauchen.",
     "reserve_one": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
     "reserve_other": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
     "reservePlay": "Mit {{have}} jetzt spiele bis zu {{play}}.",

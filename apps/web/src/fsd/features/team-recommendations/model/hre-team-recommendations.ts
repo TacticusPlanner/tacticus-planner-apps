@@ -58,6 +58,14 @@ export function hseScoresInHreMode(
   return !!hseMode && hseScoresIn(trackers, hseMode)
 }
 
+/** A curated ability tag (catalog `abilities`). */
+type HreCatalogAbility = {
+  kind: string
+  roles: readonly string[]
+  target: string
+  attack: string | null
+}
+
 type HreCatalogUnit = {
   traits?: readonly string[]
   alliance: string
@@ -66,6 +74,7 @@ type HreCatalogUnit = {
   rangedDamage?: string | null
   activeAbilityDamage?: readonly string[]
   passiveAbilityDamage?: readonly string[]
+  abilities?: readonly HreCatalogAbility[]
 }
 
 export type BuildHreTeamInput = {
@@ -73,7 +82,7 @@ export type BuildHreTeamInput = {
     HreTeamPlan,
     "rule" | "mode" | "size" | "support" | "preferPsychic"
   > &
-    Partial<Pick<HreTeamPlan, "wholeTrack">> & {
+    Partial<Pick<HreTeamPlan, "wholeTrack" | "abilityFocus">> & {
       /** Only units of these factions: the allied factions a campaign lets you deploy. */
       factions?: readonly string[]
     }
@@ -155,14 +164,10 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     )
   } else if (plan.rule === "abilities" || plan.rule === "strongest") {
     // Any units: every ability use, kill, hit or heal counts.
-  } else if (plan.rule === "ranged") {
-    roster = deployable.filter(
-      (character) => !!input.catalog.get(character.unitId)?.rangedDamage
-    )
-  } else if (plan.rule === "melee") {
-    // Units without a ranged attack always strike in melee.
-    roster = deployable.filter(
-      (character) => !input.catalog.get(character.unitId)?.rangedDamage
+  } else if (plan.rule === "ranged" || plan.rule === "melee") {
+    const attack = plan.rule
+    roster = deployable.filter((character) =>
+      strikesWith(input.catalog.get(character.unitId), attack)
     )
   } else {
     if (
@@ -195,6 +200,7 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
       eligibleCount: roster.length,
     }
   }
+  roster = abilityDealers(input, roster)
   let support: "included" | "missing" | null = null
   if (plan.support) {
     const healer = strongest(
@@ -216,6 +222,8 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
       )
     )
   }
+  const abilityPool = abilityFocusPool(input, roster)
+  if (abilityPool) pools.push(abilityPool)
   const hse = hsePools(roster)
   pools.push(...hse)
   const recommendations = buildTeamRecommendations({
@@ -257,6 +265,90 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
         ? team.members.filter((member) => hseIds.has(member.unitId)).length
         : null,
   }
+}
+
+const dealsDamage = (ability: HreCatalogAbility) =>
+  ability.roles.includes("damage")
+/** A character's active, or a Machine of War's primary: the ability the player uses. */
+const isActive = (ability: HreCatalogAbility) =>
+  ability.kind === "active" || ability.kind === "primary"
+
+const abilitiesOf = (
+  input: BuildHreTeamInput,
+  character: TeamRosterCharacter
+): readonly HreCatalogAbility[] =>
+  input.catalog.get(character.unitId)?.abilities ?? []
+
+/**
+ * Whether a unit can kill with `attack`: ranged with a ranged attack, melee without one (it always
+ * strikes in melee), or either with an active that is itself that attack (a melee unit's ranged
+ * active, a ranged unit's melee one).
+ */
+function strikesWith(
+  view: HreCatalogUnit | undefined,
+  attack: "melee" | "ranged"
+): boolean {
+  const ranged = !!view?.rangedDamage
+  if (attack === "ranged" ? ranged : !ranged) return true
+  return (view?.abilities ?? []).some(
+    (ability) => isActive(ability) && ability.attack === attack
+  )
+}
+
+/** Ability damage counts only abilities that deal damage (never Bellator's or Incisus's): the units
+ * with one, unless too few of them leave a full team. Every unit for another focus. */
+function abilityDealers(
+  input: BuildHreTeamInput,
+  roster: TeamRosterCharacter[]
+): TeamRosterCharacter[] {
+  if (input.plan.abilityFocus !== "damage") return roster
+  const dealers = roster.filter((character) =>
+    abilitiesOf(input, character).some(dealsDamage)
+  )
+  return dealers.length >= MIN_TEAM_SIZE ? dealers : roster
+}
+
+/**
+ * The units an ability objective puts first, after the heal and Psychic picks: AoE damage abilities
+ * for ability damage; for ability uses, an active with no target or one target, quick to use and
+ * never clearing the enemies the rest of the team needs for their own abilities as an AoE active can.
+ */
+function abilityFocusPool(
+  input: BuildHreTeamInput,
+  roster: readonly TeamRosterCharacter[]
+): TeamPoolSpec | null {
+  switch (input.plan.abilityFocus) {
+    case "damage":
+      return pool(
+        "ability-aoe-damage",
+        unitIdsWith(
+          input,
+          roster,
+          (ability) => dealsDamage(ability) && ability.target === "aoe"
+        )
+      )
+    case "uses":
+      return pool(
+        "ability-quick-use",
+        unitIdsWith(
+          input,
+          roster,
+          (ability) => isActive(ability) && ability.target !== "aoe"
+        )
+      )
+    default:
+      return null
+  }
+}
+
+function unitIdsWith(
+  input: BuildHreTeamInput,
+  units: readonly TeamRosterCharacter[],
+  matches: (ability: HreCatalogAbility) => boolean
+): UnitId[] {
+  return units
+    .filter((character) => abilitiesOf(input, character).some(matches))
+    .map((character) => character.unitId)
 }
 
 /** The running HSE's event-unit pools among `units` in the plan's mode. */

@@ -44,6 +44,38 @@ export type UnitSummons = (typeof unitSummons)[number]
 // Defaults to `none` for a server that predates the field.
 export const unitSummonsSchema = z.enum(unitSummons).default("none")
 
+/** What a unit's ability does, hand curated in the catalog: deals damage, supports allies, or other utility. */
+export const abilityRoles = ["damage", "support", "utility"] as const
+export type AbilityRole = (typeof abilityRoles)[number]
+
+/** Who a unit's ability targets: no target (self, buff or summon), a single unit, or an area. */
+export const abilityTargets = ["none", "single", "aoe"] as const
+export type AbilityTarget = (typeof abilityTargets)[number]
+
+/** The ability kinds: a character's active and passive, a MoW's primary and secondary. */
+export const abilityKinds = [
+  "active",
+  "passive",
+  "primary",
+  "secondary",
+] as const
+export type AbilityKind = (typeof abilityKinds)[number]
+
+/** Whether an ability is itself a melee or ranged attack. */
+export const abilityAttacks = ["melee", "ranged"] as const
+export type AbilityAttack = (typeof abilityAttacks)[number]
+
+const unitAbilitySchema = z.looseObject({
+  id: z.string(),
+  kind: z.enum(abilityKinds),
+  roles: z.array(z.enum(abilityRoles)),
+  target: z.enum(abilityTargets),
+  attack: z.enum(abilityAttacks).nullable(),
+})
+
+// Defaults to [] for a server that predates the field.
+export const unitAbilitiesSchema = z.array(unitAbilitySchema).default([])
+
 export const equipmentSlotSchema = z.looseObject({
   slot: z.string(),
   equipmentIds: z.array(equipmentIdSchema),

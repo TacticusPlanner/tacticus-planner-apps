@@ -79,7 +79,18 @@ export type {
 } from "./record-types"
 
 export { shopDaysOfWeek, type ShopDayOfWeek } from "./schemas/shops"
-export { unitSummons, type UnitSummons } from "./schemas/shared"
+export {
+  abilityAttacks,
+  abilityKinds,
+  abilityRoles,
+  abilityTargets,
+  unitSummons,
+  type AbilityAttack,
+  type AbilityKind,
+  type AbilityRole,
+  type AbilityTarget,
+  type UnitSummons,
+} from "./schemas/shared"
 export {
   npcEncounterSources,
   type NpcEncounterBattle,

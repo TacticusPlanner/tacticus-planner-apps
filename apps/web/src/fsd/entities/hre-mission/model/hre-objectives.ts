@@ -8,7 +8,8 @@ const CAMPAIGN_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
 ])
 
 /** What one battle fought by hand counts toward a manual objective, or null when the page cannot
- * estimate it (ability damage, a damage type, the featured hero's damage, healing). */
+ * estimate it (a damage type, the featured hero's damage, healing). Ability damage counts the node's
+ * enemy health, as damage does. */
 type HreBattleYield =
   "battle" | "abilityUses" | "enemies" | "factionEnemies" | "enemyHealth"
 
@@ -65,7 +66,8 @@ const MANUAL_YIELD: Partial<Record<HreObjectiveKind, HreBattleYield | null>> = {
   killWithAlliance: "enemies",
   killFaction: "factionEnemies",
   damage: "enemyHealth",
-  abilityDamage: null,
+  // A battle's ability damage is bounded by its enemies' total health (Severyn, 2026-11).
+  abilityDamage: "enemyHealth",
   damageType: null,
   featuredDamage: null,
   heal: null,

@@ -15,6 +15,9 @@ import {
   isCollectionGrouping,
   isCollectionKind,
   isCollectionSummons,
+  isCollectionAbilityAttack,
+  isCollectionAbilityRole,
+  isCollectionAbilityTarget,
   isCollectionLayout,
   isCollectionProgression,
   isCollectionQuickFilter,
@@ -48,6 +51,9 @@ const PARAM = {
   hideUnowned: "owned",
   kind: "kind",
   summons: "summons",
+  abilityRole: "abilityRole",
+  abilityTarget: "abilityTarget",
+  abilityAttack: "abilityAttack",
   attack: "attack",
   hitsMin: "hitsMin",
   hitsMax: "hitsMax",
@@ -217,6 +223,9 @@ function readCollectionQuery(
     hideUnowned: one(PARAM.hideUnowned, isHideUnownedValue) !== null,
     kind: one(PARAM.kind, isCollectionKind),
     summons: one(PARAM.summons, isCollectionSummons),
+    abilityRole: one(PARAM.abilityRole, isCollectionAbilityRole),
+    abilityTarget: one(PARAM.abilityTarget, isCollectionAbilityTarget),
+    abilityAttack: one(PARAM.abilityAttack, isCollectionAbilityAttack),
     attack: one(PARAM.attack, isCollectionAttackType),
     hitsMin,
     hitsMax,
@@ -272,7 +281,7 @@ export interface CollectionQueryState {
 
 /**
  * The Collection toolbar's state, owned by the URL (`?q=&alliance=&faction=&rarity=&rankMin=
- * &rankMax=&starsMin=&starsMax=&owned=&kind=&summons=&attack=&hitsMin=&hitsMax=&move=&rangeMin=&rangeMax=
+ * &rankMax=&starsMin=&starsMax=&owned=&kind=&summons=&abilityRole=&abilityTarget=&abilityAttack=&attack=&hitsMin=&hitsMax=&move=&rangeMin=&rangeMax=
  * &damage=&trait=&source=&sort=&view=&group=`) so reload, Back and shared links restore it. Invalid
  * values are dropped from the URL (a list keeps its valid items) and a backwards range is swapped.
  * `options` validates the values only the catalog knows; while it is `undefined` (catalog loading)
