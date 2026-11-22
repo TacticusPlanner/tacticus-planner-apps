@@ -227,6 +227,19 @@ export function TeamEditorDialog({
     void save(false)
   }
   const actionClassName = isMobile ? "h-11" : undefined
+  const saveAnother = team ? null : (
+    <Button
+      aria-describedby={needsMembers ? needsMembersId : undefined}
+      className={actionClassName}
+      data-testid="team-editor-save-another"
+      disabled={!canSave}
+      onClick={() => void save(true)}
+      type="button"
+      variant="ghost"
+    >
+      {t("teams.editor.saveAndAddAnother")}
+    </Button>
+  )
 
   return (
     <ResponsiveDialog
@@ -326,6 +339,7 @@ export function TeamEditorDialog({
               units={units}
             />
           </section>
+          {isMobile ? saveAnother : null}
         </ResponsiveDialogBody>
         {reloaded ? (
           <p
@@ -336,7 +350,7 @@ export function TeamEditorDialog({
             {t("teams.editor.notSaved")}
           </p>
         ) : null}
-        <ResponsiveDialogFooter className="flex-col md:justify-between">
+        <ResponsiveDialogFooter>
           <TeamEditorSummary
             checkedObjectives={objectives.filter((objective) =>
               checked.includes(objective.index)
@@ -348,23 +362,12 @@ export function TeamEditorDialog({
             needsMembersId={needsMembersId}
           />
           <div
-            className="flex shrink-0 flex-wrap justify-end gap-2"
+            className="flex shrink-0 gap-2 max-md:basis-full max-md:*:flex-1 md:ml-auto"
             data-testid="team-editor-actions"
           >
-            {/* A secondary action is ghost and comes first (ui-style-guide rule 8). */}
-            {team ? null : (
-              <Button
-                aria-describedby={needsMembers ? needsMembersId : undefined}
-                className={actionClassName}
-                data-testid="team-editor-save-another"
-                disabled={!canSave}
-                onClick={() => void save(true)}
-                type="button"
-                variant="ghost"
-              >
-                {t("teams.editor.saveAndAddAnother")}
-              </Button>
-            )}
+            {/* A secondary action is ghost and comes first (ui-style-guide rule 8); on a phone it
+                moves to the end of the body so the footer keeps one row. */}
+            {isMobile ? null : saveAnother}
             <Button
               className={actionClassName}
               disabled={saving}

@@ -108,7 +108,7 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
           ) : null}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64">
+      <PopoverContent>
         <div className={cn("flex items-center gap-2", hasRecipe && "pb-2")}>
           <UpgradeIcon
             id={upgrade.id}

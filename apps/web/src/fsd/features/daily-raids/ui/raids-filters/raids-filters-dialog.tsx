@@ -10,6 +10,7 @@ import {
 import { factionOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   EntityIcon,
@@ -66,6 +67,7 @@ export function RaidsFiltersDialog({
     "progression",
     "traits",
   ])
+  const isMobile = useIsMobile()
   const [applied, setApplied] = useRaidsFilters()
   const [draft, setDraft] = useState<RaidsFilters>(applied)
   // The option lists fill in once each dataset is read; the dialog has no loading state of its own.
@@ -192,6 +194,22 @@ export function RaidsFiltersDialog({
   })
 
   const close = () => onOpenChange(false)
+  // A third, secondary button: in the footer at the left on desktop, at the top of the body on a
+  // phone so the footer keeps one row (ui-style-guide rule 8).
+  const clearButton = (
+    <Button
+      className="max-md:self-start md:mr-auto"
+      data-testid="raids-filters-reset"
+      onClick={() => {
+        setApplied(emptyRaidsFilters)
+        close()
+      }}
+      variant="ghost"
+    >
+      <X data-icon="inline-start" />
+      {t("dailies:raidsFilters.actions.reset")}
+    </Button>
+  )
 
   return (
     <ResponsiveDialog
@@ -209,6 +227,7 @@ export function RaidsFiltersDialog({
         </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody className="gap-5">
+        {isMobile ? clearButton : null}
         <Section title={t("dailies:raidsFilters.sections.allies")}>
           <LabeledField label={t("dailies:raidsFilters.fields.alliances")}>
             <MultiSelect
@@ -375,18 +394,7 @@ export function RaidsFiltersDialog({
         </Section>
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
-        <Button
-          className="md:mr-auto"
-          data-testid="raids-filters-reset"
-          onClick={() => {
-            setApplied(emptyRaidsFilters)
-            close()
-          }}
-          variant="ghost"
-        >
-          <X data-icon="inline-start" />
-          {t("dailies:raidsFilters.actions.reset")}
-        </Button>
+        {isMobile ? null : clearButton}
         <Button
           data-testid="raids-filters-close"
           onClick={close}

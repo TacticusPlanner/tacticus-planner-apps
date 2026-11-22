@@ -550,7 +550,7 @@
   },
   "raidsFilters": {
     "title": "Filters",
-    "description": "Limit which campaign locations Today, Bonus Raids and the HSE tab may use. Plan and Goals are not affected.",
+    "description": "Applies to Today, Bonus Raids and the HSE tab, not to Plan or Goals.",
     "sections": {
       "allies": "Allies",
       "enemies": "Enemies",
@@ -929,7 +929,8 @@
   "battleProgress": {
     "open": "Medals",
     "title": "Battles without 3 medals",
-    "description": "Raids need 3 medals. Beaten battles count as the best result (3 medals, Lightning Victory, top milestone); change only the ones that fell short. A battle below 3 medals is planned as one to play manually. Your next battle in each campaign is always played manually.",
+    "description": "Raids need 3 medals. Change only the battles that fell short.",
+    "note": "Beaten battles count as 3 medals, Lightning Victory and the top milestone. A battle below 3 medals, and your next battle in each campaign, is played manually.",
     "campaign": "Campaign",
     "notStarted": "You haven't reached any battle in this campaign yet.",
     "notBeaten": "Not beaten yet",

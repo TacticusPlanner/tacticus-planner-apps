@@ -103,9 +103,7 @@ export function DetailsOverlay({
         data-testid={testId}
       >
         <PopoverHeader>
-          <PopoverTitle className="text-sm" id={titleId}>
-            {title}
-          </PopoverTitle>
+          <PopoverTitle id={titleId}>{title}</PopoverTitle>
           {hasNode(description) ? (
             <PopoverDescription
               className={cn("text-xs", descriptionHidden && "sr-only")}

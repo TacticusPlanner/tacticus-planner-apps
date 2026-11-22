@@ -79,7 +79,7 @@
   "runInputs": {
     "button": "Inputs",
     "title": "Run inputs",
-    "description": "Missions and packs the game does not report for the current run. Missions finish in order, so set how many are done. They feed the reward outlook on the Run status card.",
+    "description": "Missions and packs the game does not report for the current run.",
     "run": "Run {{run}}",
     "phase": {
       "done": "Done",

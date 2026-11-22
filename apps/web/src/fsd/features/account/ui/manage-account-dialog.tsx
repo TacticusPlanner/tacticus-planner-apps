@@ -169,15 +169,15 @@ export function ManageAccountDialog({
           </Tabs>
         </DialogActionSlotContext>
       </ResponsiveDialogBody>
-      {/* Close and the open tab's main button (rendered here through `DialogAction`) share one row. */}
-      <ResponsiveDialogFooter className="grid grid-cols-2">
+      {/* Cancel and the open tab's main button (rendered here through `DialogAction`). Every tab is a
+          form, so the dismiss throws input away and says Cancel (ui-style-guide rule 8). */}
+      <ResponsiveDialogFooter>
         <Button
-          className={dialogActionClassName}
           data-testid="manage-account-close"
           variant="outline"
           onClick={() => onOpenChange(false)}
         >
-          {t("common.close")}
+          {t("common.cancel")}
         </Button>
         <div className="contents" ref={setActionSlot} />
       </ResponsiveDialogFooter>

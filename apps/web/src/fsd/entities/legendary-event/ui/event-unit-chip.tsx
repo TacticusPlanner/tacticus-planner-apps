@@ -387,7 +387,6 @@ export function EventUnitChip({
         <Popover onOpenChange={setDetailsOpen} open>
           <PopoverAnchor virtualRef={anchorRef} />
           <PopoverContent
-            className="w-auto max-w-64 rounded-xl p-3"
             onEscapeKeyDown={() => {
               refocusOnClose.current = true
             }}

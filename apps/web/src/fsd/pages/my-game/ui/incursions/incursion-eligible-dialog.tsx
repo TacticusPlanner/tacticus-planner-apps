@@ -163,9 +163,9 @@ export function IncursionEligibleDialog({
           })}
         </ol>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="flex-col md:justify-between">
+      <ResponsiveDialogFooter>
         <p
-          className="inline-flex flex-wrap items-center gap-1 text-sm tabular-nums"
+          className="inline-flex flex-wrap items-center gap-1 text-sm tabular-nums max-md:basis-full md:mr-auto"
           data-testid="incursion-eligible-power"
         >
           <EntityIcon size="inline" alt="" src={powerIcon()} />
@@ -181,17 +181,15 @@ export function IncursionEligibleDialog({
             </>
           ) : null}
         </p>
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            onClick={() => setPicked(suggested.map((member) => member.id))}
-          >
-            {t("eligible.reset")}
-          </Button>
-          <Button onClick={() => onOpenChange(false)}>
-            {t("eligible.done")}
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => setPicked(suggested.map((member) => member.id))}
+        >
+          {t("eligible.reset")}
+        </Button>
+        <Button onClick={() => onOpenChange(false)}>
+          {t("eligible.done")}
+        </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>
   )

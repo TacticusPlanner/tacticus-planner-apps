@@ -6,6 +6,7 @@ import { Button } from "@workspace/ui/components/button"
 import {
   Popover,
   PopoverContent,
+  PopoverTitle,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
@@ -54,12 +55,12 @@ export function TokenMissionsPopover({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-72 gap-2 rounded-xl p-3"
+        className="gap-2"
         data-testid={`${testId}-popover`}
       >
-        <h4 className="text-sm font-semibold">
+        <PopoverTitle>
           {t("tokenPlan.nextToken.missions.progresses")}
-        </h4>
+        </PopoverTitle>
         <ul className="flex flex-col gap-1 text-xs">
           {gains.map((gain) => {
             const mission = missionLabel(gain.ref.mission)
@@ -148,10 +149,10 @@ export function TokenTeamPopover({
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-auto max-w-[min(24rem,calc(100vw-2rem))] gap-2 rounded-xl p-3"
+        className="w-80 max-w-[calc(100vw-2rem)] gap-2"
         data-testid={`${testId}-popover`}
       >
-        <h4 className="text-sm font-semibold">{teamName}</h4>
+        <PopoverTitle>{teamName}</PopoverTitle>
         {depth ? <TeamDepthLine depth={depth} testId={testId} /> : null}
         <ul
           aria-label={t("tokenPlan.nextToken.members")}

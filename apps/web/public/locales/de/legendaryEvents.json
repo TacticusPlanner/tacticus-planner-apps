@@ -79,7 +79,7 @@
   "runInputs": {
     "button": "Eingaben",
     "title": "Eingaben pro Durchlauf",
-    "description": "Missionen und Pakete, die das Spiel für den aktuellen Lauf nicht meldet. Missionen werden der Reihe nach abgeschlossen, also gib an, wie viele erledigt sind. Sie fließen in die Belohnungsprognose der Karte Laufstatus ein.",
+    "description": "Missionen und Pakete, die das Spiel für den aktuellen Lauf nicht meldet.",
     "run": "Durchlauf {{run}}",
     "phase": {
       "done": "Erledigt",

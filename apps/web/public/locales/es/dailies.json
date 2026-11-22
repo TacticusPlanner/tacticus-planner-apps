@@ -550,7 +550,7 @@
   },
   "raidsFilters": {
     "title": "Filtros",
-    "description": "Limita qué ubicaciones de campaña pueden usar Hoy, las incursiones extra y la pestaña EPI. El plan y los objetivos no se ven afectados.",
+    "description": "Se aplica a Hoy, las incursiones extra y la pestaña EPI, no al plan ni a los objetivos.",
     "sections": {
       "allies": "Aliados",
       "enemies": "Enemigos",
@@ -929,7 +929,8 @@
   "battleProgress": {
     "open": "Medallas",
     "title": "Batallas sin 3 medallas",
-    "description": "Las incursiones requieren 3 medallas. Las batallas ganadas cuentan como el mejor resultado (3 medallas, victoria relámpago, hito máximo); cambia solo las que se quedaron cortas. Una batalla con menos de 3 medallas se planifica para jugarla manualmente. Tu siguiente batalla en cada campaña siempre se juega manualmente.",
+    "description": "Las incursiones requieren 3 medallas. Cambia solo las batallas que se quedaron cortas.",
+    "note": "Las batallas ganadas cuentan como 3 medallas, victoria relámpago e hito máximo. Una batalla con menos de 3 medallas y tu siguiente batalla en cada campaña se juegan manualmente.",
     "campaign": "Campaña",
     "notStarted": "Aún no has llegado a ninguna batalla de esta campaña.",
     "notBeaten": "Aún no superada",
