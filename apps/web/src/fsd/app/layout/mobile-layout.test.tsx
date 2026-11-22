@@ -40,7 +40,10 @@ vi.mock("@/shared/auth", () => ({
 
 // Mirrors desktop-layout.test.tsx's reasoning: nav-items.ts reads `isUiKitEnabled` from the real
 // `@/shared/config` module, which also calls `initReactI18next` at import time.
-vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
+vi.mock("@/shared/config", () => ({
+  appEnvironment: "production",
+  isUiKitEnabled: true,
+}))
 
 vi.mock("../providers/auth-control", () => ({ AuthControl: () => null }))
 // The card's own rows are covered by the account-menu tests; here only the header's wiring matters.

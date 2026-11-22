@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
+import { appEnvironment } from "@/shared/config"
 
 export function AppLogo({ className }: { className?: string }) {
   return (
@@ -42,16 +43,19 @@ export function AppLogoHomeLink({
   )
 }
 
-/** Marks the app as a beta release wherever the logo shows. */
-export function BetaBadge({ className }: { className?: string }) {
+/** Marks the app as a beta release wherever the logo shows, or as staging on the staging build. */
+export function EnvironmentBadge({ className }: { className?: string }) {
   const { t } = useTranslation()
   return (
     <Badge
       className={cn("shrink-0 px-1.5 text-xs tracking-wider", className)}
-      data-testid="app-beta-badge"
+      data-testid="app-environment-badge"
       variant="outline"
     >
-      {t("app.beta")}
+      {
+        // Staging is a team-facing marker, so it stays in English in every language.
+        appEnvironment === "staging" ? "Staging" : t("app.beta")
+      }
     </Badge>
   )
 }
