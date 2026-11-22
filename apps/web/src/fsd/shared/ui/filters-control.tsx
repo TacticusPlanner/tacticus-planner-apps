@@ -20,6 +20,8 @@ import {
   ResponsiveDialogTitle,
 } from "./responsive-dialog"
 import { CountBadge } from "./count-badge"
+import { FilterLabelIcon } from "./filter-label-icon"
+import type { FilterLabelIconKind } from "./filter-label-icon"
 
 /**
  * The one "Filters" button (ui-style-guide rule 2): an outline button with the filter icon, and the
@@ -163,14 +165,18 @@ export function FiltersControl({
  * One filter with its visible label above the control. Pass `children` as a render function to
  * name the control by the label (`id` for an input or switch, `labelId` for `aria-labelledby`);
  * a control passed as plain children names itself (its `aria-label` repeats the visible label).
+ * `icon` puts the filter's game icon before the label (`FilterLabelIcon`), so a panel of fields
+ * scans by picture as well as by word.
  */
 export function FilterField({
   label,
+  icon,
   children,
   className,
   inline = false,
 }: {
   label: string
+  icon?: FilterLabelIconKind
   children: ReactNode | ((ids: { id: string; labelId: string }) => ReactNode)
   className?: string
   /** A switch or a short number input: label and control on one line. */
@@ -192,6 +198,7 @@ export function FilterField({
         htmlFor={named ? id : undefined}
         id={labelId}
       >
+        {icon ? <FilterLabelIcon kind={icon} /> : null}
         {label}
       </Label>
       {named ? children({ id, labelId }) : children}

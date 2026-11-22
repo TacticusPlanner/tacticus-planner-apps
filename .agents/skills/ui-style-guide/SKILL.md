@@ -120,7 +120,10 @@ One row directly under the header, three fixed slots, left to right:
   `size="compact"` is a `w-80` popover on desktop, for a short list that fits
   without scrolling; `size="form"` is a form-width dialog, for longer lists.
   Both are a bottom sheet on mobile. Inside, each field has its visible label
-  above it (`FilterField`; `inline` for a switch or a short number). Changes
+  above it (`FilterField`; `inline` for a switch or a short number), led by
+  the filter's game icon (`icon`, from `FilterLabelIcon` so a filter looks
+  the same on every page), and options of a game entity show its icon in the
+  list and in the trigger (rule 6). Changes
   apply as they are made; the footer is ghost "Clear filters" at the left and
   "Done". The one exception is a filter set that starts a slow calculation
   (Raids): it keeps an "Apply" button.

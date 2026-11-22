@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 import { Switch } from "@workspace/ui/components/switch"
 
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
-import { render, screen } from "@/test/render"
+import { render, screen, within } from "@/test/render"
 
 import { FilterField, FiltersControl } from "./filters-control"
 
@@ -116,4 +116,22 @@ describe("FiltersControl", () => {
       expect(screen.getByRole("switch", { name: "Owned only" })).toBeChecked()
     }
   )
+
+  it("leads a field's label with its decorative game icon, still named by the label alone", () => {
+    render(
+      <FilterField icon="movement" label="Movement">
+        {({ id }) => <input id={id} />}
+      </FilterField>
+    )
+
+    expect(
+      screen.getByRole("textbox", { name: "Movement" })
+    ).toBeInTheDocument()
+    const label = screen.getByText("Movement")
+    // Drawn, but hidden from assistive tech: the label's text already names the field.
+    expect(
+      within(label).getByRole("presentation", { hidden: true })
+    ).toHaveAttribute("src", expect.stringContaining("ui_icon_stat_move"))
+    expect(within(label).queryByRole("presentation")).toBeNull()
+  })
 })

@@ -363,7 +363,10 @@ export function SearchableSelect<TValue extends string | number>({
       testId={testId}
       summary={
         selected ? (
-          <span className="truncate">{selected.label}</span>
+          <>
+            {selected.icon}
+            <span className="truncate">{selected.label}</span>
+          </>
         ) : value !== undefined ? (
           <span className="truncate">{String(value)}</span>
         ) : (
