@@ -90,8 +90,9 @@ export function RowDrop({
 }
 
 /** One row per suggested node, as a regular raid card row: its battle (opening its enemies), the
- * goal drop with "owned/target" (or the node's own drop with what the player holds), the enemies a
- * battle defeats on a row fought by hand for kills, and the running Home Screen Event's points. A raid row shows no raid
+ * goal drop with "owned/target" (or the node's own drop with what the player holds) and the running
+ * Home Screen Event's points; a by-hand battle row adds a second line with the enemies a battle
+ * defeats (for kills) and its battle count. A raid row shows no raid
  * count or energy; a by-hand battle row keeps its battle count, and an open-ended row shows its
  * energy per battle. */
 export function RaidRows({
@@ -128,6 +129,15 @@ export function RaidRows({
               fallbackLabel={row.battleId}
               location={locations?.get(row.battleId)}
               testId={`hre-raid-${row.battleId}`}
+              details={
+                battles && !openEnded ? (
+                  <BattleDetails
+                    battles={row.raids}
+                    enemies={row.enemies}
+                    testId={`hre-raid-${row.battleId}`}
+                  />
+                ) : null
+              }
             >
               <RowDrop
                 battleId={row.battleId}
@@ -135,15 +145,6 @@ export function RaidRows({
                 testId={`hre-raid-${row.battleId}`}
                 view={rowsView}
               />
-              {row.enemies === undefined ? null : (
-                <Badge
-                  className="tabular-nums"
-                  data-testid={`hre-raid-${row.battleId}-enemies`}
-                  variant="outline"
-                >
-                  {t("raids.enemyCount", { count: row.enemies })}
-                </Badge>
-              )}
               {row.eventPoints > 0 ? (
                 <Badge
                   className="tabular-nums"
@@ -158,21 +159,47 @@ export function RaidRows({
                   <EntityIcon size="inline" alt="" src={energyIcon()} />
                   {t("raids.energyPerBattle", { energy: row.energyCost })}
                 </Badge>
-              ) : battles ? (
-                <Badge className="tabular-nums" variant="outline">
-                  <EntityIcon
-                    size="inline"
-                    alt=""
-                    src={battleGlyphIcon("campaignBattle")}
-                  />
-                  {t("raids.battleCount", { count: row.raids })}
-                </Badge>
               ) : null}
             </EventLocationRow>
           )
         }}
       />
       <ListPagingControls paging={paging} testId={`${testId}-paging`} />
+    </>
+  )
+}
+
+/** A by-hand battle row's second line: the enemies one battle defeats (kill objectives) and the
+ * battles to fight there. */
+function BattleDetails({
+  battles,
+  enemies,
+  testId,
+}: {
+  battles: number
+  enemies: number | undefined
+  testId: string
+}) {
+  const { t } = useTranslation("hre")
+  return (
+    <>
+      {enemies === undefined ? null : (
+        <Badge
+          className="tabular-nums"
+          data-testid={`${testId}-enemies`}
+          variant="outline"
+        >
+          {t("raids.enemyCount", { count: enemies })}
+        </Badge>
+      )}
+      <Badge className="tabular-nums" variant="outline">
+        <EntityIcon
+          size="inline"
+          alt=""
+          src={battleGlyphIcon("campaignBattle")}
+        />
+        {t("raids.battleCount", { count: battles })}
+      </Badge>
     </>
   )
 }

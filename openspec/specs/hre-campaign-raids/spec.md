@@ -273,7 +273,7 @@ Raid suggestions SHALL use every candidate node whatever the mission's other obj
 
 ### Requirement: Rows look like regular raid card rows
 
-Each suggested node SHALL be shown as a regular raid card row: its battle, the goal drop with "owned/target", and the running event's points. A node that feeds no goal SHALL show its own drop's icon with how many the player owns ("7 owned"), so its rewards show without a goal (Severyn, 2026-11); a node that drops nothing shows no drop. A row fought by hand for a kill objective SHALL show the enemies one battle there defeats ("6 enemies"; Severyn, 2026-11). Rows SHALL NOT show the portraits of the goals' characters (Severyn, 2026-11), so a row stays on one line on a phone.
+Each suggested node SHALL be shown as a regular raid card row: its battle, the goal drop with "owned/target", and the running event's points. A node that feeds no goal SHALL show its own drop's icon with how many the player owns ("7 owned"), so its rewards show without a goal (Severyn, 2026-11); a node that drops nothing shows no drop. A row fought by hand SHALL show its battle count, and for a kill objective the enemies one battle there defeats ("6 enemies"), on a second line under the row, so they never squeeze the node name (Severyn, 2026-11). Rows SHALL NOT show the portraits of the goals' characters (Severyn, 2026-11), so a row stays on one line on a phone.
 
 #### Scenario: Node feeds two goals
 

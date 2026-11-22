@@ -66,7 +66,7 @@ describe("RaidRows", () => {
     )
   })
 
-  it("shows the enemies a battle defeats on a row fought by hand for kills", () => {
+  it("shows the enemies a battle defeats and the battle count on a second line", () => {
     render(
       <RaidRows
         battles
@@ -75,9 +75,10 @@ describe("RaidRows", () => {
         view={view()}
       />
     )
-    expect(screen.getByTestId("hre-raid-I20-enemies")).toHaveTextContent(
-      "raids.enemyCount|count=6"
-    )
+    // On the row's second line, with the battle count.
+    const details = screen.getByTestId("hre-raid-I20-details")
+    expect(details).toHaveTextContent("raids.enemyCount|count=6")
+    expect(details).toHaveTextContent("raids.battleCount|count=1")
     expect(screen.queryByTestId("hre-raid-I21-enemies")).toBeNull()
   })
 })
