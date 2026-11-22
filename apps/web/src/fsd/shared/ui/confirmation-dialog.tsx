@@ -58,7 +58,12 @@ export function ConfirmationDialog({
         if (!next && !pending) onCancel()
       }}
     >
-      <DialogContent className="sm:max-w-md" data-testid={testId}>
+      {/* No close button: Cancel, Escape and a click outside already cancel. */}
+      <DialogContent
+        className="sm:max-w-md"
+        data-testid={testId}
+        showCloseButton={false}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description === undefined ? null : (

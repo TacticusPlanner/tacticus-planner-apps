@@ -23,6 +23,9 @@ describe("ConfirmationDialog", () => {
     )
 
     expect(screen.getByText("Your changes will be lost.")).toBeVisible()
+    expect(
+      screen.queryByRole("button", { name: "Close" })
+    ).not.toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: "Keep editing" }))
     expect(onCancel).toHaveBeenCalledOnce()
     await user.click(screen.getByRole("button", { name: "Discard" }))

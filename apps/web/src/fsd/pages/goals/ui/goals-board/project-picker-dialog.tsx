@@ -43,7 +43,7 @@ export function ProjectPickerDialog({
   return (
     <ResponsiveDialog
       data-testid="project-picker-dialog"
-      desktopClassName="sm:max-w-md"
+      width="narrow"
       onOpenChange={onOpenChange}
       open={open}
     >
@@ -51,7 +51,7 @@ export function ProjectPickerDialog({
         <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
         <ResponsiveDialogDescription>{description}</ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-1 py-2">
+      <ResponsiveDialogBody className="gap-1">
         {projects.map((project) => (
           <Button
             className="justify-start gap-2"

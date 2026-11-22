@@ -6,6 +6,7 @@ import {
 } from "@workspace/ui/components/popover"
 import {
   Sheet,
+  SheetBody,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -78,9 +79,9 @@ export function EnemyTile({
               {t("battles.enemy.detailDescription")}
             </SheetDescription>
           </SheetHeader>
-          <div className="overflow-y-auto px-4 pb-4">
+          <SheetBody>
             <EnemyDetail tile={tile} />
-          </div>
+          </SheetBody>
         </SheetContent>
       </Sheet>
     )

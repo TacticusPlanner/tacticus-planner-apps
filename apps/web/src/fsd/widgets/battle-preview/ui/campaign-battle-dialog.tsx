@@ -40,7 +40,7 @@ export function CampaignBattleDialog({
   return (
     <ResponsiveDialog
       data-testid="campaign-battle-dialog"
-      desktopClassName="sm:max-w-2xl"
+      width="form"
       onOpenChange={(open) => {
         if (!open) onClose()
       }}
@@ -86,7 +86,7 @@ function CampaignBattleContent({ target }: { target: CampaignBattleTarget }) {
           <CampaignLocationName {...target.title} />
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="flex min-w-0 flex-col gap-3 pb-6">
+      <ResponsiveDialogBody className="flex min-w-0 flex-col gap-3">
         {battlesRead.status === "loading" ? (
           <div data-testid="campaign-battle-loading">
             <span className="sr-only">{t("locationDetails.loading")}</span>

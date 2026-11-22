@@ -83,7 +83,7 @@ export function PlanningSettingsDialog({
   return (
     <ResponsiveDialog
       data-testid="planning-settings-dialog"
-      desktopClassName="sm:max-w-md"
+      width="narrow"
       onOpenChange={onOpenChange}
       open={open}
     >
@@ -96,7 +96,7 @@ export function PlanningSettingsDialog({
         </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
 
-      <ResponsiveDialogBody className="gap-6 py-4">
+      <ResponsiveDialogBody className="gap-6">
         <Field>
           <FieldLabel>{t("goals.planningSettings.dailyEnergy")}</FieldLabel>
           <p

@@ -37,7 +37,7 @@ export function LegendaryEventSettingsButton() {
       />
       <ResponsiveDialog
         data-testid="legendary-event-settings-dialog"
-        desktopClassName="sm:max-w-md"
+        width="narrow"
         // Opened from state, so focus goes back to the Settings button by hand.
         onCloseAutoFocus={(event) => {
           event.preventDefault()
@@ -52,7 +52,7 @@ export function LegendaryEventSettingsButton() {
             {t("settings.description")}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-        <ResponsiveDialogBody className="pt-2 pb-6">
+        <ResponsiveDialogBody>
           <LegendaryEventSettingsForm />
         </ResponsiveDialogBody>
       </ResponsiveDialog>

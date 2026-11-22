@@ -18,6 +18,7 @@ import {
 } from "@workspace/ui/components/popover"
 import {
   Sheet,
+  SheetBody,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -186,11 +187,11 @@ function MobileList({
           <SheetHeader>
             <SheetTitle>{open?.unit.name}</SheetTitle>
           </SheetHeader>
-          <div className="overflow-y-auto px-4 pb-4">
+          <SheetBody>
             {open ? (
               <UnitDiffDetails item={open} fields={fields} hideTitle />
             ) : null}
-          </div>
+          </SheetBody>
         </SheetContent>
       </Sheet>
     </>

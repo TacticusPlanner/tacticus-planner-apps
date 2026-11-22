@@ -6,6 +6,7 @@ import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import {
   Sheet,
+  SheetBody,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -187,9 +188,9 @@ export function TierTileDetailsSheet({
                 {t("tierList.details.description")}
               </SheetDescription>
             </SheetHeader>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
+            <SheetBody>
               <TierTileDetailsList details={details} />
-            </div>
+            </SheetBody>
           </>
         ) : null}
       </SheetContent>

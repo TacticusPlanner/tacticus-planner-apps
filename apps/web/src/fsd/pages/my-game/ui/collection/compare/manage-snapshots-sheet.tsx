@@ -7,6 +7,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import {
   Sheet,
+  SheetBody,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -76,7 +77,7 @@ export function ManageSnapshotsSheet({
                 : null}
             </SheetDescription>
           </SheetHeader>
-          <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 pb-4">
+          <SheetBody className="flex flex-col gap-6">
             <section data-testid="manage-snapshots-manual">
               {list && sections.manual.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
@@ -128,7 +129,7 @@ export function ManageSnapshotsSheet({
                 ))}
               </ul>
             </section>
-          </div>
+          </SheetBody>
         </SheetContent>
       </Sheet>
       <DeleteSnapshotDialog

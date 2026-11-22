@@ -11,6 +11,7 @@ import {
   EntityIcon,
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -48,7 +49,7 @@ export function QuestTeamOptionsDialog({
   return (
     <ResponsiveDialog
       data-testid="quest-team-options"
-      desktopClassName="sm:max-w-2xl"
+      width="form"
       onOpenChange={onOpenChange}
       open={open}
     >
@@ -56,9 +57,11 @@ export function QuestTeamOptionsDialog({
         <ResponsiveDialogTitle>
           {t("team.optionsTitle", { number: battleNumber ?? "" })}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">{t("team.optionsHint")}</p>
+        <ResponsiveDialogDescription>
+          {t("team.optionsHint")}
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="pb-3">
+      <ResponsiveDialogBody>
         <ol className="flex flex-col gap-1.5">
           {featured ? (
             <li>
@@ -104,7 +107,7 @@ export function QuestTeamOptionsDialog({
           })}
         </ol>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="flex-col border-t md:justify-between">
+      <ResponsiveDialogFooter className="flex-col md:justify-between">
         <p
           className="inline-flex items-center gap-1 text-sm tabular-nums"
           data-testid="quest-team-options-power"

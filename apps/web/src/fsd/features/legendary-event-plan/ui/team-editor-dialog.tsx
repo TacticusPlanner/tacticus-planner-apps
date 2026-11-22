@@ -255,7 +255,7 @@ export function TeamEditorDialog({
                 })}
           </ResponsiveDialogTitle>
         </ResponsiveDialogHeader>
-        <ResponsiveDialogBody className="gap-5 pb-2">
+        <ResponsiveDialogBody className="gap-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium" htmlFor={nameId}>
               {t("teams.editor.name")}
@@ -336,7 +336,7 @@ export function TeamEditorDialog({
             {t("teams.editor.notSaved")}
           </p>
         ) : null}
-        <ResponsiveDialogFooter className="flex-col border-t md:justify-between">
+        <ResponsiveDialogFooter className="flex-col md:justify-between">
           <TeamEditorSummary
             checkedObjectives={objectives.filter((objective) =>
               checked.includes(objective.index)
