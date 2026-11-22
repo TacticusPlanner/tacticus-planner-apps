@@ -9,6 +9,9 @@ import type {
   PrerequisiteGoalLabel,
 } from "../blockers/goal-blockers"
 import { implicitPrerequisiteBlockers } from "../blockers/implicit-prerequisite-blockers"
+import { splitEstimateBlock } from "../blockers/hre-goal-source"
+import { useHreShardSources } from "@/entities/hre-mission"
+import type { HreShardSource } from "@/entities/hre-mission"
 import type {
   EstimateOutcome,
   RankSlotAllocation,
@@ -59,6 +62,9 @@ export type GoalOverviewMetrics = {
   /** The higher-priority in-flight goal of the same unit and type that already reaches this goal's
    *  target (goal-milestone-planning), so this one adds no work of its own; null otherwise. */
   coveredBy?: GoalDetail | null
+  /** The running or upcoming Hero Release Event this goal's unfarmable shards come from: shown as
+   *  obtainable there rather than blocked. Absent without a plan estimate. */
+  hreSource?: HreShardSource | null
 }
 
 const UNKNOWN_METRICS: GoalOverviewMetrics = {
@@ -143,6 +149,7 @@ function useComputedGoalsOverviewMetrics(
     !!(charactersById && mowsById && ascensionCostsById && unlockShardCostsById)
 
   const levelRules = useLevelRules()
+  const hreSources = useHreShardSources()
 
   // Everything below is pure in the reads above: memoised so a re-render that changes none of them
   // (a toggle elsewhere on the page, a sync progress tick) skips the per-goal resource maths.
@@ -319,15 +326,13 @@ function useComputedGoalsOverviewMetrics(
         ? { ...withMaterials, ...planNet, alliance }
         : withMaterials
 
-      const estimateOutcome = estimatesByGoalId?.get(goalId)
+      const estimateBlock = splitEstimateBlock(
+        estimatesByGoalId?.get(goalId),
+        hreSources
+      )
       const blockers = computeGoalBlockers({
-        estimatePartial:
-          estimateOutcome?.status === "Blocked" &&
-          (estimateOutcome.actionableResourceIds?.length ?? 0) > 0,
-        estimateReason:
-          estimateOutcome?.status === "Blocked"
-            ? estimateOutcome.reason
-            : undefined,
+        estimatePartial: estimateBlock.partial,
+        estimateReason: estimateBlock.reason,
         unreachedPrerequisites: detail.dependsOn
           .filter(
             (dependencyGoalId) =>
@@ -355,6 +360,7 @@ function useComputedGoalsOverviewMetrics(
         remaining,
         blockers,
         coveredBy: siblings?.coveredBy ?? null,
+        hreSource: estimateBlock.hreSource,
         levelRequirement: computeLevelRequirementProgress({
           detail,
           playerUnit,
@@ -392,6 +398,7 @@ function useComputedGoalsOverviewMetrics(
     abilityMaterialsByGoalId,
     planNetByGoalId,
     levelRules,
+    hreSources,
   ])
 }
 

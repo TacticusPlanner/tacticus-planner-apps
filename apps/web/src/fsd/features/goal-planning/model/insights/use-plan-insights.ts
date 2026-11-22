@@ -11,7 +11,12 @@ import {
 import { useGlobalGoalPlan } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
 import { usePlanningSettings } from "@/entities/planning-setting"
-import { toOnslaughtRunsPerDay, useLevelRules } from "@/entities/goal-farming"
+import {
+  hreShardReasons,
+  toOnslaughtRunsPerDay,
+  useLevelRules,
+} from "@/entities/goal-farming"
+import { useHreShardSources } from "@/entities/hre-mission"
 import { useCampaignDisplay, compareCodeUnits } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
@@ -101,6 +106,15 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     useCampaignGateContext()
   const levelRules = useLevelRules()
   const { settings: planningSettings } = usePlanningSettings()
+  // A featured hero's shards come from their running or upcoming Hero Release Event.
+  const hreSources = useHreShardSources()
+  const hreReasons = useMemo(
+    () => hreShardReasons(hreSources.values()),
+    [hreSources]
+  )
+  const hreKey = [...hreReasons]
+    .map(([id, reason]) => `${id}=${reason}`)
+    .join(",")
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
 
@@ -163,7 +177,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     powerLevel,
     eliteCampaignMinPowerLevel,
   ].join("|")
-  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}:${eligibleBattlesKey}:${reachedBattlesKey}`
+  const calculationKey = `${scopeKey}:${memberKey}:${inventoryKey}:${onslaughtRunsPerDay}:${progressionKey}:${eligibleBattlesKey}:${reachedBattlesKey}:${hreKey}`
   // A project scope that holds none of the plan's Active goals has nothing to report.
   const hasQuery =
     isAuthenticated &&
@@ -302,6 +316,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
             campaignFullLabel,
             dailyEnergy: planningSettings.dailyEnergy,
             onslaughtProgress,
+            hreShardReasons: hreReasons,
             currentOnslaughtTokens,
             onslaughtRewards: onslaughtRewards,
             onslaughtRunsPerDay,

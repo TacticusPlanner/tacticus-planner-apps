@@ -51,6 +51,38 @@ vi.mock("@/features/goal-planning/model/shared/use-goal-catalog", () => ({
 import { BlockedIndicator, StatusBadge } from "./status-badge"
 
 describe("BlockedIndicator", () => {
+  it("leaves a hero's HRE shards out of the unavailable materials", async () => {
+    render(
+      <BlockedIndicator
+        blockers={{
+          reasons: [{ kind: "EstimateBlocked", reason: "NoFarmLocation" }],
+          isBlocked: true,
+        }}
+        estimate={{
+          status: "Blocked",
+          reason: "NoFarmLocation",
+          resourceIds: ["upgHpM004" as never, "shard:astraDaras"],
+          blockers: [
+            {
+              resourceId: "upgHpM004" as never,
+              reason: "NoFarmLocation",
+              remaining: 6,
+            },
+            {
+              resourceId: "shard:astraDaras",
+              reason: "HreRunning",
+              remaining: 80,
+            },
+          ],
+        }}
+      />
+    )
+    await userEvent.click(screen.getByTestId("goal-blocked-indicator"))
+    const materials = await screen.findByTestId("goal-unavailable-materials")
+    expect(materials).toHaveTextContent("Venerable Battle Mark")
+    expect(materials).not.toHaveTextContent(/astraDaras|Hero Release Event/)
+  })
+
   it("renders nothing when not blocked", () => {
     render(<BlockedIndicator blockers={{ reasons: [], isBlocked: false }} />)
     expect(screen.queryByTestId("goal-blocked-indicator")).toBeNull()

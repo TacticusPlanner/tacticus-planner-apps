@@ -16,7 +16,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { GoalStatus } from "@/entities/goal"
 import { afterNextPaint, hasNode } from "@/shared/lib"
-import { resourceLabel } from "@/entities/goal-farming"
+import { isHreBlocker, resourceLabel } from "@/entities/goal-farming"
 import type {
   EstimateOutcome,
   EstimateResourceId,
@@ -269,12 +269,12 @@ function UnavailableMaterials({
 }) {
   const { t } = useTranslation(["common", "upgrades", "characters", "dailies"])
   const { upgradesById, charactersById } = useGoalCatalog()
-  if (
-    estimate.status !== "Blocked" ||
-    estimate.blockers === undefined ||
-    estimate.blockers.length === 0
-  )
-    return null
+  // A hero's shards from a Hero Release Event have their own indicator (`HreSourceIndicator`).
+  const blockers =
+    estimate.status === "Blocked"
+      ? (estimate.blockers ?? []).filter((blocker) => !isHreBlocker(blocker))
+      : []
+  if (blockers.length === 0) return null
   const label = (id: EstimateResourceId) => {
     const fallback = resourceLabel(
       id,
@@ -291,7 +291,7 @@ function UnavailableMaterials({
   }
   return (
     <ul className="grid gap-3 text-xs" data-testid="goal-unavailable-materials">
-      {estimate.blockers.map((blocker) => {
+      {blockers.map((blocker) => {
         const reason = t(`common:goals.estimate.blocked.${blocker.reason}`)
         const material = t("common:goals.estimate.materialCount", {
           material: label(blocker.resourceId),

@@ -30,6 +30,7 @@ export type GoalRowData = {
   remaining: GoalOverviewMetrics["remaining"]
   levelRequirement: GoalOverviewMetrics["levelRequirement"] | undefined
   blockers: GoalOverviewMetrics["blockers"]
+  hreSource: GoalOverviewMetrics["hreSource"]
   energy: number | undefined
   onslaughtTokens: number | undefined
   shopSpend: ReturnType<typeof estimateShopSpend>
@@ -57,6 +58,7 @@ export function deriveGoalRowData(
     remaining,
     levelRequirement: metrics?.levelRequirement,
     blockers: metrics?.blockers ?? NO_BLOCKERS,
+    hreSource: metrics?.hreSource ?? null,
     energy,
     onslaughtTokens: estimateOnslaughtTokens(estimate),
     shopSpend: estimateShopSpend(estimate),

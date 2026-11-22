@@ -1,7 +1,11 @@
 import type { CharacterStorageModel } from "@workspace/game-catalog"
 import type { Rarity, UpgradeId } from "@workspace/game-domain"
 
-import { resourceLabel, selectFarmNodes } from "@/entities/goal-farming"
+import {
+  isHreBlocker,
+  resourceLabel,
+  selectFarmNodes,
+} from "@/entities/goal-farming"
 import type {
   EstimateOutcome,
   EstimateResourceId,
@@ -110,7 +114,12 @@ export function computeBottlenecks(params: {
     const estimate = params.estimates.get(goal.goalId)
     const blocked = new Set<EstimateResourceId>()
     if (estimate?.status === "Blocked") {
-      for (const blocker of estimate.blockers ?? []) {
+      // A hero's shards from a Hero Release Event aren't holding the plan back (and no node
+      // drops them, so they never count as farmable either).
+      const deadEnds = (estimate.blockers ?? []).filter(
+        (blocker) => !isHreBlocker(blocker)
+      )
+      for (const blocker of deadEnds) {
         blocked.add(blocker.resourceId)
         const key = `${blocker.reason}:${blocker.resourceId}`
         const entry = blockers.get(key) ?? {
