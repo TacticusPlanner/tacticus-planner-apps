@@ -826,30 +826,62 @@ describe("selectTeamPlans", () => {
     ])
   })
 
-  it("plays the manual objectives in every spare-token mode, waves first for kills", () => {
-    // Mission 2: Chaos kills.
-    expect(modes(progress({ mission: 2, progress: [5, 0] }), all)).toEqual([
-      "battle:alliance",
-      "onslaught:alliance",
-      "salvageRun:alliance",
-      "arena:alliance",
-    ])
-    // Mission 6: summon-free wins, Arena first.
-    expect(modes(progress({ mission: 6, progress: [2500, 0] }), all)).toEqual([
+  it("plays the manual objectives in the spare-token modes, Arena first, Onslaught first for abilities", () => {
+    // Mission 6: healing and summon-free wins, Arena, Salvage Run, then Onslaught.
+    expect(modes(progress({ mission: 6 }), all)).toEqual([
       "battle:summonFree",
       "arena:summonFree",
-      "onslaught:summonFree",
       "salvageRun:summonFree",
+      "onslaught:summonFree",
     ])
-    // Mission 4 already plays Arena for its token objective.
-    expect(modes(progress({ mission: 4 }), all)).toEqual([
-      "battle:ranged",
-      "arena:ranged",
-      "onslaught:ranged",
-      "salvageRun:ranged",
+    // Mission 3: ability uses, Onslaught first.
+    expect(modes(progress({ mission: 3, progress: [20, 0] }), all)).toEqual([
+      "battle:abilities",
+      "onslaught:abilities",
+      "arena:abilities",
+      "salvageRun:abilities",
+    ])
+    // Mission 5: ability damage, Onslaught first too.
+    expect(modes(progress({ mission: 5 }), all)).toEqual([
+      "battle:strongest",
+      "onslaught:strongest",
+      "arena:strongest",
+      "salvageRun:strongest",
     ])
     // No spare tokens, no spare teams.
     expect(modes(progress({ mission: 3 }))).toEqual(["battle:abilities"])
+  })
+
+  it("leaves out the overkill modes for kills and stops once the kills are covered", () => {
+    // Mission 1: 5 melee kills. Arena's 3 spare battles cover them; Onslaught is overkill.
+    expect(modes(progress({ mission: 1, progress: [2, 0] }), all)).toEqual([
+      "battle:melee",
+      "arena:melee",
+    ])
+    // Without spare Arena tokens, Salvage Run and Onslaught are still overkill for 5 kills.
+    expect(
+      modes(progress({ mission: 1, progress: [2, 0] }), {
+        onslaught: all.onslaught,
+        salvageRun: all.salvageRun,
+      })
+    ).toEqual(["battle:melee"])
+    // Mission 2: 10 alliance kills, covered by 3 Arena battles.
+    expect(modes(progress({ mission: 2, progress: [5, 0] }), all)).toEqual([
+      "battle:alliance",
+      "arena:alliance",
+    ])
+    // Mission 4 already plays Arena for its token objective; 50 ranged kills take both others.
+    expect(modes(progress({ mission: 4 }), all)).toEqual([
+      "battle:ranged",
+      "arena:ranged",
+      "salvageRun:ranged",
+      "onslaught:ranged",
+    ])
+    // 45 of 50 done: 5 left, so neither Salvage Run nor Onslaught.
+    expect(modes(progress({ mission: 4, progress: [0, 45] }), all)).toEqual([
+      "battle:ranged",
+      "arena:ranged",
+    ])
   })
 
   it("names the spare and fields the whole alliance for Onslaught ability uses", () => {
