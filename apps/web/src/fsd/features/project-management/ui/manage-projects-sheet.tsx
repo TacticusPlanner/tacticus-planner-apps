@@ -4,25 +4,25 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@workspace/ui/components/sheet"
 
 import { isProjectNameValid } from "@/entities/project"
 import type { ProjectSummary } from "@/entities/project"
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+} from "@/shared/ui"
 import { useEventTargetOptions } from "../model/event-target-options"
 import type { useProjectActions } from "../model/use-project-actions"
 import { ProjectColorPicker } from ".//project-color-picker"
 import { ProjectTargetField } from "./project-target-field"
 
 /**
- * The create/edit form for a project (project-management spec: "Creating and editing a project
- * uses a form Sheet") — narrowed from its previous shape, which combined this form with an
+ * The create/edit form for a project, in a form-width dialog (a bottom sheet on phones) with Cancel
+ * and Create/Save (ui-style-guide rule 8: a plain form is a dialog, not a side sheet). Narrowed from its previous shape, which combined this form with an
  * embedded project list/selection; that list now lives permanently on the Projects page itself (see
  * `ProjectList`). `project` undefined means "New project" (blank form); a `ProjectSummary` means
  * "Edit" (pre-filled). Submitting saves the change and closes the Sheet either way. Lifecycle
@@ -49,41 +49,42 @@ export function ManageProjectsSheet({
   const { t } = useTranslation()
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        className="sm:data-[side=right]:max-w-md"
-        data-testid="manage-projects-sheet"
-      >
-        <SheetHeader>
-          <SheetTitle>
-            {project
-              ? t("goals.project.editTitle")
-              : t("goals.project.newProjectTitle")}
-          </SheetTitle>
-          <SheetDescription>
-            {t("goals.project.formDescription")}
-          </SheetDescription>
-        </SheetHeader>
+    <ResponsiveDialog
+      data-testid="manage-projects-sheet"
+      open={open}
+      onOpenChange={onOpenChange}
+      width="form"
+    >
+      <ResponsiveDialogHeader>
+        <ResponsiveDialogTitle>
+          {project
+            ? t("goals.project.editTitle")
+            : t("goals.project.newProjectTitle")}
+        </ResponsiveDialogTitle>
+        <ResponsiveDialogDescription>
+          {t("goals.project.formDescription")}
+        </ResponsiveDialogDescription>
+      </ResponsiveDialogHeader>
 
-        {/* Unmounted while closed and keyed by the target project (or "new") - so every time it
+      {/* Unmounted while closed and keyed by the target project (or "new") - so every time it
             opens, local form state starts fresh from the current `project` prop rather than
             needing an effect to resync state that a previous open may have left behind. */}
-        {open ? (
-          <ProjectForm
-            actions={actions}
-            key={project?.projectId ?? "new"}
-            onSaved={(created) => {
-              if (created && !project && onCreated) {
-                onCreated(created)
-              } else {
-                onOpenChange(false)
-              }
-            }}
-            project={project}
-          />
-        ) : null}
-      </SheetContent>
-    </Sheet>
+      {open ? (
+        <ProjectForm
+          actions={actions}
+          key={project?.projectId ?? "new"}
+          onCancel={() => onOpenChange(false)}
+          onSaved={(created) => {
+            if (created && !project && onCreated) {
+              onCreated(created)
+            } else {
+              onOpenChange(false)
+            }
+          }}
+          project={project}
+        />
+      ) : null}
+    </ResponsiveDialog>
   )
 }
 
@@ -91,10 +92,12 @@ function ProjectForm({
   project,
   actions,
   onSaved,
+  onCancel,
 }: {
   project: ProjectSummary | undefined
   actions: ReturnType<typeof useProjectActions>
   onSaved: (created: ProjectSummary | null) => void
+  onCancel: () => void
 }) {
   const { t } = useTranslation()
   const [name, setName] = useState(project?.name ?? "")
@@ -135,54 +138,59 @@ function ProjectForm({
 
   return (
     <>
-      <form
-        className="grid min-h-0 flex-1 content-start gap-4 overflow-y-auto px-4"
-        id="manage-project-form"
-        onSubmit={submit}
-      >
-        <Field>
-          <FieldLabel htmlFor="project-name">
-            {t("goals.project.name")}
-          </FieldLabel>
-          <Input
-            id="project-name"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="project-description">
-            {t("goals.project.description")}
-          </FieldLabel>
-          <Input
-            id="project-description"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="project-color">
-            {t("goals.project.color")}
-          </FieldLabel>
-          <ProjectColorPicker onChange={setColor} value={color} />
-          <Input
-            aria-label={t("goals.project.color")}
-            id="project-color"
-            placeholder="#6366f1"
-            value={color}
-            onChange={(event) => setColor(event.target.value)}
-          />
-        </Field>
-        {project?.isDefault ? null : (
-          <ProjectTargetField
-            onChange={setTargetEventId}
-            options={targetOptions}
-            value={targetEventId}
-          />
-        )}
-      </form>
+      <ResponsiveDialogBody>
+        <form
+          className="grid content-start gap-4"
+          id="manage-project-form"
+          onSubmit={submit}
+        >
+          <Field>
+            <FieldLabel htmlFor="project-name">
+              {t("goals.project.name")}
+            </FieldLabel>
+            <Input
+              id="project-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="project-description">
+              {t("goals.project.description")}
+            </FieldLabel>
+            <Input
+              id="project-description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="project-color">
+              {t("goals.project.color")}
+            </FieldLabel>
+            <ProjectColorPicker onChange={setColor} value={color} />
+            <Input
+              aria-label={t("goals.project.color")}
+              id="project-color"
+              placeholder="#6366f1"
+              value={color}
+              onChange={(event) => setColor(event.target.value)}
+            />
+          </Field>
+          {project?.isDefault ? null : (
+            <ProjectTargetField
+              onChange={setTargetEventId}
+              options={targetOptions}
+              value={targetEventId}
+            />
+          )}
+        </form>
+      </ResponsiveDialogBody>
 
-      <SheetFooter>
+      <ResponsiveDialogFooter>
+        <Button onClick={onCancel} type="button" variant="outline">
+          {t("goals.project.cancel")}
+        </Button>
         <Button
           disabled={!isProjectNameValid(name) || actions.pending}
           form="manage-project-form"
@@ -190,7 +198,7 @@ function ProjectForm({
         >
           {project ? t("goals.project.save") : t("goals.project.create")}
         </Button>
-      </SheetFooter>
+      </ResponsiveDialogFooter>
     </>
   )
 }

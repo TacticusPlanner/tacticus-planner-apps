@@ -11,7 +11,7 @@ a project context preselects that project.
 
 ### Requirement: A project-scoped goal-creation launch preselects that project
 
-When goal creation is launched from a project context — a Projects row's Create goal menu action, the Create new goal action inside that row's Manage goals sheet, Goals' contextual Create Goal action while a project scope is selected, or a global entry point (the sidebar button, bottom-nav button, or keyboard shortcut) used while the Goals page is scoped to a project (`/plan/goals?project={id}`) — the creation sheet SHALL preselect that project as the goal's membership before the user has chosen an entity or goal type. The user MAY still change or clear that selection before saving, the same as any other project selection in the creation sheet. Launching creation with no project context (Goals with "All goals" selected, the Projects page's New project flow, or a global entry point used anywhere else) SHALL be unaffected by this requirement and SHALL keep falling back to the user's Default project when no consecutive-creation context is remembered. Remembered membership and its precedence follow `goal-creation` ("Consecutive creation retains compatible context").
+When goal creation is launched from a project context — a Projects row's Create goal menu action, the Create new goal action inside that row's Manage goals dialog, Goals' contextual Create Goal action while a project scope is selected, or a global entry point (the sidebar button, bottom-nav button, or keyboard shortcut) used while the Goals page is scoped to a project (`/plan/goals?project={id}`) — the creation sheet SHALL preselect that project as the goal's membership before the user has chosen an entity or goal type. The user MAY still change or clear that selection before saving, the same as any other project selection in the creation sheet. Launching creation with no project context (Goals with "All goals" selected, the Projects page's New project flow, or a global entry point used anywhere else) SHALL be unaffected by this requirement and SHALL keep falling back to the user's Default project when no consecutive-creation context is remembered. Remembered membership and its precedence follow `goal-creation` ("Consecutive creation retains compatible context").
 
 #### Scenario: Creating from a non-default project preselects it
 
@@ -44,7 +44,7 @@ When goal creation is launched from a project context — a Projects row's Creat
 
 ### Requirement: Existing project controls can start a new goal
 
-A Projects row's overflow menu and its Manage goals sheet SHALL each offer a
+A Projects row's overflow menu and its Manage goals dialog SHALL each offer a
 distinct Create goal / Create new goal action. Activating either SHALL launch the
 normal goal-creation sheet with that row's project preselected. Manage goals
 SHALL remain an existing-goal assignment flow; choosing Create new goal SHALL not

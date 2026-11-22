@@ -19,11 +19,6 @@
       "count": 2
     }
   },
-  "src/fsd/features/project-management/ui/add-goals-to-project-sheet.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/features/project-management/ui/project-color-picker.tsx": {
     "no-restricted-syntax": {
       "count": 1

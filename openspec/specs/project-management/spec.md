@@ -6,19 +6,19 @@ Makes Projects a list/detail pair of routes: `/goals/projects` for browsing, cre
 
 ## Requirements
 
-### Requirement: Creating and editing a project uses a form Sheet
+### Requirement: Creating and editing a project uses a form dialog
 
-The list route SHALL provide a "Create project" affordance and, on each project row, an "Edit" action. Both SHALL open the same form (name, description, color and, for a non-Default project, Related to — see `project-event-target`) in a Sheet — "Create project" with empty fields, "Edit" pre-filled with that row's project. Submitting the form SHALL save the change and close the Sheet without navigating away from the current route. The Projects page SHALL be the only surface offering a Create project action; the Legendary Event plan wizard MAY create a project with an event target as part of the plan it creates.
+The list route SHALL provide a "Create project" affordance and, on each project row, an "Edit" action. Both SHALL open the same form (name, description, color and, for a non-Default project, Related to — see `project-event-target`) in a form-width dialog (centered at or above 768px, a bottom sheet below) — "Create project" with empty fields, "Edit" pre-filled with that row's project. The dialog SHALL end with Cancel and the primary action (Create project or Save project). Submitting the form SHALL save the change and close the dialog without navigating away from the current route; Cancel SHALL close it without saving. The Projects page SHALL be the only surface offering a Create project action; the Legendary Event plan wizard MAY create a project with an event target as part of the plan it creates.
 
 #### Scenario: Creating a project
 
-- **WHEN** the user activates "Create project", fills in a name in the opened Sheet, and submits
-- **THEN** the new project appears as a row in the list and the Sheet closes
+- **WHEN** the user activates "Create project", fills in a name in the opened dialog, and submits
+- **THEN** the new project appears as a row in the list and the dialog closes
 
 #### Scenario: Editing a project
 
-- **WHEN** the user activates "Edit" on a project row, changes its name in the opened Sheet, and submits
-- **THEN** the project row reflects the new name and the Sheet closes
+- **WHEN** the user activates "Edit" on a project row, changes its name in the opened dialog, and submits
+- **THEN** the project row reflects the new name and the dialog closes
 
 #### Scenario: Goals offers no project creation
 
