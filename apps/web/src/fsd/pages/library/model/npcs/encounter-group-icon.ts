@@ -2,12 +2,38 @@ import type { CampaignId, UnitId } from "@workspace/game-domain"
 import {
   campaignIcon,
   characterIcon,
+  gameMenuIcon,
+  incursionTokenIcon,
   mowIcon,
   onslaughtTokenIcon,
   raidBossPortrait,
 } from "@workspace/game-catalog"
 
 import type { NpcEncounter } from "@/entities/npc"
+
+/** The game mode's own menu icon (the NPC filter's game mode options); none for Survival. */
+export function encounterSourceIcon(
+  source: NpcEncounter["source"]
+): string | undefined {
+  switch (source) {
+    case "campaign":
+      return gameMenuIcon("battle")
+    case "campaignEvent":
+      return gameMenuIcon("campaignEvent")
+    case "legendaryEvent":
+      return gameMenuIcon("legendaryEvent")
+    case "questEvent":
+      return gameMenuIcon("quests")
+    case "incursion":
+      return incursionTokenIcon()
+    case "guildRaid":
+      return gameMenuIcon("guildRaid")
+    case "onslaught":
+      return gameMenuIcon("onslaught")
+    case "survival":
+      return undefined
+  }
+}
 
 /**
  * The game icon that leads an encounter's row: the campaign's or event's own icon, the event hero or

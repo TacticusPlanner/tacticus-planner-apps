@@ -7,8 +7,9 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { GroupByControl, SegmentedControl } from "@/shared/ui"
+import { EntityIcon, GroupByControl, SegmentedControl } from "@/shared/ui"
 
+import { goalTypeIcon } from "../model/goal-type-icon"
 import { GOAL_TYPE_VALUES } from "../model/types"
 import type { GoalKind } from "../model/types"
 
@@ -47,6 +48,7 @@ export function GoalFilters({
       ? t("goals.filters.allTypes")
       : t(`goals.create.goalTypes.${goalType}`)
 
+  // Each type leads with its game icon, which the trigger repeats beside the chosen one.
   // The trigger shows the chosen type on every viewport (no icon-only select: ui-style-guide rule
   // 3). Its name stays the stable purpose ("Goal type filter") and the value is also said through
   // `aria-describedby`. The list is positioned against the trigger (`position="popper"`).
@@ -69,6 +71,7 @@ export function GoalFilters({
         <SelectItem value="all">{t("goals.filters.allTypes")}</SelectItem>
         {GOAL_TYPE_VALUES.map((type) => (
           <SelectItem key={type} value={type}>
+            <EntityIcon alt="" size="inline" src={goalTypeIcon(type)} />
             {t(`goals.create.goalTypes.${type}`)}
           </SelectItem>
         ))}

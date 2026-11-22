@@ -626,6 +626,7 @@ atlases/ui_icon_faction_votann_01.webp
 atlases/ui_icon_faction_votann_simple_01.webp
 atlases/ui_icon_faction_world_eaters_01.webp
 atlases/ui_icon_guildwars.webp
+atlases/ui_icon_herocount.webp
 atlases/ui_icon_itemtype_block.webp
 atlases/ui_icon_itemtype_booster_block.webp
 atlases/ui_icon_itemtype_booster_crit.webp

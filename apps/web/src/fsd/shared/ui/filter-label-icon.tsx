@@ -1,7 +1,10 @@
 import {
+  battleGlyphIcon,
   campaignIcon,
+  countdownIcon,
   factionIcon,
   gameMenuIcon,
+  datamineAssetUrl,
   heroStarIcon,
   onslaughtAllianceIcon,
   rankIcon,
@@ -44,6 +47,11 @@ const FILTER_LABEL_ICONS = {
   damageType: [statIcon("damage")],
   trait: [traitIcon("Flying"), traitIcon("Psyker"), traitIcon("Mechanical")],
   shardSource: [shardIcon("Regular")],
+  enemies: [battleGlyphIcon("kill")],
+  // The game's hero count (a squad of figures): how many units a battle lets you deploy.
+  deploymentSlots: [datamineAssetUrl("atlases/ui_icon_herocount.webp")],
+  gameMode: [gameMenuIcon("battle")],
+  runningNow: [countdownIcon()],
   campaignType: [campaignIcon(campaignIdSchema.parse("campaign1"), "Standard")],
 } satisfies Record<string, (GameIcon | undefined)[]>
 

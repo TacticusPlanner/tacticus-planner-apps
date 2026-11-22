@@ -42,13 +42,13 @@ export interface NpcVariationOption {
 /** Filter options derived from the listed catalog (so the controls only offer values that exist). */
 export interface NpcFilterOptions {
   factions: { id: string; name: string }[]
-  alliances: { id: string; name: string }[]
+  alliances: { id: string; name: string; icon?: string }[]
   damageTypes: { id: string; name: string }[]
   traits: { id: string; name: string }[]
   /** The encounter sources some listed variation has, in display order; empty without encounter data. */
-  gameModes: { id: NpcEncounterSource; name: string }[]
+  gameModes: { id: NpcEncounterSource; name: string; icon?: string }[]
   /** The groups of the chosen game mode, by name; empty until one is chosen. */
-  locations: { id: string; name: string }[]
+  locations: { id: string; name: string; icon?: string }[]
   /** Whether "running now" can be answered: both the encounter data and the calendar are present. */
   canFilterRunning: boolean
 }

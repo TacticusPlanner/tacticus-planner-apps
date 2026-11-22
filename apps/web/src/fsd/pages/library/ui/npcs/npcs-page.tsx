@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router"
 import { useTranslation } from "react-i18next"
+import { allianceIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 
 import {
@@ -33,6 +34,10 @@ import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { useEncounterGroupName } from "../../model/npcs/use-encounter-group-name"
 import { encounterTiming } from "../../model/encounter-timing"
+import {
+  encounterGroupIcon,
+  encounterSourceIcon,
+} from "../../model/npcs/encounter-group-icon"
 
 import { useNpcEncounters } from "../../model/npcs/use-npc-encounters"
 import { useNpcsCatalog } from "../../model/npcs/use-npcs-catalog"
@@ -194,6 +199,7 @@ export function NpcsPage() {
         .map((id) => ({
           id,
           name: t(`library:npcs.alliances.${id}`, { defaultValue: id }),
+          icon: allianceIcon(id),
         }))
         .toSorted(byName),
       damageTypes: [...damageTypes]
@@ -211,9 +217,14 @@ export function NpcsPage() {
       ).map((id) => ({
         id,
         name: t(`library:npcs.encounters.source.${id}`, { defaultValue: id }),
+        icon: encounterSourceIcon(id),
       })),
       locations: [...(locations ?? [])]
-        .map(([id, encounter]) => ({ id, name: encounterGroupName(encounter) }))
+        .map(([id, encounter]) => ({
+          id,
+          name: encounterGroupName(encounter),
+          icon: encounterGroupIcon(encounter),
+        }))
         .toSorted(byName),
       canFilterRunning,
     }
