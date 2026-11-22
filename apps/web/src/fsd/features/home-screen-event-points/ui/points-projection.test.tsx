@@ -335,8 +335,8 @@ describe("PointsProjection: other events and states", () => {
     expect(note).not.toHaveTextContent("de Arène")
   })
 
-  it("asks for Defeat Waves' averages before projecting points", async () => {
-    renderHse(i18n, hseInstance("hse-defeat-waves", "upcoming"))
+  it("asks for Against the Tide's averages before projecting points", async () => {
+    renderHse(i18n, hseInstance("hse-against-the-tide", "upcoming"))
 
     expect(
       screen.queryByTestId("hse-projection-mode-Arena")

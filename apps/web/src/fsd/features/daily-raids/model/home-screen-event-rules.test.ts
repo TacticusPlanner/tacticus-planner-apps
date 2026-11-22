@@ -92,7 +92,7 @@ describe("homeScreenEventRaidRule", () => {
       "hse-faction-boost",
       "hse-squig-smash",
       "hse-faction-focus",
-      "hse-defeat-waves",
+      "hse-against-the-tide",
       "hse-arsenal-of-war",
       "hse-11th-edition-week-2",
     ] as const) {
@@ -100,7 +100,7 @@ describe("homeScreenEventRaidRule", () => {
     }
   })
 
-  it("has none without `config.hse` (Against the Tide) or with a config that does not parse", () => {
+  it("has none without `config.hse` or with a config that does not parse", () => {
     expect(homeScreenEventRaidRule({}, null)).toBeNull()
     expect(homeScreenEventRaidRule(undefined, null)).toBeNull()
     expect(homeScreenEventRaidRule({ hse: { variants: [] } }, null)).toBeNull()

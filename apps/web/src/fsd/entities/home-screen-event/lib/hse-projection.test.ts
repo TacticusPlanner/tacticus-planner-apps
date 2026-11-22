@@ -295,10 +295,10 @@ describe("projectHsePoints: other events", () => {
     expect(projection.projected?.points).toBe(1126)
   })
 
-  it("Defeat Waves asks for an average: requirement in waves, no projected points", () => {
+  it("Against the Tide asks for an average: requirement in waves, no projected points", () => {
     const projection = projectHsePoints({
-      tier: hseTier("hse-defeat-waves", "High"),
-      trackers: hseVariant("hse-defeat-waves").trackers,
+      tier: hseTier("hse-against-the-tide", "High"),
+      trackers: hseVariant("hse-against-the-tide").trackers,
       tokens: upcomingTokens,
       averages: {},
       pointsSoFar: 0,
@@ -316,8 +316,8 @@ describe("projectHsePoints: other events", () => {
     expect(projection.projected).toBeNull()
 
     const entered = projectHsePoints({
-      tier: hseTier("hse-defeat-waves", "High"),
-      trackers: hseVariant("hse-defeat-waves").trackers,
+      tier: hseTier("hse-against-the-tide", "High"),
+      trackers: hseVariant("hse-against-the-tide").trackers,
       tokens: upcomingTokens,
       averages: { Onslaught: 10, SalvageRun: 5 },
       pointsSoFar: 0,

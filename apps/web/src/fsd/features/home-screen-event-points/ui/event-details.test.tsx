@@ -132,8 +132,8 @@ describe("EventDetails", () => {
     expect(screen.queryByTestId("hse-projection")).not.toBeInTheDocument()
   })
 
-  it("says milestone data is not available without config.hse (Against the Tide)", () => {
-    renderHse(i18n, hseInstance("hse-against-the-tide", "running"))
+  it("says milestone data is not available without config.hse", () => {
+    renderHse(i18n, hseInstance("hse-unscored", "running"))
     expect(screen.getByTestId("hse-event-details-no-data")).toHaveTextContent(
       "Milestone data is not available yet for this event."
     )

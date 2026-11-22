@@ -225,8 +225,8 @@ describe("buildHseTeamRecommendations — player filters", () => {
     expect(ids(team)[0]).toBe("ultraCalgar")
   })
 
-  it("makes Defeat Waves teams (no player filter) the strongest five of each roster", () => {
-    const result = build("hse-defeat-waves")
+  it("makes Against the Tide teams (no player filter) the strongest five of each roster", () => {
+    const result = build("hse-against-the-tide")
 
     expect(result.modes.map((entry) => entry.mode)).toEqual([
       "Onslaught",
