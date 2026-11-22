@@ -6,8 +6,9 @@ import type { HreTeamPlan } from "@/entities/hre-mission"
 import type { HreTeamViewModel } from "@/features/team-recommendations"
 import { EntityIcon } from "@/shared/ui"
 
-/** Portraits a folded row shows before "+N". */
+/** Portraits a folded row shows before "+N": fewer on a phone, so the row stays on one line. */
 const SHOWN = 5
+const SHOWN_PHONE = 2
 
 /**
  * A token-mode team's folded row: the mode's token icon and name, "N battles" (or "Up to N battles"
@@ -33,33 +34,42 @@ export function HreTeamSummary({
       : []
   return (
     <span
-      className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1"
+      className="flex min-w-0 flex-1 items-center gap-2"
       data-testid={testId}
     >
-      <span className="flex items-center gap-1.5">
+      <span className="flex min-w-0 items-center gap-1.5">
         <EntityIcon alt="" size="inline" src={gameModeTokenIcon(plan.mode)} />
-        {t(`tokens.modes.${plan.mode}`)}
+        <span className="truncate">{t(`tokens.modes.${plan.mode}`)}</span>
       </span>
-      <Badge className="tabular-nums" variant="secondary">
+      <Badge className="shrink-0 tabular-nums" variant="secondary">
         {plan.spare
           ? t("teams.upTo", { count: battles })
           : t("raids.battleCount", { count: battles })}
       </Badge>
       {members.length > 0 ? (
         <span
-          className="flex items-center gap-0.5"
+          className="flex shrink-0 items-center gap-0.5"
           data-testid={`${testId}-portraits`}
         >
-          {members.slice(0, SHOWN).map((member) => (
-            <EntityIcon
-              alt=""
+          {members.slice(0, SHOWN).map((member, index) => (
+            <span
+              className={index < SHOWN_PHONE ? "contents" : "max-sm:hidden"}
               key={member.unitId}
-              size="inline"
-              src={characterIcon(member.unitId)}
-            />
+            >
+              <EntityIcon
+                alt=""
+                size="inline"
+                src={characterIcon(member.unitId)}
+              />
+            </span>
           ))}
+          {members.length > SHOWN_PHONE ? (
+            <span className="text-xs text-muted-foreground tabular-nums sm:hidden">
+              +{members.length - SHOWN_PHONE}
+            </span>
+          ) : null}
           {members.length > SHOWN ? (
-            <span className="text-xs text-muted-foreground tabular-nums">
+            <span className="text-xs text-muted-foreground tabular-nums max-sm:hidden">
               +{members.length - SHOWN}
             </span>
           ) : null}

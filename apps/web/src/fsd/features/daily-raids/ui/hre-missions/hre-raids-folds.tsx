@@ -46,7 +46,7 @@ function TopRowSummary({
   const raids = view.view
   return (
     <span
-      className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1"
+      className="flex min-w-0 flex-1 items-center gap-2"
       data-testid={testId}
     >
       {row ? (
@@ -62,7 +62,7 @@ function TopRowSummary({
         </span>
       ) : null}
       {resourceId !== undefined && raids ? (
-        <span className="flex items-center gap-1">
+        <span className="flex shrink-0 items-center gap-1">
           <ResourceIcon
             label={raids.resourceLabels.get(resourceId) ?? resourceId}
             size="row"
@@ -94,7 +94,7 @@ export function HreRaidsSummary({
   return (
     <TopRowSummary
       chip={
-        <Badge className="tabular-nums" variant="secondary">
+        <Badge className="shrink-0 tabular-nums" variant="secondary">
           <EntityIcon
             alt=""
             size="inline"
@@ -120,7 +120,7 @@ export function HreBattlesSummary({ raids }: { raids: HreRaids }) {
     <TopRowSummary
       chip={
         battles && !battles.openEnded && battles.totalBattles > 0 ? (
-          <Badge className="tabular-nums" variant="secondary">
+          <Badge className="shrink-0 tabular-nums" variant="secondary">
             <EntityIcon
               alt=""
               size="inline"
@@ -129,7 +129,7 @@ export function HreBattlesSummary({ raids }: { raids: HreRaids }) {
             {t("raids.battleCount", { count: battles.totalBattles })}
           </Badge>
         ) : (
-          <span className="text-muted-foreground">
+          <span className="shrink-0 text-muted-foreground">
             {t("raids.battles.title")}
           </span>
         )
