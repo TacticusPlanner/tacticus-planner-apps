@@ -79,7 +79,7 @@ const TASK_KINDS: Readonly<Record<string, HreObjectiveKind>> = {
  * the task name, the variant for its faction or damage type (`DealDamageOfProfileType_Psychic_
  * description`) ahead of the generic one. The guesses cover an API that serves no loca key yet.
  */
-export function hreHintKeys(task: HreTask): string[] {
+function hreHintKeys(task: HreTask): string[] {
   const variant = task.parameters.damageProfileType ?? task.parameters.factionId
   const keys = [
     task.locaKey,

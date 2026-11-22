@@ -68,10 +68,10 @@
     "killWithRanged": "Las unidades a distancia con muchos golpes derrotan enemigos más rápido.",
     "killWithAlliance": "Los ataques de área de la alianza del evento derrotan a varios enemigos por turno.",
     "killFaction": "Los nodos con muchos enemigos de esta facción requieren menos batallas.",
-    "killSummons": "Las invocaciones cuentan como bajas. En la Arena, elige rivales con invocadores. Los Enjambres de escarabajos enemigos se replican y un Biovore lanza una Mina espora cada turno: déjalo con vida y sigue derrotando sus invocaciones.",
+    "killSummons": "Las invocaciones cuentan como bajas. En la Arena, elige rivales con invocadores. Los Enjambres de escarabajos enemigos se replican, y un Biovore o un Lanzacohetes Malleus sigue añadiendo invocaciones: déjalos con vida y sigue derrotando las invocaciones.",
     "damage": "Las unidades fuertes con muchos golpes hacen más daño.",
     "abilityDamage": "Las unidades cuyas habilidades activas golpean a varios enemigos suman más rápido.",
-    "useAbilities": "Usa la habilidad activa de cada personaje en cada batalla. Las Máquinas de Guerra no cuentan.",
+    "useAbilities": "Usa la habilidad activa de cada personaje en cada batalla. Solo cuentan las habilidades de los Personajes, así que las Máquinas de Guerra no cuentan, ni tampoco las acciones de Curar y Reparar.",
     "heal": "Lleva un sanador o mecánico y déjalo curar cada turno.",
     "reserve_one": "Guarda {{count}} ficha de {{mode}} para {{mission}}.",
     "reserve_other": "Guarda {{count}} fichas de {{mode}} para {{mission}}."
@@ -156,7 +156,8 @@
       "modes": "Las batallas de Arena y Onslaught también cuentan, así que actualiza tu progreso después.",
       "more": "Hacen falta más batallas después de la energía de hoy.",
       "none": "Ningún nodo de campaña encaja con los objetivos de esta misión.",
-      "rulesTitle": "Reglas de nodos"
+      "rulesTitle": "Reglas de nodos",
+      "shared": "Las batallas de arriba también cuentan para este objetivo."
     },
     "unlimitedEnergy": "Sin límite de la energía de hoy: solo los intentos de hoy y el objetivo limitan la lista."
   },
@@ -244,22 +245,19 @@
     "nextChest": "Siguiente cofre: nivel {{tier}}, {{cost}} · faltan {{missing}} para abrirlo",
     "nextChestReady": "Siguiente cofre: nivel {{tier}}, {{cost}} · puedes abrirlo ya",
     "targetReached": "{{shards}} fragmentos: alcanzados con lo que tienes y las cajas que quedan.",
-    "needsTimeUp": "{{shards}} fragmentos quedan fuera de alcance: al evento no le quedan días.",
-    "summary": "{{points}} puntos → {{projected}} · {{step}}",
-    "summaryEmpty": "Introduce tus puntos del evento para ver el ritmo.",
-    "details": "Detalles"
+    "needsTimeUp": "{{shards}} fragmentos quedan fuera de alcance: al evento no le quedan días."
   },
   "teams": {
     "title": "Equipo de misión",
-    "alliance": "Tus 5 unidades {{alliance}} más fuertes para esta misión.",
-    "allianceGeneric": "Tus 5 unidades más fuertes de la alianza del héroe del evento.",
-    "summonFree": "Tus 5 unidades más fuertes sin habilidad de invocación.",
+    "alliance": "Tus {{size}} unidades {{alliance}} más fuertes para esta misión.",
+    "allianceGeneric": "Tus {{size}} unidades más fuertes de la alianza del héroe del evento.",
+    "summonFree": "Tus {{size}} unidades más fuertes que nunca invocan por sí solas: no uses ninguna habilidad que invoque.",
     "featured": "{{hero}} lidera, junto a tus unidades más fuertes.",
     "fewAlliance": "Solo {{count}} unidades {{alliance}}: el juego exige un equipo completo de {{alliance}} solo si se usan todas las casillas.",
     "lockedHero": "Desbloquea a {{hero}} o juega con este héroe en un evento que lo preste.",
     "tooFew": "Tienes muy pocas unidades para formar un equipo.",
     "titleMode": "Equipo de {{mode}}",
-    "ranged": "Tus 5 unidades a distancia más fuertes.",
+    "ranged": "Tus {{size}} unidades a distancia más fuertes.",
     "rangedTrack": "Tus {{size}} unidades a distancia de {{alliance}} más fuertes: 5 empiezan y el resto sustituye a las que caigan.",
     "supportIncluded": "Tu Sanador o Mecánico más fuerte está incluido, para el objetivo de curación.",
     "supportMissing": "No tienes ningún Sanador ni Mecánico para el objetivo de curación.",
@@ -268,18 +266,30 @@
     "reserve_other": "Guarda {{count}} fichas de {{mode}} para {{mission}}.",
     "reservePlay": "Con {{have}} ahora, juega hasta {{play}}.",
     "rangedTrackFew": "Tus {{size}} unidades a distancia de {{alliance}}: menos de 5, así que no hay reservas.",
-    "abilities": "Tus 5 unidades más fuertes: cada uso de habilidad cuenta para la misión.",
+    "abilities": "Tus {{size}} unidades más fuertes: cada uso de habilidad cuenta para la misión.",
     "abilitiesTrack": "Tus {{size}} unidades {{alliance}} más fuertes: cada uso de habilidad cuenta, y el resto sustituye a las que caen.",
     "abilitiesTrackFew": "Tus {{size}} unidades {{alliance}} más fuertes: cada uso de habilidad cuenta, sin repuestos para las que caen.",
     "hse_one": "{{count}} unidad de aquí también puntúa para {{event}}, así avanzan ambos eventos.",
     "hse_other": "{{count}} unidades de aquí también puntúan para {{event}}, así avanzan ambos eventos.",
     "hseNone": "Ninguna de estas unidades puntúa para {{event}}.",
-    "melee": "Tus 5 unidades cuerpo a cuerpo más fuertes.",
-    "strongest": "Tus 5 unidades más fuertes.",
+    "melee": "Tus {{size}} unidades cuerpo a cuerpo más fuertes.",
+    "strongest": "Tus {{size}} unidades más fuertes.",
     "strongestTrack": "Tus {{size}} unidades {{alliance}} más fuertes: 5 empiezan y el resto sustituye a las que caen.",
     "strongestTrackFew": "Tus {{size}} unidades {{alliance}}: menos de 5, así que no hay reservas.",
     "titleBattle": "Equipo de campaña",
     "titleCampaigns": "Equipo para {{campaigns}}",
-    "fewerSlots": "Algunas de estas batallas solo admiten {{slots}} unidades: despliega las primeras {{slots}}."
+    "fewerSlots": "Algunas de estas batallas solo admiten {{slots}} unidades: despliega las primeras {{slots}}.",
+    "wholeTrack": "Tus {{size}} unidades {{alliance}}, de la más débil a la más fuerte.",
+    "hseBoost": "Sus unidades también obtienen aquí +{{health}} % de salud, +{{damage}} % de daño y +{{armour}} % de armadura.",
+    "upTo_one": "Hasta {{count}} batalla",
+    "upTo_other": "Hasta {{count}} batallas",
+    "hints": {
+      "spare_one": "Tienes {{held}} fichas de {{mode}} y las misiones restantes necesitan {{need}}, así que juega aquí hasta {{count}} batalla. Las fichas se recargan durante el evento, así que puede que tengas más.",
+      "spare_other": "Tienes {{held}} fichas de {{mode}} y las misiones restantes necesitan {{need}}, así que juega aquí hasta {{count}} batallas. Las fichas se recargan durante el evento, así que puede que tengas más.",
+      "arenaFaction": "La Arena muestra el equipo de cada rival antes de la batalla: lucha solo contra equipos con unidades {{faction}}.",
+      "arenaSummoners": "Elige rivales con invocadores: sus invocaciones también cuentan como bajas.",
+      "wholeTrack": "Despliega todas las unidades, de la más débil a la más fuerte: usa la habilidad de cada una, déjala caer y entra la siguiente.",
+      "noEventPoints": "Estas batallas cuentan para la misión, pero no dan puntos de evento."
+    }
   }
 }

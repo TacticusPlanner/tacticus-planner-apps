@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
 import { AbilityText } from "@/shared/ability-text"
+import { useAnalyticsActions } from "@/shared/analytics"
 import { DetailsOverlay } from "@/shared/ui"
 
 import type { HreObjective } from "@/entities/hre-mission"
@@ -63,9 +64,18 @@ export function ObjectiveInfo({
   testId: string
 }) {
   const { t } = useTranslation("hre")
+  const { captureEvent } = useAnalyticsActions()
   if (!hasGuidance(objective, hint)) return null
   return (
     <DetailsOverlay
+      onOpenChange={(open) => {
+        if (open) {
+          captureEvent({
+            type: "hre_objective_info_opened",
+            objectiveKind: objective.kind,
+          })
+        }
+      }}
       testId={`${testId}-details`}
       title={objectiveText}
       trigger={

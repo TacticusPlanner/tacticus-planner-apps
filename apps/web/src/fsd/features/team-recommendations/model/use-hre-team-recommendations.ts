@@ -23,15 +23,18 @@ export type HreTeamViewModel =
 
 /**
  * One HRE mission team per team plan of the current mission (`selectTeamPlans`), in plan order.
- * Summoners come from the generated `npcAbilitySummoners` list (the abilities whose English rules
- * text summons a unit). A running HSE's
- * `hseTrackers` put its scoring units first in the token-mode teams.
+ * A summon-free team leaves out the units with a passive ability from the generated
+ * `npcAbilitySummoners` list (the abilities whose English rules text summons a unit): they summon
+ * on their own, as the LRE "No Summons" rule reads it. `hseTrackersFor` gives the running personal
+ * HSE that scores in a plan's mode, whose units come first.
  */
 export function useHreTeamRecommendations(input: {
   plans: readonly (HreTeamPlan & { factions?: readonly string[] })[]
   alliance: string | null
   featuredCharacterId: string | null
-  hseTrackers?: readonly GameCatalogHseTracker[] | null
+  hseTrackersFor?: (
+    mode: HreTeamPlan["mode"]
+  ) => readonly GameCatalogHseTracker[] | null
 }): HreTeamViewModel[] {
   const roster = usePlayerChunk("characters", toRoster)
   const catalog = useCatalogDataset("characters", toById)
@@ -52,8 +55,10 @@ export function useHreTeamRecommendations(input: {
         >
       )
     )
-    return buildSummonerIds(read.data[1].values(), (abilityId) =>
-      summoning.has(abilityId)
+    return buildSummonerIds(
+      read.data[1].values(),
+      (abilityId) => summoning.has(abilityId),
+      { forcedOnly: true }
     )
   }, [read, i18n])
 
@@ -69,7 +74,7 @@ export function useHreTeamRecommendations(input: {
       catalog: read.data[1],
       summoners,
       unitPower,
-      hseTrackers: input.hseTrackers,
+      hseTrackers: input.hseTrackersFor?.(plan.mode) ?? null,
     })
     return team ? { status: "ready", team } : { status: "hidden" }
   })

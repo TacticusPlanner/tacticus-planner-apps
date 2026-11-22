@@ -176,6 +176,19 @@ describe("buildHreTeam", () => {
     expect(team?.status === "ready" ? team.alliance : null).not.toBeNull()
   })
 
+  it("fields the whole alliance, weakest first, for Onslaught ability uses", () => {
+    const pool = build({
+      plan: { rule: "abilities", mode: "onslaught", size: 8 },
+    })
+    const whole = build({
+      plan: { rule: "abilities", mode: "onslaught", size: 8, wholeTrack: true },
+    })
+    expect(whole?.status).toBe("ready")
+    if (whole?.status !== "ready" || pool?.status !== "ready") return
+    expect(ids(whole)).toHaveLength(whole.eligibleCount)
+    expect(ids(whole).at(-1)).toBe(ids(pool)[0])
+  })
+
   it("fields an Onslaught pool of the alliance with the most ranged units", () => {
     const team = build({
       plan: { rule: "ranged", mode: "onslaught", size: 8 },

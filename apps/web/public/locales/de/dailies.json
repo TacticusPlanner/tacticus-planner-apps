@@ -420,12 +420,12 @@
           "content": "Öffne die vollständige Missionsliste. Jede Mission klappt zu ihren Tipps auf."
         },
         "raids": {
-          "title": "Kampagnenraids",
-          "content": "Wo du für das Kampagnenziel der aktuellen Mission raidest, günstigste Energie zuerst, ohne Begrenzung auf die heutige Energie. Die Übersicht unten zählt die verbleibenden Kampagnenkämpfe des ganzen Events."
+          "title": "Kampagnen-Ausblick",
+          "content": "Die Kampagnenschlachten, die im ganzen Event noch fehlen, gegen deine tägliche Energie an den günstigsten Knoten."
         },
-        "team": {
-          "title": "Missionsteam",
-          "content": "Ein Team aus deinem Kader für Missionen, die die Aufstellung einschränken oder den Event-Helden brauchen."
+        "suggestions": {
+          "title": "Vorschläge",
+          "content": "Öffne unter jedem Ziel eine Zeile, um zu sehen, wo du raiden kannst, welche Schlachten du selbst spielst und mit welchem Team, auch in Arena, Onslaught oder Plünderungslauf, wenn du Marken übrig hast."
         },
         "tokens": {
           "title": "Benötigte Marken",
@@ -434,10 +434,6 @@
         "pace": {
           "title": "Event-Tempo",
           "content": "Gib deine Eventpunkte und deinen Rang ein, optional auch, was du jetzt hast, um Währung, Truhenstufe und Splitter zu schätzen, und wähle ein Ziel, um die nötigen Punkte pro Tag zu sehen."
-        },
-        "paceSummary": {
-          "title": "Tempo auf einen Blick",
-          "content": "Deine Punkte, wo sie landen und welche Stufe sie erreichen. Tippe auf Details, um Punkte, Rang und deinen Besitz einzutragen und ein Ziel zu wählen."
         }
       }
     },

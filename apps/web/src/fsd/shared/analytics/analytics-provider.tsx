@@ -399,6 +399,39 @@ export function useAnalyticsActions() {
             tier: event.tier,
           })
           break
+        case "hre_tab_viewed":
+          client.capture(event.type, {
+            event_state: event.eventState,
+            mission: event.mission,
+          })
+          break
+        case "hre_event_switched":
+          client.capture(event.type, { event_state: event.eventState })
+          break
+        case "hre_objective_progress_changed":
+          client.capture(event.type, {
+            mission: event.mission,
+            objective_kind: event.objectiveKind,
+            method: event.method,
+          })
+          break
+        case "hre_fold_opened":
+          client.capture(event.type, {
+            mission: event.mission,
+            objective_kind: event.objectiveKind,
+            suggestion: event.suggestion,
+            spare: event.spare,
+          })
+          break
+        case "hre_objective_info_opened":
+          client.capture(event.type, { objective_kind: event.objectiveKind })
+          break
+        case "hre_location_opened":
+          client.capture(event.type, {})
+          break
+        case "hre_mission_completed":
+          client.capture(event.type, { mission: event.mission })
+          break
         case "app_install_guide_opened":
           client.capture(event.type, {
             source: event.source,

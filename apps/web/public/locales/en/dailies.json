@@ -420,12 +420,12 @@
           "content": "Open the full list of missions. Each one expands to its tips."
         },
         "raids": {
-          "title": "Campaign raids",
-          "content": "Where to raid for the current mission's campaign objective, cheapest energy first, not limited to today's energy. The summary below counts the campaign battles left over the whole event."
+          "title": "Campaign outlook",
+          "content": "The campaign battles left over the whole event against your daily energy at the cheapest nodes."
         },
-        "team": {
-          "title": "Mission team",
-          "content": "A team from your roster for missions that restrict the lineup or need the featured hero."
+        "suggestions": {
+          "title": "Suggestions",
+          "content": "Under each objective, open a row to see where to raid, the battles to fight by hand, and the team to play them with, also in Arena, Onslaught or Salvage Run when you have tokens to spare."
         },
         "tokens": {
           "title": "Tokens needed",
@@ -434,10 +434,6 @@
         "pace": {
           "title": "Event pace",
           "content": "Enter your event points and rank, and optionally what you hold now, to project currency, chest tier and shards, and pick a target to see the points a day it needs."
-        },
-        "paceSummary": {
-          "title": "Pace at a glance",
-          "content": "Your points, where they end up and the step they reach. Tap Details to enter points, rank and what you hold, and to pick a target."
         }
       }
     },

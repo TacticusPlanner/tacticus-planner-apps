@@ -68,10 +68,10 @@
     "killWithRanged": "Les unités à distance avec beaucoup de coups éliminent les ennemis le plus vite.",
     "killWithAlliance": "Les attaques de zone de l'alliance de l'événement éliminent plusieurs ennemis par tour.",
     "killFaction": "Les nœuds avec beaucoup d'ennemis de cette faction demandent le moins de batailles.",
-    "killSummons": "Les invocations comptent comme des éliminations. En Arène, choisissez des adversaires avec des invocateurs. Les Nuées de Scarabées ennemies se dupliquent et un Biovore lance une Spore-mine à chaque tour : laissez-le en vie et continuez à éliminer ses invocations.",
+    "killSummons": "Les invocations comptent comme des éliminations. En Arène, choisissez des adversaires avec des invocateurs. Les Nuées de Scarabées ennemies se dupliquent, et un Biovore ou un Lance-roquettes Malleus ajoute sans cesse des invocations : laissez-les en vie et continuez à éliminer les invocations.",
     "damage": "Les unités fortes avec beaucoup de coups infligent le plus de dégâts.",
     "abilityDamage": "Les unités dont les capacités actives touchent plusieurs ennemis progressent le plus vite.",
-    "useAbilities": "Utilisez la capacité active de chaque personnage à chaque bataille. Les Machines de guerre ne comptent pas.",
+    "useAbilities": "Utilisez la capacité active de chaque personnage à chaque bataille. Seules les capacités des Personnages comptent : pas les Machines de guerre, ni les actions Soin et Réparation.",
     "heal": "Emmenez un soigneur ou un mécanicien et laissez-le soigner à chaque tour.",
     "reserve_one": "Gardez {{count}} jeton {{mode}} pour {{mission}}.",
     "reserve_other": "Gardez {{count}} jetons {{mode}} pour {{mission}}."
@@ -156,7 +156,8 @@
       "modes": "Les batailles d'Arène et d'Onslaught comptent aussi : mettez votre progression à jour ensuite.",
       "more": "D'autres batailles seront nécessaires après l'énergie du jour.",
       "none": "Aucun nœud de campagne ne convient aux objectifs de cette mission.",
-      "rulesTitle": "Règles des nœuds"
+      "rulesTitle": "Règles des nœuds",
+      "shared": "Les batailles ci-dessus comptent aussi pour cet objectif."
     },
     "unlimitedEnergy": "Sans limite d'énergie du jour : seules les tentatives du jour et l'objectif limitent la liste."
   },
@@ -244,22 +245,19 @@
     "nextChest": "Prochain coffre : niveau {{tier}}, {{cost}} · encore {{missing}} pour l'ouvrir",
     "nextChestReady": "Prochain coffre : niveau {{tier}}, {{cost}} · vous pouvez l'ouvrir maintenant",
     "targetReached": "{{shards}} fragments : atteint avec ce que vous avez et les caisses à venir.",
-    "needsTimeUp": "{{shards}} fragments sont hors de portée : l'événement n'a plus de jours.",
-    "summary": "{{points}} points → {{projected}} · {{step}}",
-    "summaryEmpty": "Saisissez vos points d'événement pour voir le rythme.",
-    "details": "Détails"
+    "needsTimeUp": "{{shards}} fragments sont hors de portée : l'événement n'a plus de jours."
   },
   "teams": {
     "title": "Équipe de mission",
-    "alliance": "Vos 5 unités {{alliance}} les plus fortes pour cette mission.",
-    "allianceGeneric": "Vos 5 unités les plus fortes de l'alliance du héros de l'événement.",
-    "summonFree": "Vos 5 unités les plus fortes sans capacité d'invocation.",
+    "alliance": "Vos {{size}} unités {{alliance}} les plus fortes pour cette mission.",
+    "allianceGeneric": "Vos {{size}} unités les plus fortes de l'alliance du héros de l'événement.",
+    "summonFree": "Vos {{size}} unités les plus fortes qui n'invoquent jamais d'elles-mêmes : n'utilisez aucune capacité d'invocation.",
     "featured": "{{hero}} mène, avec vos unités les plus fortes.",
     "fewAlliance": "Seulement {{count}} unités {{alliance}} : le jeu n'exige une équipe 100 % {{alliance}} que si chaque place est occupée.",
     "lockedHero": "Débloquez {{hero}}, ou jouez ce héros dans un événement qui le prête.",
     "tooFew": "Vous avez trop peu d'unités pour former une équipe.",
     "titleMode": "Équipe {{mode}}",
-    "ranged": "Vos 5 unités à distance les plus fortes.",
+    "ranged": "Vos {{size}} unités à distance les plus fortes.",
     "rangedTrack": "Vos {{size}} unités à distance {{alliance}} les plus fortes : 5 commencent, les autres remplacent celles qui tombent.",
     "supportIncluded": "Votre Soigneur ou Mécanicien le plus fort est inclus, pour l'objectif de soin.",
     "supportMissing": "Vous n'avez aucun Soigneur ni Mécanicien pour l'objectif de soin.",
@@ -268,18 +266,30 @@
     "reserve_other": "Gardez {{count}} jetons {{mode}} pour {{mission}}.",
     "reservePlay": "Avec {{have}} maintenant, jouez jusqu'à {{play}}.",
     "rangedTrackFew": "Vos {{size}} unités à distance {{alliance}} : moins de 5, donc aucune réserve.",
-    "abilities": "Vos 5 unités les plus fortes : chaque utilisation de capacité compte pour la mission.",
+    "abilities": "Vos {{size}} unités les plus fortes : chaque utilisation de capacité compte pour la mission.",
     "abilitiesTrack": "Vos {{size}} unités {{alliance}} les plus fortes : chaque utilisation de capacité compte, et les autres remplacent celles qui tombent.",
     "abilitiesTrackFew": "Vos {{size}} unités {{alliance}} les plus fortes : chaque utilisation de capacité compte, sans remplaçants pour celles qui tombent.",
     "hse_one": "{{count}} unité ici rapporte aussi des points pour {{event}} : les deux événements avancent.",
     "hse_other": "{{count}} unités ici rapportent aussi des points pour {{event}} : les deux événements avancent.",
     "hseNone": "Aucune de ces unités ne rapporte de points pour {{event}}.",
-    "melee": "Vos 5 unités de mêlée les plus fortes.",
-    "strongest": "Vos 5 unités les plus fortes.",
+    "melee": "Vos {{size}} unités de mêlée les plus fortes.",
+    "strongest": "Vos {{size}} unités les plus fortes.",
     "strongestTrack": "Vos {{size}} unités {{alliance}} les plus fortes : 5 commencent, les autres remplacent celles qui tombent.",
     "strongestTrackFew": "Vos {{size}} unités {{alliance}} : moins de 5, donc pas de remplaçantes.",
     "titleBattle": "Équipe de campagne",
     "titleCampaigns": "Équipe pour {{campaigns}}",
-    "fewerSlots": "Certaines de ces batailles n'acceptent que {{slots}} unités : déployez les {{slots}} premières."
+    "fewerSlots": "Certaines de ces batailles n'acceptent que {{slots}} unités : déployez les {{slots}} premières.",
+    "wholeTrack": "Vos {{size}} unités {{alliance}}, des plus faibles aux plus fortes.",
+    "hseBoost": "Ses unités gagnent aussi ici +{{health}} % de santé, +{{damage}} % de dégâts et +{{armour}} % d'armure.",
+    "upTo_one": "Jusqu'à {{count}} bataille",
+    "upTo_other": "Jusqu'à {{count}} batailles",
+    "hints": {
+      "spare_one": "Vous avez {{held}} jetons {{mode}} et les missions restantes en demandent {{need}} : jouez ici jusqu'à {{count}} bataille. Les jetons se rechargent pendant l'événement, vous en aurez peut-être plus.",
+      "spare_other": "Vous avez {{held}} jetons {{mode}} et les missions restantes en demandent {{need}} : jouez ici jusqu'à {{count}} batailles. Les jetons se rechargent pendant l'événement, vous en aurez peut-être plus.",
+      "arenaFaction": "L'Arène montre l'équipe de chaque adversaire avant la bataille : n'affrontez que des équipes avec des unités {{faction}}.",
+      "arenaSummoners": "Choisissez des adversaires avec des invocateurs : leurs invocations comptent aussi comme des éliminations.",
+      "wholeTrack": "Déployez toutes les unités, des plus faibles aux plus fortes : utilisez la capacité de chacune, laissez-la tomber, et la suivante se déploie.",
+      "noEventPoints": "Ces batailles comptent pour la mission mais ne rapportent pas de points d'événement."
+    }
   }
 }

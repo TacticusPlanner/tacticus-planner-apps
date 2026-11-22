@@ -35,7 +35,7 @@ export function objectiveTipKeys(kind: HreObjectiveKind): string[] {
   return KILL_KINDS.has(kind) ? [kind, "killSummons"] : [kind]
 }
 
-export const hasObjectiveTip = (kind: HreObjectiveKind) => TIP_KINDS.has(kind)
+const hasObjectiveTip = (kind: HreObjectiveKind) => TIP_KINDS.has(kind)
 
 /** Whether an objective has a game hint or a tip of ours to show. */
 export const hasGuidance = (

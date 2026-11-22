@@ -11,25 +11,24 @@ type StepKey =
   | "tracker"
   | "allMissions"
   | "raids"
-  | "team"
+  | "suggestions"
   | "tokens"
   | "pace"
-  | "paceSummary"
 
 /**
- * Joyride tour for Dailies > HRE: the event switcher, the event header, then (with an event) the current mission,
- * the campaign raids, the mission team, the tokens needed and the pace on a running event, and the
- * mission list. Mobile points its pace step at the summary under the tracker (design D4), desktop
- * at the card. The `has*` flags gate steps whose targets are not rendered, since react-joyride
- * cannot recover from a target that never appears. Desktop points at the mission list; mobile at
- * its "All missions" toggle, last, as the page orders it.
+ * Joyride tour for Dailies > HRE: the event switcher, the event header, then (with an event) the
+ * current mission and the suggestions folded under its first objective that has any, the pace and
+ * the tokens needed on a running event, the campaign outlook, and the mission list, in the page's
+ * order. The `has*` flags and `suggestionsTarget` gate steps whose targets are not rendered, since
+ * react-joyride cannot recover from a target that never appears. Desktop points at the mission
+ * list after the tracker; mobile at its "All missions" toggle, last, as the page orders it.
  */
 export function useHreTutorial({
   hasSwitcher = false,
   hasEvent,
   hasRaids = hasEvent,
   running,
-  hasTeam,
+  suggestionsTarget,
   hasTokens,
 }: {
   /** The event switcher renders (the calendar has loaded). */
@@ -38,7 +37,8 @@ export function useHreTutorial({
   /** The raids section renders (an event that is not past). */
   hasRaids?: boolean
   running: boolean
-  hasTeam: boolean
+  /** The test id of the first objective's suggestions, or null when no objective has a fold. */
+  suggestionsTarget: string | null
   hasTokens: boolean
 }) {
   const { t } = useTranslation("dailies")
@@ -51,13 +51,15 @@ export function useHreTutorial({
     })
     const live = (keys: Step[]) => (running ? keys : [])
     const switcher = hasSwitcher ? [step("hre-event-switcher", "switcher")] : []
-    const sections = hasEvent
+    const tracker = live([
+      step("hre-tracker", "tracker"),
+      ...(suggestionsTarget ? [step(suggestionsTarget, "suggestions")] : []),
+    ])
+    const side = hasEvent
       ? [
+          ...live([step("hre-pace", "pace")]),
+          ...(hasTokens ? [step("hre-tokens", "tokens")] : []),
           ...(hasRaids ? [step("hre-raids", "raids")] : []),
-          ...live([
-            ...(hasTeam ? [step("hre-team", "team")] : []),
-            ...(hasTokens ? [step("hre-tokens", "tokens")] : []),
-          ]),
         ]
       : []
 
@@ -65,23 +67,27 @@ export function useHreTutorial({
       desktop: [
         ...switcher,
         step("hre-status", "header"),
-        ...live([step("hre-tracker", "tracker")]),
+        ...tracker,
         ...(hasEvent ? [step("hre-mission-list", "allMissions")] : []),
-        ...sections,
-        ...live([step("hre-pace", "pace")]),
+        ...side,
       ],
       mobile: [
         ...switcher,
         step("hre-status", "header"),
-        ...live([
-          step("hre-tracker", "tracker"),
-          step("hre-pace-summary", "paceSummary"),
-        ]),
-        ...sections,
+        ...tracker,
+        ...side,
         ...(hasEvent ? [step("hre-all-missions-toggle", "allMissions")] : []),
       ],
     }
-  }, [t, hasSwitcher, hasEvent, hasRaids, running, hasTeam, hasTokens])
+  }, [
+    t,
+    hasSwitcher,
+    hasEvent,
+    hasRaids,
+    running,
+    suggestionsTarget,
+    hasTokens,
+  ])
 
   useTourPageSteps(steps)
 }
