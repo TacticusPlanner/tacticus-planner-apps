@@ -9346,7 +9346,9 @@
           "equipmentSlots",
           "rankUpUpgrades",
           "shardLocations",
-          "eligibleEquipment"
+          "eligibleEquipment",
+          "summons",
+          "abilities"
         ],
         "type": "object",
         "properties": {
@@ -9425,6 +9427,12 @@
           },
           "eligibleEquipment": {
             "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogEquipmentSlot"
+          },
+          "summons": {
+            "type": "string"
+          },
+          "abilities": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogUnitAbility"
           }
         }
       },
@@ -11671,7 +11679,7 @@
         }
       },
       "GameCatalogHreMissionTask": {
-        "required": ["name", "target", "parameters"],
+        "required": ["name", "target", "parameters", "locaKey"],
         "type": "object",
         "properties": {
           "name": {
@@ -11683,6 +11691,9 @@
           },
           "parameters": {
             "$ref": "#/components/schemas/IReadOnlyDictionaryOfStringAndString"
+          },
+          "locaKey": {
+            "type": ["null", "string"]
           }
         }
       },
@@ -12456,7 +12467,9 @@
           "faction",
           "alliance",
           "primaryAbility",
-          "secondaryAbility"
+          "secondaryAbility",
+          "summons",
+          "abilities"
         ],
         "type": "object",
         "properties": {
@@ -12480,6 +12493,12 @@
           },
           "secondaryAbility": {
             "$ref": "#/components/schemas/GameCatalogMowAbility"
+          },
+          "summons": {
+            "type": "string"
+          },
+          "abilities": {
+            "$ref": "#/components/schemas/IReadOnlyListOfGameCatalogUnitAbility"
           },
           "mythicAbility": {
             "oneOf": [
@@ -13738,6 +13757,27 @@
           "modifier": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "GameCatalogUnitAbility": {
+        "required": ["id", "kind", "roles", "target", "attack"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "roles": {
+            "$ref": "#/components/schemas/IReadOnlyListOfString"
+          },
+          "target": {
+            "type": "string"
+          },
+          "attack": {
+            "type": ["null", "string"]
           }
         }
       },
@@ -15255,6 +15295,12 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/GameCatalogTraitPowerModifier"
+        }
+      },
+      "IReadOnlyListOfGameCatalogUnitAbility": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GameCatalogUnitAbility"
         }
       },
       "IReadOnlyListOfGameCatalogUnitPowerUnit": {

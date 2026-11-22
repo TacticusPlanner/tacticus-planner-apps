@@ -2568,6 +2568,8 @@ export interface components {
       rankUpUpgrades: components["schemas"]["IReadOnlyListOfGameCatalogCharacterRankUp"]
       shardLocations: components["schemas"]["IReadOnlyListOfGameCatalogFarmLocation"]
       eligibleEquipment: components["schemas"]["IReadOnlyListOfGameCatalogEquipmentSlot"]
+      summons: string
+      abilities: components["schemas"]["IReadOnlyListOfGameCatalogUnitAbility"]
     }
     GameCatalogDamageProfileModifier: {
       damageType: string
@@ -3215,6 +3217,7 @@ export interface components {
       /** Format: int32 */
       target: number
       parameters: components["schemas"]["IReadOnlyDictionaryOfStringAndString"]
+      locaKey: null | string
     }
     GameCatalogHrePhase: {
       /** Format: int32 */
@@ -3475,6 +3478,8 @@ export interface components {
       alliance: string
       primaryAbility: components["schemas"]["GameCatalogMowAbility"]
       secondaryAbility: components["schemas"]["GameCatalogMowAbility"]
+      summons: string
+      abilities: components["schemas"]["IReadOnlyListOfGameCatalogUnitAbility"]
       mythicAbility?:
         null | components["schemas"]["GameCatalogMowMythicAbility"]
     }
@@ -3903,6 +3908,13 @@ export interface components {
       /** Format: int32 */
       modifier: number
     }
+    GameCatalogUnitAbility: {
+      id: string
+      kind: string
+      roles: components["schemas"]["IReadOnlyListOfString"]
+      target: string
+      attack: null | string
+    }
     GameCatalogUnitPower: {
       id: string
       heroProgressionSteps: components["schemas"]["IReadOnlyListOfGameCatalogHeroPowerStep"]
@@ -4311,6 +4323,7 @@ export interface components {
     IReadOnlyListOfGameCatalogShopVariantView: components["schemas"]["GameCatalogShopVariantView"][]
     IReadOnlyListOfGameCatalogStaminaShopTier: components["schemas"]["GameCatalogStaminaShopTier"][]
     IReadOnlyListOfGameCatalogTraitPowerModifier: components["schemas"]["GameCatalogTraitPowerModifier"][]
+    IReadOnlyListOfGameCatalogUnitAbility: components["schemas"]["GameCatalogUnitAbility"][]
     IReadOnlyListOfGameCatalogUnitPowerUnit: components["schemas"]["GameCatalogUnitPowerUnit"][]
     IReadOnlyListOfGameCatalogUpgradeRecipeIngredient: components["schemas"]["GameCatalogUpgradeRecipeIngredient"][]
     IReadOnlyListOfGameCatalogUpgradeSlotRank: components["schemas"]["GameCatalogUpgradeSlotRank"][]
