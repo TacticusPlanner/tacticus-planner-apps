@@ -138,7 +138,7 @@ export function FiltersControl({
       />
       <ResponsiveDialog
         data-testid={testId ? `${testId}-panel` : undefined}
-        desktopClassName="sm:max-w-2xl"
+        width="form"
         onCloseAutoFocus={(event) => {
           // Opened from state, not a Radix trigger: hand focus back to the button.
           event.preventDefault()
@@ -153,9 +153,7 @@ export function FiltersControl({
         <ResponsiveDialogBody>
           <div className="flex flex-col gap-4 pb-2">{children}</div>
         </ResponsiveDialogBody>
-        <ResponsiveDialogFooter className="border-t">
-          {footer}
-        </ResponsiveDialogFooter>
+        <ResponsiveDialogFooter>{footer}</ResponsiveDialogFooter>
       </ResponsiveDialog>
     </>
   )

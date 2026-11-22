@@ -35,11 +35,7 @@ export function MoveToPriorityDialog({
   onMove,
 }: Props) {
   return (
-    <ResponsiveDialog
-      desktopClassName="sm:max-w-md"
-      onOpenChange={onOpenChange}
-      open={open}
-    >
+    <ResponsiveDialog width="narrow" onOpenChange={onOpenChange} open={open}>
       {/* Remounted per opening so the field starts at the goal's current priority. */}
       {open ? (
         <MoveToPriorityForm
@@ -85,7 +81,7 @@ function MoveToPriorityForm({
           {t("goals.actions.moveToPriorityDescription", { total })}
         </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-2 py-4">
+      <ResponsiveDialogBody className="gap-2">
         <Label htmlFor={fieldId}>
           {t("goals.actions.moveToPriorityLabel", { total })}
         </Label>

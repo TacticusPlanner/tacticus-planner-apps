@@ -81,7 +81,7 @@ export function BulkGoalDialog({
     <ResponsiveDialog
       contentRef={setPortalContainer}
       data-testid="bulk-goal-dialog"
-      desktopClassName="sm:max-w-2xl"
+      width="form"
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
       open={open}
       preventOutsideClose
@@ -141,7 +141,7 @@ function BulkGoalDialogContent({
           {t("goals.bulkCreate.title", { count: units.length })}
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-4 pb-4">
+      <ResponsiveDialogBody className="gap-4">
         {sent === null ? (
           <TargetFields form={form} portalContainer={portalContainer} />
         ) : null}

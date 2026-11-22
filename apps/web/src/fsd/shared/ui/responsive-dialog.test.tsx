@@ -11,6 +11,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "./responsive-dialog"
+import type { ResponsiveDialogWidth } from "./responsive-dialog"
 import { UnitCombobox } from "./unit-combobox"
 
 const mobile = vi.hoisted(() => ({ value: false }))
@@ -26,11 +27,17 @@ const groups: FactionGroup[] = [
   },
 ]
 
-function renderDialog(props: { onOpenChange?: (open: boolean) => void } = {}) {
+function renderDialog(
+  props: {
+    onOpenChange?: (open: boolean) => void
+    width?: ResponsiveDialogWidth
+  } = {}
+) {
   return render(
     <ResponsiveDialog
       open
       onOpenChange={props.onOpenChange ?? vi.fn()}
+      width={props.width}
       preventOutsideClose
       data-testid="shell"
     >
@@ -79,6 +86,23 @@ describe("ResponsiveDialog", () => {
     expect(screen.getByTestId("shell")).toHaveAttribute("data-side", "bottom")
   })
 
+  it.each([
+    [undefined, "sm:max-w-5xl"],
+    ["narrow", "sm:max-w-md"],
+    ["form", "sm:max-w-2xl"],
+  ] as const)("sizes the desktop dialog by width=%s", (width, className) => {
+    renderDialog({ width })
+
+    expect(screen.getByTestId("shell")).toHaveClass(className)
+  })
+
+  it("keeps the phone sheet full width whatever the width", () => {
+    mobile.value = true
+    renderDialog({ width: "narrow" })
+
+    expect(screen.getByTestId("shell")).not.toHaveClass("sm:max-w-md")
+  })
+
   it.each([false, true])(
     "portals a combobox list inside the shell content (mobile=%s)",
     (isMobile) => {
@@ -115,7 +139,7 @@ describe("ResponsiveDialog", () => {
       const footer = screen.getByText("footer")
       expect(body).toHaveClass("overflow-y-auto", "min-h-0", "flex-1")
       expect(body).not.toContainElement(footer)
-      expect(footer).toHaveClass("shrink-0")
+      expect(footer).toHaveClass("shrink-0", "border-t")
       expect(shell).toHaveClass("flex", "flex-col")
     }
   )

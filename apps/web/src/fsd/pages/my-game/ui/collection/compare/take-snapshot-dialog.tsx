@@ -14,6 +14,7 @@ import { usePlayerDataStatus } from "@/shared/player-data-status"
 import {
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -120,18 +121,18 @@ export function TakeSnapshotDialog({
     <ResponsiveDialog
       open={open}
       onOpenChange={close}
-      desktopClassName="sm:max-w-md"
+      width="narrow"
       data-testid="take-snapshot-dialog"
     >
       <ResponsiveDialogHeader>
         <ResponsiveDialogTitle>
           {t("myGame.collection.snapshots.dialogTitle")}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
+        <ResponsiveDialogDescription>
           {t("myGame.collection.snapshots.dialogBody")}
-        </p>
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-3 py-2">
+      <ResponsiveDialogBody className="gap-3">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={nameId}>
             {t("myGame.collection.snapshots.name")}

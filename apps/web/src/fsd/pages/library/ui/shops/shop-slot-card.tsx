@@ -143,7 +143,7 @@ export function ShopSlotCard({
       </button>
 
       <ResponsiveDialog
-        desktopClassName="sm:max-w-md"
+        width="narrow"
         onCloseAutoFocus={(event) => {
           event.preventDefault()
           triggerRef.current?.focus()
@@ -159,7 +159,7 @@ export function ShopSlotCard({
             {t("shops.randomSlotHint")}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-        <ResponsiveDialogBody className="gap-2 pt-2 pb-6">
+        <ResponsiveDialogBody className="gap-2">
           {slot.rewards.map((reward) => (
             <div
               key={reward.rewardType}

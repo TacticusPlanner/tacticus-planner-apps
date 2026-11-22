@@ -105,7 +105,7 @@ export function ManageAccountDialog({
   return (
     <ResponsiveDialog
       data-testid="manage-account-dialog"
-      desktopClassName="sm:max-w-2xl"
+      width="form"
       open={open}
       onOpenChange={onOpenChange}
     >
@@ -114,7 +114,7 @@ export function ManageAccountDialog({
           {t("manageAccount.title")}
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="pb-4">
+      <ResponsiveDialogBody>
         <DialogActionSlotContext value={actionSlot}>
           <Tabs className="min-w-0" defaultValue={initialTab}>
             <PageTabsList>
@@ -170,7 +170,7 @@ export function ManageAccountDialog({
         </DialogActionSlotContext>
       </ResponsiveDialogBody>
       {/* Close and the open tab's main button (rendered here through `DialogAction`) share one row. */}
-      <ResponsiveDialogFooter className="grid grid-cols-2 border-t">
+      <ResponsiveDialogFooter className="grid grid-cols-2">
         <Button
           className={dialogActionClassName}
           data-testid="manage-account-close"

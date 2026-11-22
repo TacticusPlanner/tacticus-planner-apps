@@ -240,8 +240,13 @@ Pick the overlay by the job, then use its shared component. Mobile means below
 
 **Anatomy.** Every dialog and sheet has a title (`…Title`; `sr-only` only when
 the content's own heading says the same). An optional one-line description is
-`text-sm text-muted-foreground`. Header and footer stay put and only the body
-scrolls (`ResponsiveDialogBody`); nothing is taller than the viewport. A
+`ResponsiveDialogDescription` (or `SheetDescription`) in the header, never a
+plain `<p>`: it names the dialog for screen readers and clears the close
+button. Header and footer stay put and only the body scrolls
+(`ResponsiveDialogBody`, `SheetBody`); nothing is taller than the viewport.
+The shell owns the spacing: body padding, the 24px inset shared by header and
+body, and the footer's top border. Pass no `pt-*`, `pb-*`, `py-*` or
+`border-t` to them; a body sets only its own layout (`gap-*`, `grid`). A
 popover doesn't scroll, except an option list (a combobox, search results);
 other content that needs to is a sheet or dialog.
 
@@ -265,7 +270,8 @@ other content that needs to is a sheet or dialog.
   "Apply filters", not "OK", "Yes" or "Submit".
 
 **Confirming.** Confirm only what can't be undone; an action the player can
-reverse in one tap doesn't ask. A confirm is `ConfirmationDialog`:
+reverse in one tap doesn't ask. A confirm is `ConfirmationDialog` (no close
+button: Cancel already says it):
 
 - The title is the question: "Delete this project?"
 - The description says in one sentence what is lost.
@@ -275,13 +281,16 @@ reverse in one tap doesn't ask. A confirm is `ConfirmationDialog`:
 - A delete that reaches past the player's own data (a guild purge) also asks
   them to type a word before the confirm button turns on.
 
-**Widths.** Desktop dialogs use one of three widths:
+**Widths.** Desktop dialogs use one of three widths, set with
+`ResponsiveDialog`'s `width` prop. Never put a `sm:max-w-*` class in
+`contentClassName`: it also reaches the phone sheet, which below 768px must
+stay full screen.
 
-| Width          | Class          | For                                                                    |
-| -------------- | -------------- | ---------------------------------------------------------------------- |
-| Narrow (448px) | `sm:max-w-md`  | Confirms, one choice, up to three fields                               |
-| Form (672px)   | `sm:max-w-2xl` | Forms, pickers, filters                                                |
-| Wide (1024px)  | `sm:max-w-5xl` | Tables, side-by-side panels, browsing (the `ResponsiveDialog` default) |
+| Width          | `width`  | For                                                 |
+| -------------- | -------- | --------------------------------------------------- |
+| Narrow (448px) | `narrow` | Confirms, one choice, up to three fields            |
+| Form (672px)   | `form`   | Forms, pickers, filters                             |
+| Wide (1024px)  | `wide`   | Tables, side-by-side panels, browsing (the default) |
 
 Right sheets are `sm:max-w-md`. Popovers are `w-72`, or `w-80` for a unit or
 enemy card, and never wider than `calc(100vw-2rem)`.

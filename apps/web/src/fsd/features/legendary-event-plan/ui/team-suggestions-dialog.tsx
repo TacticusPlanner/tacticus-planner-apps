@@ -21,6 +21,7 @@ import {
   EntityIcon,
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/shared/ui"
@@ -119,11 +120,11 @@ export function TeamSuggestionsDialog({
         <ResponsiveDialogTitle>
           {t("suggestions.title", { lane: t(`lanes.${source.laneId}`) })}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
+        <ResponsiveDialogDescription>
           {t("suggestions.description")}
-        </p>
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-3 pb-4">
+      <ResponsiveDialogBody className="gap-3">
         <div
           className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg bg-muted/40 px-3 py-2"
           data-testid="team-suggestions-toggles"

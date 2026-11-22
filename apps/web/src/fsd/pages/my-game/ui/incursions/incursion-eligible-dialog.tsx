@@ -18,6 +18,7 @@ import {
   RankBadge,
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -69,16 +70,18 @@ export function IncursionEligibleDialog({
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      desktopClassName="sm:max-w-2xl"
+      width="form"
       data-testid="incursion-eligible-dialog"
     >
       <ResponsiveDialogHeader>
         <ResponsiveDialogTitle>
           {t("eligible.title", { mow: mowName })}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">{t("eligible.hint")}</p>
+        <ResponsiveDialogDescription>
+          {t("eligible.hint")}
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="pb-3">
+      <ResponsiveDialogBody>
         <ol className="grid gap-1.5 @xl:grid-cols-2">
           {eligible.map((unit, at) => {
             const name = t(`characters:${unit.id}`, { defaultValue: unit.id })
@@ -160,7 +163,7 @@ export function IncursionEligibleDialog({
           })}
         </ol>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="flex-col border-t md:justify-between">
+      <ResponsiveDialogFooter className="flex-col md:justify-between">
         <p
           className="inline-flex flex-wrap items-center gap-1 text-sm tabular-nums"
           data-testid="incursion-eligible-power"

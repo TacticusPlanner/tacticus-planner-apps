@@ -81,7 +81,7 @@ function AllianceDialog({
   return (
     <ResponsiveDialog
       data-testid="event-shop-alliance-dialog"
-      desktopClassName="sm:max-w-md"
+      width="narrow"
       onOpenChange={(open) => !open && controller.closeDialog()}
       open
     >
@@ -95,7 +95,7 @@ function AllianceDialog({
           })}
         </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="py-4">
+      <ResponsiveDialogBody>
         <div className="grid grid-cols-3 gap-2">
           {DRAFT_ALLIANCES.map((alliance) => (
             <Button
@@ -204,7 +204,7 @@ function BoughtSomeDialog({
   return (
     <ResponsiveDialog
       data-testid="event-shop-bought-some-dialog"
-      desktopClassName="sm:max-w-md"
+      width="narrow"
       onOpenChange={(open) => !open && controller.closeDialog()}
       open
     >
@@ -216,7 +216,7 @@ function BoughtSomeDialog({
           {format.reward(entry.rewardType).label} · {date}
         </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="py-4">
+      <ResponsiveDialogBody>
         <NumberStepper
           data-testid="event-shop-bought-some-value"
           labels={{

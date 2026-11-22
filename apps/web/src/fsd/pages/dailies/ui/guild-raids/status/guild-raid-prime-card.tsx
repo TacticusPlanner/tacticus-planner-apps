@@ -130,7 +130,7 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
           event.preventDefault()
           triggerRef.current?.focus()
         }}
-        desktopClassName="sm:max-w-md"
+        width="narrow"
         onOpenChange={setOpen}
         open={open}
       >
@@ -145,7 +145,7 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
             })}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-        <ResponsiveDialogBody className="pt-2 pb-6">
+        <ResponsiveDialogBody>
           {modifiers.map((modifier, index) => (
             <ModifierRow
               key={`${modifier.modifierId}-${index}`}

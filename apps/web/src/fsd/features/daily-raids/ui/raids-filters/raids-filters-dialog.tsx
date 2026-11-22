@@ -16,6 +16,7 @@ import {
   MultiSelect,
   ResponsiveDialog,
   ResponsiveDialogBody,
+  ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
@@ -194,7 +195,7 @@ export function RaidsFiltersDialog({
 
   return (
     <ResponsiveDialog
-      contentClassName="sm:max-w-2xl"
+      width="form"
       data-testid="raids-filters-dialog"
       onOpenChange={onOpenChange}
       open={open}
@@ -203,11 +204,11 @@ export function RaidsFiltersDialog({
         <ResponsiveDialogTitle>
           {t("dailies:raidsFilters.title")}
         </ResponsiveDialogTitle>
-        <p className="text-sm text-muted-foreground">
+        <ResponsiveDialogDescription>
           {t("dailies:raidsFilters.description")}
-        </p>
+        </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
-      <ResponsiveDialogBody className="gap-5 pt-2 pb-4">
+      <ResponsiveDialogBody className="gap-5">
         <Section title={t("dailies:raidsFilters.sections.allies")}>
           <LabeledField label={t("dailies:raidsFilters.fields.alliances")}>
             <MultiSelect
@@ -373,7 +374,7 @@ export function RaidsFiltersDialog({
           </LabeledField>
         </Section>
       </ResponsiveDialogBody>
-      <ResponsiveDialogFooter className="border-t">
+      <ResponsiveDialogFooter>
         <Button
           className="md:mr-auto"
           data-testid="raids-filters-reset"
