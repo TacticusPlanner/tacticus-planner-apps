@@ -6,6 +6,7 @@ import {
   characterRankUpSchema,
   equipmentSlotSchema,
   farmLocationSchema,
+  unitAbilitiesSchema,
   unitSummonsSchema,
 } from "./shared"
 
@@ -37,4 +38,6 @@ export const characterViewSchema = z.looseObject({
   shardLocations: z.array(farmLocationSchema),
   eligibleEquipment: z.array(equipmentSlotSchema),
   summons: unitSummonsSchema,
+  // The active then passive abilities with their curated roles, target and attack.
+  abilities: unitAbilitiesSchema,
 })

@@ -483,6 +483,24 @@
           "conditional": "Invocación condicional",
           "forced": "Invocación forzada"
         },
+        "abilityRole": "Función de habilidad",
+        "abilityTarget": "Objetivo de habilidad",
+        "abilityAttack": "Ataque de habilidad",
+        "abilityAny": "Todas",
+        "abilityRoles": {
+          "damage": "Daño",
+          "support": "Apoyo",
+          "utility": "Utilidad"
+        },
+        "abilityTargets": {
+          "none": "Sin objetivo",
+          "single": "Objetivo único",
+          "aoe": "Área (AoE)"
+        },
+        "abilityAttacks": {
+          "melee": "Cuerpo a cuerpo",
+          "ranged": "A distancia"
+        },
         "hitsFrom": "Golpes mínimos",
         "hitsTo": "Golpes máximos",
         "movement": "Movimiento",

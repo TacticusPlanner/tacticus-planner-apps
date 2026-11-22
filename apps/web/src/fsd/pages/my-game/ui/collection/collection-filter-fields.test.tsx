@@ -93,6 +93,15 @@ describe("CollectionFilterFields", () => {
     choose(screen.getByLabelText("Summons"), "Forced summons")
     expect(update).toHaveBeenLastCalledWith({ summons: "forced" })
 
+    choose(screen.getByLabelText("Ability role"), "Damage")
+    expect(update).toHaveBeenLastCalledWith({ abilityRole: "damage" })
+
+    choose(screen.getByLabelText("Ability target"), "Area (AoE)")
+    expect(update).toHaveBeenLastCalledWith({ abilityTarget: "aoe" })
+
+    choose(screen.getByLabelText("Ability attack"), "Melee")
+    expect(update).toHaveBeenLastCalledWith({ abilityAttack: "melee" })
+
     choose(screen.getByLabelText("Fewest hits"), "2")
     expect(update).toHaveBeenLastCalledWith({ hitsMin: 2 })
 

@@ -483,6 +483,24 @@
           "conditional": "Conditional summons",
           "forced": "Forced summons"
         },
+        "abilityRole": "Ability role",
+        "abilityTarget": "Ability target",
+        "abilityAttack": "Ability attack",
+        "abilityAny": "Any",
+        "abilityRoles": {
+          "damage": "Damage",
+          "support": "Support",
+          "utility": "Utility"
+        },
+        "abilityTargets": {
+          "none": "No target",
+          "single": "Single target",
+          "aoe": "Area (AoE)"
+        },
+        "abilityAttacks": {
+          "melee": "Melee",
+          "ranged": "Ranged"
+        },
         "hitsFrom": "Fewest hits",
         "hitsTo": "Most hits",
         "movement": "Movement",

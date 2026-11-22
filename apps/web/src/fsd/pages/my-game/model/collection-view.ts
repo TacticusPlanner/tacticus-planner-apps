@@ -68,11 +68,13 @@ type CatalogCharacter = Pick<
   | "shardLocations"
   | "equipmentSlots"
   | "summons"
+  | "abilities"
 >
 type CatalogMow = Pick<
   MowStorageModel,
-  "id" | "name" | "faction" | "alliance" | "summons"
+  "id" | "name" | "faction" | "alliance" | "summons" | "abilities"
 >
+type UnitAbility = CatalogMow["abilities"][number]
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
 type InventoryShard = PlayerDataChunkDto<"inventory-shards">[number]
@@ -172,8 +174,8 @@ export interface CollectionView {
   quickCounts: Record<CollectionQuickFilter, number>
 }
 
-/** A row before its catalog `summons` is added. */
-type UnsummonedRow = Omit<CollectionRow, "summons">
+/** A row before its catalog `summons` and `abilities` are added. */
+type UnsummonedRow = Omit<CollectionRow, "summons" | "abilityTags">
 
 interface CollectionRow {
   unit: UnitTileUnit
@@ -196,6 +198,8 @@ interface CollectionRow {
   unlock: number
   /** What its abilities can summon (catalog `summons`); the Summons filter reads it. */
   summons: UnitSummons
+  /** Its curated ability tags (catalog `abilities`); the Ability filters read them. */
+  abilityTags: readonly UnitAbility[]
   /** Owned rows only: what the quick filters read. */
   quick?: QuickFilterUnit
   /** Characters only (owned or not): what the combat filters read. */
@@ -315,6 +319,7 @@ export function buildCollectionView(
       return {
         ...row,
         summons: character.summons,
+        abilityTags: character.abilities,
         combat: combatProfile(character),
       }
     }),
@@ -324,7 +329,7 @@ export function buildCollectionView(
       const row = record
         ? ownedMowRow(mow, record, name, extras.power?.mow(record) ?? -1)
         : unownedRow("mow", mow, name, { shards })
-      return { ...row, summons: mow.summons }
+      return { ...row, summons: mow.summons, abilityTags: mow.abilities }
     }),
   ]
 
@@ -458,6 +463,7 @@ function rowMatcher(
     query.starsMax === null ? null : progressionIndex(query.starsMax)
   )
   const matchesCombat = combatMatcher(query)
+  const matchesAbility = abilityMatcher(query)
 
   return (row) => {
     const isOwned = row.unit.data.state === "owned"
@@ -489,6 +495,7 @@ function rowMatcher(
       return false
     if (query.kind !== null && row.unit.kind !== query.kind) return false
     if (query.summons !== null && row.summons !== query.summons) return false
+    if (matchesAbility && !row.abilityTags.some(matchesAbility)) return false
     if (query.quick !== null && !matchesQuick(row, query.quick, extras))
       return false
     return true
@@ -506,6 +513,22 @@ function range(
   const min = ends.length === 2 ? Math.min(...ends) : (low ?? -Infinity)
   const max = ends.length === 2 ? Math.max(...ends) : (high ?? Infinity)
   return (value) => value >= min && value <= max
+}
+
+/** One ability carrying every Ability filter tag set; `undefined` when none is set. */
+function abilityMatcher(
+  query: CollectionQuery
+): ((ability: UnitAbility) => boolean) | undefined {
+  const {
+    abilityRole: role,
+    abilityTarget: target,
+    abilityAttack: attack,
+  } = query
+  if (role === null && target === null && attack === null) return undefined
+  return (ability) =>
+    (role === null || ability.roles.includes(role)) &&
+    (target === null || ability.target === target) &&
+    (attack === null || ability.attack === attack)
 }
 
 /**
