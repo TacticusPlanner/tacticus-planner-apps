@@ -4,17 +4,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import {
-  Sheet,
-  SheetBody,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@workspace/ui/components/sheet"
 
 import { NpcLevelBadge, NpcPortrait } from "@/entities/npc"
+import { DetailsSheet } from "@/shared/ui"
 
 import type { EnemyTileViewModel } from "../model/enemy-tile"
 import { EnemyDetail } from "./enemy-detail"
@@ -23,7 +15,7 @@ import { useEnemyLabels } from "./enemy-label"
 /**
  * One served enemy entry of a wave (design D5): portrait, localized name, a "×N" badge when the
  * entry spawns more than one, and its level. Activating it opens the enemy detail in a popover on
- * desktop and a bottom sheet on mobile; both return focus to the tile on close.
+ * desktop and a content-height details sheet on mobile; both return focus to the tile on close.
  */
 export function EnemyTile({
   tile,
@@ -70,20 +62,15 @@ export function EnemyTile({
 
   if (isMobile) {
     return (
-      <Sheet>
-        <SheetTrigger asChild>{trigger}</SheetTrigger>
-        <SheetContent data-testid="battle-enemy-sheet" side="bottom">
-          <SheetHeader>
-            <SheetTitle>{name}</SheetTitle>
-            <SheetDescription className="sr-only">
-              {t("battles.enemy.detailDescription")}
-            </SheetDescription>
-          </SheetHeader>
-          <SheetBody>
-            <EnemyDetail tile={tile} />
-          </SheetBody>
-        </SheetContent>
-      </Sheet>
+      <DetailsSheet
+        description={t("battles.enemy.detailDescription")}
+        descriptionHidden
+        testId="battle-enemy-sheet"
+        title={name}
+        trigger={trigger}
+      >
+        <EnemyDetail tile={tile} />
+      </DetailsSheet>
     )
   }
   return (

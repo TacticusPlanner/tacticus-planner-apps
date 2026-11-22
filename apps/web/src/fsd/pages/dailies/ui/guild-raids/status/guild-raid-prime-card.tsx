@@ -1,4 +1,3 @@
-import { useRef, useState } from "react"
 import { ChevronRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
@@ -12,13 +11,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Progress } from "@workspace/ui/components/progress"
 
 import { RaidBossPortrait } from "@/entities/raid-boss"
-import {
-  ResponsiveDialog,
-  ResponsiveDialogBody,
-  ResponsiveDialogDescription,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
-} from "@/shared/ui"
+import { DetailsOverlay } from "@/shared/ui"
 
 import {
   countActivatedModifiers,
@@ -78,9 +71,6 @@ function ModifierRow({ modifier }: { modifier: GuildRaidModifierView }) {
 function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
   const { t } = useTranslation("dailies")
   const { modifiers } = prime
-  const [open, setOpen] = useState(false)
-  const triggerRef = useRef<HTMLButtonElement>(null)
-
   if (modifiers.length === 0) {
     return null
   }
@@ -89,72 +79,58 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
   const activatedCount = countActivatedModifiers(modifiers)
 
   return (
-    <>
-      <div
-        className="flex flex-col gap-1.5"
-        data-testid="guild-raid-prime-modifiers"
+    <div
+      className="flex flex-col gap-1.5"
+      data-testid="guild-raid-prime-modifiers"
+    >
+      <span
+        className="text-xs text-muted-foreground"
+        data-testid="guild-raid-modifiers-count"
       >
-        <span
-          className="text-xs text-muted-foreground"
-          data-testid="guild-raid-modifiers-count"
-        >
-          {t("guildRaids.status.modifiersHit", {
-            active: activatedCount,
-            total: modifiers.length,
-          })}
-        </span>
-        <button
-          aria-haspopup="dialog"
-          className="flex w-full items-center justify-between gap-2 rounded-lg border bg-muted/40 px-3 py-2 text-left hover:bg-muted"
-          data-testid="guild-raid-next-modifier-trigger"
-          ref={triggerRef}
-          onClick={() => setOpen(true)}
-          type="button"
-        >
-          {next ? (
-            <ModifierRow modifier={next} />
-          ) : (
-            <span className="text-sm text-muted-foreground">
-              {t("guildRaids.status.modifiersAllActive")}
-            </span>
-          )}
-          <ChevronRight
-            aria-hidden="true"
-            className="size-4 shrink-0 text-muted-foreground"
-          />
-        </button>
-      </div>
-      <ResponsiveDialog
-        data-testid="guild-raid-modifiers-dialog"
-        onCloseAutoFocus={(event) => {
-          event.preventDefault()
-          triggerRef.current?.focus()
-        }}
-        width="narrow"
-        onOpenChange={setOpen}
-        open={open}
+        {t("guildRaids.status.modifiersHit", {
+          active: activatedCount,
+          total: modifiers.length,
+        })}
+      </span>
+      <DetailsOverlay
+        description={t("guildRaids.status.modifiersHit", {
+          active: activatedCount,
+          total: modifiers.length,
+        })}
+        testId="guild-raid-modifiers-dialog"
+        title={t("guildRaids.status.modifiersDialogTitle", {
+          name: prime.name,
+        })}
+        trigger={
+          <button
+            className="flex w-full items-center justify-between gap-2 rounded-lg border bg-muted/40 px-3 py-2 text-left hover:bg-muted"
+            data-testid="guild-raid-next-modifier-trigger"
+            type="button"
+          >
+            {next ? (
+              <ModifierRow modifier={next} />
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                {t("guildRaids.status.modifiersAllActive")}
+              </span>
+            )}
+            <ChevronRight
+              aria-hidden="true"
+              className="size-4 shrink-0 text-muted-foreground"
+            />
+          </button>
+        }
       >
-        <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>
-            {t("guildRaids.status.modifiersDialogTitle", { name: prime.name })}
-          </ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>
-            {t("guildRaids.status.modifiersHit", {
-              active: activatedCount,
-              total: modifiers.length,
-            })}
-          </ResponsiveDialogDescription>
-        </ResponsiveDialogHeader>
-        <ResponsiveDialogBody>
+        <div className="flex flex-col gap-2">
           {modifiers.map((modifier, index) => (
             <ModifierRow
               key={`${modifier.modifierId}-${index}`}
               modifier={modifier}
             />
           ))}
-        </ResponsiveDialogBody>
-      </ResponsiveDialog>
-    </>
+        </div>
+      </DetailsOverlay>
+    </div>
   )
 }
 

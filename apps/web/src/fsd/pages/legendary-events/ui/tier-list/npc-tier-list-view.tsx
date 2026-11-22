@@ -13,14 +13,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@workspace/ui/components/sheet"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
@@ -34,7 +26,7 @@ import {
 import type { NpcTierTile } from "@/entities/legendary-event"
 import { NpcPortrait, useNpcLabels, useNpcsById } from "@/entities/npc"
 import { useTourPageSteps } from "@/shared/tour"
-import { EmptyState, PageToolbar } from "@/shared/ui"
+import { DetailsSheet, EmptyState, PageToolbar } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { useNpcThreatText } from "../../model/use-npc-threat-text"
@@ -281,18 +273,15 @@ function NpcTile({
   )
   if (isMobile) {
     return (
-      <Sheet>
-        <SheetTrigger asChild>{trigger}</SheetTrigger>
-        <SheetContent data-testid="npc-tier-sheet" side="bottom">
-          <SheetHeader>
-            <SheetTitle>{name}</SheetTitle>
-            <SheetDescription className="sr-only">
-              {t("npcTierList.details.description")}
-            </SheetDescription>
-          </SheetHeader>
-          <div className="px-4 pb-4">{details}</div>
-        </SheetContent>
-      </Sheet>
+      <DetailsSheet
+        description={t("npcTierList.details.description")}
+        descriptionHidden
+        testId="npc-tier-sheet"
+        title={name}
+        trigger={trigger}
+      >
+        {details}
+      </DetailsSheet>
     )
   }
   return (
