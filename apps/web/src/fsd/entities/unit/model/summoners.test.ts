@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest"
+import type { UnitSummons } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 
 import { forcedSummonerIds } from "./summoners"
 
-const unit = (id: string, summons: "none" | "optional" | "forced") => ({
+const unit = (id: string, summons: UnitSummons) => ({
   id: id as UnitId,
   summons,
 })
@@ -14,6 +15,7 @@ describe("forcedSummonerIds", () => {
       ...forcedSummonerIds([
         unit("blackPossession", "forced"),
         unit("necroSpyder", "optional"),
+        unit("admecMarshall", "conditional"),
         unit("ultraCalgar", "none"),
         unit("adeptCelestine", "forced"),
       ]),

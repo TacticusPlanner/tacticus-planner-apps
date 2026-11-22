@@ -480,6 +480,7 @@
         "summonsTypes": {
           "none": "Aucune invocation",
           "optional": "Invocation facultative",
+          "conditional": "Invocation conditionnelle",
           "forced": "Invocation forcée"
         },
         "hitsFrom": "Coups minimum",

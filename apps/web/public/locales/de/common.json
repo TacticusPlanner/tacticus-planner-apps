@@ -480,6 +480,7 @@
         "summonsTypes": {
           "none": "Keine Beschwörung",
           "optional": "Optionale Beschwörung",
+          "conditional": "Bedingte Beschwörung",
           "forced": "Erzwungene Beschwörung"
         },
         "hitsFrom": "Wenigste Treffer",

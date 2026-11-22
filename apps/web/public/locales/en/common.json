@@ -480,6 +480,7 @@
         "summonsTypes": {
           "none": "No summons",
           "optional": "Optional summons",
+          "conditional": "Conditional summons",
           "forced": "Forced summons"
         },
         "hitsFrom": "Fewest hits",

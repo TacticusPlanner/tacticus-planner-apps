@@ -23,10 +23,11 @@ type PlayerMow = PlayerDataChunkDto<"mows">[number]
 // character starts Epic here except the few the tests pin explicitly.
 const initialRarity: Record<string, Rarity> = { ultraCalgar: "Legendary" }
 // A few real summoners; every other character has none.
-const summons: Record<string, "optional" | "forced"> = {
+const summons: Record<string, "optional" | "conditional" | "forced"> = {
   blackPossession: "forced",
   adeptCelestine: "forced",
   necroSpyder: "optional",
+  admecMarshall: "conditional",
 }
 const characters = legendaryEventCharacters.map((character) => ({
   ...character,
@@ -725,8 +726,8 @@ describe("buildCollectionView with a query", () => {
   })
 
   it("lists characters and Machines of War by what they can summon", () => {
-    const [forced, optional, none] = (
-      ["forced", "optional", "none"] as const
+    const [forced, conditional, optional, none] = (
+      ["forced", "conditional", "optional", "none"] as const
     ).map((summons) =>
       ids(
         buildCollectionView(
@@ -739,6 +740,7 @@ describe("buildCollectionView with a query", () => {
     )
 
     expect(forced).toEqual(["adeptCelestine", "blackPossession"])
+    expect(conditional).toEqual(["admecMarshall"])
     expect(optional).toEqual(["necroSpyder", "ultraDreadnought"])
     expect(none).toContain("blackForgefiend")
     expect(none).not.toContain("blackPossession")

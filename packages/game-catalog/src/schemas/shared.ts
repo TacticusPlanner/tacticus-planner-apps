@@ -28,11 +28,17 @@ export const farmLocationSchema = z.looseObject({
 })
 
 /**
- * Whether a character or MoW can summon: `none`; `optional` (the player decides whether it summons: an active
- * ability left unused, or a passive the player can switch off); `forced` (a passive ability summons on its own, so
- * the player cannot prevent it).
+ * Whether a character or MoW can summon: `none`; `optional` (only an active ability summons, so the player decides
+ * whether it summons); `conditional` (a passive summons, but only while the player keeps up a condition they can
+ * avoid, such as Tan Gi'da's active or Vynn repairing, so it is easy to summon by accident); `forced` (a passive
+ * ability summons on its own, so the player cannot prevent it).
  */
-export const unitSummons = ["none", "optional", "forced"] as const
+export const unitSummons = [
+  "none",
+  "optional",
+  "conditional",
+  "forced",
+] as const
 export type UnitSummons = (typeof unitSummons)[number]
 
 // Defaults to `none` for a server that predates the field.

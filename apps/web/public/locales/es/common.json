@@ -480,6 +480,7 @@
         "summonsTypes": {
           "none": "Sin invocaciones",
           "optional": "Invocación opcional",
+          "conditional": "Invocación condicional",
           "forced": "Invocación forzada"
         },
         "hitsFrom": "Golpes mínimos",
