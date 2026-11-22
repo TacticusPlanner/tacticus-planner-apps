@@ -43,6 +43,7 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 vi.mock("@/shared/config", () => ({
+  appEnvironment: "production",
   BUY_ME_A_COFFEE_URL: "https://coffee.example",
   DISCORD_INVITE_URL: "https://discord.example",
   isUiKitEnabled: true,

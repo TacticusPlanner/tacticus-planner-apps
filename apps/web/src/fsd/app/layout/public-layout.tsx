@@ -22,7 +22,7 @@ import {
 } from "@/shared/config"
 import { GuestPreferencesCard, USERJOT_BOARD_URL } from "@/widgets/account-menu"
 
-import { AppLogo, BetaBadge } from "./app-logo"
+import { AppLogo, EnvironmentBadge } from "./app-logo"
 import { documentTitle } from "./document-title"
 import { SkipLink } from "./skip-link"
 
@@ -94,7 +94,7 @@ function PublicTopBar() {
           <span className="truncate font-heading text-sm font-semibold tracking-tight">
             {t("app.name")}
           </span>
-          <BetaBadge />
+          <EnvironmentBadge />
         </Link>
         <span className="flex-1" />
         <Button

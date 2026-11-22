@@ -8,7 +8,7 @@ import { CommunityHeaderLinks } from "@/widgets/account-menu"
 
 import { AuthControl } from "../providers/auth-control"
 import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
-import { AppLogo, AppLogoHomeLink, BetaBadge } from "./app-logo"
+import { AppLogo, AppLogoHomeLink, EnvironmentBadge } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
@@ -56,7 +56,7 @@ export function DesktopTopBar({
         <span className="hidden truncate text-sm font-semibold tracking-tight lg:inline">
           {t("app.name")}
         </span>
-        <BetaBadge />
+        <EnvironmentBadge />
       </AppLogoHomeLink>
       <div className="flex min-w-0 flex-1 justify-center">
         <button

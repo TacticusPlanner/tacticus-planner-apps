@@ -18,7 +18,7 @@ import { PageHeaderSettingsSlot } from "@/shared/ui"
 
 import { AuthControl } from "../providers/auth-control"
 import { useUserJot } from "../providers/userjot-provider"
-import { AppLogo, AppLogoHomeLink, BetaBadge } from "./app-logo"
+import { AppLogo, AppLogoHomeLink, EnvironmentBadge } from "./app-logo"
 import type { NavItem } from "./nav-items"
 import { SectionActions } from "./section-actions"
 import { SectionTabs } from "./section-tabs"
@@ -49,7 +49,7 @@ export function MobileHeader({
             isAuthenticated={isAuthenticated}
           >
             <AppLogo className="size-10" />
-            <BetaBadge className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 bg-background" />
+            <EnvironmentBadge className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 bg-background" />
           </AppLogoHomeLink>
           <div className="flex min-w-0 flex-col">
             <h1

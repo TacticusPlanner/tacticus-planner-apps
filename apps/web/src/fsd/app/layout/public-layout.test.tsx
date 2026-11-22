@@ -7,6 +7,7 @@ const signUp = vi.fn()
 const signInState = vi.fn(() => ({ checkingSignIn: false, disabled: false }))
 const isAuthenticated = vi.fn(() => false)
 const isUiKitEnabled = vi.fn(() => true)
+const appEnvironment = vi.fn((): string => "production")
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -21,6 +22,9 @@ vi.mock("@/shared/auth", () => ({
 }))
 
 vi.mock("@/shared/config", () => ({
+  get appEnvironment() {
+    return appEnvironment()
+  },
   DISCORD_INVITE_URL: "https://discord.example",
   GITHUB_ORG_URL: "https://github.example",
   get isUiKitEnabled() {
@@ -52,6 +56,7 @@ describe("PublicLayout", () => {
     signInState.mockReturnValue({ checkingSignIn: false, disabled: false })
     isAuthenticated.mockReturnValue(false)
     isUiKitEnabled.mockReturnValue(true)
+    appEnvironment.mockReturnValue("production")
   })
 
   it("renders the page inside the one main landmark", () => {
@@ -153,6 +158,23 @@ describe("PublicLayout", () => {
     expect(
       screen.queryByRole("link", { name: "publicSite.uiKit" })
     ).not.toBeInTheDocument()
+  })
+
+  it("marks the production build as beta", () => {
+    renderLayout()
+
+    expect(screen.getByTestId("app-environment-badge")).toHaveTextContent(
+      "app.beta"
+    )
+  })
+
+  it("marks the staging build as staging", () => {
+    appEnvironment.mockReturnValue("staging")
+    renderLayout()
+
+    expect(screen.getByTestId("app-environment-badge")).toHaveTextContent(
+      "app.staging"
+    )
   })
 
   it("titles the document with the page and app names", () => {
