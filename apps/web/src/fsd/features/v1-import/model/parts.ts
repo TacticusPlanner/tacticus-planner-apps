@@ -31,6 +31,11 @@ export const V1_IMPORT_PARTS = [
     label: "goals.v1Import.parts.rosterSnapshots",
     description: "goals.v1Import.partDescriptions.rosterSnapshots",
   },
+  {
+    key: "teams",
+    label: "goals.v1Import.parts.teams",
+    description: "goals.v1Import.partDescriptions.teams",
+  },
 ] as const
 
 export type V1ImportPartKey = (typeof V1_IMPORT_PARTS)[number]["key"]

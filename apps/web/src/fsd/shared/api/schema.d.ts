@@ -59,7 +59,7 @@ export interface paths {
     put?: never
     /**
      * Replaces this staging account's planner data with a copy from production.
-     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, event shop plans, personal roster snapshots, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
+     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, event shop plans, personal roster snapshots, teams, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
      */
     post: operations["TacticusPlannerApiFeaturesStagingTransferImportFromProductionEndpoint"]
     delete?: never
@@ -119,7 +119,7 @@ export interface paths {
     put?: never
     /**
      * Selectively imports integration data, progress, and goals from V1.
-     * @description V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes. The rosterSnapshots part rebuilds V1 roster snapshots and stores the live ones as V1Import personal snapshots, newest first within the manual limit, skipping ones an earlier run imported; it reports one outcome per V1 snapshot in rosterSnapshotOutcomes.
+     * @description V1 credentials are used once and never persisted. After profile retrieval, each selected part is applied independently and reports Imported, Skipped, or Failed. Goals are created directly by this operation, in V1 priority order — the response carries one outcome per source V1 goal (created, skipped, or failed), one per linked unit when a pre-farm goal fans out, plus one per automatically added prerequisite. The goals part is refused (no goals created) when the account has no player data snapshot. The legendaryEventPlans part creates one Legendary Event plan per V1 event (never touching a plan that already has teams) and reports one outcome per V1 event in legendaryEventOutcomes. The rosterSnapshots part rebuilds V1 roster snapshots and stores the live ones as V1Import personal snapshots, newest first within the manual limit, skipping ones an earlier run imported; it reports one outcome per V1 snapshot in rosterSnapshotOutcomes. The teams part imports V1 teams2 as personal teams, after the existing ones and within the team limit, keeping each team as V1 had it even when it breaks a team rule; it skips teams an earlier run imported (even renamed ones) and names already taken, and reports one outcome per V1 team in teamOutcomes.
      */
     post: operations["TacticusPlannerApiFeaturesV1ImportImportV1ProfileEndpoint"]
     delete?: never
@@ -1997,6 +1997,68 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/teams": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Lists the caller's teams in their saved order.
+     * @description issues are the team rules each team breaks against the current catalog, derived on every read; a team with issues stays readable, reorderable and deletable.
+     */
+    get: operations["TacticusPlannerApiFeaturesTeamsListTeamsEndpoint"]
+    put?: never
+    /** Creates a team at the end of the order. */
+    post: operations["TacticusPlannerApiFeaturesTeamsCreateTeamEndpoint"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/teams/order": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Reorders the caller's teams as a whole list.
+     * @description teamIds must be exactly the profile's current teams, in their new order. A reorder changes no other field of any team, including its revision.
+     */
+    put: operations["TacticusPlannerApiFeaturesTeamsUpdateTeamOrderEndpoint"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/teams/{teamId}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Replaces a team's fields when the revision matches.
+     * @description The updated team must satisfy every team rule, including a team that was imported with issues. The id, position and V1 import key never change.
+     */
+    put: operations["TacticusPlannerApiFeaturesTeamsUpdateTeamEndpoint"]
+    post?: never
+    /** Deletes a team and closes the gap in the remaining positions. */
+    delete: operations["TacticusPlannerApiFeaturesTeamsDeleteTeamEndpoint"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/userjot-token": {
     parameters: {
       query?: never
@@ -2057,7 +2119,7 @@ export interface components {
       kind: components["schemas"]["AcquisitionSourceKind"]
       ids: components["schemas"]["ListOfString"]
     }
-    /** @description RFC 7807 problem details. issueCode names the failure; errors maps fields to messages on a validation failure; current carries the conflicting resource in its read shape on a 409. */
+    /** @description RFC 7807 problem details. issueCode names the failure; errors maps fields to messages on a validation failure; current carries the conflicting resource in its read shape on a 409; rules names the broken team rules on a 400 teamRulesBroken. */
     ApiProblem: {
       type: string
       title: string
@@ -2076,6 +2138,8 @@ export interface components {
       }
       /** @description The conflicting resource as its read endpoint serves it. */
       current?: unknown
+      /** @description On a 400 teamRulesBroken: every team rule the refused team breaks. */
+      rules?: components["schemas"]["TeamRuleCode"][]
     }
     /** @enum {string} */
     BattleMilestone: "None" | "Bronze" | "Silver" | "Gold"
@@ -2226,6 +2290,31 @@ export interface components {
       code: string
       /** Format: date-time */
       expiresAt: string
+    }
+    /** @constant */
+    CreateTeamRequest: {
+      /** @constant */
+      name: string
+      modes: components["schemas"]["IReadOnlyListOfTeamMode"]
+      characterIds: components["schemas"]["IReadOnlyListOfString"]
+      /**
+       * Format: int32
+       * @constant
+       */
+      flexStartIndex: null | number
+      mowIds: components["schemas"]["IReadOnlyListOfString"]
+      /**
+       * Format: int32
+       * @constant
+       */
+      mowFlexStartIndex: null | number
+      /** @constant */
+      campaignGroupId: null | string
+      incursionMowIds: components["schemas"]["IReadOnlyListOfString"]
+      /** @constant */
+      notes: null | string
+      /** @constant */
+      rarityCap: null | components["schemas"]["TeamRarityCap"]
     }
     CurrentUserResponse: {
       /** Format: uuid */
@@ -2479,6 +2568,8 @@ export interface components {
       rankUpUpgrades: components["schemas"]["IReadOnlyListOfGameCatalogCharacterRankUp"]
       shardLocations: components["schemas"]["IReadOnlyListOfGameCatalogFarmLocation"]
       eligibleEquipment: components["schemas"]["IReadOnlyListOfGameCatalogEquipmentSlot"]
+      summons: string
+      abilities: components["schemas"]["IReadOnlyListOfGameCatalogUnitAbility"]
     }
     GameCatalogDamageProfileModifier: {
       damageType: string
@@ -3126,6 +3217,7 @@ export interface components {
       /** Format: int32 */
       target: number
       parameters: components["schemas"]["IReadOnlyDictionaryOfStringAndString"]
+      locaKey: null | string
     }
     GameCatalogHrePhase: {
       /** Format: int32 */
@@ -3386,6 +3478,8 @@ export interface components {
       alliance: string
       primaryAbility: components["schemas"]["GameCatalogMowAbility"]
       secondaryAbility: components["schemas"]["GameCatalogMowAbility"]
+      summons: string
+      abilities: components["schemas"]["IReadOnlyListOfGameCatalogUnitAbility"]
       mythicAbility?:
         null | components["schemas"]["GameCatalogMowMythicAbility"]
     }
@@ -3814,6 +3908,13 @@ export interface components {
       /** Format: int32 */
       modifier: number
     }
+    GameCatalogUnitAbility: {
+      id: string
+      kind: string
+      roles: components["schemas"]["IReadOnlyListOfString"]
+      target: string
+      attack: null | string
+    }
     GameCatalogUnitPower: {
       id: string
       heroProgressionSteps: components["schemas"]["IReadOnlyListOfGameCatalogHeroPowerStep"]
@@ -4040,6 +4141,8 @@ export interface components {
       personalRosterSnapshots: number
       /** Format: int32 */
       eventShopPlans: number
+      /** Format: int32 */
+      teams: number
       settings: boolean
       overrides: boolean
     }
@@ -4071,6 +4174,8 @@ export interface components {
       legendaryEventOutcomes: components["schemas"]["IReadOnlyListOfV1LegendaryEventOutcome"]
       rosterSnapshots: components["schemas"]["ImportPartResult"]
       rosterSnapshotOutcomes: components["schemas"]["IReadOnlyListOfV1RosterSnapshotOutcome"]
+      teams: components["schemas"]["ImportPartResult"]
+      teamOutcomes: components["schemas"]["IReadOnlyListOfV1TeamOutcome"]
       /** Format: uuid */
       importProjectId: null | string
       /** Format: uuid */
@@ -4095,6 +4200,8 @@ export interface components {
       legendaryEventPlans?: boolean
       /** @default false */
       rosterSnapshots?: boolean
+      /** @default false */
+      teams?: boolean
     }
     IncursionBattleProgressOverrideRequest: {
       mowId: string
@@ -4216,6 +4323,7 @@ export interface components {
     IReadOnlyListOfGameCatalogShopVariantView: components["schemas"]["GameCatalogShopVariantView"][]
     IReadOnlyListOfGameCatalogStaminaShopTier: components["schemas"]["GameCatalogStaminaShopTier"][]
     IReadOnlyListOfGameCatalogTraitPowerModifier: components["schemas"]["GameCatalogTraitPowerModifier"][]
+    IReadOnlyListOfGameCatalogUnitAbility: components["schemas"]["GameCatalogUnitAbility"][]
     IReadOnlyListOfGameCatalogUnitPowerUnit: components["schemas"]["GameCatalogUnitPowerUnit"][]
     IReadOnlyListOfGameCatalogUpgradeRecipeIngredient: components["schemas"]["GameCatalogUpgradeRecipeIngredient"][]
     IReadOnlyListOfGameCatalogUpgradeSlotRank: components["schemas"]["GameCatalogUpgradeSlotRank"][]
@@ -4244,10 +4352,15 @@ export interface components {
     IReadOnlyListOfRosterEquipmentSlotResponse: components["schemas"]["RosterEquipmentSlotResponse"][]
     IReadOnlyListOfRosterMowResponse: components["schemas"]["RosterMowResponse"][]
     IReadOnlyListOfString: string[]
+    IReadOnlyListOfTeamMode: components["schemas"]["TeamMode"][]
+    IReadOnlyListOfTeamResponse: components["schemas"]["TeamResponse"][]
+    IReadOnlyListOfTeamRuleCode: components["schemas"]["TeamRuleCode"][]
     IReadOnlyListOfV1GoalOutcome: components["schemas"]["V1GoalOutcome"][]
     IReadOnlyListOfV1LegendaryEventIssue: components["schemas"]["V1LegendaryEventIssue"][]
     IReadOnlyListOfV1LegendaryEventOutcome: components["schemas"]["V1LegendaryEventOutcome"][]
     IReadOnlyListOfV1RosterSnapshotOutcome: components["schemas"]["V1RosterSnapshotOutcome"][]
+    IReadOnlyListOfV1TeamIssue: components["schemas"]["V1TeamIssue"][]
+    IReadOnlyListOfV1TeamOutcome: components["schemas"]["V1TeamOutcome"][]
     /** @enum {string} */
     LegendaryEventAnnotationStatus: "maybeClear" | "stopHere"
     /** @enum {string} */
@@ -4389,6 +4502,9 @@ export interface components {
     ListOfUpgradeMaterialTargetResponse: components["schemas"]["UpgradeMaterialTargetResponse"][]
     ListProjectsResponse: {
       projects: components["schemas"]["ListOfProjectSummaryResponse"]
+    }
+    ListTeamsResponse: {
+      teams: components["schemas"]["IReadOnlyListOfTeamResponse"]
     }
     MyGuildResponse: {
       state: components["schemas"]["MyGuildState"]
@@ -4629,6 +4745,56 @@ export interface components {
     }
     /** @enum {string} */
     RosterSnapshotSource: "manual" | "auto" | "v1Import"
+    /** @enum {string} */
+    TeamMode:
+      | "warOffense"
+      | "warDefense"
+      | "guildRaid"
+      | "tournamentArena"
+      | "horde"
+      | "campaign"
+      | "incursion"
+    /** @enum {string} */
+    TeamRarityCap:
+      "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary" | "Mythic"
+    TeamResponse: {
+      /** Format: uuid */
+      id: string
+      /** Format: int64 */
+      revision: number
+      name: string
+      /** Format: int32 */
+      position: number
+      modes: components["schemas"]["IReadOnlyListOfTeamMode"]
+      characterIds: components["schemas"]["IReadOnlyListOfString"]
+      /** Format: int32 */
+      flexStartIndex: null | number
+      mowIds: components["schemas"]["IReadOnlyListOfString"]
+      /** Format: int32 */
+      mowFlexStartIndex: null | number
+      campaignGroupId: null | string
+      incursionMowIds: components["schemas"]["IReadOnlyListOfString"]
+      notes: null | string
+      rarityCap: null | components["schemas"]["TeamRarityCap"]
+      issues: components["schemas"]["IReadOnlyListOfTeamRuleCode"]
+    }
+    /** @enum {string} */
+    TeamRuleCode:
+      | "nameLength"
+      | "noMode"
+      | "tooFewCharacters"
+      | "unknownUnit"
+      | "modeNotCombinable"
+      | "tooManyCoreCharacters"
+      | "tooManyCoreMows"
+      | "mowsNotAllowed"
+      | "campaignRequired"
+      | "unknownCampaign"
+      | "coreCharacterMissing"
+      | "factionNotAllowed"
+      | "incursionRequired"
+      | "unknownIncursion"
+      | "noSharedIncursionFaction"
     UnitId: string
     /** @enum {string} */
     UnitProgression:
@@ -4921,6 +5087,39 @@ export interface components {
       tacticusUserIdMasked: null | string
       tacticusUserId: null | string
     }
+    UpdateTeamOrderRequest: {
+      teamIds: components["schemas"]["IReadOnlyListOfGuid"]
+    }
+    /** @constant */
+    UpdateTeamRequest: {
+      /** @constant */
+      name: string
+      modes: components["schemas"]["IReadOnlyListOfTeamMode"]
+      characterIds: components["schemas"]["IReadOnlyListOfString"]
+      /**
+       * Format: int32
+       * @constant
+       */
+      flexStartIndex: null | number
+      mowIds: components["schemas"]["IReadOnlyListOfString"]
+      /**
+       * Format: int32
+       * @constant
+       */
+      mowFlexStartIndex: null | number
+      /** @constant */
+      campaignGroupId: null | string
+      incursionMowIds: components["schemas"]["IReadOnlyListOfString"]
+      /** @constant */
+      notes: null | string
+      /** @constant */
+      rarityCap: null | components["schemas"]["TeamRarityCap"]
+      /**
+       * Format: int64
+       * @constant
+       */
+      revision: number
+    }
     /** @constant */
     UpdateUserSettingsRequest: {
       /**
@@ -5040,6 +5239,18 @@ export interface components {
       | "skippedDuplicate"
       | "skippedLimit"
       | "failed"
+    V1TeamIssue: {
+      code: string
+      value: null | string
+    }
+    V1TeamOutcome: {
+      name: null | string
+      status: components["schemas"]["ImportPartStatus"]
+      code: null | string
+      /** Format: uuid */
+      teamId: null | string
+      issues: components["schemas"]["IReadOnlyListOfV1TeamIssue"]
+    }
     /** @enum {string} */
     XpBookRarity:
       "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary" | "Mythic"
@@ -11656,6 +11867,300 @@ export interface operations {
       }
       /** @description Forbidden */
       403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesTeamsListTeamsEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ListTeamsResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesTeamsCreateTeamEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateTeamRequest"]
+      }
+    }
+    responses: {
+      /** @description The created team, as GET returns it. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TeamResponse"]
+        }
+      }
+      /** @description teamRulesBroken (each broken rule under rules), teamNameTaken, teamLimitReached, or an invalid shape. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesTeamsUpdateTeamOrderEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateTeamOrderRequest"]
+      }
+    }
+    responses: {
+      /** @description The reordered teams. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ListTeamsResponse"]
+        }
+      }
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description teamOrderStale: teamIds is not the profile's current set of teams; current is the current list. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesTeamsUpdateTeamEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        teamId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateTeamRequest"]
+      }
+    }
+    responses: {
+      /** @description The updated team, as GET returns it. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["TeamResponse"]
+        }
+      }
+      /** @description teamRulesBroken (each broken rule under rules), teamNameTaken, or an invalid shape. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The team does not exist or belongs to another profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description teamRevisionStale; current is the team as it stands. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesTeamsDeleteTeamEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        teamId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The team was deleted. */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The team does not exist or belongs to another profile. */
+      404: {
         headers: {
           [name: string]: unknown
         }

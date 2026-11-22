@@ -156,6 +156,7 @@ describe("navItems", () => {
       "/my-game/campaigns",
       "/my-game/campaign-events",
       "/my-game/incursions",
+      "/my-game/teams",
     ])
   })
 
@@ -171,6 +172,16 @@ describe("navItems", () => {
 })
 
 describe("filterVisibleNavItems", () => {
+  it("finds Teams under My Game for a signed-in user's search", () => {
+    const byKey = (key: string) => (key === "myGame.tabs.teams" ? "Teams" : key)
+    const myGame = filterNavigationItems(navItems, "teams", byKey).find(
+      (item) => item.path === "/my-game"
+    )
+    expect(myGame?.children?.map((child) => child.path)).toEqual([
+      "/my-game/teams",
+    ])
+  })
+
   const myGameChildren = (items: typeof navItems) =>
     items
       .find((item) => item.path === "/my-game")
@@ -179,7 +190,7 @@ describe("filterVisibleNavItems", () => {
   it("returns the whole tree for a signed-in user", () => {
     const visible = filterVisibleNavItems(navItems, true)
     expect(visible).toBe(navItems)
-    expect(myGameChildren(visible)).toHaveLength(5)
+    expect(myGameChildren(visible)).toHaveLength(6)
   })
 
   it("keeps only My Game's anonymous children for a signed-out user", () => {
@@ -218,9 +229,11 @@ describe("filterVisibleNavItems", () => {
       ({
         "myGame.tabs.onslaught": "Onslaught",
         "myGame.tabs.collection": "Collection",
+        "myGame.tabs.teams": "Teams",
       })[key] ?? key
 
     expect(filterNavigationItems(visible, "onslaught", byKey)).toEqual([])
+    expect(filterNavigationItems(visible, "teams", byKey)).toEqual([])
     const myGame = filterNavigationItems(visible, "collection", byKey).find(
       (item) => item.path === "/my-game"
     )

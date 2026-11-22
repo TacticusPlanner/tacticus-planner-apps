@@ -14,6 +14,7 @@ const gameMenuIconFiles = {
   shop: "atlases/ui_icon_tabs_shop",
   guild: "atlases/ui_icon_tabs_social",
   guildRaid: "atlases/ui_icon_menu_guildboss",
+  guildWar: "atlases/ui_icon_guildwars",
   onslaught: "atlases/ui_icon_menu_battle_onslaught",
   quests: "atlases/ui_icon_menu_quests",
   raids: "fonts/raids",

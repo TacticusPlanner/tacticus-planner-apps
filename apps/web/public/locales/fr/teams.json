@@ -1,0 +1,321 @@
+{
+  "modes": {
+    "warOffense": "Attaque de guerre",
+    "warDefense": "Défense de guerre",
+    "guildRaid": "Raid de guilde",
+    "tournamentArena": "Arène du tournoi",
+    "horde": "Horde",
+    "campaign": "Campagne",
+    "incursion": "Incursion"
+  },
+  "page": {
+    "toolbarLabel": "Commandes des équipes",
+    "mode": "Mode",
+    "allModes": "Tous les modes",
+    "create": "Créer une équipe",
+    "limitReached": "Vous avez {{count}} équipes, le maximum autorisé. Supprimez-en une pour faire de la place.",
+    "loading": "Chargement de vos équipes…",
+    "loadError": "Vos équipes n'ont pas pu être chargées.",
+    "retry": "Réessayer",
+    "empty": "Aucune équipe pour l'instant.",
+    "importHint": "Vous venez de l'ancien planificateur ?",
+    "importLink": "Importer vos équipes V1",
+    "noMatch": "Aucune équipe n'a le mode {{mode}}.",
+    "noRoster": "Synchronisez votre effectif pour voir quelles unités vous avez débloquées et où en est chacune.",
+    "listLabel": "Vos équipes",
+    "search": "Rechercher des équipes ou des unités",
+    "searchPlaceholder": "Rechercher des équipes ou des unités…",
+    "needsFixes": "À corriger",
+    "sharedUnits": "Unités partagées",
+    "cards": "Cartes",
+    "table": "Tableau",
+    "list": "Liste",
+    "groupByMode": "Mode",
+    "count": "{{count}} sur {{max}}",
+    "countLimit": "Limite atteinte · {{max}} sur {{max}}",
+    "noMatchAny": "Aucune équipe ne correspond.",
+    "sectionCount_one": "{{count}} équipe",
+    "sectionCount_other": "{{count}} équipes",
+    "sectionShared": "{{unit}} dans {{count}} équipes",
+    "sectionSharedMany_one": "{{count}} unité partagée",
+    "sectionSharedMany_other": "{{count}} unités partagées",
+    "quickFilters": "Filtres rapides",
+    "noModeSection": "Sans mode"
+  },
+  "card": {
+    "core": "Principaux",
+    "flex": "Flexibles",
+    "mows": "Machines de guerre",
+    "campaign": "Campagne : {{name}}",
+    "incursions": "Incursions : {{names}}",
+    "locked": "{{name}} (verrouillée)",
+    "editTeam": "Modifier {{name}}",
+    "drag": "Faites glisser {{name}} pour réordonner",
+    "noUnits": "Aucune unité",
+    "positionLabel": "Position",
+    "deleteTeam": "Supprimer {{name}}"
+  },
+  "reorder": {
+    "failed": "Votre nouvel ordre n'a pas été enregistré. Réessayez.",
+    "stale": "Vos équipes ont changé sur un autre appareil, votre déplacement n'a donc pas été appliqué."
+  },
+  "delete": {
+    "title": "Supprimer {{name}} ?",
+    "description": "{{name}} sera supprimée. Cette action est irréversible.",
+    "confirm": "Supprimer l'équipe",
+    "cancel": "Annuler",
+    "deleted": "{{name}} supprimée.",
+    "failed": "{{name}} n'a pas été supprimée. Réessayez."
+  },
+  "editor": {
+    "createTitle": "Créer une équipe",
+    "editTitle": "Modifier {{name}}",
+    "name": "Nom",
+    "nameHint": "{{min}} à {{max}} caractères",
+    "notes": "Notes",
+    "notesCount": "{{count}} / {{max}}",
+    "modes": "Modes",
+    "lineupCharacters_one": "{{count}} personnage",
+    "lineupCharacters_other": "{{count}} personnages",
+    "lineupMows_one": "{{count}} machine de guerre",
+    "lineupMows_other": "{{count}} machines de guerre",
+    "save": "Enregistrer l'équipe",
+    "saving": "Enregistrement…",
+    "cancel": "Annuler",
+    "loading": "Chargement des données de jeu…",
+    "loadError": "Les données de jeu n'ont pas pu être chargées : l'équipe ne peut être ni vérifiée ni enregistrée.",
+    "fixToSave": "Corrigez ceci pour enregistrer :",
+    "saved": "{{name}} enregistrée.",
+    "saveFailed": "L'équipe n'a pas été enregistrée. Vos modifications sont toujours là ; réessayez.",
+    "stale": "Cette équipe a changé sur un autre appareil, votre enregistrement n'a donc pas été appliqué. Enregistrez à nouveau pour la remplacer par votre version.",
+    "deleted": "Cette équipe a été supprimée sur un autre appareil, elle ne peut donc pas être enregistrée.",
+    "nameTaken": "Une autre équipe porte déjà ce nom.",
+    "limitReached": "Vous avez déjà {{count}} équipes. Supprimez-en une pour faire de la place.",
+    "refused": "Le planificateur n'a pas accepté cette équipe :",
+    "unsaved": {
+      "title": "Abandonner les modifications non enregistrées ?",
+      "description": "Vous avez des modifications non enregistrées sur cette équipe. Fermer maintenant les abandonnera.",
+      "keep": "Continuer la modification",
+      "discard": "Abandonner les modifications"
+    },
+    "hasNotes": "Contient des notes",
+    "newTeam": "Nouvelle équipe",
+    "toSave": "Pour enregistrer cette équipe :",
+    "addedCore": "{{name}} ajouté aux principaux.",
+    "addedFlex": "{{name}} ajouté en flexible.",
+    "removed": "{{name}} retiré.",
+    "undo": "Annuler",
+    "tabsLabel": "Modifier la composition",
+    "tabDetails": "Détails",
+    "tabLineup": "Composition"
+  },
+  "modeReasons": {
+    "exclusive": "Les équipes {{mode}} ne peuvent pas avoir d'autres modes.",
+    "exclusiveBlocked": "{{modes}} ne peuvent pas être combinés à d'autres modes.",
+    "tooManyCore": "Les équipes de guerre et de l'Arène du tournoi acceptent 5 personnages principaux. Rendez les autres flexibles.",
+    "tooManyCoreMows": "Les équipes de guerre et de l'Arène du tournoi acceptent 1 machine de guerre principale. Rendez les autres flexibles."
+  },
+  "lineup": {
+    "core": "Principaux",
+    "flex": "Flexibles",
+    "mows": "Machines de guerre",
+    "empty": "Ajoutez des unités depuis la liste.",
+    "remove": "Retirer {{name}}",
+    "campaignCore": "{{name}} est un personnage principal de cette campagne.",
+    "notAllowed": "Non autorisé",
+    "mustBeCore": "Doit être principal",
+    "unknown": "Unité inconnue",
+    "characters": "Personnages",
+    "drag": "Déplacer {{name}}",
+    "dropFlex": "Glissez ici pour flexible",
+    "coreOfMax": "{{count}} principaux sur {{max}}",
+    "coreCount_one": "{{count}} principal",
+    "coreCount_other": "{{count}} principaux",
+    "role": "Rôle de {{name}}"
+  },
+  "campaign": {
+    "label": "Campagne",
+    "placeholder": "Choisir une campagne",
+    "allowed": "Factions autorisées : {{factions}}",
+    "replaces": "Choisir une campagne remplace la composition par ses personnages principaux."
+  },
+  "incursion": {
+    "label": "Incursions",
+    "addPlaceholder": "Ajouter une Incursion",
+    "remove": "Retirer {{name}}",
+    "allowed": "Factions autorisées : {{factions}}",
+    "noShared": "Ces Incursions n'ont aucune faction en commun.",
+    "clears": "Changer les Incursions vide la composition."
+  },
+  "picker": {
+    "label": "Ajouter des unités",
+    "search": "Rechercher des unités",
+    "lockedUnits": "Unités verrouillées",
+    "characters": "Personnages",
+    "mows": "Machines de guerre",
+    "empty": "Aucune unité ne correspond à ces filtres.",
+    "usedIn": "Aussi dans {{teams}}",
+    "noRoster": "Sans effectif synchronisé, toutes les unités sont listées.",
+    "rank": "Rang",
+    "rarity": "Rareté",
+    "from": "De",
+    "to": "À",
+    "faction": "Faction",
+    "allFactions": "Toutes les factions",
+    "alliance": "Alliance",
+    "allAlliances": "Toutes les alliances",
+    "trait": "Trait",
+    "allTraits": "Tous les traits",
+    "attackType": "Type d'attaque",
+    "anyAttack": "Tous",
+    "melee": "Corps à corps",
+    "ranged": "À distance",
+    "hits": "Coups",
+    "movement": "Déplacement",
+    "range": "Portée",
+    "any": "Tous",
+    "damageType": "Type de dégâts",
+    "allDamageTypes": "Tous les types de dégâts",
+    "abilities": "Capacités {{first}} et {{second}}",
+    "underCap": "Sous {{rarity}} : {{parts}}",
+    "capParts": {
+      "rarity": "rareté",
+      "rank": "rang",
+      "level": "niveau",
+      "abilities": "capacités"
+    }
+  },
+  "rarityCap": {
+    "label": "Plafond de rareté",
+    "none": "Aucun",
+    "hint": "Unités affichées plafonnées à {{rarity}}."
+  },
+  "rules": {
+    "nameLength": {
+      "reason": "Le nom doit compter entre 3 et 40 caractères.",
+      "fix": "Modifiez le nom."
+    },
+    "noMode": {
+      "reason": "L'équipe n'a aucun mode.",
+      "fix": "Choisissez au moins un mode."
+    },
+    "tooFewCharacters": {
+      "reason": "Une équipe doit compter au moins 3 personnages. Les machines de guerre ne comptent pas.",
+      "fix_one": "Ajoutez {{count}} personnage de plus.",
+      "fix_other": "Ajoutez {{count}} personnages de plus."
+    },
+    "unknownUnit": {
+      "reason": "Une unité ne figure plus dans les données de jeu.",
+      "fix": "Retirez les unités marquées comme inconnues."
+    },
+    "modeNotCombinable": {
+      "reason": "Les équipes Campagne et Incursion ne peuvent pas avoir d'autres modes.",
+      "fix": "Ne gardez qu'un seul de ces modes."
+    },
+    "tooManyCoreCharacters": {
+      "reason": "Une équipe de guerre ou de l'Arène du tournoi peut avoir au plus 5 personnages principaux.",
+      "fix_one": "Rendez {{count}} personnage flexible.",
+      "fix_other": "Rendez {{count}} personnages flexibles."
+    },
+    "tooManyCoreMows": {
+      "reason": "Une équipe de guerre ou de l'Arène du tournoi peut avoir au plus une machine de guerre principale.",
+      "fix_one": "Rendez {{count}} machine de guerre flexible.",
+      "fix_other": "Rendez {{count}} machines de guerre flexibles."
+    },
+    "mowsNotAllowed": {
+      "reason": "Les équipes Campagne et Incursion n'ont pas de machine de guerre.",
+      "fix": "Retirez les machines de guerre."
+    },
+    "campaignRequired": {
+      "reason": "Une équipe Campagne a besoin d'une campagne, et les autres équipes ne peuvent pas en avoir.",
+      "fix": "Choisissez une campagne ou retirez-la."
+    },
+    "unknownCampaign": {
+      "reason": "Cette campagne ne figure pas dans les données de jeu.",
+      "fix": "Choisissez une autre campagne."
+    },
+    "coreCharacterMissing": {
+      "reason": "Chaque personnage principal de la campagne doit être parmi les principaux.",
+      "fix": "Ajoutez comme principaux les personnages marqués « Doit être principal »."
+    },
+    "factionNotAllowed": {
+      "reason": "Certains personnages appartiennent à des factions que cette équipe ne peut pas aligner.",
+      "fix": "Retirez les personnages marqués « Non autorisé »."
+    },
+    "incursionRequired": {
+      "reason": "Une équipe Incursion a besoin d'au moins une Incursion, et les autres équipes ne peuvent pas en avoir.",
+      "fix": "Choisissez une Incursion ou retirez-les."
+    },
+    "unknownIncursion": {
+      "reason": "Une Incursion ne figure pas dans les données de jeu.",
+      "fix": "Retirez-la et choisissez-en une autre."
+    },
+    "noSharedIncursionFaction": {
+      "reason": "Ces Incursions n'ont aucune faction en commun.",
+      "fix": "Retirez une Incursion."
+    }
+  },
+  "tour": {
+    "teams": {
+      "steps": {
+        "mode": {
+          "title": "Filtrer par mode",
+          "content": "N'affichez que les équipes d'un mode de jeu. Cet appareil retient votre choix."
+        },
+        "view": {
+          "title": "Regrouper et afficher",
+          "content": "Regroupez les équipes par mode ou listez-les dans l'ordre de jeu, en cartes ou en tableau."
+        },
+        "create": {
+          "title": "Créer une équipe",
+          "content": "Composez une équipe pour un ou plusieurs modes. Vous pouvez garder jusqu'à 20 équipes."
+        },
+        "card": {
+          "title": "Une équipe",
+          "content": "Ses modes, ses personnages principaux et flexibles, et ses machines de guerre. Une équipe qui enfreint une règle indique comment la corriger."
+        },
+        "reorder": {
+          "title": "Ordonner vos équipes",
+          "content": "Faites glisser une équipe par la poignée à côté de son numéro. Avec un filtre ou dans une section de mode, seules les équipes affichées bougent."
+        }
+      }
+    }
+  },
+  "table": {
+    "label": "Équipes",
+    "position": "#",
+    "team": "Équipe",
+    "core": "Principaux",
+    "flex": "Flexibles",
+    "mow": "Machines de guerre",
+    "status": "État",
+    "actions": "Actions"
+  },
+  "chips": {
+    "cap": "Plafond {{rarity}}",
+    "shared": "{{unit}} partagé",
+    "underCap_one": "{{count}} sous le plafond",
+    "underCap_other": "{{count}} sous le plafond",
+    "rules": {
+      "nameLength": "Longueur du nom",
+      "noMode": "Aucun mode",
+      "unknownUnit": "Unité inconnue",
+      "modeNotCombinable": "Modes incompatibles",
+      "tooManyCoreCharacters": "{{count}} principaux (max {{max}})",
+      "tooManyCoreMows": "{{count}} machines de guerre principales (max {{max}})",
+      "mowsNotAllowed": "Aucune machine de guerre",
+      "campaignRequired": "Campagne manquante",
+      "unknownCampaign": "Campagne inconnue",
+      "coreCharacterMissing": "Cœur de campagne manquant",
+      "factionNotAllowed": "Faction non autorisée",
+      "incursionRequired": "Incursion manquante",
+      "unknownIncursion": "Incursion inconnue",
+      "noSharedIncursionFaction": "Aucune faction commune",
+      "tooFewCharacters_one": "{{count}} personnage (min. {{min}})",
+      "tooFewCharacters_other": "{{count}} personnages (min. {{min}})"
+    }
+  },
+  "list": {
+    "more": "{{flex}} flexibles, {{mows}} machines de guerre principales"
+  }
+}

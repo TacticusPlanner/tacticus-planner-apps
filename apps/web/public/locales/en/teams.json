@@ -1,0 +1,321 @@
+{
+  "modes": {
+    "warOffense": "War Offense",
+    "warDefense": "War Defense",
+    "guildRaid": "Guild Raid",
+    "tournamentArena": "Tournament Arena",
+    "horde": "Horde",
+    "campaign": "Campaign",
+    "incursion": "Incursion"
+  },
+  "page": {
+    "toolbarLabel": "Teams controls",
+    "mode": "Mode",
+    "allModes": "All modes",
+    "create": "Create team",
+    "limitReached": "You have {{count}} teams, the most you can keep. Delete one to make room.",
+    "loading": "Loading your teams…",
+    "loadError": "Your teams couldn't be loaded.",
+    "retry": "Retry",
+    "empty": "No teams yet.",
+    "importHint": "Coming from the old planner?",
+    "importLink": "Import your V1 teams",
+    "noMatch": "No team has the {{mode}} mode.",
+    "noRoster": "Sync your roster to see which units you've unlocked and how far each one has progressed.",
+    "listLabel": "Your teams",
+    "search": "Search teams or units",
+    "searchPlaceholder": "Search teams or units…",
+    "needsFixes": "Needs fixes",
+    "sharedUnits": "Shared units",
+    "cards": "Cards",
+    "table": "Table",
+    "list": "List",
+    "groupByMode": "Mode",
+    "count": "{{count}} of {{max}}",
+    "countLimit": "Limit reached · {{max}} of {{max}}",
+    "noMatchAny": "No teams match.",
+    "sectionCount_one": "{{count}} team",
+    "sectionCount_other": "{{count}} teams",
+    "sectionShared": "{{unit}} in {{count}} teams",
+    "sectionSharedMany_one": "{{count}} unit shared",
+    "sectionSharedMany_other": "{{count}} units shared",
+    "quickFilters": "Quick filters",
+    "noModeSection": "No mode"
+  },
+  "card": {
+    "core": "Core",
+    "flex": "Flex",
+    "mows": "Machines of War",
+    "campaign": "Campaign: {{name}}",
+    "incursions": "Incursions: {{names}}",
+    "locked": "{{name}} (locked)",
+    "editTeam": "Edit {{name}}",
+    "drag": "Drag {{name}} to reorder",
+    "noUnits": "No units",
+    "positionLabel": "Position",
+    "deleteTeam": "Delete {{name}}"
+  },
+  "reorder": {
+    "failed": "Your new order wasn't saved. Try again.",
+    "stale": "Your teams changed on another device, so your move wasn't applied."
+  },
+  "delete": {
+    "title": "Delete {{name}}?",
+    "description": "{{name}} will be deleted. This can't be undone.",
+    "confirm": "Delete team",
+    "cancel": "Cancel",
+    "deleted": "Deleted {{name}}.",
+    "failed": "{{name}} wasn't deleted. Try again."
+  },
+  "editor": {
+    "createTitle": "Create team",
+    "editTitle": "Edit {{name}}",
+    "name": "Name",
+    "nameHint": "{{min}}–{{max}} characters",
+    "notes": "Notes",
+    "notesCount": "{{count}} / {{max}}",
+    "modes": "Modes",
+    "lineupCharacters_one": "{{count}} character",
+    "lineupCharacters_other": "{{count}} characters",
+    "lineupMows_one": "{{count}} Machine of War",
+    "lineupMows_other": "{{count}} Machines of War",
+    "save": "Save team",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "loading": "Loading game data…",
+    "loadError": "Game data couldn't be loaded, so the team can't be checked or saved.",
+    "fixToSave": "Fix these to save:",
+    "saved": "Saved {{name}}.",
+    "saveFailed": "The team wasn't saved. Your changes are still here; try again.",
+    "stale": "This team changed on another device, so your save wasn't applied. Save again to replace it with your version.",
+    "deleted": "This team was deleted on another device, so it can't be saved.",
+    "nameTaken": "Another team already has this name.",
+    "limitReached": "You already have {{count}} teams. Delete one to make room.",
+    "refused": "The planner didn't accept this team:",
+    "unsaved": {
+      "title": "Discard unsaved changes?",
+      "description": "You have unsaved changes to this team. Closing now will discard them.",
+      "keep": "Keep editing",
+      "discard": "Discard changes"
+    },
+    "hasNotes": "Has notes",
+    "newTeam": "New team",
+    "toSave": "To save this team:",
+    "addedCore": "{{name}} added to core.",
+    "addedFlex": "{{name}} added as flex.",
+    "removed": "{{name}} removed.",
+    "undo": "Undo",
+    "tabsLabel": "Edit the lineup",
+    "tabDetails": "Details",
+    "tabLineup": "Lineup"
+  },
+  "modeReasons": {
+    "exclusive": "{{mode}} teams can't have other modes.",
+    "exclusiveBlocked": "{{modes}} can't be combined with other modes.",
+    "tooManyCore": "War and Tournament Arena teams allow 5 core characters. Make the others flex.",
+    "tooManyCoreMows": "War and Tournament Arena teams allow 1 core Machine of War. Make the others flex."
+  },
+  "lineup": {
+    "core": "Core",
+    "flex": "Flex",
+    "mows": "Machines of War",
+    "empty": "Add units from the list.",
+    "remove": "Remove {{name}}",
+    "campaignCore": "{{name}} is a core character of this campaign.",
+    "notAllowed": "Not allowed",
+    "mustBeCore": "Must be core",
+    "unknown": "Unknown unit",
+    "characters": "Characters",
+    "drag": "Move {{name}}",
+    "dropFlex": "Drag here for flex",
+    "coreOfMax": "{{count}} of {{max}} core",
+    "coreCount_one": "{{count}} core",
+    "coreCount_other": "{{count}} core",
+    "role": "Role of {{name}}"
+  },
+  "campaign": {
+    "label": "Campaign",
+    "placeholder": "Choose a campaign",
+    "allowed": "Allowed factions: {{factions}}",
+    "replaces": "Choosing a campaign replaces the lineup with its core characters."
+  },
+  "incursion": {
+    "label": "Incursions",
+    "addPlaceholder": "Add an Incursion",
+    "remove": "Remove {{name}}",
+    "allowed": "Allowed factions: {{factions}}",
+    "noShared": "These Incursions have no faction in common.",
+    "clears": "Changing the Incursions clears the lineup."
+  },
+  "picker": {
+    "label": "Add units",
+    "search": "Search units",
+    "lockedUnits": "Locked units",
+    "characters": "Characters",
+    "mows": "Machines of War",
+    "empty": "No unit matches these filters.",
+    "usedIn": "Also in {{teams}}",
+    "noRoster": "Without a synced roster, every unit is listed.",
+    "rank": "Rank",
+    "rarity": "Rarity",
+    "from": "From",
+    "to": "To",
+    "faction": "Faction",
+    "allFactions": "All factions",
+    "alliance": "Alliance",
+    "allAlliances": "All alliances",
+    "trait": "Trait",
+    "allTraits": "All traits",
+    "attackType": "Attack type",
+    "anyAttack": "Any",
+    "melee": "Melee",
+    "ranged": "Ranged",
+    "hits": "Hits",
+    "movement": "Movement",
+    "range": "Range",
+    "any": "Any",
+    "damageType": "Damage type",
+    "allDamageTypes": "All damage types",
+    "abilities": "Abilities {{first}} and {{second}}",
+    "underCap": "Under {{rarity}}: {{parts}}",
+    "capParts": {
+      "rarity": "rarity",
+      "rank": "rank",
+      "level": "level",
+      "abilities": "abilities"
+    }
+  },
+  "rarityCap": {
+    "label": "Rarity cap",
+    "none": "None",
+    "hint": "Units shown capped at {{rarity}}."
+  },
+  "rules": {
+    "nameLength": {
+      "reason": "The name must be 3 to 40 characters.",
+      "fix": "Change the name."
+    },
+    "noMode": {
+      "reason": "The team has no mode.",
+      "fix": "Choose at least one mode."
+    },
+    "tooFewCharacters": {
+      "reason": "A team needs at least 3 characters. Machines of War don't count.",
+      "fix_one": "Add {{count}} more character.",
+      "fix_other": "Add {{count}} more characters."
+    },
+    "unknownUnit": {
+      "reason": "A unit is no longer in the game data.",
+      "fix": "Remove the units marked unknown."
+    },
+    "modeNotCombinable": {
+      "reason": "Campaign and Incursion teams can't have other modes.",
+      "fix": "Keep only one of those modes."
+    },
+    "tooManyCoreCharacters": {
+      "reason": "A war or Tournament Arena team can have at most 5 core characters.",
+      "fix_one": "Make {{count}} character flex.",
+      "fix_other": "Make {{count}} characters flex."
+    },
+    "tooManyCoreMows": {
+      "reason": "A war or Tournament Arena team can have at most one core Machine of War.",
+      "fix_one": "Make {{count}} Machine of War flex.",
+      "fix_other": "Make {{count}} Machines of War flex."
+    },
+    "mowsNotAllowed": {
+      "reason": "Campaign and Incursion teams have no Machine of War.",
+      "fix": "Remove the Machines of War."
+    },
+    "campaignRequired": {
+      "reason": "A Campaign team needs a campaign, and other teams can't have one.",
+      "fix": "Choose a campaign, or clear it."
+    },
+    "unknownCampaign": {
+      "reason": "This campaign isn't in the game data.",
+      "fix": "Choose another campaign."
+    },
+    "coreCharacterMissing": {
+      "reason": "Every core character of the campaign must be in the core.",
+      "fix": "Add the characters marked “Must be core” as core."
+    },
+    "factionNotAllowed": {
+      "reason": "Some characters are from factions this team can't field.",
+      "fix": "Remove the characters marked “Not allowed”."
+    },
+    "incursionRequired": {
+      "reason": "An Incursion team needs at least one Incursion, and other teams can't have one.",
+      "fix": "Choose an Incursion, or clear them."
+    },
+    "unknownIncursion": {
+      "reason": "An Incursion isn't in the game data.",
+      "fix": "Remove it and choose another."
+    },
+    "noSharedIncursionFaction": {
+      "reason": "These Incursions have no faction in common.",
+      "fix": "Remove an Incursion."
+    }
+  },
+  "tour": {
+    "teams": {
+      "steps": {
+        "mode": {
+          "title": "Filter by mode",
+          "content": "Show only the teams for one game mode. This device remembers your choice."
+        },
+        "view": {
+          "title": "Group and lay out",
+          "content": "Group teams by mode or list them in play order, as cards or a table."
+        },
+        "create": {
+          "title": "Create a team",
+          "content": "Build a lineup for one or more modes. You can keep up to 20 teams."
+        },
+        "card": {
+          "title": "A team",
+          "content": "Its modes, core and flex characters, and Machines of War. A team that breaks a rule says how to fix it."
+        },
+        "reorder": {
+          "title": "Order your teams",
+          "content": "Drag a team by the grip beside its number. Under a filter or a mode section, teams move only among the ones shown."
+        }
+      }
+    }
+  },
+  "table": {
+    "label": "Teams",
+    "position": "#",
+    "team": "Team",
+    "core": "Core",
+    "flex": "Flex",
+    "mow": "Machines of War",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "chips": {
+    "cap": "{{rarity}} cap",
+    "shared": "{{unit}} shared",
+    "underCap_one": "{{count}} under cap",
+    "underCap_other": "{{count}} under cap",
+    "rules": {
+      "nameLength": "Name length",
+      "noMode": "No mode",
+      "unknownUnit": "Unknown unit",
+      "modeNotCombinable": "Modes can't mix",
+      "tooManyCoreCharacters": "{{count}} core (max {{max}})",
+      "tooManyCoreMows": "{{count}} core Machines of War (max {{max}})",
+      "mowsNotAllowed": "No Machines of War allowed",
+      "campaignRequired": "Campaign missing",
+      "unknownCampaign": "Unknown campaign",
+      "coreCharacterMissing": "Campaign core missing",
+      "factionNotAllowed": "Faction not allowed",
+      "incursionRequired": "Incursion missing",
+      "unknownIncursion": "Unknown Incursion",
+      "noSharedIncursionFaction": "No shared faction",
+      "tooFewCharacters_one": "{{count}} character (min {{min}})",
+      "tooFewCharacters_other": "{{count}} characters (min {{min}})"
+    }
+  },
+  "list": {
+    "more": "{{flex}} flex, {{mows}} core Machines of War"
+  }
+}

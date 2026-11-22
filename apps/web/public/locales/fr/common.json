@@ -373,7 +373,9 @@
       "campaign-events": "Événements de campagne",
       "campaign-eventsDescription": "Votre progression dans chaque événement de campagne.",
       "incursions": "Incursions",
-      "incursionsDescription": "L'Incursion de chaque Machine de guerre : paliers, combats, ennemis et récompenses."
+      "incursionsDescription": "L'Incursion de chaque Machine de guerre : paliers, combats, ennemis et récompenses.",
+      "teams": "Équipes",
+      "teamsDescription": "Vos compositions enregistrées pour la Guerre de guilde, le Raid de guilde, l'Arène du tournoi et les autres modes."
     },
     "collection": {
       "loading": "Chargement de votre collection…",
@@ -1008,13 +1010,15 @@
         "onslaughtProgress": "Progression de l'Onslaught",
         "campaignEventProgress": "Progression des événements de campagne",
         "legendaryEventPlans": "Équipes des Événements Légendaires",
-        "rosterSnapshots": "Instantanés du roster"
+        "rosterSnapshots": "Instantanés du roster",
+        "teams": "Équipes"
       },
       "partDescriptions": {
         "userId": "Relie votre compte du planificateur à votre joueur en jeu, ce dont les fonctions de guilde ont besoin.",
         "guildKey": "Utilisé uniquement si vous êtes chef ou co-chef de votre guilde : il enregistre votre guilde dans le planificateur pour que tous les membres puissent utiliser les fonctions de guilde.",
         "legendaryEventPlans": "Les équipes composées à la main, les notes, les saisies de missions et de packs par manche et les marques « Peut-être faisable » / « S'arrêter ici » des événements que le planificateur connaît. La progression des événements n'est pas importée.",
-        "rosterSnapshots": "Vos instantanés du roster de V1, du plus récent au plus ancien, jusqu'à la limite d'instantanés. V1 n'enregistrait ni l'XP totale ni les améliorations appliquées, les comparaisons les ignorent donc."
+        "rosterSnapshots": "Vos instantanés du roster de V1, du plus récent au plus ancien, jusqu'à la limite d'instantanés. V1 n'enregistrait ni l'XP totale ni les améliorations appliquées, les comparaisons les ignorent donc.",
+        "teams": "Vos équipes de la page Équipes de V1, jusqu'à 20. Les équipes déjà présentes dans le planificateur sont conservées. Les plans de défense et d'attaque de la Guerre de guilde de V1 ne sont pas importés."
       },
       "submit": "Importer la sélection",
       "submitting": "Importation en cours…",
@@ -1177,6 +1181,35 @@
           "no_roster_snapshot_imported": "Aucun nouvel instantané n'a été importé.",
           "roster_snapshot_import_failed": "Aucun de vos instantanés de V1 n'a pu être lu.",
           "roster_snapshot_import_conflict": "Vos instantanés ont changé pendant l'import. Réessayez."
+        }
+      },
+      "teams": {
+        "title": "Équipes",
+        "unnamed": "Équipe sans nom",
+        "fixOnTeamsPage": "Vous pouvez la corriger sur la page Équipes.",
+        "openTeams": "Ouvrir Équipes",
+        "reasons": {
+          "imported": "Importée",
+          "already_imported": "Déjà importée, même si elle a été renommée depuis",
+          "duplicate_name": "Une équipe du planificateur porte déjà ce nom",
+          "team_limit_reached": "Vous avez déjà {{count}} équipes, le maximum autorisé",
+          "no_units": "Aucune de ses unités ne figure dans les données de jeu du planificateur",
+          "invalid_team": "Cette équipe n'a pas pu être lue"
+        },
+        "issues": {
+          "unit_not_recognised": "Unité non reconnue : {{value}}",
+          "campaign_not_recognised": "Campagne non reconnue : {{value}}",
+          "duplicate_unit": "Présente deux fois, conservée une fois : {{value}}",
+          "flex_dropped": "V1 n'avait aucun personnage principal avant la section flexible, donc tous les personnages sont principaux",
+          "name_shortened": "Nom raccourci à 40 caractères",
+          "notes_shortened": "Notes raccourcies à 300 caractères",
+          "unknown": "Un élément de cette équipe a été modifié : {{value}}"
+        },
+        "partReasons": {
+          "missing_teams": "Votre profil V1 n'a aucune équipe.",
+          "invalid_teams": "Vos équipes V1 n'ont pas pu être lues.",
+          "teams_skipped": "Aucune nouvelle équipe n'a été importée.",
+          "team_import_failed": "Aucune de vos équipes V1 n'a pu être importée."
         }
       }
     },

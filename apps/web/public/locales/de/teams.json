@@ -1,0 +1,321 @@
+{
+  "modes": {
+    "warOffense": "Kriegsangriff",
+    "warDefense": "Kriegsverteidigung",
+    "guildRaid": "Gildenraid",
+    "tournamentArena": "Turnierarena",
+    "horde": "Horde",
+    "campaign": "Kampagne",
+    "incursion": "Incursion"
+  },
+  "page": {
+    "toolbarLabel": "Team-Steuerung",
+    "mode": "Modus",
+    "allModes": "Alle Modi",
+    "create": "Team erstellen",
+    "limitReached": "Du hast {{count}} Teams, mehr kannst du nicht behalten. Lösche eines, um Platz zu schaffen.",
+    "loading": "Deine Teams werden geladen…",
+    "loadError": "Deine Teams konnten nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "empty": "Noch keine Teams.",
+    "importHint": "Du kommst vom alten Planner?",
+    "importLink": "Importiere deine V1-Teams",
+    "noMatch": "Kein Team hat den Modus {{mode}}.",
+    "noRoster": "Synchronisiere dein Roster, um zu sehen, welche Einheiten du freigeschaltet hast und wie weit jede fortgeschritten ist.",
+    "listLabel": "Deine Teams",
+    "search": "Teams oder Einheiten suchen",
+    "searchPlaceholder": "Teams oder Einheiten suchen…",
+    "needsFixes": "Braucht Korrekturen",
+    "sharedUnits": "Geteilte Einheiten",
+    "cards": "Karten",
+    "table": "Tabelle",
+    "list": "Liste",
+    "groupByMode": "Modus",
+    "count": "{{count}} von {{max}}",
+    "countLimit": "Limit erreicht · {{max}} von {{max}}",
+    "noMatchAny": "Kein Team passt.",
+    "sectionCount_one": "{{count}} Team",
+    "sectionCount_other": "{{count}} Teams",
+    "sectionShared": "{{unit}} in {{count}} Teams",
+    "sectionSharedMany_one": "{{count}} geteilte Einheit",
+    "sectionSharedMany_other": "{{count}} geteilte Einheiten",
+    "quickFilters": "Schnellfilter",
+    "noModeSection": "Kein Modus"
+  },
+  "card": {
+    "core": "Kern",
+    "flex": "Flex",
+    "mows": "Kriegsmaschinen",
+    "campaign": "Kampagne: {{name}}",
+    "incursions": "Incursions: {{names}}",
+    "locked": "{{name}} (gesperrt)",
+    "editTeam": "{{name}} bearbeiten",
+    "drag": "{{name}} zum Sortieren ziehen",
+    "noUnits": "Keine Einheiten",
+    "positionLabel": "Position",
+    "deleteTeam": "{{name}} löschen"
+  },
+  "reorder": {
+    "failed": "Deine neue Reihenfolge wurde nicht gespeichert. Versuche es erneut.",
+    "stale": "Deine Teams wurden auf einem anderen Gerät geändert, daher wurde deine Verschiebung nicht übernommen."
+  },
+  "delete": {
+    "title": "{{name}} löschen?",
+    "description": "{{name}} wird gelöscht. Das kann nicht rückgängig gemacht werden.",
+    "confirm": "Team löschen",
+    "cancel": "Abbrechen",
+    "deleted": "{{name}} gelöscht.",
+    "failed": "{{name}} wurde nicht gelöscht. Versuche es erneut."
+  },
+  "editor": {
+    "createTitle": "Team erstellen",
+    "editTitle": "{{name}} bearbeiten",
+    "name": "Name",
+    "nameHint": "{{min}}–{{max}} Zeichen",
+    "notes": "Notizen",
+    "notesCount": "{{count}} / {{max}}",
+    "modes": "Modi",
+    "lineupCharacters_one": "{{count}} Charakter",
+    "lineupCharacters_other": "{{count}} Charaktere",
+    "lineupMows_one": "{{count}} Kriegsmaschine",
+    "lineupMows_other": "{{count}} Kriegsmaschinen",
+    "save": "Team speichern",
+    "saving": "Wird gespeichert…",
+    "cancel": "Abbrechen",
+    "loading": "Spieldaten werden geladen…",
+    "loadError": "Die Spieldaten konnten nicht geladen werden, daher kann das Team weder geprüft noch gespeichert werden.",
+    "fixToSave": "Behebe Folgendes, um zu speichern:",
+    "saved": "{{name}} gespeichert.",
+    "saveFailed": "Das Team wurde nicht gespeichert. Deine Änderungen sind noch da; versuche es erneut.",
+    "stale": "Dieses Team wurde auf einem anderen Gerät geändert, daher wurde dein Speichern nicht übernommen. Speichere erneut, um es durch deine Version zu ersetzen.",
+    "deleted": "Dieses Team wurde auf einem anderen Gerät gelöscht und kann daher nicht gespeichert werden.",
+    "nameTaken": "Ein anderes Team hat bereits diesen Namen.",
+    "limitReached": "Du hast bereits {{count}} Teams. Lösche eines, um Platz zu schaffen.",
+    "refused": "Der Planner hat dieses Team nicht angenommen:",
+    "unsaved": {
+      "title": "Nicht gespeicherte Änderungen verwerfen?",
+      "description": "Du hast nicht gespeicherte Änderungen an diesem Team. Wenn du jetzt schließt, gehen sie verloren.",
+      "keep": "Weiter bearbeiten",
+      "discard": "Änderungen verwerfen"
+    },
+    "hasNotes": "Hat Notizen",
+    "newTeam": "Neues Team",
+    "toSave": "Zum Speichern:",
+    "addedCore": "{{name}} zum Kern hinzugefügt.",
+    "addedFlex": "{{name}} als Flex hinzugefügt.",
+    "removed": "{{name}} entfernt.",
+    "undo": "Rückgängig",
+    "tabsLabel": "Aufstellung bearbeiten",
+    "tabDetails": "Details",
+    "tabLineup": "Aufstellung"
+  },
+  "modeReasons": {
+    "exclusive": "{{mode}}-Teams können keine anderen Modi haben.",
+    "exclusiveBlocked": "{{modes}} können nicht mit anderen Modi kombiniert werden.",
+    "tooManyCore": "Kriegs- und Turnierarena-Teams erlauben 5 Kern-Charaktere. Mach die übrigen zu Flex.",
+    "tooManyCoreMows": "Kriegs- und Turnierarena-Teams erlauben 1 Kern-Kriegsmaschine. Mache die übrigen zu Flex."
+  },
+  "lineup": {
+    "core": "Kern",
+    "flex": "Flex",
+    "mows": "Kriegsmaschinen",
+    "empty": "Füge Einheiten aus der Liste hinzu.",
+    "remove": "{{name}} entfernen",
+    "campaignCore": "{{name}} ist ein Kern-Charakter dieser Kampagne.",
+    "notAllowed": "Nicht erlaubt",
+    "mustBeCore": "Muss Kern sein",
+    "unknown": "Unbekannte Einheit",
+    "characters": "Charaktere",
+    "drag": "{{name}} verschieben",
+    "dropFlex": "Hierher ziehen für Flex",
+    "coreOfMax": "{{count}} von {{max}} Kern",
+    "coreCount_one": "{{count}} Kern",
+    "coreCount_other": "{{count}} Kern",
+    "role": "Rolle von {{name}}"
+  },
+  "campaign": {
+    "label": "Kampagne",
+    "placeholder": "Kampagne wählen",
+    "allowed": "Erlaubte Fraktionen: {{factions}}",
+    "replaces": "Die Wahl einer Kampagne ersetzt die Aufstellung durch ihre Kern-Charaktere."
+  },
+  "incursion": {
+    "label": "Incursions",
+    "addPlaceholder": "Incursion hinzufügen",
+    "remove": "{{name}} entfernen",
+    "allowed": "Erlaubte Fraktionen: {{factions}}",
+    "noShared": "Diese Incursions haben keine gemeinsame Fraktion.",
+    "clears": "Eine Änderung der Incursions leert die Aufstellung."
+  },
+  "picker": {
+    "label": "Einheiten hinzufügen",
+    "search": "Einheiten suchen",
+    "lockedUnits": "Gesperrte Einheiten",
+    "characters": "Charaktere",
+    "mows": "Kriegsmaschinen",
+    "empty": "Keine Einheit passt zu diesen Filtern.",
+    "usedIn": "Auch in {{teams}}",
+    "noRoster": "Ohne synchronisiertes Roster werden alle Einheiten aufgeführt.",
+    "rank": "Rang",
+    "rarity": "Seltenheit",
+    "from": "Von",
+    "to": "Bis",
+    "faction": "Fraktion",
+    "allFactions": "Alle Fraktionen",
+    "alliance": "Allianz",
+    "allAlliances": "Alle Allianzen",
+    "trait": "Eigenschaft",
+    "allTraits": "Alle Eigenschaften",
+    "attackType": "Angriffsart",
+    "anyAttack": "Beliebig",
+    "melee": "Nahkampf",
+    "ranged": "Fernkampf",
+    "hits": "Treffer",
+    "movement": "Bewegung",
+    "range": "Reichweite",
+    "any": "Beliebig",
+    "damageType": "Schadensart",
+    "allDamageTypes": "Alle Schadensarten",
+    "abilities": "Fähigkeiten {{first}} und {{second}}",
+    "underCap": "Unter {{rarity}}: {{parts}}",
+    "capParts": {
+      "rarity": "Seltenheit",
+      "rank": "Rang",
+      "level": "Stufe",
+      "abilities": "Fähigkeiten"
+    }
+  },
+  "rarityCap": {
+    "label": "Seltenheitsgrenze",
+    "none": "Keine",
+    "hint": "Einheiten auf {{rarity}} begrenzt angezeigt."
+  },
+  "rules": {
+    "nameLength": {
+      "reason": "Der Name muss 3 bis 40 Zeichen lang sein.",
+      "fix": "Ändere den Namen."
+    },
+    "noMode": {
+      "reason": "Das Team hat keinen Modus.",
+      "fix": "Wähle mindestens einen Modus."
+    },
+    "tooFewCharacters": {
+      "reason": "Ein Team braucht mindestens 3 Charaktere. Kriegsmaschinen zählen nicht.",
+      "fix_one": "Füge {{count}} weiteren Charakter hinzu.",
+      "fix_other": "Füge {{count}} weitere Charaktere hinzu."
+    },
+    "unknownUnit": {
+      "reason": "Eine Einheit ist nicht mehr in den Spieldaten.",
+      "fix": "Entferne die als unbekannt markierten Einheiten."
+    },
+    "modeNotCombinable": {
+      "reason": "Kampagnen- und Incursion-Teams können keine anderen Modi haben.",
+      "fix": "Behalte nur einen dieser Modi."
+    },
+    "tooManyCoreCharacters": {
+      "reason": "Ein Kriegs- oder Turnierarena-Team kann höchstens 5 Kern-Charaktere haben.",
+      "fix_one": "Mach {{count}} Charakter zu Flex.",
+      "fix_other": "Mach {{count}} Charaktere zu Flex."
+    },
+    "tooManyCoreMows": {
+      "reason": "Ein Kriegs- oder Turnierarena-Team kann höchstens eine Kern-Kriegsmaschine haben.",
+      "fix_one": "Mache {{count}} Kriegsmaschine zu Flex.",
+      "fix_other": "Mache {{count}} Kriegsmaschinen zu Flex."
+    },
+    "mowsNotAllowed": {
+      "reason": "Kampagnen- und Incursion-Teams haben keine Kriegsmaschine.",
+      "fix": "Entferne die Kriegsmaschinen."
+    },
+    "campaignRequired": {
+      "reason": "Ein Kampagnen-Team braucht eine Kampagne, andere Teams dürfen keine haben.",
+      "fix": "Wähle eine Kampagne oder entferne sie."
+    },
+    "unknownCampaign": {
+      "reason": "Diese Kampagne ist nicht in den Spieldaten.",
+      "fix": "Wähle eine andere Kampagne."
+    },
+    "coreCharacterMissing": {
+      "reason": "Jeder Kern-Charakter der Kampagne muss im Kern sein.",
+      "fix": "Füge die als „Muss Kern sein“ markierten Charaktere als Kern hinzu."
+    },
+    "factionNotAllowed": {
+      "reason": "Einige Charaktere gehören zu Fraktionen, die dieses Team nicht einsetzen kann.",
+      "fix": "Entferne die als „Nicht erlaubt“ markierten Charaktere."
+    },
+    "incursionRequired": {
+      "reason": "Ein Incursion-Team braucht mindestens eine Incursion, andere Teams dürfen keine haben.",
+      "fix": "Wähle eine Incursion oder entferne sie."
+    },
+    "unknownIncursion": {
+      "reason": "Eine Incursion ist nicht in den Spieldaten.",
+      "fix": "Entferne sie und wähle eine andere."
+    },
+    "noSharedIncursionFaction": {
+      "reason": "Diese Incursions haben keine gemeinsame Fraktion.",
+      "fix": "Entferne eine Incursion."
+    }
+  },
+  "tour": {
+    "teams": {
+      "steps": {
+        "mode": {
+          "title": "Nach Modus filtern",
+          "content": "Zeige nur die Teams für einen Spielmodus. Dieses Gerät merkt sich deine Wahl."
+        },
+        "view": {
+          "title": "Gruppieren und anordnen",
+          "content": "Gruppiere Teams nach Modus oder liste sie in Spielreihenfolge, als Karten oder Tabelle."
+        },
+        "create": {
+          "title": "Ein Team erstellen",
+          "content": "Stelle eine Aufstellung für einen oder mehrere Modi zusammen. Du kannst bis zu 20 Teams behalten."
+        },
+        "card": {
+          "title": "Ein Team",
+          "content": "Seine Modi, Kern- und Flex-Charaktere und Kriegsmaschinen. Ein Team, das gegen eine Regel verstößt, sagt dir, wie du es behebst."
+        },
+        "reorder": {
+          "title": "Teams sortieren",
+          "content": "Ziehe ein Team am Griff neben seiner Nummer. Mit Filter oder in einem Modusabschnitt bewegen sich nur die angezeigten Teams."
+        }
+      }
+    }
+  },
+  "table": {
+    "label": "Teams",
+    "position": "#",
+    "team": "Team",
+    "core": "Kern",
+    "flex": "Flex",
+    "mow": "Kriegsmaschinen",
+    "status": "Status",
+    "actions": "Aktionen"
+  },
+  "chips": {
+    "cap": "{{rarity}}-Grenze",
+    "shared": "{{unit}} geteilt",
+    "underCap_one": "{{count}} unter der Grenze",
+    "underCap_other": "{{count}} unter der Grenze",
+    "rules": {
+      "nameLength": "Namenslänge",
+      "noMode": "Kein Modus",
+      "unknownUnit": "Unbekannte Einheit",
+      "modeNotCombinable": "Modi nicht kombinierbar",
+      "tooManyCoreCharacters": "{{count}} Kern (max. {{max}})",
+      "tooManyCoreMows": "{{count}} Kern-Kriegsmaschinen (max. {{max}})",
+      "mowsNotAllowed": "Keine Kriegsmaschinen erlaubt",
+      "campaignRequired": "Kampagne fehlt",
+      "unknownCampaign": "Unbekannte Kampagne",
+      "coreCharacterMissing": "Kampagnenkern fehlt",
+      "factionNotAllowed": "Fraktion nicht erlaubt",
+      "incursionRequired": "Incursion fehlt",
+      "unknownIncursion": "Unbekannte Incursion",
+      "noSharedIncursionFaction": "Keine gemeinsame Fraktion",
+      "tooFewCharacters_one": "{{count}} Charakter (min. {{min}})",
+      "tooFewCharacters_other": "{{count}} Charaktere (min. {{min}})"
+    }
+  },
+  "list": {
+    "more": "{{flex}} Flex, {{mows}} Kern-Kriegsmaschinen"
+  }
+}

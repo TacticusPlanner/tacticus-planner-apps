@@ -107,6 +107,8 @@ function result(
     legendaryEventOutcomes,
     rosterSnapshots: notSelected,
     rosterSnapshotOutcomes: [],
+    teams: notSelected,
+    teamOutcomes: [],
     importProjectId: null,
     profileId: "profile-1",
     playerName: null,
@@ -742,6 +744,59 @@ describe("ImportResult — roster snapshots", () => {
 
     expect(screen.getByTestId("v1-import-result")).toHaveTextContent(
       "A newer server reason."
+    )
+  })
+})
+
+describe("ImportResult — teams", () => {
+  it.each([
+    "missing_teams",
+    "invalid_teams",
+    "teams_skipped",
+    "team_import_failed",
+  ])("translates the part's own %s code", (code) => {
+    render(
+      <ImportResult
+        result={{
+          ...result([], notSelected),
+          teams: { status: "Skipped", code, message: "Server text." },
+        }}
+      />
+    )
+
+    expect(screen.getByTestId("v1-import-result")).toHaveTextContent(
+      `goals.v1Import.teams.partReasons.${code}`
+    )
+    expect(screen.getByTestId("v1-import-result")).not.toHaveTextContent(
+      "Server text."
+    )
+  })
+
+  it("lists the per-team outcomes when the part was selected", () => {
+    render(
+      <ImportResult
+        result={{
+          ...result([], notSelected),
+          teams: imported,
+          teamOutcomes: [
+            {
+              name: "Horde core",
+              status: "Imported",
+              code: null,
+              teamId: "t1",
+              issues: [],
+            },
+          ],
+        }}
+      />,
+      { route: "/account/v1-import" }
+    )
+
+    expect(screen.getByTestId("v1-import-teams-result")).toHaveTextContent(
+      "Horde core"
+    )
+    expect(screen.getByTestId("v1-import-result")).toHaveTextContent(
+      "goals.v1Import.parts.teams"
     )
   })
 })
