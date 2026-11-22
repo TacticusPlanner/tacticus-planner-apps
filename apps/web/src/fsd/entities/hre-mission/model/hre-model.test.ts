@@ -841,13 +841,22 @@ describe("selectTeamPlans", () => {
       "arena:abilities",
       "salvageRun:abilities",
     ])
-    // Mission 5: ability damage, Onslaught first too.
-    expect(modes(progress({ mission: 5 }), all)).toEqual([
+    // Mission 5: ability damage, Guild Raid first, then Onslaught.
+    const withGuildRaid = { ...all, guildRaid: { held: 3, need: 2 } }
+    expect(modes(progress({ mission: 5 }), withGuildRaid)).toEqual([
       "battle:strongest",
+      "guildRaid:strongest",
       "onslaught:strongest",
       "arena:strongest",
       "salvageRun:strongest",
     ])
+    // Guild Raid serves only ability damage.
+    expect(
+      modes(progress({ mission: 3, progress: [20, 0] }), withGuildRaid)
+    ).not.toContain("guildRaid:abilities")
+    expect(modes(progress({ mission: 6 }), withGuildRaid)).not.toContain(
+      "guildRaid:summonFree"
+    )
     // No spare tokens, no spare teams.
     expect(modes(progress({ mission: 3 }))).toEqual(["battle:abilities"])
   })
@@ -917,15 +926,18 @@ describe("spareTokens", () => {
         arena: 20,
         onslaught: 0,
         salvageRun: null,
+        guildRaid: 9,
       })
     ).toEqual({
       arena: { held: 20, need: tokenNeeds(state, hreMissions).arena },
+      guildRaid: { held: 9, need: tokenNeeds(state, hreMissions).guildRaid },
     })
     expect(
       spareTokens(state, hreMissions, {
         arena: null,
         onslaught: null,
         salvageRun: null,
+        guildRaid: null,
       })
     ).toEqual({})
   })

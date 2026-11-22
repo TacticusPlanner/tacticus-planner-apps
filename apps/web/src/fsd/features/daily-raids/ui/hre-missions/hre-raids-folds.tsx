@@ -16,10 +16,8 @@ import type { MissionDeployGroup } from "../../model/mission-deploy-groups"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { RaidState } from "../raid-state"
-import { ResourceIcon } from "../resource-icon"
-import { ResourceStock } from "../resource-stock"
 import { HreHandBattles } from "./hre-hand-battles"
-import { HreNoDropRaids, RaidRows } from "./hre-raids-extras"
+import { HreNoDropRaids, RaidRows, RowDrop } from "./hre-raids-extras"
 import type { RaidRowsView } from "./hre-raids-extras"
 import type { HreRaids, HreRaidsRequest } from "./use-hre-raids"
 
@@ -27,7 +25,8 @@ type Row = MissionRaidPlan["rows"][number]
 
 /**
  * A suggestion's one row: the top node as a regular raid card row (campaign icon, node, the goal
- * drop with "owned/target"), then a count chip. Nothing in it is interactive: the whole row scrolls
+ * drop with "owned/target", or the node's own drop with what the player holds when it feeds no
+ * goal), then a count chip. Nothing in it is interactive: the whole row scrolls
  * to its details.
  */
 function TopRowSummary({
@@ -42,8 +41,6 @@ function TopRowSummary({
   testId: string
 }) {
   const location = row ? view.locations?.get(row.battleId) : undefined
-  const resourceId = row?.goal?.resourceId
-  const raids = view.view
   return (
     <span
       className="flex min-w-0 flex-1 items-center gap-2"
@@ -61,18 +58,13 @@ function TopRowSummary({
           </span>
         </span>
       ) : null}
-      {resourceId !== undefined && raids ? (
-        <span className="flex shrink-0 items-center gap-1">
-          <ResourceIcon
-            label={raids.resourceLabels.get(resourceId) ?? resourceId}
-            size="row"
-            visual={raids.resourceVisuals.get(resourceId)}
-          />
-          <ResourceStock
-            progress={raids.resourceTotals.get(resourceId)}
-            testId={`${testId}-stock`}
-          />
-        </span>
+      {row ? (
+        <RowDrop
+          battleId={row.battleId}
+          resourceId={row.goal?.resourceId}
+          testId={testId}
+          view={view}
+        />
       ) : null}
       {chip}
     </span>

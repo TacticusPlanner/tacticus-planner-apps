@@ -139,6 +139,8 @@
     },
     "battleCount_one": "{{count}} batalla",
     "battleCount_other": "{{count}} batallas",
+    "enemyCount_one": "{{count}} enemigo",
+    "enemyCount_other": "{{count}} enemigos",
     "eventPoints": "{{points}} pts de evento",
     "noteHomeScreenEvent": "{{event}} también está activo: entre nodos del mismo coste, primero los que dan más de sus puntos.",
     "raidsTitle": "Incursiones",

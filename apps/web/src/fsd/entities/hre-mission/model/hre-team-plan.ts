@@ -87,10 +87,9 @@ function ruleFor(objectives: readonly HreObjective[]): HreTeamRule {
   return RULE_ORDER.find((rule) => rules.includes(rule)) ?? "strongest"
 }
 
-/** Ability objectives: Onslaught comes first for them, its whole roster using abilities (Severyn,
+/** Ability uses: Onslaught comes first for them, its whole roster using abilities (Severyn,
  * 2026-11). */
-const ABILITY_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
-  "abilityDamage",
+const ABILITY_USE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "useAbilities",
   "useAbilitiesAlliance",
 ])
@@ -109,18 +108,24 @@ const KILL_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
 ])
 /** Enemies one battle of a spare mode yields, roughly: the HSE projection's default kills per
  * token (Arena five, Salvage Run 12, Onslaught 20; Severyn's estimates). */
-const KILLS_PER_BATTLE: Readonly<Record<HreSpareMode, number>> = {
+const KILLS_PER_BATTLE: Readonly<Partial<Record<HreSpareMode, number>>> = {
   arena: 5,
   salvageRun: 12,
   onslaught: 20,
 }
+const ARENA_KILLS = 5
 
 /**
  * The spare-token modes in the order a mission's manual objectives suit them (Severyn, 2026-11):
- * Arena, Salvage Run, then Onslaught; Onslaught first for ability damage and ability uses.
+ * Arena, Salvage Run, then Onslaught. Ability damage puts Guild Raid first, where a boss soaks up
+ * every ability, then Onslaught; ability uses put Onslaught first. Guild Raid serves only ability
+ * damage.
  */
 function spareOrder(manual: readonly HreObjective[]): readonly HreSpareMode[] {
-  return manual.some((objective) => ABILITY_KINDS.has(objective.kind))
+  if (manual.some((objective) => objective.kind === "abilityDamage")) {
+    return ["guildRaid", "onslaught", "arena", "salvageRun"]
+  }
+  return manual.some((objective) => ABILITY_USE_KINDS.has(objective.kind))
     ? ["onslaught", "arena", "salvageRun"]
     : ["arena", "salvageRun", "onslaught"]
 }
@@ -147,8 +152,8 @@ function spareModes(
   let covered = 0
   for (const mode of modes) {
     if (covered >= left) break
-    const kills = KILLS_PER_BATTLE[mode]
-    if (kills > Math.max(left, KILLS_PER_BATTLE.arena)) continue
+    const kills = KILLS_PER_BATTLE[mode] ?? Infinity
+    if (kills > Math.max(left, ARENA_KILLS)) continue
     const tokens = spare[mode]
     if (!tokens) continue
     picked.push(mode)

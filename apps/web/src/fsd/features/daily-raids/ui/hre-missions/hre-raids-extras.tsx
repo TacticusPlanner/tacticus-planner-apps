@@ -12,6 +12,7 @@ import { EntityIcon } from "@/shared/ui"
 import { campaignOutlook } from "../../model/campaign-outlook"
 import type {
   DailyRaidLocationViewModel,
+  DailyRaidResourceVisual,
   DailyRaidsReadyViewModel,
 } from "../../model/daily-raids.domain"
 import type { MissionRaidPlan } from "../../model/mission-raids"
@@ -29,16 +30,74 @@ export type RaidRowsView = {
   view: DailyRaidsReadyViewModel | null
   /** Makes each battle's name open its enemies. */
   onShowLocation?: (target: RaidLocationTarget) => void
+  /** A node's catalog drop with what the player holds of it, for a row that feeds no goal. */
+  nodeDrop?: (battleId: BattleId) => HreNodeDrop | undefined
+}
+
+/** A node's own drop and the player's inventory of it. */
+type HreNodeDrop = {
+  label: string
+  visual: DailyRaidResourceVisual
+  owned: number
+}
+
+/** A node's drop as a row shows it: the goal's resource with "owned/target", else the node's own
+ * drop with what the player holds. */
+export function RowDrop({
+  battleId,
+  resourceId,
+  view: { view, nodeDrop },
+  testId,
+}: {
+  battleId: BattleId
+  resourceId: string | undefined
+  view: RaidRowsView
+  testId: string
+}) {
+  const { t } = useTranslation("dailies")
+  if (resourceId !== undefined && view) {
+    return (
+      <span className="flex shrink-0 items-center gap-1">
+        <ResourceIconWithTooltip
+          size="row"
+          label={view.resourceLabels.get(resourceId) ?? resourceId}
+          visual={view.resourceVisuals.get(resourceId)}
+        />
+        <ResourceStock
+          progress={view.resourceTotals.get(resourceId)}
+          testId={`${testId}-stock`}
+        />
+      </span>
+    )
+  }
+  const drop = nodeDrop?.(battleId)
+  if (!drop) return null
+  return (
+    <span className="flex shrink-0 items-center gap-1">
+      <ResourceIconWithTooltip
+        size="row"
+        label={drop.label}
+        visual={drop.visual}
+      />
+      <span
+        className="text-xs text-muted-foreground tabular-nums"
+        data-testid={`${testId}-owned`}
+      >
+        {t("hse.raids.owned", { count: drop.owned })}
+      </span>
+    </span>
+  )
 }
 
 /** One row per suggested node, as a regular raid card row: its battle (opening its enemies), the
- * goal drop with "owned/target" and the running Home Screen Event's points. A raid row shows no raid
+ * goal drop with "owned/target" (or the node's own drop with what the player holds), the enemies a
+ * battle defeats on a row fought by hand for kills, and the running Home Screen Event's points. A raid row shows no raid
  * count or energy; a by-hand battle row keeps its battle count, and an open-ended row shows its
  * energy per battle. */
 export function RaidRows({
   rows,
   testId,
-  view: { locations, view, onShowLocation },
+  view: rowsView,
   battles = false,
   openEnded = false,
 }: {
@@ -51,6 +110,7 @@ export function RaidRows({
   openEnded?: boolean
 }) {
   const { t } = useTranslation("hre")
+  const { locations, onShowLocation } = rowsView
   const paging = useListPaging(rows)
   return (
     <>
@@ -60,7 +120,6 @@ export function RaidRows({
         rows={paging.visible}
         testId={testId}
         renderRow={(row) => {
-          const resourceId = row.goal?.resourceId
           return (
             <EventLocationRow
               key={row.battleId}
@@ -70,19 +129,21 @@ export function RaidRows({
               location={locations?.get(row.battleId)}
               testId={`hre-raid-${row.battleId}`}
             >
-              {resourceId !== undefined && view ? (
-                <span className="flex items-center gap-1">
-                  <ResourceIconWithTooltip
-                    size="row"
-                    label={view.resourceLabels.get(resourceId) ?? resourceId}
-                    visual={view.resourceVisuals.get(resourceId)}
-                  />
-                  <ResourceStock
-                    progress={view.resourceTotals.get(resourceId)}
-                    testId={`hre-raid-${row.battleId}-stock`}
-                  />
-                </span>
-              ) : null}
+              <RowDrop
+                battleId={row.battleId}
+                resourceId={row.goal?.resourceId}
+                testId={`hre-raid-${row.battleId}`}
+                view={rowsView}
+              />
+              {row.enemies === undefined ? null : (
+                <Badge
+                  className="tabular-nums"
+                  data-testid={`hre-raid-${row.battleId}-enemies`}
+                  variant="outline"
+                >
+                  {t("raids.enemyCount", { count: row.enemies })}
+                </Badge>
+              )}
               {row.eventPoints > 0 ? (
                 <Badge
                   className="tabular-nums"

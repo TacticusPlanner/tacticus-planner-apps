@@ -219,7 +219,7 @@ Every open objective that only progresses in battles played by hand (kills, dama
 - **The featured hero's ability uses or damage:** also only nodes where the featured hero's faction can deploy, so the hero can play every listed node.
 - **Faction kills:** only nodes with that faction's enemies (see "Faction kills get their own list of battles").
 
-These limits replace the Raids Filters' slot, allies-alliance and (for the featured hero's objectives) allies-faction choices for this list; the other Raids Filters still apply. The list SHALL estimate what one battle counts toward each objective: the node's enemy total for kills, its enemies of the faction for faction kills, its enemies' total health for damage, 5 uses for ability uses, and 1 for the featured hero's ability uses and for wins. Nodes that count nothing toward an estimated objective SHALL be left out. While the mission's lightning victories are open, nodes with a lightning-victory condition SHALL come first (see "Faction kills get their own list of battles"); then nodes that drop a resource an in-scope goal still needs; then nodes SHALL be ordered by what they count per energy for the first estimated objective, so the fewest battles are needed, then as raids are (including the event-point tie-breaks), and filled until every estimated objective is covered, within the attempts left and today's energy left; the raids get the energy and attempts the list leaves. When no objective can be estimated (ability damage, a damage type, the featured hero's damage, healing), the list SHALL show the 3 best nodes by enemy health per energy with their energy per battle, and say to play them until the objective is done. The list SHALL open with one visible line saying that raids don't count these objectives. Its other notes SHALL be a bullet list folded under "Node rules", closed by default on desktop and mobile: the limits that apply, whether the counts are estimates, that each battle also counts as a campaign win (when it does), and that Arena and Onslaught battles count too. When the featured hero's faction rule applies, the alliance rule SHALL NOT be listed, because the faction rule already implies it. When more battles are needed than today's energy allows, the list SHALL say so.
+These limits replace the Raids Filters' slot, allies-alliance and (for the featured hero's objectives) allies-faction choices for this list; the other Raids Filters still apply. The list SHALL estimate what one battle counts toward each objective: the node's enemy total for kills, its enemies of the faction for faction kills, its enemies' total health for damage, 5 uses for ability uses, and 1 for the featured hero's ability uses and for wins. Nodes that count nothing toward an estimated objective SHALL be left out. While the mission's lightning victories are open, nodes with a lightning-victory condition SHALL come first (see "Faction kills get their own list of battles"); then nodes that drop a resource an in-scope goal still needs; then nodes SHALL be ordered by the energy it takes to finish the first estimated objective at that node alone (the battles it needs there times its energy cost), then by the fewest of those battles, then as raids are (including the event-point tie-breaks), and filled until every estimated objective is covered, within the attempts left and today's energy left; the raids get the energy and attempts the list leaves. When no objective can be estimated (ability damage, a damage type, the featured hero's damage, healing), the list SHALL show the 3 best nodes by enemy health per energy with their energy per battle, and say to play them until the objective is done. The list SHALL open with one visible line saying that raids don't count these objectives. Its other notes SHALL be a bullet list folded under "Node rules", closed by default on desktop and mobile: the limits that apply, whether the counts are estimates, that each battle also counts as a campaign win (when it does), and that Arena and Onslaught battles count too. When the featured hero's faction rule applies, the alliance rule SHALL NOT be listed, because the faction rule already implies it. When more battles are needed than today's energy allows, the list SHALL say so.
 
 While the mission's `campaignWins` objective is also open, each battle won by hand SHALL also count as a campaign win, so the raids to go SHALL drop by the battles in the list, and the note SHALL say so; when they cover every win still needed, the raids SHALL say the battles above cover them.
 
@@ -268,12 +268,17 @@ Raid suggestions SHALL use every candidate node whatever the mission's other obj
 
 ### Requirement: Rows look like regular raid card rows
 
-Each suggested node SHALL be shown as a regular raid card row: its battle, the goal drop with "owned/target", and the running event's points. Rows SHALL NOT show the portraits of the goals' characters (Severyn, 2026-11), so a row stays on one line on a phone.
+Each suggested node SHALL be shown as a regular raid card row: its battle, the goal drop with "owned/target", and the running event's points. A node that feeds no goal SHALL show its own drop's icon with how many the player owns ("7 owned"), so its rewards show without a goal (Severyn, 2026-11); a node that drops nothing shows no drop. A row fought by hand for a kill objective SHALL show the enemies one battle there defeats ("6 enemies"; Severyn, 2026-11). Rows SHALL NOT show the portraits of the goals' characters (Severyn, 2026-11), so a row stays on one line on a phone.
 
 #### Scenario: Node feeds two goals
 
 - **GIVEN** a suggested node that drops a material two goals still need
 - **THEN** its row shows the material's icon with "owned/target", and no character portraits
+
+#### Scenario: Node feeds no goal
+
+- **GIVEN** a suggested Indomitus node whose drop no goal needs, and 7 of that drop in the inventory
+- **THEN** its row shows the drop's icon with "7 owned"
 
 ### Requirement: All-alliance suggestions wait for the featured hero
 
@@ -286,7 +291,7 @@ While the featured hero does not resolve, the section SHALL NOT list battles for
 
 ### Requirement: Faction kills get their own list of battles
 
-While the current mission has an open `killFaction` objective, its list of battles to fight by hand SHALL hold only nodes with that faction's enemies, from any campaign, and each battle SHALL count the node's enemies of that faction toward the kills still needed. Nodes with the most of them per energy SHALL come first, then they are ordered as raids are. While the mission's lightning victories are also open, nodes with a lightning-victory condition SHALL come first, so a quick win counts for both. These battles SHALL NOT reduce the lightning raids still needed, because a win by hand is not always a lightning victory.
+While the current mission has an open `killFaction` objective, its list of battles to fight by hand SHALL hold only nodes with that faction's enemies, from any campaign, and each battle SHALL count the node's enemies of that faction toward the kills still needed. They SHALL be ordered as the list orders nodes for kills (see "Manual objectives get a list of battles to fight by hand"). While the mission's lightning victories are also open, nodes with a lightning-victory condition SHALL come first, so a quick win counts for both. These battles SHALL NOT reduce the lightning raids still needed, because a win by hand is not always a lightning victory.
 
 Assumptions:
 
@@ -301,6 +306,11 @@ Assumptions:
 
 - **GIVEN** 20 Necron kills still needed, a 3-energy node with 3 Necrons and a 6-energy node with 9 Necrons
 - **THEN** the 6-energy node comes first, with 3 battles
+
+#### Scenario: A few kills take the cheapest node with enough enemies
+
+- **GIVEN** mission 1 with 5 kills still needed, an 8-energy node with 12 enemies, a 5-energy node with 6 enemies and a 3-energy node with 4 enemies
+- **THEN** the 5-energy node is suggested for 1 battle and its row shows "6 enemies", not the node with the most enemies (Severyn, 2026-11)
 
 ### Requirement: Event points break ties among equal costs
 

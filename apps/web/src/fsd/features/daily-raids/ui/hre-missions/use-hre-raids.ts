@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import type { BattleId } from "@workspace/game-domain"
 import { useTranslation } from "react-i18next"
 
 import type {
@@ -7,6 +8,8 @@ import type {
   MissionRaidsRequest,
 } from "../../model/mission-raids"
 import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-event"
+import { useResourceByBattleId } from "../../model/use-resource-by-battle-id"
+import { usePlayerChunk } from "@/shared/local-data"
 import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useHomeScreenEventName } from "../home-screen-event/use-home-screen-event-name"
@@ -111,6 +114,35 @@ export function useHreRaids({
     missionRaids,
     quickFilters,
   })
+  const resourceByBattleId = useResourceByBattleId()
+  const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
+  const inventoryShardsRead = usePlayerChunk("inventory-shards")
+  // What the player holds of each node's catalog drop, for rows that feed no goal.
+  const nodeDrops = useMemo(() => {
+    const upgrades = new Map(
+      inventoryUpgradesRead.status === "ready" && inventoryUpgradesRead.data
+        ? inventoryUpgradesRead.data.map((entry) => [
+            entry.upgradeId,
+            entry.amount,
+          ])
+        : []
+    )
+    const shards = new Map(
+      inventoryShardsRead.status === "ready" && inventoryShardsRead.data
+        ? inventoryShardsRead.data.map((entry) => [entry.unitId, entry.amount])
+        : []
+    )
+    return (battleId: BattleId) => {
+      const resource = resourceByBattleId.get(battleId)
+      if (!resource) return undefined
+      const { visual } = resource
+      const owned =
+        visual.kind === "upgrade"
+          ? (upgrades.get(visual.id) ?? 0)
+          : (shards.get(visual.unitId) ?? 0)
+      return { label: resource.label, visual, owned }
+    }
+  }, [resourceByBattleId, inventoryUpgradesRead, inventoryShardsRead])
   const loaded = raids.status !== "loading" && raids.status !== "error"
   const plan = loaded ? raids.missionRaids : undefined
   const locations = loaded ? raids.locationsByBattleId : undefined
@@ -129,7 +161,7 @@ export function useHreRaids({
         ? raids.status
         : "ready",
     plan,
-    rowsView: { locations, view, onShowLocation },
+    rowsView: { locations, view, onShowLocation, nodeDrop: nodeDrops },
     hseNote,
     hasActiveEventBattles: loaded && (raids.hasActiveEventBattles ?? false),
   }

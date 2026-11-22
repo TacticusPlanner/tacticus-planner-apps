@@ -139,6 +139,8 @@
     },
     "battleCount_one": "{{count}} Kampf",
     "battleCount_other": "{{count}} Kämpfe",
+    "enemyCount_one": "{{count}} Gegner",
+    "enemyCount_other": "{{count}} Gegner",
     "eventPoints": "{{points}} Eventpunkte",
     "noteHomeScreenEvent": "{{event}} läuft auch: Bei gleichen Kosten kommen Knoten mit mehr Punkten dafür zuerst.",
     "raidsTitle": "Raids",

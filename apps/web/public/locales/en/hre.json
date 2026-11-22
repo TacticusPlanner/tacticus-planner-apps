@@ -139,6 +139,8 @@
     },
     "battleCount_one": "{{count}} battle",
     "battleCount_other": "{{count}} battles",
+    "enemyCount_one": "{{count}} enemy",
+    "enemyCount_other": "{{count}} enemies",
     "eventPoints": "{{points}} event pts",
     "noteHomeScreenEvent": "{{event}} is running too: among nodes of equal cost, those earning more of its points come first.",
     "raidsTitle": "Raids",

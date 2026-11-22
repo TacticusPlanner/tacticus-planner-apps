@@ -67,6 +67,8 @@ type MissionRaidRow = {
   eventPoints: number
   /** Who may deploy there, for the team that fights it by hand. */
   deploy?: MissionDeploy
+  /** The enemies one battle there defeats toward a kill objective, on rows fought by hand for one. */
+  enemies?: number
 }
 
 /** A node's deployment rules: the allied factions its campaign lets you field and its slots. */
@@ -298,8 +300,10 @@ export function planMissionRaids(
 /**
  * The battles to fight by hand for the mission's manual objectives, over every node that passes
  * `passesBattlesFilter` (drops or not: a kill counts anywhere). Nodes with a lightning condition
- * come first while lightning victories are open; then the nodes that feed a goal; then the most of the first estimated objective
- * per energy (the most enemies, enemy health or ability uses; for wins, the cheapest); then
+ * come first while lightning victories are open; then the nodes that feed a goal; then
+ * the least energy to finish the first estimated objective at that node alone (its battles times
+ * their cost, so a node with more enemies than the kills left is no better than one with just
+ * enough), then the fewest of those battles; then
  * `compareCandidates`. Each node gets as many battles as its attempts, the budget and the
  * objective still needing the most battles allow. Without any estimate, the best few nodes are
  * listed open-ended, ranked by enemy health.
@@ -317,8 +321,25 @@ function planMissionBattles(
     need.per && need.toGo > 0 ? [{ toGo: need.toGo, per: need.per }] : []
   )
   const primary = quantified[0]?.per ?? "enemyHealth"
-  const efficiency = (battle: MissionRaidBattle) =>
-    yieldOf(battle.id, primary) / battle.energyCost
+  const primaryLeft = quantified[0]?.toGo
+  // The battles a node alone takes to finish the first estimated objective, and their energy: five
+  // kills to go rank every node with five enemies or more by energy alone, not the biggest node
+  // first. Open-ended, the most of it per energy.
+  const battlesToFinish = (battle: MissionRaidBattle) =>
+    primaryLeft === undefined
+      ? 1
+      : Math.ceil(primaryLeft / yieldOf(battle.id, primary))
+  const finishCost = (battle: MissionRaidBattle) =>
+    primaryLeft === undefined
+      ? -yieldOf(battle.id, primary) / battle.energyCost
+      : battlesToFinish(battle) * battle.energyCost
+  const kills = quantified.find(
+    (need) => need.per === "enemies" || need.per === "factionEnemies"
+  )?.per
+  const withEnemies = (rows: MissionRaidRow[]) =>
+    kills
+      ? rows.map((row) => ({ ...row, enemies: yieldOf(row.battleId, kills) }))
+      : rows
   const candidates = input.battles
     .filter(
       (battle) =>
@@ -334,7 +355,8 @@ function planMissionBattles(
           : 0,
         Number(!input.goalNodesByBattle.has(a.id)) -
           Number(!input.goalNodesByBattle.has(b.id)),
-        efficiency(b) - efficiency(a),
+        finishCost(a) - finishCost(b),
+        battlesToFinish(a) - battlesToFinish(b),
         sort(a, b)
       )
     )
@@ -381,7 +403,7 @@ function planMissionBattles(
     input
   )
   return plan(
-    rows,
+    withEnemies(rows),
     false,
     left.some((value) => value > 0),
     attemptsBlocked ? "no-attempts" : "no-energy"

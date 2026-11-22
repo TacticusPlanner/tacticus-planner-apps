@@ -259,8 +259,14 @@ export function tokenNeeds(
   return needs
 }
 
-/** The token modes a manual objective can also be played in, with tokens to spare. */
-const HRE_SPARE_MODES = ["arena", "onslaught", "salvageRun"] as const
+/** The token modes a manual objective can also be played in, with tokens to spare (Guild Raid for
+ * ability damage only, see `selectTeamPlans`). */
+const HRE_SPARE_MODES = [
+  "arena",
+  "onslaught",
+  "salvageRun",
+  "guildRaid",
+] as const
 export type HreSpareMode = (typeof HRE_SPARE_MODES)[number]
 
 /** Tokens held of a spare mode against what the remaining missions need of it. */
@@ -268,7 +274,7 @@ type HreSpare = { held: number; need: number }
 export type HreSpareTokens = Partial<Record<HreSpareMode, HreSpare>>
 
 /**
- * The spare-token modes (Severyn, 2026-11): Arena, Onslaught and Salvage Run where the tokens held
+ * The spare-token modes (Severyn, 2026-11): Arena, Onslaught, Salvage Run and Guild Raid where the tokens held
  * now exceed what the current mission (less its progress) and every later one need. Regeneration
  * over the event is left out, so the count is a safe floor. A mode with unknown tokens has none.
  */
