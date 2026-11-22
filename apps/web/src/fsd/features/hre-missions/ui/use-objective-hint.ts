@@ -2,7 +2,11 @@ import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import type { HreObjective } from "@/entities/hre-mission"
-import { hintGameMode, objectiveHint } from "../model/hre-objective-hint"
+import {
+  hintGameMode,
+  hintLookup,
+  objectiveHint,
+} from "../model/hre-objective-hint"
 import type { HreFeaturedHero } from "../model/use-hre-instance"
 
 /**
@@ -24,16 +28,9 @@ export function useObjectiveHint(
   ])
   return useCallback(
     (objective: HreObjective) => {
-      // `i18n.languages` is the resolved chain ("es-ES", "es", …), so a region locale finds the
-      // language's hints; English is the last resort.
-      const lookup = (key: string) =>
-        [...i18n.languages, "en"]
-          .map(
-            (language) =>
-              i18n.getResource(language, "hreTaskHints", key) as
-                string | undefined
-          )
-          .find((hint) => hint !== undefined)
+      const lookup = hintLookup(i18n.languages, (language, key) =>
+        i18n.getResource(language, "hreTaskHints", key)
+      )
       const mode = hintGameMode(objective)
       const qualifier = objective.qualifier ?? ""
       return objectiveHint(objective, lookup, {

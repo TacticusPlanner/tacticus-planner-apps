@@ -34,3 +34,20 @@ export function objectiveHint(
   }
   return undefined
 }
+
+/**
+ * Reads a hint key in the first of `languages` that has it, then English. `languages` is i18next's
+ * resolved chain ("es-ES", "es", …), so a region locale finds the language's hints.
+ */
+export function hintLookup(
+  languages: readonly string[],
+  getResource: (language: string, key: string) => unknown
+) {
+  return (key: string): string | undefined => {
+    for (const language of [...languages, "en"]) {
+      const hint = getResource(language, key)
+      if (typeof hint === "string") return hint
+    }
+    return undefined
+  }
+}
