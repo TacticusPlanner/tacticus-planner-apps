@@ -13,6 +13,7 @@ import {
   isTokenObjective,
 } from "@/entities/hre-mission"
 import { objectiveTextKey } from "./hre-objective-text"
+import { objectiveTipKeys } from "./hre-objective-tips"
 import { compareCodeUnits } from "@/shared/lib"
 
 function leafKeys(value: unknown, prefix = ""): string[] {
@@ -54,13 +55,14 @@ describe("HRE translations", () => {
     )
   })
 
-  it("words every objective kind and gives every non-token kind a tip", () => {
+  it("words every objective kind and has every tip it shows", () => {
+    const tips = en.tips as Record<string, string>
     for (const kind of HRE_OBJECTIVE_KINDS) {
       const objectives = en.objectives as Record<string, unknown>
       expect(objectives[kind] ?? objectives[`${kind}_other`], kind).toBeTruthy()
-      const tip = (en.tips as Record<string, string>)[kind]
-      if (isTokenObjective(kind)) expect(tip, kind).toBeUndefined()
-      else expect(tip, kind).toBeTruthy()
+      const keys = objectiveTipKeys(kind)
+      if (isTokenObjective(kind)) expect(keys, kind).toEqual([])
+      for (const key of keys) expect(tips[key], key).toBeTruthy()
     }
   })
 

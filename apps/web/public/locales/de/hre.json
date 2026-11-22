@@ -68,6 +68,7 @@
     "killWithRanged": "Fernkampfeinheiten mit vielen Treffern besiegen Gegner am schnellsten.",
     "killWithAlliance": "Flächenangriffe der Event-Allianz besiegen mehrere Gegner pro Zug.",
     "killFaction": "Knoten mit vielen Gegnern dieser Fraktion brauchen die wenigsten Schlachten.",
+    "killSummons": "Beschwörungen zählen als Kills. Wähle in der Arena Gegner mit Beschwörern. Gegnerische Skarabäenschwärme vervielfältigen sich und ein Biovore schießt jede Runde eine Sporenmine, also lass ihn leben und besiege weiter seine Beschwörungen.",
     "damage": "Starke Einheiten mit vielen Treffern verursachen den meisten Schaden.",
     "abilityDamage": "Einheiten, deren aktive Fähigkeiten mehrere Gegner treffen, kommen am schnellsten voran.",
     "useAbilities": "Nutze in jeder Schlacht die aktive Fähigkeit jedes Charakters. Kriegsmaschinen zählen nicht.",

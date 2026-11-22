@@ -1,16 +1,12 @@
 import { Info, Lightbulb } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover"
 
 import { AbilityText } from "@/shared/ability-text"
+import { DetailsOverlay } from "@/shared/ui"
 
 import type { HreObjective } from "@/entities/hre-mission"
-import { hasGuidance, hasObjectiveTip } from "../model/hre-objective-tips"
+import { hasGuidance, objectiveTipKeys } from "../model/hre-objective-tips"
 
 /** The game's hint for one objective, then our tip for its kind; either may be missing. */
 export function ObjectiveGuidance({
@@ -24,8 +20,8 @@ export function ObjectiveGuidance({
   testId: string
 }) {
   const { t } = useTranslation("hre")
-  const tip = hasObjectiveTip(objective.kind)
-  if (!hint && !tip) return null
+  const tips = objectiveTipKeys(objective.kind)
+  if (!hint && tips.length === 0) return null
   return (
     <div className="space-y-1.5" data-testid={testId}>
       {hint ? (
@@ -39,20 +35,22 @@ export function ObjectiveGuidance({
           />
         </div>
       ) : null}
-      {tip ? (
+      {tips.map((key, index) => (
         <p
+          key={key}
           className="flex gap-2 text-xs text-muted-foreground"
-          data-testid={`${testId}-tip`}
+          data-testid={index === 0 ? `${testId}-tip` : `${testId}-tip-${key}`}
         >
           <Lightbulb aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
-          <span>{t(`tips.${objective.kind}` as never)}</span>
+          <span>{t(`tips.${key}` as never)}</span>
         </p>
-      ) : null}
+      ))}
     </div>
   )
 }
 
-/** The objective's 'i' button: a popover with the game's hint and our tip, as the game's own 'i'. */
+/** The objective's 'i' button: the game's hint and our tip in a details overlay (a popover on
+ *  desktop, a content-height sheet on phones), as the game's own 'i'. */
 export function ObjectiveInfo({
   objective,
   objectiveText,
@@ -67,8 +65,10 @@ export function ObjectiveInfo({
   const { t } = useTranslation("hre")
   if (!hasGuidance(objective, hint)) return null
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <DetailsOverlay
+      testId={`${testId}-details`}
+      title={objectiveText}
+      trigger={
         <Button
           aria-label={t("tracker.info", { objective: objectiveText })}
           className="shrink-0 text-muted-foreground"
@@ -78,14 +78,13 @@ export function ObjectiveInfo({
         >
           <Info aria-hidden="true" />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-72 max-w-[calc(100vw-2rem)]">
-        <ObjectiveGuidance
-          hint={hint}
-          objective={objective}
-          testId={`${testId}-guidance`}
-        />
-      </PopoverContent>
-    </Popover>
+      }
+    >
+      <ObjectiveGuidance
+        hint={hint}
+        objective={objective}
+        testId={`${testId}-guidance`}
+      />
+    </DetailsOverlay>
   )
 }

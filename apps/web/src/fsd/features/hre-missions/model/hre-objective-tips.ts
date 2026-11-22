@@ -20,6 +20,21 @@ const TIP_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "heal",
 ])
 
+/** Kill kinds: summons count as kills, so they also get the summons tip (Severyn, 2026-11). */
+const KILL_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
+  "killEnemies",
+  "killWithMelee",
+  "killWithRanged",
+  "killWithAlliance",
+  "killFaction",
+])
+
+/** The `hre:tips.*` keys for an objective kind, in the order shown; empty when it has none. */
+export function objectiveTipKeys(kind: HreObjectiveKind): string[] {
+  if (!TIP_KINDS.has(kind)) return []
+  return KILL_KINDS.has(kind) ? [kind, "killSummons"] : [kind]
+}
+
 export const hasObjectiveTip = (kind: HreObjectiveKind) => TIP_KINDS.has(kind)
 
 /** Whether an objective has a game hint or a tip of ours to show. */

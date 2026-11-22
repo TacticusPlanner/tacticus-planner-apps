@@ -68,6 +68,7 @@
     "killWithRanged": "Ranged units with many hits defeat enemies fastest.",
     "killWithAlliance": "Area attacks from the event's alliance defeat several enemies a turn.",
     "killFaction": "Nodes with many of this faction's enemies take the fewest battles.",
+    "killSummons": "Summons count as kills. In Arena, pick opponents with summoners. Enemy Scarab Swarms copy themselves and a Biovore launches a Spore Mine every turn, so leave one alive and keep defeating its summons.",
     "damage": "Strong units with many hits deal the most damage.",
     "abilityDamage": "Units whose active abilities hit several enemies add up fastest.",
     "useAbilities": "Use every character's active ability each battle. Machines of War don't count.",

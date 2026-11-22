@@ -445,7 +445,11 @@ describe("HRE tab", () => {
         manual: {
           needs: [
             {
-              objective: { kind: "abilityDamage", target: 10_000 },
+              objective: {
+                kind: "abilityDamage",
+                target: 10_000,
+                hintKeys: ["DealAbilityDamage_description"],
+              },
               toGo: 4000,
               per: null,
             },
@@ -514,7 +518,11 @@ describe("HRE tab", () => {
         manual: {
           needs: [
             {
-              objective: { kind: "useAbilitiesAlliance", target: 20 },
+              objective: {
+                kind: "useAbilitiesAlliance",
+                target: 20,
+                hintKeys: expect.any(Array),
+              },
               toGo: 8,
               per: "abilityUses",
             },

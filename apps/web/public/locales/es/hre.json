@@ -68,6 +68,7 @@
     "killWithRanged": "Las unidades a distancia con muchos golpes derrotan enemigos más rápido.",
     "killWithAlliance": "Los ataques de área de la alianza del evento derrotan a varios enemigos por turno.",
     "killFaction": "Los nodos con muchos enemigos de esta facción requieren menos batallas.",
+    "killSummons": "Las invocaciones cuentan como bajas. En la Arena, elige rivales con invocadores. Los Enjambres de escarabajos enemigos se replican y un Biovore lanza una Mina espora cada turno: déjalo con vida y sigue derrotando sus invocaciones.",
     "damage": "Las unidades fuertes con muchos golpes hacen más daño.",
     "abilityDamage": "Las unidades cuyas habilidades activas golpean a varios enemigos suman más rápido.",
     "useAbilities": "Usa la habilidad activa de cada personaje en cada batalla. Las Máquinas de Guerra no cuentan.",

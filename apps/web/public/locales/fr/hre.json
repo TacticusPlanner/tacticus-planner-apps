@@ -68,6 +68,7 @@
     "killWithRanged": "Les unités à distance avec beaucoup de coups éliminent les ennemis le plus vite.",
     "killWithAlliance": "Les attaques de zone de l'alliance de l'événement éliminent plusieurs ennemis par tour.",
     "killFaction": "Les nœuds avec beaucoup d'ennemis de cette faction demandent le moins de batailles.",
+    "killSummons": "Les invocations comptent comme des éliminations. En Arène, choisissez des adversaires avec des invocateurs. Les Nuées de Scarabées ennemies se dupliquent et un Biovore lance une Spore-mine à chaque tour : laissez-le en vie et continuez à éliminer ses invocations.",
     "damage": "Les unités fortes avec beaucoup de coups infligent le plus de dégâts.",
     "abilityDamage": "Les unités dont les capacités actives touchent plusieurs ennemis progressent le plus vite.",
     "useAbilities": "Utilisez la capacité active de chaque personnage à chaque bataille. Les Machines de guerre ne comptent pas.",
