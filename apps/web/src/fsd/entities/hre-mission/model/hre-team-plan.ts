@@ -1,6 +1,7 @@
 import { hreAllDone, hreMission } from "./hre-missions"
 import type { HreMission, HreObjective, HreObjectiveKind } from "./hre-missions"
-import { isManualObjective } from "./hre-objectives"
+import { HRE_SPARE_MODES, isManualObjective } from "./hre-objectives"
+import type { HreSpareMode, HreSpareTokens } from "./hre-objectives"
 import type { HreProgress } from "./hre-progress"
 
 /** The lineup the mission's manual objectives ask for (hre-mission-teams). */
@@ -31,6 +32,12 @@ export type HreTeamPlan = {
   preferPsychic: boolean
   /** Tokens of `mode` a later mission needs, to keep rather than spend now. */
   reserve: { tokens: number; missionNumber: number } | null
+  /** A manual objective played with spare tokens: the tokens held against the remaining missions'
+   * need, `held - need` battles to play. Null for the campaign team and a token objective's team. */
+  spare: { held: number; need: number } | null
+  /** Onslaught ability uses: the whole alliance, weakest first, each using its ability before it
+   * falls and the next one deploys. */
+  wholeTrack: boolean
 }
 
 /** The rule each manual kind asks for, strongest rule first when two objectives meet. */
@@ -80,19 +87,48 @@ function ruleFor(objectives: readonly HreObjective[]): HreTeamRule {
   return RULE_ORDER.find((rule) => rules.includes(rule)) ?? "strongest"
 }
 
+/** Kinds whose count waves of enemies serve best: Onslaught and Salvage Run come first for them. */
+const WAVE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
+  "killEnemies",
+  "killWithMelee",
+  "killWithRanged",
+  "killWithAlliance",
+  "killFaction",
+  "damage",
+  "abilityDamage",
+  "damageType",
+  "featuredDamage",
+  "heal",
+  "useAbilities",
+  "useAbilitiesAlliance",
+])
+/** Ability uses every unit makes: Onslaught fields the whole alliance, weakest first. */
+const POOL_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
+  "useAbilities",
+  "useAbilitiesAlliance",
+])
+
+/** The spare-token modes in the order a mission's manual objectives suit them. */
+function spareOrder(manual: readonly HreObjective[]): readonly HreSpareMode[] {
+  return manual.some((objective) => WAVE_KINDS.has(objective.kind))
+    ? ["onslaught", "salvageRun", "arena"]
+    : HRE_SPARE_MODES
+}
+
 /**
  * The current mission's teams (design D9). Its open manual objectives share one campaign team for
  * the battles fought by hand, with the strictest rule of the two. Every open token objective gets
- * a team for its mode with that same rule, or the strongest units when it is open alone. Ranged
- * kills also get an Onslaught pool when no Arena battles are open, and any-unit ability uses always
- * do (missions 3 and 15). Summon-free wins (mission 6) get an Arena team while Arena tokens above a
- * later mission's reserve are left (`arenaSurplus`). A heal objective adds a Healer or Mechanic and
- * a Psychic damage objective puts Psychic damage dealers first, in every team.
+ * a team for its mode with that same rule, or the strongest units when it is open alone. The manual
+ * objectives also get a team in every spare-token mode (`spareTokens`: Arena, Onslaught or Salvage
+ * Run tokens above what the remaining missions need) the mission does not already play, Onslaught
+ * and Salvage Run first for kills, damage, healing and ability uses, whose enemies come in waves;
+ * Onslaught ability uses field the whole alliance, weakest first. A heal objective adds a Healer
+ * or Mechanic and a Psychic damage objective puts Psychic damage dealers first, in every team.
  */
 export function selectTeamPlans(
   state: HreProgress,
   missions: readonly HreMission[],
-  arenaSurplus = 0
+  spare: HreSpareTokens = {}
 ): HreTeamPlan[] {
   if (state.mission >= hreAllDone(missions)) return []
   const objectives = hreMission(missions, state.mission).objectives
@@ -105,17 +141,20 @@ export function selectTeamPlans(
   const plan = (
     served: HreObjective[],
     mode: HreTeamMode,
-    teamRule = rule
+    extra: Partial<Pick<HreTeamPlan, "spare" | "wholeTrack">> = {}
   ): HreTeamPlan => ({
     objectives: served,
-    rule: teamRule,
+    rule,
     mode,
     size: mode === "onslaught" ? ONSLAUGHT_POOL_SIZE : TEAM_SIZE,
     support: open.some((item) => item.kind === "heal"),
     preferPsychic: open.some(
       (item) => item.kind === "damageType" && item.qualifier === "Psychic"
     ),
-    reserve: reserveFor(mode, state.mission, missions),
+    // Spare tokens are already what the later missions leave over.
+    reserve: extra.spare ? null : reserveFor(mode, state.mission, missions),
+    spare: extra.spare ?? null,
+    wholeTrack: extra.wholeTrack ?? false,
   })
   const plans: HreTeamPlan[] = []
   if (manual.length > 0) plans.push(plan(manual, "battle"))
@@ -126,27 +165,20 @@ export function selectTeamPlans(
     tokenModes.add(mode)
     plans.push(plan([objective, ...manual], mode))
   }
-  const onslaughtPool =
-    (rule === "ranged" && !tokenModes.has("arena")) || rule === "abilities"
-  if (onslaughtPool && !tokenModes.has("onslaught")) {
-    plans.push(plan(manual, "onslaught"))
-  }
-  if (rule === "summonFree" && arenaSurplus > 0 && !tokenModes.has("arena")) {
-    plans.push(plan(manual, "arena"))
+  if (manual.length === 0) return plans
+  for (const mode of spareOrder(manual)) {
+    const tokens = spare[mode]
+    if (!tokens || tokenModes.has(mode)) continue
+    plans.push(
+      plan(manual, mode, {
+        spare: tokens,
+        wholeTrack:
+          mode === "onslaught" &&
+          manual.some((objective) => POOL_KINDS.has(objective.kind)),
+      })
+    )
   }
   return plans
-}
-
-/** Arena tokens above the next later mission's Arena need (mission 6's surplus over mission 10's 4),
- * or 0 when Arena tokens are unknown. */
-export function arenaSurplus(
-  state: HreProgress,
-  missions: readonly HreMission[],
-  tokens: number | null
-): number {
-  if (tokens === null) return 0
-  const reserve = reserveFor("arena", state.mission, missions)
-  return Math.max(0, tokens - (reserve?.tokens ?? 0))
 }
 
 /** The next later mission's need for `mode`'s tokens (mission 6's Arena: 4 for mission 10). */

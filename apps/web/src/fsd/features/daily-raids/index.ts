@@ -82,7 +82,17 @@ export { OnslaughtRunList } from "./ui/plan/plan-onslaught-runs"
 export { PlanUnitFilter } from "./ui/plan/plan-unit-filter"
 export { PlanBlockers } from "./ui/plan-blockers"
 // Dailies > HRE: where to raid today for the current mission's campaign objective.
-export { HreRaidsSection } from "./ui/hre-missions/hre-raids-section"
+export {
+  HreBattlesDetails,
+  HreBattlesSummary,
+  HreRaidsDetails,
+  HreRaidsSummary,
+} from "./ui/hre-missions/hre-raids-folds"
+export { HreCampaignOutlook } from "./ui/hre-missions/hre-raids-extras"
+export {
+  type HreRaidsRequest,
+  useHreRaids,
+} from "./ui/hre-missions/use-hre-raids"
 export { BattleProgressDialog } from "./ui/battle-progress-dialog"
 export { EventTrackMedals } from "./ui/event-track-medals"
 export { useSavedBattleProgress } from "./model/use-saved-battle-progress"

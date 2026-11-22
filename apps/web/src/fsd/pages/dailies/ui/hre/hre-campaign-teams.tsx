@@ -4,7 +4,8 @@ import type { MissionDeployGroup } from "@/features/daily-raids"
 import type { HreMission, HreTeamPlan } from "@/entities/hre-mission"
 
 import { useHreTeamRecommendations } from "@/features/team-recommendations"
-import type { RunningHse } from "../../model/use-running-hse"
+import { runningHseFor } from "../../model/running-hse"
+import type { RunningHse } from "../../model/running-hse"
 import { HreTeamCard } from "./hre-team-card"
 
 /**
@@ -19,7 +20,7 @@ export function HreCampaignTeams({
   allianceName,
   featuredCharacterId,
   hero,
-  hse,
+  hses,
   missions,
 }: {
   groups: readonly MissionDeployGroup[]
@@ -28,10 +29,12 @@ export function HreCampaignTeams({
   allianceName: string | null
   featuredCharacterId: string | null
   hero: string
-  hse: RunningHse | null
+  /** The running personal HSEs: the one scoring in campaign battles leads the teams. */
+  hses: readonly RunningHse[]
   missions: readonly HreMission[]
 }) {
   const { t } = useTranslation(["hre"])
+  const hse = runningHseFor(hses, "battle")
   const teams = useHreTeamRecommendations({
     plans: groups.map((group) => ({
       ...plan,
@@ -40,7 +43,7 @@ export function HreCampaignTeams({
     })),
     alliance,
     featuredCharacterId,
-    hseTrackers: hse?.trackers ?? null,
+    hseTrackersFor: () => hse?.trackers ?? null,
   })
   return (
     <div className="space-y-3" data-testid="hre-campaign-teams">

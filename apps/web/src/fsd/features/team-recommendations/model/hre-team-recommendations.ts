@@ -7,7 +7,7 @@ import type { UnitPowerContext } from "@/shared/unit-power"
 
 import { mapRosterCharacter } from "./roster-character"
 import type { RawRosterCharacter } from "./roster-character"
-import { hseEventUnitPools } from "./hse-team-recommendations"
+import { hseEventUnitPools, hseScoresIn } from "./hse-team-recommendations"
 import type { HseTeamMode } from "./hse-team-recommendations.types"
 import { combatPowerOf } from "./team-eligibility"
 import { buildTeamRecommendations } from "./team-recommendations"
@@ -49,6 +49,15 @@ export type HreTeam =
   /** The featured-hero objective while the player has not unlocked the hero. */
   | { status: "locked-hero" }
 
+/** Whether an HSE's trackers score in an HRE team's mode (never in Guild Raid). */
+export function hseScoresInHreMode(
+  trackers: readonly GameCatalogHseTracker[],
+  mode: HreTeamPlan["mode"]
+): boolean {
+  const hseMode = HSE_MODE[mode]
+  return !!hseMode && hseScoresIn(trackers, hseMode)
+}
+
 type HreCatalogUnit = {
   traits?: readonly string[]
   alliance: string
@@ -63,15 +72,17 @@ export type BuildHreTeamInput = {
   plan: Pick<
     HreTeamPlan,
     "rule" | "mode" | "size" | "support" | "preferPsychic"
-  > & {
-    /** Only units of these factions: the allied factions a campaign lets you deploy. */
-    factions?: readonly string[]
-  }
+  > &
+    Partial<Pick<HreTeamPlan, "wholeTrack">> & {
+      /** Only units of these factions: the allied factions a campaign lets you deploy. */
+      factions?: readonly string[]
+    }
   /** The featured hero's alliance; null when the hero does not resolve. */
   alliance: string | null
   featuredCharacterId: string | null
   roster: readonly RawRosterCharacter[]
   catalog: ReadonlyMap<string, HreCatalogUnit>
+  /** Units a summon-free team leaves out: those that summon on their own (a passive summon). */
   summoners: ReadonlySet<UnitId>
   unitPower: UnitPowerContext | null
   /** The running Home Screen Event's point trackers; null when none runs. */
@@ -101,8 +112,10 @@ const pool = (id: string, unitIds: Iterable<UnitId>): TeamPoolSpec => ({
  * Onslaught or Salvage Run team keeps to one alliance track. The strongest Healer or Mechanic
  * leads while a heal objective is open, then Psychic damage dealers while a Psychic damage
  * objective is open, then units that score for a running HSE in the team's mode (campaign battles,
- * Arena, Onslaught or Salvage Run: its own event units, so both events progress; for a track, the alliance with the most of them). Null when the
- * rule cannot be applied (an all-alliance lineup without a resolved alliance).
+ * Arena, Onslaught or Salvage Run: its own event units, so both events progress; for a track, the alliance with the most of them). A
+ * whole-track plan (Onslaught ability uses) fields every unit of the track, weakest first, so each
+ * uses its ability before it falls and the next one deploys. Null when the rule cannot be applied
+ * (an all-alliance lineup without a resolved alliance).
  */
 export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
   const { plan } = input
@@ -207,7 +220,7 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
   pools.push(...hse)
   const recommendations = buildTeamRecommendations({
     mode: "power",
-    teamSize: plan.size,
+    teamSize: plan.wholeTrack ? roster.length : plan.size,
     roster,
     pools,
     preferences: {},
@@ -216,11 +229,22 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     leadWithPools: pools.length > 0,
     unitPower: input.unitPower,
   })
-  const team = required(
+  const planTeam = required(
     recommendations.categories.find((category) => category.id === "plan"),
     "the plan team"
   )
   const hseIds = hseUnitIds(hse)
+  const team = plan.wholeTrack
+    ? {
+        ...planTeam,
+        members: wholeTrackOrder(
+          planTeam.members,
+          hseIds,
+          roster,
+          input.unitPower
+        ),
+      }
+    : planTeam
   return {
     status: "ready",
     rule: plan.rule,
@@ -302,6 +326,32 @@ function largestAlliance(
     }
   }
   return best
+}
+
+/**
+ * A whole track deploys every unit: the units that score for the running HSE first, then the rest,
+ * each group weakest first by power. The engine's order also weighs how many HSE trackers a unit
+ * matches, so it is not a power order to reverse; reversing it only breaks power ties.
+ */
+function wholeTrackOrder<Member extends { unitId: UnitId }>(
+  members: readonly Member[],
+  hseIds: ReadonlySet<UnitId>,
+  roster: readonly TeamRosterCharacter[],
+  unitPower: UnitPowerContext | null
+): Member[] {
+  const power = new Map(
+    roster.map((character) => [
+      character.unitId,
+      combatPowerOf(character, unitPower),
+    ])
+  )
+  const powerOf = (member: Member) => power.get(member.unitId) ?? 0
+  const group = (member: Member) => (hseIds.has(member.unitId) ? 0 : 1)
+  return members
+    .toReversed()
+    .toSorted((a, b) =>
+      group(a) === group(b) ? powerOf(a) - powerOf(b) : group(a) - group(b)
+    )
 }
 
 function strongest(

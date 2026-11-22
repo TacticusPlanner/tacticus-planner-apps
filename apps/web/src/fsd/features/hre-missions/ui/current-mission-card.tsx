@@ -25,10 +25,14 @@ import type {
   HreProgress,
 } from "@/entities/hre-mission"
 import type { HreProgressActions } from "../model/use-hre-progress"
+import { useAnalyticsActions } from "@/shared/analytics"
 import { EntityIcon } from "@/shared/ui"
 
 import { missionName } from "./mission-name"
-import { ObjectiveTips } from "./objective-tips"
+import { ObjectiveFolds } from "./objective-folds"
+import type { ObjectiveSuggestions } from "./objective-folds"
+import { ObjectiveInfo } from "./objective-guidance"
+import { ReserveTip } from "./reserve-tip"
 
 /** "+1" on every open objective, plus "+10" from a target of 20. */
 const steps = (target: number) => (target >= 20 ? [1, 10] : [1])
@@ -36,8 +40,9 @@ const steps = (target: number) => (target >= 20 ? [1, 10] : [1])
 /**
  * The current mission: the mission picker, each objective with its progress input (clamped to the
  * target, empty rather than a leading 0 so typing never reads "033"), "+1" (and "+10"), a one-click
- * "Mark done" and its bar, the objectives' tips, and "Mission complete" once both are at target,
- * followed by an Undo toast.
+ * "Mark done" and its bar, an 'i' button with the game's hint and our tip, the objective's
+ * suggestions folded under it, the tokens to keep for a later mission, and "Mission complete" once
+ * both are at target, followed by an Undo toast.
  */
 export function CurrentMissionCard({
   state,
@@ -45,6 +50,8 @@ export function CurrentMissionCard({
   actions,
   objectiveText,
   objectiveIcon,
+  objectiveHint,
+  objectiveSuggestions,
 }: {
   state: HreProgress
   missions: readonly HreMission[]
@@ -52,8 +59,26 @@ export function CurrentMissionCard({
   objectiveText: (objective: HreObjective) => string
   /** The game glyph shown before each objective. */
   objectiveIcon?: (objective: HreObjective) => string | undefined
+  /** The game's hint for an objective, shown behind its 'i' button. */
+  objectiveHint?: (objective: HreObjective) => string | undefined
+  /** The suggestions folded under an objective (raids, battles by hand, teams), or null. */
+  objectiveSuggestions?: (
+    objective: HreObjective,
+    index: number
+  ) => ObjectiveSuggestions | null
 }) {
   const { t, i18n } = useTranslation("hre")
+  const { captureEvent } = useAnalyticsActions()
+  const reportProgress = (
+    objective: HreObjective,
+    method: "step" | "markDone"
+  ) =>
+    captureEvent({
+      type: "hre_objective_progress_changed",
+      mission: state.mission,
+      objectiveKind: objective.kind,
+      method,
+    })
   const mission = hreMission(missions, state.mission)
   const complete = isMissionComplete(state, missions)
 
@@ -87,18 +112,29 @@ export function CurrentMissionCard({
           const value = state.progress[index] ?? 0
           const done = value >= objective.target
           const testId = `hre-objective-${index}`
+          const suggestions = done
+            ? null
+            : (objectiveSuggestions?.(objective, index) ?? null)
           return (
             <div key={index} className="space-y-1.5" data-testid={testId}>
               <div className="flex items-start justify-between gap-2">
-                <p className="flex items-center gap-2 text-sm font-medium">
-                  <EntityIcon
-                    size="inline"
-                    alt=""
-                    className="shrink-0"
-                    src={objectiveIcon?.(objective)}
+                <div className="flex items-center gap-1">
+                  <p className="flex items-center gap-2 text-sm font-medium">
+                    <EntityIcon
+                      size="inline"
+                      alt=""
+                      className="shrink-0"
+                      src={objectiveIcon?.(objective)}
+                    />
+                    {objectiveText(objective)}
+                  </p>
+                  <ObjectiveInfo
+                    hint={objectiveHint?.(objective)}
+                    objective={objective}
+                    objectiveText={objectiveText(objective)}
+                    testId={testId}
                   />
-                  {objectiveText(objective)}
-                </p>
+                </div>
                 {done ? (
                   <CheckCircle2
                     aria-label={t("tracker.objectiveDone")}
@@ -145,12 +181,13 @@ export function CurrentMissionCard({
                         })}
                         data-testid={`${testId}-plus-${step}`}
                         key={step}
-                        onClick={() =>
+                        onClick={() => {
                           actions.setObjectiveProgress(
                             index as 0 | 1,
                             value + step
                           )
-                        }
+                          reportProgress(objective, "step")
+                        }}
                         size="sm"
                         variant="outline"
                       >
@@ -162,12 +199,13 @@ export function CurrentMissionCard({
                         objective: objectiveText(objective),
                       })}
                       data-testid={`${testId}-mark-done`}
-                      onClick={() =>
+                      onClick={() => {
                         actions.setObjectiveProgress(
                           index as 0 | 1,
                           objective.target
                         )
-                      }
+                        reportProgress(objective, "markDone")
+                      }}
                       size="sm"
                       variant="outline"
                     >
@@ -177,14 +215,30 @@ export function CurrentMissionCard({
                 )}
               </div>
               <Progress value={(value / objective.target) * 100} />
+              {suggestions ? (
+                <ObjectiveFolds
+                  // A new mission starts with every fold closed.
+                  key={`${state.mission}-${objective.kind}`}
+                  suggestions={suggestions}
+                  onOpen={(fold) =>
+                    captureEvent({
+                      type: "hre_fold_opened",
+                      mission: state.mission,
+                      objectiveKind: objective.kind,
+                      suggestion: fold.suggestion,
+                      spare: fold.spare ?? false,
+                    })
+                  }
+                  testId={testId}
+                />
+              ) : null}
             </div>
           )
         })}
-        <ObjectiveTips
+        <ReserveTip
           missionNumber={mission.number}
           missions={missions}
-          objectives={mission.objectives}
-          testId="hre-current-tips"
+          testId="hre-current-reserve"
         />
         <Button
           data-testid="hre-mission-complete"
@@ -193,6 +247,10 @@ export function CurrentMissionCard({
             // Undo lives in this toast only (design D3), never in storage.
             const previous = state
             actions.completeMission()
+            captureEvent({
+              type: "hre_mission_completed",
+              mission: previous.mission,
+            })
             toast(
               t("tracker.completed", {
                 mission: missionName(t, previous.mission, missions),

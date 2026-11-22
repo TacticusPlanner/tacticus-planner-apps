@@ -420,12 +420,12 @@
           "content": "Abre la lista completa de misiones. Cada una se despliega con sus consejos."
         },
         "raids": {
-          "title": "Incursiones de campaña",
-          "content": "Dónde hacer incursiones para el objetivo de campaña de la misión actual, primero la energía más barata, sin límite de la energía de hoy. El resumen de abajo cuenta las batallas de campaña restantes de todo el evento."
+          "title": "Previsión de campaña",
+          "content": "Las batallas de campaña que faltan en todo el evento frente a tu energía diaria en los nodos más baratos."
         },
-        "team": {
-          "title": "Equipo de misión",
-          "content": "Un equipo de tu plantilla para misiones que limitan la alineación o necesitan al héroe del evento."
+        "suggestions": {
+          "title": "Sugerencias",
+          "content": "Bajo cada objetivo, abre una fila para ver dónde hacer incursiones, qué batallas jugar a mano y con qué equipo, también en Arena, Onslaught o Carrera de Saqueo si te sobran fichas."
         },
         "tokens": {
           "title": "Fichas necesarias",
@@ -434,10 +434,6 @@
         "pace": {
           "title": "Ritmo del evento",
           "content": "Introduce tus puntos del evento y tu puesto, y si quieres lo que tienes ahora, para estimar moneda, nivel de cofre y fragmentos, y elige un objetivo para ver los puntos al día que necesita."
-        },
-        "paceSummary": {
-          "title": "El ritmo de un vistazo",
-          "content": "Tus puntos, dónde acaban y el paso que alcanzan. Toca Detalles para introducir puntos, puesto y lo que tienes, y para elegir un objetivo."
         }
       }
     },

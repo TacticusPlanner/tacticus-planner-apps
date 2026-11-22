@@ -1,37 +1,35 @@
-import type { GameCatalogHseTracker } from "@workspace/game-catalog"
+import { useMemo } from "react"
+import type { EventDefinitionStorageModel } from "@workspace/game-catalog"
 
 import {
   useActiveHomeScreenEvent,
   useHomeScreenEventName,
 } from "@/features/daily-raids"
-import { useHseProjection } from "@/features/home-screen-event-points"
+import { useCatalogDataset } from "@/shared/local-data"
 
-export type RunningHse = {
-  /** The event's localized name, e.g. "Faction Boost: Dark Angels". */
-  name: string
-  trackers: readonly GameCatalogHseTracker[]
-}
+import { runningPersonalHses } from "./running-hse"
+import type { RunningHse } from "./running-hse"
+
+const NONE: readonly RunningHse[] = []
+
+const toConfigs = (definitions: EventDefinitionStorageModel[]) =>
+  new Map(definitions.map((definition) => [definition.id, definition.config]))
 
 /**
- * The running personal Home Screen Event's point trackers (its resolved variant), for the HRE
- * mission teams to rank its scoring units first. Null while none runs, it is still loading, or it
- * is a Global event (its points are not the player's own).
+ * The running personal Home Screen Events (`runningPersonalHses`), for the HRE mission teams to rank
+ * the scoring units of the one that scores in each team's mode first. Empty while none runs or the
+ * calendar or definitions are still loading.
  */
-export function useRunningHse(): RunningHse | null {
+export function useRunningHses(): readonly RunningHse[] {
   const state = useActiveHomeScreenEvent()
   const eventName = useHomeScreenEventName()
-  const active = state.status === "ready" ? state.active : null
-  const instance =
-    state.status === "ready" && active
-      ? (state.instances.find(
-          (candidate) =>
-            candidate.status === "running" &&
-            candidate.entry.definitionId === active.definitionId &&
-            candidate.entry.startUtc === active.startUtc
-        ) ?? null)
-      : null
-  const points = useHseProjection(instance)
-  if (!instance || points.status !== "ready") return null
-  if (points.details.scope === "Global") return null
-  return { name: eventName(instance.entry), trackers: points.details.trackers }
+  const configs = useCatalogDataset("event-definitions", toConfigs)
+  return useMemo(() => {
+    if (state.status !== "ready" || configs.status !== "ready") return NONE
+    return runningPersonalHses(
+      state.instances,
+      (id) => configs.data.get(id),
+      (instance) => eventName(instance.entry)
+    )
+  }, [state, configs, eventName])
 }

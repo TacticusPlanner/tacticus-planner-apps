@@ -424,6 +424,14 @@ export function hseEventUnitPools(
   return eventPool(scoring, roster, catalog, unitPower).pools
 }
 
+/** Whether any of the trackers scores in `mode`. */
+export function hseScoresIn(
+  trackers: readonly GameCatalogHseTracker[],
+  mode: HseTeamMode | "Campaign"
+): boolean {
+  return modeTrackers(trackers, mode).length > 0
+}
+
 /** The token modes the trackers score in, in display order. */
 export function hseTeamModes(
   trackers: readonly GameCatalogHseTracker[]

@@ -72,4 +72,23 @@ describe("summoners", () => {
       "ultraInceptorSgt",
     ])
   })
+
+  it("keeps only passive summoners when asked for forced summons", () => {
+    const characters = [
+      {
+        id: "active" as UnitId,
+        activeAbilityNames: ["Summon"],
+        passiveAbilityNames: [],
+      },
+      {
+        id: "passive" as UnitId,
+        activeAbilityNames: [],
+        passiveAbilityNames: ["Summon"],
+      },
+    ]
+    const summons = (id: string) => id === "Summon"
+    expect([
+      ...buildSummonerIds(characters, summons, { forcedOnly: true }),
+    ]).toEqual(["passive"])
+  })
 })

@@ -35,6 +35,11 @@ export type HreObjective = {
   target: number
   /** `killFaction`: the faction id; `damageType`: the damage type id. */
   qualifier?: string
+  /**
+   * The game task's hint keys in the `hreTaskHints` namespace, best first: the served loca key, then
+   * keys guessed from the task name for a client reading an API that does not serve it yet.
+   */
+  hintKeys?: readonly string[]
 }
 
 export type HreMission = {

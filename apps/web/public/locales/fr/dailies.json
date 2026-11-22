@@ -420,12 +420,12 @@
           "content": "Ouvrez la liste complète des missions. Chacune se déplie sur ses conseils."
         },
         "raids": {
-          "title": "Raids de campagne",
-          "content": "Où raider pour l'objectif de campagne de la mission en cours, l'énergie la moins chère en premier, sans limite d'énergie du jour. Le résumé ci-dessous compte les combats de campagne restants sur tout l'événement."
+          "title": "Prévisions de campagne",
+          "content": "Les batailles de campagne restantes sur tout l'événement face à votre énergie quotidienne aux nœuds les moins chers."
         },
-        "team": {
-          "title": "Équipe de mission",
-          "content": "Une équipe tirée de votre effectif pour les missions qui limitent la composition ou demandent le héros de l'événement."
+        "suggestions": {
+          "title": "Suggestions",
+          "content": "Sous chaque objectif, ouvrez une ligne pour voir où faire des raids, quelles batailles jouer vous-même et avec quelle équipe, aussi en Arène, Onslaught ou Course au pillage si vous avez des jetons en trop."
         },
         "tokens": {
           "title": "Jetons nécessaires",
@@ -434,10 +434,6 @@
         "pace": {
           "title": "Rythme de l'événement",
           "content": "Saisissez vos points d'événement et votre rang, et si vous voulez ce que vous avez maintenant, pour estimer la monnaie, le niveau de coffre et les fragments, et choisissez un objectif pour voir les points par jour nécessaires."
-        },
-        "paceSummary": {
-          "title": "Le rythme en un coup d'œil",
-          "content": "Vos points, où ils mènent et le palier atteint. Touchez Détails pour saisir vos points, votre rang et ce que vous avez, et choisir un objectif."
         }
       }
     },

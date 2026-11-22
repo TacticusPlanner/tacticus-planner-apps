@@ -3,7 +3,11 @@ export {
   useHreTeamRecommendations,
   type HreTeamViewModel,
 } from "./model/use-hre-team-recommendations"
-export { HRE_TEAM_SIZE, type HreTeam } from "./model/hre-team-recommendations"
+export {
+  HRE_TEAM_SIZE,
+  type HreTeam,
+  hseScoresInHreMode,
+} from "./model/hre-team-recommendations"
 export { useHseTeamRecommendations } from "./model/use-hse-team-recommendations"
 export type { HseTeamsRead } from "./model/hse-teams-view-model"
 export { buildHseTeamRecommendations } from "./model/hse-team-recommendations"

@@ -11,14 +11,12 @@ import { EntityIcon } from "@/shared/ui"
 
 import { campaignOutlook } from "../../model/campaign-outlook"
 import type {
-  DailyRaidGoalViewModel,
   DailyRaidLocationViewModel,
   DailyRaidsReadyViewModel,
 } from "../../model/daily-raids.domain"
 import type { MissionRaidPlan } from "../../model/mission-raids"
 import { CampaignGroupedList } from "../campaign-group"
 import type { RaidLocationTarget } from "../raid-location-name"
-import { EventGoalIcons } from "../home-screen-event/event-goal-icons"
 import { EventLocationRow } from "../home-screen-event/event-location-row"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
@@ -33,10 +31,10 @@ export type RaidRowsView = {
   onShowLocation?: (target: RaidLocationTarget) => void
 }
 
-/** One row per suggested node: its battle (opening its enemies), the goals it feeds (as on the HSE
- * farm list), the goal drop with "owned/target" and the running Home Screen Event's points. Like the
- * HSE list, a raid row shows no raid count or energy; a by-hand battle row keeps its battle count,
- * and an open-ended row shows its energy per battle. */
+/** One row per suggested node, as a regular raid card row: its battle (opening its enemies), the
+ * goal drop with "owned/target" and the running Home Screen Event's points. A raid row shows no raid
+ * count or energy; a by-hand battle row keeps its battle count, and an open-ended row shows its
+ * energy per battle. */
 export function RaidRows({
   rows,
   testId,
@@ -63,9 +61,6 @@ export function RaidRows({
         testId={testId}
         renderRow={(row) => {
           const resourceId = row.goal?.resourceId
-          const goals = (row.goal?.goalIds ?? [])
-            .map((goalId) => view?.goalsById.get(goalId))
-            .filter((goal): goal is DailyRaidGoalViewModel => !!goal)
           return (
             <EventLocationRow
               key={row.battleId}
@@ -75,10 +70,6 @@ export function RaidRows({
               location={locations?.get(row.battleId)}
               testId={`hre-raid-${row.battleId}`}
             >
-              <EventGoalIcons
-                goals={goals}
-                testId={`hre-raid-${row.battleId}-goals`}
-              />
               {resourceId !== undefined && view ? (
                 <span className="flex items-center gap-1">
                   <ResourceIconWithTooltip
@@ -111,7 +102,6 @@ export function RaidRows({
                   <EntityIcon
                     size="inline"
                     alt=""
-
                     src={battleGlyphIcon("campaignBattle")}
                   />
                   {t("raids.battleCount", { count: row.raids })}

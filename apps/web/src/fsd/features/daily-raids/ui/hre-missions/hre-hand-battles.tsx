@@ -94,7 +94,6 @@ export function HreHandBattles({
                 <EntityIcon
                   size="inline"
                   alt=""
-
                   src={battleGlyphIcon("campaignBattle")}
                 />
                 {t("raids.battleCount", { count: plan.totalBattles })}

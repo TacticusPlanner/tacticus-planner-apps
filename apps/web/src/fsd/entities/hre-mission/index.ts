@@ -15,6 +15,7 @@ export {
   hreMission,
 } from "./model/hre-missions"
 export {
+  type HreCampaignPlan,
   type HreTokenMode,
   type HreTokenNeedRow,
   campaignObjectiveState,
@@ -23,6 +24,7 @@ export {
   nextTokenReserve,
   remainingCampaignBattles,
   selectCampaignPlan,
+  spareTokens,
   tokenNeedRows,
 } from "./model/hre-objectives"
 export {
@@ -60,6 +62,5 @@ export {
 export {
   type HreTeamPlan,
   type HreTeamRule,
-  arenaSurplus,
   selectTeamPlans,
 } from "./model/hre-team-plan"

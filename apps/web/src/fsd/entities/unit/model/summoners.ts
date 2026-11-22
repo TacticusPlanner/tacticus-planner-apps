@@ -21,21 +21,25 @@ export function abilitySummons(description: string): boolean {
   return SUMMON_PATTERNS.some((pattern) => pattern.test(description))
 }
 
-/** The characters with an active or passive ability that summons a unit. */
+/**
+ * The characters with an active or passive ability that summons a unit. With `forcedOnly`, only a
+ * passive one: those summon on their own, while an active summon can be left unused (the LRE "No
+ * Summons" rule, which the HRE summon-free team follows).
+ */
 export function buildSummonerIds(
   characters: Iterable<{
     id: UnitId
     activeAbilityNames: readonly string[]
     passiveAbilityNames: readonly string[]
   }>,
-  isSummoning: (abilityId: string) => boolean
+  isSummoning: (abilityId: string) => boolean,
+  { forcedOnly = false }: { forcedOnly?: boolean } = {}
 ): Set<UnitId> {
   const summoners = new Set<UnitId>()
   for (const character of characters) {
-    const abilities = [
-      ...character.activeAbilityNames,
-      ...character.passiveAbilityNames,
-    ]
+    const abilities = forcedOnly
+      ? character.passiveAbilityNames
+      : [...character.activeAbilityNames, ...character.passiveAbilityNames]
     if (abilities.some(isSummoning)) {
       summoners.add(character.id)
     }
