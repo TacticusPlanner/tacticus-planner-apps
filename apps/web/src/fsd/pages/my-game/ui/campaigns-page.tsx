@@ -42,6 +42,7 @@ import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
 
+import { useCampaignsTutorial } from "./campaigns-page.tutorial"
 import { ProgressSummary } from "./progress-summary"
 
 type Story = {
@@ -63,6 +64,7 @@ export function CampaignsPage() {
     read.status === "ready" ? read.data : []
   const [medalsGroupId, setMedalsGroupId] = useState<string | null>(null)
   const overrides = useSavedBattleProgress()
+  useCampaignsTutorial()
 
   // Keyed on each read's data (each referentially stable while unchanged), not on the combined tuple.
   const model = useMemo(
@@ -84,7 +86,7 @@ export function CampaignsPage() {
 
   return (
     <div className="space-y-8" data-testid="campaigns-page">
-      <div className="flex flex-wrap gap-8">
+      <div className="flex flex-wrap gap-8" data-testid="campaigns-summary">
         <ProgressSummary
           label={t("progress.campaigns.normal")}
           {...model.normalSummary}
@@ -94,7 +96,10 @@ export function CampaignsPage() {
           {...model.mirrorSummary}
         />
       </div>
-      <div className="grid items-start gap-6 lg:grid-cols-2">
+      <div
+        className="grid items-start gap-6 lg:grid-cols-2"
+        data-testid="campaigns-stories"
+      >
         <StorySection
           title={t("progress.campaigns.normal")}
           stories={model.normal}

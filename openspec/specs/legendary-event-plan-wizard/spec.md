@@ -255,7 +255,7 @@ Recommendations SHALL be grouped by the first run they help ("Ready for run N"),
 
 ### Requirement: Teams step undoes, edits and adds teams
 
-Each removed team SHALL stay listed, struck through, with its own **Undo**; **Restore all** SHALL restore every removed team. **Edit** SHALL open the team editor on the draft team, and **Add a team** SHALL add a team to the lane. Depth per run SHALL show as battles cleared out of the lane's battles. Keep / Replace SHALL show the number of the user's teams and of generated teams. On desktop at or above 1024px the lanes SHALL sit side by side; below 768px they stay tabs.
+Each removed team SHALL stay listed, struck through, with its own **Undo**; **Restore all** SHALL restore every removed team. **Edit** SHALL open the team editor on the draft team, and **Create a team** SHALL add a team to the lane. Depth per run SHALL show as battles cleared out of the lane's battles. Keep / Replace SHALL show the number of the user's teams and of generated teams. On desktop at or above 1024px the lanes SHALL sit side by side; below 768px they stay tabs.
 
 #### Scenario: Undo one removal
 

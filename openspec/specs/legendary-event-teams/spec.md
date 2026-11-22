@@ -8,7 +8,7 @@ Defines the per-lane Teams section of a Legendary Event page: the team card, the
 
 ### Requirement: Each Event board lane column has a Teams section with one card per team
 
-Each lane column of the Teams tab's Event board SHALL show a Teams section, under its unit table, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members in position order as unit chips (the `legendary-events-hub` unit chip, with rank shading per the Rank shading setting and the unit details) with a count badge ("N/5") whenever fewer than five members, the reserve member as a unit chip marked as the reserve when present, a **coverage strip** beside the team name when the card is at least 28rem wide, and on a line of its own under the name on narrower cards, never squeezing the name out (so five named member chips keep a line of their own), with one fixed slot per lane objective in objective order (a covered objective shows its icon and points; a stored objective the current members no longer derive shows muted and does not count toward points; an uncovered one shows faint, so teams scan down by column), the clear depth as a **depth bar** of one segment per lane battle filled through the depth with a "Battles 1–n" headline (toned: set by you, room to spare, or within 10% of the next battle; "No depth set" when null) and an edit button that reveals the depth stepper (shown at once when there is no depth), a **Details** fold with the team's **points left** (see the points-left requirement), its **total power** and the last-run line, and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Add team** button; no scroll, swipe or other gesture SHALL create or open a team. A member chip SHALL be a button that opens the member's details (see the `legendary-events-hub` details requirement).
+Each lane column of the Teams tab's Event board SHALL show a Teams section, under its unit table, listing that lane's teams in their stored order as one card per team. A card SHALL show the team name, its members in position order as unit chips (the `legendary-events-hub` unit chip, with rank shading per the Rank shading setting and the unit details) with a count badge ("N/5") whenever fewer than five members, the reserve member as a unit chip marked as the reserve when present, a **coverage strip** beside the team name when the card is at least 28rem wide, and on a line of its own under the name on narrower cards, never squeezing the name out (so five named member chips keep a line of their own), with one fixed slot per lane objective in objective order (a covered objective shows its icon and points; a stored objective the current members no longer derive shows muted and does not count toward points; an uncovered one shows faint, so teams scan down by column), the clear depth as a **depth bar** of one segment per lane battle filled through the depth with a "Battles 1–n" headline (toned: set by you, room to spare, or within 10% of the next battle; "No depth set" when null) and an edit button that reveals the depth stepper (shown at once when there is no depth), a **Details** fold with the team's **points left** (see the points-left requirement), its **total power** and the last-run line, and an actions menu with Edit, Delete and, on mobile, Move up / Move down. The same team SHALL never be rendered more than once, whatever the number of objectives it covers. The section SHALL carry an explicit **Create team** button; no scroll, swipe or other gesture SHALL create or open a team. A member chip SHALL be a button that opens the member's details (see the `legendary-events-hub` details requirement).
 
 #### Scenario: Teams render in order on a lane
 
@@ -134,7 +134,7 @@ The client SHALL read the plan for the current event once per page through a que
 
 ### Requirement: Teams section states are distinct
 
-The section SHALL not render when the user is signed out. While the plan, the catalog units or the synced progress (which decides the current run) are loading, the section SHALL show a skeleton card, so no depth edit or editor opens against the default run before the synced run is known. When the plan or the catalog units fail to load the section SHALL show an inline error with a Retry action that re-reads whichever failed, while the rest of the lane tab renders normally. When the plan loads with no team on the lane the section SHALL show an empty line naming the lane plus Add team.
+The section SHALL not render when the user is signed out. While the plan, the catalog units or the synced progress (which decides the current run) are loading, the section SHALL show a skeleton card, so no depth edit or editor opens against the default run before the synced run is known. When the plan or the catalog units fail to load the section SHALL show an inline error with a Retry action that re-reads whichever failed, while the rest of the lane tab renders normally. When the plan loads with no team on the lane the section SHALL show an empty line naming the lane plus Create team.
 
 #### Scenario: Plan load failure
 
@@ -157,7 +157,7 @@ The section SHALL not render when the user is signed out. While the plan, the ca
 
 - **GIVEN** the plan loaded and Gamma has no team
 - **WHEN** the user opens Gamma
-- **THEN** the section says no teams are on Gamma yet and shows Add team
+- **THEN** the section says no teams are on Gamma yet and shows Create team
 
 ### Requirement: A team card shows what the same team cleared last run
 
@@ -302,7 +302,7 @@ The team editor body SHALL be ordered Name, then one row holding the Members hea
 
 ### Requirement: Team editor covers the objectives its members derive
 
-The team editor (Add team or Edit; dialog on desktop, sheet on mobile) SHALL offer the lane's allowed units (`legendary-event-team-editor-workflow`) for up to five members in selection order plus one reserve. Covered objectives SHALL be those every non-reserve member satisfies, read-only, and SHALL be what is saved.
+The team editor (Create team or Edit; dialog on desktop, sheet on mobile) SHALL offer the lane's allowed units (`legendary-event-team-editor-workflow`) for up to five members in selection order plus one reserve. Covered objectives SHALL be those every non-reserve member satisfies, read-only, and SHALL be what is saved.
 
 #### Scenario: Coverage follows the members
 
@@ -342,10 +342,10 @@ The team editor (Add team or Edit; dialog on desktop, sheet on mobile) SHALL off
 
 ### Requirement: A lane holds at most 50 teams
 
-When a lane already holds 50 teams, Add team SHALL be disabled with a translated note beside it. Every path that creates a team (Add team, an accepted suggestion, adding a unit from the leaderboard) SHALL check the plan's confirmed teams for that lane and SHALL NOT send the request at the cap; it shows a translated toast instead. A `legendaryEventTeamLimitReached` from the API SHALL show the same toast. The plan stays as it was.
+When a lane already holds 50 teams, Create team SHALL be disabled with a translated note beside it. Every path that creates a team (Create team, an accepted suggestion, adding a unit from the leaderboard) SHALL check the plan's confirmed teams for that lane and SHALL NOT send the request at the cap; it shows a translated toast instead. A `legendaryEventTeamLimitReached` from the API SHALL show the same toast. The plan stays as it was.
 
 #### Scenario: The lane is full
 
 - **WHEN** the Alpha lane holds 50 teams
-- **THEN** Add team is disabled and the note says the lane holds the maximum of 50 teams
+- **THEN** Create team is disabled and the note says the lane holds the maximum of 50 teams
 - **AND** saving a team from a suggestion sends nothing and toasts the cap

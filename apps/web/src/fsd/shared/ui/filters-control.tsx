@@ -2,7 +2,6 @@ import { useId, useRef, useState } from "react"
 import type { ComponentProps, ReactNode } from "react"
 import { ListFilter, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import {
@@ -20,6 +19,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "./responsive-dialog"
+import { CountBadge } from "./count-badge"
 
 /**
  * The one "Filters" button (ui-style-guide rule 2): an outline button with the filter icon, and the
@@ -47,14 +47,10 @@ export function FiltersButton({
     >
       <ListFilter data-icon="inline-start" />
       {t("filtersControl.button")}
-      {count > 0 ? (
-        <Badge
-          data-testid={testId ? `${testId}-badge` : undefined}
-          variant="secondary"
-        >
-          {count}
-        </Badge>
-      ) : null}
+      <CountBadge
+        count={count}
+        testId={testId ? `${testId}-badge` : undefined}
+      />
     </Button>
   )
 }

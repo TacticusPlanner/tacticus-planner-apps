@@ -29,6 +29,8 @@ import { IncursionMowPage } from "./incursions/incursion-mow-page"
 import { IncursionTierPage } from "./incursions/incursion-tier-page"
 import { IncursionsOverview } from "./incursions/incursions-overview"
 
+vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
+
 async function renderPage({
   data = incursionsFixture as unknown,
   authenticated = true,
@@ -75,11 +77,11 @@ describe("IncursionsPage", () => {
     const user = userEvent.setup()
     await renderPage()
 
-    expect(await screen.findByTestId("incursions-rules")).not.toHaveTextContent(
-      "run tokens"
-    )
-    await user.click(screen.getByTestId("incursions-rules-toggle"))
-    expect(screen.getByTestId("incursions-rules")).toHaveTextContent(
+    const rulesBox = await screen.findByTestId("incursions-rules")
+    expect(rulesBox).not.toHaveAttribute("open")
+    await user.click(within(rulesBox).getByText("How Incursions work"))
+    expect(rulesBox).toHaveAttribute("open")
+    expect(rulesBox).toHaveTextContent(
       "You start with 2 run tokens and hold up to 3; one more arrives every 20 hours. Starting a run costs 1."
     )
     const rows = within(screen.getByTestId("incursions-list"))

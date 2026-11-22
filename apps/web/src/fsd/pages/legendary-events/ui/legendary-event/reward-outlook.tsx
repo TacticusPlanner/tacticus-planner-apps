@@ -4,7 +4,7 @@ import type { LegendaryEventResource } from "@workspace/game-catalog"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { RewardProjection } from "@/entities/legendary-event"
-import { IconLine } from "@/shared/ui"
+import { HowToRead, IconLine } from "@/shared/ui"
 
 import type { RewardOutlookViewModel } from "./legendary-event-page.view-model"
 
@@ -160,15 +160,12 @@ function OutlookBody({
           </IconLine>
         ))}
       </ul>
-      <details
-        className="rounded-xl border p-3 text-sm"
+      <HowToRead
         data-testid="reward-outlook-explain"
+        summary={t("outlook.explain.title")}
       >
-        <summary className="cursor-pointer font-medium">
-          {t("outlook.explain.title")}
-        </summary>
         <ExplanationLines projection={projection} />
-      </details>
+      </HowToRead>
     </>
   )
 }
@@ -233,7 +230,7 @@ function ExplanationLines({ projection }: { projection: RewardProjection }) {
   )
   return (
     <ul
-      className="mt-2 flex list-disc flex-col gap-1 pl-5 text-muted-foreground"
+      className="flex list-disc flex-col gap-1 pl-5"
       data-testid="reward-outlook-explain-lines"
     >
       {lines.map((line) => (

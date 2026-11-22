@@ -56,6 +56,7 @@ export { describeSeries } from "./level-chart.model"
 export { FILTER_CHIP_CLASS_NAME } from "./filter-chip"
 export { FilterField, FiltersButton, FiltersControl } from "./filters-control"
 export { EmptyState } from "./empty-state"
+export { CountBadge } from "./count-badge"
 export { SearchField } from "./search-field"
 export { PageTabsList, PageTabsTrigger } from "./page-tabs"
 export { LegalDocument } from "./legal-document"
@@ -72,5 +73,10 @@ export {
   PageHeaderSlotProvider,
   PageSettingsButton,
 } from "./page-header"
-export { GroupByControl, PageToolbar, SegmentedControl } from "./page-toolbar"
+export {
+  GroupByControl,
+  PageToolbar,
+  SegmentedControl,
+  ToolbarField,
+} from "./page-toolbar"
 export { useViewPlacement } from "./view-placement"

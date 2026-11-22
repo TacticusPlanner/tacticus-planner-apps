@@ -19,6 +19,7 @@ import { InsightsEvents } from "./insights-events"
 import { InsightsHoldingBack } from "./insights-holding-back"
 import { InsightsMissing } from "./insights-missing"
 import { InsightsOutlook } from "./insights-outlook"
+import { useInsightsTutorial } from "./insights-page.tutorial"
 import type { InsightsGoalInfo } from "./insights-view"
 
 /** Which nodes "Best campaigns/events to farm" rank over. */
@@ -40,6 +41,7 @@ export function InsightsPage() {
   const [projectId, setProjectId] = useState<string | undefined>(undefined)
   // Which nodes the farming cards rank: what the player has reached, or every node.
   const [locations, setLocations] = useState<InsightsLocations>("reached")
+  useInsightsTutorial()
 
   const globalPlan = useGlobalGoalPlan()
   // A project only narrows the plan by the goals' `projectIds`; no membership read.
@@ -154,7 +156,7 @@ export function InsightsPage() {
                 goalInfoById={goalInfoById}
               />
             </div>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6" data-testid="insights-farming">
               <InsightsEvents
                 benefitingGoalIdsByInsightId={
                   farming.benefitingGoalIdsByInsightId

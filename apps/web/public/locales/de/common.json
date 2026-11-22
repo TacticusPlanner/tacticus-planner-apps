@@ -275,7 +275,6 @@
     }
   },
   "nav": {
-    "addGoal": "Ziel hinzufügen",
     "dailies": "Tägliches",
     "dailiesDescription": "Tägliche und wiederkehrende Spielaufgaben.",
     "eventLive": "Event aktiv",
@@ -1235,21 +1234,16 @@
     },
     "bulk": {
       "pause": "Pausieren",
-      "pauseCount": "Pausieren ({{count}})",
       "resume": "Fortsetzen",
-      "resumeCount": "Fortsetzen ({{count}})",
       "addToProject": "Zu Projekt hinzufügen",
-      "addToProjectCount": "Zu Projekt hinzufügen ({{count}})",
       "delete": "Löschen",
-      "deleteCount": "Löschen ({{count}})",
       "selected_one": "{{count}} ausgewählt",
       "selected_other": "{{count}} ausgewählt",
       "selectAll": "Alle Ziele auswählen",
       "selectRow": "{{entity}} auswählen",
       "selectMode": "Ziele auswählen",
       "selectDone": "Fertig",
-      "removeFromProject": "Aus Projekt entfernen",
-      "removeFromProjectCount": "Aus Projekt entfernen ({{count}})"
+      "removeFromProject": "Aus Projekt entfernen"
     },
     "delete": {
       "title_one": "Dieses Ziel löschen?",
@@ -1301,9 +1295,9 @@
       "cancel": "Abbrechen",
       "edit": "Bearbeiten",
       "editTitle": "Projekt bearbeiten",
-      "newProjectTitle": "Neues Projekt",
+      "newProjectTitle": "Projekt erstellen",
       "formDescription": "Benenne, beschreibe und färbe dieses Projekt.",
-      "newProject": "Neues Projekt",
+      "newProject": "Projekt erstellen",
       "name": "Name",
       "description": "Beschreibung",
       "color": "Farbe",
@@ -2181,7 +2175,7 @@
       },
       "bottomNavigation": {
         "addGoal": {
-          "title": "Ziel hinzufügen",
+          "title": "Ziel erstellen",
           "content": "Erstelle Ziele für Charaktere oder Kriegsmaschinen und wähle ein oder mehrere Projekte. Das Standardprojekt ist automatisch ausgewählt."
         },
         "sync": {
@@ -2448,6 +2442,74 @@
         "save": {
           "title": "Änderungen speichern",
           "content": "Sobald du etwas änderst, erscheint unten eine Leiste mit Speichern und Verwerfen. Vor dem Verlassen mit ungespeicherten Änderungen wirst du gefragt."
+        }
+      }
+    },
+    "campaigns": {
+      "steps": {
+        "summary": {
+          "title": "Kampagnenfortschritt",
+          "content": "Wie weit du in den normalen Kampagnen und Spiegelkampagnen bist, laut deinem synchronisierten Fortschritt."
+        },
+        "stories": {
+          "title": "Geschichten und Strecken",
+          "content": "Jede Geschichte zeigt ihre Standard- und Elite-Strecken und die Kämpfe, die du geschafft hast. Mit „Medaillen bearbeiten“ markierst du Kämpfe mit weniger als 3 Medaillen, damit die täglichen Raids sie als manuell zu spielende Kämpfe planen."
+        }
+      }
+    },
+    "incursions": {
+      "steps": {
+        "rules": {
+          "title": "So funktionieren Incursions",
+          "content": "Hier stehen die Lauf-Tokens, wer einem Team beitreten kann und wie ein Lauf abläuft."
+        },
+        "list": {
+          "title": "Kriegsmaschinen",
+          "content": "Eine Karte pro Incursion-Kriegsmaschine, die neueste zuerst, mit Besitz und verdienten Sternen. Öffne eine Karte für Stufen, Laufkarten und Teams."
+        }
+      }
+    },
+    "insights": {
+      "steps": {
+        "toolbar": {
+          "title": "Umfang",
+          "content": "Berichte über alle aktiven Ziele oder ein Projekt. „Orte“ legt fest, ob beim Farmen nur erreichte Kämpfe oder alle Kämpfe gewertet werden."
+        },
+        "outlook": {
+          "title": "Planausblick",
+          "content": "Wann der Plan bei deiner täglichen Energie fertig ist, welche Ziele das Datum bestimmen und welche nicht darin enthalten sind."
+        },
+        "holdingBack": {
+          "title": "Was dich aufhält",
+          "content": "Was kein Farmen löst, dann die Ressourcen, die an deinen gewählten Knoten die meiste Energie kosten."
+        },
+        "farming": {
+          "title": "Wo farmen",
+          "content": "Die Kampagnen und Events, deren Kämpfe am meisten von dem droppen, was deine Ziele brauchen, und die Kampagnen, die sich als Nächstes lohnen."
+        },
+        "missing": {
+          "title": "Noch fehlend",
+          "content": "Alles, was deine Ziele über dein aktuelles Inventar hinaus brauchen, wobei dein Bestand in Prioritätsreihenfolge verbraucht wird."
+        }
+      }
+    },
+    "guild": {
+      "steps": {
+        "summary": {
+          "title": "Deine Gilde",
+          "content": "Name, Kürzel und Stufe der Gilde und wann sie zuletzt synchronisiert wurde."
+        },
+        "actions": {
+          "title": "Synchronisieren und löschen",
+          "content": "Ein Anführer oder Ko-Anführer kann die Gilde synchronisieren, um die Mitglieder zu aktualisieren, oder sie aus Planner löschen."
+        },
+        "members": {
+          "title": "Mitglieder",
+          "content": "Alle in der Gilde mit Rolle, Stufe, letzter Aktivität im Spiel und in Planner und ob sie ein Planner-Konto verknüpft haben."
+        },
+        "apiKey": {
+          "title": "Gilden-API-Schlüssel",
+          "content": "Planner synchronisiert die Gilde mit diesem Schlüssel. Ein Anführer oder Ko-Anführer kann ihn hier ersetzen, nachdem er neu erstellt oder widerrufen wurde."
         }
       }
     }

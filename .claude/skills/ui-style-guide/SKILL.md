@@ -41,7 +41,13 @@ Run it after changing a page's controls (instructions at the top of the spec).
   has the divider.
 - Page settings: one labelled "Settings" button at the right end of the header
   row. Never a bare gear beside the title, never inside section tabs, never in
-  the middle of the toolbar.
+  the middle of the toolbar. The one icon-only exception is the phone header,
+  which is app chrome: there Settings is an icon button beside the tour button,
+  named "Settings".
+- Every page in the navigation registers its own tour (`useTourPageSteps` from
+  `@/shared/tour`, in a `*.tutorial.ts` file next to the page), so "Tour this
+  page" is always there. Mark a step `data: { optional: true }` when its target
+  can be missing (empty, loading, leaders-only), so the tour skips it.
 - The first heading inside the page never repeats the page title.
 - The shell renders the page's only `<h1>` (the `PageHeader` title on desktop,
   the mobile header on phones). Headings inside a page start at `<h2>`.
@@ -93,6 +99,9 @@ One row directly under the header, three fixed slots, left to right:
 - Icon-only segmented buttons are allowed only with a tooltip and an
   `aria-label`, and only where the label would not fit (mobile).
 - A `Select` is never icon-only: it shows its value on every viewport.
+- Up to two filters may sit in the toolbar as labelled selects, each in a
+  `ToolbarField` (`@/shared/ui`) with its label outside the trigger (Season
+  fit on Goals). A third filter moves them all into `FiltersControl`.
 - Browsing a set of items (characters, MoWs, NPCs, raid bosses) is a list
   whose items open their own page. That page starts with the shared unit top
   bar: Back to the list, then Previous / Next with "N of M" in the order the
@@ -113,7 +122,13 @@ One row directly under the header, three fixed slots, left to right:
   Both are a bottom sheet on mobile. Inside, each field has its visible label
   above it (`FilterField`; `inline` for a switch or a short number). Changes
   apply as they are made; the footer is ghost "Clear filters" at the left and
-  "Done".
+  "Done". The one exception is a filter set that starts a slow calculation
+  (Raids): it keeps an "Apply" button.
+- Save model. Progress the game also tracks (Onslaught, Incursion stars,
+  campaign event tracks, collection edits) is edited as a draft: the shared
+  `UnsavedChangesBar` with Save and Discard, and `UnsavedChangesGuard` before
+  leaving. Planner-only inputs (filters, settings, plan inputs, goals) save as
+  you change them, with no Save button.
 
 ## 4. Tabs
 
@@ -185,7 +200,7 @@ Short, true right now, written for players — not developers.
 | --- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | 1   | Numbers first, words second                                       | "Next: Unlock. 1 more chest costing 350 currency. Enough currency for the chests now." | "375 / 400 shards · 1 chest left (350)"                              |
 | 2   | At most one line of page description: what it is for              | A how-to paragraph under the title                                                     | "Spend today's energy on your active goals."                         |
-| 3   | Explanations, assumptions, formulas collapsed by default          | An open "How this is worked out" block                                                 | A closed "How this is worked out" disclosure                         |
+| 3   | Explanations, assumptions, formulas collapsed by default          | An open "How this is worked out" block                                                 | A closed `HowToRead` disclosure (`@/shared/ui`)                      |
 | 4   | Empty state = what's missing + one action                         | Two cards explaining "no active goals" in different words                              | "No active goals." + "Create goal"                                   |
 | 5   | Never describe the code or the spec                               | "…plus your inputs for later runs; runs already started are not added again."          | Cut it, or "Includes runs 2–3 if you clear them"                     |
 | 6   | "Now" only for what is true now; projections name their condition | "Enough currency now" (counts future runs)                                             | "Enough by run 3"                                                    |
@@ -194,6 +209,8 @@ Short, true right now, written for players — not developers.
 | 9   | Sentence case, no ALL CAPS labels                                 | "NORMAL CAMPAIGNS", "CAPPED"                                                           | "Normal campaigns", "Capped"                                         |
 | 10  | Buttons are verb + object                                         | "Open Today", "Go"                                                                     | "Open today's raids", "Create goal"                                  |
 | 11  | Dates, durations and counts come from one shared formatter        | "Nov 22, 2026 to Dec 6, 2026" and "Nov 22 – Dec 6" on one page                         | "Nov 22 – Dec 6" (year only if not this year), "in 4 days", "12,590" |
+| 12  | "Create" makes a new record; "Add" puts a thing into another      | "Add goal", "Add team", "New project"                                                  | "Create goal", "Create team"; "Add to project"                       |
+| 13  | A count beside a label is a `CountBadge`, not parentheses         | "Resume (2)"                                                                           | "Resume" with a 2 badge                                              |
 
 Game terms follow the repo glossary (shards, orbs, promote, ascend, D3, A2…).
 Strings live in `apps/web/public/locales/en`; see the `react-i18next` skill.
@@ -276,8 +293,10 @@ back to the control that opened it (`onCloseAutoFocus`).
 ## Review checklist
 
 - [ ] Page has the standard header; settings (if any) is the labelled button at its right.
+- [ ] Page registers its own tour; steps that can be missing are optional.
 - [ ] Toolbar controls are in the Find / View / Actions slots, in that order.
 - [ ] Each option uses the control from rule 3; Group by is labelled and in the View slot.
+- [ ] Empty states use `EmptyState`, explanations use `HowToRead`, and the save model follows rule 3.
 - [ ] No new tab, segmented or pill style; no hand-rolled `aria-pressed` toggles.
 - [ ] Controls meet 48px on touch; no `size="sm"` in toolbars.
 - [ ] Every game icon uses a size from rule 6.

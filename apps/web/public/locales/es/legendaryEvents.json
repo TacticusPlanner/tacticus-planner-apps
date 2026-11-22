@@ -380,7 +380,7 @@
   },
   "teams": {
     "title": "Equipos",
-    "add": "Añadir equipo",
+    "add": "Crear equipo",
     "empty": "Aún no hay equipos en {{lane}}.",
     "loading": "Cargando equipos…",
     "loadError": "No se pudieron cargar tus equipos.",
@@ -1229,7 +1229,7 @@
       "modeLabel": "Tus equipos",
       "restoreAll": "Restaurar todos",
       "undo": "Deshacer",
-      "add": "Añadir un equipo",
+      "add": "Crear un equipo",
       "editTeam": "Editar {{name}}",
       "lanesLabel": "Líneas",
       "depthOf": "Ronda {{run}}: {{depth}} de {{battles}} batallas"
@@ -1239,7 +1239,7 @@
     },
     "review": {
       "project": "Proyecto",
-      "newProject": "Proyecto nuevo",
+      "newProject": "Crear proyecto",
       "newProjectName": "{{name}} · {{step}}",
       "goals": "Objetivos a crear",
       "teams": "Equipos",
