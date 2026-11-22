@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Suggests teams from the player's synced roster for the current HRE mission: a team per campaign for the objectives played by hand, one team for each token mode the mission spends, and one for each mode the player has tokens to spare in. Each team folds under the objective it serves.
+Suggests teams from the player's synced roster for the current HRE mission: a team per campaign for the objectives played by hand, one team for each token mode the mission spends, and one for each mode the player has tokens to spare in. Each team has a row under the objective it serves and its card in the mission's Suggestions section.
 
 ## Requirements
 
 ### Requirement: The mission's manual objectives share a team per campaign
 
-When the current mission has open objectives that only progress in battles played by hand, the tab SHALL suggest, under the list of battles to fight by hand (in that objective's "Fight by hand" fold), one team for all of them per group of listed nodes whose campaigns allow the same allied factions, titled "Team for" and the group's campaigns. Each team SHALL hold only units of those factions, at most the group's largest deployment slot count (a node without a slot count takes 5), built in Power mode with the shared team engine, so it can deploy on every node of its group (Severyn, 2026-10). When some of the group's nodes take fewer units, the card SHALL say to field its first units there, since the team is listed strongest first. The teams SHALL follow the listed nodes only: when no battle is listed (no energy left, or none passes the limits), no campaign team is shown. The team SHALL follow the strictest rule among those objectives, in this order:
+When the current mission has open objectives that only progress in battles played by hand, the tab SHALL suggest, under the list of battles to fight by hand (in that objective's "Fight by hand" card), one team for all of them per group of listed nodes whose campaigns allow the same allied factions, titled "Team for" and the group's campaigns. Each team SHALL hold only units of those factions, at most the group's largest deployment slot count (a node without a slot count takes 5), built in Power mode with the shared team engine, so it can deploy on every node of its group (Severyn, 2026-10). When some of the group's nodes take fewer units, the card SHALL say to field its first units there, since the team is listed strongest first. The teams SHALL follow the listed nodes only: when no battle is listed (no energy left, or none passes the limits), no campaign team is shown. The team SHALL follow the strictest rule among those objectives, in this order:
 
 1. **Featured hero** (`useAbilitiesFeatured`, `featuredDamage`): the featured hero leads the team when the player has unlocked them.
 2. **Alliance** (`winWithAllianceLineup`, `useAbilitiesAlliance`, `killWithAlliance`): only units of the featured hero's alliance.
@@ -71,12 +71,12 @@ Severyn chose one combined team (2026-10): no mission's two objectives ask for t
 
 Every open `arenaBattles`, `salvageRuns`, `onslaught` or `guildRaids` objective SHALL get its own team card titled by its mode (Arena, Salvage Run, Onslaught, Guild Raid), following the rule of the mission's other open objective when that one is manual, so its battles count for both. A token objective open alone SHALL get the player's strongest units. An Onslaught team is a pool (see "Onslaught pools keep to one alliance"); the card SHALL count the units it holds and say there are no spares when fewer than 5 qualify.
 
-The team folds under its token objective as one row: the mode's token icon and name, "N battles" (the battles to go) and the team's portraits; it opens to the full team card.
+The team has one row under its token objective: the mode's token icon and name, "N battles" (the battles to go) and the team's portraits; it scrolls to the full team card in the Suggestions section.
 
-#### Scenario: Token objective folded
+#### Scenario: Token objective row
 
 - **GIVEN** mission 10 with 1 of 4 Arena battles
-- **THEN** under the Arena objective a closed row shows the Arena token, "3 battles" and the team's portraits
+- **THEN** under the Arena objective a row shows the Arena token, "3 battles" and the team's portraits
 
 #### Scenario: Mission 7
 
@@ -105,10 +105,11 @@ The team folds under its token objective as one row: the mode's token icon and n
 
 ### Requirement: Manual objectives get a team in every spare-token mode
 
-Spare tokens SHALL be, per mode (Arena, Onslaught, Salvage Run), the synced tokens held now minus the battles of that mode the current mission (less its progress) and every later mission still need (Severyn, 2026-11). Regeneration during the event is not counted, so the count is a safe floor; the card SHALL say tokens refill. A mode with unknown tokens has none. While the current mission has an open manual objective, each mode with spare tokens that the mission does not already play for a token objective SHALL get a team for the manual objectives, with their rule and preferences, folded under the first manual objective after its "Fight by hand" fold. This replaces the earlier fixed Onslaught pool and the mission 6 Arena surplus rule.
+Spare tokens SHALL be, per mode (Arena, Onslaught, Salvage Run, Guild Raid), the synced tokens held now minus the battles of that mode the current mission (less its progress) and every later mission still need (Severyn, 2026-11). Regeneration during the event is not counted, so the count is a safe floor; the card SHALL say tokens refill. A mode with unknown tokens has none. While the current mission has an open manual objective, each mode with spare tokens that the mission does not already play for a token objective can get a team for the manual objectives, with their rule and preferences, with its row under the first manual objective after its "Fight by hand" row. This replaces the earlier fixed Onslaught pool and the mission 6 Arena surplus rule.
 
-- Modes SHALL come Onslaught, Salvage Run, then Arena for kills, damage, healing and ability uses, whose enemies come in waves; Arena first otherwise.
-- The folded row SHALL show the token icon, "Up to N battles" (the spare) and the team's portraits. The card SHALL say why: "You hold 15 Arena tokens and the remaining missions need 12, so play up to 3 battles here."
+- Modes SHALL come Arena, Salvage Run, then Onslaught; for ability uses (`useAbilities`, `useAbilitiesAlliance`) Onslaught SHALL come first, then Arena and Salvage Run; for ability damage (`abilityDamage`) Guild Raid SHALL come first, then Onslaught, Arena and Salvage Run, since a raid boss soaks every ability's damage (Severyn, 2026-11). Guild Raid SHALL be offered for ability damage only.
+- **No overkill for kills**: while every open manual objective counts kills, a mode whose one battle yields more enemies than the most kills still to go (and more than an Arena battle) SHALL be left out, and no further mode SHALL be added once the modes already listed cover the kills still to go. A battle is estimated at the HSE projection's default kills per token: 5 for Arena, 12 for Salvage Run and 20 for Onslaught. Other objectives get every mode with spare tokens.
+- The row SHALL show the token icon, "Up to N battles" (the spare) and the team's portraits. The card SHALL say why: "You hold 15 Arena tokens and the remaining missions need 12, so play up to 3 battles here."
 - **Onslaught ability uses** (`useAbilities`, `useAbilitiesAlliance`): the team SHALL be the whole alliance, weakest first, with the hint to use each unit's ability, let it fall, and let the next one deploy.
 - **Arena kills**: the card SHALL say to pick opponents with summoners, since their summons count as kills. **Arena faction kills** SHALL also say to fight only opponent teams with that faction, since Arena shows the opponent's team before the battle (Severyn, 2026-11).
 - **Onslaught and Salvage Run** (spare or token objective) SHALL say these battles count for the mission but earn no event points: the HREs score points only in Campaign, Elite, Mirror, Campaign Event, Arena and Guild Raid battles.
@@ -117,7 +118,7 @@ Spare tokens SHALL be, per mode (Arena, Onslaught, Salvage Run), the synced toke
 #### Scenario: Mission 2 during Faction Boost: World Eaters
 
 - **GIVEN** mission 2 (defeat 10 enemies with Chaos units), 15 Arena tokens with 8 needed, and Faction Boost: World Eaters running
-- **THEN** under the kill objective, after "Fight by hand", a closed Arena row shows "Up to 7 battles" with a Chaos team led by World Eaters
+- **THEN** under the kill objective, after "Fight by hand", an Arena row shows "Up to 7 battles" with a Chaos team led by World Eaters, and no Salvage Run or Onslaught row, since the Arena battles cover the 10 kills
 - **AND** the card says why, to pick opponents with summoners, that both events progress and that the boost gives +20% health, damage and armour there
 
 #### Scenario: Mission 15 with spare Onslaught tokens
@@ -129,6 +130,11 @@ Spare tokens SHALL be, per mode (Arena, Onslaught, Salvage Run), the synced toke
 
 - **GIVEN** mission 6 with 0 / 10 summon-free wins and 11 Arena tokens, the missions from 6 on needing 8
 - **THEN** an Arena team without forced summoners shows "Up to 3 battles", and the campaign list covers the other 7 wins
+
+#### Scenario: Mission 1, too few kills for Onslaught
+
+- **GIVEN** mission 1 with 0 / 5 melee kills, no spare Arena tokens and spare Salvage Run and Onslaught tokens
+- **THEN** no spare-token team is shown, since one Salvage Run or Onslaught battle is overkill for 5 kills
 
 #### Scenario: No spare tokens
 

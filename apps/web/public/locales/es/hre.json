@@ -93,7 +93,9 @@
     "add": "+{{amount}}",
     "addLabel": "Sumar {{amount}}: {{objective}}",
     "completed": "{{mission}} completada.",
-    "undo": "Deshacer"
+    "undo": "Deshacer",
+    "detailsTitle": "Sugerencias",
+    "detailsDescription": "Dónde jugar para cada objetivo de la misión actual. Toca una fila bajo un objetivo para ir a su tarjeta."
   },
   "raids": {
     "title": "Campaña: {{mission}}",
@@ -137,6 +139,8 @@
     },
     "battleCount_one": "{{count}} batalla",
     "battleCount_other": "{{count}} batallas",
+    "enemyCount_one": "{{count}} enemigo",
+    "enemyCount_other": "{{count}} enemigos",
     "eventPoints": "{{points}} pts de evento",
     "noteHomeScreenEvent": "{{event}} también está activo: entre nodos del mismo coste, primero los que dan más de sus puntos.",
     "raidsTitle": "Incursiones",
@@ -200,6 +204,7 @@
     "ohSoClose": "La oferta «Oh So Close» debería cubrir la diferencia a cambio de piedra negra.",
     "target": "Objetivo",
     "targetPlaceholder": "Elige un objetivo",
+    "targetNeedsPoints": "Introduce arriba tus puntos del evento para ver qué necesita este objetivo.",
     "needs": "{{shards}} fragmentos: nivel de cofre {{tier}} ({{currency}} de moneda), {{points}} puntos del evento.",
     "needsOutOfReach": "{{shards}} fragmentos superan lo que pueden dar los cofres en este puesto.",
     "perDay": "Se necesitan {{points}} puntos al día durante el resto del evento.",

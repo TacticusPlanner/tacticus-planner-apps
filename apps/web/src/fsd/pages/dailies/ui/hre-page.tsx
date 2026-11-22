@@ -1,7 +1,15 @@
 import { useEffect, useMemo } from "react"
+import type { ReactNode } from "react"
 import { useOutletContext, useSearchParams } from "react-router"
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card"
 
 import {
   HreBattlesDetails,
@@ -22,6 +30,7 @@ import {
   hreObjectiveIcon,
   MissionTracker,
   missionName,
+  ObjectiveDetails,
   PaceCard,
   TokensNeededCard,
   useHreInstance,
@@ -31,7 +40,7 @@ import {
   useObjectiveText,
 } from "@/features/hre-missions"
 import type {
-  ObjectiveFold,
+  ObjectiveSuggestion,
   ObjectiveSuggestions,
 } from "@/features/hre-missions"
 import {
@@ -69,8 +78,8 @@ import { DailiesEventToolbar } from "./dailies-event-toolbar"
 import { useHreTutorial } from "./hre-page.tutorial"
 
 const NO_MISSIONS: readonly HreMission[] = []
-/** The raids count battles, so "Fewer raids" changes nothing here; "CE nodes first" is Today's. */
-const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids", "preferEvent"] as const
+/** The raids count battles, so "Fewer raids" changes nothing here. */
+const HRE_HIDDEN_QUICK_FILTERS = ["fewerRaids"] as const
 /** The HRE tab's search parameter holding the selected instance key (HRE-only, never carried over). */
 const EVENT_PARAM = "event"
 
@@ -78,16 +87,17 @@ const EVENT_PARAM = "event"
  * Dailies > HRE: one Hero Release Event at a time. By default the running one (or the next one as a
  * read-only preview); the switcher opens any other upcoming or past event, held in the `event` URL
  * parameter so it survives a reload. A past event shows its header and mission list only. On a
- * running event: the current mission with its progress inputs, an 'i' per objective, and each
- * objective's suggestions folded under it: the raids for its campaign objective, the battles to
- * fight by hand for its manual objectives with a team per campaign, a token objective's team, and
- * a team per spare-token mode for the manual objectives (each led by the units of the running
- * personal HSE that scores in its mode). Beside it the event pace, the tokens the remaining
- * missions need and the campaign outlook; a preview shows the tokens and the outlook for the whole
+ * running event: the current mission with its progress inputs, an 'i' per objective, and a row per
+ * suggestion under each objective: the raids for its campaign objective, the battles to fight by
+ * hand for its manual objectives with a team per campaign, a token objective's team, and a team per
+ * spare-token mode for the manual objectives (each led by the units of the running personal HSE
+ * that scores in its mode). A row scrolls to its details card, in the suggestions section right
+ * after the event pace. Beside it the event pace, the suggestions, the tokens the remaining missions
+ * need and the campaign outlook; a preview shows the tokens and the outlook for the whole
  * event. Every event lists all missions. The raids follow the Dailies project, Filters and the
- * quick filters, picked in the page toolbar with the event picker.
- * Desktop: missions on the left, the rest on the right, the pace first. Mobile: one column in the
- * same order, the mission list last, collapsed behind "All missions".
+ * quick filters ("CE nodes first" among them), picked in the page toolbar with the event picker.
+ * Desktop: missions on the left, the rest on the right, the pace first, then the suggestions.
+ * Mobile: one column in the same order, the mission list last, collapsed behind "All missions".
  */
 export function HrePage() {
   const { t } = useTranslation([
@@ -303,10 +313,7 @@ export function HrePage() {
   const raids = useHreRaids({
     request: event && !past ? request : null,
     projectId: context.projectId,
-    quickFilters: {
-      ...todayQuickFilterOptions(quickFilters),
-      preferEvent: false,
-    },
+    quickFilters: todayQuickFilterOptions(quickFilters),
     onShowLocation: (target) => {
       battleDialog.show(target)
       captureEvent({ type: "hre_location_opened" })
@@ -327,15 +334,30 @@ export function HrePage() {
         plan={battlePlan}
       />
     ) : null
+  // A raids or battles suggestion's details card; a team's details are its team card.
+  const detailCard = (
+    testId: string,
+    title: string,
+    objective: HreObjective,
+    content: ReactNode
+  ) => (
+    <Card data-testid={testId}>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{objectiveText(objective)}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">{content}</CardContent>
+    </Card>
+  )
   const objectiveSuggestions = (
     objective: HreObjective,
     index: number
   ): ObjectiveSuggestions | null => {
-    const folds: ObjectiveFold[] = []
+    const items: ObjectiveSuggestion[] = []
     let note: string | null = null
     for (const slot of hreObjectiveSlots(objective, campaignPlan, teamPlans)) {
       if (slot.kind === "raids" && request?.raids) {
-        folds.push({
+        items.push({
           id: "raids",
           suggestion: "raids",
           summary: (
@@ -344,7 +366,10 @@ export function HrePage() {
               raids={raids}
             />
           ),
-          content: (
+          detail: detailCard(
+            "hre-raids-card",
+            t("hre:raids.raidsTitle"),
+            objective,
             <HreRaidsDetails
               eventOnly={request.raids.eventOnly}
               raids={raids}
@@ -353,11 +378,14 @@ export function HrePage() {
         })
       } else if (slot.kind === "battles") {
         if (request?.manual) {
-          folds.push({
+          items.push({
             id: "battles",
             suggestion: "battles",
             summary: <HreBattlesSummary raids={raids} />,
-            content: (
+            detail: detailCard(
+              "hre-battles-card",
+              t("hre:raids.battles.title"),
+              objective,
               <HreBattlesDetails
                 manual={request.manual}
                 raids={raids}
@@ -381,7 +409,7 @@ export function HrePage() {
           ? plan.spare.held - plan.spare.need
           : objective.target - (progress.progress[index] ?? 0)
         const testId = `hre-team-${plan.mode}`
-        folds.push({
+        items.push({
           id: plan.mode,
           suggestion: plan.mode,
           spare: !!plan.spare,
@@ -393,7 +421,7 @@ export function HrePage() {
               view={view}
             />
           ),
-          content: view ? (
+          detail: view ? (
             <HreTeamCard
               alliance={allianceName}
               hero={heroName}
@@ -410,7 +438,7 @@ export function HrePage() {
         })
       }
     }
-    return folds.length > 0 || note ? { folds, note } : null
+    return items.length > 0 || note ? { items, note } : null
   }
   const campaignShown =
     request !== null &&
@@ -489,16 +517,24 @@ export function HrePage() {
     />
   ) : null
 
-  // The tour points at the first objective with a fold.
+  // Each open objective's suggestions: rows under it, details below the pace.
   const objectives =
     running && progress.mission < hreAllDone(missions)
       ? hreMission(missions, progress.mission).objectives
       : []
-  const suggestionsIndex = objectives.findIndex(
-    (objective, index) =>
-      (progress.progress[index] ?? 0) < objective.target &&
-      (objectiveSuggestions(objective, index)?.folds.length ?? 0) > 0
-  )
+  const openSuggestions = objectives.flatMap((objective, index) => {
+    if ((progress.progress[index] ?? 0) >= objective.target) return []
+    const suggestions = objectiveSuggestions(objective, index)
+    return suggestions && suggestions.items.length > 0
+      ? [{ index, suggestions }]
+      : []
+  })
+  const detailsSection =
+    openSuggestions.length > 0 ? (
+      <ObjectiveDetails objectives={openSuggestions} />
+    ) : null
+  // The tour points at the first objective with a suggestion.
+  const suggestionsIndex = openSuggestions[0]?.index ?? -1
   useHreTutorial({
     hasSwitcher: !!ready,
     hasEvent: !!event,
@@ -535,7 +571,12 @@ export function HrePage() {
             ? {
                 quickFilters,
                 onQuickFiltersChange: setQuickFilters,
-                hiddenQuickFilters: HRE_HIDDEN_QUICK_FILTERS,
+                // "CE nodes first" only while a campaign event with reached nodes runs, or while on.
+                hiddenQuickFilters:
+                  raids.hasActiveEventBattles ||
+                  quickFilters.includes("preferEvent")
+                    ? HRE_HIDDEN_QUICK_FILTERS
+                    : [...HRE_HIDDEN_QUICK_FILTERS, "preferEvent"],
               }
             : null
         }
@@ -574,6 +615,7 @@ export function HrePage() {
           <div className="space-y-5" data-testid="hre-sections">
             {tracker}
             {paceCard}
+            {detailsSection}
             {tokensCard}
             {campaignCard}
             {missionList}
@@ -589,6 +631,7 @@ export function HrePage() {
             </div>
             <div className="space-y-5">
               {paceCard}
+              {detailsSection}
               {tokensCard}
               {campaignCard}
             </div>

@@ -93,7 +93,9 @@
     "add": "+{{amount}}",
     "addLabel": "{{amount}} hinzufügen: {{objective}}",
     "completed": "{{mission}} abgeschlossen.",
-    "undo": "Rückgängig"
+    "undo": "Rückgängig",
+    "detailsTitle": "Vorschläge",
+    "detailsDescription": "Wo du für jedes Ziel der aktuellen Mission spielst. Tippe auf eine Zeile unter einem Ziel, um zu ihrer Karte zu springen."
   },
   "raids": {
     "title": "Kampagne für {{mission}}",
@@ -137,6 +139,8 @@
     },
     "battleCount_one": "{{count}} Kampf",
     "battleCount_other": "{{count}} Kämpfe",
+    "enemyCount_one": "{{count}} Gegner",
+    "enemyCount_other": "{{count}} Gegner",
     "eventPoints": "{{points}} Eventpunkte",
     "noteHomeScreenEvent": "{{event}} läuft auch: Bei gleichen Kosten kommen Knoten mit mehr Punkten dafür zuerst.",
     "raidsTitle": "Raids",
@@ -200,6 +204,7 @@
     "ohSoClose": "Das „Oh So Close“-Angebot sollte die Lücke gegen Blackstone schließen.",
     "target": "Ziel",
     "targetPlaceholder": "Ziel wählen",
+    "targetNeedsPoints": "Gib oben deine Eventpunkte ein, um zu sehen, was dieses Ziel braucht.",
     "needs": "{{shards}} Splitter: Truhenstufe {{tier}} ({{currency}} Währung), {{points}} Eventpunkte.",
     "needsOutOfReach": "{{shards}} Splitter sind bei diesem Rang mehr, als die Truhen hergeben.",
     "perDay": "{{points}} Punkte pro Tag für den Rest des Events nötig.",

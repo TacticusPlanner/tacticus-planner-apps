@@ -1,6 +1,6 @@
 import { hreAllDone, hreMission } from "./hre-missions"
 import type { HreMission, HreObjective, HreObjectiveKind } from "./hre-missions"
-import { HRE_SPARE_MODES, isManualObjective } from "./hre-objectives"
+import { isManualObjective } from "./hre-objectives"
 import type { HreSpareMode, HreSpareTokens } from "./hre-objectives"
 import type { HreProgress } from "./hre-progress"
 
@@ -87,18 +87,9 @@ function ruleFor(objectives: readonly HreObjective[]): HreTeamRule {
   return RULE_ORDER.find((rule) => rules.includes(rule)) ?? "strongest"
 }
 
-/** Kinds whose count waves of enemies serve best: Onslaught and Salvage Run come first for them. */
-const WAVE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
-  "killEnemies",
-  "killWithMelee",
-  "killWithRanged",
-  "killWithAlliance",
-  "killFaction",
-  "damage",
-  "abilityDamage",
-  "damageType",
-  "featuredDamage",
-  "heal",
+/** Ability uses: Onslaught comes first for them, its whole roster using abilities (Severyn,
+ * 2026-11). */
+const ABILITY_USE_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "useAbilities",
   "useAbilitiesAlliance",
 ])
@@ -107,12 +98,68 @@ const POOL_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
   "useAbilities",
   "useAbilitiesAlliance",
 ])
+/** Kill objectives, counted in enemies, so a spare-token battle's yield can be estimated. */
+const KILL_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
+  "killEnemies",
+  "killWithMelee",
+  "killWithRanged",
+  "killWithAlliance",
+  "killFaction",
+])
+/** Enemies one battle of a spare mode yields, roughly: the HSE projection's default kills per
+ * token (Arena five, Salvage Run 12, Onslaught 20; Severyn's estimates). */
+const KILLS_PER_BATTLE: Readonly<Partial<Record<HreSpareMode, number>>> = {
+  arena: 5,
+  salvageRun: 12,
+  onslaught: 20,
+}
+const ARENA_KILLS = 5
 
-/** The spare-token modes in the order a mission's manual objectives suit them. */
+/**
+ * The spare-token modes in the order a mission's manual objectives suit them (Severyn, 2026-11):
+ * Arena, Salvage Run, then Onslaught. Ability damage puts Guild Raid first, where a boss soaks up
+ * every ability, then Onslaught; ability uses put Onslaught first. Guild Raid serves only ability
+ * damage.
+ */
 function spareOrder(manual: readonly HreObjective[]): readonly HreSpareMode[] {
-  return manual.some((objective) => WAVE_KINDS.has(objective.kind))
-    ? ["onslaught", "salvageRun", "arena"]
-    : HRE_SPARE_MODES
+  if (manual.some((objective) => objective.kind === "abilityDamage")) {
+    return ["guildRaid", "onslaught", "arena", "salvageRun"]
+  }
+  return manual.some((objective) => ABILITY_USE_KINDS.has(objective.kind))
+    ? ["onslaught", "arena", "salvageRun"]
+    : ["arena", "salvageRun", "onslaught"]
+}
+
+/**
+ * The spare modes worth suggesting, in `spareOrder`. While every open manual objective counts kills
+ * (`left` the most of them still to go), a mode whose one battle yields more than is left (and more
+ * than an Arena battle) is overkill and left out, and the list stops once the modes already listed
+ * cover what is left. Other objectives get every mode with spare tokens.
+ */
+function spareModes(
+  manual: readonly HreObjective[],
+  left: number,
+  spare: HreSpareTokens,
+  played: ReadonlySet<HreTeamMode>
+): HreSpareMode[] {
+  const modes = spareOrder(manual).filter(
+    (mode) => spare[mode] && !played.has(mode)
+  )
+  if (manual.some((objective) => !KILL_KINDS.has(objective.kind))) {
+    return modes
+  }
+  const picked: HreSpareMode[] = []
+  let covered = 0
+  for (const mode of modes) {
+    if (covered >= left) break
+    const kills = KILLS_PER_BATTLE[mode] ?? Infinity
+    if (kills > Math.max(left, ARENA_KILLS)) continue
+    const tokens = spare[mode]
+    if (!tokens) continue
+    picked.push(mode)
+    covered += (tokens.held - tokens.need) * kills
+  }
+  return picked
 }
 
 /**
@@ -120,9 +167,9 @@ function spareOrder(manual: readonly HreObjective[]): readonly HreSpareMode[] {
  * the battles fought by hand, with the strictest rule of the two. Every open token objective gets
  * a team for its mode with that same rule, or the strongest units when it is open alone. The manual
  * objectives also get a team in every spare-token mode (`spareTokens`: Arena, Onslaught or Salvage
- * Run tokens above what the remaining missions need) the mission does not already play, Onslaught
- * and Salvage Run first for kills, damage, healing and ability uses, whose enemies come in waves;
- * Onslaught ability uses field the whole alliance, weakest first. A heal objective adds a Healer
+ * Run tokens above what the remaining missions need) the mission does not already play, in
+ * `spareModes` order and trimmed for kills; Onslaught ability uses field the whole alliance, weakest
+ * first. A heal objective adds a Healer
  * or Mechanic and a Psychic damage objective puts Psychic damage dealers first, in every team.
  */
 export function selectTeamPlans(
@@ -166,9 +213,17 @@ export function selectTeamPlans(
     plans.push(plan([objective, ...manual], mode))
   }
   if (manual.length === 0) return plans
-  for (const mode of spareOrder(manual)) {
+  const left = Math.max(
+    0,
+    ...objectives.map((objective, index) =>
+      isManualObjective(objective.kind)
+        ? objective.target - (state.progress[index] ?? 0)
+        : 0
+    )
+  )
+  for (const mode of spareModes(manual, left, spare, tokenModes)) {
     const tokens = spare[mode]
-    if (!tokens || tokenModes.has(mode)) continue
+    if (!tokens) continue
     plans.push(
       plan(manual, mode, {
         spare: tokens,

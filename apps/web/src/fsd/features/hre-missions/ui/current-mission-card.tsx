@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { hreMission, isMissionComplete } from "@/entities/hre-mission"
+import { hreMission } from "@/entities/hre-mission"
 import type {
   HreMission,
   HreObjective,
@@ -29,8 +29,8 @@ import { useAnalyticsActions } from "@/shared/analytics"
 import { EntityIcon } from "@/shared/ui"
 
 import { missionName } from "./mission-name"
-import { ObjectiveFolds } from "./objective-folds"
-import type { ObjectiveSuggestions } from "./objective-folds"
+import { ObjectiveSuggestionRows } from "./objective-suggestions"
+import type { ObjectiveSuggestions } from "./objective-suggestions"
 import { ObjectiveInfo } from "./objective-guidance"
 import { ReserveTip } from "./reserve-tip"
 
@@ -40,9 +40,9 @@ const steps = (target: number) => (target >= 20 ? [1, 10] : [1])
 /**
  * The current mission: the mission picker, each objective with its progress input (clamped to the
  * target, empty rather than a leading 0 so typing never reads "033"), "+1" (and "+10"), a one-click
- * "Mark done" and its bar, an 'i' button with the game's hint and our tip, the objective's
- * suggestions folded under it, the tokens to keep for a later mission, and "Mission complete" once
- * both are at target, followed by an Undo toast.
+ * "Mark done" and its bar, an 'i' button with the game's hint and our tip, a row per suggestion
+ * for the objective (each scrolling to its details below the pace), the tokens to keep for a later mission, and "Mission complete",
+ * always enabled (it fills both objectives), followed by an Undo toast.
  */
 export function CurrentMissionCard({
   state,
@@ -61,7 +61,7 @@ export function CurrentMissionCard({
   objectiveIcon?: (objective: HreObjective) => string | undefined
   /** The game's hint for an objective, shown behind its 'i' button. */
   objectiveHint?: (objective: HreObjective) => string | undefined
-  /** The suggestions folded under an objective (raids, battles by hand, teams), or null. */
+  /** The suggestions for an objective (raids, battles by hand, teams), or null. */
   objectiveSuggestions?: (
     objective: HreObjective,
     index: number
@@ -80,7 +80,6 @@ export function CurrentMissionCard({
       method,
     })
   const mission = hreMission(missions, state.mission)
-  const complete = isMissionComplete(state, missions)
 
   return (
     <Card data-testid="hre-current-mission">
@@ -216,17 +215,16 @@ export function CurrentMissionCard({
               </div>
               <Progress value={(value / objective.target) * 100} />
               {suggestions ? (
-                <ObjectiveFolds
-                  // A new mission starts with every fold closed.
-                  key={`${state.mission}-${objective.kind}`}
+                <ObjectiveSuggestionRows
+                  index={index}
                   suggestions={suggestions}
-                  onOpen={(fold) =>
+                  onOpen={(item) =>
                     captureEvent({
                       type: "hre_fold_opened",
                       mission: state.mission,
                       objectiveKind: objective.kind,
-                      suggestion: fold.suggestion,
-                      spare: fold.spare ?? false,
+                      suggestion: item.suggestion,
+                      spare: item.spare ?? false,
                     })
                   }
                   testId={testId}
@@ -242,7 +240,6 @@ export function CurrentMissionCard({
         />
         <Button
           data-testid="hre-mission-complete"
-          disabled={!complete}
           onClick={() => {
             // Undo lives in this toast only (design D3), never in storage.
             const previous = state

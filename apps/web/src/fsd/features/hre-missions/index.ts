@@ -9,7 +9,11 @@ export { useHreTokens } from "./model/use-hre-tokens"
 export { HreEventHeader } from "./ui/hre-event-header"
 export { HreEventSwitcher } from "./ui/hre-event-switcher"
 export { AllMissions, MissionTracker } from "./ui/mission-tracker"
-export type { ObjectiveFold, ObjectiveSuggestions } from "./ui/objective-folds"
+export { ObjectiveDetails } from "./ui/objective-details"
+export type {
+  ObjectiveSuggestion,
+  ObjectiveSuggestions,
+} from "./ui/objective-suggestions"
 export { TokensNeededCard } from "./ui/tokens-needed-card"
 export { PaceCard } from "./ui/pace-card"
 export { useObjectiveText } from "./ui/use-objective-text"

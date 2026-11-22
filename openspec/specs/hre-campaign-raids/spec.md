@@ -8,7 +8,7 @@ Tells the player where to raid today so that the current HRE mission's campaign-
 
 ### Requirement: Raid suggestions appear only for a current campaign objective
 
-On a running HRE, raids SHALL be suggested only when the current mission has an open objective that raids serve, and battles to fight by hand only when it has one that only those battles serve (see "Manual objectives get a list of battles to fight by hand"). Both lists sit in folds under the objectives they serve (see "Raids and battles fold under the objectives they serve"); in the rest of this spec, "the section" means those folds. Raids SHALL serve only `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles") and `lightningVictories` ("Win N lightning victories") objectives below their target; the battles still needed SHALL be the target minus the recorded progress. Raids SHALL NOT be suggested for any other objective, because a raid counts no kills, damage, healing, ability uses or lineup wins (Severyn, 2026-10). When the current mission has neither, the "Campaign battles" section (see "The Campaign battles section holds the outlook") SHALL say its campaign objective is complete when it has one, or else name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
+On a running HRE, raids SHALL be suggested only when the current mission has an open objective that raids serve, and battles to fight by hand only when it has one that only those battles serve (see "Manual objectives get a list of battles to fight by hand"). Both lists are summarised in rows under the objectives they serve and shown in full in the mission's suggestions section (see "Suggestion rows under the objectives jump to their details"); in the rest of this spec, "the section" means those details cards. Raids SHALL serve only `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles") and `lightningVictories` ("Win N lightning victories") objectives below their target; the battles still needed SHALL be the target minus the recorded progress. Raids SHALL NOT be suggested for any other objective, because a raid counts no kills, damage, healing, ability uses or lineup wins (Severyn, 2026-10). When the current mission has neither, the "Campaign battles" section (see "The Campaign battles section holds the outlook") SHALL say its campaign objective is complete when it has one, or else name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
 
 Assumptions:
 
@@ -18,12 +18,12 @@ Assumptions:
 #### Scenario: Mission 5 in progress
 
 - **GIVEN** the current mission is 5 with 37 / 100 campaign wins
-- **THEN** the "Win 100 campaign battles" objective has a Raids fold for 63 battles to go
+- **THEN** the "Win 100 campaign battles" objective has a Raids row for 63 battles to go
 
 #### Scenario: Current mission has no campaign objective
 
 - **GIVEN** the current mission is 8 with 20,000 / 20,000 damage and its Guild Raid tokens still open
-- **THEN** no raids or battles fold is shown, and the Campaign battles section reads "Next campaign mission: 16, Raid 25 campaign battles"
+- **THEN** no raids or battles row is shown, and the Campaign battles section reads "Next campaign mission: 16, Raid 25 campaign battles"
 
 #### Scenario: Campaign objective already met
 
@@ -33,12 +33,12 @@ Assumptions:
 #### Scenario: Every objective that needs the campaign is met
 
 - **GIVEN** mission 19 at 75 / 75 campaign wins and 100 / 100 melee kills
-- **THEN** no fold is shown, and the Campaign battles section says the campaign objective is complete
+- **THEN** no row is shown, and the Campaign battles section says the campaign objective is complete
 
 #### Scenario: Preview event
 
 - **GIVEN** the tab previews an upcoming HRE
-- **THEN** no fold is shown; the Campaign battles section shows only the remaining-campaign summary (see below), from mission 1
+- **THEN** no row is shown; the Campaign battles section shows only the remaining-campaign summary (see below), from mission 1
 
 ### Requirement: Candidate locations follow raid eligibility and today's limits
 
@@ -85,11 +85,12 @@ Assumptions:
 
 The suggestions SHALL use only candidates that drop something. Candidates SHALL be ordered as follows:
 
-1. A node that drops a resource an in-scope goal still needs SHALL come first, whatever its energy cost (Severyn, 2026-10).
-2. Then energy cost ascending, then the event-point tie-breaks (see "Event points break ties among equal costs").
-3. Among goal nodes, a higher drop rate for the goal's resource SHALL come next, because common and uncommon materials drop more often. A higher average guaranteed gold comes next, then the goal's best priority.
-4. Other nodes SHALL be ordered by average guaranteed gold, descending.
-5. Battle id breaks any remaining tie.
+1. A node that drops a resource an in-scope goal still needs SHALL come first, whatever its energy cost (Severyn, 2026-10). An Epic or higher upgrade SHALL count only on Elite nodes (a storyline Elite or Elite Mirror node, or an event's Extremis node): a standard or Mirror node drops it too rarely to farm it there, so for that upgrade it is not a goal node (Severyn, 2026-11). A goal's pinned farm locations keep counting whatever their tier. A node feeds its goal only until the raids already suggested are expected to drop what the in-scope goals still need of its resource (raids times drop rate): it SHALL get no more raids for the goal than that, and once the resource is covered every node dropping it SHALL rank as a node that feeds no goal (Severyn, 2026-11).
+2. With "CE nodes first" on (see "The HRE tab has raid list controls"), the running campaign event's reached nodes SHALL come next, ahead of cheaper nodes, among goal nodes and among the others alike.
+3. Among nodes still feeding a goal, the least energy per expected drop of the goal's resource (energy cost divided by drop rate) SHALL come next (Severyn, 2026-11). Then energy cost ascending, then the event-point tie-breaks (see "Event points break ties among equal costs").
+4. Among goal nodes, a higher drop rate for the goal's resource SHALL come next, because common and uncommon materials drop more often. A higher average guaranteed gold comes next, then the goal's best priority.
+5. Other nodes SHALL be ordered by average guaranteed gold, descending.
+6. Battle id breaks any remaining tie.
 
 Each node, in order, SHALL get as many raids as its attempts left, the remaining budget and the battles left for suggestions allow. A node that does not fit SHALL be skipped. Rows with 0 raids SHALL NOT be shown. A row whose node feeds a goal SHALL show the goal resource's icon with the player's "owned/target" for it, as on the HSE tab. The totals of raids and energy SHALL be shown, and the energy total SHALL NOT exceed the budget.
 
@@ -98,6 +99,11 @@ Each node, in order, SHALL get as many raids as its attempts left, the remaining
 - **GIVEN** the "Energy spent today" case (38 battles to go, 188 energy budget), with Indomitus unlocked, none of it used today, and no goals
 - **THEN** I15, I16 and I17 (5 energy, cap 10) get 10 raids each and I18 gets 7
 - **AND** the totals read 37 raids and 185 energy, and the section notes "1 battle left after today's energy"
+
+#### Scenario: A covered material stops pulling raids
+
+- **GIVEN** a goal that needs 6 Combat Stimms, dropped by a Tyranids Extremis node (one per raid on average, 5 attempts) and by Fall of Cadia Mirror and standard nodes at lower rates
+- **THEN** the Extremis node is suggested first with its 5 raids, a Mirror node gets only the raids expected to drop the last Stimm, and the battles still left go to the cheapest nodes, not to every node that drops Combat Stimms
 
 #### Scenario: Goal tie-break among equal costs
 
@@ -218,7 +224,7 @@ Every open objective that only progresses in battles played by hand (kills, dama
 - **The featured hero's ability uses or damage:** also only nodes where the featured hero's faction can deploy, so the hero can play every listed node.
 - **Faction kills:** only nodes with that faction's enemies (see "Faction kills get their own list of battles").
 
-These limits replace the Raids Filters' slot, allies-alliance and (for the featured hero's objectives) allies-faction choices for this list; the other Raids Filters still apply. The list SHALL estimate what one battle counts toward each objective: the node's enemy total for kills, its enemies of the faction for faction kills, its enemies' total health for damage, 5 uses for ability uses, and 1 for the featured hero's ability uses and for wins. Nodes that count nothing toward an estimated objective SHALL be left out. While the mission's lightning victories are open, nodes with a lightning-victory condition SHALL come first (see "Faction kills get their own list of battles"); then nodes that drop a resource an in-scope goal still needs; then nodes SHALL be ordered by what they count per energy for the first estimated objective, so the fewest battles are needed, then as raids are (including the event-point tie-breaks), and filled until every estimated objective is covered, within the attempts left and today's energy left; the raids get the energy and attempts the list leaves. When no objective can be estimated (ability damage, a damage type, the featured hero's damage, healing), the list SHALL show the 3 best nodes by enemy health per energy with their energy per battle, and say to play them until the objective is done. The list SHALL open with one visible line saying that raids don't count these objectives. Its other notes SHALL be a bullet list folded under "Node rules", closed by default on desktop and mobile: the limits that apply, whether the counts are estimates, that each battle also counts as a campaign win (when it does), and that Arena and Onslaught battles count too. When the featured hero's faction rule applies, the alliance rule SHALL NOT be listed, because the faction rule already implies it. When more battles are needed than today's energy allows, the list SHALL say so.
+These limits replace the Raids Filters' slot, allies-alliance and (for the featured hero's objectives) allies-faction choices for this list; the other Raids Filters still apply. The list SHALL estimate what one battle counts toward each objective: the node's enemy total for kills, its enemies of the faction for faction kills, its enemies' total health for damage, 5 uses for ability uses, and 1 for the featured hero's ability uses and for wins. Nodes that count nothing toward an estimated objective SHALL be left out. While the mission's lightning victories are open, nodes with a lightning-victory condition SHALL come first (see "Faction kills get their own list of battles"); then nodes that drop a resource an in-scope goal still needs; then nodes SHALL be ordered by the energy it takes to finish the first estimated objective at that node alone (the battles it needs there times its energy cost), then by the fewest of those battles, then as raids are (including the event-point tie-breaks), and filled until every estimated objective is covered, within the attempts left and today's energy left; the raids get the energy and attempts the list leaves. When no objective can be estimated (ability damage, a damage type, the featured hero's damage, healing), the list SHALL show the 3 best nodes by enemy health per energy with their energy per battle, and say to play them until the objective is done. The list SHALL open with one visible line saying that raids don't count these objectives. Its other notes SHALL be a bullet list folded under "Node rules", closed by default on desktop and mobile: the limits that apply, whether the counts are estimates, that each battle also counts as a campaign win (when it does), and that Arena and Onslaught battles count too. When the featured hero's faction rule applies, the alliance rule SHALL NOT be listed, because the faction rule already implies it. When more battles are needed than today's energy allows, the list SHALL say so.
 
 While the mission's `campaignWins` objective is also open, each battle won by hand SHALL also count as a campaign win, so the raids to go SHALL drop by the battles in the list, and the note SHALL say so; when they cover every win still needed, the raids SHALL say the battles above cover them.
 
@@ -267,12 +273,17 @@ Raid suggestions SHALL use every candidate node whatever the mission's other obj
 
 ### Requirement: Rows look like regular raid card rows
 
-Each suggested node SHALL be shown as a regular raid card row: its battle, the goal drop with "owned/target", and the running event's points. Rows SHALL NOT show the portraits of the goals' characters (Severyn, 2026-11), so a row stays on one line on a phone.
+Each suggested node SHALL be shown as a regular raid card row: its battle, the goal drop with "owned/target", and the running event's points. A node that feeds no goal SHALL show its own drop's icon with how many the player owns ("7 owned"), so its rewards show without a goal (Severyn, 2026-11); a node that drops nothing shows no drop. A row fought by hand for a kill objective SHALL show the enemies one battle there defeats ("6 enemies"; Severyn, 2026-11). Rows SHALL NOT show the portraits of the goals' characters (Severyn, 2026-11), so a row stays on one line on a phone.
 
 #### Scenario: Node feeds two goals
 
 - **GIVEN** a suggested node that drops a material two goals still need
 - **THEN** its row shows the material's icon with "owned/target", and no character portraits
+
+#### Scenario: Node feeds no goal
+
+- **GIVEN** a suggested Indomitus node whose drop no goal needs, and 7 of that drop in the inventory
+- **THEN** its row shows the drop's icon with "7 owned"
 
 ### Requirement: All-alliance suggestions wait for the featured hero
 
@@ -285,7 +296,7 @@ While the featured hero does not resolve, the section SHALL NOT list battles for
 
 ### Requirement: Faction kills get their own list of battles
 
-While the current mission has an open `killFaction` objective, its list of battles to fight by hand SHALL hold only nodes with that faction's enemies, from any campaign, and each battle SHALL count the node's enemies of that faction toward the kills still needed. Nodes with the most of them per energy SHALL come first, then they are ordered as raids are. While the mission's lightning victories are also open, nodes with a lightning-victory condition SHALL come first, so a quick win counts for both. These battles SHALL NOT reduce the lightning raids still needed, because a win by hand is not always a lightning victory.
+While the current mission has an open `killFaction` objective, its list of battles to fight by hand SHALL hold only nodes with that faction's enemies, from any campaign, and each battle SHALL count the node's enemies of that faction toward the kills still needed. They SHALL be ordered as the list orders nodes for kills (see "Manual objectives get a list of battles to fight by hand"). While the mission's lightning victories are also open, nodes with a lightning-victory condition SHALL come first, so a quick win counts for both. These battles SHALL NOT reduce the lightning raids still needed, because a win by hand is not always a lightning victory.
 
 Assumptions:
 
@@ -300,6 +311,11 @@ Assumptions:
 
 - **GIVEN** 20 Necron kills still needed, a 3-energy node with 3 Necrons and a 6-energy node with 9 Necrons
 - **THEN** the 6-energy node comes first, with 3 battles
+
+#### Scenario: A few kills take the cheapest node with enough enemies
+
+- **GIVEN** mission 1 with 5 kills still needed, an 8-energy node with 12 enemies, a 5-energy node with 6 enemies and a 3-energy node with 4 enemies
+- **THEN** the 5-energy node is suggested for 1 battle and its row shows "6 enemies", not the node with the most enemies (Severyn, 2026-11)
 
 ### Requirement: Event points break ties among equal costs
 
@@ -345,7 +361,7 @@ While a rule-bearing Home Screen Event runs, each HRE row whose raids earn its p
 
 ### Requirement: HRE suggestion rows are grouped by campaign
 
-Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) SHALL show each run of consecutive rows in one campaign (with its difficulty) under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word; each row SHALL name just its battle ("Battle 7") ahead of its goals, drop and counts. A campaign with a single row in a group SHALL show no header: that row SHALL instead name the location in full ("Saim-Hann Elite 33") after the campaign icon, on one line. Grouping SHALL NOT reorder the list, and paging counts rows, not groups. As on the HSE lists, a raid row SHALL NOT show its raid count or energy (a by-hand battle row keeps its battle count, an open-ended row its energy per battle), and each row's battle name SHALL open the battle and its enemies.
+Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) SHALL show each run of consecutive rows in one campaign (with its difficulty) under one header with the campaign icon and the campaign's name, mirror qualifier and difficulty word; each row SHALL name just its battle ("Battle 7") ahead of its goals, drop and counts. A campaign with a single row in a group SHALL show no header: that row SHALL instead name the location in full ("Saim-Hann Elite 33") after the campaign icon, with its drop and counts on the same line, as on Dailies > Raids, wrapping only when the row is too narrow (Severyn, 2026-11). Grouping SHALL NOT reorder the list, and paging counts rows, not groups. As on the HSE lists, a raid row SHALL NOT show its raid count or energy (a by-hand battle row keeps its battle count, an open-ended row its energy per battle), and each row's battle name SHALL open the battle and its enemies.
 
 #### Scenario: Consecutive rows of one campaign share a header
 
@@ -355,34 +371,46 @@ Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) 
 
 ### Requirement: The HRE tab has raid list controls
 
-The HRE tab's toolbar SHALL show the Dailies project selector (with "All projects") and the Raids Filters action while the event is running or previewed, and SHALL NOT show the Planning Settings action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HSE tab. The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (except the campaign-type filter, as before) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. A past event SHALL NOT show the controls, the folds or the Campaign battles section.
+The HRE tab's toolbar SHALL show the Dailies project selector (with "All projects") and the Raids Filters action while the event is running or previewed, and SHALL NOT show the Planning Settings action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HSE tab. The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (except the campaign-type filter, as before) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. Today's quick filters SHALL apply too, except "Fewer raids", which the tab hides because its raids count battles. "CE nodes first" SHALL be offered, as on Today, only while a campaign event with reached nodes is running or while it is on, and SHALL rank the running campaign event's nodes first (Severyn, 2026-11). A past event SHALL NOT show the controls, the suggestions or the Campaign battles section.
 
 #### Scenario: Controls in the toolbar
 
 - **GIVEN** an HRE is running
 - **THEN** the toolbar shows the project selector and the Raids Filters action, and no Planning Settings action
 
+#### Scenario: CE nodes first
+
+- **GIVEN** an HRE and a campaign event are running, and the player has reached nodes of the campaign event
+- **WHEN** the player turns on "CE nodes first"
+- **THEN** the raids for the campaign objective list the campaign event's nodes first, after any node feeding a goal
+
+#### Scenario: Epic upgrade on a Mirror node
+
+- **GIVEN** a goal still needs a Legendary upgrade that drops on Saim-Hann Mirror 74 and Saim-Hann Elite 30
+- **THEN** only Saim-Hann Elite 30 counts as a goal node, and Saim-Hann Mirror 74 is ranked as a node that feeds no goal
+
 #### Scenario: Project picked on Today
 
 - **GIVEN** a project is selected on Today
 - **THEN** the HRE suggestions rank nodes that feed that project's goals first
 
-### Requirement: Raids and battles fold under the objectives they serve
+### Requirement: Suggestion rows under the objectives jump to their details
 
-Under each open objective of the current mission card, the tab SHALL show one fold per suggestion that serves it: the raids, the battles to fight by hand, and the token teams (see the hre-mission-teams capability). Every fold SHALL be closed by default, on desktop and on mobile, and its closed row SHALL fit one line: the first suggested node or the team's portraits, and the count ("37 raids", "10 battles", "Up to 3 battles"). Opening a fold SHALL show the full list with its notes. An objective already at its target SHALL show no folds.
+Under each open objective of the current mission card, the tab SHALL show one row per suggestion that serves it: the raids, the battles to fight by hand, and the token teams (see the hre-mission-teams capability). Each row SHALL fit one line: the first suggested node or the team's portraits, the count ("37 raids", "10 battles", "Up to 3 battles"), and a down arrow. The rows SHALL NOT expand in place (Severyn, 2026-11). Every suggestion's full list with its notes, or its team card, SHALL be shown as its own card in a "Suggestions" section right after the Event pace card, in objective order; a raids card is titled "Raids" and a battles card "Fight by hand", each with the objective it serves. Tapping a row SHALL scroll the page to its card, smoothly unless the player prefers reduced motion. An objective already at its target SHALL show no rows and no cards; with no suggestion at all the section is not shown.
 
-When the battles to fight by hand serve two open objectives of the mission, the fold SHALL sit under the first of them, and the other SHALL say "The battles above count for this objective too." instead of a second fold. Raids SHALL fold only under `campaignWins`, `campaignRaids` and `lightningVictories` objectives.
+When the battles to fight by hand serve two open objectives of the mission, the row SHALL sit under the first of them, and the other SHALL say "The battles above count for this objective too." instead of a second row. Raids SHALL sit only under `campaignWins`, `campaignRaids` and `lightningVictories` objectives.
 
 #### Scenario: Mission 5
 
 - **GIVEN** mission 5 with 6,000 / 10,000 ability damage and 37 / 100 campaign wins, and spare Onslaught tokens
-- **THEN** the ability damage shows a closed "Fight by hand" fold and a closed Onslaught team fold
-- **AND** the campaign wins show a closed Raids fold whose row names its first node and the raid count
+- **THEN** the ability damage shows a "Fight by hand" row and an Onslaught team row
+- **AND** the campaign wins show a Raids row naming its first node and the raid count
+- **AND** the Suggestions section after Event pace shows the Fight by hand card, the Onslaught team card and the Raids card
 
-#### Scenario: Opening a fold
+#### Scenario: Tapping a row
 
-- **WHEN** the player opens the Raids fold
-- **THEN** the grouped raid rows, the totals and the notes are shown, and the other folds stay closed
+- **WHEN** the player taps the Raids row
+- **THEN** the page scrolls to the Raids card, with the grouped raid rows, the totals and the notes
 
 ### Requirement: The Campaign battles section holds the outlook
 
@@ -391,4 +419,4 @@ The side column SHALL hold a section titled "Campaign battles" below the event p
 #### Scenario: Mission 5
 
 - **GIVEN** mission 5 with its campaign wins open
-- **THEN** the Campaign battles section shows only the remaining-campaign summary, and the raids are in the objective's fold
+- **THEN** the Campaign battles section shows only the remaining-campaign summary, and the raids are in the Raids card of the Suggestions section

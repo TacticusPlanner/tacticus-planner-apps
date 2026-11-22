@@ -16,19 +16,18 @@ import type { MissionDeployGroup } from "../../model/mission-deploy-groups"
 import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { RaidState } from "../raid-state"
-import { ResourceIcon } from "../resource-icon"
-import { ResourceStock } from "../resource-stock"
 import { HreHandBattles } from "./hre-hand-battles"
-import { HreNoDropRaids, RaidRows } from "./hre-raids-extras"
+import { HreNoDropRaids, RaidRows, RowDrop } from "./hre-raids-extras"
 import type { RaidRowsView } from "./hre-raids-extras"
 import type { HreRaids, HreRaidsRequest } from "./use-hre-raids"
 
 type Row = MissionRaidPlan["rows"][number]
 
 /**
- * A folded suggestion's one row: the top node as a regular raid card row (campaign icon, node, the
- * goal drop with "owned/target"), then a count chip. Nothing in it is interactive: the whole row
- * opens the fold.
+ * A suggestion's one row: the top node as a regular raid card row (campaign icon, node, the goal
+ * drop with "owned/target", or the node's own drop with what the player holds when it feeds no
+ * goal), then a count chip. Nothing in it is interactive: the whole row scrolls
+ * to its details.
  */
 function TopRowSummary({
   row,
@@ -42,8 +41,6 @@ function TopRowSummary({
   testId: string
 }) {
   const location = row ? view.locations?.get(row.battleId) : undefined
-  const resourceId = row?.goal?.resourceId
-  const raids = view.view
   return (
     <span
       className="flex min-w-0 flex-1 items-center gap-2"
@@ -61,25 +58,20 @@ function TopRowSummary({
           </span>
         </span>
       ) : null}
-      {resourceId !== undefined && raids ? (
-        <span className="flex shrink-0 items-center gap-1">
-          <ResourceIcon
-            label={raids.resourceLabels.get(resourceId) ?? resourceId}
-            size="row"
-            visual={raids.resourceVisuals.get(resourceId)}
-          />
-          <ResourceStock
-            progress={raids.resourceTotals.get(resourceId)}
-            testId={`${testId}-stock`}
-          />
-        </span>
+      {row ? (
+        <RowDrop
+          battleId={row.battleId}
+          resourceId={row.goal?.resourceId}
+          testId={testId}
+          view={view}
+        />
       ) : null}
       {chip}
     </span>
   )
 }
 
-/** The raid objective's folded row: its top raid node and "N raids" (or the battles to go while the
+/** The raid objective's row: its top raid node and "N raids" (or the battles to go while the
  * raids load or when none fit). */
 export function HreRaidsSummary({
   raids,
@@ -112,7 +104,7 @@ export function HreRaidsSummary({
   )
 }
 
-/** The manual objectives' folded row: the top node to fight by hand and "N battles". */
+/** The manual objectives' row: the top node to fight by hand and "N battles". */
 export function HreBattlesSummary({ raids }: { raids: HreRaids }) {
   const { t } = useTranslation("hre")
   const battles = raids.plan?.battles
@@ -141,7 +133,7 @@ export function HreBattlesSummary({ raids }: { raids: HreRaids }) {
   )
 }
 
-/** The raid objective's fold: the energy note, then its raids with their totals, empty state and
+/** The raid objective's details: the energy note, then its raids with their totals, empty state and
  * the no-drop Indomitus alternative. */
 export function HreRaidsDetails({
   raids,
@@ -208,7 +200,7 @@ export function HreRaidsDetails({
   )
 }
 
-/** The manual objectives' fold: the battles to fight by hand with their node rules, then the teams,
+/** The manual objectives' details: the battles to fight by hand with their node rules, then the teams,
  * one per group of nodes that allow the same factions. */
 export function HreBattlesDetails({
   raids,

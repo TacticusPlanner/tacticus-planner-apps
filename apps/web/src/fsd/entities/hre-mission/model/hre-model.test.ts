@@ -236,6 +236,14 @@ describe("progress", () => {
       hreAllDone(hreMissions)
     )
   })
+
+  it("completes a mission at any progress, keeping it at its targets", () => {
+    const partial = progress({ mission: 5, progress: [1200, 0] })
+    expect(isMissionComplete(partial, hreMissions)).toBe(false)
+    const next = advanceMission(partial, hreMissions)
+    expect(next).toMatchObject({ mission: 6, progress: [0, 0] })
+    expect(next.byMission[5]).toEqual([10_000, 100])
+  })
 })
 
 describe("objectives", () => {
@@ -818,30 +826,71 @@ describe("selectTeamPlans", () => {
     ])
   })
 
-  it("plays the manual objectives in every spare-token mode, waves first for kills", () => {
-    // Mission 2: Chaos kills.
-    expect(modes(progress({ mission: 2, progress: [5, 0] }), all)).toEqual([
-      "battle:alliance",
-      "onslaught:alliance",
-      "salvageRun:alliance",
-      "arena:alliance",
-    ])
-    // Mission 6: summon-free wins, Arena first.
-    expect(modes(progress({ mission: 6, progress: [2500, 0] }), all)).toEqual([
+  it("plays the manual objectives in the spare-token modes, Arena first, Onslaught first for abilities", () => {
+    // Mission 6: healing and summon-free wins, Arena, Salvage Run, then Onslaught.
+    expect(modes(progress({ mission: 6 }), all)).toEqual([
       "battle:summonFree",
       "arena:summonFree",
-      "onslaught:summonFree",
       "salvageRun:summonFree",
+      "onslaught:summonFree",
     ])
-    // Mission 4 already plays Arena for its token objective.
+    // Mission 3: ability uses, Onslaught first.
+    expect(modes(progress({ mission: 3, progress: [20, 0] }), all)).toEqual([
+      "battle:abilities",
+      "onslaught:abilities",
+      "arena:abilities",
+      "salvageRun:abilities",
+    ])
+    // Mission 5: ability damage, Guild Raid first, then Onslaught.
+    const withGuildRaid = { ...all, guildRaid: { held: 3, need: 2 } }
+    expect(modes(progress({ mission: 5 }), withGuildRaid)).toEqual([
+      "battle:strongest",
+      "guildRaid:strongest",
+      "onslaught:strongest",
+      "arena:strongest",
+      "salvageRun:strongest",
+    ])
+    // Guild Raid serves only ability damage.
+    expect(
+      modes(progress({ mission: 3, progress: [20, 0] }), withGuildRaid)
+    ).not.toContain("guildRaid:abilities")
+    expect(modes(progress({ mission: 6 }), withGuildRaid)).not.toContain(
+      "guildRaid:summonFree"
+    )
+    // No spare tokens, no spare teams.
+    expect(modes(progress({ mission: 3 }))).toEqual(["battle:abilities"])
+  })
+
+  it("leaves out the overkill modes for kills and stops once the kills are covered", () => {
+    // Mission 1: 5 melee kills. Arena's 3 spare battles cover them; Onslaught is overkill.
+    expect(modes(progress({ mission: 1, progress: [2, 0] }), all)).toEqual([
+      "battle:melee",
+      "arena:melee",
+    ])
+    // Without spare Arena tokens, Salvage Run and Onslaught are still overkill for 5 kills.
+    expect(
+      modes(progress({ mission: 1, progress: [2, 0] }), {
+        onslaught: all.onslaught,
+        salvageRun: all.salvageRun,
+      })
+    ).toEqual(["battle:melee"])
+    // Mission 2: 10 alliance kills, covered by 3 Arena battles.
+    expect(modes(progress({ mission: 2, progress: [5, 0] }), all)).toEqual([
+      "battle:alliance",
+      "arena:alliance",
+    ])
+    // Mission 4 already plays Arena for its token objective; 50 ranged kills take both others.
     expect(modes(progress({ mission: 4 }), all)).toEqual([
       "battle:ranged",
       "arena:ranged",
-      "onslaught:ranged",
       "salvageRun:ranged",
+      "onslaught:ranged",
     ])
-    // No spare tokens, no spare teams.
-    expect(modes(progress({ mission: 3 }))).toEqual(["battle:abilities"])
+    // 45 of 50 done: 5 left, so neither Salvage Run nor Onslaught.
+    expect(modes(progress({ mission: 4, progress: [0, 45] }), all)).toEqual([
+      "battle:ranged",
+      "arena:ranged",
+    ])
   })
 
   it("names the spare and fields the whole alliance for Onslaught ability uses", () => {
@@ -877,15 +926,18 @@ describe("spareTokens", () => {
         arena: 20,
         onslaught: 0,
         salvageRun: null,
+        guildRaid: 9,
       })
     ).toEqual({
       arena: { held: 20, need: tokenNeeds(state, hreMissions).arena },
+      guildRaid: { held: 9, need: tokenNeeds(state, hreMissions).guildRaid },
     })
     expect(
       spareTokens(state, hreMissions, {
         arena: null,
         onslaught: null,
         salvageRun: null,
+        guildRaid: null,
       })
     ).toEqual({})
   })

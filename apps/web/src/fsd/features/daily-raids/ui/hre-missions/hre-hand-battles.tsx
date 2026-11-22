@@ -59,7 +59,6 @@ export function HreHandBattles({
   ].filter((rule): rule is string => !!rule)
   return (
     <div className="space-y-2" data-testid="hre-battles">
-      <h3 className="font-medium">{t("raids.battles.title")}</h3>
       <p
         className="text-sm text-muted-foreground"
         data-testid="hre-battles-note"

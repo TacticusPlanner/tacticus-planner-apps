@@ -93,6 +93,14 @@ The player SHALL be able to pick a target step: unlock, a star, or an ascension,
 - the event points needed: the lowest milestone whose cumulative currency covers the tier cost minus missions, payouts and crates
 - the points per day still needed over the days left
 
+The needs come from the projection, so before any event points are entered, a picked target SHALL show "Enter your event points above to see what this target needs." under it instead of nothing (Severyn, 2026-11).
+
+#### Scenario: Target picked before any points
+
+- **GIVEN** no event points entered
+- **WHEN** the player picks a target
+- **THEN** the message to enter event points shows under the target, and the needs show once points are entered
+
 #### Scenario: Worked example for Epic 1 red star
 
 - **GIVEN** target Epic 1 red star (460), the 2,501 to 5,000 bracket, and 0 points on day 1
