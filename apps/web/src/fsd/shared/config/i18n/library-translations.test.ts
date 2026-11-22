@@ -77,7 +77,6 @@ describe("Library translations", () => {
       expect(Object.keys(locale.npcs.tour.steps)).toEqual([
         "filters",
         "list",
-        "picker",
         "variation",
         "level",
         "stats",

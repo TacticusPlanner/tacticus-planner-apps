@@ -16,21 +16,6 @@ function useSharedSteps() {
         title: t("raidBosses.tour.steps.tabs.title"),
         content: t("raidBosses.tour.steps.tabs.content"),
       } satisfies Step,
-      bosses: {
-        target: '[data-testid="raid-boss-list-bosses"]',
-        title: t("raidBosses.tour.steps.bosses.title"),
-        content: t("raidBosses.tour.steps.bosses.content"),
-      } satisfies Step,
-      primes: {
-        target: '[data-testid="raid-boss-list-primes"]',
-        title: t("raidBosses.tour.steps.primes.title"),
-        content: t("raidBosses.tour.steps.primes.content"),
-      } satisfies Step,
-      mobilePicker: {
-        target: '[data-testid="raid-boss-mobile-picker"]',
-        title: t("raidBosses.tour.steps.mobilePicker.title"),
-        content: t("raidBosses.tour.steps.mobilePicker.content"),
-      } satisfies Step,
       progression: {
         target: '[data-testid="raid-boss-progression"]',
         title: t("raidBosses.tour.steps.progression.title"),
@@ -87,9 +72,6 @@ export function useRaidBossesTutorial(
 ): TourPageSteps {
   const {
     tabs,
-    bosses,
-    primes,
-    mobilePicker,
     progression,
     primeModifiers,
     adjustedStats,
@@ -102,6 +84,7 @@ export function useRaidBossesTutorial(
   } = useSharedSteps()
 
   const details = useMemo<TourPageSteps>(() => {
+    // Without an entity the tab is the season reference; with one, that unit's page.
     if (!hasEntityDetail) {
       return {
         desktop: [
@@ -118,15 +101,12 @@ export function useRaidBossesTutorial(
     return {
       desktop: [
         { ...tabs, placement: "bottom" },
-        { ...bosses, placement: "right" },
-        { ...primes, placement: "right" },
         { ...progression, placement: "bottom" },
         { ...primeModifiers, placement: "left" },
         { ...adjustedStats, placement: "top" },
       ],
       mobile: [
         { ...tabs, placement: "bottom" },
-        { ...mobilePicker, placement: "bottom" },
         { ...progression, placement: "bottom" },
         { ...primeModifiers, placement: "top" },
         { ...adjustedStats, placement: "top" },
@@ -134,11 +114,8 @@ export function useRaidBossesTutorial(
     }
   }, [
     adjustedStats,
-    bosses,
     hasEntityDetail,
-    mobilePicker,
     primeModifiers,
-    primes,
     progression,
     seasonBoard,
     tabs,

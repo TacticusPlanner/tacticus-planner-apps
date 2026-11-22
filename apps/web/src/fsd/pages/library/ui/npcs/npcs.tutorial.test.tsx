@@ -5,42 +5,27 @@ import { renderHook } from "@/test/render"
 import { useNpcsTutorial } from "./npcs.tutorial"
 
 describe("useNpcsTutorial", () => {
-  it("targets the desktop filter bar, list, selectors, and stats", () => {
-    const { result } = renderHook(() => useNpcsTutorial())
+  it("covers the toolbar and the tiles on the list, the same on both forms", () => {
+    const { result } = renderHook(() => useNpcsTutorial(false))
 
     expect(result.current.desktop.map((step) => step.target)).toEqual([
       '[data-testid="npcs-toolbar"]',
       '[data-testid="npcs-list"]',
-      '[data-testid="npcs-variation-select"]',
-      '[data-testid="npcs-level-select"]',
-      '[data-testid="npcs-stats"]',
-      '[data-testid="npc-encounters"]',
     ])
     expect(result.current.desktop[0]?.title).toBe("Filter the roster")
+    expect(result.current.mobile).toEqual(result.current.desktop)
   })
 
-  it("ends both tours on the encounters section with translated copy", () => {
-    const { result } = renderHook(() => useNpcsTutorial())
+  it("covers the selectors, stats and encounters on an NPC's page", () => {
+    const { result } = renderHook(() => useNpcsTutorial(true))
 
-    expect(result.current.desktop.at(-1)?.title).toBe("Where it is fought")
-    expect(result.current.mobile?.at(-1)?.target).toBe(
-      '[data-testid="npc-encounters"]'
-    )
-  })
-
-  it("targets the mobile combobox, selectors, and stats", () => {
-    const { result } = renderHook(() => useNpcsTutorial())
-
-    expect(result.current.mobile?.map((step) => step.target)).toEqual([
-      '[data-testid="npcs-toolbar"]',
-      '[data-testid="npcs-combobox"]',
+    expect(result.current.desktop.map((step) => step.target)).toEqual([
       '[data-testid="npcs-variation-select"]',
       '[data-testid="npcs-level-select"]',
       '[data-testid="npcs-stats"]',
       '[data-testid="npc-encounters"]',
     ])
-    expect(result.current.mobile?.[1]?.content).toBe(
-      "Open the picker and search for a unit. Variations of the same unit are grouped under one entry."
-    )
+    expect(result.current.desktop.at(-1)?.title).toBe("Where it is fought")
+    expect(result.current.mobile).toEqual(result.current.desktop)
   })
 })
