@@ -8,7 +8,7 @@ Tells the player where to raid today so that the current HRE mission's campaign-
 
 ### Requirement: Raid suggestions appear only for a current campaign objective
 
-The section SHALL be titled "Campaign for mission N" on a running HRE when the current mission has an open objective that raids serve, or one that only battles fought by hand serve (see "Manual objectives get a list of battles to fight by hand"). Raids SHALL serve only `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles") and `lightningVictories` ("Win N lightning victories") objectives below their target; the battles still needed SHALL be the target minus the recorded progress. Raids SHALL NOT be suggested for any other objective, because a raid counts no kills, damage, healing, ability uses or lineup wins (Severyn, 2026-10). When the current mission has neither, the section SHALL say its campaign objective is complete when it has one, or else name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
+On a running HRE, raids SHALL be suggested only when the current mission has an open objective that raids serve, and battles to fight by hand only when it has one that only those battles serve (see "Manual objectives get a list of battles to fight by hand"). Both lists sit in folds under the objectives they serve (see "Raids and battles fold under the objectives they serve"); in the rest of this spec, "the section" means those folds. Raids SHALL serve only `campaignWins` ("Win N campaign battles"), `campaignRaids` ("Raid N campaign battles") and `lightningVictories` ("Win N lightning victories") objectives below their target; the battles still needed SHALL be the target minus the recorded progress. Raids SHALL NOT be suggested for any other objective, because a raid counts no kills, damage, healing, ability uses or lineup wins (Severyn, 2026-10). When the current mission has neither, the "Campaign battles" section (see "The Campaign battles section holds the outlook") SHALL say its campaign objective is complete when it has one, or else name the next mission that has a campaign objective and its target, or say that no campaign missions are left. It SHALL NOT list raids for a later mission.
 
 Assumptions:
 
@@ -18,12 +18,12 @@ Assumptions:
 #### Scenario: Mission 5 in progress
 
 - **GIVEN** the current mission is 5 with 37 / 100 campaign wins
-- **THEN** the section is titled "Campaign for mission 5" and its raids show "63 battles to go"
+- **THEN** the "Win 100 campaign battles" objective has a Raids fold for 63 battles to go
 
 #### Scenario: Current mission has no campaign objective
 
 - **GIVEN** the current mission is 8 with 20,000 / 20,000 damage and its Guild Raid tokens still open
-- **THEN** no list is shown, and the section reads "Next campaign mission: 16, Raid 25 campaign battles"
+- **THEN** no raids or battles fold is shown, and the Campaign battles section reads "Next campaign mission: 16, Raid 25 campaign battles"
 
 #### Scenario: Campaign objective already met
 
@@ -33,12 +33,12 @@ Assumptions:
 #### Scenario: Every objective that needs the campaign is met
 
 - **GIVEN** mission 19 at 75 / 75 campaign wins and 100 / 100 melee kills
-- **THEN** no list is shown, and the section says the campaign objective is complete
+- **THEN** no fold is shown, and the Campaign battles section says the campaign objective is complete
 
 #### Scenario: Preview event
 
 - **GIVEN** the tab previews an upcoming HRE
-- **THEN** no raid list is shown; only the remaining-campaign summary (see below) is shown, from mission 1
+- **THEN** no fold is shown; the Campaign battles section shows only the remaining-campaign summary (see below), from mission 1
 
 ### Requirement: Candidate locations follow raid eligibility and today's limits
 
@@ -265,14 +265,14 @@ Raid suggestions SHALL use every candidate node whatever the mission's other obj
 - **GIVEN** mission 16 with its Xenos kills and campaign raids open
 - **THEN** the raids are suggested on every candidate node, and the Xenos kills get a "Fight by hand" list of nodes where Xenos can deploy
 
-### Requirement: Rows show the goals a node feeds
+### Requirement: Rows look like regular raid card rows
 
-Each suggested node SHALL show the characters of the in-scope goals it feeds, as the HSE farm list does.
+Each suggested node SHALL be shown as a regular raid card row: its battle, the goal drop with "owned/target", and the running event's points. Rows SHALL NOT show the portraits of the goals' characters (Severyn, 2026-11), so a row stays on one line on a phone.
 
 #### Scenario: Node feeds two goals
 
 - **GIVEN** a suggested node that drops a material two goals still need
-- **THEN** its row shows both goals' character icons
+- **THEN** its row shows the material's icon with "owned/target", and no character portraits
 
 ### Requirement: All-alliance suggestions wait for the featured hero
 
@@ -353,16 +353,42 @@ Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) 
 - **WHEN** the list renders
 - **THEN** it shows an "Octarius Mirror Elite" group with Battle 26, an "Indomitus Mirror Elite" group with Battle 7 and Battle 38, then an "Octarius Mirror Elite" group with Battle 15, 21 and 39, each row keeping its own badges and drop
 
-### Requirement: The HRE raids section has raid list controls
+### Requirement: The HRE tab has raid list controls
 
-The HRE tab's raids section SHALL show, under its title, the Dailies project selector (with "All projects") and the Raids Filters action, and SHALL NOT show the Planning Settings action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HSE tab. The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (except the campaign-type filter, as before) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. A past event SHALL NOT show the raids section.
+The HRE tab's toolbar SHALL show the Dailies project selector (with "All projects") and the Raids Filters action while the event is running or previewed, and SHALL NOT show the Planning Settings action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HSE tab. The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (except the campaign-type filter, as before) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. A past event SHALL NOT show the controls, the folds or the Campaign battles section.
 
-#### Scenario: Controls in the raids section
+#### Scenario: Controls in the toolbar
 
 - **GIVEN** an HRE is running
-- **THEN** the raids section shows the project selector and the Raids Filters action, and the title row shows neither
+- **THEN** the toolbar shows the project selector and the Raids Filters action, and no Planning Settings action
 
 #### Scenario: Project picked on Today
 
 - **GIVEN** a project is selected on Today
 - **THEN** the HRE suggestions rank nodes that feed that project's goals first
+
+### Requirement: Raids and battles fold under the objectives they serve
+
+Under each open objective of the current mission card, the tab SHALL show one fold per suggestion that serves it: the raids, the battles to fight by hand, and the token teams (see the hre-mission-teams capability). Every fold SHALL be closed by default, on desktop and on mobile, and its closed row SHALL fit one line: the first suggested node or the team's portraits, and the count ("37 raids", "10 battles", "Up to 3 battles"). Opening a fold SHALL show the full list with its notes. An objective already at its target SHALL show no folds.
+
+When the battles to fight by hand serve two open objectives of the mission, the fold SHALL sit under the first of them, and the other SHALL say "The battles above count for this objective too." instead of a second fold. Raids SHALL fold only under `campaignWins`, `campaignRaids` and `lightningVictories` objectives.
+
+#### Scenario: Mission 5
+
+- **GIVEN** mission 5 with 6,000 / 10,000 ability damage and 37 / 100 campaign wins, and spare Onslaught tokens
+- **THEN** the ability damage shows a closed "Fight by hand" fold and a closed Onslaught team fold
+- **AND** the campaign wins show a closed Raids fold whose row names its first node and the raid count
+
+#### Scenario: Opening a fold
+
+- **WHEN** the player opens the Raids fold
+- **THEN** the grouped raid rows, the totals and the notes are shown, and the other folds stay closed
+
+### Requirement: The Campaign battles section holds the outlook
+
+The side column SHALL hold a section titled "Campaign battles" below the event pace and the tokens card (on mobile, after them and before the mission list). It SHALL show the remaining-campaign summary (see "Remaining campaign battles are summarised across missions"), a loading or error state while the raid data is not ready, and, when the current mission has no raids or battles to suggest, the notice of "Raid suggestions appear only for a current campaign objective". It SHALL NOT list raids itself.
+
+#### Scenario: Mission 5
+
+- **GIVEN** mission 5 with its campaign wins open
+- **THEN** the Campaign battles section shows only the remaining-campaign summary, and the raids are in the objective's fold

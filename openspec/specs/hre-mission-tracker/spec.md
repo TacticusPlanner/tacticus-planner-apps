@@ -190,3 +190,35 @@ A selected upcoming instance SHALL render as the preview does. A past instance S
 
 - **GIVEN** the URL holds `?event=gone`
 - **THEN** the tab shows the default event and removes the parameter
+
+### Requirement: The HRE tab lays out the tracker first
+
+On desktop, the left column SHALL hold the current mission card, with each objective's 'i' and suggestion folds, and then the mission list; the right column SHALL hold the Event pace card, the tokens card and the Campaign battles section, in that order. On mobile, the tab SHALL show one column in this order: the current mission card, the Event pace card, the tokens card, the Campaign battles section and the mission list, which starts folded. Every control SHALL stay usable at phone width without horizontal scrolling.
+
+#### Scenario: Phone
+
+- **GIVEN** a running event on a phone
+- **THEN** the current mission card comes first and the Event pace card right after it
+
+#### Scenario: Desktop
+
+- **GIVEN** a running event on desktop
+- **THEN** the tracker and mission list sit on the left, and the pace, tokens and Campaign battles cards on the right
+
+### Requirement: The HRE tab reports how it is used
+
+The tab SHALL report these analytics events, without progress values, points or ranks:
+
+- `hre_tab_viewed` once per visit and shown event, with the event's state (running, upcoming or past) and the current mission of a running event
+- `hre_event_switched` when another event is picked, with its state
+- `hre_objective_progress_changed` when "+1", "+10" or "Mark done" is pressed, with the mission, the objective kind and the method; typing is not reported
+- `hre_fold_opened` when a suggestion fold opens, with the mission, the objective kind, the suggestion (raids, battles, or a token mode) and whether it is a spare-token team
+- `hre_objective_info_opened` when an objective's 'i' opens, with the objective kind
+- `hre_location_opened` when a suggested battle's enemies are opened
+- `hre_mission_completed` when "Mission complete" is pressed, with the mission
+
+#### Scenario: Opening a fold
+
+- **GIVEN** mission 5 is current
+- **WHEN** the player opens the Raids fold under the campaign wins
+- **THEN** `hre_fold_opened` is reported with mission 5, kind `campaignWins`, suggestion `raids` and spare false
