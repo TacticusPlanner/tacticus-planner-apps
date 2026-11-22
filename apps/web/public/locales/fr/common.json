@@ -1,8 +1,7 @@
 {
   "app": {
     "name": "Tacticus Planner",
-    "beta": "Bêta",
-    "staging": "Staging"
+    "beta": "Bêta"
   },
   "common": {
     "cancel": "Annuler",

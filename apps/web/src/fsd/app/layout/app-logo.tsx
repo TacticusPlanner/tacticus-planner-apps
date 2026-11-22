@@ -4,7 +4,6 @@ import { Link } from "react-router"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 import { appEnvironment } from "@/shared/config"
-import { environmentBadgeLabelKey } from "./environment-badge"
 
 export function AppLogo({ className }: { className?: string }) {
   return (
@@ -53,7 +52,10 @@ export function EnvironmentBadge({ className }: { className?: string }) {
       data-testid="app-environment-badge"
       variant="outline"
     >
-      {t(environmentBadgeLabelKey(appEnvironment))}
+      {
+        // Staging is a team-facing marker, so it stays in English in every language.
+        appEnvironment === "staging" ? "Staging" : t("app.beta")
+      }
     </Badge>
   )
 }

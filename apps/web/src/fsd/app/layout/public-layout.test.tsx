@@ -173,7 +173,7 @@ describe("PublicLayout", () => {
     renderLayout()
 
     expect(screen.getByTestId("app-environment-badge")).toHaveTextContent(
-      "app.staging"
+      "Staging"
     )
   })
 
