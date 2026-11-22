@@ -725,7 +725,9 @@ describe("buildCollectionView with a query", () => {
   })
 
   it("lists characters and Machines of War by what they can summon", () => {
-    const view = (summons: CollectionQuery["summons"]) =>
+    const [passive, active, none] = (
+      ["passive", "active", "none"] as const
+    ).map((summons) =>
       ids(
         buildCollectionView(
           catalog,
@@ -734,11 +736,12 @@ describe("buildCollectionView with a query", () => {
           query({ summons })
         )
       ).toSorted(compareCodeUnits)
+    )
 
-    expect(view("passive")).toEqual(["adeptCelestine", "blackPossession"])
-    expect(view("active")).toEqual(["necroSpyder", "ultraDreadnought"])
-    expect(view("none")).toContain("blackForgefiend")
-    expect(view("none")).not.toContain("blackPossession")
+    expect(passive).toEqual(["adeptCelestine", "blackPossession"])
+    expect(active).toEqual(["necroSpyder", "ultraDreadnought"])
+    expect(none).toContain("blackForgefiend")
+    expect(none).not.toContain("blackPossession")
   })
 
   it("matches an unowned character's starting rarity and never an unowned Machine of War", () => {

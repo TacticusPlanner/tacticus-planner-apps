@@ -3,13 +3,13 @@ import type { UnitId } from "@workspace/game-domain"
 
 import { passiveSummonerIds } from "./summoners"
 
+const unit = (id: string, summons: "none" | "active" | "passive") => ({
+  id: id as UnitId,
+  summons,
+})
+
 describe("passiveSummonerIds", () => {
   it("keeps only the units whose summons are passive", () => {
-    const unit = (id: string, summons: "none" | "active" | "passive") => ({
-      id: id as UnitId,
-      summons,
-    })
-
     expect([
       ...passiveSummonerIds([
         unit("blackPossession", "passive"),
