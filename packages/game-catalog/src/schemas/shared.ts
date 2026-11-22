@@ -65,7 +65,7 @@ export type AbilityKind = (typeof abilityKinds)[number]
 export const abilityAttacks = ["melee", "ranged"] as const
 export type AbilityAttack = (typeof abilityAttacks)[number]
 
-export const unitAbilitySchema = z.looseObject({
+const unitAbilitySchema = z.looseObject({
   id: z.string(),
   kind: z.enum(abilityKinds),
   roles: z.array(z.enum(abilityRoles)),
