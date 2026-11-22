@@ -186,8 +186,8 @@ describe("AddGoalsToProjectSheet", () => {
 
     await screen.findByTestId("add-goals-row-goal-1")
     expect(screen.getByTestId("add-goals-group-none")).toHaveAttribute(
-      "aria-pressed",
-      "true"
+      "data-state",
+      "on"
     )
 
     await user.click(screen.getByTestId("add-goals-group-unit"))

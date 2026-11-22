@@ -23,6 +23,35 @@ const activeProject = {
 }
 
 describe("ManageProjectsSheet", () => {
+  it("opens as a form-width dialog whose Cancel closes without saving", async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    const actions = {
+      create: vi.fn(),
+      pending: false,
+      reorder: vi.fn(),
+      save: vi.fn(),
+      remove: vi.fn(),
+    }
+
+    render(
+      <ManageProjectsSheet
+        actions={actions}
+        onOpenChange={onOpenChange}
+        open
+        project={activeProject as never}
+      />
+    )
+
+    expect(screen.getByTestId("manage-projects-sheet")).toHaveClass(
+      "sm:max-w-2xl"
+    )
+    await user.click(screen.getByText("goals.project.cancel"))
+
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(actions.save).not.toHaveBeenCalled()
+  })
+
   it("creates a project with a blank form and closes on success", async () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
