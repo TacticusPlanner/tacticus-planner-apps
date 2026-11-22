@@ -909,6 +909,7 @@ describe("selectTeamPlans", () => {
       spare: { held: 3, need: 1 },
       reserve: null,
       wholeTrack: true,
+      abilityFocus: "uses",
     })
     expect(plans[0]).toMatchObject({ spare: null, wholeTrack: false })
     expect(
@@ -921,6 +922,20 @@ describe("selectTeamPlans", () => {
       preferPsychic: true,
       wholeTrack: false,
     })
+  })
+})
+
+const abilityFocusOf = (mission: number) =>
+  selectTeamPlans(progress({ mission }), hreMissions).map(
+    (plan) => plan.abilityFocus
+  )
+
+describe("abilityFocus", () => {
+  it("shapes every team for ability damage, then ability uses, else not at all", () => {
+    expect(abilityFocusOf(5)).toContain("damage")
+    expect(new Set(abilityFocusOf(5))).toEqual(new Set(["damage"]))
+    expect(new Set(abilityFocusOf(3))).toEqual(new Set(["uses"]))
+    expect(new Set(abilityFocusOf(1))).toEqual(new Set([null]))
   })
 })
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import type { UnitId } from "@workspace/game-domain"
 
+import { compareCodeUnits } from "@/shared/lib"
 import { hseVariant } from "@/test/fixtures/home-screen-event-scoring"
 import {
   hseTeamsFixtureCharacters,
@@ -18,16 +19,32 @@ type Overrides = Partial<Omit<BuildHreTeamInput, "plan">> & {
   plan?: Partial<BuildHreTeamInput["plan"]>
   /** Ranged damage type per unit id (the fixture catalog has none). */
   ranged?: Record<string, string>
+  /** Curated ability tags per unit id (the fixture catalog has none). */
+  abilities?: Record<string, ReturnType<typeof ability>[]>
+}
+
+function ability(
+  kind: "active" | "passive",
+  roles: string[],
+  target: "none" | "single" | "aoe",
+  attack: "melee" | "ranged" | null = null
+) {
+  return { kind, roles, target, attack }
 }
 
 function build(overrides: Overrides = {}): HreTeam | null {
-  const { characters, plan, ranged = {}, ...rest } = overrides
+  const { characters, plan, ranged = {}, abilities = {}, ...rest } = overrides
   const read = hseTeamsFixtureRead(characters)
   if (read.status !== "ready") throw new Error("fixture read")
   const catalog = new Map(
     [...read.catalog].map(([id, view]) => [
       id,
-      { ...view, meleeDamage: "Power", rangedDamage: ranged[id] ?? null },
+      {
+        ...view,
+        meleeDamage: "Power",
+        rangedDamage: ranged[id] ?? null,
+        abilities: abilities[id] ?? [],
+      },
     ])
   )
   return buildHreTeam({
@@ -137,6 +154,85 @@ describe("buildHreTeam", () => {
     expect(ids(team)).toHaveLength(5)
     expect(ids(team)).not.toContain("ultraCalgar")
     expect(ids(team)).not.toContain("thousAhriman")
+  })
+
+  it("counts an active that is itself a ranged or melee attack for ranged and melee kills", () => {
+    const ranged = { ultraCalgar: "Bolter", thousAhriman: "Psychic" }
+    const rangedTeam = build({
+      plan: { rule: "ranged", size: 5 },
+      ranged,
+      // Azrael has no ranged attack, but his active is one.
+      abilities: {
+        darkaAzrael: [ability("active", ["damage"], "single", "ranged")],
+      },
+    })
+    expect(rangedTeam).toMatchObject({ status: "ready", eligibleCount: 3 })
+    expect(ids(rangedTeam)).toContain("darkaAzrael")
+
+    const meleeTeam = build({
+      plan: { rule: "melee", size: 5 },
+      ranged,
+      // Calgar has a ranged attack, but his active strikes in melee.
+      abilities: {
+        ultraCalgar: [ability("active", ["damage"], "aoe", "melee")],
+      },
+    })
+    expect(ids(meleeTeam)).toContain("ultraCalgar")
+    expect(ids(meleeTeam)).not.toContain("thousAhriman")
+  })
+
+  it("leaves units whose abilities deal no damage out of an ability damage team, AoE damage first", () => {
+    const damage = ability("active", ["damage"], "single")
+    const team = build({
+      plan: { rule: "strongest", abilityFocus: "damage" },
+      abilities: {
+        // Calgar, the strongest, deals no damage with his abilities.
+        ultraCalgar: [ability("active", ["support"], "aoe")],
+        // Typhus, far weaker, deals AoE damage.
+        deathTyphus: [ability("active", ["damage"], "aoe")],
+        darkaAzrael: [damage],
+        thousAhriman: [damage],
+        bloodMephiston: [damage],
+        ultraTigurius: [ability("passive", ["damage"], "single")],
+      },
+    })
+    expect(team).toMatchObject({ status: "ready", eligibleCount: 5 })
+    expect(ids(team)[0]).toBe("deathTyphus")
+    expect(ids(team)).not.toContain("ultraCalgar")
+  })
+
+  it("keeps every unit for ability damage when too few deal damage with abilities", () => {
+    const team = build({
+      plan: { rule: "strongest", abilityFocus: "damage" },
+      abilities: { deathTyphus: [ability("active", ["damage"], "aoe")] },
+    })
+    expect(team).toMatchObject({
+      status: "ready",
+      eligibleCount: hseTeamsFixtureCharacters.length,
+    })
+    expect(ids(team)[0]).toBe("deathTyphus")
+    expect(ids(team)).toContain("ultraCalgar")
+  })
+
+  it("puts single-target and no-target actives first for ability uses", () => {
+    const aoeDamage = ability("active", ["damage"], "aoe")
+    const team = build({
+      plan: { rule: "abilities", abilityFocus: "uses" },
+      abilities: {
+        ultraCalgar: [aoeDamage],
+        darkaAzrael: [aoeDamage],
+        thousAhriman: [aoeDamage],
+        bloodMephiston: [ability("active", ["support"], "none")],
+        astraPrimarisPsy: [ability("active", ["damage"], "single")],
+        // A passive does not make an ability to use.
+        necroSpyder: [ability("passive", ["utility"], "none")],
+      },
+    })
+    expect(ids(team).slice(0, 2).toSorted(compareCodeUnits)).toEqual([
+      "astraPrimarisPsy",
+      "bloodMephiston",
+    ])
+    expect(ids(team)).not.toContain("necroSpyder")
   })
 
   it("fields the strongest units of any alliance for kills and damage", () => {
