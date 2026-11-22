@@ -95,6 +95,32 @@ describe("CampaignBattleDialog", () => {
     ])
   })
 
+  it("opens as a content-height details sheet on a phone", async () => {
+    setViewportWidth(390)
+    render(
+      <CampaignBattleDialog
+        onClose={() => {}}
+        target={{
+          battleId: battle.id,
+          title: { campaignName: "Indomitus", nodeLabel: "Elite 40" },
+        }}
+      />,
+      { route: "/", wrapper: i18nWrapper(i18n) }
+    )
+
+    const dialog = await screen.findByRole("dialog")
+    expect(dialog).toHaveAttribute("data-slot", "drawer-content")
+    expect(within(dialog).getByRole("heading", { level: 2 })).toHaveTextContent(
+      "Indomitus Elite 40"
+    )
+    expect(
+      await within(dialog).findByTestId("campaign-battle-summary")
+    ).toHaveTextContent("10 energy")
+    expect(
+      await within(dialog).findAllByTestId("battle-enemy-tile")
+    ).toHaveLength(2)
+  })
+
   it("says so when the battle is not in the game data", async () => {
     render(
       <CampaignBattleDialog
