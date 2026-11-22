@@ -963,8 +963,7 @@
       "dailyEnergy": "Energie pro Tag",
       "xpBookRarity": "XP-Buch-Seltenheit",
       "xpBookRarityHint": "Die Anforderungen zum Levelaufstieg zeigen die zusätzliche Buchanzahl in dieser Seltenheit.",
-      "save": "Einstellungen speichern",
-      "cancel": "Abbrechen",
+      "done": "Fertig",
       "error": "Die Planungseinstellungen konnten nicht gespeichert werden."
     },
     "v1Import": {

@@ -963,8 +963,7 @@
       "dailyEnergy": "Energy per day",
       "xpBookRarity": "XP-book rarity",
       "xpBookRarityHint": "Required-level guidance shows its additional book count in this rarity.",
-      "save": "Save settings",
-      "cancel": "Cancel",
+      "done": "Done",
       "error": "Planning settings could not be saved."
     },
     "v1Import": {

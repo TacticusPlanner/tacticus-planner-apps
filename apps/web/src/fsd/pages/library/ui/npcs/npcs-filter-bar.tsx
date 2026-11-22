@@ -1,22 +1,6 @@
-import { useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Check, ChevronsUpDown, X } from "lucide-react"
 import { damageTypeIcon, factionIcon, traitIcon } from "@workspace/game-catalog"
-import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@workspace/ui/components/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover"
 import {
   Select,
   SelectContent,
@@ -26,15 +10,10 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { Switch } from "@workspace/ui/components/switch"
-import { cn } from "@workspace/ui/lib/utils"
 
 import type { NpcAttackFilter, NpcFilters } from "@/entities/npc"
-import {
-  closestOverlayContent,
-  EntityIcon,
-  FilterField,
-  useCommandListId,
-} from "@/shared/ui"
+import { EntityIcon, FilterField, MultiSelect } from "@/shared/ui"
+import type { SelectOption } from "@/shared/ui"
 
 import type { NpcFilterOptions } from "./npcs-page.view-model"
 
@@ -42,131 +21,15 @@ const ANY = "__any__"
 
 type Option = { id: string; name: string; icon?: string }
 
-/** A searchable multi-select over id/name options, each shown with its game icon. */
-function MultiSelect({
-  label,
-  placeholder,
-  clearLabel,
-  options,
-  value,
-  onChange,
-  testId,
-}: {
-  label: string
-  /** Shown while nothing is picked, e.g. "Any trait". */
-  placeholder: string
-  clearLabel: string
-  options: Option[]
-  value: readonly string[]
-  onChange: (next: string[]) => void
-  testId: string
-}) {
-  const { t } = useTranslation("library")
-  const [open, setOpen] = useState(false)
-  const [listId, listRef] = useCommandListId()
-  // Inside the mobile filter sheet the list must portal into the sheet: Radix's scroll lock blocks
-  // scrolling in a popover portaled to `body`. Elsewhere it keeps the default portal.
-  const triggerRef = useRef<HTMLButtonElement>(null)
-  const [portalContainer, setPortalContainer] = useState<HTMLElement>()
-  const selectedNames = options
-    .filter((option) => value.includes(option.id))
-    .map((option) => option.name)
-
-  const toggle = (id: string) =>
-    onChange(
-      value.includes(id) ? value.filter((v) => v !== id) : [...value, id]
-    )
-
-  return (
-    <Popover
-      open={open}
-      onOpenChange={(next) => {
-        if (next) setPortalContainer(closestOverlayContent(triggerRef.current))
-        setOpen(next)
-      }}
-    >
-      <div className="relative flex items-center">
-        <PopoverTrigger asChild>
-          <Button
-            ref={triggerRef}
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            aria-controls={listId}
-            aria-label={label}
-            className="w-full justify-between font-normal"
-            data-testid={testId}
-          >
-            <span className="truncate">
-              {selectedNames.length > 0
-                ? selectedNames.join(", ")
-                : placeholder}
-            </span>
-            {/* The X replaces the chevron rather than sitting beside it — two trailing affordances
-                on one control read as clutter, and the trigger body still opens the list. */}
-            <ChevronsUpDown
-              className={cn(
-                "shrink-0 opacity-50",
-                value.length > 0 && "invisible"
-              )}
-            />
-          </Button>
-        </PopoverTrigger>
-        {/* Clearing one facet should not mean clearing them all: this resets just this control. */}
-        {value.length > 0 ? (
-          <button
-            type="button"
-            onClick={() => onChange([])}
-            aria-label={clearLabel}
-            data-testid={`${testId}-clear`}
-            className="absolute right-2.5 flex size-5 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary"
-          >
-            <X className="size-4" />
-          </button>
-        ) : null}
-      </div>
-      <PopoverContent
-        className="w-64 p-0"
-        align="start"
-        container={portalContainer}
-      >
-        <Command>
-          <CommandInput placeholder={label} />
-          <CommandList ref={listRef}>
-            {/* This list holds filter options, not NPCs — an empty search here means no option
-                matched, which is a different statement from "no NPCs match". */}
-            <CommandEmpty>{t("npcs.noMatchingOptions")}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.id}
-                  value={option.name}
-                  onSelect={() => toggle(option.id)}
-                  aria-selected={value.includes(option.id)}
-                >
-                  <Check
-                    className={cn(
-                      "size-4 shrink-0",
-                      value.includes(option.id) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.icon ? (
-                    <EntityIcon
-                      size="inline"
-                      src={option.icon}
-                      alt=""
-                      className="shrink-0"
-                    />
-                  ) : null}
-                  <span className="truncate">{option.name}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
+/** Id/name options as the shared selects take them, each with its game icon. */
+function toSelectOptions(options: Option[]): SelectOption<string>[] {
+  return options.map((option) => ({
+    value: option.id,
+    label: option.name,
+    icon: option.icon ? (
+      <EntityIcon size="inline" src={option.icon} alt="" className="shrink-0" />
+    ) : undefined,
+  }))
 }
 
 /** A single-select whose options carry an icon, with an "any" reset row. */
@@ -236,7 +99,7 @@ export function NpcsFilterBar({
 
   return (
     <div
-      className="grid grid-cols-1 gap-3"
+      className="grid grid-cols-1 gap-3 @lg:grid-cols-2"
       data-testid="npcs-filter-bar"
       role="group"
       aria-label={t("npcs.filters")}
@@ -353,28 +216,36 @@ export function NpcsFilterBar({
         <MultiSelect
           label={t("npcs.damageType")}
           placeholder={t("npcs.anyDamageType")}
+          searchPlaceholder={t("npcs.damageType")}
+          emptyText={t("npcs.noMatchingOptions")}
           clearLabel={t("npcs.clearOne", { name: t("npcs.damageType") })}
-          options={options.damageTypes.map((type) => ({
-            ...type,
-            icon: damageTypeIcon(type.id),
-          }))}
+          options={toSelectOptions(
+            options.damageTypes.map((type) => ({
+              ...type,
+              icon: damageTypeIcon(type.id),
+            }))
+          )}
           value={filters.damageTypes}
           onChange={(damageTypes) => onChange({ ...filters, damageTypes })}
-          testId="npcs-damage-type-filter"
+          data-testid="npcs-damage-type-filter"
         />
       </FilterField>
       <FilterField label={t("npcs.trait")}>
         <MultiSelect
           label={t("npcs.trait")}
           placeholder={t("npcs.anyTrait")}
+          searchPlaceholder={t("npcs.trait")}
+          emptyText={t("npcs.noMatchingOptions")}
           clearLabel={t("npcs.clearOne", { name: t("npcs.trait") })}
-          options={options.traits.map((trait) => ({
-            ...trait,
-            icon: traitIcon(trait.id),
-          }))}
+          options={toSelectOptions(
+            options.traits.map((trait) => ({
+              ...trait,
+              icon: traitIcon(trait.id),
+            }))
+          )}
           value={filters.traits}
           onChange={(traits) => onChange({ ...filters, traits })}
-          testId="npcs-trait-filter"
+          data-testid="npcs-trait-filter"
         />
       </FilterField>
     </div>

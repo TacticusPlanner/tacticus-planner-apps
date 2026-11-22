@@ -46,12 +46,25 @@ import { PlanningSettingsDialog } from "./planning-settings-dialog"
 
 describe("PlanningSettingsDialog", () => {
   beforeEach(() => {
-    save.mockReset().mockResolvedValue(undefined)
+    save
+      .mockReset()
+      .mockImplementation((next: typeof settings) =>
+        Promise.resolve({ ...next, revision: next.revision + 1 })
+      )
     onOpenChange.mockReset()
     settings.dailyEnergy = 538
   })
 
-  it("loads synchronized energy and rarity, and saves with the current revision", async () => {
+  const pickRarity = async (rarity: string) => {
+    fireEvent.click(screen.getByTestId("planning-settings-xp-book-rarity"))
+    fireEvent.click(
+      within(await screen.findByRole("listbox")).getByText(
+        `progression:rarities.${rarity}`
+      )
+    )
+  }
+
+  it("shows the synchronized energy and rarity and saves nothing on open", () => {
     render(<PlanningSettingsDialog open onOpenChange={onOpenChange} />)
 
     expect(
@@ -60,28 +73,13 @@ describe("PlanningSettingsDialog", () => {
     expect(
       screen.getByTestId("planning-settings-xp-book-rarity")
     ).toHaveTextContent("progression:rarities.Epic")
-    fireEvent.click(screen.getByTestId("planning-settings-save"))
-
-    await waitFor(() => {
-      expect(save).toHaveBeenCalledWith({
-        dailyEnergy: 538,
-        xpBookRarity: "Epic",
-        revision: 7,
-      })
-      expect(onOpenChange).toHaveBeenCalledWith(false)
-    })
+    expect(save).not.toHaveBeenCalled()
   })
 
-  it("saves the newly selected XP-book rarity", async () => {
+  it("saves a new XP-book rarity as soon as it is picked", async () => {
     render(<PlanningSettingsDialog open onOpenChange={onOpenChange} />)
 
-    fireEvent.click(screen.getByTestId("planning-settings-xp-book-rarity"))
-    fireEvent.click(
-      within(await screen.findByRole("listbox")).getByText(
-        "progression:rarities.Legendary"
-      )
-    )
-    fireEvent.click(screen.getByTestId("planning-settings-save"))
+    await pickRarity("Legendary")
 
     await waitFor(() => {
       expect(save).toHaveBeenCalledWith({
@@ -92,33 +90,48 @@ describe("PlanningSettingsDialog", () => {
     })
   })
 
-  it("keeps a saved energy value the ladder no longer offers", async () => {
-    settings.dailyEnergy = 500
+  it("saves a released energy step with the rarity picked before it", async () => {
+    render(<PlanningSettingsDialog open onOpenChange={onOpenChange} />)
+
+    await pickRarity("Legendary")
+    const thumb = screen.getByRole("slider")
+    fireEvent.keyDown(thumb, { key: "ArrowRight" })
+
+    await waitFor(() => expect(save).toHaveBeenCalledTimes(2))
+    // The second write sends the revision the first one returned.
+    expect(save).toHaveBeenLastCalledWith(
+      expect.objectContaining({ xpBookRarity: "Legendary", revision: 8 })
+    )
+    expect(save.mock.lastCall?.[0].dailyEnergy).not.toBe(538)
+  })
+
+  it("has one Done button that closes without saving", () => {
     render(<PlanningSettingsDialog open onOpenChange={onOpenChange} />)
 
     expect(
-      screen.getByTestId("planning-settings-energy-value")
-    ).toHaveTextContent("500")
-    fireEvent.click(screen.getByTestId("planning-settings-save"))
+      screen.queryByText("goals.planningSettings.cancel")
+    ).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId("planning-settings-done"))
 
-    await waitFor(() => {
-      expect(save).toHaveBeenCalledWith({
-        dailyEnergy: 500,
-        xpBookRarity: "Epic",
-        revision: 7,
-      })
-    })
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    expect(save).not.toHaveBeenCalled()
   })
 
-  it("keeps the dialog open and displays a failed save", async () => {
-    save.mockRejectedValue(new Error("network"))
+  it("displays a failed save and clears it on the next change", async () => {
+    save.mockRejectedValueOnce(new Error("network"))
     render(<PlanningSettingsDialog open onOpenChange={onOpenChange} />)
 
-    fireEvent.click(screen.getByTestId("planning-settings-save"))
-
+    await pickRarity("Legendary")
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "goals.planningSettings.error"
     )
-    expect(onOpenChange).not.toHaveBeenCalled()
+
+    await pickRarity("Mythic")
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(save).toHaveBeenLastCalledWith(
+        expect.objectContaining({ xpBookRarity: "Mythic", revision: 7 })
+      )
+    })
   })
 })
