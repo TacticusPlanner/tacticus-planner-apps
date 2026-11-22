@@ -479,8 +479,8 @@
         "summonsAny": "Any",
         "summonsTypes": {
           "none": "No summons",
-          "active": "Active summon",
-          "passive": "Passive summon"
+          "optional": "Optional summons",
+          "forced": "Forced summons"
         },
         "hitsFrom": "Fewest hits",
         "hitsTo": "Most hits",

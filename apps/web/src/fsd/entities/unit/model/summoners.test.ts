@@ -1,21 +1,21 @@
 import { describe, expect, it } from "vitest"
 import type { UnitId } from "@workspace/game-domain"
 
-import { passiveSummonerIds } from "./summoners"
+import { forcedSummonerIds } from "./summoners"
 
-const unit = (id: string, summons: "none" | "active" | "passive") => ({
+const unit = (id: string, summons: "none" | "optional" | "forced") => ({
   id: id as UnitId,
   summons,
 })
 
-describe("passiveSummonerIds", () => {
-  it("keeps only the units whose summons are passive", () => {
+describe("forcedSummonerIds", () => {
+  it("keeps only the units whose summons are forced", () => {
     expect([
-      ...passiveSummonerIds([
-        unit("blackPossession", "passive"),
-        unit("necroSpyder", "active"),
+      ...forcedSummonerIds([
+        unit("blackPossession", "forced"),
+        unit("necroSpyder", "optional"),
         unit("ultraCalgar", "none"),
-        unit("adeptCelestine", "passive"),
+        unit("adeptCelestine", "forced"),
       ]),
     ]).toEqual(["blackPossession", "adeptCelestine"])
   })

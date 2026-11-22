@@ -3,7 +3,7 @@ import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { useNpcsById } from "@/entities/npc"
-import { passiveSummonerIds } from "@/entities/unit"
+import { forcedSummonerIds } from "@/entities/unit"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
@@ -62,7 +62,7 @@ export function questTeamView(
 /**
  * Every battle's suggested team (spec: quest-event-teams) and clear estimates (spec:
  * quest-event-clear-estimates) from the synced roster, every unit's power taken at the battle tier's
- * rarity cap. "Use no summons" leaves out the passive summoners (catalog `summons`), as for HRE teams.
+ * rarity cap. "Use no summons" leaves out the forced summoners (catalog `summons`), as for HRE teams.
  * Recomputed live from the datasets and never stored.
  */
 export function useQuestPlan(input: {
@@ -85,7 +85,7 @@ export function useQuestPlan(input: {
   const summoners = useMemo(
     () =>
       read.status === "ready"
-        ? passiveSummonerIds(read.data[1].values())
+        ? forcedSummonerIds(read.data[1].values())
         : new Set<string>(),
     [read]
   )

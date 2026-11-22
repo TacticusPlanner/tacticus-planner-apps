@@ -81,12 +81,12 @@ describe("useCollectionQuery", () => {
 
   it("reads the stars range and the combat filters", () => {
     const { result } = renderAt(
-      "/my-game/collection?starsMin=Legendary:RedThreeStars&summons=passive&attack=ranged&hitsMin=2&hitsMax=3&move=3&rangeMax=2&damage=Bolter,Psychic&trait=Psyker&source=Elite,none"
+      "/my-game/collection?starsMin=Legendary:RedThreeStars&summons=forced&attack=ranged&hitsMin=2&hitsMax=3&move=3&rangeMax=2&damage=Bolter,Psychic&trait=Psyker&source=Elite,none"
     )
     expect(result.current.state.query).toMatchObject({
       starsMin: "Legendary:RedThreeStars",
       starsMax: null,
-      summons: "passive",
+      summons: "forced",
       attack: "ranged",
       hitsMin: 2,
       hitsMax: 3,

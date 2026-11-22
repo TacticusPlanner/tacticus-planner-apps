@@ -479,8 +479,8 @@
         "summonsAny": "Todas",
         "summonsTypes": {
           "none": "Sin invocaciones",
-          "active": "Invocación activa",
-          "passive": "Invocación pasiva"
+          "optional": "Invocación opcional",
+          "forced": "Invocación forzada"
         },
         "hitsFrom": "Golpes mínimos",
         "hitsTo": "Golpes máximos",

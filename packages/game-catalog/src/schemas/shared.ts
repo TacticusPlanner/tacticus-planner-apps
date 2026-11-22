@@ -28,10 +28,11 @@ export const farmLocationSchema = z.looseObject({
 })
 
 /**
- * Whether a character or MoW can summon: `none`; `active` (only an active ability summons, so the player can
- * leave it unused); `passive` (a passive ability can summon on its own, so the player cannot prevent it).
+ * Whether a character or MoW can summon: `none`; `optional` (the player decides whether it summons: an active
+ * ability left unused, or a passive the player can switch off); `forced` (a passive ability summons on its own, so
+ * the player cannot prevent it).
  */
-export const unitSummons = ["none", "active", "passive"] as const
+export const unitSummons = ["none", "optional", "forced"] as const
 export type UnitSummons = (typeof unitSummons)[number]
 
 // Defaults to `none` for a server that predates the field.

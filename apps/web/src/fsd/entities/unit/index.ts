@@ -11,4 +11,4 @@ export {
 export { UnitTile } from "./ui/unit-tile"
 export { UnitPortrait } from "./ui/unit-portrait"
 export { UnitRosterRow } from "./ui/unit-roster-row"
-export { passiveSummonerIds } from "./model/summoners"
+export { forcedSummonerIds } from "./model/summoners"

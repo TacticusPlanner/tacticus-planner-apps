@@ -6,7 +6,7 @@ import type { HreTeamPlan } from "@/entities/hre-mission"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
-import { passiveSummonerIds } from "@/entities/unit"
+import { forcedSummonerIds } from "@/entities/unit"
 import { buildHreTeam } from "./hre-team-recommendations"
 import type { HreTeam } from "./hre-team-recommendations"
 import { useTeamUnitPower } from "./use-team-unit-power"
@@ -22,7 +22,7 @@ export type HreTeamViewModel =
 
 /**
  * One HRE mission team per team plan of the current mission (`selectTeamPlans`), in plan order.
- * A summon-free team leaves out the passive summoners (catalog `summons`): they summon on their
+ * A summon-free team leaves out the forced summoners (catalog `summons`): they summon on their
  * own, as the LRE "No Summons" rule reads it. `hseTrackersFor` gives the running personal
  * HSE that scores in a plan's mode, whose units come first.
  */
@@ -44,7 +44,7 @@ export function useHreTeamRecommendations(input: {
   const summoners = useMemo(
     () =>
       read.status === "ready"
-        ? passiveSummonerIds(read.data[1].values())
+        ? forcedSummonerIds(read.data[1].values())
         : new Set<never>(),
     [read]
   )

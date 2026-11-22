@@ -479,8 +479,8 @@
         "summonsAny": "Alle",
         "summonsTypes": {
           "none": "Keine Beschwörung",
-          "active": "Aktive Beschwörung",
-          "passive": "Passive Beschwörung"
+          "optional": "Optionale Beschwörung",
+          "forced": "Erzwungene Beschwörung"
         },
         "hitsFrom": "Wenigste Treffer",
         "hitsTo": "Meiste Treffer",

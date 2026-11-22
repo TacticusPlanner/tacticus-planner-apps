@@ -82,7 +82,7 @@ export interface CollectionQuery {
   /** Lists owned units only: a display setting, kept in `?owned=owned`; the counts are unchanged. */
   hideUnowned: boolean
   kind: UnitKind | null
-  /** No summons, active summon or passive summon; characters and MoWs alike. */
+  /** No summons, optional summons or forced summons; characters and MoWs alike. */
   summons: UnitSummons | null
   // The combat filters: catalog properties of characters, so they apply signed out too.
   attack: CollectionAttackType | null

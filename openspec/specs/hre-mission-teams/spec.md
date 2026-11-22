@@ -12,7 +12,7 @@ When the current mission has open objectives that only progress in battles playe
 
 1. **Featured hero** (`useAbilitiesFeatured`, `featuredDamage`): the featured hero leads the team when the player has unlocked them.
 2. **Alliance** (`winWithAllianceLineup`, `useAbilitiesAlliance`, `killWithAlliance`): only units of the featured hero's alliance.
-3. **Summon-free** (`winWithoutSummons`): follows the LRE "No Summons" rule (Severyn, 2026-11): excludes every unit whose catalog `summons` is `passive`, since those summon on their own. A unit whose active ability summons stays, and the card says not to use an ability that summons.
+3. **Summon-free** (`winWithoutSummons`): follows the LRE "No Summons" rule (Severyn, 2026-11): excludes every unit whose catalog `summons` is `forced`, since those summon on their own. A unit whose active ability summons stays, and the card says not to use an ability that summons.
 4. **Ranged** (`killWithRanged`): only units with a ranged attack.
 5. **Melee** (`killWithMelee`): only units without a ranged attack, so every kill is a melee one; this is stricter than the objective, since ranged units can also attack in melee.
 6. **Abilities** (`useAbilities`): the strongest units, and the card says every ability use counts.
