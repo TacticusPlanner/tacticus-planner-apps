@@ -44,6 +44,15 @@ vi.mock("@/shared/api", () => ({
 
 import { PlanningSettingsDialog } from "./planning-settings-dialog"
 
+async function pickRarity(rarity: string) {
+  fireEvent.click(screen.getByTestId("planning-settings-xp-book-rarity"))
+  fireEvent.click(
+    within(await screen.findByRole("listbox")).getByText(
+      `progression:rarities.${rarity}`
+    )
+  )
+}
+
 describe("PlanningSettingsDialog", () => {
   beforeEach(() => {
     save
@@ -54,15 +63,6 @@ describe("PlanningSettingsDialog", () => {
     onOpenChange.mockReset()
     settings.dailyEnergy = 538
   })
-
-  const pickRarity = async (rarity: string) => {
-    fireEvent.click(screen.getByTestId("planning-settings-xp-book-rarity"))
-    fireEvent.click(
-      within(await screen.findByRole("listbox")).getByText(
-        `progression:rarities.${rarity}`
-      )
-    )
-  }
 
   it("shows the synchronized energy and rarity and saves nothing on open", () => {
     render(<PlanningSettingsDialog open onOpenChange={onOpenChange} />)
