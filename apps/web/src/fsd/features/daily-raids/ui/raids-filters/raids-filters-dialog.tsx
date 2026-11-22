@@ -408,7 +408,7 @@ export function RaidsFiltersDialog({
             />
           </LabeledField>
           <LabeledField
-            icon="itemSlots"
+            icon="deploymentSlots"
             label={t("dailies:raidsFilters.fields.slots")}
           >
             <MultiSelect
