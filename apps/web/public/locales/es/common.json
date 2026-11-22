@@ -1221,6 +1221,15 @@
       "reviewPrerequisite": "Revisar objetivo previo existente",
       "existingPrerequisiteGuidance": "El objetivo activo o pausado existente no alcanza este destino. Archívalo o reemplázalo antes de crear otro."
     },
+    "hreSource": {
+      "liveLabel": "HRE en curso",
+      "upcomingLabel": "HRE {{date}}",
+      "unlockRunning": "Desbloquea a {{unit}} en el Evento de lanzamiento de héroe, en curso hasta el {{end}}.",
+      "unlockUpcoming": "{{unit}} se podrá desbloquear en el Evento de lanzamiento de héroe, {{range}}.",
+      "shardsRunning": "Los fragmentos de {{unit}} se obtienen en el Evento de lanzamiento de héroe, en curso hasta el {{end}}.",
+      "shardsUpcoming": "Los fragmentos de {{unit}} se obtienen en el Evento de lanzamiento de héroe, {{range}}.",
+      "openPlanner": "Abrir planificador de HRE"
+    },
     "actions": {
       "openMenu": "Abrir acciones del objetivo",
       "pause": "Pausar",
@@ -1684,7 +1693,9 @@
         "InsufficientDailyEnergy": "La energía diaria es inferior al coste del nodo utilizable más barato.",
         "SimulationLimit": "Este objetivo tarda más de lo que el planificador puede estimar.",
         "UnsupportedCost": "El planificador aún no puede estimar el coste de este objetivo.",
-        "FilteredOut": "Todos los lugares de farmeo están excluidos por tus filtros de incursiones."
+        "FilteredOut": "Todos los lugares de farmeo están excluidos por tus filtros de incursiones.",
+        "HreRunning": "Se obtiene en el Evento de lanzamiento de héroe en curso.",
+        "HreUpcoming": "Se obtiene en un próximo Evento de lanzamiento de héroe."
       },
       "unlockAt": "Se desbloquea en",
       "battlesToGo_one": "falta {{count}} batalla",

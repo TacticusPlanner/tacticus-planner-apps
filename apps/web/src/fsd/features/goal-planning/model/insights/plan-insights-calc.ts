@@ -34,11 +34,13 @@ import {
   createUnitCoverage,
   isMowDetail,
   rankSlotAllocation,
+  relabelHreOutcomes,
 } from "@/entities/goal-farming"
 import type {
   EstimateResourceId,
   EstimateUpgrade,
   GoalNeed,
+  HreBlockedReason,
   LevelRules,
   UpgradeNeed,
   RankSlotAllocation,
@@ -118,6 +120,9 @@ export function computePlanInsights(params: {
   campaignFullLabel: (descriptor: CampaignDescriptor) => string
   dailyEnergy?: number
   onslaughtProgress?: OnslaughtProgress
+  /** Featured heroes' shard ids whose running or upcoming Hero Release Event supplies them
+   *  (`hreShardReasons`): a goal blocked only on these reads as obtainable through the event. */
+  hreShardReasons?: ReadonlyMap<EstimateResourceId, HreBlockedReason>
   currentOnslaughtTokens?: number
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
   onslaughtRunsPerDay?: number
@@ -351,13 +356,16 @@ export function computePlanInsights(params: {
     count: entry.amount,
   }))
 
-  const estimateResults = estimatePlan({
-    goals: goalNeeds,
-    upgradesById: combinedUpgradesById,
-    battlesById: params.battlesById,
-    dailyEnergy: params.dailyEnergy ?? 288,
-    inventory,
-  })
+  const estimateResults = relabelHreOutcomes(
+    estimatePlan({
+      goals: goalNeeds,
+      upgradesById: combinedUpgradesById,
+      battlesById: params.battlesById,
+      dailyEnergy: params.dailyEnergy ?? 288,
+      inventory,
+    }),
+    params.hreShardReasons ?? new Map()
+  )
   const standaloneByGoalId = standalone.resolve({
     upgradesById: combinedUpgradesById,
     battlesById: params.battlesById,

@@ -13,6 +13,7 @@ const retryCatalogReads = vi.hoisted(() => vi.fn())
 const compute = vi.hoisted(() => vi.fn())
 // Every other read returns the same objects on each render, as the real memoised hooks do.
 const stable = vi.hoisted(() => ({
+  hreSources: new Map(),
   plan: {
     entries: [
       {
@@ -64,8 +65,12 @@ vi.mock("@/entities/planning-setting", () => ({
   usePlanningSettings: () => stable.settings,
 }))
 vi.mock("@/entities/goal-farming", () => ({
+  hreShardReasons: () => new Map(),
   toOnslaughtRunsPerDay: () => 1,
   useLevelRules: () => stable.levelRules,
+}))
+vi.mock("@/entities/hre-mission", () => ({
+  useHreShardSources: () => stable.hreSources,
 }))
 vi.mock("@/shared/lib", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/lib")>()),

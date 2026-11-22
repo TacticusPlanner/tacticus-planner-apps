@@ -1221,6 +1221,15 @@
       "reviewPrerequisite": "Review existing prerequisite",
       "existingPrerequisiteGuidance": "The existing active or paused goal does not reach this target. Archive or replace it before creating another."
     },
+    "hreSource": {
+      "liveLabel": "HRE live",
+      "upcomingLabel": "HRE {{date}}",
+      "unlockRunning": "Unlock {{unit}} in the Hero Release Event, running until {{end}}.",
+      "unlockUpcoming": "{{unit}} can be unlocked in the Hero Release Event, {{range}}.",
+      "shardsRunning": "{{unit}} shards come from the Hero Release Event, running until {{end}}.",
+      "shardsUpcoming": "{{unit}} shards come from the Hero Release Event, {{range}}.",
+      "openPlanner": "Open HRE planner"
+    },
     "actions": {
       "openMenu": "Open goal actions",
       "pause": "Pause",
@@ -1684,7 +1693,9 @@
         "InsufficientDailyEnergy": "Daily energy is below the cost of the cheapest usable node.",
         "SimulationLimit": "This goal takes longer than the planner can estimate.",
         "UnsupportedCost": "The planner can't estimate the cost of this goal yet.",
-        "FilteredOut": "Every farming location is excluded by your raid filters."
+        "FilteredOut": "Every farming location is excluded by your raid filters.",
+        "HreRunning": "Comes from the Hero Release Event running now.",
+        "HreUpcoming": "Comes from an upcoming Hero Release Event."
       },
       "unlockAt": "Unlocks at",
       "battlesToGo_one": "{{count}} battle to go",

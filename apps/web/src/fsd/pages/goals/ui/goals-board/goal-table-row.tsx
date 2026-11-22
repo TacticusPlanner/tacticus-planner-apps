@@ -23,6 +23,7 @@ import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import type { SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
+import { HreSourceIndicator } from "../shared/hre-source-indicator"
 import { SeasonFitLabel } from "./season-fit-ui"
 import {
   EstimateCell,
@@ -105,6 +106,7 @@ export const GoalRowCells = memo(function GoalRowCells({
     remaining,
     levelRequirement,
     blockers,
+    hreSource,
     energy,
     onslaughtTokens,
     shopSpend,
@@ -245,6 +247,14 @@ export const GoalRowCells = memo(function GoalRowCells({
             estimate={estimates?.get(row.goalId)}
             progress={progress}
           />
+          {reached ? null : (
+            <HreSourceIndicator
+              className="px-2.5 py-1 text-sm"
+              isUnlock={row.goalType === "Unlock"}
+              source={hreSource}
+              unitName={getEntityName(row.entityType, row.entityId)}
+            />
+          )}
         </div>
       </TableCell>
       <TableCell>

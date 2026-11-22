@@ -6,6 +6,8 @@ export {
   resolveHreSelection,
   selectHreInstance,
 } from "./model/hre-instance"
+export { type HreShardSource } from "./model/hre-shard-sources"
+export { useHreShardSources } from "./model/use-hre-shard-sources"
 export {
   HRE_OBJECTIVE_KINDS,
   type HreMission,

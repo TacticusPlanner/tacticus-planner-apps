@@ -257,6 +257,11 @@ export type EstimateBlockedReason =
   | "UnsupportedCost"
   /** Every farm node failed the caller's `FarmNodeFilter` (Today/Bonus Raids Filters only). */
   | "FilteredOut"
+  /** A featured hero's shards no node drops, coming from the Hero Release Event running now
+   *  (`relabelHreBlockers`). Not a dead end: the goal is obtainable through the event. */
+  | "HreRunning"
+  /** The same, for a hero whose Hero Release Event is scheduled but hasn't started. */
+  | "HreUpcoming"
 
 /** One residual need (after inventory) with no usable supported source. */
 export interface EstimateBlocker {

@@ -79,6 +79,12 @@ export {
 export { useUnitShopShardSupply } from "./model/use-unit-shop-shard-supply"
 export { useMythicMaterialShopOffers } from "./model/use-mythic-material-shop-offers"
 export { farmingStageTargets } from "./lib/farming-stages"
+export {
+  type HreBlockedReason,
+  hreShardReasons,
+  isHreBlocker,
+  relabelHreOutcomes,
+} from "./lib/hre-blockers"
 export { createCraftedInventoryPool } from "./lib/upgrade-recipe"
 export {
   shardResourceId,

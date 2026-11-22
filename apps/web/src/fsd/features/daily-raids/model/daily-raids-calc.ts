@@ -26,6 +26,7 @@ import {
   estimateGoal,
   estimatePlanSchedule,
   estimateTodayRun,
+  relabelHreOutcomes,
 } from "@/entities/goal-farming"
 import type {
   EstimatePlanParams,
@@ -35,6 +36,7 @@ import type {
   FarmingCharacter,
   FarmingUpgrade,
   GoalNeed,
+  HreBlockedReason,
   RaidPlanSchedule,
 } from "@/entities/goal-farming"
 import type { Battle } from "@/shared/lib"
@@ -117,6 +119,9 @@ export type DailyRaidsCalculationInput = {
   }
   /** The Dailies > HRE tab only: also return, per node, the best-priority goal it feeds. */
   missionGoalNodes?: boolean
+  /** Featured heroes' shard ids whose running or upcoming Hero Release Event supplies them
+   *  (`hreShardReasons`): a blocked goal names the event instead of "no farming location". */
+  hreShardReasons?: ReadonlyMap<EstimateResourceId, HreBlockedReason>
   referenceDate?: Date
   onslaughtProgress?: OnslaughtProgress
   onslaughtRewards?: readonly OnslaughtRewardStorageModel[]
@@ -379,7 +384,10 @@ export function calculateDailyRaids(
         (id) => params.upgradesById.get(id as UpgradeId)?.rarity
       )
     : undefined
-  const blockedGoals = blockedGoalsOf(goals, plan.outcomes)
+  const blockedGoals = blockedGoalsOf(
+    goals,
+    relabelHreOutcomes(plan.outcomes, params.hreShardReasons ?? new Map())
+  )
   // Nothing to raid and nothing to explain: no plan. A goal blocked outright still gets a plan view
   // so its blockers are reported rather than silently dropped, and so does a filter that removed
   // every node (the filtered-out notice is the only way back to an unfiltered Today).

@@ -1221,6 +1221,15 @@
       "reviewPrerequisite": "Bestehende Voraussetzung ansehen",
       "existingPrerequisiteGuidance": "Das bestehende aktive oder pausierte Ziel erreicht dieses Ziel nicht. Archiviere oder ersetze es, bevor du ein weiteres erstellst."
     },
+    "hreSource": {
+      "liveLabel": "HRE läuft",
+      "upcomingLabel": "HRE {{date}}",
+      "unlockRunning": "Schalte {{unit}} im Helden-Release-Event frei, läuft bis {{end}}.",
+      "unlockUpcoming": "{{unit}} kann im Helden-Release-Event freigeschaltet werden, {{range}}.",
+      "shardsRunning": "Splitter von {{unit}} kommen aus dem Helden-Release-Event, läuft bis {{end}}.",
+      "shardsUpcoming": "Splitter von {{unit}} kommen aus dem Helden-Release-Event, {{range}}.",
+      "openPlanner": "HRE-Planer öffnen"
+    },
     "actions": {
       "openMenu": "Zielaktionen öffnen",
       "pause": "Pausieren",
@@ -1684,7 +1693,9 @@
         "InsufficientDailyEnergy": "Die tägliche Energie liegt unter den Kosten des günstigsten nutzbaren Knotens.",
         "SimulationLimit": "Dieses Ziel dauert länger, als der Planer schätzen kann.",
         "UnsupportedCost": "Der Planer kann die Kosten dieses Ziels noch nicht schätzen.",
-        "FilteredOut": "Jeder Farm-Ort wird von deinen Raid-Filtern ausgeschlossen."
+        "FilteredOut": "Jeder Farm-Ort wird von deinen Raid-Filtern ausgeschlossen.",
+        "HreRunning": "Kommt aus dem laufenden Helden-Release-Event.",
+        "HreUpcoming": "Kommt aus einem kommenden Helden-Release-Event."
       },
       "unlockAt": "Freigeschaltet bei",
       "battlesToGo_one": "noch {{count}} Kampf",

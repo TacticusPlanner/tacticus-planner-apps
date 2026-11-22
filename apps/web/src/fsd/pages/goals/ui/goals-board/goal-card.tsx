@@ -29,6 +29,7 @@ import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
 import { ShardProgressBars } from "../shared/shard-progress-bars"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
+import { HreSourceIndicator } from "../shared/hre-source-indicator"
 import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalRowActions } from "./goal-row-actions"
 import { deriveGoalRowData } from "./goal-row-data"
@@ -377,6 +378,13 @@ export const GoalCard = memo(
             estimate={estimate}
             progress={data.progress}
           />
+          {data.reached ? null : (
+            <HreSourceIndicator
+              isUnlock={kind === "Unlock"}
+              source={data.hreSource}
+              unitName={name}
+            />
+          )}
           {data.reached ? (
             // A Reached goal is done: offer its cleanup on the card itself, acting at once without
             // the confirmation an unreached goal's Delete asks for.

@@ -1221,6 +1221,15 @@
       "reviewPrerequisite": "Voir l'objectif préalable existant",
       "existingPrerequisiteGuidance": "L'objectif actif ou en pause existant n'atteint pas cette cible. Archivez-le ou remplacez-le avant d'en créer un autre."
     },
+    "hreSource": {
+      "liveLabel": "HRE en cours",
+      "upcomingLabel": "HRE {{date}}",
+      "unlockRunning": "Débloquez {{unit}} pendant l'événement de sortie de héros, en cours jusqu'au {{end}}.",
+      "unlockUpcoming": "{{unit}} pourra être débloqué pendant l'événement de sortie de héros, {{range}}.",
+      "shardsRunning": "Les fragments de {{unit}} proviennent de l'événement de sortie de héros, en cours jusqu'au {{end}}.",
+      "shardsUpcoming": "Les fragments de {{unit}} proviennent de l'événement de sortie de héros, {{range}}.",
+      "openPlanner": "Ouvrir le planificateur HRE"
+    },
     "actions": {
       "openMenu": "Ouvrir les actions de l'objectif",
       "pause": "Mettre en pause",
@@ -1684,7 +1693,9 @@
         "InsufficientDailyEnergy": "L'énergie quotidienne est inférieure au coût du nœud utilisable le moins cher.",
         "SimulationLimit": "Cet objectif prend plus de temps que le planificateur ne peut estimer.",
         "UnsupportedCost": "Le planificateur ne peut pas encore estimer le coût de cet objectif.",
-        "FilteredOut": "Tous les lieux de farming sont exclus par vos filtres de raids."
+        "FilteredOut": "Tous les lieux de farming sont exclus par vos filtres de raids.",
+        "HreRunning": "Provient de l'événement de sortie de héros en cours.",
+        "HreUpcoming": "Provient d'un prochain événement de sortie de héros."
       },
       "unlockAt": "Se débloque à",
       "battlesToGo_one": "encore {{count}} combat",
