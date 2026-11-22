@@ -254,13 +254,22 @@ other content that needs to is a sheet or dialog.
 
 **Footer.**
 
-- Buttons sit at the right on desktop. On mobile they are full width and
-  stacked, the primary on top (`flex-col-reverse`).
+- Buttons sit at the right on desktop. On a phone they share one row in equal
+  parts: dismiss and primary 50/50, a single button the full width. The
+  footer shells do this; pass no width or `flex-col` to their buttons.
 - Source order is dismiss, then primary, so the primary is last (rightmost) on
-  desktop.
+  every screen.
 - One primary (`default`) per footer. Dismiss is `outline`. A secondary action
   such as "Clear filters" or "Reset to suggested" is `ghost` and sits at the
   left (`md:mr-auto`).
+- At most two buttons in a phone footer. A third, secondary one moves into the
+  body on a phone (`useIsMobile`): at the top when it acts on the whole form
+  ("Clear filters"), at the end when it follows from it ("Save and add
+  another").
+- A summary line (selection count, power, a save error) sits at the left on
+  desktop (`md:mr-auto`) and takes its own row above the buttons on a phone
+  (`max-md:basis-full`).
+- Pagers (Previous · Close · Next, Back · Next) keep their own row.
 - Dismiss says "Cancel" when it throws input away and "Close" when there is
   nothing to lose. Never both.
 - A dialog whose changes apply as they are made (filters, view options,
@@ -294,8 +303,10 @@ stay full screen.
 | Form (672px)   | `form`   | Forms, pickers, filters                             |
 | Wide (1024px)  | `wide`   | Tables, side-by-side panels, browsing (the default) |
 
-Right sheets are `sm:max-w-md`. Popovers are `w-72`, or `w-80` for a unit or
-enemy card, and never wider than `calc(100vw-2rem)`.
+Right sheets are `sm:max-w-md`. Popovers are `w-72` (the `PopoverContent`
+default), or `w-80` for a unit or enemy card, and never wider than
+`calc(100vw-2rem)`. Keep the default radius and padding; a popover heading is
+`PopoverTitle` (`text-sm font-medium`).
 
 **Touch and focus.** Footer buttons and the close button follow rule 5 (48px hit
 area on touch). A dialog opened from state, not from its trigger, sends focus
