@@ -44,6 +44,7 @@ describe("resolveCampaignEventProgress", () => {
       completedChallengeBattlesIds: ["AMS3B"],
       battleSource: "synced",
       challengeSource: "synced",
+      syncedBattleCount: 8,
     })
   })
 
@@ -53,16 +54,53 @@ describe("resolveCampaignEventProgress", () => {
       completedChallengeBattlesIds: [],
       battleSource: "none",
       challengeSource: "none",
+      syncedBattleCount: null,
     })
   })
 
-  it("lets a manual value lower than synced progress win", () => {
+  it("lets synced progress win over a lower, stale manual value", () => {
     expect(
       resolveCampaignEventProgress(
         synced({ completedBattleCount: 15 }),
         override({ completedBattleCount: 5 })
-      ).completedBattleCount
-    ).toBe(5)
+      )
+    ).toMatchObject({
+      completedBattleCount: 15,
+      battleSource: "synced",
+      syncedBattleCount: 15,
+    })
+  })
+
+  it("lets synced progress win over a V1-imported 0 once the player has played the event", () => {
+    // V1 stored 0 for every event track by default, and the V1 import saves it as an override.
+    expect(
+      resolveCampaignEventProgress(
+        synced({ completedBattleCount: 3 }),
+        override({ completedBattleCount: 0 })
+      )
+    ).toMatchObject({ completedBattleCount: 3, battleSource: "synced" })
+  })
+
+  it("reports a manual value equal to synced progress as synced", () => {
+    expect(
+      resolveCampaignEventProgress(
+        synced({ completedBattleCount: 8 }),
+        override({ completedBattleCount: 8 })
+      )
+    ).toMatchObject({ completedBattleCount: 8, battleSource: "synced" })
+  })
+
+  it("keeps a manual value when nothing is synced", () => {
+    expect(
+      resolveCampaignEventProgress(
+        undefined,
+        override({ completedBattleCount: 0 })
+      )
+    ).toMatchObject({
+      completedBattleCount: 0,
+      battleSource: "manual",
+      syncedBattleCount: null,
+    })
   })
 
   it("resolves battle count and challenge ids independently", () => {
@@ -76,6 +114,7 @@ describe("resolveCampaignEventProgress", () => {
       completedChallengeBattlesIds: ["AMS7B"],
       battleSource: "synced",
       challengeSource: "manual",
+      syncedBattleCount: 15,
     })
   })
 

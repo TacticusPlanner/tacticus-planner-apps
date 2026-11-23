@@ -361,7 +361,7 @@ A battle belonging to an event campaign SHALL be eligible only when both:
 1. its campaign group id equals `live-progress.activeCampaignEventId`, and
 2. its node has been reached by the player, per that campaign-group-and-type's **effective event progress**: for a non-challenge node, its `nodeNumber` SHALL be at most one greater than the effective completed battle count; for a challenge node, its battle id SHALL appear in the effective completed challenge ids.
 
-Effective event progress SHALL be resolved per `{campaignGroupId, type}`, separately for the completed battle count and the completed challenge ids, as the player's saved campaign-event manual override value when it is not null, else the `campaign-events-progress` synced value, else no progress. This is the same resolution the Campaign Events progress page displays (see `campaign-event-progress-editing`).
+Effective event progress SHALL be resolved per `{campaignGroupId, type}`, separately for the completed battle count and the completed challenge ids, as the player's saved campaign-event manual override value when it is not null, else the `campaign-events-progress` synced value, else no progress, except that a manual completed battle count SHALL be used only when it is greater than the synced count (or no synced entry exists); otherwise the synced count is used. This is the same resolution the Campaign Events progress page displays (see `campaign-event-progress-editing`).
 
 When no campaign event is active, all event-campaign battles SHALL be excluded. When a battle's campaign group and type has neither a synced `campaign-events-progress` entry nor a manual override value, that battle's node-reached condition SHALL be treated as not met (excluded), since a synced entry only exists once the player has started that tier. The same holds for each value on its own: a non-challenge node SHALL be treated as not reached when the track has neither a synced completed battle count nor a manual one, even if a manual challenge value exists for that track. Today SHALL wait for the saved overrides to load before calculating, and SHALL show its existing error state if they fail to load, the same way it treats saved Onslaught progress.
 
@@ -370,7 +370,7 @@ Assumptions this requirement depends on:
 - An event campaign's non-challenge nodes are numbered sequentially starting at 1 within each `{campaignGroupId, type}` track, and `completedBattleCount` counts consecutively from that start — reaching node N requires having completed nodes 1..N-1. A manual override's `completedBattleCount` is interpreted the same way.
 - A standing campaign's `battleIndex` is assigned sequentially starting at 0 within each `{campaignGroupId, type}` track (covering both challenge and non-challenge battles), and `highestCompletedBattleIndex` counts consecutively from that start the same way `campaign-progress` already reports to the Progress page.
 - `campaign-events-progress` and `live-progress.battleAttempts` are independent signals: the former reliably distinguishes Standard from Extremis (unlike the latter, which is deliberately not used for this eligibility check — see "Today's raid schedule shows what is left to farm" and "Today shows real daily energy usage" for why). The same independence holds between `campaign-progress` and `live-progress.battleAttempts` for standing campaigns — this eligibility check SHALL NOT be used as the signal for whether a real synced attempt exists at a battle; "Today's Attempts section" and "Today shows real daily energy usage" are governed only by `live-progress.battleAttempts`, independent of whether this requirement currently judges that battle reached.
-- A manual override is the player's own statement of progress and is trusted over synced data even when it is lower than the synced value (for example after a sync that is known to be stale).
+- The game reports only battles the player has beaten, so a synced completed battle count above the manual one means the manual value is stale (for example V1's default 0, saved as an override by the V1 import, or a value set during an earlier event run). A manual count can raise progress beyond a stale sync but never hides nodes the sync shows as reached. Manual challenge ids still replace the synced ones.
 
 #### Scenario: One campaign event is active
 
@@ -413,14 +413,14 @@ Assumptions this requirement depends on:
 - **WHEN** Today calculates the schedule
 - **THEN** `AME12` is eligible, since `12 <= 11 + 1`
 
-#### Scenario: A manual override lower than synced progress wins
+#### Scenario: Synced progress wins over a lower, stale manual count
 
-- **GIVEN** the active campaign event is "Adeptus Mechanicus" (`eventCampaign1`)
-- **AND** `campaign-events-progress` for `{eventCampaign1, Standard}` shows `completedBattleCount: 15`
-- **AND** the player's saved override for `{eventCampaign1, Standard}` has `completedBattleCount: 5`
-- **AND** a needed material's only farm location is node 12 of the Standard track (`AMS12`)
-- **WHEN** Today calculates the schedule
-- **THEN** `AMS12` is excluded, since `12 > 5 + 1`
+- **GIVEN** the active campaign event is "T'au Empire" (`eventCampaign3`)
+- **AND** `campaign-events-progress` for `{eventCampaign3, Standard}` shows `completedBattleCount: 3`
+- **AND** the player's saved override for `{eventCampaign3, Standard}` has `completedBattleCount: 0` (from the V1 import)
+- **AND** "CE nodes first" is on and a needed material drops at node 4 of the Standard track (`TAS04`) and at standing campaign nodes
+- **WHEN** Today calculates the schedule, Bonus Raids, or the raids left today once the energy limit is reached
+- **THEN** `TAS04` is eligible, since `4 <= 3 + 1`, and the material is farmed there
 
 #### Scenario: Challenge override and synced count resolve independently
 

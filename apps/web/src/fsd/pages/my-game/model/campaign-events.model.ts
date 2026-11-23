@@ -115,6 +115,23 @@ export type OverridePatch = Partial<
   >
 >
 
+/**
+ * The override a track's regular-battle editor saves for `value`: clamped to 0..`total`, and cleared
+ * (`null`) at or below the synced count, since synced progress then wins (see
+ * `resolveCampaignEventProgress`) and a lower manual value would only be a stale override.
+ */
+export function manualBattleCount(
+  value: number,
+  total: number,
+  progress: Pick<EffectiveCampaignEventProgress, "syncedBattleCount">
+): number | null {
+  const clamped = Math.max(0, Math.min(total, value))
+  return progress.syncedBattleCount !== null &&
+    clamped <= progress.syncedBattleCount
+    ? null
+    : clamped
+}
+
 /** Sets or clears (`null`) one track's override values, returning a new normalized draft. */
 export function applyOverridePatch(
   draft: readonly CampaignEventProgressOverride[],

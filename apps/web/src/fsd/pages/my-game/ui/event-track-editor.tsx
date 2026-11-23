@@ -17,6 +17,7 @@ import type { CampaignEventProgressSource } from "@/entities/player-data-overrid
 import { EventTrackMedals } from "@/features/daily-raids"
 import { EntityIcon } from "@/shared/ui"
 
+import { manualBattleCount } from "../model/campaign-events.model"
 import type {
   EventType,
   OverridePatch,
@@ -69,8 +70,9 @@ export function EventTrackEditor({
   const count = Math.min(progress.completedBattleCount, total)
   const setCount = (value: number) =>
     onPatch(groupId, type, {
-      completedBattleCount: Math.max(0, Math.min(total, value)),
+      completedBattleCount: manualBattleCount(value, total, progress),
     })
+  const floor = Math.min(progress.syncedBattleCount ?? 0, total)
   const toggleChallenge = (id: string) => {
     const current = new Set(progress.completedChallengeBattlesIds)
     if (current.has(id)) current.delete(id)
@@ -137,7 +139,7 @@ export function EventTrackEditor({
               size="icon-sm"
               variant="outline"
               aria-label={t("progress.events.decrease", { type: typeLabel })}
-              disabled={count <= 0}
+              disabled={count <= floor}
               onClick={() => setCount(count - 1)}
             >
               <Minus />
