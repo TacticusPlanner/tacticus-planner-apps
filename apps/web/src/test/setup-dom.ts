@@ -44,6 +44,13 @@ if (jsdomWindow.matchMedia === undefined) {
 jsdomElement.scrollIntoView ??= vi.fn()
 // jsdom defines scrollTo but only logs "Not implemented".
 window.scrollTo = vi.fn()
+// jsdom 31+ applies stylesheets to computed styles, so vaul's injected `animation-name` on a closing
+// drawer now reaches Radix Presence, which then waits for an `animationend` jsdom never fires and
+// leaves the closed drawer mounted. Tests don't animate, as with reduced motion.
+const noMotion = document.createElement("style")
+noMotion.textContent =
+  "*, *::before, *::after { animation: none !important; transition: none !important; }"
+document.head.append(noMotion)
 jsdomElement.hasPointerCapture ??= vi.fn()
 jsdomElement.releasePointerCapture ??= vi.fn()
 jsdomElement.setPointerCapture ??= vi.fn()
