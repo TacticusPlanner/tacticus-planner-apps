@@ -100,7 +100,6 @@
     },
     "hasNotes": "Contient des notes",
     "newTeam": "Nouvelle équipe",
-    "toSave": "Pour enregistrer cette équipe :",
     "addedCore": "{{name}} ajouté aux principaux.",
     "addedFlex": "{{name}} ajouté en flexible.",
     "removed": "{{name}} retiré.",
@@ -136,21 +135,22 @@
   "campaign": {
     "label": "Campagne",
     "placeholder": "Choisir une campagne",
-    "allowed": "Factions autorisées : {{factions}}",
+    "allowed": "Factions autorisées",
     "replaces": "Choisir une campagne remplace la composition par ses personnages principaux."
   },
   "incursion": {
     "label": "Incursions",
     "addPlaceholder": "Ajouter une Incursion",
     "remove": "Retirer {{name}}",
-    "allowed": "Factions autorisées : {{factions}}",
+    "allowed": "Factions autorisées",
     "noShared": "Ces Incursions n'ont aucune faction en commun.",
     "clears": "Changer les Incursions vide la composition."
   },
   "picker": {
     "label": "Ajouter des unités",
     "search": "Rechercher des unités",
-    "lockedUnits": "Unités verrouillées",
+    "ownedOnly": "Débloquées uniquement",
+    "ownedOnlyNeedsRoster": "« Débloquées uniquement » nécessite un effectif synchronisé.",
     "characters": "Personnages",
     "mows": "Machines de guerre",
     "empty": "Aucune unité ne correspond à ces filtres.",
@@ -268,7 +268,7 @@
         },
         "create": {
           "title": "Créer une équipe",
-          "content": "Composez une équipe pour un ou plusieurs modes. Vous pouvez garder jusqu'à 20 équipes."
+          "content": "Composez une équipe pour un ou plusieurs modes. Vous pouvez garder jusqu'à 50 équipes."
         },
         "card": {
           "title": "Une équipe",

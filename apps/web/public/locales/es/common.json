@@ -1018,7 +1018,7 @@
         "guildKey": "Solo se usa si eres líder o colíder de tu gremio: registra tu gremio en el planificador para que todos los miembros puedan usar las funciones de gremio.",
         "legendaryEventPlans": "Equipos creados a mano, notas, datos de misiones y packs por ronda y marcas «Quizá superable» / «Parar aquí» de los eventos que conoce el planificador. El progreso del evento no se importa.",
         "rosterSnapshots": "Tus instantáneas de la plantilla de V1, de la más reciente a la más antigua, hasta el límite de instantáneas. V1 no guardaba la XP total ni las mejoras aplicadas, así que las comparaciones las omiten.",
-        "teams": "Tus equipos de la página Equipos de V1, hasta 20. Los equipos que ya tienes en el planificador se conservan. Los planes de defensa y ataque de la Guerra de gremios de V1 no se importan."
+        "teams": "Tus equipos de la página Equipos de V1, hasta 50. Los equipos que ya tienes en el planificador se conservan. Los planes de defensa y ataque de la Guerra de gremios de V1 no se importan."
       },
       "submit": "Importar selección",
       "submitting": "Importando…",

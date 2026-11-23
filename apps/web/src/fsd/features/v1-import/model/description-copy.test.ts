@@ -47,7 +47,7 @@ describe("goals.v1Import.partDescriptions.teams copy", () => {
   it("names the limit, that existing teams are kept, and what is not imported", () => {
     const description = en.goals.v1Import.partDescriptions.teams
     expect(description).toMatch(/Teams page/)
-    expect(description).toMatch(/up to 20/)
+    expect(description).toMatch(/up to 50/)
     expect(description).toMatch(/already in the planner are kept/i)
     expect(description).toMatch(
       /War Defense and War Offense plans are not imported/

@@ -14,7 +14,7 @@ The page SHALL distinguish these states:
 
 - Teams loading: a skeleton in the current layout, with the toolbar unavailable
 - Teams failed to load: an error with a retry action, not the empty state
-- No teams: "No teams yet." with one Create team action, and a secondary text link to the V1 import
+- No teams: "No teams yet." with one Create team action, and a secondary text link to the V1 import, whose back arrow returns to the Teams page
 - Teams available but no synced roster: teams shown normally, without unit progression and without locked marks, plus a prompt to sync
 
 #### Scenario: Flex units are separated
@@ -79,7 +79,7 @@ On a phone the first row SHALL hold the search, the View button (a sheet with Gr
 
 ### Requirement: Teams can be filtered and grouped by mode
 
-The Mode select SHALL offer All and each of the 7 game modes, defaulting to All, and SHALL show only teams with the chosen mode. Group by SHALL default to Mode. Grouped by Mode, the teams SHALL appear in one section per mode, in the order War Offense, War Defense, Guild Raid, Tournament Arena, Horde, Campaign, Incursion, skipping modes with no team; a team SHALL appear once, under the first of its modes in that order, and teams with no mode (an imported team can have none) SHALL appear last, in a No mode section. A section header SHALL name the mode and its team count; in War Offense and War Defense it SHALL note a unit of its teams that two teams of that mode use, counting every team as the shared chips do, not only the ones the filter shows. Grouped by None, the teams SHALL appear in one list in play order. The mode, the grouping and the layout SHALL be remembered on this device and SHALL render when storage is unavailable. Filters with no matching teams SHALL say so and offer to show all teams, clearing the search, the mode and the chips.
+The Mode select SHALL offer All and each of the 7 game modes, each mode with its game icon in the list and in the closed select, defaulting to All, and SHALL show only teams with the chosen mode. Group by SHALL default to Mode. Grouped by Mode, the teams SHALL appear in one section per mode, in the order War Offense, War Defense, Guild Raid, Tournament Arena, Horde, Campaign, Incursion, skipping modes with no team; a team SHALL appear once, under the first of its modes in that order, and teams with no mode (an imported team can have none) SHALL appear last, in a No mode section. A section header SHALL name the mode and its team count; in War Offense and War Defense it SHALL note a unit of its teams that two teams of that mode use, counting every team as the shared chips do, not only the ones the filter shows. Grouped by None, the teams SHALL appear in one list in play order. The mode, the grouping and the layout SHALL be remembered on this device and SHALL render when storage is unavailable. Filters with no matching teams SHALL say so and offer to show all teams, clearing the search, the mode and the chips.
 
 #### Scenario: Filter by Horde
 
@@ -145,13 +145,13 @@ Each team SHALL show status chips, one fact per chip and never two in one: its s
 
 ### Requirement: Teams can be added, edited and deleted
 
-Create team SHALL open an empty editor, and opening a team SHALL open the editor filled from that team. At 20 teams, Create team SHALL be unavailable with the limit stated beside it. Delete SHALL ask for confirmation, naming the team, and SHALL delete nothing until confirmed. The editor SHALL close only once a save succeeds, or when the player closes it, asking first when the draft has unsaved changes. After a failed save the draft SHALL stay. After a stale save the team SHALL reload, the draft SHALL stay, and the editor SHALL say the save was not applied.
+Create team SHALL open an empty editor, and opening a team SHALL open the editor filled from that team. At 50 teams, Create team SHALL be unavailable with the limit stated beside it. Delete SHALL ask for confirmation, naming the team, and SHALL delete nothing until confirmed. The editor SHALL close only once a save succeeds, or when the player closes it, asking first when the draft has unsaved changes. After a failed save the draft SHALL stay. After a stale save the team SHALL reload, the draft SHALL stay, and the editor SHALL say the save was not applied.
 
 #### Scenario: Limit reached
 
-- **GIVEN** a player with 20 teams
+- **GIVEN** a player with 50 teams
 - **WHEN** the page renders
-- **THEN** Create team is unavailable and the toolbar says the limit of 20 is reached
+- **THEN** Create team is unavailable and the toolbar says the limit of 50 is reached
 
 #### Scenario: Unsaved changes
 
@@ -173,15 +173,15 @@ Create team SHALL open an empty editor, and opening a team SHALL open the editor
 
 ### Requirement: The editor is a large dialog on desktop and a tabbed sheet on a phone
 
-On desktop the editor SHALL open as a large centered dialog, nearly the full window height and at most 88rem wide, over the page, which keeps its scroll position. Its header SHALL hold the name, Notes and Close; then the team settings (modes, the campaign or Incursion fields, the rarity cap); then a lineup band that stays in view while the picker below it scrolls; and a footer with the live lineup count, any reasons Save is unavailable, Cancel and Save. The picker SHALL show characters and MoWs as two columns side by side.
+On desktop the editor SHALL open as a large centered dialog, nearly the full window height and at most 88rem wide, over the page, which keeps its scroll position. Its header SHALL hold the title ("Create team" or "Edit" and the team's name) and Close; then the name, the rarity cap and a Notes button that shows or hides the notes field in place; then the modes, each with its game icon, and the campaign or Incursion fields; then a lineup band whose character and MoW rows each scroll sideways, so a full lineup never grows taller; then the picker, which keeps room for about two rows of units, the dialog body scrolling when the window is too short; and a footer with the live lineup count (or, once a save is tried, what to fix), Cancel and Save. No overlay SHALL open on top of the editor except the discard confirmation. The picker SHALL show characters and MoWs as two columns side by side.
 
-On a phone the editor SHALL be a bottom sheet with a header (name, Name and notes, Close), Modes and Cap buttons, and three tabs with live counts: Lineup, Characters and Machines of War. Its footer SHALL hold the lineup count and a full-width Save. Every add or remove in the Characters or Machines of War tab SHALL show a short message saying where the unit went, with Undo restoring the previous lineup exactly.
+On a phone the editor SHALL be a bottom sheet with a header (name, Name and notes, Close), Modes and Cap buttons, and three tabs with live counts: Lineup, Characters and Machines of War. Its footer SHALL hold the lineup count on its own row, then Cancel and Save side by side. Every add or remove in the Characters or Machines of War tab SHALL show a short message saying where the unit went, with Undo restoring the previous lineup exactly.
 
 #### Scenario: On desktop
 
 - **GIVEN** a viewport at or above 768px
 - **WHEN** the editor opens and the player scrolls the picker
-- **THEN** it is a centered dialog, the lineup band stays in view, and the picker's Filters button opens its filters in a popover
+- **THEN** it is a centered dialog, the lineup band stays in view, and the picker's Filters button opens its filters inline, in a column after the units, so the units stay in view
 
 #### Scenario: On a phone
 
@@ -197,7 +197,7 @@ On a phone the editor SHALL be a bottom sheet with a header (name, Name and note
 
 ### Requirement: The editor applies the rules of the selected modes
 
-The editor SHALL evaluate the draft after every change, using the same rule codes as the API, and SHALL make Save unavailable, listing each reason, while any rule is broken. A name SHALL be 3 to 40 characters and notes at most 300, with their limits shown. A team SHALL have at least one mode and at least 3 characters, in every mode; MoWs do not count. The modes SHALL be a multi-select toggle group. Rule behavior SHALL be:
+The editor SHALL evaluate the draft after every change, using the same rule codes as the API. Save SHALL stay available: trying it while any rule is broken SHALL save nothing and list each reason in the footer, and from then on the list SHALL follow the draft, each reason going away once fixed. Before a save is tried the reasons SHALL not be listed. A name SHALL be 3 to 40 characters and notes at most 300, with their limits shown. A team SHALL have at least one mode and at least 3 characters, in every mode; MoWs do not count. The modes SHALL be a multi-select toggle group. Rule behavior SHALL be:
 
 | Mode                                       | Lineup behavior                                                                                                                                                                            |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -278,7 +278,7 @@ Assumption: allowed factions are the `allowedFactions` of the served `incursions
 
 ### Requirement: The picker finds units across the roster
 
-The picker SHALL list catalog characters and MoWs that fit the selected modes, sorted by rank, then ability levels, then rarity, as fixed-size unit tiles showing the portrait (rarity frame and rank badge), the name and the two ability levels. A picked unit's tile SHALL be filled and carry a check mark, distinct from the focus ring. Each list SHALL be one Tab stop, with the arrow keys moving between tiles and Enter or Space adding or removing. The picker SHALL offer a name search and a "Filters" button, badged with the number of active filters, for rank range, rarity range, faction, alliance, trait, attack type, hits, movement, range and damage type. A "Locked units" filter chip, on by default, SHALL show or hide locked units. MoWs SHALL honor the filters that apply to them: name, rarity, faction and alliance. Filters SHALL reset when the editor closes. A unit already in another team that shares a selected Guild War mode (War Offense, or War Defense) SHALL be flagged, by a mark on its tile that is also its accessible description, and SHALL stay selectable. Without a synced roster, every unit SHALL still be selectable. XP level SHALL NOT be shown on tiles.
+The picker SHALL list catalog characters and MoWs that fit the selected modes, sorted by rank, then ability levels, then rarity, as fixed-size unit tiles showing the portrait (rarity frame and rank badge), the name and the two ability levels. A picked unit's tile SHALL be filled and carry a check mark, distinct from the focus ring. Each list SHALL be one Tab stop, with the arrow keys moving between tiles and Enter or Space adding or removing. The picker SHALL offer a name search and a "Filters" button, badged with the number of active filters, for rank range, rarity range, faction, alliance, trait, attack type, hits, movement, range and damage type. An "Owned only" filter chip, as on Collection and off by default, SHALL list only the units the player owns; without a synced roster it SHALL be unavailable and say why. MoWs SHALL honor the filters that apply to them: name, rarity, faction and alliance. Filters SHALL reset when the editor closes. A unit already in another team that shares a selected Guild War mode (War Offense, or War Defense) SHALL be flagged, by a mark on its tile that is also its accessible description, and SHALL stay selectable. Without a synced roster, every unit SHALL still be selectable. XP level SHALL NOT be shown on tiles.
 
 #### Scenario: Unit used by another team
 
@@ -318,19 +318,19 @@ Assumptions: a Rarity's caps are V1's: Common is Iron 1, level 8, 2 stars; Uncom
 
 ### Requirement: Teams that break a rule are flagged and fixed in the editor
 
-A team with `issues` SHALL show error status chips and a translated reason for each issue code, never a raw code. Each reason SHALL say how to fix it in the editor, for example "Make 1 character flex". The flag SHALL not prevent deleting, reordering or filtering. Opening it in the editor SHALL show a box listing the broken rules with their fixes and the draft as imported, mark the lineup units concerned, and keep Save unavailable until every rule is satisfied. For `factionNotAllowed`, `coreCharacterMissing`, `tooManyCoreCharacters` and `tooManyCoreMows`, the editor SHALL mark the lineup units concerned, so the player does not have to find them.
+A team with `issues` SHALL show error status chips and a translated reason for each issue code, never a raw code. Each reason SHALL say how to fix it in the editor, for example "Make 1 character flex". The flag SHALL not prevent deleting, reordering or filtering. Opening it in the editor SHALL show a box listing the broken rules with their fixes and the draft as imported, mark the lineup units concerned, and list them again in the footer when a save is tried before every rule is satisfied. For `factionNotAllowed`, `coreCharacterMissing`, `tooManyCoreCharacters` and `tooManyCoreMows`, the editor SHALL mark the lineup units concerned, so the player does not have to find them.
 
 #### Scenario: Imported team with two core MoWs
 
 - **GIVEN** a War Offense team with issue `tooManyCoreMows`
 - **WHEN** the player opens the page
-- **THEN** the team shows a "2 core MoW (max 1)" chip, and opening it shows the reason with its fix, the second core MoW marked and Save unavailable
+- **THEN** the team shows a "2 core MoW (max 1)" chip, and opening it marks the second core MoW, and trying to save lists the reason with its fix and saves nothing
 
 #### Scenario: Characters outside the allowed factions are marked
 
 - **GIVEN** an imported Incursion team for Rukkatrukk with one Sisters of Battle character and issue `factionNotAllowed`
 - **WHEN** the player opens it in the editor
-- **THEN** that character is marked as not allowed, and removing it makes Save available
+- **THEN** that character is marked as not allowed, and once it is removed the team saves
 
 ### Requirement: The Teams page has a tour
 

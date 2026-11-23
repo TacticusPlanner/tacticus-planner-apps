@@ -95,7 +95,7 @@ describe("TeamImportResult", () => {
     const notImported = screen.getByTestId("v1-import-team-bucket-notImported")
     expect(notImported).toHaveTextContent("Not imported (3)")
     expect(notImported).toHaveTextContent(
-      "You already have 20 teams, the most you can keep"
+      "You already have 50 teams, the most you can keep"
     )
     expect(notImported).toHaveTextContent(
       "None of its units are in the planner's game data"

@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 
-import { V1ImportPanel } from "@/features/v1-import"
+import { V1ImportPanel, v1ImportReturnPath } from "@/features/v1-import"
 
 // Every part starts unchecked here (unlike the setup flow's `SetupV1Import`, which preselects
 // everything): the account is already provisioned, so a rerun should only touch what the user
@@ -28,6 +28,8 @@ const NOTHING_SELECTED = {
 export function V1ImportPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  // Back returns to the page that linked here (Teams), else Home.
+  const backTo = v1ImportReturnPath(useLocation().state)
 
   return (
     <div
@@ -37,7 +39,7 @@ export function V1ImportPage() {
       <div className="flex items-start gap-3">
         <Button
           aria-label={t("goals.v1Import.back")}
-          onClick={() => void navigate("/home")}
+          onClick={() => void navigate(backTo)}
           size="icon-sm"
           variant="ghost"
         >

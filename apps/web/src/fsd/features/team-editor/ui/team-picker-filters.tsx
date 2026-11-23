@@ -1,6 +1,14 @@
-import { useId, useState } from "react"
+import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { X } from "lucide-react"
+import {
+  allianceIcon,
+  damageTypeIcon,
+  factionIcon,
+  rankIcon,
+  rarityIcon,
+  traitIcon,
+} from "@workspace/game-catalog"
 import { rankOrder, rarityOrder } from "@workspace/game-domain"
 import type { Rank, Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -15,13 +23,13 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
-import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { FilterField, FiltersButton, FiltersControl } from "@/shared/ui"
+import { EntityIcon, FilterField, FiltersButton } from "@/shared/ui"
 import type { FilterLabelIconKind } from "@/shared/ui"
 
 import { activeFilterCount, defaultPickerFilters } from "../model/unit-picker"
+import { useOverlayPortal } from "./use-overlay-portal"
 import type {
   AttackType,
   PickerFilters,
@@ -47,14 +55,17 @@ function FilterSelect<T extends string | number>({
   icon?: FilterLabelIconKind
   value: T | null
   anyLabel: string
-  options: readonly { value: T; label: string }[]
+  /** Each choice, with its game icon when it is a game entity (ui-style-guide rule 3). */
+  options: readonly { value: T; label: string; icon?: string }[]
   onChange: (value: T | null) => void
   testId: string
 }) {
+  const { triggerRef, container, onOpenChange } = useOverlayPortal()
   return (
     <FilterField icon={icon} label={label}>
       {({ labelId }) => (
         <Select
+          onOpenChange={onOpenChange}
           onValueChange={(next) =>
             onChange(
               next === ANY
@@ -69,16 +80,20 @@ function FilterSelect<T extends string | number>({
             aria-labelledby={labelId}
             className="w-full"
             data-testid={testId}
+            ref={triggerRef}
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent position="popper">
+          <SelectContent container={container} position="popper">
             <SelectItem value={ANY}>{anyLabel}</SelectItem>
             {options.map((option) => (
               <SelectItem
                 key={String(option.value)}
                 value={String(option.value)}
               >
+                {option.icon ? (
+                  <EntityIcon alt="" size="inline" src={option.icon} />
+                ) : null}
                 {option.label}
               </SelectItem>
             ))}
@@ -111,11 +126,18 @@ function FilterFields({
   const ranks = rankOrder.map((rank) => ({
     value: rank,
     label: t(`progression:ranks.${rank}`),
+    icon: rankIcon(rank),
   }))
   const rarities = rarityOrder.map((rarity) => ({
     value: rarity,
     label: t(`progression:rarities.${rarity}`),
+    icon: rarityIcon(rarity),
   }))
+  const iconOf = {
+    factions: factionIcon,
+    traits: traitIcon,
+    damageTypes: damageTypeIcon,
+  }
   const named = (
     namespace: "factions" | "traits" | "damageTypes",
     values: readonly string[]
@@ -124,6 +146,7 @@ function FilterFields({
       .map((value) => ({
         value,
         label: t(`${namespace}:${value}`, { defaultValue: value }),
+        icon: iconOf[namespace](value),
       }))
       .toSorted((a, b) => a.label.localeCompare(b.label))
   return (
@@ -185,6 +208,7 @@ function FilterFields({
           label: t(`common:alliances.${alliance as "Imperial"}`, {
             defaultValue: alliance,
           }),
+          icon: allianceIcon(alliance),
         }))}
         icon="alliance"
         testId="team-filter-alliance"
@@ -269,78 +293,92 @@ function FilterFields({
   )
 }
 
+/** The "Filters" button: shows or hides the picker's filters panel, with the active count. */
+export function TeamPickerFiltersButton({
+  filters,
+  open,
+  onOpenChange,
+  panelId,
+}: {
+  filters: PickerFilters
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  panelId: string
+}) {
+  return (
+    <FiltersButton
+      aria-controls={panelId}
+      aria-expanded={open}
+      count={activeFilterCount(filters)}
+      onClick={() => onOpenChange(!open)}
+      testId="team-picker-filters"
+    />
+  )
+}
+
 /**
- * The picker's filters (ui-style-guide rule 3): on desktop the shared `FiltersControl` popover. On a
- * phone the editor is already a sheet and no overlay opens another (rule 8), so the "Filters"
- * button opens the fields inline, on their own row under the search, with "Clear filters" at the
- * top. Changes apply as they are made.
+ * The picker's filters (ui-style-guide rule 3). The editor is already a dialog or a sheet and no
+ * overlay opens another (rule 8), so the fields sit inline: above the units on a narrow editor,
+ * and on a wide one in a last column after the units, under the "Filters" button, scrolling on
+ * its own so the units stay in view. It stays next to the button in the reading order.
+ * "Clear filters" sits beside the heading. Changes apply as they are made.
  */
-export function TeamPickerFilters({
+export function TeamPickerFiltersPanel({
   filters,
   options,
   onChange,
+  open,
+  panelId,
 }: {
   filters: PickerFilters
   options: ReturnType<typeof pickerFilterOptions>
   onChange: (patch: Partial<PickerFilters>) => void
+  /** Closed, the panel renders nothing. */
+  open: boolean
+  panelId: string
 }) {
   const { t } = useTranslation("common")
-  const isMobile = useIsMobile()
-  const [open, setOpen] = useState(false)
-  const panelId = useId()
+  const headingId = useId()
   const count = activeFilterCount(filters)
   const clear = () =>
     onChange({
       ...defaultPickerFilters,
       search: filters.search,
-      lockedUnits: filters.lockedUnits,
+      ownedOnly: filters.ownedOnly,
     })
 
-  if (!isMobile) {
-    return (
-      <FiltersControl
-        count={count}
-        onClear={clear}
-        size="compact"
-        testId="team-picker-filters"
-      >
-        <FilterFields filters={filters} onChange={onChange} options={options} />
-      </FiltersControl>
-    )
-  }
+  if (!open) return null
   return (
-    <>
-      <FiltersButton
-        aria-controls={panelId}
-        aria-expanded={open}
-        count={count}
-        onClick={() => setOpen((current) => !current)}
-        testId="team-picker-filters"
-      />
-      {open ? (
-        <div
-          className="order-last flex basis-full flex-col gap-3 rounded-lg border p-3"
-          data-testid="team-picker-filters-panel"
-          id={panelId}
+    <section
+      aria-labelledby={headingId}
+      className="flex flex-col gap-3 rounded-lg border p-3 @3xl/editor:order-last @3xl/editor:w-64 @3xl/editor:shrink-0 @3xl/editor:gap-1.5 @3xl/editor:overflow-y-auto @3xl/editor:rounded-none @3xl/editor:border-0 @3xl/editor:border-l @3xl/editor:p-1 @3xl/editor:pl-4"
+      data-testid="team-picker-filters-panel"
+      id={panelId}
+    >
+      {/* The heading row keeps the column headings' height, so "Filters" lines up with
+          "Characters" and "Machines of War"; the small ghost button overhangs it evenly. */}
+      <div className="flex items-center justify-between gap-2">
+        <h4 className="text-sm font-medium" id={headingId}>
+          {t("filtersControl.title")}
+        </h4>
+        <Button
+          className="-my-1"
+          disabled={count === 0}
+          onClick={clear}
+          size="xs"
+          type="button"
+          variant="ghost"
         >
-          <Button
-            className="self-start"
-            disabled={count === 0}
-            onClick={clear}
-            type="button"
-            variant="ghost"
-          >
-            <X data-icon="inline-start" />
-            {t("filtersControl.clear")}
-          </Button>
-          <FilterFields
-            className="grid-cols-2"
-            filters={filters}
-            onChange={onChange}
-            options={options}
-          />
-        </div>
-      ) : null}
-    </>
+          <X data-icon="inline-start" />
+          {t("filtersControl.clear")}
+        </Button>
+      </div>
+      <FilterFields
+        className="grid-cols-2 @xl/editor:grid-cols-3 @3xl/editor:grid-cols-1"
+        filters={filters}
+        onChange={onChange}
+        options={options}
+      />
+    </section>
   )
 }

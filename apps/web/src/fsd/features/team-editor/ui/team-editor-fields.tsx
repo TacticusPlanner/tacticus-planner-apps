@@ -1,16 +1,12 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { NotebookPen, TriangleAlert, X } from "lucide-react"
+import { factionIcon, mowIcon, rarityIcon } from "@workspace/game-catalog"
 import { rarityOrder } from "@workspace/game-domain"
-import type { Rarity } from "@workspace/game-domain"
+import type { Rarity, UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover"
 import {
   Select,
   SelectContent,
@@ -30,28 +26,18 @@ import {
   TEAM_MODES,
   allowedFactions,
   sharedIncursionFactions,
+  teamModeIcon,
   useTeamModeLabel,
 } from "@/entities/team"
 import type { TeamMode, TeamRuleFacts } from "@/entities/team"
-import { closestOverlayContent, FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import { EntityIcon, FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { modeBlock } from "../model/team-draft"
 import type { ModeBlock, TeamDraft } from "../model/team-draft"
 
-/**
- * Where a select inside the editor portals its list: the open Dialog or Sheet content around its
- * trigger. A list portaled to the body can be impossible to open under the dialog's scroll lock.
- */
-function useOverlayPortal() {
-  const [trigger, setTrigger] = useState<HTMLButtonElement | null>(null)
-  const [container, setContainer] = useState<HTMLElement>()
-  const onOpenChange = (open: boolean) => {
-    if (open) setContainer(closestOverlayContent(trigger))
-  }
-  return { triggerRef: setTrigger, container, onOpenChange }
-}
 import type { CampaignOption } from "../model/use-team-editor-data"
+import { useOverlayPortal } from "./use-overlay-portal"
 
 /** The cap select's value for a team with no cap. */
 const NO_CAP = "none"
@@ -63,7 +49,7 @@ const NO_CAP = "none"
 const isExclusiveReason = (block: ModeBlock | null) =>
   block?.reason === "exclusive" || block?.reason === "exclusiveBlocked"
 
-/** The allowed factions, named, for a campaign or the chosen Incursions. */
+/** The allowed factions, each with its icon, for a campaign or the chosen Incursions. */
 function FactionNote({
   factions,
   labelKey,
@@ -72,17 +58,29 @@ function FactionNote({
   labelKey: "campaign.allowed" | "incursion.allowed"
 }) {
   const { t } = useTranslation(["teams", "factions"])
+  const labelId = useId()
   if (!factions || factions.size === 0) return null
-  const names = [...factions]
-    .map((faction) => t(`factions:${faction}`, { defaultValue: faction }))
-    .toSorted((a, b) => a.localeCompare(b))
+  const named = [...factions]
+    .map((faction) => ({
+      faction,
+      name: t(`factions:${faction}`, { defaultValue: faction }),
+    }))
+    .toSorted((a, b) => a.name.localeCompare(b.name))
   return (
-    <p
-      className="text-sm text-muted-foreground"
+    <div
+      className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground"
       data-testid="team-allowed-factions"
     >
-      {t(labelKey, { factions: names.join(", ") })}
-    </p>
+      <span id={labelId}>{t(labelKey)}</span>
+      <ul aria-labelledby={labelId} className="contents">
+        {named.map(({ faction, name }) => (
+          <li className="flex items-center gap-1" key={faction}>
+            <EntityIcon alt="" size="inline" src={factionIcon(faction)} />
+            {name}
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 
@@ -102,7 +100,7 @@ export function TeamNameField({
   const id = useId()
   const hintId = useId()
   return (
-    <div className={cn("flex min-w-0 flex-col gap-1", className)}>
+    <div className={cn("flex min-w-0 flex-col gap-1.5", className)}>
       <Label htmlFor={id}>{t("editor.name")}</Label>
       <Input
         aria-describedby={hintId}
@@ -160,71 +158,42 @@ export function TeamNotesField({
   )
 }
 
-/** A button opening its fields in a popover, marked when they hold something. */
-function TeamPopoverButton({
-  label,
-  marked = false,
-  markLabel,
-  testId,
-  icon,
-  children,
-}: {
-  label: string
-  marked?: boolean
-  markLabel?: string
-  testId: string
-  icon?: React.ReactNode
-  children: React.ReactNode
-}) {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          className="pointer-coarse:min-h-12"
-          data-testid={testId}
-          type="button"
-          variant="outline"
-        >
-          {icon}
-          {label}
-          {marked ? (
-            <span
-              aria-label={markLabel}
-              className="size-2 rounded-full bg-primary"
-              role="img"
-            />
-          ) : null}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className="flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-4"
-      >
-        {children}
-      </PopoverContent>
-    </Popover>
-  )
-}
-
-/** The Notes button: the notes in a popover, marked when the team has some. */
+/**
+ * The Notes button: shows or hides the notes field in the editor itself (no overlay opens on top
+ * of the dialog, ui-style-guide rule 8), marked when the team has notes.
+ */
 export function TeamNotesButton({
   notes,
-  onNotesChange,
+  open,
+  onOpenChange,
+  controls,
 }: {
   notes: string
-  onNotesChange: (notes: string) => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  /** The id of the notes field's panel. */
+  controls: string
 }) {
   const { t } = useTranslation("teams")
   return (
-    <TeamPopoverButton
-      icon={<NotebookPen data-icon="inline-start" />}
-      label={t("editor.notes")}
-      markLabel={t("editor.hasNotes")}
-      marked={notes.trim().length > 0}
-      testId="team-notes-button"
+    <Button
+      aria-controls={controls}
+      aria-expanded={open}
+      data-testid="team-notes-button"
+      onClick={() => onOpenChange(!open)}
+      type="button"
+      variant="outline"
     >
-      <TeamNotesField notes={notes} onNotesChange={onNotesChange} />
-    </TeamPopoverButton>
+      <NotebookPen data-icon="inline-start" />
+      {t("editor.notes")}
+      {notes.trim().length > 0 ? (
+        <span
+          aria-label={t("editor.hasNotes")}
+          className="size-2 rounded-full bg-primary"
+          role="img"
+        />
+      ) : null}
+    </Button>
   )
 }
 
@@ -290,7 +259,6 @@ export function TeamModesField({
           }
           onToggleMode(mode)
         }}
-        size="sm"
         spacing={1}
         type="multiple"
         value={draft.modes}
@@ -311,7 +279,6 @@ export function TeamModesField({
               aria-disabled={exclusiveBlock || undefined}
               className={cn(
                 FILTER_CHIP_CLASS_NAME,
-                "pointer-coarse:min-h-12",
                 exclusiveBlock && "opacity-50"
               )}
               data-testid={`team-mode-${mode}`}
@@ -319,6 +286,7 @@ export function TeamModesField({
               key={mode}
               value={mode}
             >
+              <EntityIcon alt="" size="inline" src={teamModeIcon(mode)} />
               {modeLabel(mode)}
             </ToggleGroupItem>
           )
@@ -358,22 +326,22 @@ export function TeamModesField({
 export function TeamRarityCapField({
   rarityCap,
   onRarityCapChange,
+  className,
 }: {
   rarityCap: Rarity | null
   onRarityCapChange: (rarity: Rarity | null) => void
+  className?: string
 }) {
   const { t } = useTranslation(["teams", "progression"])
-  const labelId = useId()
+  const id = useId()
   const {
     triggerRef: capTrigger,
     container: capContainer,
     onOpenChange: capOpenChange,
   } = useOverlayPortal()
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium" id={labelId}>
-        {t("rarityCap.label")}
-      </span>
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <Label htmlFor={id}>{t("rarityCap.label")}</Label>
       <Select
         onOpenChange={capOpenChange}
         onValueChange={(value) =>
@@ -382,11 +350,10 @@ export function TeamRarityCapField({
         value={rarityCap ?? NO_CAP}
       >
         <SelectTrigger
-          aria-labelledby={labelId}
-          className="w-36"
+          className="w-40"
           data-testid="team-rarity-cap"
+          id={id}
           ref={capTrigger}
-          size="sm"
         >
           <SelectValue />
         </SelectTrigger>
@@ -394,6 +361,7 @@ export function TeamRarityCapField({
           <SelectItem value={NO_CAP}>{t("rarityCap.none")}</SelectItem>
           {rarityOrder.map((rarity) => (
             <SelectItem key={rarity} value={rarity}>
+              <EntityIcon alt="" size="inline" src={rarityIcon(rarity)} />
               {t(`progression:rarities.${rarity}`)}
             </SelectItem>
           ))}
@@ -475,6 +443,7 @@ export function TeamContextFields({
             <SelectContent container={campaignContainer} position="popper">
               {campaigns.map((campaign) => (
                 <SelectItem key={campaign.groupId} value={campaign.groupId}>
+                  <EntityIcon alt="" size="inline" src={campaign.icon} />
                   {campaign.label}
                 </SelectItem>
               ))}
@@ -497,9 +466,15 @@ export function TeamContextFields({
             <ul className="flex flex-wrap gap-1.5">
               {draft.incursionMowIds.map((mowId) => (
                 <li
-                  className="flex items-center gap-1 rounded-full border py-0.5 pr-0.5 pl-3 text-sm"
+                  className="flex items-center gap-1.5 rounded-full border bg-muted/30 p-0.5 text-sm"
+                  data-testid="team-incursion-chip"
                   key={mowId}
                 >
+                  <EntityIcon
+                    alt=""
+                    size="portrait-sm"
+                    src={mowIcon(mowId as UnitId)}
+                  />
                   {mowName(mowId)}
                   <Button
                     aria-label={t("incursion.remove", { name: mowName(mowId) })}
@@ -536,6 +511,11 @@ export function TeamContextFields({
             <SelectContent container={incursionContainer} position="popper">
               {incursionChoices.map((mowId) => (
                 <SelectItem key={mowId} value={mowId}>
+                  <EntityIcon
+                    alt=""
+                    size="row"
+                    src={mowIcon(mowId as UnitId)}
+                  />
                   {mowName(mowId)}
                 </SelectItem>
               ))}

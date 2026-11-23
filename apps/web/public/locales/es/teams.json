@@ -100,7 +100,6 @@
     },
     "hasNotes": "Tiene notas",
     "newTeam": "Nuevo equipo",
-    "toSave": "Para guardar este equipo:",
     "addedCore": "{{name}} añadido a los principales.",
     "addedFlex": "{{name}} añadido como flexible.",
     "removed": "{{name}} quitado.",
@@ -136,21 +135,22 @@
   "campaign": {
     "label": "Campaña",
     "placeholder": "Elige una campaña",
-    "allowed": "Facciones permitidas: {{factions}}",
+    "allowed": "Facciones permitidas",
     "replaces": "Elegir una campaña sustituye la alineación por sus personajes principales."
   },
   "incursion": {
     "label": "Incursiones",
     "addPlaceholder": "Añadir una Incursión",
     "remove": "Quitar {{name}}",
-    "allowed": "Facciones permitidas: {{factions}}",
+    "allowed": "Facciones permitidas",
     "noShared": "Estas Incursiones no tienen ninguna facción en común.",
     "clears": "Cambiar las Incursiones vacía la alineación."
   },
   "picker": {
     "label": "Añadir unidades",
     "search": "Buscar unidades",
-    "lockedUnits": "Unidades bloqueadas",
+    "ownedOnly": "Solo desbloqueadas",
+    "ownedOnlyNeedsRoster": "«Solo desbloqueadas» necesita una plantilla sincronizada.",
     "characters": "Personajes",
     "mows": "Máquinas de Guerra",
     "empty": "Ninguna unidad coincide con estos filtros.",
@@ -268,7 +268,7 @@
         },
         "create": {
           "title": "Crear un equipo",
-          "content": "Arma una alineación para uno o varios modos. Puedes guardar hasta 20 equipos."
+          "content": "Arma una alineación para uno o varios modos. Puedes guardar hasta 50 equipos."
         },
         "card": {
           "title": "Un equipo",

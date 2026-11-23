@@ -163,8 +163,8 @@ export type AttackType = "any" | "melee" | "ranged"
 /** The picker's filters; they live as long as the editor is open. */
 export interface PickerFilters {
   search: string
-  /** The "Locked units" chip, on by default: whether locked units are listed. */
-  lockedUnits: boolean
+  /** The "Owned only" chip, off by default: whether only owned units are listed. */
+  ownedOnly: boolean
   rankMin: Rank | null
   rankMax: Rank | null
   rarityMin: Rarity | null
@@ -181,7 +181,7 @@ export interface PickerFilters {
 
 export const defaultPickerFilters: PickerFilters = {
   search: "",
-  lockedUnits: true,
+  ownedOnly: false,
   rankMin: null,
   rankMax: null,
   rarityMin: null,
@@ -308,7 +308,7 @@ export function filterPickerUnits(
     ) {
       return false
     }
-    if (!filters.lockedUnits && unit.owned === false) return false
+    if (filters.ownedOnly && unit.owned === false) return false
     if (needle && !anyNameIncludes(unit.searchNames, needle, locale)) {
       return false
     }

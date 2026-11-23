@@ -93,7 +93,7 @@ function BandSlot({
         type="button"
       >
         <TeamUnitPortrait
-          size="md"
+          size="sm"
           unit={cappedView(kind, unitId, roster, rarityCap)}
         />
         <GripVertical
@@ -174,7 +174,7 @@ function FlexDivider({
       className={cn(
         "flex shrink-0 flex-col items-center justify-center gap-1 self-stretch text-center text-xs text-muted-foreground",
         empty
-          ? "w-28 rounded-lg border-2 border-dashed border-muted-foreground/50 bg-muted/30 p-1.5"
+          ? "w-20 rounded-lg border-2 border-dashed border-muted-foreground/50 bg-muted/30 p-1.5"
           : "w-8"
       )}
       data-testid="team-lineup-flex-divider"
@@ -214,7 +214,9 @@ function BandRow({
   onArrange,
   onToggleRole,
   onRemove,
+  className,
 }: {
+  className?: string
   kind: Kind
   label: string
   count: string
@@ -232,15 +234,19 @@ function BandRow({
   const items = [...core, FLEX_DIVIDER, ...flex]
   const sectionOf = (id: string) => (flex.includes(id) ? "flex" : "core")
   return (
-    <section aria-label={label} className="flex min-w-0 flex-col gap-1.5">
+    <section
+      aria-label={label}
+      className={cn("flex min-w-0 flex-col gap-1.5", className)}
+    >
       <h4 className="flex items-baseline gap-2 text-sm font-medium">
         {label}
         <span className="text-xs font-normal text-muted-foreground tabular-nums">
           {count}
         </span>
       </h4>
+      {/* One row that scrolls sideways, so a full lineup never pushes the picker down. */}
       <ul
-        className="flex flex-wrap gap-2"
+        className="flex gap-2 overflow-x-auto p-1"
         data-testid={
           kind === "mow" ? "team-lineup-mow-row" : "team-lineup-character-row"
         }
@@ -289,7 +295,7 @@ function BandRow({
 
 /**
  * The desktop lineup band (design D6): the characters and the MoWs as rows of slots that stay in
- * view above the picker. A divider splits core from flex; dragging a slot across it changes its
+ * view above the picker, each one row that scrolls sideways once it is full. A divider splits core from flex; dragging a slot across it changes its
  * role, and dragging within a side reorders it, by pointer, touch or keyboard. Each slot also has
  * a Core/Flex switch and Remove, and shows the rule marks and what is under the cap.
  */
@@ -329,15 +335,16 @@ export function TeamLineupBand({
       : t("lineup.coreCount", { count: core })
   return (
     <div
-      className="flex flex-col gap-3 rounded-xl border bg-muted/30 p-3"
+      className="flex shrink-0 flex-col gap-3 rounded-xl border bg-muted/30 p-3"
       data-testid="team-editor-lineup"
     >
       {empty ? (
         <p className="text-sm text-muted-foreground">{t("lineup.empty")}</p>
       ) : (
-        <div className="flex flex-wrap items-start gap-x-6 gap-y-3">
+        <div className="flex items-start gap-6">
           {draft.characterIds.length > 0 ? (
             <BandRow
+              className="flex-1"
               canCore={(unitId) => canMakeCore(draft, unitId)}
               canFlex={(unitId) => canMakeFlex(draft, unitId)}
               core={characters.core}
@@ -359,6 +366,9 @@ export function TeamLineupBand({
           {/* Shown whenever there are MoWs, also an imported team's in a mode that takes none, so they can be removed. */}
           {draft.mowIds.length > 0 ? (
             <BandRow
+              className={
+                draft.characterIds.length > 0 ? "max-w-1/3 shrink-0" : "flex-1"
+              }
               canCore={(unitId) => canMakeMowCore(draft, unitId)}
               canFlex={() => true}
               core={mowLineup.core}

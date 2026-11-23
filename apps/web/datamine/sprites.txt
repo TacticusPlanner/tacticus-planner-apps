@@ -657,8 +657,10 @@ atlases/ui_icon_resource_summoning_special.webp
 atlases/ui_icon_resource_summoning_token.webp
 atlases/ui_icon_resource_token_battle_guildboss.webp
 atlases/ui_icon_resource_token_battle_pvp.webp
+atlases/ui_icon_resource_token_battle_standard.webp
 atlases/ui_icon_resource_token_battle_treasureBeach.webp
 atlases/ui_icon_resource_token_battle_waves.webp
+atlases/ui_icon_resource_token_sync_pvp.webp
 atlases/ui_icon_star_herodetail_01.webp
 atlases/ui_icon_star_herodetail_epic_01.webp
 atlases/ui_icon_star_legendary_large_01.webp
@@ -1925,6 +1927,7 @@ ui/ui_icon_crusade_planet_score_below.webp
 ui/ui_icon_missions_daily.webp
 ui/ui_icon_resource_crusade_currency_large.webp
 ui/ui_icon_resource_guild_war_currency_large.webp
+ui/ui_icon_resource_token_guildwars.webp
 ui/ui_image_background_desktop.webp
 ui/ui_image_portrait_concealed_01.webp
 ui/ui_image_portrait_generic_01.webp

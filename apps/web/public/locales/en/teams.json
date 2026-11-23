@@ -100,7 +100,6 @@
     },
     "hasNotes": "Has notes",
     "newTeam": "New team",
-    "toSave": "To save this team:",
     "addedCore": "{{name}} added to core.",
     "addedFlex": "{{name}} added as flex.",
     "removed": "{{name}} removed.",
@@ -136,21 +135,22 @@
   "campaign": {
     "label": "Campaign",
     "placeholder": "Choose a campaign",
-    "allowed": "Allowed factions: {{factions}}",
+    "allowed": "Allowed factions",
     "replaces": "Choosing a campaign replaces the lineup with its core characters."
   },
   "incursion": {
     "label": "Incursions",
     "addPlaceholder": "Add an Incursion",
     "remove": "Remove {{name}}",
-    "allowed": "Allowed factions: {{factions}}",
+    "allowed": "Allowed factions",
     "noShared": "These Incursions have no faction in common.",
     "clears": "Changing the Incursions clears the lineup."
   },
   "picker": {
     "label": "Add units",
     "search": "Search units",
-    "lockedUnits": "Locked units",
+    "ownedOnly": "Owned only",
+    "ownedOnlyNeedsRoster": "Owned only needs a synced roster.",
     "characters": "Characters",
     "mows": "Machines of War",
     "empty": "No unit matches these filters.",
@@ -268,7 +268,7 @@
         },
         "create": {
           "title": "Create a team",
-          "content": "Build a lineup for one or more modes. You can keep up to 20 teams."
+          "content": "Build a lineup for one or more modes. You can keep up to 50 teams."
         },
         "card": {
           "title": "A team",
