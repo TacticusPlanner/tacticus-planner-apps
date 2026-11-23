@@ -48,7 +48,10 @@ for (const file of files) {
     filename: file,
     babelrc: false,
     configFile: false,
-    parserOpts: { plugins: ["typescript", "jsx"] },
+    // JSX only in .tsx: in .ts files `<T>(…) =>` is a generic arrow, which Babel 8 rejects as JSX.
+    parserOpts: {
+      plugins: file.endsWith(".tsx") ? ["typescript", "jsx"] : ["typescript"],
+    },
     plugins: [
       [
         "babel-plugin-react-compiler",

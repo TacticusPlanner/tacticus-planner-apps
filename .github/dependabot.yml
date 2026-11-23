@@ -142,6 +142,16 @@ updates:
       - dependency-name: "@types/node"
         update-types:
           - version-update:semver-major
+      # babel-plugin-react-compiler (1.0.0) is built on Babel 7's AST: under Babel 8 it silently skips
+      # every function with a defaulted destructure (~318 here). Lift once it supports Babel 8.
+      - dependency-name: "@babel/core"
+        update-types:
+          - version-update:semver-major
+      # TypeScript 7 (native compiler) has no JS API yet, which typescript-eslint and openapi-typescript
+      # need (lint and api:types fail). Lift once both support it, or run TS 7 beside TS 6 for them.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
