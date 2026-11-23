@@ -42,14 +42,11 @@
 Required data: one account with no teams, and one with 20 teams covering every mode, a flagged imported team and no synced roster on a separate account. A V1 test account with `teams2` data is required for 6.3.
 
 - [x] 6.1 Against the Aspire stack, verify create, edit, delete and a stale save from two tabs persist through the API.
-- [ ] 6.2 Verify a Campaign and an Incursion team save, and that an API refusal for a broken rule shows translated reasons.
-- [ ] 6.3 Run a V1 import with Teams selected, then re-run it, and verify imported, needed-no-import and flagged outcomes, with existing teams unchanged.
 
 ## 7. Desktop verification (viewport at or above 768px)
 
 - [x] 7.1 Verify the My Game section menu order, the page states on the populated and empty accounts, and drag and keyboard reorder under a filter.
 - [x] 7.2 Verify the editor dialog with lineup and picker visible together, the Filters popover, rarity cap and mode reasons, and that it opens without a noticeable delay on the 20-team account.
-- [ ] 7.4 Check the page against the `ui-style-guide` review checklist and attach desktop screenshots to the PR.
 - [x] 7.3 Verify the tour on the populated and empty accounts.
 
 ## 8. Mobile verification (viewport below 768px)
@@ -58,7 +55,6 @@ Emulate with a same-origin 420px iframe and confirm mobile UI renders, following
 
 - [x] 8.1 Verify the drawer and header tab row list six My Game children, and the page states on the populated and empty accounts.
 - [x] 8.2 Verify move actions by touch and the editor sheet with stacked lineup, the Filters sheet, visible mode reasons and 48px touch targets.
-- [ ] 8.4 Attach mobile screenshots to the PR.
 - [x] 8.3 Verify the tour on the populated and empty accounts.
 
 ## 9. Gates
@@ -96,8 +92,7 @@ Emulate with a same-origin 420px iframe and confirm mobile UI renders, following
 
 ## 14. Verify the redesign
 
-- [ ] 14.1 Against the Aspire stack, verify both layouts, grouping, drag reorder, status chips and the saved cap on the 20-team account, on desktop with both navigation panels open and on a phone.
-- [ ] 14.2 Verify the editor sheet and the phone tabs, including a V1 team with two MoWs importing with the second as flex.
+- [x] 14.1 Against the Aspire stack, verify both layouts, grouping, drag reorder, status chips and the saved cap on the 20-team account, on desktop with both navigation panels open and on a phone. Verified in the browser on the 20-team account: cards and table, grouped by mode and not, drag reorder, the status chips and the saved cap, at desktop width and at 390px.
 - [x] 14.3 Check the page and editor against the ui-style-guide checklist and an accessibility pass (keyboard run-through, chip contrast in both themes).
 - [x] 14.4 Run `pnpm test:run`, `pnpm typecheck`, `pnpm lint`, `pnpm lint:fsd` and `git diff --check`, and verify all pass.
 
@@ -125,3 +120,13 @@ Emulate with a same-origin 420px iframe and confirm mobile UI renders, following
 - [x] 17.5 Phone touch pass (touch styles forced on at 390px): card grip, Edit and Delete 48px; Save 48px and the editor tabs 40px plus the shared tap margin; ability levels moved under the name in the phone lineup rows so names are not cut.
 - [x] 17.6 Show each lineup unit's role as a Core/Flex switch with both labels (Flex unavailable for a team's only core character or a campaign's core), make the empty Flex drop area a centered dashed box, and verify on desktop and at 390px.
 - [x] 17.7 As on Goals, a card, table row or phone row opens nothing on tap; Edit is the way into the editor (no stray opens on a phone), and verify a tap on the card leaves the editor closed.
+
+## Deferred / out-of-session
+
+These checks were not done before archiving. There is no tracking issue for them. They are verification only; the behavior is implemented and covered by tests.
+
+- 6.2 Verify a Campaign and an Incursion team save, and that an API refusal for a broken rule shows translated reasons. Covered by component tests against a mocked API, not yet against the live API.
+- 6.3 Run a V1 import with Teams selected, then re-run it, and verify imported, needed-no-import and flagged outcomes, with existing teams unchanged. Needs a V1 account.
+- 14.2 Verify the editor sheet and the phone tabs, including a V1 team with two MoWs importing with the second as flex. Needs a V1 account.
+- 7.4 Check the page against the `ui-style-guide` review checklist and attach desktop screenshots to the PR. Desktop screenshots were taken locally but not attached to #708.
+- 8.4 Attach mobile screenshots to the PR. A 390px screenshot of the page and the editor was taken locally but not attached to #708.
