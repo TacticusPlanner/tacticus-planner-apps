@@ -13,6 +13,10 @@ import { lastRank, rankIndex, rankOrder } from "@workspace/game-domain"
 import type { Rank } from "@workspace/game-domain"
 
 import type { FarmingStrategy } from "@/entities/goal"
+import {
+  requiredLevelForRankTarget,
+  useLevelRules,
+} from "@/entities/goal-farming"
 import type { RankAdditionalTarget } from "@/entities/goal-farming"
 import { closestOverlayContent } from "@/shared/ui"
 
@@ -181,6 +185,7 @@ function AdditionalTargetSelect({
   onChange: (value: RankAdditionalTarget) => void
 }) {
   const { t } = useTranslation()
+  const rules = useLevelRules()
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [container, setContainer] = useState<HTMLElement>()
 
@@ -209,7 +214,15 @@ function AdditionalTargetSelect({
         <SelectContent container={container}>
           {choices.map((choice) => (
             <SelectItem key={choice} value={choice}>
-              <AdditionalTargetLabel rank={end} value={choice} />
+              <AdditionalTargetLabel
+                level={
+                  rules && choice !== "None"
+                    ? requiredLevelForRankTarget(end, choice, rules)
+                    : undefined
+                }
+                rank={end}
+                value={choice}
+              />
             </SelectItem>
           ))}
         </SelectContent>

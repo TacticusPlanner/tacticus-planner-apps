@@ -16,6 +16,8 @@ export type EffectiveCampaignEventProgress = {
   completedChallengeBattlesIds: readonly string[]
   battleSource: CampaignEventProgressSource
   challengeSource: CampaignEventProgressSource
+  /** The synced battle count, or null with no synced data: the floor a manual count must beat. */
+  syncedBattleCount: number | null
 }
 
 /** One `{campaignGroupId, type}` track's key, shared by the page and daily raids. */
@@ -24,9 +26,14 @@ export function campaignEventTrackKey(campaignGroupId: string, type: string) {
 }
 
 /**
- * Resolves one track's effective progress: the manual override value when it is not null, else the
- * synced value, else no progress. Battle count and challenge ids resolve independently, since an
- * override may set either one and leave the other null.
+ * Resolves one track's effective progress. Battle count and challenge ids resolve independently,
+ * since an override may set either one and leave the other null.
+ *
+ * - Battle count: the manual override when it is above the synced count (or nothing is synced),
+ *   else the synced count, else 0. The game only reports battles the player has beaten, so a synced
+ *   count above the manual one means the override is stale (for example a V1 import or a value set
+ *   in an earlier event run); it must not hide event nodes the player has since reached.
+ * - Challenge ids: the manual override when it is not null, else the synced ids, else none.
  */
 export function resolveCampaignEventProgress(
   synced: SyncedCampaignEventProgress | undefined,
@@ -34,12 +41,16 @@ export function resolveCampaignEventProgress(
 ): EffectiveCampaignEventProgress {
   const manualCount = override?.completedBattleCount ?? null
   const manualChallenges = override?.completedChallengeBattlesIds ?? null
+  const syncedCount = synced?.completedBattleCount ?? null
+  const manualCountWins =
+    manualCount !== null && (syncedCount === null || manualCount > syncedCount)
   return {
-    completedBattleCount: manualCount ?? synced?.completedBattleCount ?? 0,
+    completedBattleCount: manualCountWins ? manualCount : (syncedCount ?? 0),
     completedChallengeBattlesIds:
       manualChallenges ?? synced?.completedChallengeBattlesIds ?? [],
-    battleSource: sourceOf(manualCount !== null, synced),
+    battleSource: sourceOf(manualCountWins, synced),
     challengeSource: sourceOf(manualChallenges !== null, synced),
+    syncedBattleCount: syncedCount,
   }
 }
 

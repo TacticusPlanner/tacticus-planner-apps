@@ -14,7 +14,7 @@ const target = (end: Rank, endPointFive = false, endAppliedUpgrades = 0) => ({
 })
 
 describe("rankTargetKey", () => {
-  it("treats point-five and three applied slots as one target below Diamond3", () => {
+  it("treats point-five and three applied slots as one target below Adamantine1", () => {
     expect(rankTargetKey(target(Rank.Silver3, true, 0))).toBe(
       rankTargetKey(target(Rank.Silver3, false, 3))
     )
@@ -29,12 +29,21 @@ describe("rankTargetKey", () => {
     )
   })
 
-  it("distinguishes ranks and caps applied slots at the three-slot row", () => {
+  it("distinguishes ranks", () => {
     expect(rankTargetKey(target(Rank.Silver3))).not.toBe(
       rankTargetKey(target(Rank.Gold1))
     )
-    expect(rankTargetKey(target(Rank.Silver3, false, 5))).toBe(
-      rankTargetKey(target(Rank.Silver3, false, 3))
+  })
+
+  it("numbers every slot below Diamond3, so a bottom-row target is its own key", () => {
+    expect(rankTargetKey(target(Rank.Diamond2, false, 4))).toBe(
+      `${rankIndex(Rank.Diamond2)}:4`
+    )
+    expect(rankTargetKey(target(Rank.Diamond2, false, 5))).not.toBe(
+      rankTargetKey(target(Rank.Diamond2, false, 4))
+    )
+    expect(rankTargetKey(target(Rank.Diamond2, false, 4))).not.toBe(
+      rankTargetKey(target(Rank.Diamond2, true, 0))
     )
   })
 
@@ -70,7 +79,8 @@ describe("rankTargetSlots", () => {
   it("normalizes the slot count the key carries", () => {
     expect(rankTargetSlots(target(Rank.Silver3))).toBe(0)
     expect(rankTargetSlots(target(Rank.Silver3, true))).toBe(3)
-    expect(rankTargetSlots(target(Rank.Silver3, false, 5))).toBe(3)
+    expect(rankTargetSlots(target(Rank.Silver3, false, 5))).toBe(5)
+    expect(rankTargetSlots(target(Rank.Silver3, true, 4))).toBe(4)
     expect(rankTargetSlots(target(Rank.Adamantine1, true, 2))).toBe(2)
   })
 })

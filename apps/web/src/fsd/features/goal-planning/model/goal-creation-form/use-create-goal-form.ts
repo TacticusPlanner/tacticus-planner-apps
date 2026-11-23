@@ -123,7 +123,6 @@ export function useCreateGoalForm({
   const {
     pointFive: rankEndPointFive,
     appliedUpgrades: rankEndAppliedUpgrades,
-    topRowCount: rankEndTopRowCount,
   } = additionalTargetSelection(rankAdditionalTarget)
 
   const { rankUpgradeSlotsTotal, rankAppliedUpgrades } =
@@ -316,7 +315,6 @@ export function useCreateGoalForm({
       rankEnd,
       rankEndPointFive,
       rankEndAppliedUpgrades,
-      rankEndTopRowCount,
       abilityActiveStart,
       abilityActiveEnd,
       abilityPassiveStart,
@@ -709,7 +707,6 @@ function useCreationPreview(params: CreationPreviewParams) {
     rankEnd,
     rankEndPointFive,
     rankEndAppliedUpgrades,
-    rankEndTopRowCount,
     abilityActiveStart,
     abilityActiveEnd,
     abilityPassiveStart,
@@ -732,7 +729,6 @@ function useCreationPreview(params: CreationPreviewParams) {
         rankEnd,
         rankEndPointFive,
         rankEndAppliedUpgrades,
-        rankEndTopRowCount,
         abilityActiveStart,
         abilityActiveEnd,
         abilityPassiveStart,
@@ -753,7 +749,6 @@ function useCreationPreview(params: CreationPreviewParams) {
       rankEnd,
       rankEndPointFive,
       rankEndAppliedUpgrades,
-      rankEndTopRowCount,
       abilityActiveStart,
       abilityActiveEnd,
       abilityPassiveStart,

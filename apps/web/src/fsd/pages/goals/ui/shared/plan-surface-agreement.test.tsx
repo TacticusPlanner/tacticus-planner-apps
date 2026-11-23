@@ -94,6 +94,7 @@ function eligibleBattles(activeCampaignEventId: string | null) {
             completedChallengeBattlesIds: [],
             battleSource: "synced" as const,
             challengeSource: "synced" as const,
+            syncedBattleCount: 0,
           },
         ],
       ]),
