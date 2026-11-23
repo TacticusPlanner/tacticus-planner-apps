@@ -56,7 +56,15 @@ export type MissionGoalNode = {
   resourceId: EstimateResourceId
   /** How many of the resource the in-scope goals still need in all; unknown when absent. */
   need?: number
+  /** The resource is an Epic or higher upgrade on a node that is not Elite, which drops it rarely:
+   * the node still feeds the goal, but ranks after the nodes that feed one at a good rate (and
+   * before the nodes that feed none). */
+  lowRate?: true
 }
+
+/** 0 for a node feeding a goal, 1 for one feeding it at a low rate (`lowRate`), 2 for none. */
+const goalTier = (goal: MissionGoalNode | undefined) =>
+  goal ? (goal.lowRate ? 1 : 0) : 2
 
 type MissionRaidRow = {
   battleId: BattleId
@@ -162,7 +170,8 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
 const descending = (a: number, b: number) => b - a
 
 /**
- * Suggestion order: a node feeding an in-scope goal first; then, with "CE nodes first", the running
+ * Suggestion order: a node feeding an in-scope goal first, one feeding it at a low rate next
+ * (`goalTier`); then, with "CE nodes first", the running
  * campaign event's nodes; then energy cost; then more points in a running Home Screen Event; then more HRE
  * points (a lightning-victory condition, then more enemy power); then a node feeding an in-scope goal; among those, the higher drop rate of the goal's resource (common and
  * uncommon drop more often), then more gold, then the goal's priority (skipped with `combineGoals`);
@@ -186,7 +195,7 @@ function compareCandidates(
     const goalB = goalNodes.get(b.id)
     // Nodes that feed a goal come first of all (Severyn, 2026-10), then the cheapest.
     return firstDifference(
-      Number(!goalA) - Number(!goalB),
+      goalTier(goalA) - goalTier(goalB),
       later(a) - later(b),
       a.energyCost - b.energyCost,
       descending(points(a), points(b)),
@@ -381,7 +390,7 @@ function fillRaids(
   return { rows, attemptsBlocked: rows.length === 0 && attemptsBlocked }
 }
 
-/** `compareCandidates` with the nodes still feeding a goal (`open`) first, then "CE nodes first",
+/** `compareCandidates` with the nodes still feeding a goal (`open`) first (by `goalTier`), then "CE nodes first",
  * then among goal nodes the least energy per expected drop of the goal's resource. */
 function openGoalSort(
   open: ReadonlyMap<BattleId, MissionGoalNode>,
@@ -403,7 +412,7 @@ function openGoalSort(
   }
   return (a, b) =>
     firstDifference(
-      Number(!open.has(a.id)) - Number(!open.has(b.id)),
+      goalTier(open.get(a.id)) - goalTier(open.get(b.id)),
       later(a) - later(b),
       perItem(a) - perItem(b),
       base(a, b)
@@ -479,8 +488,8 @@ function planMissionBattles(
           ? Number(a.lightningCondition === false) -
               Number(b.lightningCondition === false)
           : 0,
-        Number(!input.goalNodesByBattle.has(a.id)) -
-          Number(!input.goalNodesByBattle.has(b.id)),
+        goalTier(input.goalNodesByBattle.get(a.id)) -
+          goalTier(input.goalNodesByBattle.get(b.id)),
         finishCost(a) - finishCost(b),
         battlesToFinish(a) - battlesToFinish(b),
         sort(a, b)
@@ -610,7 +619,18 @@ function isEliteBattle(
   return token === "elite" || token === "eventExtremis"
 }
 
-/** An Epic or higher upgrade, farmed for HRE only on Elite nodes (see `isEliteBattle`). */
+/** How well a node farms a goal's upgrade: an Epic or higher one (`eliteOnly`) only at a low rate
+ * off Elite nodes; unknown when the node is not in the catalog. */
+function farmRate(
+  eliteOnly: boolean,
+  battle: Battle | undefined
+): "full" | "low" | "unknown" {
+  if (!eliteOnly) return "full"
+  if (!battle) return "unknown"
+  return isEliteBattle(battle) ? "full" : "low"
+}
+
+/** An Epic or higher upgrade, farmed at a good rate only on Elite nodes (see `isEliteBattle`). */
 const eliteOnlyRarity = (rarity: Rarity | undefined) =>
   rarity !== undefined && rarityRank(rarity) >= rarityRank(Rarity.Epic)
 
@@ -618,9 +638,11 @@ const eliteOnlyRarity = (rarity: Rarity | undefined) =>
  * Per node, the best-priority in-scope goal it feeds: a node drops a resource some goal still needs
  * over its whole schedule (after the Plan's priority-ordered inventory allocation). A goal with
  * pinned farm locations is served only by them, as on the HSE farm list. Otherwise an Epic or higher
- * upgrade counts only on Elite nodes (`rarityOf` gives an upgrade's rarity): a standard or Mirror
- * node drops it too rarely to farm it there (Severyn, 2026-11). Each node carries how many of its
- * resource the goals still need in all, so the raids stop favouring it once they cover that.
+ * upgrade (`rarityOf` gives an upgrade's rarity) on a node that is not Elite is marked `lowRate`: a
+ * standard or Mirror node drops it too rarely to farm it there first (Severyn, 2026-11), but a raid
+ * there still beats one that feeds no goal, such as an event's 25B when only event nodes count
+ * (Severyn, 2026-11). Each node carries how many of its resource the goals still need in all, so the
+ * raids stop favouring it once they cover that.
  */
 export function buildMissionGoalNodes(
   goals: readonly GoalNeed[],
@@ -647,16 +669,16 @@ export function buildMissionGoalNodes(
         // A pinned location is the player's own pick, kept whatever its tier.
         const eliteOnly = !pins && eliteOnlyRarity(rarityOf(need.id))
         for (const node of collectFarmNodes(upgrade, battlesById, pins)) {
-          if (eliteOnly) {
-            const battle = battlesById.get(node.battleId)
-            if (!battle || !isEliteBattle(battle)) continue
-          }
+          const rate = farmRate(eliteOnly, battlesById.get(node.battleId))
+          if (rate === "unknown") continue
+          const lowRate = rate === "low"
           const existing = nodes.get(node.battleId)
           if (!existing) {
             nodes.set(node.battleId, {
               priority: goal.priority,
               goalIds: [goal.goalId],
               resourceId: need.id,
+              ...(lowRate ? { lowRate: true as const } : {}),
             })
           } else if (!existing.goalIds.includes(goal.goalId)) {
             existing.goalIds.push(goal.goalId)
