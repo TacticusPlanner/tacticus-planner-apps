@@ -37,7 +37,7 @@ const t = ((key: string, options?: Record<string, unknown>) => {
     (acc, [param, value]) => acc.replace(`{{${param}}}`, String(value)),
     base
   )
-}) as Parameters<typeof resolveEventDisplayName>[0]
+}) as unknown as Parameters<typeof resolveEventDisplayName>[0]
 
 function baseEntry(
   overrides: Partial<EventEntryViewModel>
