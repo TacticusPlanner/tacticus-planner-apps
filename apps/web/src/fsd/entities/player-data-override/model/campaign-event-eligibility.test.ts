@@ -11,7 +11,8 @@ import {
 import { compareCodeUnits } from "@/shared/lib"
 
 // daily-raids-today, "Only the active campaign event is farmable": event node eligibility reads the
-// effective progress (manual override, else synced, else none), not the synced chunk alone.
+// effective progress (a manual count above the synced one, else synced, else none), not the synced
+// chunk alone.
 
 const ACTIVE = "eventCampaign1"
 const eventIds = new Set([ACTIVE])
@@ -117,18 +118,42 @@ describe("event node eligibility from effective progress", () => {
     ).toEqual(["AME12"])
   })
 
-  it("lets a manual override lower than synced progress exclude a node", () => {
+  it("keeps a node synced progress reaches when a stale manual override is lower", () => {
     const battles = [battle("AMS12", "Standard", 12)]
-    expect(eligibleIds(battles, [synced("Standard", 15)], [])).toEqual([
-      "AMS12",
-    ])
     expect(
       eligibleIds(
         battles,
         [synced("Standard", 15)],
         [override("Standard", { completedBattleCount: 5 })]
       )
-    ).toEqual([])
+    ).toEqual(["AMS12"])
+  })
+
+  it("reaches event nodes past node 1 despite a V1-imported 0 override", () => {
+    // The V1 import saves V1's default 0 for every event track as a manual override. With nodes
+    // 1-3 synced as beaten, node 4 is reached, so "CE nodes first" can farm it.
+    const battles = [
+      battle("AMS1", "Standard", 1),
+      battle("AMS4", "Standard", 4),
+      battle("AMS5", "Standard", 5),
+    ]
+    expect(
+      eligibleIds(
+        battles,
+        [synced("Standard", 3)],
+        [override("Standard", { completedBattleCount: 0 })]
+      )
+    ).toEqual(["AMS1", "AMS4"])
+  })
+
+  it("lets a manual override above synced progress reach further nodes", () => {
+    expect(
+      eligibleIds(
+        [battle("AMS12", "Standard", 12)],
+        [synced("Standard", 5)],
+        [override("Standard", { completedBattleCount: 11 })]
+      )
+    ).toEqual(["AMS12"])
   })
 
   it("resolves a challenge override independently of the synced battle count", () => {

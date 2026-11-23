@@ -12,7 +12,12 @@ import type {
   FarmLocation,
   GoalNeed,
 } from "../model/estimate.domain"
-import { estimatePlanSchedule, estimateTodaySchedule } from "./estimate-plan"
+import {
+  estimateBonusRaids,
+  estimatePlanSchedule,
+  estimateRaidsLeftToday,
+  estimateTodaySchedule,
+} from "./estimate-plan"
 import type { EstimatePlanParams } from "./estimate-plan"
 import { compareCodeUnits } from "@/shared/lib"
 
@@ -58,6 +63,14 @@ const goal = (
   })),
   ...extra,
 })
+
+const battlesFor = (
+  schedule: ReturnType<typeof estimateTodaySchedule>,
+  resourceId: string
+) =>
+  schedule.entries
+    .filter((e) => e.resourceId === resourceId)
+    .map((e) => e.battleId)
 
 describe("Fewer raids quick filter", () => {
   // SMALL (6 energy, rate 0.5, 2 raids a day) and BIG (12 energy, guaranteed) both cost 12 energy
@@ -169,6 +182,33 @@ describe("CE nodes first quick filter", () => {
       battle("STD"),
     ])
   })
+
+  // Bonus raids: what today's energy leaves unraided, and every raid still open once the daily
+  // energy limit is reached. Both must honour the filter like Today's plan does.
+  it.each([false, true])(
+    "farms Bonus raids at the event node (Combine goals %s)",
+    (combineGoals) => {
+      const bonus = estimateBonusRaids(
+        params({ preferredBattleIds, combineGoals, dailyEnergy: 1 })
+      )
+      expect(battlesFor(bonus, "mat")).toEqual([battle("EVENT")])
+      expect(battlesFor(bonus, "other")).toEqual([battle("STD")])
+    }
+  )
+
+  it.each([false, true])(
+    "farms the raids left today at the event node once the limit is reached (Combine goals %s)",
+    (combineGoals) => {
+      const left = estimateRaidsLeftToday({
+        ...params({ preferredBattleIds, combineGoals }),
+        attemptsLeftByBattle: new Map([
+          [battle("STD"), 5],
+          [battle("EVENT"), 5],
+        ]),
+      })
+      expect(battlesFor(left, "mat")).toEqual([battle("EVENT")])
+    }
+  )
 })
 
 describe("Combine goals quick filter", () => {

@@ -93,7 +93,12 @@ function progressMap(
   return new Map(
     entries.map(([campaignGroupId, type, entry]) => [
       campaignEventProgressKey(campaignGroupId, type),
-      { ...entry, battleSource: "synced", challengeSource: "synced" },
+      {
+        ...entry,
+        battleSource: "synced",
+        challengeSource: "synced",
+        syncedBattleCount: entry.completedBattleCount,
+      },
     ])
   )
 }
