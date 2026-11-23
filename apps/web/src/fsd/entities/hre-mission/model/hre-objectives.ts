@@ -279,6 +279,8 @@ export type HreSpareTokens = Partial<Record<HreSpareMode, HreSpare>>
  * The spare-token modes (Severyn, 2026-11): Arena, Onslaught, Salvage Run and Guild Raid where the tokens held
  * now exceed what the current mission (less its progress) and every later one need. Regeneration
  * over the event is left out, so the count is a safe floor. A mode with unknown tokens has none.
+ * Onslaught has none on a mission whose open objectives it pays off little for while a later
+ * mission's it pays off for (`nextOnslaughtMission`; Severyn, 2026-11).
  */
 export function spareTokens(
   state: HreProgress,
@@ -286,8 +288,16 @@ export function spareTokens(
   tokens: Record<HreSpareMode, number | null>
 ): HreSpareTokens {
   const needs = tokenNeeds(state, missions)
+  // Onslaught tokens wait for a later mission they pay off for when this one gains little from them.
+  const saveOnslaught =
+    state.mission < hreAllDone(missions) &&
+    openObjectives(state, missions).every(
+      (item) => !onslaughtPaysOff(item.objective)
+    ) &&
+    nextOnslaughtMission(state.mission, missions) !== null
   const spare: HreSpareTokens = {}
   for (const mode of HRE_SPARE_MODES) {
+    if (mode === "onslaught" && saveOnslaught) continue
     const held = tokens[mode]
     if (held !== null && held > needs[mode]) {
       spare[mode] = { held, need: needs[mode] }
@@ -318,6 +328,64 @@ export function nextTokenReserve(
     }
   }
   return null
+}
+
+/** Enemies one Onslaught run kills, roughly (Severyn's estimate). */
+export const ONSLAUGHT_KILLS_PER_RUN = 20
+
+/** Objectives that count every ability use, hit or point of damage: one Onslaught run, a long
+ * fight of many waves, counts far more for them than a campaign or Arena battle. */
+const ONSLAUGHT_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
+  "useAbilities",
+  "useAbilitiesAlliance",
+  "abilityDamage",
+  "damage",
+])
+const ONSLAUGHT_KILL_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
+  "killEnemies",
+  "killWithMelee",
+  "killWithRanged",
+  "killWithAlliance",
+  "killFaction",
+])
+
+/**
+ * Whether Onslaught pays off for an objective without asking for it: ability uses, damage, ability
+ * damage, and kills needing more than one run's worth. Wins (one per run), healing and the featured
+ * hero's objectives gain little from a token there.
+ */
+export function onslaughtPaysOff(objective: HreObjective): boolean {
+  if (ONSLAUGHT_KINDS.has(objective.kind)) return true
+  return (
+    ONSLAUGHT_KILL_KINDS.has(objective.kind) &&
+    objective.target > ONSLAUGHT_KILLS_PER_RUN
+  )
+}
+
+/**
+ * The first mission after `missionNumber` Onslaught pays off for, when `missionNumber` itself gains
+ * little from Onslaught and does not ask for it: its tokens are better kept for that one. Null on a
+ * mission Onslaught serves, or with no such mission left.
+ */
+export function nextOnslaughtMission(
+  missionNumber: number,
+  missions: readonly HreMission[]
+): number | null {
+  const current = missions.find((mission) => mission.number === missionNumber)
+  if (
+    current?.objectives.some(
+      (objective) =>
+        onslaughtPaysOff(objective) || objective.kind === TOKEN_KIND.onslaught
+    )
+  ) {
+    return null
+  }
+  const next = missions.find(
+    (mission) =>
+      mission.number > missionNumber &&
+      mission.objectives.some(onslaughtPaysOff)
+  )
+  return next?.number ?? null
 }
 
 export type HreTokenNeedRow = {

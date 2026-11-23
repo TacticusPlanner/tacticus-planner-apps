@@ -6,7 +6,8 @@ import type { HreTeamPlan } from "@/entities/hre-mission"
 import type { HreTeamViewModel } from "@/features/team-recommendations"
 import { EntityIcon } from "@/shared/ui"
 
-/** Portraits a folded row shows before "+N": fewer on a phone, so the row stays on one line. */
+/** Portraits a folded row shows before "+N": on a desktop at the row portrait size, on a phone
+ * fewer and inline-sized, so the row stays on one line. */
 const SHOWN = 5
 const SHOWN_PHONE = 2
 
@@ -48,7 +49,7 @@ export function HreTeamSummary({
       </Badge>
       {members.length > 0 ? (
         <span
-          className="flex shrink-0 items-center gap-0.5"
+          className="flex shrink-0 items-center gap-0.5 sm:gap-1"
           data-testid={`${testId}-portraits`}
         >
           {members.slice(0, SHOWN).map((member, index) => (
@@ -56,9 +57,17 @@ export function HreTeamSummary({
               className={index < SHOWN_PHONE ? "contents" : "max-sm:hidden"}
               key={member.unitId}
             >
+              {/* A phone keeps the small inline portrait so the mode name fits beside them. */}
               <EntityIcon
                 alt=""
+                className="sm:hidden"
                 size="inline"
+                src={characterIcon(member.unitId)}
+              />
+              <EntityIcon
+                alt=""
+                className="max-sm:hidden"
+                size="portrait-sm"
                 src={characterIcon(member.unitId)}
               />
             </span>

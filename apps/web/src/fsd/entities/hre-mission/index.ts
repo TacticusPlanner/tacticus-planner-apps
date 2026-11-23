@@ -23,6 +23,7 @@ export {
   campaignObjectiveState,
   isTokenObjective,
   nextCampaignMission,
+  nextOnslaughtMission,
   nextTokenReserve,
   remainingCampaignBattles,
   selectCampaignPlan,

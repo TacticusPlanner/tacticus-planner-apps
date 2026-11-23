@@ -20,7 +20,10 @@ import type {
 
 export const HRE_TEAM_SIZE = 5
 
-const SUPPORT_TRAITS: ReadonlySet<string> = new Set(["Healer", "Mechanic"])
+const HEALER = "Healer"
+/** A Mechanic only repairs units with this trait, where a Healer heals any unit (Severyn, 2026-11). */
+const MECHANIC = "Mechanic"
+const MECHANICAL = "Mechanical"
 const PSYCHIC = "Psychic"
 /** The running HSE's game mode for each HRE team mode; Guild Raid has none. */
 const HSE_MODE: Record<string, HseTeamMode | "Campaign"> = {
@@ -119,7 +122,7 @@ const pool = (id: string, unitIds: Iterable<UnitId>): TeamPoolSpec => ({
  * ranged attack for melee kills, any units for ability uses and other objectives, or the featured
  * hero leading for a featured-hero objective. An
  * Onslaught or Salvage Run team keeps to one alliance track. The strongest Healer or Mechanic
- * leads while a heal objective is open, then Psychic damage dealers while a Psychic damage
+ * leads while a heal objective is open (a Mechanic when most of the team is mechanical, a Healer otherwise), then Psychic damage dealers while a Psychic damage
  * objective is open, then units that score for a running HSE in the team's mode (campaign battles,
  * Arena, Onslaught or Salvage Run: its own event units, so both events progress; for a track, the alliance with the most of them). A
  * whole-track plan (Onslaught ability uses) fields every unit of the track, weakest first, so each
@@ -202,18 +205,10 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
   }
   roster = abilityDealers(input, roster)
   let support: "included" | "missing" | null = null
-  if (plan.support) {
-    const healer = strongest(
-      roster.filter((character) =>
-        character.traits.some((trait) => SUPPORT_TRAITS.has(trait))
-      ),
-      input.unitPower
-    )
-    support = healer ? "included" : "missing"
-    if (healer) pools.push(pool("support", [healer.unitId]))
-  }
+  // The featured hero leads, then the support pick, then the preference pools below.
+  const preferences: TeamPoolSpec[] = []
   if (plan.preferPsychic) {
-    pools.push(
+    preferences.push(
       pool(
         "psychic",
         roster
@@ -223,24 +218,35 @@ export function buildHreTeam(input: BuildHreTeamInput): HreTeam | null {
     )
   }
   const abilityPool = abilityFocusPool(input, roster)
-  if (abilityPool) pools.push(abilityPool)
+  if (abilityPool) preferences.push(abilityPool)
   const hse = hsePools(roster)
-  pools.push(...hse)
-  const recommendations = buildTeamRecommendations({
-    mode: "power",
-    teamSize: plan.wholeTrack ? roster.length : plan.size,
-    roster,
-    pools,
-    preferences: {},
-    lockedRandomUnitIds: [],
-    randomSeed: 0,
-    leadWithPools: pools.length > 0,
-    unitPower: input.unitPower,
-  })
-  const planTeam = required(
-    recommendations.categories.find((category) => category.id === "plan"),
-    "the plan team"
-  )
+  preferences.push(...hse)
+  const teamWith = (specs: readonly TeamPoolSpec[]) =>
+    required(
+      buildTeamRecommendations({
+        mode: "power",
+        teamSize: plan.wholeTrack ? roster.length : plan.size,
+        roster,
+        pools: [...specs],
+        preferences: {},
+        lockedRandomUnitIds: [],
+        randomSeed: 0,
+        leadWithPools: specs.length > 0,
+        unitPower: input.unitPower,
+      }).categories.find((category) => category.id === "plan"),
+      "the plan team"
+    )
+  if (plan.support) {
+    const healer = supportPick(
+      roster,
+      teamWith([...pools, ...preferences]).members,
+      input.unitPower
+    )
+    support = healer ? "included" : "missing"
+    if (healer) pools.push(pool("support", [healer.unitId]))
+  }
+  pools.push(...preferences)
+  const planTeam = teamWith(pools)
   const hseIds = hseUnitIds(hse)
   const team = plan.wholeTrack
     ? {
@@ -444,6 +450,32 @@ function wholeTrackOrder<Member extends { unitId: UnitId }>(
     .toSorted((a, b) =>
       group(a) === group(b) ? powerOf(a) - powerOf(b) : group(a) - group(b)
     )
+}
+
+/** The heal objective's support unit, read off the team picked without one (`team`): the strongest
+ * Mechanic when most of that team is mechanical, since a Mechanic repairs only mechanical units, and
+ * the strongest Healer otherwise; the other kind when none of the first is owned. */
+function supportPick(
+  roster: readonly TeamRosterCharacter[],
+  team: readonly { unitId: UnitId }[],
+  unitPower: UnitPowerContext | null
+): TeamRosterCharacter | undefined {
+  const traitsOf = new Map(
+    roster.map((character) => [character.unitId, character.traits])
+  )
+  const mechanical = team.filter((member) =>
+    traitsOf.get(member.unitId)?.includes(MECHANICAL)
+  ).length
+  const order =
+    mechanical * 2 > team.length ? [MECHANIC, HEALER] : [HEALER, MECHANIC]
+  for (const trait of order) {
+    const pick = strongest(
+      roster.filter((character) => character.traits.includes(trait)),
+      unitPower
+    )
+    if (pick) return pick
+  }
+  return undefined
 }
 
 function strongest(

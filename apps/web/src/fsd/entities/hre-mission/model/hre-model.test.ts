@@ -9,7 +9,9 @@ import { hreRules, hreMissions } from "@/test/fixtures/hre-rules"
 
 import { hreAllDone, hreMission } from "./hre-missions"
 import {
+  nextOnslaughtMission,
   nextTokenReserve,
+  onslaughtPaysOff,
   remainingCampaignBattles,
   selectCampaignPlan,
   spareTokens,
@@ -961,6 +963,56 @@ describe("spareTokens", () => {
         guildRaid: null,
       })
     ).toEqual({})
+  })
+
+  it("saves Onslaught tokens on a mission they pay off little for, for a later one", () => {
+    const tokens = {
+      arena: null,
+      onslaught: 3,
+      salvageRun: null,
+      guildRaid: null,
+    }
+    // Mission 6 (healing, summon-free wins): kept for mission 7's ability uses.
+    expect(spareTokens(progress({ mission: 6 }), hreMissions, tokens)).toEqual(
+      {}
+    )
+    // Mission 7's ability uses pay off: spend what mission 12 leaves.
+    expect(spareTokens(progress({ mission: 7 }), hreMissions, tokens)).toEqual({
+      onslaught: { held: 3, need: 1 },
+    })
+    // Mission 13's open ability uses pay off, its kills done or not.
+    expect(
+      spareTokens(
+        progress({ mission: 13, progress: [75, 0] }),
+        hreMissions,
+        tokens
+      )
+    ).toEqual({ onslaught: { held: 3, need: 0 } })
+  })
+})
+
+const paysOff = (number: number) =>
+  hreMission(hreMissions, number).objectives.map(onslaughtPaysOff)
+
+describe("Onslaught payoff", () => {
+  it("pays off for ability uses, damage and kills beyond one run", () => {
+    expect(paysOff(1)).toEqual([false, false]) // 5 melee kills: one run's worth
+    expect(paysOff(3)).toEqual([false, true])
+    expect(paysOff(5)).toEqual([true, false])
+    expect(paysOff(6)).toEqual([false, false])
+    expect(paysOff(9)).toEqual([false, true]) // 75 ranged kills
+    expect(paysOff(10)).toEqual([false, false])
+  })
+
+  it("names the later mission to keep Onslaught tokens for", () => {
+    expect(nextOnslaughtMission(1, hreMissions)).toBe(3)
+    expect(nextOnslaughtMission(6, hreMissions)).toBe(7)
+    expect(nextOnslaughtMission(10, hreMissions)).toBe(11)
+    // A mission Onslaught serves, or one asking for it, keeps nothing back.
+    expect(nextOnslaughtMission(7, hreMissions)).toBeNull()
+    expect(nextOnslaughtMission(12, hreMissions)).toBeNull()
+    // Nothing later pays off.
+    expect(nextOnslaughtMission(20, hreMissions)).toBeNull()
   })
 })
 

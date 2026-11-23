@@ -109,11 +109,12 @@ Spare tokens SHALL be, per mode (Arena, Onslaught, Salvage Run, Guild Raid), the
 
 - Modes SHALL come Arena, Salvage Run, then Onslaught; for ability uses (`useAbilities`, `useAbilitiesAlliance`) Onslaught SHALL come first, then Arena and Salvage Run; for ability damage (`abilityDamage`) Guild Raid SHALL come first, then Onslaught, Arena and Salvage Run, since a raid boss soaks every ability's damage (Severyn, 2026-11). Guild Raid SHALL be offered for ability damage only.
 - **No overkill for kills**: while every open manual objective counts kills, a mode whose one battle yields more enemies than the most kills still to go (and more than an Arena battle) SHALL be left out, and no further mode SHALL be added once the modes already listed cover the kills still to go. A battle is estimated at the HSE projection's default kills per token: 5 for Arena, 12 for Salvage Run and 20 for Onslaught. Other objectives get every mode with spare tokens.
-- The row SHALL show the token icon, "Up to N battles" (the spare) and the team's portraits. The card SHALL say why: "You hold 15 Arena tokens and the remaining missions need 12, so play up to 3 battles here."
+- The row SHALL show the token icon, "Up to N battles" (the spare) and the team's portraits (row portrait size on a desktop, inline size on a phone so the mode name fits). The card SHALL say why: "You hold 15 Arena tokens and the remaining missions need 12, so play up to 3 battles here."
 - **Onslaught ability uses** (`useAbilities`, `useAbilitiesAlliance`): the team SHALL be the whole alliance, weakest first, with the hint to use each unit's ability, let it fall, and let the next one deploy.
 - **Arena kills**: the card SHALL say to pick opponents with summoners, since their summons count as kills. **Arena faction kills** SHALL also say to fight only opponent teams with that faction, since Arena shows the opponent's team before the battle (Severyn, 2026-11).
 - **Onslaught and Salvage Run** (spare or token objective) SHALL say these battles count for the mission but earn no event points: the HREs score points only in Campaign, Elite, Mirror, Campaign Event, Arena and Guild Raid battles.
 - **Summon-free wins** (mission 6): the wins the spare Arena tokens can play SHALL be left out of the campaign list.
+- **Onslaught kept for a later mission**: Onslaught SHALL have no spare tokens on a mission whose open objectives it pays off little for while a later mission's it pays off for (see hre-mission-guidance, "Missions Onslaught pays off little for keep Onslaught tokens"), so those tokens wait for that mission (Severyn, 2026-11).
 
 #### Scenario: Mission 2 during Faction Boost: World Eaters
 
@@ -130,6 +131,11 @@ Spare tokens SHALL be, per mode (Arena, Onslaught, Salvage Run, Guild Raid), the
 
 - **GIVEN** mission 6 with 0 / 10 summon-free wins and 11 Arena tokens, the missions from 6 on needing 8
 - **THEN** an Arena team without forced summoners shows "Up to 3 battles", and the campaign list covers the other 7 wins
+
+#### Scenario: Mission 6 keeps its Onslaught tokens
+
+- **GIVEN** mission 6 with 0 / 10 summon-free wins and 3 Onslaught tokens, 1 needed later
+- **THEN** no Onslaught row is shown, since mission 7's ability uses gain far more from an Onslaught run
 
 #### Scenario: Mission 1, too few kills for Onslaught
 
@@ -161,12 +167,22 @@ For a token objective's Arena, Salvage Run, Onslaught or Guild Raid team, the ca
 
 ### Requirement: Support and damage-type preferences
 
-While the current mission's `heal` objective is open, the team SHALL include the strongest eligible Healer or Mechanic, or say that the player owns none. While its `damageType` "Psychic" objective is open, eligible units that deal Psychic damage SHALL lead the team.
+While the current mission's `heal` objective is open, the team SHALL include a support unit, or say that the player owns none: the strongest eligible Mechanic when most of the team picked without one is `Mechanical`, since a Mechanic only repairs mechanical units, and the strongest eligible Healer otherwise, since a Healer heals any unit; the other kind when none of the first is owned (Severyn, 2026-11). While its `damageType` "Psychic" objective is open, eligible units that deal Psychic damage SHALL lead the team.
 
 #### Scenario: Heal objective open
 
 - **GIVEN** mission 6 with 0 / 2,500 healing and one non-summoning Healer owned
 - **THEN** that Healer is in the team, with the note that it is there for the heal objective
+
+#### Scenario: Healer and a stronger Mechanic owned, few mechanical units
+
+- **GIVEN** mission 6 with 0 / 2,500 healing, Rotbone (Healer) and a stronger Aleph-Null (Mechanic) owned, and a team of mostly non-mechanical units
+- **THEN** Rotbone is in the team, not Aleph-Null
+
+#### Scenario: Mostly mechanical team
+
+- **GIVEN** an all-Xenos team whose strongest units are mostly Necrons and Ork walkers (`Mechanical`), with a Mechanic and a Healer owned
+- **THEN** the Mechanic is in the team
 
 #### Scenario: Psychic objective met
 

@@ -80,6 +80,25 @@ const xenos = (
   traits: [],
 })
 
+/** A Xenos roster with a Mechanic, a Healer and three units that are mechanical or not. The
+ * Mechanic is the weakest unit, so only the support pick fields it. */
+const xenosSupport = (mechanicalTeam: boolean) => {
+  const mechanical = mechanicalTeam ? ["Mechanical"] : []
+  return [
+    ...hseTeamsFixtureCharacters.filter(
+      (character) => character.unitId !== "necroSpyder"
+    ),
+    {
+      ...xenos("necroSpyder", "Stone1"),
+      traits: ["Mechanic", "Mechanical"],
+    },
+    { ...xenos("orksWarboss", "Gold1"), traits: mechanical },
+    { ...xenos("orksKillaKan", "Silver1"), traits: mechanical },
+    { ...xenos("necroWarden", "Bronze1"), traits: mechanical },
+    { ...xenos("genesBiophagus", "Bronze1"), traits: ["Healer"] },
+  ]
+}
+
 describe("buildHreTeam", () => {
   it("fields only the alliance's units, strongest five", () => {
     const characters = [
@@ -345,6 +364,38 @@ describe("buildHreTeam", () => {
     expect(
       build({ plan: { rule: "summonFree", mode: "arena", support: true } })
     ).toMatchObject({ support: "missing" })
+  })
+
+  it("fields a Mechanic when most of the team is mechanical", () => {
+    const team = build({
+      characters: xenosSupport(true),
+      plan: { rule: "alliance", mode: "arena", support: true },
+    })
+    expect(team).toMatchObject({ status: "ready", support: "included" })
+    expect(ids(team)[0]).toBe("necroSpyder")
+  })
+
+  it("fields a Healer when few of the team are mechanical", () => {
+    const team = build({
+      characters: xenosSupport(false),
+      plan: { rule: "alliance", mode: "arena", support: true },
+    })
+    expect(team).toMatchObject({ status: "ready", support: "included" })
+    expect(ids(team)[0]).toBe("genesBiophagus")
+  })
+
+  it("fields a Mechanic when no Healer is owned", () => {
+    const characters = hseTeamsFixtureCharacters.map((character) =>
+      character.unitId === "necroSpyder"
+        ? { ...character, traits: ["Mechanic"] }
+        : character
+    )
+    const team = build({
+      characters,
+      plan: { rule: "summonFree", mode: "arena", support: true },
+    })
+    expect(team).toMatchObject({ status: "ready", support: "included" })
+    expect(ids(team)[0]).toBe("necroSpyder")
   })
 })
 

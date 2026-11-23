@@ -72,9 +72,10 @@
     "damage": "Strong units with many hits deal the most damage.",
     "abilityDamage": "Units whose active abilities hit several enemies add up fastest.",
     "useAbilities": "Use every character's active ability each battle. Only Characters' abilities count, so Machines of War don't, and Heal and Repair actions don't either.",
-    "heal": "Bring a Healer or Mechanic and let them heal every turn.",
+    "heal": "Bring a Healer and let them heal every turn, or a Mechanic for a team of mostly mechanical units: a Mechanic only repairs those.",
     "reserve_one": "Keep {{count}} {{mode}} token for {{mission}}.",
-    "reserve_other": "Keep {{count}} {{mode}} tokens for {{mission}}."
+    "reserve_other": "Keep {{count}} {{mode}} tokens for {{mission}}.",
+    "saveOnslaught": "Keep your {{mode}} tokens for {{mission}}: one run there counts many more kills, hits or ability uses than here."
   },
   "tracker": {
     "current": "Current mission",
@@ -264,7 +265,7 @@
     "titleMode": "{{mode}} team",
     "ranged": "Your {{size}} strongest ranged units.",
     "rangedTrack": "Your {{size}} strongest ranged {{alliance}} units: 5 start, the rest replace those who fall.",
-    "supportIncluded": "Your strongest Healer or Mechanic is in, for the heal objective.",
+    "supportIncluded": "Your strongest Healer is in for the heal objective, or your strongest Mechanic when most of the team is mechanical.",
     "supportMissing": "You own no Healer or Mechanic for the heal objective.",
     "psychic": "Psychic damage dealers come first, for the Psychic damage objective.",
     "abilityDamage": "Units whose abilities deal area damage come first, and units whose abilities deal no damage are left out, for the ability damage objective.",
