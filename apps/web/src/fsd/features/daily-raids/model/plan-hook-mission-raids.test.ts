@@ -98,13 +98,40 @@ describe("planHookMissionRaids", () => {
     expect(result.noDropRows.map((row) => row.battleId)).toEqual(["I06"])
   })
 
-  it("ignores the campaign-type Raids Filter", () => {
+  it("keeps the location Raids Filter, as Today does", () => {
     const result = plan({
       calculation: null,
       raidsFilters: { ...emptyRaidsFilters, campaignTypes: ["Elite"] },
     })
-    expect(result.outlookNodes).toHaveLength(2)
-    expect(result.rows.map((row) => row.battleId)).toEqual(["I15"])
+    // Neither I06 (no campaign type) nor I15 (Standard) matches Elite.
+    expect(result.outlookNodes).toHaveLength(0)
+    expect(result.rows).toEqual([])
+    expect(result.empty).toBe("filtered")
+  })
+
+  it("starts from Today's raids under the mission's node rules", () => {
+    const result = plan({
+      request: { battlesToGo: 4, eventOnly: false },
+      calculation: {
+        ...calculation,
+        missionTodayEntries: [
+          {
+            battleId: id("I15"),
+            raidsPerformed: 6,
+            goalId: "g1",
+            resourceId: "shards_necroWarden",
+          },
+        ],
+      } as unknown as DailyRaidsCalculationViewModel,
+    })
+    // Cut to the 4 battles to go, with the goal's resource shown though no goal node lists I15.
+    expect(result.rows).toEqual([
+      expect.objectContaining({
+        battleId: "I15",
+        raids: 4,
+        goal: expect.objectContaining({ resourceId: "shards_necroWarden" }),
+      }),
+    ])
   })
 
   it("keeps the other Raids Filters", () => {

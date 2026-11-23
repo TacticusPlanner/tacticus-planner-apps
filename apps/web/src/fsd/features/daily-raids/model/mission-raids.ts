@@ -152,6 +152,14 @@ export type PlanMissionRaidsInput = MissionRaidsRequest & {
   preferredBattleIds?: ReadonlySet<BattleId>
   /** Plan as if energy were unlimited: only attempts and the objective bound the suggestions. */
   unlimitedEnergy?: boolean
+  /** Today's raids under the mission's node rules (`missionTodayNodes`), in Today's order: the
+   * suggestions start from them before any other node. */
+  todayEntries?: readonly {
+    battleId: BattleId
+    raidsPerformed: number
+    goalId: string
+    resourceId: EstimateResourceId
+  }[]
   /** Whether a node may be fought by hand for `battles` (the Raids Filters plus its slots, alliance
    * and faction). */
   passesBattlesFilter?: (battleId: BattleId) => boolean
@@ -205,13 +213,15 @@ function compareCandidates(
 const OPEN_ENDED_NODES = 3
 
 /**
- * Where to fight and raid today for the current HRE mission, with the least of today's energy.
- * Today's plan is not counted. The manual objectives' battles to fight by hand come first
- * (`planMissionBattles`); then the raid objective's battles still needed (less the battles won by
- * hand, for campaign wins) are filled over the eligible nodes that drop something, in
- * `compareCandidates` order, each getting as many raids as its attempts left, the budget left and
- * the battles left allow. A node that does not fit is skipped, not a stop. The nodes that drop
- * nothing get the same fill on their own, as an alternative.
+ * Where to fight and raid today for the current HRE mission. The manual objectives' battles to
+ * fight by hand come first (`planMissionBattles`). The raid objective's battles still needed (less
+ * the battles won by hand, for campaign wins) then start from Today's raids under the mission's
+ * node rules (`todayEntries`), in Today's goal order, so the list matches Today's plan (Severyn,
+ * 2026-11); the last of them is cut to the battles left. Battles still left are filled over the
+ * eligible nodes that drop something, in `compareCandidates` order, each getting as many raids as
+ * its attempts left, the budget left and the battles left allow. A node that does not fit is
+ * skipped, not a stop. The nodes that drop nothing get the same fill on their own, as an
+ * alternative.
  */
 export function planMissionRaids(
   input: PlanMissionRaidsInput
@@ -295,14 +305,102 @@ export function planMissionRaids(
   }
   if (raidBudget <= 0) return done([], "no-energy")
 
+  const base = todayRows(input, raidBudget, battlesLeft, usedAttempts, raidable)
+  for (const row of base.rows) {
+    usedAttempts.set(
+      row.battleId,
+      (usedAttempts.get(row.battleId) ?? 0) + row.raids
+    )
+  }
   const { rows, attemptsBlocked } = fillRaids(
     pool,
-    raidBudget,
-    battlesLeft,
+    raidBudget - base.energy,
+    battlesLeft - base.raids,
     input,
     usedAttempts
   )
-  return done(rows, attemptsBlocked ? "no-attempts" : "no-energy")
+  return done(
+    mergeRows(base.rows, rows),
+    attemptsBlocked ? "no-attempts" : "no-energy"
+  )
+}
+
+/**
+ * Today's raids under the mission's node rules (`input.todayEntries`) that serve the objective: one
+ * row per node in Today's order, within its attempts left (less `usedAttempts`), the budget and the
+ * battles left; the last row is cut to what is left.
+ */
+function todayRows(
+  input: PlanMissionRaidsInput,
+  budget: number,
+  battlesLeft: number,
+  usedAttempts: ReadonlyMap<BattleId, number>,
+  raidable: (battle: MissionRaidBattle) => boolean
+): { rows: MissionRaidRow[]; raids: number; energy: number } {
+  const battles = new Map(input.battles.map((battle) => [battle.id, battle]))
+  const raidsOf = new Map<MissionRaidBattle, number>()
+  // The goal Today raids each node for, when the goal nodes don't list it (an Epic off Elite nodes).
+  const goalOf = new Map<BattleId, MissionGoalNode>()
+  let left = battlesLeft
+  let energyLeft = budget
+  for (const entry of input.todayEntries ?? []) {
+    const battle = battles.get(entry.battleId)
+    if (left <= 0) break
+    if (!battle || !raidable(battle) || !input.passesFilter(battle.id)) continue
+    const taken = raidsOf.get(battle) ?? 0
+    const cap =
+      input.attemptsLeftByBattle.get(battle.id) ??
+      (battle.dailyAttempts > 0 ? battle.dailyAttempts : Infinity)
+    const raids = Math.min(
+      entry.raidsPerformed,
+      cap - (usedAttempts.get(battle.id) ?? 0) - taken,
+      Math.floor(energyLeft / battle.energyCost),
+      left
+    )
+    if (raids <= 0) continue
+    raidsOf.set(battle, taken + raids)
+    if (!goalOf.has(battle.id)) {
+      goalOf.set(
+        battle.id,
+        input.goalNodesByBattle.get(battle.id) ?? {
+          priority: 0,
+          goalIds: [entry.goalId],
+          resourceId: entry.resourceId,
+        }
+      )
+    }
+    left -= raids
+    energyLeft -= raids * battle.energyCost
+  }
+  const rows = [...raidsOf].map(([battle, raids]) => ({
+    ...row(battle, raids, input),
+    goal: goalOf.get(battle.id) ?? null,
+  }))
+  return {
+    rows,
+    raids: battlesLeft - left,
+    // Summed, not `budget - energyLeft`: an unlimited budget would make that NaN.
+    energy: rows.reduce((total, item) => total + item.energy, 0),
+  }
+}
+
+/** `first` then `second`, a node in both kept once at its first place with their raids summed. */
+function mergeRows(
+  first: readonly MissionRaidRow[],
+  second: readonly MissionRaidRow[]
+): MissionRaidRow[] {
+  const merged = new Map(first.map((item) => [item.battleId, { ...item }]))
+  for (const item of second) {
+    const existing = merged.get(item.battleId)
+    if (existing) {
+      existing.raids += item.raids
+      existing.energy += item.energy
+      existing.eventPoints += item.eventPoints
+    } else {
+      merged.set(item.battleId, item)
+    }
+  }
+  return [...merged.values()]
 }
 
 /**

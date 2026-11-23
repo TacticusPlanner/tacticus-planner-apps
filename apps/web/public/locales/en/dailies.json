@@ -546,7 +546,7 @@
   },
   "raidsFilters": {
     "title": "Filters",
-    "description": "Applies to Today, Bonus Raids and the HSE tab, not to Plan or Goals.",
+    "description": "Applies to Today, Bonus Raids and the HSE and HRE tabs, not to Plan or Goals.",
     "sections": {
       "allies": "Allies",
       "enemies": "Enemies",

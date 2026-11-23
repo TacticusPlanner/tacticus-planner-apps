@@ -546,7 +546,7 @@
   },
   "raidsFilters": {
     "title": "Filter",
-    "description": "Gilt für Heute, Bonus-Raids und den SBE-Tab, nicht für Plan und Ziele.",
+    "description": "Gilt für Heute, Bonus-Raids und die SBE- und HRE-Tabs, nicht für Plan und Ziele.",
     "sections": {
       "allies": "Verbündete",
       "enemies": "Gegner",

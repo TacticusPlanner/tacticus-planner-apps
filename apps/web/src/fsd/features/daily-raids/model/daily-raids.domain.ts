@@ -15,6 +15,7 @@ import type { GoalKind } from "@/entities/goal"
 import type {
   EstimateBlocker,
   FilteredOutNeed,
+  RaidBreakdownEntry,
   RaidDaySchedule,
   RaidPlanSummary,
 } from "@/entities/goal-farming"
@@ -237,6 +238,9 @@ export type DailyRaidsReadyViewModel = {
   eventFarm?: EventFarm
   /** The Dailies > HRE tab: per node, the best-priority goal it feeds. */
   missionGoalNodes?: ReadonlyMap<BattleId, MissionGoalNode>
+  /** The Dailies > HRE tab: Today's run again under the current mission's node rules
+   *  (`missionToday`), whose raids the HRE suggestions start from, in Today's order. */
+  missionTodayEntries?: readonly RaidBreakdownEntry[]
   /** The Dailies > HRE raid suggestions; set only when the run was given a mission request. */
   missionRaids?: MissionRaidPlan
 }

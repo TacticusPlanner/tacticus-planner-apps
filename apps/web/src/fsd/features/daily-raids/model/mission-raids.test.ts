@@ -327,6 +327,69 @@ describe("planMissionRaids stops favouring a covered goal resource", () => {
   })
 })
 
+describe("planMissionRaids from Today's raids", () => {
+  const entry = (battleId: string, raidsPerformed: number) => ({
+    battleId: id(battleId),
+    raidsPerformed,
+    goalId: "g1",
+    resourceId: `drop${battleId}` as never,
+  })
+
+  it("starts from Today's raids in Today's order, then tops up the cheapest", () => {
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 15,
+        unlimitedEnergy: true,
+        // Today raids I25 for a goal before I20; neither is the cheapest of the 5-energy nodes.
+        todayEntries: [entry("I25", 4), entry("I20", 6)],
+      })
+    )
+    expect(plan.rows.map((row) => [row.battleId, row.raids])).toEqual([
+      ["I25", 4],
+      ["I20", 6],
+      ["I15", 5],
+    ])
+    expect(plan.rows[0]?.goal?.resourceId).toBe("dropI25")
+  })
+
+  it("cuts the last of Today's raids to the battles left", () => {
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 5,
+        unlimitedEnergy: true,
+        todayEntries: [entry("I25", 4), entry("I20", 6)],
+      })
+    )
+    expect(raidsOf(plan.rows)).toEqual({ I25: 4, I20: 1 })
+  })
+
+  it("leaves out Today's raids that don't count, such as standing nodes for lightning victories", () => {
+    const event = node("E10", 6, 10, { isEvent: true })
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 3,
+        eventOnly: true,
+        unlimitedEnergy: true,
+        battles: [...indomitus, event],
+        todayEntries: [entry("I25", 4), entry("E10", 2)],
+      })
+    )
+    expect(raidsOf(plan.rows)).toEqual({ E10: 3 })
+  })
+
+  it("keeps Today's raids within the node's attempts left", () => {
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 6,
+        unlimitedEnergy: true,
+        attemptsLeftByBattle: new Map([[id("I25"), 2]]),
+        todayEntries: [entry("I25", 4)],
+      })
+    )
+    expect(raidsOf(plan.rows)).toEqual({ I25: 2, I15: 4 })
+  })
+})
+
 describe("buildMissionGoalNodes", () => {
   const battle = (campaignGroupId: string, type: string): Battle => ({
     campaignGroupId: campaignGroupId as Battle["campaignGroupId"],

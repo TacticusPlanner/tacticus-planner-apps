@@ -50,6 +50,7 @@ import type {
   DailyRaidsViewModel,
 } from "./daily-raids.domain"
 import type { MissionRaidPlan, MissionRaidsRequest } from "./mission-raids"
+import { missionTodayNodes } from "./mission-today-nodes"
 import { planHookMissionRaids } from "./plan-hook-mission-raids"
 import type { TodayQuickFilterOptions } from "./today-quick-filters/today-quick-filters"
 
@@ -225,6 +226,29 @@ export function useDailyRaids(
         : []
     )
   }, [availableBattles, liveProgress])
+  // The current HRE mission's rules for Today's run, the base of its raid suggestions.
+  const missionToday = useMemo(
+    () =>
+      missionTodayNodes(
+        missionRequest,
+        availableBattles,
+        new Set(
+          (campaignDefinitions ?? [])
+            .filter((definition) => definition.releaseType === "event")
+            .map((definition) => definition.groupId)
+        ),
+        preferEvent && activeEventBattleIds.size > 0
+          ? activeEventBattleIds
+          : undefined
+      ),
+    [
+      missionRequest,
+      availableBattles,
+      campaignDefinitions,
+      preferEvent,
+      activeEventBattleIds,
+    ]
+  )
   const locationsByBattleId = useMemo(
     () =>
       buildLocationsByBattleId(
@@ -455,6 +479,7 @@ export function useDailyRaids(
           }
         : undefined,
       missionGoalNodes: !!missionRequest,
+      missionToday,
       hreShardReasons,
     })
     return result
@@ -508,6 +533,7 @@ export function useDailyRaids(
     locationsByBattleId,
     manualBattleIds,
     missionRequest,
+    missionToday,
     mowsById,
     npcsById,
     onslaughtProgress,

@@ -71,9 +71,12 @@ export function planHookMissionRaids(input: {
       .map((definition) => definition.groupId)
   )
   const manual = input.request.manual
-  const raidFilters: RaidsFilters = { ...input.raidsFilters, campaignTypes: [] }
+  // Raids follow every Raids Filter, locations included, as on Today (Severyn, 2026-11). Battles
+  // fought by hand ignore the location filter: it picks where to farm drops, not where to fight.
+  const raidFilters: RaidsFilters = input.raidsFilters
   const battleFilters: RaidsFilters = {
     ...raidFilters,
+    campaignTypes: [],
     ...(manual?.slots !== undefined && manual.slots > 0
       ? { slots: [manual.slots] }
       : {}),
@@ -112,6 +115,7 @@ export function planHookMissionRaids(input: {
     dailyEnergy: input.dailyEnergy,
     realEnergyUsedToday: input.realEnergyUsedToday,
     goalNodesByBattle: input.calculation?.missionGoalNodes ?? new Map(),
+    todayEntries: input.calculation?.missionTodayEntries ?? [],
     eventPointsByBattle: input.eventPointsByBattleId,
     combineGoals: input.combineGoals,
     preferredBattleIds: input.preferredBattleIds,
