@@ -72,7 +72,7 @@
     "damage": "Las unidades fuertes con muchos golpes hacen más daño.",
     "abilityDamage": "Las unidades cuyas habilidades activas golpean a varios enemigos suman más rápido.",
     "useAbilities": "Usa la habilidad activa de cada personaje en cada batalla. Solo cuentan las habilidades de los Personajes, así que las Máquinas de Guerra no cuentan, ni tampoco las acciones de Curar y Reparar.",
-    "heal": "Lleva un sanador y déjalo curar cada turno. Un mecánico solo repara unidades mecánicas.",
+    "heal": "Lleva un sanador y déjalo curar cada turno, o un mecánico para un equipo de unidades sobre todo mecánicas: un mecánico solo repara esas.",
     "reserve_one": "Guarda {{count}} ficha de {{mode}} para {{mission}}.",
     "reserve_other": "Guarda {{count}} fichas de {{mode}} para {{mission}}.",
     "saveOnslaught": "Guarda tus fichas de {{mode}} para {{mission}}: una partida allí cuenta muchas más bajas, golpes o usos de habilidades que aquí."
@@ -265,7 +265,7 @@
     "titleMode": "Equipo de {{mode}}",
     "ranged": "Tus {{size}} unidades a distancia más fuertes.",
     "rangedTrack": "Tus {{size}} unidades a distancia de {{alliance}} más fuertes: 5 empiezan y el resto sustituye a las que caigan.",
-    "supportIncluded": "Tu Sanador más fuerte está incluido para el objetivo de curación, o un Mecánico si no tienes ningún Sanador.",
+    "supportIncluded": "Tu Sanador más fuerte está incluido para el objetivo de curación, o tu Mecánico más fuerte cuando la mayoría del equipo es mecánico.",
     "supportMissing": "No tienes ningún Sanador ni Mecánico para el objetivo de curación.",
     "psychic": "Las unidades con daño psíquico van primero, para el objetivo de daño psíquico.",
     "abilityDamage": "Las unidades cuyas habilidades hacen daño en área van primero y se excluyen las que no hacen daño con habilidades, para el objetivo de daño con habilidades.",

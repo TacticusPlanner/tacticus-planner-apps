@@ -167,17 +167,22 @@ For a token objective's Arena, Salvage Run, Onslaught or Guild Raid team, the ca
 
 ### Requirement: Support and damage-type preferences
 
-While the current mission's `heal` objective is open, the team SHALL include the strongest eligible Healer, or without one the strongest eligible Mechanic, or say that the player owns neither: a Healer heals any unit, while a Mechanic only repairs mechanical units (Severyn, 2026-11). While its `damageType` "Psychic" objective is open, eligible units that deal Psychic damage SHALL lead the team.
+While the current mission's `heal` objective is open, the team SHALL include a support unit, or say that the player owns none: the strongest eligible Mechanic when most of the team picked without one is `Mechanical`, since a Mechanic only repairs mechanical units, and the strongest eligible Healer otherwise, since a Healer heals any unit; the other kind when none of the first is owned (Severyn, 2026-11). While its `damageType` "Psychic" objective is open, eligible units that deal Psychic damage SHALL lead the team.
 
 #### Scenario: Heal objective open
 
 - **GIVEN** mission 6 with 0 / 2,500 healing and one non-summoning Healer owned
 - **THEN** that Healer is in the team, with the note that it is there for the heal objective
 
-#### Scenario: Healer and a stronger Mechanic owned
+#### Scenario: Healer and a stronger Mechanic owned, few mechanical units
 
-- **GIVEN** mission 6 with 0 / 2,500 healing, Rotbone (Healer) and a stronger Aleph-Null (Mechanic) owned
+- **GIVEN** mission 6 with 0 / 2,500 healing, Rotbone (Healer) and a stronger Aleph-Null (Mechanic) owned, and a team of mostly non-mechanical units
 - **THEN** Rotbone is in the team, not Aleph-Null
+
+#### Scenario: Mostly mechanical team
+
+- **GIVEN** an all-Xenos team whose strongest units are mostly Necrons and Ork walkers (`Mechanical`), with a Mechanic and a Healer owned
+- **THEN** the Mechanic is in the team
 
 #### Scenario: Psychic objective met
 
