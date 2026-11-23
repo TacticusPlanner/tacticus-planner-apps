@@ -9,7 +9,7 @@ import { goalCreateErrorText } from "./goal-create-error"
 const t = ((key: string, options?: Record<string, unknown>) =>
   options && "max" in options
     ? `${key}:${String(options.max)}`
-    : key) as TFunction
+    : key) as unknown as TFunction
 const unitName = () => "Bellator"
 
 describe("goalCreateErrorText", () => {
