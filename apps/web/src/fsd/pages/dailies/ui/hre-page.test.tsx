@@ -670,6 +670,21 @@ describe("HRE tab", () => {
     expect(screen.queryByTestId("hre-team-reserve")).toBeNull()
   })
 
+  it("keeps mission 6's Onslaught tokens for mission 7, where a run pays off", () => {
+    mocks.team = { status: "loading" }
+    mocks.tokens = { arena: 0, guildRaid: 0, onslaught: 3, salvageRun: 0 }
+    seed({ mission: 6, progress: [0, 0] })
+    renderHre()
+    // No spare Onslaught team: nothing else on mission 6 plays a token mode.
+    expect(mocks.teamArgs.at(-1)).toMatchObject({ plans: [] })
+    expect(screen.queryByTestId("hre-team-onslaught-summary")).toBeNull()
+    expect(
+      screen.getByTestId("hre-current-reserve-onslaught")
+    ).toHaveTextContent(
+      "tips.saveOnslaught|mode=tokens.modes.onslaught,mission=missions.number|number=7"
+    )
+  })
+
   it("keeps mission 6's Arena tokens for later missions when none are spare", () => {
     mocks.team = { status: "loading" }
     // 7 held against the 8 Arena battles the missions from 6 on need: nothing spare, so all 10

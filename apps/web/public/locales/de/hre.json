@@ -72,9 +72,10 @@
     "damage": "Starke Einheiten mit vielen Treffern verursachen den meisten Schaden.",
     "abilityDamage": "Einheiten, deren aktive Fähigkeiten mehrere Gegner treffen, kommen am schnellsten voran.",
     "useAbilities": "Nutze in jeder Schlacht die aktive Fähigkeit jedes Charakters. Es zählen nur Fähigkeiten von Charakteren, also keine Kriegsmaschinen, und auch Heilen und Reparieren zählt nicht.",
-    "heal": "Nimm einen Heiler oder Mechaniker mit und lass ihn jeden Zug heilen.",
+    "heal": "Nimm einen Heiler mit und lass ihn jeden Zug heilen. Ein Mechaniker repariert nur mechanische Einheiten.",
     "reserve_one": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
-    "reserve_other": "Behalte {{count}} {{mode}}-Token für {{mission}}."
+    "reserve_other": "Behalte {{count}} {{mode}}-Token für {{mission}}.",
+    "saveOnslaught": "Behalte deine {{mode}}-Token für {{mission}}: Ein Lauf dort zählt viel mehr Kills, Treffer oder Fähigkeitseinsätze als hier."
   },
   "tracker": {
     "current": "Aktuelle Mission",
@@ -264,7 +265,7 @@
     "titleMode": "{{mode}}-Team",
     "ranged": "Deine {{size}} stärksten Fernkampf-Einheiten.",
     "rangedTrack": "Deine {{size}} stärksten {{alliance}}-Fernkampf-Einheiten: 5 starten, der Rest ersetzt gefallene.",
-    "supportIncluded": "Dein stärkster Heiler oder Mechaniker ist dabei, für das Heilungsziel.",
+    "supportIncluded": "Dein stärkster Heiler ist für das Heilungsziel dabei, oder ein Mechaniker, wenn du keinen Heiler hast.",
     "supportMissing": "Du besitzt keinen Heiler oder Mechaniker für das Heilungsziel.",
     "psychic": "Einheiten mit psychischem Schaden kommen zuerst, für das Ziel mit psychischem Schaden.",
     "abilityDamage": "Einheiten, deren Fähigkeiten Flächenschaden verursachen, kommen zuerst; Einheiten ohne Fähigkeitsschaden bleiben draußen, für das Ziel mit Fähigkeitsschaden.",

@@ -346,6 +346,36 @@ describe("buildHreTeam", () => {
       build({ plan: { rule: "summonFree", mode: "arena", support: true } })
     ).toMatchObject({ support: "missing" })
   })
+
+  it("fields a Healer over a stronger Mechanic, who only repairs mechanical units", () => {
+    const characters = hseTeamsFixtureCharacters.map((character) =>
+      character.unitId === "necroSpyder"
+        ? { ...character, traits: ["Mechanic"] }
+        : character.unitId === "blackPossession"
+          ? { ...character, traits: ["Healer"] }
+          : character
+    )
+    const team = build({
+      characters,
+      plan: { rule: "summonFree", mode: "arena", support: true },
+    })
+    expect(team).toMatchObject({ status: "ready", support: "included" })
+    expect(ids(team)[0]).toBe("blackPossession")
+  })
+
+  it("fields a Mechanic when no Healer is owned", () => {
+    const characters = hseTeamsFixtureCharacters.map((character) =>
+      character.unitId === "necroSpyder"
+        ? { ...character, traits: ["Mechanic"] }
+        : character
+    )
+    const team = build({
+      characters,
+      plan: { rule: "summonFree", mode: "arena", support: true },
+    })
+    expect(team).toMatchObject({ status: "ready", support: "included" })
+    expect(ids(team)[0]).toBe("necroSpyder")
+  })
 })
 
 describe("buildHreTeam with a running HSE", () => {

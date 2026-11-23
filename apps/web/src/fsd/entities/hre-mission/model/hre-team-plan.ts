@@ -1,6 +1,6 @@
 import { hreAllDone, hreMission } from "./hre-missions"
 import type { HreMission, HreObjective, HreObjectiveKind } from "./hre-missions"
-import { isManualObjective } from "./hre-objectives"
+import { ONSLAUGHT_KILLS_PER_RUN, isManualObjective } from "./hre-objectives"
 import type { HreSpareMode, HreSpareTokens } from "./hre-objectives"
 import type { HreProgress } from "./hre-progress"
 
@@ -120,7 +120,7 @@ const KILL_KINDS: ReadonlySet<HreObjectiveKind> = new Set([
 const KILLS_PER_BATTLE: Readonly<Partial<Record<HreSpareMode, number>>> = {
   arena: 5,
   salvageRun: 12,
-  onslaught: 20,
+  onslaught: ONSLAUGHT_KILLS_PER_RUN,
 }
 const ARENA_KILLS = 5
 
