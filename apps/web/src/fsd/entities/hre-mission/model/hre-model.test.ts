@@ -991,16 +991,17 @@ describe("spareTokens", () => {
   })
 })
 
+const paysOff = (number: number) =>
+  hreMission(hreMissions, number).objectives.map(onslaughtPaysOff)
+
 describe("Onslaught payoff", () => {
   it("pays off for ability uses, damage and kills beyond one run", () => {
-    const kinds = (number: number) =>
-      hreMission(hreMissions, number).objectives.map(onslaughtPaysOff)
-    expect(kinds(1)).toEqual([false, false]) // 5 melee kills: one run's worth
-    expect(kinds(3)).toEqual([false, true])
-    expect(kinds(5)).toEqual([true, false])
-    expect(kinds(6)).toEqual([false, false])
-    expect(kinds(9)).toEqual([false, true]) // 75 ranged kills
-    expect(kinds(10)).toEqual([false, false])
+    expect(paysOff(1)).toEqual([false, false]) // 5 melee kills: one run's worth
+    expect(paysOff(3)).toEqual([false, true])
+    expect(paysOff(5)).toEqual([true, false])
+    expect(paysOff(6)).toEqual([false, false])
+    expect(paysOff(9)).toEqual([false, true]) // 75 ranged kills
+    expect(paysOff(10)).toEqual([false, false])
   })
 
   it("names the later mission to keep Onslaught tokens for", () => {
