@@ -351,13 +351,12 @@ export function TeamPickerFiltersPanel({
   return (
     <section
       aria-labelledby={headingId}
-      className="flex flex-col gap-3 rounded-lg border p-3 @3xl/editor:order-last @3xl/editor:min-h-0 @3xl/editor:w-64 @3xl/editor:shrink-0 @3xl/editor:gap-1.5 @3xl/editor:rounded-none @3xl/editor:border-0 @3xl/editor:border-l @3xl/editor:p-1 @3xl/editor:pl-4"
+      className="flex flex-col gap-3 rounded-lg border p-3 @3xl/editor:order-last @3xl/editor:w-64 @3xl/editor:shrink-0 @3xl/editor:gap-1.5 @3xl/editor:overflow-y-auto @3xl/editor:rounded-none @3xl/editor:border-0 @3xl/editor:border-l @3xl/editor:p-1 @3xl/editor:pl-4"
       data-testid="team-picker-filters-panel"
       id={panelId}
     >
       {/* The heading row keeps the column headings' height, so "Filters" lines up with
-          "Characters" and "Machines of War"; the small ghost button overhangs it evenly. Only
-          the fields under it scroll. */}
+          "Characters" and "Machines of War"; the small ghost button overhangs it evenly. */}
       <div className="flex items-center justify-between gap-2">
         <h4 className="text-sm font-medium" id={headingId}>
           {t("filtersControl.title")}
@@ -375,7 +374,7 @@ export function TeamPickerFiltersPanel({
         </Button>
       </div>
       <FilterFields
-        className="grid-cols-2 @xl/editor:grid-cols-3 @3xl/editor:-mx-1 @3xl/editor:min-h-0 @3xl/editor:grid-cols-1 @3xl/editor:overflow-y-auto @3xl/editor:p-1"
+        className="grid-cols-2 @xl/editor:grid-cols-3 @3xl/editor:grid-cols-1"
         filters={filters}
         onChange={onChange}
         options={options}
