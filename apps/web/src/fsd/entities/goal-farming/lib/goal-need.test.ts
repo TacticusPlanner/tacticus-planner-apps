@@ -336,12 +336,15 @@ describe("rankSlotsRemaining", () => {
         ])
       )
     )
-    const playerCharacter = {
-      rank: "Stone2",
-      appliedUpgradeSlots: [0, 2, 4],
-    } as never
-    const need = (endAppliedUpgrades: number) => {
+    const need = (
+      endAppliedUpgrades: number,
+      appliedUpgradeSlots = [0, 2, 4]
+    ) => {
       const detail = goalDetail({ start: 1, end: 1, endAppliedUpgrades })
+      const playerCharacter = {
+        rank: "Stone2",
+        appliedUpgradeSlots,
+      } as never
       return {
         slots: rankSlotsRemaining({ detail, character, playerCharacter }),
         cost: rankResourceNeed({
@@ -364,6 +367,14 @@ describe("rankSlotsRemaining", () => {
         { id: upgradeId("d4"), count: 1 },
       ],
     })
+
+    // Bottom-row slots the player already applied are not charged again.
+    expect(need(4, [0, 2, 4, 1])).toEqual({ slots: 0, cost: [] })
+    expect(need(5, [0, 2, 4, 1])).toEqual({
+      slots: 1,
+      cost: [{ id: upgradeId("d4"), count: 1 }],
+    })
+    expect(need(5, [0, 2, 4, 1, 3])).toEqual({ slots: 0, cost: [] })
   })
 
   it("does not subtract matching materials from completed earlier ranks", () => {

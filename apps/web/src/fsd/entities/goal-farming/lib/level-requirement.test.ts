@@ -47,4 +47,25 @@ describe("requiredLevelForGoal", () => {
       requiredLevelForGoal(rankGoal(Rank.Diamond2, 0, true), levelRules)
     ).toBe(47)
   })
+
+  it("is null for a MoW, a goal kind without a level, and a Rank goal without a target", () => {
+    expect(
+      requiredLevelForGoal(
+        { ...rankGoal(Rank.Diamond2, 4), entityType: "Mow" },
+        levelRules
+      )
+    ).toBeNull()
+    expect(
+      requiredLevelForGoal(
+        { ...rankGoal(Rank.Diamond2, 4), goalType: "Ascension" },
+        levelRules
+      )
+    ).toBeNull()
+    expect(
+      requiredLevelForGoal(
+        { ...rankGoal(Rank.Diamond2, 4), config: {} } as never,
+        levelRules
+      )
+    ).toBeNull()
+  })
 })
