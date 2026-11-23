@@ -119,6 +119,15 @@ export type DailyRaidsCalculationInput = {
   }
   /** The Dailies > HRE tab only: also return, per node, the best-priority goal it feeds. */
   missionGoalNodes?: boolean
+  /** The Dailies > HRE tab only: also run Today again under the current mission's node rules and
+   *  return its entries (`missionTodayEntries`), the base of the HRE raid suggestions. `nodeFilter`
+   *  narrows the nodes further (lightning victories: event-campaign nodes only); `preferredBattleIds`
+   *  replaces "CE nodes first"'s set (a material is farmed at one of them when any drops it). "Fewer
+   *  raids" is off, since each raid counts one battle. */
+  missionToday?: {
+    nodeFilter?: (battleId: BattleId) => boolean
+    preferredBattleIds?: ReadonlySet<BattleId>
+  }
   /** Featured heroes' shard ids whose running or upcoming Hero Release Event supplies them
    *  (`hreShardReasons`): a blocked goal names the event instead of "no farming location". */
   hreShardReasons?: ReadonlyMap<EstimateResourceId, HreBlockedReason>
@@ -375,6 +384,9 @@ export function calculateDailyRaids(
         ...params.eventFarm,
       })
     : undefined
+  const missionTodayEntries = params.missionToday
+    ? estimateMissionToday(filteredCalculation, params.missionToday)
+    : undefined
   const missionGoalNodes = params.missionGoalNodes
     ? buildMissionGoalNodes(
         goals,
@@ -411,6 +423,7 @@ export function calculateDailyRaids(
     filteredOut,
     eventFarm,
     missionGoalNodes,
+    missionTodayEntries,
     dailyEnergy: params.dailyEnergy,
     goalsById,
     shopOffersById,
@@ -449,6 +462,28 @@ export function calculateDailyRaids(
     ),
     attemptsUsedByBattle: today.attemptsUsedByBattle,
   }
+}
+
+/**
+ * Today's run under the HRE mission's node rules: the Raids Filters and `mission.nodeFilter` both
+ * apply, `mission.preferredBattleIds` replaces "CE nodes first"'s set, and "Fewer raids" is off.
+ */
+function estimateMissionToday(
+  today: EstimatePlanParams,
+  mission: NonNullable<DailyRaidsCalculationInput["missionToday"]>
+) {
+  const { nodeFilter: missionFilter, preferredBattleIds } = mission
+  const nodeFilter: EstimatePlanParams["nodeFilter"] = missionFilter
+    ? (battleId, resourceId) =>
+        missionFilter(battleId) &&
+        (!today.nodeFilter || today.nodeFilter(battleId, resourceId))
+    : today.nodeFilter
+  return estimateTodayRun({
+    ...today,
+    nodeFilter,
+    fewerRaids: false,
+    preferredBattleIds: preferredBattleIds ?? today.preferredBattleIds,
+  }).today.entries
 }
 
 /**

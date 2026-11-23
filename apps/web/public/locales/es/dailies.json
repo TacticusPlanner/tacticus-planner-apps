@@ -546,7 +546,7 @@
   },
   "raidsFilters": {
     "title": "Filtros",
-    "description": "Se aplica a Hoy, las incursiones extra y la pestaña EPI, no al plan ni a los objetivos.",
+    "description": "Se aplica a Hoy, las incursiones extra y las pestañas EPI y ELH, no al plan ni a los objetivos.",
     "sections": {
       "allies": "Aliados",
       "enemies": "Enemigos",

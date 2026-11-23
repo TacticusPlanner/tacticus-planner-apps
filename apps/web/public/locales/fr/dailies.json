@@ -546,7 +546,7 @@
   },
   "raidsFilters": {
     "title": "Filtres",
-    "description": "S'applique à Aujourd'hui, aux raids bonus et à l'onglet ÉÉA, pas au plan ni aux objectifs.",
+    "description": "S'applique à Aujourd'hui, aux raids bonus et aux onglets ÉÉA et ÉSH, pas au plan ni aux objectifs.",
     "sections": {
       "allies": "Alliés",
       "enemies": "Ennemis",

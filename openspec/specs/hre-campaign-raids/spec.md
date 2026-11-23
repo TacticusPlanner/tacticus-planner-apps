@@ -47,7 +47,7 @@ A campaign battle SHALL be a candidate only if all of these hold:
 1. The player's campaign progress unlocks it, which includes event-campaign nodes only while their event runs.
 2. Its energy cost is above 0.
 3. It has attempts left today.
-4. It passes the persisted Raids Filters, except the campaign-type filter. Every campaign battle counts as a win, so a type picked for farming drops does not hide the cheapest nodes.
+4. It passes the persisted Raids Filters, the campaign-type (location) filter included, as on Today (Severyn, 2026-11). Battles fought by hand (see "Manual objectives get a list of battles to fight by hand") still ignore the campaign-type filter.
 
 Attempts left SHALL be the synced attempts left for that node, or the catalog's daily cap for the node when that is not known.
 
@@ -71,19 +71,33 @@ Assumptions:
 - **GIVEN** the Raids Filters hide Indomitus by enemy faction
 - **THEN** no Indomitus node is listed, even though they are the cheapest
 
-#### Scenario: Campaign-type filter keeps untyped nodes
-
-- **GIVEN** a campaign-type Raids Filter of Standard and Early
-- **THEN** I06 to I14, which have no campaign type and so match no option, stay candidates
-
-#### Scenario: Campaign-type filter ignored
+#### Scenario: Campaign-type filter applied
 
 - **GIVEN** a campaign-type Raids Filter of Mirror only
-- **THEN** the 5-energy Indomitus nodes I15 to I29 and the no-drop I06 to I14 stay candidates
+- **THEN** only Mirror nodes are candidates for raids: the 5-energy Indomitus nodes I15 to I29 and the no-drop I06 to I14, which have no campaign type and so match no option, are not
+
+### Requirement: Suggestions start from Today's raids under the mission's rules
+
+The suggestions SHALL start from Today's plan, run again with the same goals, Raids Filters, quick filters (except "Fewer raids"), energy left today and attempts, plus the current mission's node rules, like a quick filter (Severyn, 2026-11):
+
+- For a `lightningVictories` objective, only event-campaign nodes count, so only they SHALL be raided in that run.
+- For a `campaignWins` or `campaignRaids` objective, any node counts, so each material SHALL be farmed at a 5 or 6 energy node when one drops it (more battles for the energy), or, with "CE nodes first" on, at the running campaign event's node.
+
+That run's raids at candidate nodes SHALL be listed first, one row per node in Today's order, within each node's attempts left, until the battles to go are reached; the last row SHALL be cut to what is left. A row SHALL show the resource Today raids the node for. Battles still left SHALL then be filled as "Suggestions serve goals first, then minimise energy, and fill to the limits" says, and a node already listed keeps its place with the raids added.
+
+#### Scenario: Lightning victories follow Today's goals
+
+- **GIVEN** mission 8 at 0 / 25 lightning victories, the Tyranids campaign event running, and Today farming a goal's Epic at Tyranids 25B among standing-campaign nodes
+- **THEN** the run limited to event nodes still farms the goals' event drops (Tyranids 3, 19, 3B and 25B) in goal order, and only then do the cheapest event nodes take the battles still left
+
+#### Scenario: Location filter as on Today
+
+- **GIVEN** the Raids Filters keep only Mirror, Standard, Extremis and Early nodes
+- **THEN** the suggestions use only those nodes, as Today does
 
 ### Requirement: Suggestions serve goals first, then minimise energy, and fill to the limits
 
-The suggestions SHALL use only candidates that drop something. Candidates SHALL be ordered as follows:
+Battles still left after Today's raids (see "Suggestions start from Today's raids under the mission's rules") SHALL use only candidates that drop something. Candidates SHALL be ordered as follows:
 
 1. A node that drops a resource an in-scope goal still needs SHALL come first, whatever its energy cost (Severyn, 2026-10). An Epic or higher upgrade SHALL count only on Elite nodes (a storyline Elite or Elite Mirror node, or an event's Extremis node): a standard or Mirror node drops it too rarely to farm it there, so for that upgrade it is not a goal node (Severyn, 2026-11). A goal's pinned farm locations keep counting whatever their tier. A node feeds its goal only until the raids already suggested are expected to drop what the in-scope goals still need of its resource (raids times drop rate): it SHALL get no more raids for the goal than that, and once the resource is covered every node dropping it SHALL rank as a node that feeds no goal (Severyn, 2026-11).
 2. With "CE nodes first" on (see "The HRE tab has raid list controls"), the running campaign event's reached nodes SHALL come next, ahead of cheaper nodes, among goal nodes and among the others alike.
@@ -147,7 +161,7 @@ Each node, in order, SHALL get as many raids as its attempts left, the remaining
 
 ### Requirement: Lightning-victory objectives suggest event-campaign raids
 
-When the current mission has a `lightningVictories` objective below its target, the section SHALL suggest raids on event-campaign nodes only, because a raid there counts as a lightning victory. It SHALL use the same budget, attempts, filters, ordering (energy, then the tie-breaks of "Event points break ties among equal costs", then goals, then id) and fill as campaign objectives. The battles to go are the lightning victories still needed. When no campaign event is running, the section SHALL say so and suggest winning battles manually.
+When the current mission has a `lightningVictories` objective below its target, the section SHALL suggest raids on event-campaign nodes only, because a raid there counts as a lightning victory. It SHALL use the same budget, attempts, filters, start from Today's raids, ordering and fill as campaign objectives. The battles to go are the lightning victories still needed. When no campaign event is running, the section SHALL say so and suggest winning battles manually.
 
 Assumptions:
 
@@ -166,7 +180,7 @@ Assumptions:
 
 ### Requirement: Remaining campaign battles are summarised across missions
 
-The tab SHALL show the total campaign battles still needed across the current mission and every later mission, including Bonus. It SHALL set them against the days the event has left: the remaining time while it runs, or its whole length for a preview, rounded up and at least 1. It SHALL show the battles a day needed and the energy a day they cost at the cheapest candidate nodes, within each node's daily cap. When the Planning Settings daily energy cannot cover that many a day, it SHALL show the most battles a day the energy allows and how many battles will not fit before the event ends. The nodes ignore today's attempts and the lightning restriction, but still apply unlock state and the Raids Filters (except the campaign-type filter).
+The tab SHALL show the total campaign battles still needed across the current mission and every later mission, including Bonus. It SHALL set them against the days the event has left: the remaining time while it runs, or its whole length for a preview, rounded up and at least 1. It SHALL show the battles a day needed and the energy a day they cost at the cheapest candidate nodes, within each node's daily cap. When the Planning Settings daily energy cannot cover that many a day, it SHALL show the most battles a day the energy allows and how many battles will not fit before the event ends. The nodes ignore today's attempts and the lightning restriction, but still apply unlock state and the Raids Filters.
 
 #### Scenario: Worked example from mission 5
 
@@ -192,9 +206,9 @@ Candidates that drop nothing (Indomitus I06 to I14) SHALL be listed in their own
 - **GIVEN** a lightning-victory objective
 - **THEN** the section is not shown, because these nodes are not event-campaign nodes
 
-### Requirement: Suggestions use today's energy left and ignore Today's plan
+### Requirement: Suggestions use today's energy left and ignore Today's progress
 
-The battles to go SHALL be the objective's target minus its progress; raids still planned on Today SHALL NOT count toward them, and their energy and attempts SHALL NOT be reserved. Severyn chose this so the section always says where to raid for the mission. The HRE energy budget SHALL be the Planning Settings daily energy minus the energy really spent today, never below 0.
+The battles to go SHALL be the objective's target minus its progress; raids still planned on Today SHALL NOT count toward them as done. The suggestions start from those raids instead (see "Suggestions start from Today's raids under the mission's rules"), so the section says where to raid for the mission in the same places as Today. The HRE energy budget SHALL be the Planning Settings daily energy minus the energy really spent today, never below 0.
 
 Assumptions:
 
@@ -208,7 +222,7 @@ Assumptions:
 #### Scenario: Today's plan does not hide suggestions
 
 - **GIVEN** 20 battles to go and Today still planning 94 raids
-- **THEN** raids for all 20 battles are still suggested, within today's energy left
+- **THEN** raids for all 20 battles are still suggested, starting from Today's raids
 
 #### Scenario: Today's energy spent
 
@@ -371,7 +385,7 @@ Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) 
 
 ### Requirement: The HRE tab has raid list controls
 
-The HRE tab's toolbar SHALL show the Dailies project selector (with "All projects") and the Raids Filters action while the event is running or previewed, and SHALL NOT show the Planning Settings action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HSE tab. The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (except the campaign-type filter, as before) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. Today's quick filters SHALL apply too, except "Fewer raids", which the tab hides because its raids count battles. "CE nodes first" SHALL be offered, as on Today, only while a campaign event with reached nodes is running or while it is on, and SHALL rank the running campaign event's nodes first (Severyn, 2026-11). A past event SHALL NOT show the controls, the suggestions or the Campaign battles section.
+The HRE tab's toolbar SHALL show the Dailies project selector (with "All projects") and the Raids Filters action while the event is running or previewed, and SHALL NOT show the Planning Settings action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HSE tab. The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (the campaign-type filter included) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. Today's quick filters SHALL apply too, except "Fewer raids", which the tab hides because its raids count battles. "CE nodes first" SHALL be offered, as on Today, only while a campaign event with reached nodes is running or while it is on, and SHALL rank the running campaign event's nodes first (Severyn, 2026-11). A past event SHALL NOT show the controls, the suggestions or the Campaign battles section.
 
 #### Scenario: Controls in the toolbar
 
