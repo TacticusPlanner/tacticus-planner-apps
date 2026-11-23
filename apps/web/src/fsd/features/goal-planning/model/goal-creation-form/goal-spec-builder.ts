@@ -57,7 +57,6 @@ export function computeMissingUpgrades(params: {
   rankEnd: Rank
   rankEndPointFive: boolean
   rankEndAppliedUpgrades?: number
-  rankEndTopRowCount?: number
   playerCharacter:
     { rank: Rank; appliedUpgradeSlots: readonly number[] } | undefined
   inventoryUpgrades:
@@ -77,8 +76,7 @@ export function computeMissingUpgrades(params: {
   const sameRankWithoutPartial =
     rankIndex(rankStart) === rankIndex(rankEnd) &&
     !rankEndPointFive &&
-    (params.rankEndAppliedUpgrades ?? 0) === 0 &&
-    (params.rankEndTopRowCount ?? 0) === 0
+    (params.rankEndAppliedUpgrades ?? 0) === 0
   if (
     !rankEnabled ||
     !character ||
@@ -93,8 +91,7 @@ export function computeMissingUpgrades(params: {
     rankStart,
     rankEnd,
     rankEndPointFive,
-    params.rankEndAppliedUpgrades,
-    params.rankEndTopRowCount
+    params.rankEndAppliedUpgrades
   )
   const required = aggregateBaseUpgrades(requiredIds, upgradesById)
 

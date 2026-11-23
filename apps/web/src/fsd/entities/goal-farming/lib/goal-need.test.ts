@@ -318,6 +318,54 @@ describe("rankSlotsRemaining", () => {
     ).toEqual([{ id: upgradeId("d3"), count: 1 }])
   })
 
+  it("costs a bottom-row partial target below Diamond3 one slot at a time in book order", () => {
+    // Stone2 4/6 is the top row (h3, d3, a3) plus the bottom-left slot (h4); 5/6 adds d4.
+    const upgradesById = new Map(
+      character.rankUpUpgrades.flatMap((rank) =>
+        rank.upgradeIds.map((id) => [
+          id,
+          {
+            id,
+            label: id,
+            rarity: "Common",
+            stat: "health",
+            crafted: false,
+            recipe: [],
+            farmLocations: [],
+          } as FarmingUpgrade,
+        ])
+      )
+    )
+    const playerCharacter = {
+      rank: "Stone2",
+      appliedUpgradeSlots: [0, 2, 4],
+    } as never
+    const need = (endAppliedUpgrades: number) => {
+      const detail = goalDetail({ start: 1, end: 1, endAppliedUpgrades })
+      return {
+        slots: rankSlotsRemaining({ detail, character, playerCharacter }),
+        cost: rankResourceNeed({
+          detail,
+          character,
+          playerCharacter,
+          upgradesById,
+        }),
+      }
+    }
+
+    expect(need(4)).toEqual({
+      slots: 1,
+      cost: [{ id: upgradeId("h4"), count: 1 }],
+    })
+    expect(need(5)).toEqual({
+      slots: 2,
+      cost: [
+        { id: upgradeId("h4"), count: 1 },
+        { id: upgradeId("d4"), count: 1 },
+      ],
+    })
+  })
+
   it("does not subtract matching materials from completed earlier ranks", () => {
     const repeatedId = upgradeId("shared")
     const repeatedMaterialCharacter: FarmingCharacter = {

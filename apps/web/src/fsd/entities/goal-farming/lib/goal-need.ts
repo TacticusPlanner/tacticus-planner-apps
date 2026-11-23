@@ -106,8 +106,7 @@ function rankGoalOccurrences(params: {
     rankAt(effectiveStart),
     rankEnd,
     rankTarget.endPointFive,
-    additionalTarget.appliedUpgrades,
-    additionalTarget.topRowCount
+    additionalTarget.appliedUpgrades
   )
   return occurrences.length === 0 ? null : { occurrences, effectiveStart }
 }

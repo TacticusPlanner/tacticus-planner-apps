@@ -126,7 +126,7 @@ describe("same-rank partial Rank targets", () => {
     expect(
       getGoalValidationIssue({
         ...rank,
-        rankAdditionalTarget: "TopRow",
+        rankAdditionalTarget: "Row3",
         currentAppliedSlots: [0],
       })
     ).toBeNull()
@@ -137,7 +137,7 @@ describe("same-rank partial Rank targets", () => {
     expect(
       getGoalValidationIssue({
         ...rank,
-        rankAdditionalTarget: "TopRow",
+        rankAdditionalTarget: "Row3",
         currentAppliedSlots: [0, 2, 4],
       })
     ).toBe("rankAlreadyReached")
