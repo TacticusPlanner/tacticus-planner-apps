@@ -10,10 +10,10 @@ Lets a signed-in player see where they are in every campaign event and quickly c
 
 For each campaign event track (`{campaignGroupId, type}`, where type is Standard or Extremis), the page SHALL show the effective progress, resolved separately for regular battles and for challenges:
 
-- regular battles: the manual override's `completedBattleCount` when it is not null, else the synced `campaign-events-progress` entry's `completedBattleCount`, else 0;
+- regular battles: the manual override's `completedBattleCount` when it is not null and either no synced entry exists or it is greater than the synced entry's `completedBattleCount`; else the synced count; else 0. The game reports only battles the player has beaten, so a synced count at or above the manual one means the override is stale (for example a V1 import, which saves V1's default 0 for every event track, or a value set during an earlier event run);
 - challenges: the manual override's `completedChallengeBattlesIds` when it is not null, else the synced entry's `completedChallengeBattlesIds`, else none.
 
-Each of the two values SHALL carry its source: **Manual** when the override value is used, **Synced** when the synced entry is used, and **No synced data** when neither exists. The page SHALL NOT label a value Synced when no synced entry exists for that track. The source is shown next to the value it describes and does not sit between a label and its count.
+Each of the two values SHALL carry its source: **Manual** when the override value is used (a stale manual count that synced progress outranks is not used, so it is labelled Synced), **Synced** when the synced entry is used, and **No synced data** when neither exists. The page SHALL NOT label a value Synced when no synced entry exists for that track. The source is shown next to the value it describes and does not sit between a label and its count.
 
 This is the same resolution daily raids uses for event-node eligibility (see `daily-raids-today`).
 
@@ -23,6 +23,13 @@ This is the same resolution daily raids uses for event-node eligibility (see `da
 - **AND** the override for the same track has `completedBattleCount: 12`
 - **WHEN** the page renders that track
 - **THEN** the regular count is 12 and its source is Manual
+
+#### Scenario: Synced progress wins over a lower manual count
+
+- **GIVEN** the synced entry for `{eventCampaign3, Standard}` has `completedBattleCount: 3`
+- **AND** the override for the same track has `completedBattleCount: 0`
+- **WHEN** the page renders that track
+- **THEN** the regular count is 3 and its source is Synced
 
 #### Scenario: Synced value used when no override exists
 
@@ -114,7 +121,7 @@ An event SHALL count as completed when, for each of its Standard and Extremis tr
 
 ### Requirement: One compact editor per track
 
-Each expanded track SHALL edit its regular-battle count with a single compact control: decrease and increase steps, a Max action that sets the count to the track's number of regular battles, and a progress bar that also works as a slider (pointer drag and keyboard arrows). The count SHALL be shown as `count/total`. Values SHALL stay within 0 and the total; the decrease step is disabled at 0 and the increase step and Max at the total. There SHALL be no separate number input, slider, or progress bar for the same value. Any change creates or updates the manual override for that value.
+Each expanded track SHALL edit its regular-battle count with a single compact control: decrease and increase steps, a Max action that sets the count to the track's number of regular battles, and a progress bar that also works as a slider (pointer drag and keyboard arrows). The count SHALL be shown as `count/total`. Values SHALL stay within the synced count (0 with no synced entry) and the total; the decrease step is disabled at the synced count and the increase step and Max at the total. There SHALL be no separate number input, slider, or progress bar for the same value. A change above the synced count creates or updates the manual override for that value; a change to the synced count or below clears it, since synced progress wins there.
 
 A "Reset to synced" action SHALL appear for a value only while it is Manual, and SHALL clear that override value so the value falls back to synced data (or No synced data). When that clears a track's last non-null override value, the track's override entry SHALL be removed from the draft before saving; if the track's other value is still overridden, the entry SHALL be kept with the cleared value set to null.
 
@@ -136,6 +143,12 @@ Challenges SHALL be toggled individually. Toggling any challenge makes the track
 - **GIVEN** a track's regular count is Manual 20 and its synced count is 8
 - **WHEN** the player chooses "Reset to synced"
 - **THEN** the count shows 8 with source Synced and "Reset to synced" is no longer shown for it
+
+#### Scenario: Stepping back to the synced count clears the override
+
+- **GIVEN** a track's synced count is 8 and the player increased it to Manual 9
+- **WHEN** the player decreases it once
+- **THEN** the count shows 8 with source Synced, the decrease step is disabled, and the override value is cleared
 
 #### Scenario: No reset action for a synced value
 

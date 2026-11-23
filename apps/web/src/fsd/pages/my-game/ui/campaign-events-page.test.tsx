@@ -311,6 +311,26 @@ describe("CampaignEventsPage", () => {
       expect(count("current-event", "Extremis")).toHaveTextContent("3/5")
     })
 
+    it("shows synced progress over a lower, stale manual value", async () => {
+      getOverrides.mockResolvedValue({
+        progress: [
+          {
+            campaignGroupId: "eventCampaign1",
+            type: "Standard",
+            completedBattleCount: 0,
+            completedChallengeBattlesIds: null,
+          },
+        ],
+        revision: 4,
+      })
+      await renderPage()
+      await screen.findByTestId("current-event")
+      expect(count("current-event", "Standard")).toHaveTextContent("2/5")
+      expect(
+        screen.getByTestId("current-event-Standard-battle-source")
+      ).toHaveAttribute("data-source", "synced")
+    })
+
     it("treats a never-synced profile as no synced data, not a load error", async () => {
       catalogData.synced = undefined
       await renderPage()
@@ -350,6 +370,17 @@ describe("CampaignEventsPage", () => {
       expect(
         current().getByRole("button", {
           name: "Decrease Extremis progress",
+        })
+      ).toBeDisabled()
+    })
+
+    it("does not step the regular count below synced progress", async () => {
+      await renderPage()
+      await screen.findByTestId("current-event")
+      expect(count("current-event", "Standard")).toHaveTextContent("2/5")
+      expect(
+        current().getByRole("button", {
+          name: "Decrease Standard progress",
         })
       ).toBeDisabled()
     })
@@ -502,16 +533,15 @@ describe("CampaignEventsPage", () => {
       expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
       await increaseStandard(user)
       expect(screen.getByTestId("unsaved-changes-bar")).toBeInTheDocument()
-      // Back to the synced value: still an override (manual 2), so still unsaved.
+      // Back to the synced value: synced progress wins there, so the override is cleared.
       await decreaseStandard(user)
-      expect(screen.getByTestId("unsaved-changes-bar")).toBeInTheDocument()
-      await user.click(
-        within(screen.getByTestId("current-event-track-Standard")).getByRole(
+      expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
+      expect(
+        within(screen.getByTestId("current-event-track-Standard")).queryByRole(
           "button",
           { name: "Reset to synced" }
         )
-      )
-      expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
+      ).toBeNull()
       expect(screen.queryByRole("button", { name: "Save" })).toBeNull()
     })
 
