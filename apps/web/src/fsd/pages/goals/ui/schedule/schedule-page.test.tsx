@@ -313,7 +313,12 @@ describe("Schedule page", () => {
           screen.getByTestId(`plan-day-${day}-energy-bar`)
         expect(bar(1)).toHaveStyle({ width: "100%" })
         expect(bar(1)).toHaveClass("bg-success-foreground")
-        expect(bar(2).style.width).toBe(`${(700 / 738) * 100}%`)
+        // Browsers (and jsdom 31+) round the serialized percentage, so compare the number.
+        expect(bar(2).style.width).toMatch(/%$/)
+        expect(Number.parseFloat(bar(2).style.width)).toBeCloseTo(
+          (700 / 738) * 100,
+          3
+        )
         expect(bar(2)).toHaveClass("bg-amber-500")
         expect(bar(3)).toHaveClass("bg-amber-500")
       } finally {
