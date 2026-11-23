@@ -181,7 +181,7 @@ On a phone the editor SHALL be a bottom sheet with a header (name, Name and note
 
 - **GIVEN** a viewport at or above 768px
 - **WHEN** the editor opens and the player scrolls the picker
-- **THEN** it is a centered dialog, the lineup band stays in view, and the picker's Filters button opens its filters inline, in a column beside the units, so the units stay in view
+- **THEN** it is a centered dialog, the lineup band stays in view, and the picker's Filters button opens its filters inline, in a column after the units, so the units stay in view
 
 #### Scenario: On a phone
 

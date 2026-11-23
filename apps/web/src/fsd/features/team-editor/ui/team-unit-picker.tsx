@@ -231,7 +231,7 @@ export function TeamUnitPicker({
           {t("picker.noRoster")}
         </p>
       )}
-      {/* Open filters sit above the units on a narrow editor and beside them on a wide one. */}
+      {/* Open filters sit above the units on a narrow editor and after them on a wide one. */}
       <div className="flex min-h-0 flex-1 flex-col gap-4 @3xl/editor:flex-row">
         <TeamPickerFiltersPanel
           filters={filters}
