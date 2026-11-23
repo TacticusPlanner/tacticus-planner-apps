@@ -1,5 +1,7 @@
 import { ArrowDown } from "lucide-react"
+import { useId } from "react"
 import type { ReactNode } from "react"
+import { useTranslation } from "react-i18next"
 
 import { objectiveDetailId } from "./objective-detail-id"
 
@@ -38,7 +40,9 @@ function scrollToDetail(id: string) {
 
 /**
  * The suggestions under one objective: one row each, with an arrow. A row scrolls the page to its
- * details in the mission's suggestions section; `onOpen` reports each row tapped.
+ * details in the mission's suggestions section; `onOpen` reports each row tapped. The rows sit in a
+ * labelled, indented block with a muted fill, so they read as help for the objective above rather
+ * than another objective.
  */
 export function ObjectiveSuggestionRows({
   suggestions: { items, note },
@@ -52,31 +56,44 @@ export function ObjectiveSuggestionRows({
   testId: string
   onOpen?: (item: ObjectiveSuggestion) => void
 }) {
+  const { t } = useTranslation("hre")
+  const labelId = useId()
   if (items.length === 0 && !note) return null
   return (
-    <div className="space-y-1.5" data-testid={`${testId}-suggestions`}>
+    <div
+      className="ms-2 mt-2 space-y-1.5 border-s-2 ps-3"
+      data-testid={`${testId}-suggestions`}
+    >
       {items.length > 0 ? (
-        <ul className="divide-y rounded-lg border">
-          {items.map((item) => (
-            <li key={item.id} data-testid={`${testId}-suggestion-${item.id}`}>
-              <button
-                className="flex min-h-12 w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:min-h-8"
-                data-testid={`${testId}-suggestion-${item.id}-trigger`}
-                onClick={() => {
-                  scrollToDetail(objectiveDetailId(index, item.id))
-                  onOpen?.(item)
-                }}
-                type="button"
-              >
-                {item.summary}
-                <ArrowDown
-                  aria-hidden="true"
-                  className="size-4 shrink-0 text-muted-foreground"
-                />
-              </button>
-            </li>
-          ))}
-        </ul>
+        <>
+          <p className="text-xs font-medium text-muted-foreground" id={labelId}>
+            {t("tracker.detailsTitle")}
+          </p>
+          <ul
+            aria-labelledby={labelId}
+            className="divide-y divide-background rounded-lg bg-muted/50"
+          >
+            {items.map((item) => (
+              <li key={item.id} data-testid={`${testId}-suggestion-${item.id}`}>
+                <button
+                  className="flex min-h-12 w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:min-h-8"
+                  data-testid={`${testId}-suggestion-${item.id}-trigger`}
+                  onClick={() => {
+                    scrollToDetail(objectiveDetailId(index, item.id))
+                    onOpen?.(item)
+                  }}
+                  type="button"
+                >
+                  {item.summary}
+                  <ArrowDown
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-muted-foreground"
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
       ) : null}
       {note ? (
         <p

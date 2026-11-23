@@ -499,6 +499,14 @@ describe("HRE tab", () => {
     expect(
       screen.getByTestId("hre-objective-0-suggestion-battles")
     ).toBeInTheDocument()
+    // The rows are a labelled list inside the objective, so they don't read as another objective.
+    for (const index of [0, 1]) {
+      expect(
+        within(
+          screen.getByTestId(`hre-objective-${index}-suggestions`)
+        ).getByRole("list", { name: "tracker.detailsTitle" })
+      ).toBeInTheDocument()
+    }
     expect(screen.getByTestId("hre-raids-summary")).toHaveTextContent(
       "raids.raidCount|count=37"
     )
