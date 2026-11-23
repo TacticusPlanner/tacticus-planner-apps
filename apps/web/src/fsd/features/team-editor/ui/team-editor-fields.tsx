@@ -100,7 +100,7 @@ export function TeamNameField({
   const id = useId()
   const hintId = useId()
   return (
-    <div className={cn("flex min-w-0 flex-col gap-1", className)}>
+    <div className={cn("flex min-w-0 flex-col gap-1.5", className)}>
       <Label htmlFor={id}>{t("editor.name")}</Label>
       <Input
         aria-describedby={hintId}
@@ -326,22 +326,22 @@ export function TeamModesField({
 export function TeamRarityCapField({
   rarityCap,
   onRarityCapChange,
+  className,
 }: {
   rarityCap: Rarity | null
   onRarityCapChange: (rarity: Rarity | null) => void
+  className?: string
 }) {
   const { t } = useTranslation(["teams", "progression"])
-  const labelId = useId()
+  const id = useId()
   const {
     triggerRef: capTrigger,
     container: capContainer,
     onOpenChange: capOpenChange,
   } = useOverlayPortal()
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium" id={labelId}>
-        {t("rarityCap.label")}
-      </span>
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <Label htmlFor={id}>{t("rarityCap.label")}</Label>
       <Select
         onOpenChange={capOpenChange}
         onValueChange={(value) =>
@@ -350,9 +350,9 @@ export function TeamRarityCapField({
         value={rarityCap ?? NO_CAP}
       >
         <SelectTrigger
-          aria-labelledby={labelId}
           className="w-40"
           data-testid="team-rarity-cap"
+          id={id}
           ref={capTrigger}
         >
           <SelectValue />

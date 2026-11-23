@@ -1,4 +1,4 @@
-import { useId, useMemo } from "react"
+import { useId, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rarity } from "@workspace/game-domain"
 import {
@@ -12,7 +12,10 @@ import { FILTER_CHIP_CLASS_NAME, SearchField } from "@/shared/ui"
 
 import { filterPickerUnits, pickerFilterOptions } from "../model/unit-picker"
 import type { PickerFilters, PickerUnit } from "../model/unit-picker"
-import { TeamPickerFilters } from "./team-picker-filters"
+import {
+  TeamPickerFiltersButton,
+  TeamPickerFiltersPanel,
+} from "./team-picker-filters"
 import { UnitTile } from "./unit-tile"
 import { useRovingGrid } from "./use-roving-grid"
 
@@ -154,6 +157,8 @@ export function TeamUnitPicker({
 }) {
   const { t, i18n } = useTranslation("teams")
   const options = useMemo(() => pickerFilterOptions(units), [units])
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const filtersPanelId = useId()
   const shown = useMemo(
     () =>
       filterPickerUnits(units, filters, {
@@ -206,10 +211,11 @@ export function TeamUnitPicker({
           onChange={(search) => onFiltersChange({ search })}
           value={filters.search}
         />
-        <TeamPickerFilters
+        <TeamPickerFiltersButton
           filters={filters}
-          onChange={onFiltersChange}
-          options={options}
+          onOpenChange={setFiltersOpen}
+          open={filtersOpen}
+          panelId={filtersPanelId}
         />
         <OwnedOnlyChip
           on={filters.ownedOnly}
@@ -225,52 +231,62 @@ export function TeamUnitPicker({
           {t("picker.noRoster")}
         </p>
       )}
-      {listed === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("picker.empty")}</p>
-      ) : (
-        <div
-          className={cn(
-            "flex min-h-0 flex-1 flex-col gap-4",
-            both && "@3xl/editor:flex-row"
-          )}
-        >
-          {showCharacters && characters.length > 0 ? (
-            <div className="@container flex min-h-0 min-w-0 flex-1 flex-col gap-1.5 @3xl/editor:overflow-y-auto @3xl/editor:p-1">
-              {both ? (
-                <h4 className="text-sm font-medium">
-                  {t("picker.characters")}
-                </h4>
-              ) : null}
-              {grid(
-                characters,
-                "team-picker-characters",
-                "grid-cols-3 @md:grid-cols-4 @xl:grid-cols-5 @3xl:grid-cols-6 @5xl:grid-cols-8"
-              )}
-            </div>
-          ) : null}
-          {showMows && mowUnits.length > 0 ? (
-            <div
-              className={cn(
-                "@container flex min-h-0 min-w-0 flex-col gap-1.5",
-                both
-                  ? "@3xl/editor:w-64 @3xl/editor:shrink-0 @3xl/editor:overflow-y-auto @3xl/editor:border-l @3xl/editor:p-1 @3xl/editor:pl-4"
-                  : "flex-1"
-              )}
-            >
-              {both ? (
-                <h4 className="text-sm font-medium">{t("picker.mows")}</h4>
-              ) : null}
-              {grid(
-                mowUnits,
-                "team-picker-mows",
-                both
-                  ? "grid-cols-3 @3xl/editor:grid-cols-2"
-                  : "grid-cols-3 @md:grid-cols-4"
-              )}
-            </div>
-          ) : null}
-        </div>
-      )}
+      {/* Open filters sit above the units on a narrow editor and beside them on a wide one. */}
+      <div className="flex min-h-0 flex-1 flex-col gap-4 @3xl/editor:flex-row">
+        <TeamPickerFiltersPanel
+          filters={filters}
+          onChange={onFiltersChange}
+          open={filtersOpen}
+          options={options}
+          panelId={filtersPanelId}
+        />
+        {listed === 0 ? (
+          <p className="text-sm text-muted-foreground">{t("picker.empty")}</p>
+        ) : (
+          <div
+            className={cn(
+              "flex min-h-0 min-w-0 flex-1 flex-col gap-4",
+              both && "@3xl/editor:flex-row"
+            )}
+          >
+            {showCharacters && characters.length > 0 ? (
+              <div className="@container flex min-h-0 min-w-0 flex-1 flex-col gap-1.5 @3xl/editor:overflow-y-auto @3xl/editor:p-1">
+                {both ? (
+                  <h4 className="text-sm font-medium">
+                    {t("picker.characters")}
+                  </h4>
+                ) : null}
+                {grid(
+                  characters,
+                  "team-picker-characters",
+                  "grid-cols-3 @md:grid-cols-4 @xl:grid-cols-5 @3xl:grid-cols-6 @5xl:grid-cols-8"
+                )}
+              </div>
+            ) : null}
+            {showMows && mowUnits.length > 0 ? (
+              <div
+                className={cn(
+                  "@container flex min-h-0 min-w-0 flex-col gap-1.5",
+                  both
+                    ? "@3xl/editor:w-64 @3xl/editor:shrink-0 @3xl/editor:overflow-y-auto @3xl/editor:border-l @3xl/editor:p-1 @3xl/editor:pl-4"
+                    : "flex-1"
+                )}
+              >
+                {both ? (
+                  <h4 className="text-sm font-medium">{t("picker.mows")}</h4>
+                ) : null}
+                {grid(
+                  mowUnits,
+                  "team-picker-mows",
+                  both
+                    ? "grid-cols-3 @3xl/editor:grid-cols-2"
+                    : "grid-cols-3 @md:grid-cols-4"
+                )}
+              </div>
+            ) : null}
+          </div>
+        )}
+      </div>
     </section>
   )
 }

@@ -1,4 +1,3 @@
-import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { X } from "lucide-react"
 import {
@@ -293,23 +292,50 @@ function FilterFields({
   )
 }
 
+/** The "Filters" button: shows or hides the picker's filters panel, with the active count. */
+export function TeamPickerFiltersButton({
+  filters,
+  open,
+  onOpenChange,
+  panelId,
+}: {
+  filters: PickerFilters
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  panelId: string
+}) {
+  return (
+    <FiltersButton
+      aria-controls={panelId}
+      aria-expanded={open}
+      count={activeFilterCount(filters)}
+      onClick={() => onOpenChange(!open)}
+      testId="team-picker-filters"
+    />
+  )
+}
+
 /**
  * The picker's filters (ui-style-guide rule 3). The editor is already a dialog or a sheet and no
- * overlay opens another (rule 8), so the "Filters" button opens the fields inline, on their own
- * row under the search, with "Clear filters" at the top. Changes apply as they are made.
+ * overlay opens another (rule 8), so the fields sit inline: above the units on a narrow editor,
+ * and in a column beside them on a wide one, scrolling on its own so the units stay in view.
+ * "Clear filters" is at the top. Changes apply as they are made.
  */
-export function TeamPickerFilters({
+export function TeamPickerFiltersPanel({
   filters,
   options,
   onChange,
+  open,
+  panelId,
 }: {
   filters: PickerFilters
   options: ReturnType<typeof pickerFilterOptions>
   onChange: (patch: Partial<PickerFilters>) => void
+  /** Closed, the panel renders nothing. */
+  open: boolean
+  panelId: string
 }) {
   const { t } = useTranslation("common")
-  const [open, setOpen] = useState(false)
-  const panelId = useId()
   const count = activeFilterCount(filters)
   const clear = () =>
     onChange({
@@ -318,39 +344,29 @@ export function TeamPickerFilters({
       ownedOnly: filters.ownedOnly,
     })
 
+  if (!open) return null
   return (
-    <>
-      <FiltersButton
-        aria-controls={panelId}
-        aria-expanded={open}
-        count={count}
-        onClick={() => setOpen((current) => !current)}
-        testId="team-picker-filters"
+    <div
+      className="flex flex-col gap-3 rounded-lg border p-3 @3xl/editor:w-64 @3xl/editor:shrink-0 @3xl/editor:overflow-y-auto"
+      data-testid="team-picker-filters-panel"
+      id={panelId}
+    >
+      <Button
+        className="self-start"
+        disabled={count === 0}
+        onClick={clear}
+        type="button"
+        variant="ghost"
+      >
+        <X data-icon="inline-start" />
+        {t("filtersControl.clear")}
+      </Button>
+      <FilterFields
+        className="grid-cols-2 @xl/editor:grid-cols-3 @3xl/editor:grid-cols-1"
+        filters={filters}
+        onChange={onChange}
+        options={options}
       />
-      {open ? (
-        <div
-          className="order-last flex basis-full flex-col gap-3 rounded-lg border p-3"
-          data-testid="team-picker-filters-panel"
-          id={panelId}
-        >
-          <Button
-            className="self-start"
-            disabled={count === 0}
-            onClick={clear}
-            type="button"
-            variant="ghost"
-          >
-            <X data-icon="inline-start" />
-            {t("filtersControl.clear")}
-          </Button>
-          <FilterFields
-            className="grid-cols-2 @xl/editor:grid-cols-3 @3xl/editor:grid-cols-4 @5xl/editor:grid-cols-6"
-            filters={filters}
-            onChange={onChange}
-            options={options}
-          />
-        </div>
-      ) : null}
-    </>
+    </div>
   )
 }

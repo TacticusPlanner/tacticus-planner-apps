@@ -337,15 +337,22 @@ function EditorBody({
 
   return (
     <div className="@container/editor flex min-h-0 flex-1 flex-col gap-4">
-      <div className="flex flex-wrap items-start gap-x-4 gap-y-3">
+      {/* One grid for the three, so their labels, controls and hints share rows. */}
+      <div className="grid grid-cols-[minmax(12rem,24rem)_10rem_auto] grid-rows-[auto_auto_auto] justify-start gap-x-4 gap-y-1.5">
         <TeamNameField
-          className="max-w-sm min-w-48 flex-1"
+          className="row-span-3 grid grid-rows-subgrid"
           name={draft.name}
           nameError={nameError}
           onNameChange={(name) => setDraft((current) => ({ ...current, name }))}
         />
-        {cap}
-        <div className="pt-6">
+        <TeamRarityCapField
+          className="row-span-3 grid grid-rows-subgrid"
+          onRarityCapChange={(value) =>
+            setDraft((current) => ({ ...current, rarityCap: value }))
+          }
+          rarityCap={draft.rarityCap}
+        />
+        <div className="col-start-3 row-start-2">
           <TeamNotesButton
             controls={notesId}
             notes={draft.notes}
