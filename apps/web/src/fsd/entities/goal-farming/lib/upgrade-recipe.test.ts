@@ -52,7 +52,7 @@ describe("rankUpUpgradeIds", () => {
     expect(rankUpUpgradeIds(unit, "Bronze2", "Bronze1", false)).toEqual([])
   })
 
-  it("selects point-five, applied, and top-row-count targets", () => {
+  it("selects point-five and applied targets", () => {
     expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", true)).toEqual(
       ids("U1", "U3", "U5")
     )
@@ -61,9 +61,6 @@ describe("rankUpUpgradeIds", () => {
     )
     expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", false, 4)).toEqual(
       ids("U1", "U3", "U5", "U2")
-    )
-    expect(rankUpUpgradeIds(unit, "Bronze1", "Bronze1", false, 0, 2)).toEqual(
-      ids("U1", "U3")
     )
   })
 })

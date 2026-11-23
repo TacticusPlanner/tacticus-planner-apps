@@ -134,22 +134,22 @@ export function TargetRangeLine({
   )
 }
 
+/** "Diamond II (4/6)", plus "· Level 48" when the XP level the target needs is known. */
 export function AdditionalTargetLabel({
   rank,
   value,
+  level,
 }: {
   rank: Rank
   value: RankAdditionalTarget
+  level?: number
 }) {
   const { t } = useTranslation()
   if (value === "None") {
     return <>{t("goals.create.rank.additionalTarget.none")}</>
   }
 
-  let count = rowCount(value)
-  if (value === "TopRow1") count = 1
-  if (value === "TopRow2") count = 2
-  if (value === "TopRow") count = 3
+  const count = rowCount(value)
 
   return (
     <span className="inline-flex items-center gap-1">
@@ -160,6 +160,12 @@ export function AdditionalTargetLabel({
           <span>({count}/6)</span>
         </>
       ) : null}
+      {level === undefined ? null : (
+        <span className="text-muted-foreground">
+          {"· "}
+          {t("goals.create.rank.additionalTarget.level", { level })}
+        </span>
+      )}
     </span>
   )
 }

@@ -1493,8 +1493,7 @@
         "additionalTarget": {
           "label": "Zusätzliches Ziel",
           "none": "Keines",
-          "topRow": "Oberste Reihe (Rang und ein halber)",
-          "row": "{{count}} von {{total}} — Stufe {{level}}"
+          "level": "Stufe {{level}}"
         },
         "noResources": "Für diesen Bereich müssen keine Upgrades mehr gefarmt werden."
       },

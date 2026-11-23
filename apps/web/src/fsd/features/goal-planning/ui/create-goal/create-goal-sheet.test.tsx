@@ -1324,14 +1324,20 @@ describe("CreateGoalSheet", () => {
         name: "None",
       })
     ).toBeInTheDocument()
-    for (const count of [1, 2, 3]) {
+    for (const count of [1, 2, 3, 4, 5]) {
       expect(
         within(listbox).getByRole("option", {
           name: new RegExp(String.raw`Stone II\s*\(${count}\/6\)`),
         })
       ).toBeInTheDocument()
     }
-    expect(within(listbox).getAllByRole("option")).toHaveLength(4)
+    expect(within(listbox).getAllByRole("option")).toHaveLength(6)
+    // Each partial target names the XP level it needs: Stone II's 5th slot needs level 4.
+    expect(
+      within(listbox).getByRole("option", {
+        name: /Stone II\s*\(5\/6\)\s*· Level 4/,
+      })
+    ).toBeInTheDocument()
 
     fireEvent.click(
       within(listbox).getByRole("option", {

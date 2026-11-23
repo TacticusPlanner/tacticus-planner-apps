@@ -23,16 +23,15 @@ const TOP_ROW_SLOT_INDICES = [0, 2, 4]
 
 /**
  * The upgrade slots a Rank range needs, in order: every slot of each rank from `rankStart` up to but
- * excluding `rankEnd`, then the end rank's partial target — the first `topRowCount` top-row slots, the
- * first `appliedUpgrades` slots in book-reading order, or the whole top row for point-five.
+ * excluding `rankEnd`, then the end rank's partial target — the first `appliedUpgrades` slots in
+ * book-reading order, or the whole top row for point-five.
  */
 export function rankUpSlotOccurrences(
   character: FarmingCharacter,
   rankStart: Rank,
   rankEnd: Rank,
   pointFive: boolean,
-  appliedUpgrades = 0,
-  topRowCount = 0
+  appliedUpgrades = 0
 ): RankSlotOccurrence[] {
   if (rankIndex(rankStart) > rankIndex(rankEnd)) return []
 
@@ -53,8 +52,7 @@ export function rankUpSlotOccurrences(
       Array.from({ length: byRank.get(rank)?.length ?? 0 }, (_, slot) => slot)
     )
   }
-  if (topRowCount > 0) push(rankEnd, TOP_ROW_SLOT_INDICES.slice(0, topRowCount))
-  else if (appliedUpgrades > 0)
+  if (appliedUpgrades > 0)
     push(rankEnd, BOOK_ORDER_SLOT_INDICES.slice(0, appliedUpgrades))
   else if (pointFive) push(rankEnd, TOP_ROW_SLOT_INDICES)
   return occurrences

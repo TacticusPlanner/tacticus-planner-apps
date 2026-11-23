@@ -1493,8 +1493,7 @@
         "additionalTarget": {
           "label": "Additional target",
           "none": "None",
-          "topRow": "Top row (rank and a half)",
-          "row": "{{count}} of {{total}} — Level {{level}}"
+          "level": "Level {{level}}"
         },
         "noResources": "No upgrades are left to farm for this range."
       },

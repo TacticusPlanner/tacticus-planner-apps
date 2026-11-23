@@ -102,7 +102,7 @@ describe("goalTargetDraftFromDetail", () => {
     expect(draft).toEqual({
       kind: "Rank",
       end: Rank.Gold1,
-      additional: "TopRow",
+      additional: "Row3",
     })
   })
 
@@ -169,13 +169,26 @@ describe("goalTargetEditFromDraft", () => {
       goalTargetEditFromDraft({
         kind: "Rank",
         end: Rank.Gold1,
-        additional: "TopRow",
+        additional: "Row3",
       })
     ).toEqual({
       rank: {
         end: rankIndex(Rank.Gold1),
-        endPointFive: true,
-        endAppliedUpgrades: 0,
+        endPointFive: false,
+        endAppliedUpgrades: 3,
+      },
+    })
+    expect(
+      goalTargetEditFromDraft({
+        kind: "Rank",
+        end: Rank.Diamond2,
+        additional: "Row4",
+      })
+    ).toEqual({
+      rank: {
+        end: rankIndex(Rank.Diamond2),
+        endPointFive: false,
+        endAppliedUpgrades: 4,
       },
     })
     expect(
@@ -243,7 +256,7 @@ describe("getGoalTargetIssue", () => {
       getGoalTargetIssue(detail, {
         kind: "Rank",
         end: Rank.Silver1,
-        additional: "TopRow",
+        additional: "Row3",
       })
     ).toBeNull()
   })

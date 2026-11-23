@@ -1493,8 +1493,7 @@
         "additionalTarget": {
           "label": "Objetivo adicional",
           "none": "Ninguno",
-          "topRow": "Fila superior (rango y medio)",
-          "row": "{{count}} de {{total}} — Nivel {{level}}"
+          "level": "Nivel {{level}}"
         },
         "noResources": "No quedan mejoras por conseguir en este rango."
       },

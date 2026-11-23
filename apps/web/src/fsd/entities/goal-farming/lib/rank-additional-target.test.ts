@@ -14,14 +14,10 @@ import {
 import { levelRules } from "@/test/fixtures/level-rules"
 
 describe("additionalTargetOptions", () => {
-  it("offers None and 1-3 top-row slots below Diamond3", () => {
-    const topRowOptions = ["None", "TopRow1", "TopRow2", "TopRow"]
-    expect(additionalTargetOptions("Stone1")).toEqual(topRowOptions)
-    expect(additionalTargetOptions("Diamond2")).toEqual(topRowOptions)
-  })
-
-  it("offers None plus 1-5 applied slots from Diamond3 up to the maximum rank", () => {
+  it("offers None plus 1-5 applied slots for every rank below the maximum", () => {
     const numbered = ["None", "Row1", "Row2", "Row3", "Row4", "Row5"]
+    expect(additionalTargetOptions("Stone1")).toEqual(numbered)
+    expect(additionalTargetOptions("Diamond2")).toEqual(numbered)
     expect(additionalTargetOptions("Diamond3")).toEqual(numbered)
     expect(additionalTargetOptions("Adamantine1")).toEqual(numbered)
   })
@@ -36,78 +32,51 @@ describe("additionalTargetSelection", () => {
     expect(additionalTargetSelection("None")).toEqual({
       pointFive: false,
       appliedUpgrades: 0,
-      topRowCount: 0,
     })
   })
 
-  it("resolves TopRow1/TopRow2 to a matching appliedUpgrades count and topRowCount", () => {
-    expect(additionalTargetSelection("TopRow1")).toEqual({
-      pointFive: false,
-      appliedUpgrades: 1,
-      topRowCount: 1,
-    })
-    expect(additionalTargetSelection("TopRow2")).toEqual({
-      pointFive: false,
-      appliedUpgrades: 2,
-      topRowCount: 2,
-    })
-  })
-
-  it("resolves TopRow to pointFive, not a topRowCount/appliedUpgrades count", () => {
-    expect(additionalTargetSelection("TopRow")).toEqual({
-      pointFive: true,
-      appliedUpgrades: 0,
-      topRowCount: 0,
-    })
-  })
-
-  it("resolves RowN to a matching appliedUpgrades count with no topRowCount", () => {
+  it("resolves RowN to a matching appliedUpgrades count, never point-five", () => {
     expect(additionalTargetSelection("Row3")).toEqual({
       pointFive: false,
       appliedUpgrades: 3,
-      topRowCount: 0,
+    })
+    expect(additionalTargetSelection("Row5")).toEqual({
+      pointFive: false,
+      appliedUpgrades: 5,
     })
   })
 })
 
 describe("additionalTargetFromWire", () => {
-  it("reconstructs None/TopRow1/TopRow2/TopRow for a pre-Diamond3 rank", () => {
-    expect(
-      additionalTargetFromWire("Stone1", {
-        endPointFive: false,
-        endAppliedUpgrades: 0,
-      })
-    ).toBe("None")
-    expect(
-      additionalTargetFromWire("Stone1", {
-        endPointFive: false,
-        endAppliedUpgrades: 1,
-      })
-    ).toBe("TopRow1")
-    expect(
-      additionalTargetFromWire("Stone1", {
-        endPointFive: false,
-        endAppliedUpgrades: 2,
-      })
-    ).toBe("TopRow2")
-    expect(
-      additionalTargetFromWire("Stone1", {
-        endPointFive: true,
-        endAppliedUpgrades: 0,
-      })
-    ).toBe("TopRow")
+  it("reconstructs None and RowN below Diamond3", () => {
+    for (const [applied, expected] of [
+      [0, "None"],
+      [1, "Row1"],
+      [2, "Row2"],
+      [4, "Row4"],
+      [5, "Row5"],
+    ] as const) {
+      expect(
+        additionalTargetFromWire("Diamond2", {
+          endPointFive: false,
+          endAppliedUpgrades: applied,
+        })
+      ).toBe(expected)
+    }
   })
 
-  it("reads a Diamond3 goal saved with point-five as 3 of 6", () => {
-    expect(
-      additionalTargetFromWire("Diamond3", {
-        endPointFive: true,
-        endAppliedUpgrades: 0,
-      })
-    ).toBe("Row3")
+  it("reads a goal saved with point-five as 3 of 6 below Adamantine1", () => {
+    for (const rank of ["Stone1", "Diamond2", "Diamond3"] as const) {
+      expect(
+        additionalTargetFromWire(rank, {
+          endPointFive: true,
+          endAppliedUpgrades: 0,
+        })
+      ).toBe("Row3")
+    }
   })
 
-  it("reads a Diamond3 goal saved with 1 or 2 top-row slots as 1 or 2 of 6", () => {
+  it("reads a Diamond3 goal saved with 1, 2 or 4 slots as that many of 6", () => {
     for (const [applied, expected] of [
       [1, "Row1"],
       [2, "Row2"],
@@ -122,16 +91,7 @@ describe("additionalTargetFromWire", () => {
     }
   })
 
-  it("keeps the top-row reading below Diamond3", () => {
-    expect(
-      additionalTargetFromWire("Diamond2", {
-        endPointFive: true,
-        endAppliedUpgrades: 0,
-      })
-    ).toBe("TopRow")
-  })
-
-  it("reconstructs RowN for an Adamantine rank", () => {
+  it("reconstructs RowN for an Adamantine rank and ignores point-five there", () => {
     expect(
       additionalTargetFromWire("Adamantine1", {
         endPointFive: false,
@@ -140,7 +100,7 @@ describe("additionalTargetFromWire", () => {
     ).toBe("Row4")
     expect(
       additionalTargetFromWire("Adamantine1", {
-        endPointFive: false,
+        endPointFive: true,
         endAppliedUpgrades: 0,
       })
     ).toBe("None")
@@ -152,18 +112,21 @@ describe("rowCount", () => {
     expect(rowCount("Row1")).toBe(1)
     expect(rowCount("Row5")).toBe(5)
     expect(rowCount("None")).toBeNull()
-    expect(rowCount("TopRow")).toBeNull()
-    expect(rowCount("TopRow1")).toBeNull()
   })
 })
 
 describe("rowLevel", () => {
-  it("reads the level of the count-th cheapest upgrade slot from the game data", () => {
+  it("reads the level of the first count slots in book-reading order from the game data", () => {
     expect(rowLevel("Adamantine1", 1, levelRules)).toBe(55)
     expect(rowLevel("Adamantine1", 5, levelRules)).toBe(59)
     expect(rowLevel("Diamond3", 1, levelRules)).toBe(50)
     expect(rowLevel("Diamond3", 5, levelRules)).toBe(54)
     expect(rowLevel("Stone1", 2, levelRules)).toBe(1)
+  })
+
+  it("covers the whole top row, not just the cheapest slots", () => {
+    // Stone1's top-right slot needs level 2 while its bottom-left and bottom-middle need level 1.
+    expect(rowLevel("Stone1", 3, levelRules)).toBe(2)
   })
 })
 
@@ -173,30 +136,24 @@ describe("requiredLevelForRankTarget", () => {
     expect(requiredLevelForRankTarget("Gold1", "None", levelRules)).toBe(35)
   })
 
-  it("needs no extra levels for a rank and a half below Diamond3", () => {
-    expect(requiredLevelForRankTarget("Silver1", "TopRow", levelRules)).toBe(26)
-    expect(requiredLevelForRankTarget("Gold1", "TopRow", levelRules)).toBe(35)
-    expect(requiredLevelForRankTarget("Gold1", "TopRow1", levelRules)).toBe(35)
-    expect(requiredLevelForRankTarget("Gold1", "TopRow2", levelRules)).toBe(35)
-    expect(requiredLevelForRankTarget("Diamond2", "TopRow", levelRules)).toBe(
-      47
-    )
+  it("needs no extra levels for the top row below Diamond3", () => {
+    expect(requiredLevelForRankTarget("Silver1", "Row3", levelRules)).toBe(26)
+    expect(requiredLevelForRankTarget("Gold1", "Row1", levelRules)).toBe(35)
+    expect(requiredLevelForRankTarget("Gold1", "Row2", levelRules)).toBe(35)
+    expect(requiredLevelForRankTarget("Gold1", "Row3", levelRules)).toBe(35)
+    expect(requiredLevelForRankTarget("Diamond2", "Row3", levelRules)).toBe(47)
   })
 
-  it("needs one level per top-row slot from Diamond3 on", () => {
-    expect(requiredLevelForRankTarget("Diamond3", "TopRow1", levelRules)).toBe(
-      50
-    )
-    expect(requiredLevelForRankTarget("Diamond3", "TopRow2", levelRules)).toBe(
-      51
-    )
-    expect(requiredLevelForRankTarget("Diamond3", "TopRow", levelRules)).toBe(
-      52
-    )
+  it("needs one level per bottom-row slot below Diamond3 (Diamond2 4/6 at 48, 5/6 at 49)", () => {
+    expect(requiredLevelForRankTarget("Diamond2", "Row4", levelRules)).toBe(48)
+    expect(requiredLevelForRankTarget("Diamond2", "Row5", levelRules)).toBe(49)
+    expect(requiredLevelForRankTarget("Gold1", "Row4", levelRules)).toBe(36)
+    expect(requiredLevelForRankTarget("Gold1", "Row5", levelRules)).toBe(37)
   })
 
   it("needs one level per numbered slot at Diamond3", () => {
     expect(requiredLevelForRankTarget("Diamond3", "Row1", levelRules)).toBe(50)
+    expect(requiredLevelForRankTarget("Diamond3", "Row2", levelRules)).toBe(51)
     expect(requiredLevelForRankTarget("Diamond3", "Row3", levelRules)).toBe(52)
     expect(requiredLevelForRankTarget("Diamond3", "Row4", levelRules)).toBe(53)
     expect(requiredLevelForRankTarget("Diamond3", "Row5", levelRules)).toBe(54)
@@ -216,10 +173,9 @@ describe("requiredLevelForRankTarget", () => {
 })
 
 describe("additionalTargetSlots", () => {
-  it("names the top-row slots for TopRow targets and the first N in book order for RowN", () => {
+  it("names the first N slots in book-reading order", () => {
     expect(additionalTargetSlots("None")).toEqual([])
-    expect(additionalTargetSlots("TopRow1")).toEqual([0])
-    expect(additionalTargetSlots("TopRow")).toEqual([0, 2, 4])
+    expect(additionalTargetSlots("Row1")).toEqual([0])
     expect(additionalTargetSlots("Row3")).toEqual([0, 2, 4])
     expect(additionalTargetSlots("Row4")).toEqual([0, 2, 4, 1])
     expect(additionalTargetSlots("Row5")).toEqual([0, 2, 4, 1, 3])
@@ -230,16 +186,26 @@ describe("rankTargetReached", () => {
   const current = { rank: "Diamond3" as const, appliedSlots: [0, 2] }
 
   it("compares different ranks by ladder position", () => {
-    expect(rankTargetReached(current, "Diamond2", "TopRow")).toBe(true)
+    expect(rankTargetReached(current, "Diamond2", "Row3")).toBe(true)
     expect(rankTargetReached(current, "Adamantine1", "None")).toBe(false)
   })
 
   it("is reached on the same rank only once every named slot is applied", () => {
     expect(rankTargetReached(current, "Diamond3", "None")).toBe(true)
-    expect(rankTargetReached(current, "Diamond3", "TopRow2")).toBe(true)
-    expect(rankTargetReached(current, "Diamond3", "TopRow")).toBe(false)
     expect(rankTargetReached(current, "Diamond3", "Row2")).toBe(true)
     expect(rankTargetReached(current, "Diamond3", "Row3")).toBe(false)
+  })
+
+  it("needs the bottom-row slot for a Diamond2 4/6 target", () => {
+    const diamond2 = { rank: "Diamond2" as const, appliedSlots: [0, 2, 4] }
+    expect(rankTargetReached(diamond2, "Diamond2", "Row4")).toBe(false)
+    expect(
+      rankTargetReached(
+        { ...diamond2, appliedSlots: [0, 2, 4, 1] },
+        "Diamond2",
+        "Row4"
+      )
+    ).toBe(true)
   })
 })
 

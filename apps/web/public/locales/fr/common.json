@@ -1493,8 +1493,7 @@
         "additionalTarget": {
           "label": "Cible supplémentaire",
           "none": "Aucune",
-          "topRow": "Rangée supérieure (rang et demi)",
-          "row": "{{count}} sur {{total}} — Niveau {{level}}"
+          "level": "Niveau {{level}}"
         },
         "noResources": "Il ne reste aucune amélioration à farmer pour cette plage."
       },
