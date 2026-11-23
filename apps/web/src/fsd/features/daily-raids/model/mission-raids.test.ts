@@ -327,51 +327,6 @@ describe("planMissionRaids stops favouring a covered goal resource", () => {
   })
 })
 
-describe("planMissionRaids with a low-rate goal node", () => {
-  it("ranks it after the goal nodes and before the nodes that feed no goal", () => {
-    // Lightning victories: event nodes only. 25B drops a needed Epic at a low rate; X23 feeds no
-    // goal but has more enemy power.
-    const n19 = node("E19", 6, 10, {
-      isEvent: true,
-      drops: [["uncommon", 0.75]],
-    })
-    const b25 = node("E25B", 6, 10, { isEvent: true, drops: [["epic", 0.25]] })
-    const x23 = {
-      ...node("X23", 6, 10, { isEvent: true, drops: [["legendary", 0.14]] }),
-      enemyPower: 2_900_000,
-    }
-    const plan = planMissionRaids(
-      base({
-        battlesToGo: 13,
-        eventOnly: true,
-        battles: [...indomitus, { ...b25, enemyPower: 45_000 }, x23, n19],
-        goalNodesByBattle: new Map([
-          [id("E19"), { ...goal("uncommon"), need: 20 }],
-          [id("E25B"), { ...goal("epic", 2), need: 77, lowRate: true }],
-        ]),
-      })
-    )
-    expect(raidsOf(plan.rows)).toEqual({ E19: 10, E25B: 3 })
-  })
-
-  it("still ranks a full-rate goal node of a later goal first", () => {
-    const mirror = node("M10", 6, 10, { drops: [["epic", 0.25]] })
-    // S10 costs more energy per drop (30) than M10 (24), but M10 drops its Epic at a low rate.
-    const standard = node("S10", 6, 10, { drops: [["rare", 0.2]] })
-    const plan = planMissionRaids(
-      base({
-        battlesToGo: 5,
-        battles: [mirror, standard],
-        goalNodesByBattle: new Map([
-          [id("M10"), { ...goal("epic", 1), lowRate: true }],
-          [id("S10"), goal("rare", 2)],
-        ]),
-      })
-    )
-    expect(plan.rows.map((row) => row.battleId)).toEqual(["S10"])
-  })
-})
-
 describe("buildMissionGoalNodes", () => {
   const battle = (campaignGroupId: string, type: string): Battle => ({
     campaignGroupId: campaignGroupId as Battle["campaignGroupId"],
@@ -422,47 +377,14 @@ describe("buildMissionGoalNodes", () => {
       ).keys(),
     ].toSorted((a, b) => a.localeCompare(b))
 
-  const lowRateNodesFor = (
-    rarity: "Rare" | "Epic" | "Legendary",
-    farmingLocationIds?: string[]
-  ) =>
-    [
-      ...buildMissionGoalNodes(
-        [
-          {
-            goalId: "g1",
-            priority: 1,
-            needs: [{ id: "U" as never, count: 5 }],
-            farmingLocationIds,
-          },
-        ],
-        [],
-        new Map([["U" as never, upgrade("U")]]),
-        battlesById,
-        () => rarity
-      ),
-    ]
-      .filter(([, goalNode]) => goalNode.lowRate)
-      .map(([battleId]) => battleId)
-      .toSorted((a, b) => a.localeCompare(b))
-
   it("farms a Rare upgrade on any node", () => {
     expect(nodesFor("Rare")).toHaveLength(6)
   })
 
-  it("farms Epic and Legendary upgrades at a low rate on nodes that are not Elite", () => {
+  it("farms Epic and Legendary upgrades on Elite and Extremis nodes only", () => {
     for (const rarity of ["Epic", "Legendary"] as const) {
-      expect(lowRateNodesFor(rarity)).toEqual([
-        "eventStandard",
-        "mirror",
-        "standard",
-      ])
+      expect(nodesFor(rarity)).toEqual(["elite", "eliteMirror", "extremis"])
     }
-    expect(lowRateNodesFor("Rare")).toEqual([])
-  })
-
-  it("keeps a pinned location at its full rate", () => {
-    expect(lowRateNodesFor("Legendary", ["mirror"])).toEqual([])
   })
 
   it("keeps a pinned location whatever its tier", () => {
