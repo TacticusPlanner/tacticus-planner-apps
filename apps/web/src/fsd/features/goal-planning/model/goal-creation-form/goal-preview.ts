@@ -38,7 +38,6 @@ export function computeCreationPreview(params: {
   rankEnd: Rank
   rankEndPointFive: boolean
   rankEndAppliedUpgrades: number
-  rankEndTopRowCount: number
   abilityActiveStart: number
   abilityActiveEnd: number
   abilityPassiveStart: number
@@ -74,7 +73,6 @@ export function computeCreationPreview(params: {
           rankEnd: params.rankEnd,
           rankEndPointFive: params.rankEndPointFive,
           rankEndAppliedUpgrades: params.rankEndAppliedUpgrades,
-          rankEndTopRowCount: params.rankEndTopRowCount,
           playerCharacter: params.playerCharacter,
           inventoryUpgrades: params.inventoryUpgrades,
           upgradesById: params.upgradesById,
@@ -92,9 +90,7 @@ export function computeCreationPreview(params: {
     params.entityType !== "Character" ||
     rankIndex(params.rankStart) < rankIndex(params.rankEnd) ||
     (params.rankStart === params.rankEnd &&
-      (params.rankEndPointFive ||
-        params.rankEndAppliedUpgrades > 0 ||
-        params.rankEndTopRowCount > 0))
+      (params.rankEndPointFive || params.rankEndAppliedUpgrades > 0))
 
   const estimatePreview =
     previewEnabled && hasEntity && rankRangeValid
