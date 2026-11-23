@@ -48,7 +48,7 @@
     "i18next-http-backend": "^4.0.10",
     "lucide-react": "catalog:",
     "openapi-fetch": "^0.17.0",
-    "posthog-js": "^1.450.0",
+    "posthog-js": "^1.450.1",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-i18next": "^17.1.13",
