@@ -46,6 +46,20 @@ Under the current mission and in each expanded mission, one reserve tip SHALL na
 - **WHEN** the player expands locked mission 8
 - **THEN** its objectives show their hints and tips, then "Keep 4 Arena tokens for mission 10"
 
+### Requirement: Missions Onslaught pays off little for keep Onslaught tokens
+
+Onslaught SHALL pay off for an objective that counts every ability use, hit or point of damage (`useAbilities`, `useAbilitiesAlliance`, `abilityDamage`, `damage`), and for a kill objective needing more kills than one run's 20. A mission with no such objective and no `onslaught` objective SHALL show a second tip naming the first later mission Onslaught pays off for ("Keep your Onslaught tokens for mission 7: one run there counts many more kills, hits or ability uses than here"), and none when no such mission is left (Severyn, 2026-11).
+
+#### Scenario: Mission 6
+
+- **WHEN** the player is on mission 6 (healing, summon-free wins)
+- **THEN** after "Keep 2 Salvage Run tokens for mission 7" it says to keep the Onslaught tokens for mission 7, whose ability uses an Onslaught run serves
+
+#### Scenario: A mission Onslaught serves
+
+- **WHEN** the player is on mission 7 (ability uses with the alliance) or mission 12 (an Onslaught battle)
+- **THEN** no Onslaught tip is shown
+
 ### Requirement: Tokens needed by remaining missions are compared with synced tokens
 
 For Arena, Guild Raid, Onslaught and Salvage Run, the tab SHALL show the battles that the current mission (less its recorded progress) and all later missions still need of that mode. It SHALL also show the player's current synced tokens for the mode. A mode whose need exceeds the current tokens SHALL be marked "short". A mode with no synced bucket SHALL show "not unlocked". A mode with no remaining need SHALL be hidden. Tokens are compared as a count of battles: one battle uses one token. A preview of the next event SHALL show the card for the whole event (every mission from 1).
