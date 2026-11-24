@@ -1246,7 +1246,9 @@
       "doneBy": "Fecha fin",
       "reorder": "Reordenar",
       "reorderHandle": "Arrastrar {{entity}} para reordenar",
-      "priority": "Prioridad"
+      "priority": "Prioridad",
+      "duration": "Duración",
+      "durationHelp": "Días de incursiones que necesita este objetivo una vez que empieza a recibir energía."
     },
     "status": {
       "Draft": "Borrador",
@@ -1310,7 +1312,15 @@
       "selectRow": "Seleccionar {{entity}}",
       "selectMode": "Seleccionar objetivos",
       "selectDone": "Listo",
-      "removeFromProject": "Quitar del proyecto"
+      "removeFromProject": "Quitar del proyecto",
+      "clearSelection": "Borrar selección",
+      "selectMenu": "Elegir qué objetivos seleccionar",
+      "presets": {
+        "all": "Todos",
+        "none": "Ninguno",
+        "Active": "Activos",
+        "Paused": "En pausa"
+      }
     },
     "delete": {
       "title_one": "¿Eliminar este objetivo?",
@@ -1755,7 +1765,11 @@
       "unlockDuringEvent": "durante el evento de campaña",
       "unlockMore_one": "+{{count}} ubicación más",
       "unlockMore_other": "+{{count}} ubicaciones más",
-      "unlockFewer": "Mostrar menos"
+      "unlockFewer": "Mostrar menos",
+      "duration_one": "{{count}} día",
+      "duration_other": "{{count}} días",
+      "durationLabel_one": "{{count}} día de incursiones",
+      "durationLabel_other": "{{count}} días de incursiones"
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
     "filters": {
@@ -1781,11 +1795,13 @@
       "sort": "Ordenar",
       "sortOptions": {
         "priority": "Prioridad",
-        "finishDate": "Fecha de fin"
+        "finishDate": "Fecha de fin",
+        "duration": "Duración"
       },
       "sortHelp": {
         "priority": "Tu orden de prioridad. Arrastra los objetivos para reordenarlos.",
-        "finishDate": "Fecha estimada de fin en tu plan, la más cercana primero."
+        "finishDate": "Fecha estimada de fin en tu plan, la más cercana primero.",
+        "duration": "Días de incursiones que necesita cada objetivo una vez que empieza a recibir energía, el más corto primero."
       }
     },
     "seasonFit": {
@@ -1911,7 +1927,10 @@
         "levels": "{{count}} niveles",
         "rankEnergy": "{{energy}} energía",
         "coveredByEarlierGoal": "Cubierto por un objetivo anterior",
-        "shards": "{{count}} fragmentos"
+        "shards": "{{count}} fragmentos",
+        "upgradeSlots_one": "{{count}} ranura de mejora",
+        "upgradeSlots_other": "{{count}} ranuras de mejora",
+        "xp": "{{xp}} XP"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Detalles del progreso",
@@ -1928,7 +1947,8 @@
       "reachableCeilingReasonRarity": "limitado por rareza",
       "reachableCeilingReasonLevel": "limitado por nivel",
       "reachableCeilingReasonBoth": "limitado por rareza y nivel",
-      "coveredBy": "Cubierto por el objetivo {{type}} → {{target}}"
+      "coveredBy": "Cubierto por el objetivo {{type}} → {{target}}",
+      "coveredByPriority": "Cubierto por #{{priority}} · {{goal}}"
     },
     "insights": {
       "selectProject": "Selecciona un proyecto",
@@ -2063,7 +2083,8 @@
         "cancel": "Cancelar"
       },
       "sortBlocksReorder": "Los objetivos están ordenados por fecha de fin, así que no puedes arrastrarlos para cambiar su prioridad.",
-      "sortByPriority": "Ordenar por prioridad"
+      "sortByPriority": "Ordenar por prioridad",
+      "sortBlocksReorderDuration": "Los objetivos están ordenados por duración, así que no puedes arrastrarlos para cambiar su prioridad."
     },
     "edit": {
       "title": "Editar objetivo",
@@ -2297,6 +2318,10 @@
         "select": {
           "title": "Seleccionar objetivos",
           "content": "Toca Seleccionar objetivos y marca objetivos o usa Seleccionar todos los objetivos. Pausa, reanuda, añade a un proyecto o elimina varios a la vez desde la barra inferior y toca Listo."
+        },
+        "selectDesktop": {
+          "title": "Seleccionar objetivos",
+          "content": "En la tabla, marca objetivos o usa la casilla de seleccionar todos y su menú (Todos, Ninguno, Activos, En pausa); Mayús + clic marca un rango. Pausa, reanuda, añade a un proyecto o elimina varios a la vez desde la barra sobre la lista, y pulsa Esc o Borrar selección para empezar de nuevo. En Tarjetas, haz clic primero en Seleccionar objetivos."
         },
         "createGoal": {
           "title": "Crear un objetivo",

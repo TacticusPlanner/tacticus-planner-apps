@@ -119,8 +119,13 @@ export type GoalsListProps = {
   onMenuMove?: (goalId: string, displacedGoalId: string) => void
   /** The goal just moved from its row menu, highlighted briefly so the move can be seen. */
   highlightedGoalId?: string | null
+  /** Shift-click on a checkbox: selects the visible goals from the last one toggled through this one. */
+  onSelectRange?: (goalId: string) => void
   /** Opens the Edit goal dialog for a goal (the row's Edit action). */
   onEdit?: (goalId: string) => void
+  /** A "Covered by" note's link: shows the covering goal (scroll, flash, focus), or opens it when it
+   *  isn't in the list on screen. */
+  onJumpToGoal?: (goalId: string) => void
   /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
    *  entry, both render as the "—" placeholder (no project selected, non-Rank goal, or blocked). */
   estimates?: ReadonlyMap<string, EstimateOutcome>
@@ -164,6 +169,7 @@ export type RowSliceProps = Pick<
   | "levelPoolXpAvailable"
   | "xpBook"
   | "onToggleSelected"
+  | "onSelectRange"
   | "reachedByGoalId"
   | "cascadeContext"
   | "seasonFit"
@@ -172,14 +178,13 @@ export type RowSliceProps = Pick<
   row: GoalRow
   selected: boolean
   dragHandle?: unknown
-  popoverOpen: boolean
 }
 
 /** Memo comparator for a goal row or card: maps and `actions` are rebuilt on every page render (a
  *  pause/resume rebuilds the cascade context, estimates and `pendingIds` for the whole list), so compare
  *  only this goal's slice of each. Functions other than `onToggleSelected` are omitted on purpose:
  *  `actions`, `onEdit` and `onMenuMove` only act on ids/state read at call time (a move's target is the
- *  compared `moves`), and `setOpenPopoverGoalId` is a state setter. `extra` adds a surface's own scalar props. */
+ *  compared `moves`). `extra` adds a surface's own scalar props. */
 /** Whether a goal's row or card draws a Potential bar, which is what the legend explains. Cards draw
  *  shard bars with no Potential for Ascension, and an Ability card's only one is on its level row. */
 export function drawsPotentialBar(
@@ -217,10 +222,10 @@ export function sameRowSlice<P extends RowSliceProps>(
   if (id !== b.row.goalId || a.row !== b.row) return false
   const scalar = (props: P) => [
     props.selected,
-    props.popoverOpen,
     props.xpBook,
     props.actions.pendingIds.has(id),
     props.onToggleSelected,
+    props.onSelectRange,
     props.dragHandle,
     props.moves?.top,
     props.moves?.up,

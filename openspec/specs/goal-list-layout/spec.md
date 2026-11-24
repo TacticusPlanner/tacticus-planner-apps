@@ -20,7 +20,7 @@ The list SHALL render as the cards or the table according to this device's store
 
 - **GIVEN** the viewport is narrower than 768px and the stored Goals view is `Table`
 - **WHEN** the Goals list renders
-- **THEN** it renders as the table with its full column set, scrolling sideways inside the list while the page itself does not scroll sideways, with no checkboxes until select mode and no drag handles until reorder mode
+- **THEN** it renders as the table with its full column set, scrolling sideways inside the list while the page itself does not scroll sideways, with no checkboxes until select mode and no drag handles until reorder mode (at or above it the table's checkboxes are always shown, see `goal-bulk-actions`)
 
 #### Scenario: At or above the mobile breakpoint, Cards view
 
@@ -36,7 +36,7 @@ The list SHALL render as the cards or the table according to this device's store
 
 ### Requirement: The Actual/Potential legend renders once per list, only when relevant, not per row
 
-When at least one visible goal has both an Actual and a Potential ratio to show, the "Actual" / "Potential" swatch legend SHALL render exactly once per list: in the Progress column's header on the desktop table, and above the first card wherever the list renders as cards (desktop Cards view and mobile). It SHALL NOT repeat per row or per card, and it replaces the old per-row "Actual progress" / "Potential progress" caption labels, which moved into `goal-progress-display`'s on-demand explanation. When no visible goal has a Potential ratio, the legend SHALL NOT render at all, since it would have nothing to distinguish.
+When at least one visible goal has both an Actual and a Potential ratio to show, the "Actual" / "Potential" swatch legend SHALL render exactly once per list: in the Progress column's header on the desktop table, and above the first card wherever the list renders as cards (desktop Cards view and mobile). It SHALL NOT repeat per row or per card, and it replaces the old per-row "Actual progress" / "Potential progress" caption labels, which moved into `goal-progress-display`'s on-demand explanation. On desktop the legend SHALL carry the list's one "i" button that opens that explanation (beside the Progress header text in the table, beside the legend above the cards); mobile cards keep their per-card footer instead. When no visible goal has a Potential ratio, the legend SHALL NOT render at all, since it would have nothing to distinguish.
 
 #### Scenario: Desktop table with multiple goals showing both ratios
 
@@ -92,7 +92,7 @@ Wherever the Goals list renders (desktop table or mobile cards, on the Goals pag
 
 ### Requirement: In-flight rows show their account-wide priority position
 
-Wherever the Goals list renders Active or Paused goals in priority order (the Goals page, `/plan/goals`, with or without a project scope), each such row or card SHALL show the goal's account-wide priority position (`globalPriority`, 1 to N across every Active and Paused goal) as visible text: in the row's leading cell beside the drag handle on the desktop table, and in the card header wherever the list renders as cards. The position is not a data column and SHALL NOT change the seven-column contract. It SHALL be the goal's position in the whole account order, never its index among the visible rows: with filters, Group, or a project view, the visible rows show non-consecutive numbers. Rows and cards without a position (Reached, Completed, or Archived goals) SHALL show none and SHALL leave that slot empty. The number SHALL appear in Comfortable and Compact density and on every card, SHALL meet the text-contrast rules of `goal-visual-accessibility`, and SHALL be part of the row's or card's accessible name or description (for example "Priority 3"). While a reorder is in flight or awaiting rollback, the numbers SHALL follow the same optimistic update as the order: the moved goal takes the displaced goal's number and the goals between them shift by one, reverting with the order on rollback.
+Wherever the Goals list renders Active or Paused goals in priority order (the Goals page, `/plan/goals`, with or without a project scope), each such row or card SHALL show the goal's account-wide priority position (`globalPriority`, 1 to N across every Active and Paused goal) as visible text: in the row's leading cell beside the drag handle on the desktop table, and in the card header wherever the list renders as cards. The position is not a data column and SHALL NOT change the eight-column contract. It SHALL be the goal's position in the whole account order, never its index among the visible rows: with filters, Group, or a project view, the visible rows show non-consecutive numbers. Rows and cards without a position (Reached, Completed, or Archived goals) SHALL show none and SHALL leave that slot empty. The number SHALL appear in Comfortable and Compact density and on every card, SHALL meet the text-contrast rules of `goal-visual-accessibility`, and SHALL be part of the row's or card's accessible name or description (for example "Priority 3"). While a reorder is in flight or awaiting rollback, the numbers SHALL follow the same optimistic update as the order: the moved goal takes the displaced goal's number and the goals between them shift by one, reverting with the order on rollback.
 
 #### Scenario: Active and Paused rows show a position
 
@@ -170,7 +170,7 @@ For a goal that has not reached its target, the Remaining cell (desktop) and the
 
 ### Requirement: An Ability goal's target shows one labelled pill per ability track
 
-Wherever the Goals list renders an Ability goal's target (desktop Goal cell, mobile card), it SHALL show one pill for each ability track whose target level is above the unit's current level, each pill made of an uppercase track label, the unit's current level, an arrow, and the target level with the target emphasised. The track names depend on the unit: a Machine of War's tracks are "Primary" then "Secondary", and a Character's are "Active" then "Passive" (localized); a Character goal SHALL NOT show "Primary"/"Secondary" and a Machine of War goal SHALL NOT show "Active"/"Passive". A track already at or above its target SHALL NOT render a pill. The Ability goal SHALL NOT be reduced to a single unlabelled "Lv X → Y" for the track with the larger gap.
+Wherever the Goals list renders an Ability goal's target (desktop Goal cell, mobile card), it SHALL show one pill for each ability track whose target level is above the unit's current level, each pill made of an uppercase track label, the unit's current level, an arrow, and the target level with the target emphasised. The track names depend on the unit: a Machine of War's tracks are "Primary" then "Secondary", and a Character's are "Active" then "Passive" (localized); a Character goal SHALL NOT show "Primary"/"Secondary" and a Machine of War goal SHALL NOT show "Active"/"Passive". A track already at or above its target SHALL NOT render a pill. The Ability goal SHALL NOT be reduced to a single unlabelled "Lv X → Y" for the track with the larger gap. When the track's ability is known, its icon SHALL lead the pill: on the mobile card and the desktop card at inline size (16px) beside the label; in the desktop Goal cell at row size (32px, level with the rank emblems) in place of the label and pill background, so the entry reads icon, current level, arrow, target. Every ability icon SHALL be a focusable tooltip trigger naming the track and the ability ("Primary · Ammo Bandolier"), which is also its accessible name.
 
 #### Scenario: Only the primary track is being raised
 
@@ -190,6 +190,12 @@ Wherever the Goals list renders an Ability goal's target (desktop Goal cell, mob
 - **WHEN** its Goal cell or mobile card renders
 - **THEN** it shows a "PRIMARY 47 → 50" pill and a "SECONDARY 12 → 15" pill
 
+#### Scenario: The desktop Goal cell shows each ability by its icon
+
+- **GIVEN** an Ability goal for a Machine of War whose primary ability is known, raising its primary track from 30 to 35
+- **WHEN** its desktop Goal cell renders
+- **THEN** it shows the ability's 32px icon followed by "30 → 35" with no pill background, and hovering or focusing the icon shows "Primary · <ability name>"
+
 #### Scenario: One track has already reached its target
 
 - **GIVEN** an Ability goal whose primary track is at its target and whose secondary track is not
@@ -198,7 +204,7 @@ Wherever the Goals list renders an Ability goal's target (desktop Goal cell, mob
 
 ### Requirement: The Goal column encodes the goal kind visually, without a type label
 
-The Goal cell (desktop) and goal line (mobile card) SHALL identify the goal kind by what they show, as V1 does, and no goal-type word SHALL be shown for Rank, Ascension or Ability goals. By kind: a Rank goal SHALL show the current rank emblem, an arrow and the target rank emblem, with no rank name text (each emblem SHALL keep its rank name as its tooltip and accessible name, and a partially-applied rank target SHALL keep its slot marker); an Ascension goal SHALL show its rarity or star icons from → to with no text; an Ability goal SHALL show the labelled track pills of "An Ability goal's target shows one labelled pill per ability track"; an Unlock goal SHALL show the word "Unlock" with its owned/required shard count moved to the Progress cell beside the bar. A Rank or Ability goal's level requirement sub-line ("Lv 41 → 44") is unchanged and stays beneath the goal's own content.
+The Goal cell (desktop) and goal line (mobile card) SHALL identify the goal kind by what they show, as V1 does, and no goal-type word SHALL be shown for Rank, Ascension or Ability goals. By kind: a Rank goal SHALL show the current rank emblem, an arrow and the target rank emblem, with no rank name text (each emblem SHALL keep its rank name as its tooltip and accessible name, and a partially-applied rank target SHALL keep its slot marker); an Ascension goal SHALL show each progression in its compact form (the rarity icon, then one star icon and the star count, or the wings at the top step) from → to with no text, the rarity icon drawn at the 24px emblem size in the desktop Goal cell and inline elsewhere; an Ability goal SHALL show the labelled track pills of "An Ability goal's target shows one labelled pill per ability track"; an Unlock goal SHALL show the word "Unlock" with its owned/required shard count moved to the Progress cell beside the bar. A Rank or Ability goal's level requirement sub-line ("Lv 41 → 44") is unchanged and stays beneath the goal's own content.
 
 #### Scenario: A Rank goal shows emblems only
 
@@ -222,17 +228,49 @@ The Goal cell (desktop) and goal line (mobile card) SHALL identify the goal kind
 
 - **GIVEN** an Ascension goal from Epic to Legendary
 - **WHEN** its Goal cell renders
-- **THEN** it shows the two rarity icons with an arrow and no rarity or goal-type text
+- **THEN** it shows the two compact progressions (rarity icon, star and count) with an arrow and no rarity or goal-type text
+
+### Requirement: Goals list hints use design-system tooltips
+
+Every hint in the Goals list (a material, resource or XP-book chip's name and count, the "+N" materials chip, a truncated note, the Projects cell, the Done by date) SHALL be a design-system tooltip on a focusable control named by the same text, never a native `title`: keyboard users reach it by Tab, and on a touch screen a tap opens it as a popover. A material chip's hint SHALL lead with its name and owned/needed count, then one line per goal ranked ahead that holds some of it. The Done by date's hint SHALL be the same day written out with its weekday and year.
+
+#### Scenario: A material chip's hint by keyboard
+
+- **GIVEN** a goal row with an upgrade material that goal #2 holds some of
+- **WHEN** the user tabs to the material chip
+- **THEN** a tooltip shows the material's name and count, then the line naming goal #2
+
+#### Scenario: A hint on a phone
+
+- **GIVEN** a goal card on a touch screen
+- **WHEN** the user taps a resource chip
+- **THEN** a popover shows the chip's name and quantity
+
+### Requirement: A covered-by note names and links to the covering goal
+
+When a higher-priority goal of the same unit and type already reaches a goal's target, the goal's covered-by note SHALL name that goal by its account-wide priority and target ("Covered by #3 · Rank → Gold I"; without a priority it keeps "Covered by the Rank → Gold I goal"), in the desktop Goal cell and on the card. On the Goals page the note SHALL be a link: activating it scrolls the covering goal's row or card into view (instantly under reduced motion), flashes it with the same highlight a row-menu move uses, and moves focus to it. When that goal is not in the list on screen (filtered out, in a collapsed group, or on another tab), activating the note SHALL open the goal's Edit dialog instead, and SHALL NOT change any filter.
+
+#### Scenario: The note jumps to the covering goal
+
+- **GIVEN** a Rank goal to Gold I covered by goal #3, and goal #3 is in the list
+- **WHEN** the user activates the note "Covered by #3 · Rank → Gold I"
+- **THEN** goal #3 scrolls into view, flashes and takes focus
+
+#### Scenario: The covering goal is filtered out
+
+- **GIVEN** a covered goal whose covering goal is hidden by the Type filter
+- **WHEN** the user activates the note
+- **THEN** the covering goal's Edit dialog opens and the filter stays as it was
 
 ### Requirement: Desktop table uses static columns with a leading control cell and a row menu
 
-While the Table view is selected (see "Users choose between a Cards view and a Table view, Cards by default"), the Goals list SHALL render as a table with these data columns, in order: Character, Projects, Goal, Status, "Done by", Remaining, and Progress. Progress is last and narrow: it is the least-scanned figure in the row (UserJot "V2 Goals Page Is Harder to Scan"), so the status, completion date, day count and energy come before it. These columns SHALL remain static: none of them SHALL be hidden or added based on the table's or viewport's width — the only layout change at any desktop width is the fixed set of columns above, and below the mobile breakpoint the same columns scroll sideways inside the list. A column set that changes with width was tried and rejected: it made the page feel like it was "jumping" as the table resized. Progress SHALL be the last column at a fixed narrow width; Remaining chips wrap within their own cell.
+While the Table view is selected (see "Users choose between a Cards view and a Table view, Cards by default"), the Goals list SHALL render as a table with these data columns, in order: Character, Projects, Goal, Status, "Done by", Duration, Remaining, and Progress. Progress is last and narrow: it is the least-scanned figure in the row (UserJot "V2 Goals Page Is Harder to Scan"), so the status, completion date, day count and energy come before it. These columns SHALL remain static: none of them SHALL be hidden or added based on the table's or viewport's width — the only layout change at any desktop width is the fixed set of columns above, and below the mobile breakpoint the same columns scroll sideways inside the list. A column set that changes with width was tried and rejected: it made the page feel like it was "jumping" as the table resized. Progress SHALL be the last column at a fixed narrow width; Remaining chips wrap within their own cell.
 
-The Character column SHALL show the unit's avatar (drawn larger than the 40px V2 launch size so it reads like V1's goal cards), its name, and, when the goal has notes, the notes on a single line directly beneath the name (truncated with an ellipsis after that one line, the full text available as a tooltip), and SHALL NOT show the goal type as a text caption or the goal's project badges; the goal type is instead encoded in the Goal column (see "The Goal column encodes the goal kind visually, without a type label"). At the trailing edge of the Character cell, every row SHALL render an always-visible "⋯" menu trigger with an accessible name, opening the row's actions menu: Edit, then Pause or Resume (for a goal that is not Reached and is Active or Paused respectively — see `goal-status-actions`), then Delete as a destructive item. There SHALL be no separate Actions column and no inline action icon buttons in the row. The Projects column SHALL show the goal's project-membership badges (colour dot and project name, wrapping within the cell), and SHALL be empty for a goal in no project; its header text SHALL be visible. The Goal column SHALL show the goal's from → to representation as defined by "The Goal column encodes the goal kind visually, without a type label", with the rank and rarity emblems drawn at the large size. The Status column SHALL show only the goal's status chip(s) (Active/Paused toggle, Reached, Blocked/Restricted), drawn at body-text size so Active and Paused read at a glance. The "Done by" column SHALL show the `goal-list-estimate-display` completion date as its headline (body-text size, foreground colour) with the day count on a line directly beneath, and any season-fit label under that; when no estimate is available the cell SHALL be empty rather than showing a placeholder; a blocked estimate's per-material detail SHALL NOT render in the cell (it is the Blocked indicator's tooltip content, see `goal-list-estimate-display`).
+The Character column SHALL show the unit's avatar (drawn larger than the 40px V2 launch size so it reads like V1's goal cards), its name, and, when the goal has notes, the notes on a single line directly beneath the name (truncated with an ellipsis after that one line, the full text available as a tooltip), and SHALL NOT show the goal type as a text caption or the goal's project badges; the goal type is instead encoded in the Goal column (see "The Goal column encodes the goal kind visually, without a type label"). At the trailing edge of the Character cell, every row SHALL render an always-visible "⋯" menu trigger with an accessible name, opening the row's actions menu: Edit, then Pause or Resume (for a goal that is not Reached and is Active or Paused respectively — see `goal-status-actions`), then Delete as a destructive item. Every item in the menu SHALL lead with an icon, using the same icon the select bar uses for the same action (pause, play, folder-plus, folder-minus, trash) and pencil for Edit, arrows for the moves and a numbered list for Move to priority. There SHALL be no separate Actions column and no inline action icon buttons in the row. The Projects column SHALL show the goal's project-membership badges (colour dot and project name, wrapping within the cell), and SHALL be empty for a goal in no project; its header text SHALL be visible. The Goal column SHALL show the goal's from → to representation as defined by "The Goal column encodes the goal kind visually, without a type label", with the rank emblems and ability icons drawn at row size (32px) and the rarity icon at emblem size (24px). The Status column SHALL show only the goal's status chip(s) on two lines: the Active/Paused toggle (or Reached) on the first, drawn at body-text size so Active and Paused read at a glance, and its flags (Blocked/Restricted, HRE source) side by side on the second at a smaller size; a goal with no flags has no second line. The "Done by" column SHALL show the `goal-list-estimate-display` completion date as its headline (body-text size, foreground colour) with the day count on a line directly beneath, and any season-fit label under that; when no estimate is available the cell SHALL be empty rather than showing a placeholder; the Duration column SHALL show the days of raids the goal needs once it starts getting energy (its first raid day in the plan through its done day, "9 days"), a dash for an estimated goal that needs no raids, and nothing without an estimate, and its header SHALL carry a tooltip reading "Days of raids this goal needs once it starts getting energy." (UserJot "Show Required Days for Each Goal"); a card SHALL show the same figure after an hourglass on its date line, with that tooltip; a blocked estimate's per-material detail SHALL NOT render in the cell (it is the Blocked indicator's tooltip content, see `goal-list-estimate-display`).
 
 Each row SHALL render at a fixed height sized to one line of content per column (with the Character column's name-and-notes lines and the "Done by" column's date-and-days lines accommodated within that same fixed height). Two exceptions SHALL exist: a row whose Progress cell carries level-requirement sub-lines, and a row whose Remaining chips wrap beyond two lines (see `goal-remaining-resources`: every chip renders) — such a row SHALL grow only as far as its wrapped content needs, and no other row SHALL change height because of it. The existing alternating row (zebra) striping SHALL be preserved.
 
-Every row SHALL have a leading cell before the Character column holding, in order: the selection checkbox (only in select mode, see `goal-bulk-actions`), the account-wide priority number for an in-flight row, and — when the table renders on a route where inline reordering is available (the Goals page, with or without a project scope — see `global-goal-priority`'s "Owner can reorder from Goals") and at or above the mobile breakpoint — while Sort is Priority, a drag handle for each Active or Paused row. This cell holds control affordances, not a data column, and does not change the seven static columns above; the handle is present only in a reorderable context and absent elsewhere, which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
+Every row SHALL have a leading cell before the Character column holding, in order: a drag grip for each Active or Paused row, when the table renders on a route where inline reordering is available (the Goals page, with or without a project scope, see `global-goal-priority`'s "Owner can reorder from Goals"), at or above the mobile breakpoint, while Sort is Priority (a same-width blank keeps the other rows aligned), in the cell's left gutter with minimal padding; the selection checkbox (always on the desktop Goals page, otherwise only in select mode, see `goal-bulk-actions`); and the account-wide priority number for an in-flight row. With a fine pointer the grip SHALL be invisible until the row is hovered, holds keyboard focus or is being dragged; with a coarse pointer it SHALL always show. Its hit area SHALL be at least 32px square (44px on a coarse pointer). Only the grip starts a drag; the rest of the row does not. This cell holds control affordances, not a data column, and does not change the eight static columns above; the handle is present only in a reorderable context and absent elsewhere, which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
 
 Assumptions:
 
@@ -254,13 +292,13 @@ Assumptions:
 
 - **GIVEN** the viewport is at or above the mobile breakpoint, at any desktop width, and Table view is selected
 - **WHEN** the Goals list renders
-- **THEN** it renders as a table with all seven data columns in the order Character, Projects, Goal, Status, Done by, Remaining, Progress — no width threshold hides or restores any of them
+- **THEN** it renders as a table with all eight data columns in the order Character, Projects, Goal, Status, Done by, Duration, Remaining, Progress — no width threshold hides or restores any of them
 
 #### Scenario: A drag handle appears only in a reorderable context
 
 - **GIVEN** the same Active goal renders once on the Goals page and once in a list that is not reorderable
 - **WHEN** each list renders as a desktop table
-- **THEN** the Goals page row shows a leading drag handle and the other row does not, with both rows otherwise showing the same seven columns
+- **THEN** the Goals page row shows a leading drag handle and the other row does not, with both rows otherwise showing the same eight columns
 
 #### Scenario: The row menu holds every row action
 
@@ -351,14 +389,14 @@ The stored view SHALL be read synchronously, so the list SHALL NOT wait for it a
 
 ### Requirement: Goal cards share one layout on every platform
 
-Wherever the Goals list renders as cards, each goal SHALL render as one card in a grid whose columns are each at least 380px wide (or the full width, when narrower) and fill the available width. In Cards view the Goals tab SHALL NOT apply the page's maximum content width (1600px), so a wide screen adds columns rather than margins; the Table view and the other Goals-area tabs keep that maximum. Below the mobile breakpoint this grid is a single column. Cards in the same grid row SHALL be equal height, with their footers aligned. Wherever another requirement of this capability describes the mobile card or card behavior, it SHALL apply to this card on every platform.
+Wherever the Goals list renders as cards, each goal SHALL render as one card in a grid whose columns are each at least 380px wide (or the full width, when narrower) and fill the available width. The Goals tab SHALL NOT apply the page's maximum content width (1600px) in either layout: in Cards view a wide screen adds columns rather than margins, and in Table view the table and its toolbar get the full width, so switching layouts never changes the page width. The other Goals-area tabs keep that maximum. Below the mobile breakpoint this grid is a single column. Cards in the same grid row SHALL be equal height, with their footers aligned. Wherever another requirement of this capability describes the mobile card or card behavior, it SHALL apply to this card on every platform.
 
 Each card SHALL contain, from top to bottom:
 
 1. **A header.** In order:
+   - the drag grip, for an Active or Paused goal at or above the mobile breakpoint where reordering is available, shown on hover or keyboard focus as in the table;
    - the selection checkbox, only while select mode is active (see `goal-bulk-actions`);
    - the account-wide priority number;
-   - the drag handle, for an Active or Paused goal at or above the mobile breakpoint where reordering is available;
    - the unit avatar;
    - the unit name with, beneath it, a meta line holding the "Done By" date and day count (when an estimate exists), the season-fit label (when a mode is on), and the goal's project badges (when it has projects), wrapping as needed; a long project name is truncated at a fixed badge width, with the full name as its tooltip;
    - the "⋯" row-actions menu at the trailing edge.
@@ -384,7 +422,7 @@ The goal type SHALL lead the goal line as a badge, because a card has no Goal co
 
 - **GIVEN** an Active Rank goal at priority 3, with notes, in project "Neuro", with a completion estimate of Oct 11 (in 22 days)
 - **WHEN** it renders in Cards view at 1280px wide
-- **THEN** outside select mode its header shows "3", a drag handle, the avatar, the name and a meta line "📅 Oct 11 · 22 days" with the "Neuro" badge, and a "⋯" menu; its body shows the rank emblems with the energy chip at the right end of their row, then the progress bar, then the level line with the gold chip at its right end; a ruled section shows the notes; and its footer shows the "Active" chip with a pause action
+- **THEN** outside select mode its header shows a drag grip while hovered, "3", the avatar, the name and a meta line "📅 Oct 11 · 22 days" with the "Neuro" badge, and a "⋯" menu; its body shows the rank emblems with the energy chip at the right end of their row, then the progress bar, then the level line with the gold chip at its right end; a ruled section shows the notes; and its footer shows the "Active" chip with a pause action
 
 #### Scenario: The grid fills the width
 
@@ -397,7 +435,7 @@ The goal type SHALL lead the goal line as a badge, because a card has no Goal co
 - **GIVEN** a 3440px-wide screen
 - **WHEN** the Goals tab renders in Cards view
 - **THEN** the grid spans the full content width beside the sidebar, with more than four cards to a row
-- **AND** after switching to Table view, the table keeps the page's 1600px maximum width
+- **AND** after switching to Table view, the table also spans the full content width
 
 #### Scenario: An Ascension card shows orbs and shard bars as V1 did
 

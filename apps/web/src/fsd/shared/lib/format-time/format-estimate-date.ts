@@ -11,11 +11,13 @@
  * the project row (a feature) render this same value, and a feature may not import from a page.
  *
  * Returns null for a value that is not a well-formed `yyyy-mm-dd` date, so callers can fall back to
- * their own empty-state copy rather than rendering "Invalid Date".
+ * their own empty-state copy rather than rendering "Invalid Date". `full` gives the long form with the
+ * weekday and year, for a tooltip on the short date.
  */
 export function formatEstimateDate(
   isoDate: string | null | undefined,
-  locale: string
+  locale: string,
+  style: "short" | "full" = "short"
 ): string | null {
   if (!isoDate) return null
 
@@ -34,11 +36,13 @@ export function formatEstimateDate(
   const date = new Date(Date.UTC(year, month - 1, day))
   if (Number.isNaN(date.getTime())) return null
 
-  return new Intl.DateTimeFormat(locale, {
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(date)
+  // `full` ("Tuesday, October 11, 2026") is the short date's tooltip, where the year and weekday fit.
+  return new Intl.DateTimeFormat(
+    locale,
+    style === "full"
+      ? { dateStyle: "full", timeZone: "UTC" }
+      : { month: "short", day: "numeric", timeZone: "UTC" }
+  ).format(date)
 }
 
 /** The `YYYY-MM-DD` an instant falls on in the viewer's own zone, as `formatEstimateDate` reads it. */

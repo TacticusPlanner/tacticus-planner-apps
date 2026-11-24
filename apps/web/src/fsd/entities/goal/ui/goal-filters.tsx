@@ -24,10 +24,16 @@ const DEFAULT_GROUP_OPTIONS: readonly GoalGroupValue[] = [
 ]
 
 /** `priority`: the account-wide priority order (the only order goals can be dragged in).
- *  `finishDate`: the estimated finish date in that plan, soonest first; goals without one last. */
-export type GoalSortValue = "priority" | "finishDate"
+ *  `finishDate`: the estimated finish date in that plan, soonest first; goals without one last.
+ *  `duration`: the days of raids a goal needs once it starts getting energy, shortest first; goals
+ *  without raids last. */
+export type GoalSortValue = "priority" | "finishDate" | "duration"
 
-const GOAL_SORT_VALUES: readonly GoalSortValue[] = ["priority", "finishDate"]
+const GOAL_SORT_VALUES: readonly GoalSortValue[] = [
+  "priority",
+  "finishDate",
+  "duration",
+]
 
 /**
  * The Goals page's Type filter, a Find-slot select (goals-navigation spec, Decision 1). Filter

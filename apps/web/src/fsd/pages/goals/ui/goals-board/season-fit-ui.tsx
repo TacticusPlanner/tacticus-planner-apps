@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next"
+import { CalendarClock } from "lucide-react"
+import { cn } from "@workspace/ui/lib/utils"
 import { TableCell, TableRow } from "@workspace/ui/components/table"
 import {
   Tooltip,
@@ -13,6 +15,7 @@ import {
   seasonCutoffText,
 } from "./season-fit-copy"
 import type { CutoffEdge, GoalFitView } from "./season-fit-copy"
+import type { SeasonFitOffset } from "@/features/goal-planning"
 import { useDateLocale } from "@/shared/lib"
 
 /** The fit label beside a goal's Done By date, nothing for a goal without a fit (goal-season-fit
@@ -63,14 +66,32 @@ function useCutoffText(seasonFit: GoalFitView, edge: CutoffEdge) {
   return seasonCutoffText(t, dateLocale, seasonFit, edge)
 }
 
+/** The divider's line and icon colour: the fit colour of the goals below it, so the line joins
+ *  their row and card accents. Written out in full for Tailwind's scanner. */
+const CUTOFF_LINE_CLASS: Record<SeasonFitOffset, string> = {
+  0: "bg-(--season-fit-on-track)",
+  1: "bg-(--season-fit-caution)",
+  2: "bg-(--season-fit-urgent)",
+  3: "bg-muted-foreground",
+}
+const CUTOFF_ICON_CLASS: Record<SeasonFitOffset, string> = {
+  0: "text-(--season-fit-on-track)",
+  1: "text-(--season-fit-caution)",
+  2: "text-(--season-fit-urgent)",
+  3: "text-muted-foreground",
+}
+
 /** Desktop season cut-off: a full-width row before the first goal past the season. Not a sortable
  *  item, so drag ids and drop targets are unaffected. */
 export function SeasonCutoffRow({
   seasonFit,
+  goalId,
   colSpan,
   edge = "start",
 }: {
   seasonFit: GoalFitView
+  /** The first goal below the divider; its fit colours the line. */
+  goalId: string
   colSpan: number
   edge?: CutoffEdge
 }) {
@@ -80,8 +101,11 @@ export function SeasonCutoffRow({
       className="hover:bg-transparent"
       data-testid={CUTOFF_TEST_ID[edge]}
     >
-      <TableCell className="py-1" colSpan={colSpan}>
-        <SeasonCutoffLine text={text} />
+      <TableCell className="py-2" colSpan={colSpan}>
+        <SeasonCutoffLine
+          offset={goalFitOffset(seasonFit, goalId)}
+          text={text}
+        />
       </TableCell>
     </TableRow>
   )
@@ -91,25 +115,48 @@ export function SeasonCutoffRow({
  *  it spans every column, so the goal after it starts a new grid row. */
 export function SeasonCutoffItem({
   seasonFit,
+  goalId,
   edge = "start",
 }: {
   seasonFit: GoalFitView
+  /** The first goal below the divider; its fit colours the line. */
+  goalId: string
   edge?: CutoffEdge
 }) {
   const text = useCutoffText(seasonFit, edge)
   return (
-    <li className="col-span-full" data-testid={CUTOFF_TEST_ID[edge]}>
-      <SeasonCutoffLine text={text} />
+    <li className="col-span-full py-1" data-testid={CUTOFF_TEST_ID[edge]}>
+      <SeasonCutoffLine offset={goalFitOffset(seasonFit, goalId)} text={text} />
     </li>
   )
 }
 
-function SeasonCutoffLine({ text }: { text: string }) {
+/** A labelled marker, not a row border: the label is a chip at the left edge, where the eye scans
+ *  the priority numbers and names, and a 2px line in the fit colour runs from it to the right edge.
+ *  On a narrow phone the chip's text wraps rather than pushing the list wider. */
+function SeasonCutoffLine({
+  text,
+  offset,
+}: {
+  text: string
+  offset: SeasonFitOffset | undefined
+}) {
+  const tone = offset ?? 3
   return (
     <div className="flex items-center gap-2" role="separator" aria-label={text}>
-      <span className="h-px flex-1 bg-border" />
-      <span className="text-xs font-medium text-muted-foreground">{text}</span>
-      <span className="h-px flex-1 bg-border" />
+      <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border bg-card px-2.5 py-0.5 text-sm font-medium text-foreground">
+        <CalendarClock
+          aria-hidden="true"
+          className={cn("size-4 shrink-0", CUTOFF_ICON_CLASS[tone])}
+        />
+        {text}
+      </span>
+      <span
+        className={cn(
+          "h-0.5 min-w-4 flex-1 rounded-full",
+          CUTOFF_LINE_CLASS[tone]
+        )}
+      />
     </div>
   )
 }

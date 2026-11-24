@@ -8,7 +8,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HintLines, HintTrigger } from "@/shared/ui"
 import { useGoalResourceChips } from "./use-goal-resource-chips"
 import type {
   GoalResourceChip,
@@ -71,7 +71,7 @@ ${chip.hint}`
                   data-testid="goal-resource-chip-group"
                   type="button"
                 >
-                  <ChipFace chip={chip} label={tooltip(chip)} />
+                  <ChipFace chip={chip} />
                   <ChevronDown
                     aria-hidden="true"
                     className="size-3 text-muted-foreground"
@@ -103,7 +103,13 @@ ${chip.hint}`
               </PopoverContent>
             </Popover>
           ) : (
-            <ChipFace chip={chip} label={tooltip(chip)} />
+            <HintTrigger
+              className="gap-1 tabular-nums"
+              hint={<HintLines lines={tooltip(chip).split("\n")} />}
+              label={tooltip(chip)}
+            >
+              <ChipFace chip={chip} />
+            </HintTrigger>
           )}
         </li>
       ))}
@@ -126,16 +132,12 @@ function ChipIcon({ chip }: { chip: GoalResourceChip }) {
   )
 }
 
-function ChipFace({ chip, label }: { chip: GoalResourceChip; label: string }) {
+/** A chip's icon and figure. Its name is on the control around it (a hint or the rarity popover). */
+function ChipFace({ chip }: { chip: GoalResourceChip }) {
   return (
-    <span
-      aria-label={label}
-      className="flex items-center gap-1 tabular-nums"
-      role="img"
-      title={label}
-    >
+    <span aria-hidden className="flex items-center gap-1 tabular-nums">
       <ChipIcon chip={chip} />
-      <span aria-hidden>{chip.display ?? chip.text}</span>
+      <span>{chip.display ?? chip.text}</span>
     </span>
   )
 }

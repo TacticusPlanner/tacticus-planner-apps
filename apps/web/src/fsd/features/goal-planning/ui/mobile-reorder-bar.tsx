@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next"
 import { Check, Loader2 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 
+import { FloatingBar } from "@/shared/ui"
+
 /**
  * The exit control of the mobile reorder mode, pinned to the bottom of the viewport so it stays in
  * reach while lower rows are dragged — the header's toggle may be scrolled far out of view by then.
@@ -17,8 +19,8 @@ export function MobileReorderBar({
 }) {
   const { t } = useTranslation()
   return (
-    <div
-      className="sticky bottom-3 z-20 flex items-center justify-between gap-3 rounded-2xl border bg-card p-2 pl-4 shadow-lg"
+    <FloatingBar
+      className="sticky bottom-[calc(var(--mobile-nav-height)+0.75rem)] flex items-center justify-between gap-3 p-2 pl-4"
       data-testid="mobile-reorder-bar"
     >
       <p
@@ -44,6 +46,6 @@ export function MobileReorderBar({
         <Check aria-hidden />
         {t("goals.project.reorderDone")}
       </Button>
-    </div>
+    </FloatingBar>
   )
 }

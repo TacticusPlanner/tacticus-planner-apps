@@ -16,6 +16,7 @@ import {
   useGoalAttainmentState,
   useGoalsOverviewMetrics,
   usePlanInsights,
+  orderRowsByDuration,
   orderRowsByFinishDate,
   orderRowsByGlobalPriority,
   expandedRows,
@@ -57,6 +58,7 @@ import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { GoalsList } from ".//goals-list"
+import { jumpToGoalRow } from "./jump-to-goal"
 import { GoalGroupSection } from "./goal-group-section"
 import { GoalsBulkControls } from "./goals-bulk-controls"
 import { useProjectRemovalFlow } from "./project-removal-flow"
@@ -80,9 +82,10 @@ import {
 import { GoalsMobileReorderToggle } from "./goals-mobile-reorder-toggle"
 import { GoalsSelectButton } from "./goals-select-button"
 import { GoalsSelectBar } from "./goals-select-bar"
+import { useEscapeToClear } from "./use-escape-to-clear"
 import { SortBlocksReorderNotice } from "./sort-blocks-reorder-notice"
 import { GoalsMoveProjectGoalsButton } from "./goals-move-project-goals-button"
-import { useLevelRules } from "@/entities/goal-farming"
+import { goalRaidDuration, useLevelRules } from "@/entities/goal-farming"
 import { buildCascadeContext } from "./goal-row-utils"
 import type { SelectedXpBook } from "./goal-row-utils"
 import { PageTourButton } from "@/shared/tour"
@@ -282,7 +285,11 @@ export function GoalsPage() {
   const rows =
     sort === "finishDate"
       ? orderRowsByFinishDate(priorityRows, stableEstimates)
-      : priorityRows
+      : sort === "duration"
+        ? orderRowsByDuration(priorityRows, (goalId) =>
+            goalRaidDuration(stableEstimates.get(goalId))
+          )
+        : priorityRows
   const tabCounts = {
     all: filteredNonArchivedRows.length,
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
@@ -377,11 +384,17 @@ export function GoalsPage() {
     visibleIds,
     onToggleSelected,
     selectAllVisible,
+    selectRange,
+    selectPreset,
     clearSelection,
   } = useGoalsSelection(
     shownRows,
     [tab, goalType, scopeId, group, [...collapsed].join(",")].join("|")
   )
+  // The desktop table keeps its checkboxes and its top bar up at all times, like Gmail: no select mode,
+  // Escape clears. Cards and phones keep Select goals.
+  const tableSelectable = !isMobile && goalsView.view === "Table"
+  useEscapeToClear(!isMobile && selection.size > 0, clearSelection)
   // Built from every account-wide row (both fetched queries, not the filtered `rows`), so a
   // prerequisite's status and dependent count are known regardless of the current tab/filter.
   const cascadeContext = useMemo(
@@ -396,12 +409,20 @@ export function GoalsPage() {
     menuMovePosition,
     priorityOrder,
     highlightedGoalId,
+    highlightGoal,
     reorderAvailable: orderHasMovableGoals,
     reorderActive,
     toggleReorder,
     exitReorder,
     listRef,
   } = useGoalsPageReorder(nonArchivedRows)
+  // A "Covered by" link: show the covering goal where it is, or open it when the list hides it (a
+  // filter, a collapsed group or another tab). Filters are left as the user set them.
+  const jumpToGoal = (goalId: string) => {
+    if (jumpToGoalRow(goalId, listRef.current ?? document))
+      highlightGoal(goalId)
+    else openEditGoal(goalId)
+  }
   // Dragging changes the priority order, so it only works while the list shows that order.
   const sortBlocksReorder = sort !== "priority"
   const reorderAvailable = orderHasMovableGoals && !sortBlocksReorder
@@ -409,13 +430,20 @@ export function GoalsPage() {
     if (next !== "priority") exitReorder()
     setSort(next)
   }
-  const { selectActive, toggleSelect, exitSelect, toggleReorderExclusive } =
-    useGoalsMobileModes({
-      clearSelection,
-      exitReorder,
-      reorderActive,
-      toggleReorder,
-    })
+  const {
+    selectActive: selectModeActive,
+    toggleSelect,
+    exitSelect,
+    toggleReorderExclusive,
+  } = useGoalsMobileModes({
+    clearSelection,
+    exitReorder,
+    reorderActive,
+    toggleReorder,
+  })
+  // The selection survives a switch from the table to cards on desktop, so cards stay in select mode
+  // while anything is selected.
+  const selectActive = selectModeActive || (!isMobile && selection.size > 0)
   // Grouping is ignored on purpose: a row-menu move steps over the next goal in priority order among
   // the rows the filters show, even one in another group.
   const menuMoves = reorderAvailable
@@ -462,11 +490,34 @@ export function GoalsPage() {
     />
   )
   // Select goals, like Collection's Select units: shown until select mode is on, whose bar ends it.
-  const selectToggle = selectActive ? null : (
-    <GoalsSelectButton
-      disabled={isLoading || rows.length === 0}
-      onSelect={toggleSelect}
-    />
+  const selectToggle =
+    selectActive || tableSelectable ? null : (
+      <GoalsSelectButton
+        disabled={isLoading || rows.length === 0}
+        onSelect={toggleSelect}
+      />
+    )
+  const selectBar = (placement: "top" | "bottom") => (
+    <GoalsSelectBar
+      // Visible selected goals only, so Select all reads unchecked once a selected goal leaves the list.
+      count={selectedRows.length}
+      onClear={clearSelection}
+      onDone={tableSelectable ? undefined : exitSelect}
+      onPreset={selectPreset}
+      onSelectAll={selectAllVisible}
+      placement={placement}
+      total={visibleIds.length}
+    >
+      <GoalsBulkControls
+        actions={goalActions}
+        clearSelection={clearSelection}
+        compact={isMobile}
+        projectRemoval={projectRemoval}
+        projects={projects.projects}
+        reachedByGoalId={reachedByGoalId}
+        selectedRows={selectedRows}
+      />
+    </GoalsSelectBar>
   )
   const statusFilter = (
     <StatusFilterSelect
@@ -583,12 +634,19 @@ export function GoalsPage() {
         showPristineEmptyState={showPristineEmptyState}
       />
 
-      {sortBlocksReorder &&
+      {sort !== "priority" &&
       orderHasMovableGoals &&
       !isLoading &&
       rows.length > 0 ? (
-        <SortBlocksReorderNotice onReset={() => changeSort("priority")} />
+        <SortBlocksReorderNotice
+          onReset={() => changeSort("priority")}
+          sort={sort}
+        />
       ) : null}
+
+      {!isMobile && (tableSelectable || selectActive) && rows.length > 0
+        ? selectBar("top")
+        : null}
 
       <div
         className="flex flex-col gap-6 outline-none"
@@ -612,7 +670,9 @@ export function GoalsPage() {
               onMenuMove={handleMenuMove}
               onReorder={handleReorder}
               onEdit={openEditGoal}
+              onJumpToGoal={jumpToGoal}
               onSelectAllVisible={selectAllVisible}
+              onSelectRange={selectRange}
               onToggleSelected={onToggleSelected}
               potentialProgress={insights.potentialProgressByGoalId}
               projectRemoval={projectRemoval}
@@ -623,7 +683,7 @@ export function GoalsPage() {
               seasonCutoffGoalId={cutoffGoalId}
               eventEndCutoffGoalId={endCutoffGoalId}
               seasonFit={fitView}
-              selectActive={selectActive}
+              selectActive={selectActive || tableSelectable}
               selection={selection}
               view={goalsView.view}
               visibleIds={visibleIds}
@@ -671,23 +731,7 @@ export function GoalsPage() {
         <MobileReorderBar onDone={exitReorder} pending={orderActions.pending} />
       ) : null}
 
-      {selectActive ? (
-        <GoalsSelectBar
-          count={selection.size}
-          onDone={exitSelect}
-          onSelectAll={selectAllVisible}
-        >
-          <GoalsBulkControls
-            actions={goalActions}
-            clearSelection={clearSelection}
-            compact={isMobile}
-            projectRemoval={projectRemoval}
-            projects={projects.projects}
-            reachedByGoalId={reachedByGoalId}
-            selectedRows={selectedRows}
-          />
-        </GoalsSelectBar>
-      ) : null}
+      {isMobile && selectActive ? selectBar("bottom") : null}
 
       {projectRemovalDialogs}
       <GoalEditDialog

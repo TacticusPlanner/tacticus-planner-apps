@@ -72,18 +72,22 @@ export function GoalCheckpoints({
         data-testid="goal-checkpoints"
       >
         <PopoverTitle>{t("goals.estimate.checkpoints.title")}</PopoverTitle>
-        <ol className="grid gap-1.5 text-sm">
+        {/* Two lines per checkpoint: in the fixed `w-72` popover a third column (the date) left the
+            label no width, so a rank badge painted over it. The date sits under the label instead. */}
+        <ol className="grid gap-2 text-sm">
           {view.rows.map((row) => (
             <li
-              className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3"
+              className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3"
               data-testid="goal-checkpoint"
               key={row.target}
             >
-              <CheckpointLabel row={row} />
-              <span className="text-right whitespace-nowrap tabular-nums">
-                {row.days === 0
-                  ? t("goals.estimate.checkpoints.ready")
-                  : `${formatEstimateDate(row.date, dateLocale)} · ${t("goals.estimate.days", { days: row.days })}`}
+              <span className="grid min-w-0 gap-0.5">
+                <CheckpointLabel row={row} />
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {row.days === 0
+                    ? t("goals.estimate.checkpoints.ready")
+                    : `${formatEstimateDate(row.date, dateLocale)} · ${t("goals.estimate.days", { days: row.days })}`}
+                </span>
               </span>
               <span className="text-right whitespace-nowrap text-muted-foreground tabular-nums">
                 {t("goals.estimate.checkpoints.energy", {

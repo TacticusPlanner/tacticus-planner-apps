@@ -17,7 +17,12 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { abilityIcon } from "@workspace/game-catalog"
 
-import { EntityIcon, ProgressionBadge, RankBadge } from "@/shared/ui"
+import {
+  CompactProgression,
+  EntityIcon,
+  HintTrigger,
+  RankBadge,
+} from "@/shared/ui"
 import type { EntityIconSize } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/entities/goal-farming"
@@ -27,6 +32,7 @@ import type { GoalAbilityIds } from "./goal-ability-ids"
 import {
   formatGenericRemainingText,
   formatGoalRemainingText,
+  formatProgressTooltipText,
 } from "./goal-remaining-text"
 import { StackedProgressBar } from "./stacked-progress-bar"
 import { UpgradeTargetMaterials } from "./upgrade-target-materials"
@@ -47,17 +53,68 @@ function displayPercent(ratio: number): number {
   return Math.min(99, Math.round(ratio * 100))
 }
 
-/** One pill per ability track still being raised: a label, the current level, an arrow and
- *  the emphasised target. A Machine of War's tracks are Primary/Secondary, a Character's are
+/** An ability's icon as a focusable tooltip trigger naming the track and the ability
+ *  ("Primary · Ammo Bandolier"): the icon is the ability's only visible name in the Goals table. */
+function AbilityIconTrigger({
+  abilityId,
+  trackLabel,
+  size,
+}: {
+  abilityId: string
+  trackLabel: string
+  size: EntityIconSize
+}) {
+  const { t } = useTranslation("abilities")
+  const label = `${trackLabel} · ${t(abilityId, { defaultValue: abilityId })}`
+  return (
+    // A popover on touch, with the hit area grown past the small icon so a finger can reach it.
+    <HintTrigger
+      className="relative shrink-0 pointer-coarse:after:absolute pointer-coarse:after:-inset-3.5"
+      data-testid="goal-ability-icon"
+      label={label}
+    >
+      <EntityIcon
+        alt=""
+        className="rounded-sm"
+        size={size}
+        src={abilityIcon(abilityId)}
+      />
+    </HintTrigger>
+  )
+}
+
+/** "30 → 35": a track's current level, an arrow and the emphasised target. */
+function AbilityLevels({
+  current,
+  target,
+}: {
+  current: number
+  target: number
+}) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="text-muted-foreground tabular-nums">{current}</span>
+      <ArrowRight aria-hidden="true" className="size-3" />
+      <span className="font-semibold tabular-nums">{target}</span>
+    </span>
+  )
+}
+
+/** One entry per ability track still being raised: the ability, the current level, an arrow and the
+ *  emphasised target. A Machine of War's tracks are Primary/Secondary, a Character's are
  *  Active/Passive (`active*` fields hold the first track, `passive*` the second, for both). A track at
- *  or above its target gets no pill. `blocks` draws them as V1's goal card did: soft blocks sharing the
- *  row's width, label left and levels right. With `abilityIds`, each pill leads with its ability's
- *  icon. */
+ *  or above its target gets no entry.
+ *
+ *  `row` (the desktop table) draws each ability's icon at row size beside its levels, with the track
+ *  and ability name in the icon's tooltip, so it sits level with the rank and rarity emblems. Otherwise
+ *  each track is a compact pill (label, levels) with an inline icon; `blocks` stretches the pills
+ *  across the row as V1's goal card did. A track without a known ability shows its label instead. */
 function AbilityTargetPills({
   progress,
   entityType,
   abilityIds,
   blocks = false,
+  row = false,
 }: {
   progress: Pick<
     Extract<GoalProgress, { kind: "Ability" }>,
@@ -66,6 +123,7 @@ function AbilityTargetPills({
   entityType?: string
   abilityIds?: GoalAbilityIds
   blocks?: boolean
+  row?: boolean
 }) {
   const { t } = useTranslation()
   const mow = entityType === "Mow"
@@ -84,39 +142,65 @@ function AbilityTargetPills({
     },
   ].filter((track) => track.target > track.current)
 
+  if (row) {
+    return (
+      <span className="flex w-max items-center gap-3 text-sm">
+        {tracks.map((track) => {
+          const label = t(`goals.overview.abilityTrack.${track.key}`)
+          return (
+            <span
+              className="inline-flex items-center gap-1.5"
+              data-testid={`goal-ability-pill-${track.key}`}
+              key={track.key}
+            >
+              {track.abilityId ? (
+                <AbilityIconTrigger
+                  abilityId={track.abilityId}
+                  size="row"
+                  trackLabel={label}
+                />
+              ) : (
+                <span className="text-xs font-medium text-muted-foreground">
+                  {label}
+                </span>
+              )}
+              <AbilityLevels current={track.current} target={track.target} />
+            </span>
+          )
+        })}
+      </span>
+    )
+  }
+
   return (
     <span
       className={cn("flex flex-wrap items-center gap-1.5", blocks && "w-full")}
     >
-      {tracks.map((track) => (
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs",
-            blocks && "flex-1 justify-between rounded-lg px-2 py-1"
-          )}
-          data-testid={`goal-ability-pill-${track.key}`}
-          key={track.key}
-        >
-          <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
-            {track.abilityId ? (
-              <EntityIcon
-                size="inline"
-                alt=""
-                src={abilityIcon(track.abilityId)}
-                className="rounded-sm"
-              />
-            ) : null}
-            {t(`goals.overview.abilityTrack.${track.key}`)}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="text-muted-foreground tabular-nums">
-              {track.current}
+      {tracks.map((track) => {
+        const label = t(`goals.overview.abilityTrack.${track.key}`)
+        return (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs",
+              blocks && "flex-1 justify-between rounded-lg px-2 py-1"
+            )}
+            data-testid={`goal-ability-pill-${track.key}`}
+            key={track.key}
+          >
+            <span className="inline-flex items-center gap-1 font-medium text-muted-foreground">
+              {track.abilityId ? (
+                <AbilityIconTrigger
+                  abilityId={track.abilityId}
+                  size="inline"
+                  trackLabel={label}
+                />
+              ) : null}
+              {label}
             </span>
-            <ArrowRight aria-hidden="true" className="size-3" />
-            <span className="font-semibold tabular-nums">{track.target}</span>
+            <AbilityLevels current={track.current} target={track.target} />
           </span>
-        </span>
-      ))}
+        )
+      })}
     </span>
   )
 }
@@ -144,17 +228,18 @@ function GoalTargetPreviewDisplay({
   preview,
   entityType,
   abilityIds,
-  size,
+  large,
   rankIconSize,
   arrowClass,
 }: {
   preview: GoalTargetPreview
   entityType?: string
   abilityIds?: GoalAbilityIds
-  size: "md" | "lg"
+  large: boolean
   rankIconSize: EntityIconSize
   arrowClass: string
 }) {
+  const progressionSize = large ? "emblem" : "inline"
   switch (preview.kind) {
     case "Rank":
       return (
@@ -188,9 +273,9 @@ function GoalTargetPreviewDisplay({
           className="flex w-max items-center gap-1.5"
           data-testid="goal-target-preview"
         >
-          <ProgressionBadge size={size} value={preview.start} />
+          <CompactProgression size={progressionSize} value={preview.start} />
           <ArrowRight className={arrowClass} />
-          <ProgressionBadge size={size} value={preview.target} />
+          <CompactProgression size={progressionSize} value={preview.target} />
         </span>
       )
     case "Ability":
@@ -199,6 +284,7 @@ function GoalTargetPreviewDisplay({
           <AbilityTargetPills
             abilityIds={abilityIds}
             entityType={entityType}
+            row={large}
             progress={{
               currentActive: preview.startActive,
               targetActive: preview.targetActive,
@@ -209,6 +295,66 @@ function GoalTargetPreviewDisplay({
         </span>
       )
   }
+}
+
+/** What Actual and Potential progress mean, with the legend swatches. `actual`/`potential` add a goal's own
+ *  figures to each line (the mobile card's expanded footer); the list-wide "i" shows it without. */
+function ProgressExplanation({
+  actual,
+  potential,
+}: {
+  actual?: { heading: string; extra: string | null }
+  potential?: { heading: string; extra: string | null }
+}) {
+  const { t } = useTranslation()
+  return (
+    <div className="grid gap-3 text-sm" data-testid="goal-progress-explanation">
+      <p className="flex items-start gap-2">
+        <ProgressSwatch variant="actual" />
+        <span>
+          <span className="font-medium">
+            {actual?.heading ?? t("goals.overview.actualProgress")}
+          </span>
+          : {t("goals.overview.actualProgressDescription")}
+          {actual?.extra ? ` ${actual.extra}` : null}
+        </span>
+      </p>
+      <p className="flex items-start gap-2">
+        <ProgressSwatch variant="potential" />
+        <span>
+          <span className="font-medium">
+            {potential?.heading ?? t("goals.overview.potentialProgress")}
+          </span>
+          : {t("goals.overview.potentialProgressDescription")}
+          {potential?.extra ? ` ${potential.extra}` : null}
+        </span>
+      </p>
+    </div>
+  )
+}
+
+/** The one "i" per list that explains Actual and Potential progress (goal-list-layout): beside the
+ *  Progress header in the table, beside the legend above the cards. Each goal's own figures are in its
+ *  percent readout's tooltip. */
+export function ProgressExplainer() {
+  const { t } = useTranslation()
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          aria-label={t("goals.overview.progressDetails")}
+          data-testid="goals-progress-info-trigger"
+          size="icon-sm"
+          variant="ghost"
+        >
+          <Info />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80">
+        <ProgressExplanation />
+      </PopoverContent>
+    </Popover>
+  )
 }
 
 /** The once-per-list Actual/Potential key (goal-list-layout: never repeated per row or card). */
@@ -237,8 +383,8 @@ export function ProgressLegend({ className }: { className?: string }) {
 /** The goal's own from → target representation (Rank/Ascension badges, "Lv 44 → 50", "273 / 500
  *  shards", …) — split out from the progress bar/percent/explanation (`GoalProgressDisplay`) so a
  *  caller can lay the two out independently (the desktop table's separate Goal/Progress columns; the
- *  mobile card's "goal line"). Reuses `RankBadge`/`ProgressionBadge` so a goal's target reads
- *  identically here and in the create-goal form. Renders nothing for `Unknown` progress or a kind
+ *  mobile card's "goal line"). Ranks are `RankBadge` emblems, Ascension the compact rarity-and-stars
+ *  `CompactProgression`, ability tracks their icons. Renders nothing for `Unknown` progress or a kind
  *  with no natural current/target pair and no ratio to fall back to. */
 export function GoalTargetDisplay({
   progress,
@@ -252,7 +398,8 @@ export function GoalTargetDisplay({
   entityType?: string
   /** An Ability goal's unit abilities, for each track's icon (see `goalAbilityIds`). */
   abilityIds?: GoalAbilityIds
-  /** `lg` (desktop table) enlarges the rank and rarity emblems so the target reads at a glance. */
+  /** `lg` (desktop table) draws the emblems at table-row size (rank and ability icons `row`, the
+   *  rarity icon `emblem`) so the target reads at a glance. */
   size?: "md" | "lg"
   /** Ability tracks as full-width blocks (the goal card) instead of compact pills (the table). */
   abilityBlocks?: boolean
@@ -260,6 +407,8 @@ export function GoalTargetDisplay({
   const { t } = useTranslation()
   const large = size === "lg"
   const rankIconSize: EntityIconSize = large ? "row" : "inline"
+  // Rarity hexagons are solid and fill their box, so they sit a step below the rank emblems (`emblem`).
+  const progressionSize = large ? "emblem" : "inline"
   // `w-max` on each target row: the Goal column shrinks to its content's minimum width, and Tailwind's
   // `max-width: 100%` on images gives a row of icons almost none, which squashed them into the next cell.
   const arrowClass = cn("text-muted-foreground", large ? "size-4" : "size-3.5")
@@ -271,8 +420,8 @@ export function GoalTargetDisplay({
         arrowClass={arrowClass}
         entityType={entityType}
         preview={progress.preview}
+        large={large}
         rankIconSize={rankIconSize}
-        size={size}
       />
     ) : null
   }
@@ -302,9 +451,9 @@ export function GoalTargetDisplay({
     </span>
   ) : progress.kind === "Ascension" ? (
     <span className="flex w-max items-center gap-1.5">
-      <ProgressionBadge size={size} value={progress.current} />
+      <CompactProgression size={progressionSize} value={progress.current} />
       <ArrowRight className={arrowClass} />
-      <ProgressionBadge size={size} value={progress.target} />
+      <CompactProgression size={progressionSize} value={progress.target} />
     </span>
   ) : progress.kind === "Ability" ? (
     <AbilityTargetPills
@@ -312,6 +461,7 @@ export function GoalTargetDisplay({
       blocks={abilityBlocks}
       entityType={entityType}
       progress={progress}
+      row={large && !abilityBlocks}
     />
   ) : progress.kind === "Unlock" ? (
     // The owned / required shard count lives in the Progress cell (`GoalProgressDisplay`).
@@ -339,9 +489,9 @@ export function GoalTargetDisplay({
  * kind beyond a still-available remaining-text line (player data for this goal hasn't synced yet, or
  * the goal kind has no ratio to show at all).
  *
- * `open`/`onOpenChange` make the desktop popover a controlled component when the caller needs to
- * coordinate one-open-at-a-time across a list (see `goals-list.tsx`'s `openPopoverGoalId`); omit
- * both for an uncontrolled popover (Radix manages its own state) in a single-instance context.
+ * At or above the mobile breakpoint there is no per-goal "i": the list explains Actual and Potential
+ * once (`ProgressExplainer`), and the goal's own figures (upgrade slots, energy, levels, XP) are the
+ * percent readout's tooltip.
  *
  * `potentialOnly` drops the actual reading: the bar renders fully in
  * the striped "potential" style, the percent shows only the small potential-styled reading, and the
@@ -352,16 +502,12 @@ export function GoalProgressDisplay({
   potentialOnly = false,
   remaining = null,
   energy,
-  open,
-  onOpenChange,
 }: {
   progress: GoalProgress
   potentialRatio?: number
   potentialOnly?: boolean
   remaining?: ResourceNeed | null
   energy?: number
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
 }) {
   const { t, i18n } = useTranslation()
   const isMobile = useIsMobile()
@@ -443,7 +589,14 @@ export function GoalProgressDisplay({
     </span>
   )
 
-  const percentWithTooltip = remainingText ? (
+  const tooltipText = formatProgressTooltipText(
+    t,
+    i18n.resolvedLanguage,
+    progress,
+    remaining,
+    energy
+  )
+  const percentWithTooltip = tooltipText ? (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
@@ -455,91 +608,47 @@ export function GoalProgressDisplay({
         </button>
       </TooltipTrigger>
       <TooltipContent data-testid="goal-remaining-text">
-        {remainingText}
+        {tooltipText}
       </TooltipContent>
     </Tooltip>
   ) : (
     <span data-testid="goal-progress-percent">{percentLabel}</span>
   )
 
+  const fmt = (value: number) => formatNumber(i18n.resolvedLanguage, value)
+  const slotsRemaining = remaining?.upgradeSlotsRemaining ?? 0
+  // The mobile card's expanded footer: the shared explanation with this goal's own figures.
   const explanation = hasExplanation ? (
-    <div className="grid gap-3 text-sm" data-testid="goal-progress-explanation">
-      <p className="flex items-start gap-2">
-        <ProgressSwatch variant="actual" />
-        <span>
-          <span className="font-medium">
-            {t("goals.overview.actualProgress")} {actualPct}%
-          </span>
-          : {t("goals.overview.actualProgressDescription")}
-          {progress.kind === "Rank" &&
-          remaining &&
-          (remaining.upgradeSlotsRemaining ?? 0) > 0 ? (
-            <>
-              {" "}
-              {t("goals.overview.actualSlotsRemaining", {
-                count: remaining.upgradeSlotsRemaining,
-              })}
-            </>
-          ) : null}
-          {progress.kind === "LevelRequirement" &&
-          progress.target > progress.current ? (
-            <>
-              {" "}
-              {t("goals.overview.actualLevelsRemaining", {
-                count: progress.target - progress.current,
-              })}
-            </>
-          ) : null}
-        </span>
-      </p>
-      <p className="flex items-start gap-2">
-        <ProgressSwatch variant="potential" />
-        <span>
-          <span className="font-medium">
-            {t("goals.overview.potentialProgress")} {potentialPct}%
-          </span>
-          : {t("goals.overview.potentialProgressDescription")}
-          {progress.kind === "Rank" && energy !== undefined ? (
-            <>
-              {" "}
-              {t("goals.overview.potentialEnergyRemaining", {
-                energy: formatNumber(i18n.resolvedLanguage, energy),
-              })}
-            </>
-          ) : null}
-          {progress.kind === "LevelRequirement" && progress.remainingXp > 0 ? (
-            <>
-              {" "}
-              {t("goals.overview.potentialXpRemaining", {
-                xp: formatNumber(i18n.resolvedLanguage, progress.remainingXp),
-              })}
-            </>
-          ) : null}
-        </span>
-      </p>
-    </div>
+    <ProgressExplanation
+      actual={{
+        heading: `${t("goals.overview.actualProgress")} ${actualPct}%`,
+        extra:
+          progress.kind === "Rank" && slotsRemaining > 0
+            ? t("goals.overview.actualSlotsRemaining", {
+                count: slotsRemaining,
+              })
+            : progress.kind === "LevelRequirement" &&
+                progress.target > progress.current
+              ? t("goals.overview.actualLevelsRemaining", {
+                  count: progress.target - progress.current,
+                })
+              : null,
+      }}
+      potential={{
+        heading: `${t("goals.overview.potentialProgress")} ${potentialPct}%`,
+        extra:
+          progress.kind === "Rank" && energy !== undefined
+            ? t("goals.overview.potentialEnergyRemaining", {
+                energy: fmt(energy),
+              })
+            : progress.kind === "LevelRequirement" && progress.remainingXp > 0
+              ? t("goals.overview.potentialXpRemaining", {
+                  xp: fmt(progress.remainingXp),
+                })
+              : null,
+      }}
+    />
   ) : null
-
-  const infoTrigger = hasExplanation ? (
-    <Popover onOpenChange={onOpenChange} open={open}>
-      <PopoverTrigger asChild>
-        <Button
-          aria-expanded={open}
-          aria-label={t("goals.overview.progressDetails")}
-          data-testid="goal-progress-info-trigger"
-          size="icon-sm"
-          variant="ghost"
-        >
-          <Info className="size-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-80">
-        {explanation}
-      </PopoverContent>
-    </Popover>
-  ) : (
-    <span aria-hidden="true" className="inline-block size-7 shrink-0" />
-  )
 
   const ceilingLabel = reachableCeilingLabel(t, progress)
 
@@ -588,7 +697,6 @@ export function GoalProgressDisplay({
         </div>
         {unlockCount}
         {percentWithTooltip}
-        {!isMobile ? infoTrigger : null}
       </div>
       {isMobile ? mobileFooter : null}
     </div>

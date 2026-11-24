@@ -1,6 +1,11 @@
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Table,
@@ -12,8 +17,11 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useGoalCatalog } from "@/features/goal-planning"
-import { SortableList } from "@/shared/ui"
-import { ProgressLegend } from "../shared/goal-progress-visuals"
+import { SORTABLE_ITEM_GROUP, SortableList } from "@/shared/ui"
+import {
+  ProgressExplainer,
+  ProgressLegend,
+} from "../shared/goal-progress-visuals"
 import { GoalRowCells } from "./goal-table-row"
 import { GoalsCards } from "./goals-cards"
 import {
@@ -56,7 +64,7 @@ export function GoalsList({
 
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()
 /** Header columns in `GoalsTable`, spanned by the season cut-off row. */
-const COLUMN_COUNT = 8
+const COLUMN_COUNT = 9
 /** A header class that shrinks its column to the widest cell's content. */
 const FIT_COLUMN = "w-px"
 
@@ -74,6 +82,7 @@ function GoalsTable({
   menuMoves,
   onMenuMove,
   highlightedGoalId,
+  onJumpToGoal,
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
@@ -83,6 +92,7 @@ function GoalsTable({
   projectRemoval,
   selection = EMPTY_SELECTION,
   onToggleSelected,
+  onSelectRange,
   visibleIds,
   onSelectAllVisible,
   selectActive = false,
@@ -92,9 +102,6 @@ function GoalsTable({
 }: GoalsListProps & { isMobile: boolean }) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
-  const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
-    null
-  )
   // Select-all covers every visible row (across groups), not just this table's rows.
   const scopeIds = visibleIds ?? rows.map((row) => row.goalId)
   const selectedCount = scopeIds.filter((id) => selection.has(id)).length
@@ -119,7 +126,8 @@ function GoalsTable({
               table layout"). */}
           <TableHead className={FIT_COLUMN}>
             <div className="flex items-center gap-2">
-              {showCheckboxes ? (
+              {/* Desktop's select-all lives in the bar above the list. */}
+              {showCheckboxes && isMobile ? (
                 <Checkbox
                   aria-label={t("goals.bulk.selectAll")}
                   checked={
@@ -151,11 +159,30 @@ function GoalsTable({
           <TableHead className={FIT_COLUMN}>
             {t("goals.columns.doneBy")}
           </TableHead>
+          <TableHead className={FIT_COLUMN}>
+            {/* Not obvious from the word alone how it differs from Done by: the tooltip says. */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="cursor-default rounded-sm underline decoration-dotted underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  data-testid="goals-duration-header"
+                  type="button"
+                >
+                  {t("goals.columns.duration")}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>{t("goals.columns.durationHelp")}</TooltipContent>
+            </Tooltip>
+          </TableHead>
           <TableHead>{t("goals.columns.remaining")}</TableHead>
           <TableHead className="w-40">
             {showLegend ? (
               <div className="grid gap-0.5 py-1">
-                {t("goals.columns.progress")}
+                <span className="flex items-center justify-between gap-1">
+                  {t("goals.columns.progress")}
+                  {/* The list's one "i": the rows carry no per-goal explanation on desktop. */}
+                  {isMobile ? null : <ProgressExplainer />}
+                </span>
                 {/* Stacked: side by side it would widen this deliberately narrow column. */}
                 <ProgressLegend className="flex-col items-start gap-0" />
               </div>
@@ -182,12 +209,14 @@ function GoalsTable({
               <Fragment key={row.goalId}>
                 {seasonFit && seasonCutoffGoalId === row.goalId ? (
                   <SeasonCutoffRow
+                    goalId={row.goalId}
                     colSpan={COLUMN_COUNT}
                     seasonFit={seasonFit}
                   />
                 ) : null}
                 {seasonFit && eventEndCutoffGoalId === row.goalId ? (
                   <SeasonCutoffRow
+                    goalId={row.goalId}
                     colSpan={COLUMN_COUNT}
                     edge="end"
                     seasonFit={seasonFit}
@@ -195,7 +224,8 @@ function GoalsTable({
                 ) : null}
                 <TableRow
                   className={cn(
-                    "h-16 transition-colors duration-700 data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:outline-2 data-dragging:-outline-offset-2 data-dragging:outline-ring data-just-moved:bg-accent",
+                    SORTABLE_ITEM_GROUP,
+                    "h-16 transition-colors duration-700 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:outline-2 data-dragging:-outline-offset-2 data-dragging:outline-ring data-just-moved:bg-accent",
                     reached && REACHED_ROW_CLASS,
                     fitOffset !== undefined && SEASON_FIT_ROW_ACCENT[fitOffset]
                   )}
@@ -207,6 +237,7 @@ function GoalsTable({
                   data-reached={reached || undefined}
                   data-season-fit={fitOffset}
                   data-testid="goal-row"
+                  tabIndex={-1}
                   ref={sortable.setNodeRef}
                   style={sortable.style}
                 >
@@ -222,16 +253,16 @@ function GoalsTable({
                     metrics={metrics}
                     moves={menuMoves?.get(row.goalId)}
                     onEdit={onEdit}
+                    onJumpToGoal={onJumpToGoal}
                     onMenuMove={onMenuMove}
-                    popoverOpen={openPopoverGoalId === row.goalId}
                     potentialProgress={potentialProgress}
                     onToggleSelected={onToggleSelected}
+                    onSelectRange={onSelectRange}
                     selected={selection.has(row.goalId)}
                     reachedByGoalId={reachedByGoalId}
                     reorderEnabled={reorderEnabled && !isMobile}
                     row={row}
                     showCheckbox={showCheckboxes}
-                    setOpenPopoverGoalId={setOpenPopoverGoalId}
                     seasonFit={seasonFit}
                     xpBook={xpBook}
                   />

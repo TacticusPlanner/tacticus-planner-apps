@@ -14,6 +14,7 @@ export {
   estimateTodayRun,
   type EstimatePlanParams,
 } from "./lib/estimate-plan"
+export { goalRaidDuration } from "./lib/raid-duration"
 export {
   calculateGoalFarmingStages,
   calculateGoalResourceNeed,

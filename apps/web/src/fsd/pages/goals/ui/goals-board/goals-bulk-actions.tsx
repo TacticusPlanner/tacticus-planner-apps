@@ -121,7 +121,8 @@ export function GoalsBulkActions({
             key={key}
             onClick={onClick}
             size={compact ? "icon" : "sm"}
-            variant="outline"
+            // Labelled ghost buttons in the desktop bar, outlined icons in the phone's pill.
+            variant={compact ? "outline" : "ghost"}
           >
             {icon}
             {compact ? null : label}

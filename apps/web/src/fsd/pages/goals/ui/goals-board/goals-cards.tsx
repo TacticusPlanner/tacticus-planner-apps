@@ -1,10 +1,13 @@
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useGoalCatalog } from "@/features/goal-planning"
-import { SortableList } from "@/shared/ui"
+import { SORTABLE_ITEM_GROUP, SortableList } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
-import { ProgressLegend } from "../shared/goal-progress-visuals"
+import {
+  ProgressExplainer,
+  ProgressLegend,
+} from "../shared/goal-progress-visuals"
 import { GoalCard } from "./goal-card"
 import {
   drawsPotentialBar,
@@ -41,6 +44,7 @@ export function GoalsCards({
   menuMoves,
   onMenuMove,
   highlightedGoalId,
+  onJumpToGoal,
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
@@ -50,15 +54,13 @@ export function GoalsCards({
   projectRemoval,
   selection = EMPTY_SELECTION,
   onToggleSelected,
+  onSelectRange,
   selectActive = false,
   seasonFit,
   seasonCutoffGoalId,
   eventEndCutoffGoalId,
 }: GoalsListProps & { isMobile: boolean }) {
   const { getEntityName } = useGoalCatalog()
-  const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
-    null
-  )
   const showLegend = rows.some((row) =>
     drawsPotentialBar(
       row,
@@ -76,14 +78,19 @@ export function GoalsCards({
     return (
       <Fragment key={row.goalId}>
         {seasonFit && seasonCutoffGoalId === row.goalId ? (
-          <SeasonCutoffItem seasonFit={seasonFit} />
+          <SeasonCutoffItem goalId={row.goalId} seasonFit={seasonFit} />
         ) : null}
         {seasonFit && eventEndCutoffGoalId === row.goalId ? (
-          <SeasonCutoffItem edge="end" seasonFit={seasonFit} />
+          <SeasonCutoffItem
+            edge="end"
+            goalId={row.goalId}
+            seasonFit={seasonFit}
+          />
         ) : null}
         <li
           className={cn(
-            "flex min-w-0 flex-col gap-2.5 rounded-2xl border bg-card p-3 text-sm shadow-xs transition-colors duration-700 data-dragging:relative data-dragging:z-10 data-dragging:border-ring data-dragging:shadow-lg data-just-moved:bg-accent",
+            SORTABLE_ITEM_GROUP,
+            "flex min-w-0 flex-col gap-2.5 rounded-2xl border bg-card p-3 text-sm shadow-xs transition-colors duration-700 focus-visible:outline-2 focus-visible:outline-ring data-dragging:relative data-dragging:z-10 data-dragging:border-ring data-dragging:shadow-lg data-just-moved:bg-accent",
             reached && REACHED_ROW_CLASS,
             fitOffset !== undefined && SEASON_FIT_CARD_ACCENT[fitOffset]
           )}
@@ -93,6 +100,7 @@ export function GoalsCards({
           data-reached={reached || undefined}
           data-season-fit={fitOffset}
           data-testid="goal-row"
+          tabIndex={-1}
           ref={sortable?.setNodeRef}
           style={sortable?.style}
         >
@@ -107,16 +115,16 @@ export function GoalsCards({
             metrics={metrics}
             moves={menuMoves?.get(row.goalId)}
             onEdit={onEdit}
+            onJumpToGoal={onJumpToGoal}
             onMenuMove={onMenuMove}
             onToggleSelected={onToggleSelected}
-            popoverOpen={openPopoverGoalId === row.goalId}
+            onSelectRange={onSelectRange}
             potentialProgress={potentialProgress}
             projectRemoval={projectRemoval}
             reachedByGoalId={reachedByGoalId}
             row={row}
             seasonFit={seasonFit}
             selected={selection.has(row.goalId)}
-            setOpenPopoverGoalId={setOpenPopoverGoalId}
             showCheckbox={selectActive}
             showDragHandle={!isMobile && reorderEnabled}
             xpBook={xpBook}
@@ -128,7 +136,13 @@ export function GoalsCards({
 
   return (
     <div className="flex flex-col gap-3">
-      {showLegend ? <ProgressLegend /> : null}
+      {showLegend ? (
+        <div className="flex items-center gap-1">
+          <ProgressLegend />
+          {/* The list's one "i"; a phone's cards keep their own footer explanation. */}
+          {isMobile ? null : <ProgressExplainer />}
+        </div>
+      ) : null}
       <ul className={GRID_CLASS} data-testid="goals-list-cards">
         {/* Phones reorder in their own mode, so nothing here could start a drag. */}
         {isMobile ? (

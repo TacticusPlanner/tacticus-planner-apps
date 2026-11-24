@@ -1,5 +1,6 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { Calendar } from "lucide-react"
+import { Calendar, Hourglass } from "lucide-react"
 import {
   Tooltip,
   TooltipContent,
@@ -7,11 +8,67 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
+import { Checkbox } from "@workspace/ui/components/checkbox"
+import { HintTrigger } from "@/shared/ui"
 
+import { goalRaidDuration } from "@/entities/goal-farming"
 import type { EstimateOutcome } from "@/entities/goal-farming"
 import type { GoalRow } from "@/features/goal-planning"
 import { useGoalCatalog } from "@/features/goal-planning"
 import { isInFlightStatus } from "./goal-row-utils"
+
+/** A goal's days of raids once it starts getting energy (`goalRaidDuration`): the table's Duration
+ *  column, and an hourglass on the card's date line, whose tooltip says what the figure means. A goal
+ *  with no raids shows a dash in the column and nothing on the card. */
+export function GoalDuration({
+  estimate,
+  icon = false,
+}: {
+  estimate: EstimateOutcome | undefined
+  /** The card's date line: an hourglass and a tooltip stand in for the table's column header. */
+  icon?: boolean
+}) {
+  const { t } = useTranslation()
+  const duration = goalRaidDuration(estimate)
+  if (duration === undefined) {
+    // The column keeps a dash so a goal with no raids doesn't read as still loading.
+    return icon ? null : (
+      <span
+        className="text-sm text-muted-foreground"
+        data-testid="goal-duration-none"
+      >
+        -
+      </span>
+    )
+  }
+  const text = t("goals.estimate.duration", { count: duration })
+  if (!icon) {
+    return (
+      <span
+        className="text-sm whitespace-nowrap tabular-nums"
+        data-testid="goal-duration"
+      >
+        {text}
+      </span>
+    )
+  }
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          aria-label={t("goals.estimate.durationLabel", { count: duration })}
+          className="inline-flex cursor-default items-center gap-1 rounded-sm whitespace-nowrap tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          data-testid="goal-duration"
+          type="button"
+        >
+          <Hourglass aria-hidden="true" className="size-3.5 shrink-0" />
+          {text}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{t("goals.columns.durationHelp")}</TooltipContent>
+    </Tooltip>
+  )
+}
 
 /** The formatted completion date + "in {{days}} days" caption for a computed estimate, nothing when
  * there's no entry for this goal (no project selected, non-Rank goal type) or the farm is blocked —
@@ -36,6 +93,16 @@ export function EstimateCell({
   // cannot import it from here — see `shared/lib/format-time/format-estimate-date`, which also documents the
   // UTC parsing this value needs.
   const formattedDate = formatEstimateDate(estimate.date, dateLocale)
+  // The short date's tooltip: the same day with its weekday and year.
+  const fullDate = formatEstimateDate(estimate.date, dateLocale, "full")
+  const dateFace = (content: ReactNode) =>
+    fullDate ? (
+      <HintTrigger className="gap-1.5" label={fullDate}>
+        {content}
+      </HintTrigger>
+    ) : (
+      content
+    )
   const days = t("goals.estimate.days", { days: estimate.days })
   if (stacked) {
     // Desktop "Done by" column: the date is the row's headline figure, the day count sits beneath.
@@ -43,26 +110,40 @@ export function EstimateCell({
       <span
         className="grid gap-0.5 whitespace-nowrap"
         data-testid="goal-row-estimate"
-        title={estimate.date}
       >
         <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-          <Calendar className="size-4 shrink-0 text-muted-foreground" />
-          {formattedDate}
+          {dateFace(
+            <>
+              <Calendar className="size-4 shrink-0 text-muted-foreground" />
+              {formattedDate}
+            </>
+          )}
         </span>
         <span className="text-xs text-muted-foreground">{days}</span>
       </span>
     )
   }
+  // Each part keeps to one line; on a narrow card the duration wraps under the date as a whole.
   return (
     <span
-      className="flex items-center gap-1 text-sm text-muted-foreground"
+      className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-sm text-muted-foreground"
       data-testid="goal-row-estimate"
-      title={estimate.date}
     >
-      <Calendar className="size-3.5 shrink-0" />
-      <span className="font-medium text-foreground">
-        {formattedDate}
-      </span> · {days}
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">
+        {dateFace(
+          <>
+            <Calendar className="size-3.5 shrink-0" />
+            <span className="font-medium text-foreground">{formattedDate}</span>
+          </>
+        )}{" "}
+        · {days}
+      </span>
+      {goalRaidDuration(estimate) === undefined ? null : (
+        <span className="inline-flex items-center gap-1 whitespace-nowrap">
+          {" · "}
+          <GoalDuration estimate={estimate} icon />
+        </span>
+      )}
     </span>
   )
 }
@@ -131,5 +212,36 @@ export function GoalPriorityNumber({ row }: { row: GoalRow }) {
       <span className="sr-only">{t("goals.columns.priority")} </span>
       {row.priority}
     </span>
+  )
+}
+
+/** A goal's selection checkbox. Shift-click selects the range from the goal last toggled (Gmail). */
+export function GoalSelectCheckbox({
+  goalId,
+  entityName,
+  selected,
+  onToggle,
+  onSelectRange,
+}: {
+  goalId: string
+  entityName: string
+  selected: boolean
+  onToggle?: (goalId: string) => void
+  onSelectRange?: (goalId: string) => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <Checkbox
+      aria-label={t("goals.bulk.selectRow", { entity: entityName })}
+      checked={selected}
+      data-testid={`goal-row-select-${goalId}`}
+      onCheckedChange={() => onToggle?.(goalId)}
+      onClick={(event) => {
+        if (!event.shiftKey || !onSelectRange) return
+        // The range replaces the plain toggle.
+        event.preventDefault()
+        onSelectRange(goalId)
+      }}
+    />
   )
 }

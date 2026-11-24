@@ -92,3 +92,31 @@ export function formatGoalRemainingText(
 
   return formatGenericRemainingText(t, remaining, energy)
 }
+
+/** The percent readout's tooltip on `GoalProgressDisplay`: the goal's remaining text plus the per-goal
+ *  figures the Actual/Potential explanation used to carry in each row's own "i" popover, now that the
+ *  explanation is one shared key per list. A Rank goal leads with its upgrade slots left on the
+ *  current rank; a level requirement ends with its XP still to earn. */
+export function formatProgressTooltipText(
+  t: TFunction,
+  language: string | undefined,
+  progress: GoalProgress,
+  remaining: ResourceNeed | null,
+  energy: number | undefined
+): string | null {
+  const fmt = (value: number) => new Intl.NumberFormat(language).format(value)
+  const base = formatGoalRemainingText(t, language, progress, remaining, energy)
+  const slots = remaining?.coveredByEarlierGoal
+    ? 0
+    : (remaining?.upgradeSlotsRemaining ?? 0)
+  const parts = [
+    progress.kind === "Rank" && slots > 0
+      ? t("goals.overview.remainingText.upgradeSlots", { count: slots })
+      : null,
+    base,
+    progress.kind === "LevelRequirement" && progress.remainingXp > 0
+      ? t("goals.overview.remainingText.xp", { xp: fmt(progress.remainingXp) })
+      : null,
+  ].filter((part): part is string => part !== null)
+  return parts.length > 0 ? parts.join(" · ") : null
+}

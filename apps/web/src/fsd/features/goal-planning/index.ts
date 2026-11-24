@@ -20,7 +20,10 @@ export {
 export { useMoveProjectGoals } from "./model/goal-order/use-move-project-goals"
 export { moveGoalsChoices } from "./model/goal-order/move-goals-choices"
 export { MoveProjectGoalsDialog } from "./ui/goal-order/move-project-goals-dialog"
-export { useGoalsSelection } from "./model/goals-data/use-goals-selection"
+export {
+  useGoalsSelection,
+  type GoalSelectionPreset,
+} from "./model/goals-data/use-goals-selection"
 export {
   useGoalEditParam,
   useGoalsListFilters,
@@ -95,6 +98,7 @@ export {
   type ProjectFitCount,
 } from "./model/deadline-fit/use-project-deadline-fit"
 export {
+  orderRowsByDuration,
   orderRowsByFinishDate,
   orderRowsByGlobalPriority,
 } from "./model/shared/goal-row-order"

@@ -50,21 +50,18 @@ describe("GoalsLayout", () => {
     expect(screen.queryByTestId("goals-child")).not.toBeInTheDocument()
   })
 
-  it("drops the page width cap on the Goals tab in Cards view", () => {
-    renderLayout("/plan/goals")
+  it("drops the page width cap on the Goals tab in both layouts", () => {
+    window.localStorage.setItem("goals.overview.view", "Cards")
+    const cards = renderLayout("/plan/goals")
+    expect(screen.getByTestId("goals-page-container")).toHaveClass("max-w-none")
+    cards.unmount()
 
+    window.localStorage.setItem("goals.overview.view", "Table")
+    renderLayout("/plan/goals")
     expect(screen.getByTestId("goals-page-container")).toHaveClass("max-w-none")
   })
 
-  it("keeps the page width cap for the table and the other tabs", () => {
-    window.localStorage.setItem("goals.overview.view", "Table")
-    const table = renderLayout("/plan/goals")
-    expect(screen.getByTestId("goals-page-container")).not.toHaveClass(
-      "max-w-none"
-    )
-    table.unmount()
-
-    window.localStorage.setItem("goals.overview.view", "Cards")
+  it("keeps the page width cap on the other tabs", () => {
     renderLayout("/plan/projects")
     expect(screen.getByTestId("goals-page-container")).not.toHaveClass(
       "max-w-none"

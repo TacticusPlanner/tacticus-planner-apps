@@ -1,7 +1,5 @@
 import { memo } from "react"
-import type { Dispatch, SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
 
 import {
@@ -21,14 +19,17 @@ import { goalAbilityIds } from "../shared/goal-ability-ids"
 import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
+import { HintTrigger } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import { HreSourceIndicator } from "../shared/hre-source-indicator"
 import { SeasonFitLabel } from "./season-fit-ui"
 import {
   EstimateCell,
+  GoalDuration,
   GoalNameLink,
   GoalPriorityNumber,
+  GoalSelectCheckbox,
   ReachedDash,
 } from "./goal-row-shared"
 import { deriveGoalRowData } from "./goal-row-data"
@@ -47,11 +48,13 @@ type GoalRowCellsProps = Pick<
   | "metrics"
   | "potentialProgress"
   | "onEdit"
+  | "onJumpToGoal"
   | "levelPotentialProgress"
   | "levelChargedXp"
   | "levelPoolXpAvailable"
   | "xpBook"
   | "onToggleSelected"
+  | "onSelectRange"
   | "reachedByGoalId"
   | "cascadeContext"
   | "projectRemoval"
@@ -67,8 +70,6 @@ type GoalRowCellsProps = Pick<
   /** Stable across drag-state changes (unlike the row's transform/isDragging), so a drag moving
    *  other rows never re-renders this row's cells. */
   dragHandle: SortableRenderProps["dragHandle"]
-  popoverOpen: boolean
-  setOpenPopoverGoalId: Dispatch<SetStateAction<string | null>>
 }
 
 /** A goal row's cells. Memoized so the drag (which re-renders every sortable row shell on
@@ -80,6 +81,7 @@ export const GoalRowCells = memo(function GoalRowCells({
   metrics,
   potentialProgress,
   onEdit = () => undefined,
+  onJumpToGoal,
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
@@ -91,12 +93,11 @@ export const GoalRowCells = memo(function GoalRowCells({
   moves,
   onMenuMove,
   onToggleSelected,
+  onSelectRange,
   selected,
   reorderEnabled,
   showCheckbox,
   dragHandle,
-  popoverOpen,
-  setOpenPopoverGoalId,
 }: GoalRowCellsProps) {
   const { t, i18n } = useTranslation()
   const catalog = useGoalCatalog()
@@ -131,30 +132,34 @@ export const GoalRowCells = memo(function GoalRowCells({
     <>
       {/* No onKeyDown stop here: dnd-kit's keyboard sensor reads the drag handle's arrow, drop and
           Escape keys on the document, so they must bubble. */}
-      <TableCell onClick={stopRowNavigation}>
-        <div className="flex items-center gap-2">
-          {showCheckbox ? (
-            <Checkbox
-              aria-label={t("goals.bulk.selectRow", {
-                entity: getEntityName(row.entityType, row.entityId),
-              })}
-              checked={selected}
-              data-testid={`goal-row-select-${row.goalId}`}
-              onCheckedChange={() => onToggleSelected?.(row.goalId)}
-            />
-          ) : null}
-          <div className="flex items-center gap-1">
-            <GoalPriorityNumber row={row} />
-            {/* Only an in-flight row can be dragged *from* — a historical row in the same
-            sorted list has no handle, though it can still be a drop anchor (a neighbor
-            another drag lands next to); see spliceGoalOrder. */}
-            {reorderEnabled && isInFlightStatus(row.status) ? (
+      {/* Grip, checkbox, priority. The grip comes first, in the row's leading gutter, and shows on the
+          row's hover or focus; its space is kept so the checkboxes line up. */}
+      <TableCell className="pl-0" onClick={stopRowNavigation}>
+        <div className="flex items-center gap-1">
+          {/* Only an in-flight row can be dragged *from* — a historical row in the same sorted list has
+              no grip, though it can still be a drop anchor (see spliceGoalOrder). */}
+          {reorderEnabled ? (
+            isInFlightStatus(row.status) ? (
               <GoalDragHandle
                 dragHandle={dragHandle}
                 entityName={getEntityName(row.entityType, row.entityId)}
               />
-            ) : null}
-          </div>
+            ) : (
+              <span aria-hidden className="size-8 shrink-0" />
+            )
+          ) : null}
+          {showCheckbox ? (
+            <GoalSelectCheckbox
+              entityName={getEntityName(row.entityType, row.entityId)}
+              goalId={row.goalId}
+              onSelectRange={onSelectRange}
+              onToggle={onToggleSelected}
+              selected={selected}
+            />
+          ) : null}
+          <span className="pl-1">
+            <GoalPriorityNumber row={row} />
+          </span>
         </div>
       </TableCell>
       <TableCell className="font-medium">
@@ -171,13 +176,13 @@ export const GoalRowCells = memo(function GoalRowCells({
           <div>
             <GoalNameLink remainingText={remainingText} row={row} />
             {row.notes ? (
-              <p
-                className="max-w-64 truncate text-xs font-normal text-muted-foreground"
+              <HintTrigger
+                className="block max-w-64 truncate text-xs font-normal text-muted-foreground"
                 data-testid="goal-row-notes"
-                title={row.notes}
+                label={row.notes}
               >
                 {row.notes}
-              </p>
+              </HintTrigger>
             ) : null}
           </div>
           <div
@@ -196,9 +201,6 @@ export const GoalRowCells = memo(function GoalRowCells({
               onMove={(displacedGoalId) =>
                 onMenuMove?.(row.goalId, displacedGoalId)
               }
-              onOpenChange={(open) => {
-                if (open) setOpenPopoverGoalId(null)
-              }}
               reached={reached}
               row={row}
             />
@@ -207,13 +209,19 @@ export const GoalRowCells = memo(function GoalRowCells({
       </TableCell>
       <TableCell>
         {/* At most two lines inside the fixed row height; the full list is the tooltip. */}
-        <div
-          className="max-h-10 w-max max-w-48 overflow-hidden"
-          data-testid="goal-row-projects"
-          title={(row.projects ?? []).map((project) => project.name).join(", ")}
-        >
-          <GoalProjectBadges projects={row.projects ?? []} />
-        </div>
+        {(row.projects ?? []).length > 0 ? (
+          <HintTrigger
+            className="block max-h-10 w-max max-w-48 overflow-hidden"
+            data-testid="goal-row-projects"
+            label={(row.projects ?? [])
+              .map((project) => project.name)
+              .join(", ")}
+          >
+            <GoalProjectBadges projects={row.projects ?? []} />
+          </HintTrigger>
+        ) : (
+          <div data-testid="goal-row-projects" />
+        )}
       </TableCell>
       <TableCell>
         <GoalTargetDisplay
@@ -222,7 +230,10 @@ export const GoalRowCells = memo(function GoalRowCells({
           progress={progress}
           size="lg"
         />
-        <CoveredByNote coveredBy={metrics?.get(row.goalId)?.coveredBy} />
+        <CoveredByNote
+          coveredBy={metrics?.get(row.goalId)?.coveredBy}
+          onJump={onJumpToGoal}
+        />
         {reached ? null : (
           <GoalCheckpoints
             estimate={estimates?.get(row.goalId)}
@@ -231,7 +242,9 @@ export const GoalRowCells = memo(function GoalRowCells({
         )}
       </TableCell>
       <TableCell>
-        <div className="flex items-center gap-1">
+        {/* Two lines: the status toggle, then its flags (Blocked/Restricted, HRE source) side by side,
+            so the column stays narrow and the toggle always sits in the same place. */}
+        <div className="grid justify-items-start gap-1">
           <StatusBadge
             className="px-2.5 py-1 text-sm"
             disabled={actions.pendingIds.has(row.goalId)}
@@ -241,20 +254,26 @@ export const GoalRowCells = memo(function GoalRowCells({
             reached={reached}
             status={row.status}
           />
-          <BlockedIndicator
-            className="px-2.5 py-1 text-sm"
-            blockers={blockers}
-            estimate={estimates?.get(row.goalId)}
-            progress={progress}
-          />
-          {reached ? null : (
-            <HreSourceIndicator
-              className="px-2.5 py-1 text-sm"
-              isUnlock={row.goalType === "Unlock"}
-              source={hreSource}
-              unitName={getEntityName(row.entityType, row.entityId)}
+          <div
+            className="flex items-center gap-1 empty:hidden"
+            data-testid="goal-row-status-flags"
+          >
+            {/* Smaller than the toggle above, so both lines fit the row's height. */}
+            <BlockedIndicator
+              className="px-2 py-0.5 text-xs"
+              blockers={blockers}
+              estimate={estimates?.get(row.goalId)}
+              progress={progress}
             />
-          )}
+            {reached ? null : (
+              <HreSourceIndicator
+                className="px-2 py-0.5 text-xs"
+                isUnlock={row.goalType === "Unlock"}
+                source={hreSource}
+                unitName={getEntityName(row.entityType, row.entityId)}
+              />
+            )}
+          </div>
         </div>
       </TableCell>
       <TableCell>
@@ -265,6 +284,13 @@ export const GoalRowCells = memo(function GoalRowCells({
             <EstimateCell estimate={estimates.get(row.goalId)} stacked />
             <SeasonFitLabel goalId={row.goalId} seasonFit={seasonFit} />
           </div>
+        ) : null}
+      </TableCell>
+      <TableCell>
+        {reached ? (
+          <ReachedDash />
+        ) : estimates ? (
+          <GoalDuration estimate={estimates.get(row.goalId)} />
         ) : null}
       </TableCell>
       {/* The one column without a fixed or content width: it takes whatever the table has left, and
@@ -298,10 +324,6 @@ export const GoalRowCells = memo(function GoalRowCells({
           <>
             <GoalProgressDisplay
               energy={energy}
-              onOpenChange={(open) =>
-                setOpenPopoverGoalId(open ? row.goalId : null)
-              }
-              open={popoverOpen}
               potentialRatio={potentialProgress?.get(row.goalId)}
               progress={progress}
               remaining={remaining}

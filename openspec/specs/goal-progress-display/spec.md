@@ -82,7 +82,7 @@ The rendered percentage SHALL read "100%" only once the underlying ratio has tru
 
 ### Requirement: Remaining text stays reachable from the Progress column too
 
-The remaining-text formatter output SHALL be reachable from the Progress column through a tooltip on the percent readout, for every goal kind, independently of whether the Remaining column is present and independently of whether that goal also has an Actual/Potential explanation popover. This applies even to a goal with no Potential ratio and no info trigger (for example, a Rank goal shown with no project context), and to an Unlock goal, whose tooltip on the character's name (see the Unlock flavor-text requirement) SHALL show its own remaining-text figure alongside the flavor text rather than instead of it.
+The remaining-text formatter output SHALL be reachable from the Progress column through a tooltip on the percent readout, for every goal kind, independently of whether the Remaining column is present and independently of whether the list also shows an Actual/Potential explanation. This applies even to a goal with no Potential ratio and no info trigger (for example, a Rank goal shown with no project context), and to an Unlock goal, whose tooltip on the character's name (see the Unlock flavor-text requirement) SHALL show its own remaining-text figure alongside the flavor text rather than instead of it.
 
 Assumptions:
 
@@ -156,7 +156,7 @@ The marker is a supplementary visual cue, not a replacement for the "Restricted"
 
 ### Requirement: A Rank or Ability goal's level requirement carries its own remaining text and explanation
 
-When a Rank or Ability goal shows a level requirement (see `rank-level-progression`), the requirement display SHALL show the level target "Lv {{current}} → {{required}}" with the XP-book figure on one line in the Progress cell (see `goal-list-layout`), and SHALL NOT render a "{{count}} levels" or raw-XP text anywhere in the Remaining column. The remaining-levels and remaining-XP figures survive only in the progress explanation below. Where the requirement display has both an Actual and a Potential ratio to show, its explanation SHALL follow the disclosure behavior defined for the Actual/Potential captions, with the Actual line noting the remaining-levels figure (e.g. "6 levels remaining") and the Potential line noting the remaining-XP figure (e.g. "1,304,192 XP remaining").
+When a Rank or Ability goal shows a level requirement (see `rank-level-progression`), the requirement display SHALL show the level target "Lv {{current}} → {{required}}" with the XP-book figure on one line in the Progress cell (see `goal-list-layout`), and SHALL NOT render a "{{count}} levels" or raw-XP text anywhere in the Remaining column. The remaining-levels and remaining-XP figures survive only in the requirement's percent tooltip ("6 levels · 1,304,192 XP") and, on mobile, its expanded explanation. Where the requirement display has both an Actual and a Potential ratio to show, its mobile explanation SHALL follow the disclosure behavior defined for the Actual/Potential captions, with the Actual line noting the remaining-levels figure (e.g. "6 levels remaining") and the Potential line noting the remaining-XP figure (e.g. "1,304,192 XP remaining").
 
 #### Scenario: Requirement with a raw XP gap
 
@@ -173,8 +173,8 @@ When a Rank or Ability goal shows a level requirement (see `rank-level-progressi
 #### Scenario: The requirement's explanation carries its own remaining-levels and remaining-XP figures
 
 - **GIVEN** a Rank goal's level requirement has both an Actual Progress ratio and a Potential Progress ratio to show
-- **WHEN** the user activates the "i" button
-- **THEN** the Actual line notes the remaining-levels figure (e.g. "6 levels remaining") and the Potential line notes the remaining-XP figure (e.g. "1,304,192 XP remaining")
+- **WHEN** the user hovers or focuses its percent on desktop, or expands its footer on mobile
+- **THEN** the tooltip reads "6 levels · 1,304,192 XP"; on mobile the Actual line notes the remaining-levels figure (e.g. "6 levels remaining") and the Potential line notes the remaining-XP figure (e.g. "1,304,192 XP remaining")
 
 ### Requirement: A Rank or Ascension goal's displayed current value never reads past its own target
 
@@ -218,12 +218,12 @@ Assumptions:
 
 ### Requirement: Actual Progress and Potential Progress captions carry a visible explanation on every goal kind
 
-Where Actual and Potential ratios render together, their explanation SHALL be reachable without hover. At or above 768px it SHALL use an explicit info-triggered popover; below 768px tapping the remaining-text line SHALL expand it inline. Actual SHALL describe synced/owned state and its remaining count. Potential SHALL describe applying owned resources after globally higher-priority Active goals reserve their share, state that it does not change actual status, and show its remaining count. The explanation SHALL not describe a selected project as a separate allocation pool. The same disclosure applies in goal list and project detail, at most once per ratio. With no Potential ratio, only Actual appears and no explanation trigger is required.
+Where Actual and Potential ratios render together, their explanation SHALL be reachable without hover. At or above 768px it SHALL be one info-triggered popover per list, never one per row or card: beside the Progress column header in the table, and beside the legend above the cards (see `goal-list-layout`); that popover explains Actual and Potential in general, and each goal's own figures (a Rank goal's upgrade slots left and energy, a level requirement's levels and XP) are its percent readout's tooltip ("3 upgrade slots · 12,400 energy"). Below 768px tapping a card's remaining-text line SHALL expand the explanation inline with that goal's figures. Actual SHALL describe synced/owned state and, on mobile, its remaining count. Potential SHALL describe applying owned resources after globally higher-priority Active goals reserve their share, state that it does not change actual status, and, on mobile, show its remaining count. The explanation SHALL not describe a selected project as a separate allocation pool. The same disclosure applies in goal list and project detail, at most once per ratio. With no Potential ratio, only Actual appears and no explanation trigger is required.
 
 #### Scenario: Both bars render in the compact goals list
 
 - **WHEN** a desktop goal row has Actual and Potential ratios
-- **THEN** its stacked bar, percent, and info button render with explanations hidden until activation
+- **THEN** its stacked bar and percent render with no info button and no reserved space for one, and the Progress column header carries the list's one info button
 
 #### Scenario: Both bars render on a project detail card
 
@@ -232,8 +232,8 @@ Where Actual and Potential ratios render together, their explanation SHALL be re
 
 #### Scenario: Desktop — activating the info trigger reveals both lines
 
-- **WHEN** the desktop info button is activated
-- **THEN** a popover shows both explanations and remaining counts and closes on repeat activation, outside click, or Escape
+- **WHEN** the list's desktop info button is activated
+- **THEN** a popover shows both explanations and closes on repeat activation, outside click, or Escape
 
 #### Scenario: Mobile — both ratios present, explanation collapsed by default
 
@@ -252,7 +252,7 @@ Where Actual and Potential ratios render together, their explanation SHALL be re
 
 ### Requirement: Remaining resource text uses a per-goal-kind formatter for Rank and Unlock goals with thousands separators
 
-Wherever the goal progress display shows a still-needed resource text for a goal outside the list's Remaining column (the tooltip on the Progress column's percent readout or a screen-reader label), it SHALL use one formatter per goal kind: a Rank goal SHALL show "{{energy}} energy" when a farming energy estimate is available and no upgrade-slot count; an Unlock goal SHALL show "{{shards}} shards" (remaining shard need, per `goal-farming-estimates`' zero-once-owned rule). The Goals list's Remaining column itself renders chips per `goal-remaining-resources`. A level requirement's remaining text is defined by "A Rank or Ability goal's level requirement carries its own remaining text and explanation". Every number formatted by this requirement SHALL render with the locale's thousands separator.
+Wherever the goal progress display shows a still-needed resource text for a goal outside the list's Remaining column (a mobile card's footer line or a screen-reader label), it SHALL use one formatter per goal kind: a Rank goal SHALL show "{{energy}} energy" when a farming energy estimate is available and no upgrade-slot count; an Unlock goal SHALL show "{{shards}} shards" (remaining shard need, per `goal-farming-estimates`' zero-once-owned rule). The Goals list's Remaining column itself renders chips per `goal-remaining-resources`. A level requirement's remaining text is defined by "A Rank or Ability goal's level requirement carries its own remaining text and explanation". The percent readout's tooltip builds on this text: for a Rank goal it leads with the upgrade slots left ("3 upgrade slots · 12,400 energy", per "Actual Progress and Potential Progress captions carry a visible explanation on every goal kind"). Every number formatted by this requirement SHALL render with the locale's thousands separator.
 
 Assumptions:
 
@@ -262,8 +262,9 @@ Assumptions:
 #### Scenario: Rank goal with both slots and energy available
 
 - **GIVEN** a Rank goal has 9 upgrade slots remaining and a farming estimate of 1,674 remaining energy
-- **WHEN** its remaining text renders in the progress tooltip
+- **WHEN** its remaining text renders in the mobile footer or a screen-reader label
 - **THEN** it reads "1,674 energy", with no slot count
+- **AND** its percent readout's tooltip reads "9 upgrade slots · 1,674 energy"
 
 #### Scenario: Unlock goal
 

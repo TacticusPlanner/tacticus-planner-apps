@@ -14,3 +14,4 @@ export {
 } from "./safe-storage"
 export { usePersistedSelection } from "./use-persisted-selection"
 export { useSearchParamState } from "./use-search-param-state"
+export { useCoarsePointer } from "./use-coarse-pointer"

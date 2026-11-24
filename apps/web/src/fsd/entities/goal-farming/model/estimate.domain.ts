@@ -215,6 +215,9 @@ interface EstimateResult {
   days: number
   /** ISO `yyyy-mm-dd` completion date, with the estimate's reference date treated as Day 1. */
   date: string
+  /** The plan day (1-based) this goal is first raided on; absent when it needs no raids (covered by
+   *  stock, shops or Onslaught alone). `days - firstRaidDay + 1` is its raid duration. */
+  firstRaidDay?: number
   energyTotal: number
   raidsTotal: number
   /** How much of each resource's need was covered by a `FlatSupplier` rather than campaign farming —
@@ -300,6 +303,7 @@ interface EstimateBlocked {
   actionableResourceIds?: EstimateResourceId[]
   days?: never
   date?: never
+  firstRaidDay?: never
   energyTotal?: never
   raidsTotal?: never
 }

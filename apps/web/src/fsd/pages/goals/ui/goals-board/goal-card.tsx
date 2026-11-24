@@ -1,9 +1,7 @@
 import { memo } from "react"
-import type { Dispatch, SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
 import { Trash2 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import { GoalTypeBadge } from "@/entities/goal"
 import {
@@ -12,6 +10,7 @@ import {
   GoalUnitIcon,
 } from "@/features/goal-planning"
 import type { GoalMenuMoves } from "@/features/goal-planning"
+import { HintTrigger } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { GoalResourceChipList } from "../shared/goal-resource-chips"
 import { useGoalResourceChips } from "../shared/use-goal-resource-chips"
@@ -37,6 +36,7 @@ import {
   EstimateCell,
   GoalNameLink,
   GoalPriorityNumber,
+  GoalSelectCheckbox,
 } from "./goal-row-shared"
 import {
   isInFlightStatus,
@@ -73,11 +73,13 @@ type GoalCardProps = Pick<
   | "metrics"
   | "potentialProgress"
   | "onEdit"
+  | "onJumpToGoal"
   | "levelPotentialProgress"
   | "levelChargedXp"
   | "levelPoolXpAvailable"
   | "xpBook"
   | "onToggleSelected"
+  | "onSelectRange"
   | "reachedByGoalId"
   | "cascadeContext"
   | "projectRemoval"
@@ -93,8 +95,6 @@ type GoalCardProps = Pick<
   showDragHandle: boolean
   /** Absent where the card isn't in a sortable list. */
   dragHandle?: SortableRenderProps["dragHandle"]
-  popoverOpen: boolean
-  setOpenPopoverGoalId: Dispatch<SetStateAction<string | null>>
 }
 
 /**
@@ -108,6 +108,7 @@ export const GoalCard = memo(
     row,
     actions,
     onEdit = () => undefined,
+    onJumpToGoal,
     potentialProgress,
     levelPotentialProgress,
     estimates,
@@ -117,12 +118,11 @@ export const GoalCard = memo(
     moves,
     onMenuMove,
     onToggleSelected,
+    onSelectRange,
     selected,
     showCheckbox,
     showDragHandle,
     dragHandle,
-    popoverOpen,
-    setOpenPopoverGoalId,
     ...sources
   }: GoalCardProps) {
     const { t, i18n } = useTranslation()
@@ -167,18 +167,20 @@ export const GoalCard = memo(
             role="presentation"
             onClick={stopRowNavigation}
           >
-            {showCheckbox ? (
-              <Checkbox
-                aria-label={t("goals.bulk.selectRow", { entity: name })}
-                checked={selected}
-                data-testid={`goal-row-select-${row.goalId}`}
-                onCheckedChange={() => onToggleSelected?.(row.goalId)}
-              />
-            ) : null}
-            <GoalPriorityNumber row={row} />
+            {/* Grip first, as in the table; it shows on the card's hover or focus. */}
             {showDragHandle && dragHandle && isInFlightStatus(row.status) ? (
               <GoalDragHandle dragHandle={dragHandle} entityName={name} />
             ) : null}
+            {showCheckbox ? (
+              <GoalSelectCheckbox
+                entityName={name}
+                goalId={row.goalId}
+                onSelectRange={onSelectRange}
+                onToggle={onToggleSelected}
+                selected={selected}
+              />
+            ) : null}
+            <GoalPriorityNumber row={row} />
           </div>
           <GoalUnitIcon
             className="shrink-0"
@@ -219,9 +221,6 @@ export const GoalCard = memo(
               onMove={(displacedGoalId) =>
                 onMenuMove?.(row.goalId, displacedGoalId)
               }
-              onOpenChange={(open) => {
-                if (open) setOpenPopoverGoalId(null)
-              }}
               projectRemoval={projectRemoval}
               reached={data.reached}
               row={row}
@@ -270,6 +269,7 @@ export const GoalCard = memo(
           </div>
           <CoveredByNote
             coveredBy={sources.metrics?.get(row.goalId)?.coveredBy}
+            onJump={onJumpToGoal}
           />
           {data.reached ? null : (
             <GoalCheckpoints
@@ -318,10 +318,6 @@ export const GoalCard = memo(
               >
                 <GoalProgressDisplay
                   energy={data.energy}
-                  onOpenChange={(open) =>
-                    setOpenPopoverGoalId(open ? row.goalId : null)
-                  }
-                  open={popoverOpen}
                   potentialRatio={potentialProgress?.get(row.goalId)}
                   progress={data.progress}
                   remaining={data.remaining}
@@ -351,13 +347,14 @@ export const GoalCard = memo(
 
         {row.notes ? (
           <div className="border-t pt-2.5">
-            <p
+            {/* Clamped to two lines; the full note is the hint. */}
+            <HintTrigger
               className="line-clamp-2 border-l-2 border-primary/40 pl-2 text-xs/snug text-muted-foreground"
               data-testid="goal-row-notes"
-              title={row.notes}
+              label={row.notes}
             >
               {row.notes}
-            </p>
+            </HintTrigger>
           </div>
         ) : null}
 

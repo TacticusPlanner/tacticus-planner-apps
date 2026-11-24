@@ -1246,7 +1246,9 @@
       "doneBy": "Terminé le",
       "reorder": "Réorganiser",
       "reorderHandle": "Faire glisser {{entity}} pour réorganiser",
-      "priority": "Priorité"
+      "priority": "Priorité",
+      "duration": "Durée",
+      "durationHelp": "Jours de raids nécessaires à cet objectif une fois qu'il reçoit de l'énergie."
     },
     "status": {
       "Draft": "Brouillon",
@@ -1310,7 +1312,15 @@
       "selectRow": "Sélectionner {{entity}}",
       "selectMode": "Sélectionner des objectifs",
       "selectDone": "Terminé",
-      "removeFromProject": "Retirer du projet"
+      "removeFromProject": "Retirer du projet",
+      "clearSelection": "Effacer la sélection",
+      "selectMenu": "Choisir les objectifs à sélectionner",
+      "presets": {
+        "all": "Tous",
+        "none": "Aucun",
+        "Active": "Actifs",
+        "Paused": "En pause"
+      }
     },
     "delete": {
       "title_one": "Supprimer cet objectif ?",
@@ -1755,7 +1765,11 @@
       "unlockDuringEvent": "pendant l'événement de campagne",
       "unlockMore_one": "+{{count}} autre lieu",
       "unlockMore_other": "+{{count}} autres lieux",
-      "unlockFewer": "Afficher moins"
+      "unlockFewer": "Afficher moins",
+      "duration_one": "{{count}} jour",
+      "duration_other": "{{count}} jours",
+      "durationLabel_one": "{{count}} jour de raids",
+      "durationLabel_other": "{{count}} jours de raids"
     },
     "unlockFlavor": "Rassemblez les éclats du personnage et préparez-le à rejoindre votre effectif.",
     "filters": {
@@ -1781,11 +1795,13 @@
       "sort": "Trier",
       "sortOptions": {
         "priority": "Priorité",
-        "finishDate": "Date de fin"
+        "finishDate": "Date de fin",
+        "duration": "Durée"
       },
       "sortHelp": {
         "priority": "Votre ordre de priorité. Faites glisser les objectifs pour les réordonner.",
-        "finishDate": "Date de fin estimée dans votre plan, la plus proche d'abord."
+        "finishDate": "Date de fin estimée dans votre plan, la plus proche d'abord.",
+        "duration": "Jours de raids nécessaires à chaque objectif une fois qu'il reçoit de l'énergie, le plus court d'abord."
       }
     },
     "seasonFit": {
@@ -1911,7 +1927,10 @@
         "levels": "{{count}} niveaux",
         "rankEnergy": "{{energy}} énergie",
         "coveredByEarlierGoal": "Couvert par un objectif précédent",
-        "shards": "{{count}} éclats"
+        "shards": "{{count}} éclats",
+        "upgradeSlots_one": "{{count}} emplacement d'amélioration",
+        "upgradeSlots_other": "{{count}} emplacements d'amélioration",
+        "xp": "{{xp}} XP"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Détails de la progression",
@@ -1928,7 +1947,8 @@
       "reachableCeilingReasonRarity": "limité par la rareté",
       "reachableCeilingReasonLevel": "limité par le niveau",
       "reachableCeilingReasonBoth": "limité par la rareté et le niveau",
-      "coveredBy": "Couvert par l'objectif {{type}} → {{target}}"
+      "coveredBy": "Couvert par l'objectif {{type}} → {{target}}",
+      "coveredByPriority": "Couvert par #{{priority}} · {{goal}}"
     },
     "insights": {
       "selectProject": "Sélectionnez un projet",
@@ -2063,7 +2083,8 @@
         "cancel": "Annuler"
       },
       "sortBlocksReorder": "Les objectifs sont triés par date de fin, vous ne pouvez donc pas les faire glisser pour changer leur priorité.",
-      "sortByPriority": "Trier par priorité"
+      "sortByPriority": "Trier par priorité",
+      "sortBlocksReorderDuration": "Les objectifs sont triés par durée, vous ne pouvez donc pas les faire glisser pour changer leur priorité."
     },
     "edit": {
       "title": "Modifier l'objectif",
@@ -2297,6 +2318,10 @@
         "select": {
           "title": "Sélectionner des objectifs",
           "content": "Touchez Sélectionner des objectifs, puis cochez des objectifs ou utilisez Sélectionner tous les objectifs. Mettez en pause, reprenez, ajoutez à un projet ou supprimez-les ensemble depuis la barre du bas, puis touchez Terminé."
+        },
+        "selectDesktop": {
+          "title": "Sélectionner des objectifs",
+          "content": "Dans le tableau, cochez des objectifs ou utilisez la case Tout sélectionner et son menu (Tous, Aucun, Actifs, En pause) ; Maj + clic coche une plage. Mettez en pause, reprenez, ajoutez à un projet ou supprimez-les ensemble depuis la barre au-dessus de la liste, et appuyez sur Échap ou Effacer la sélection pour recommencer. En Cartes, cliquez d'abord sur Sélectionner des objectifs."
         },
         "createGoal": {
           "title": "Créer un objectif",

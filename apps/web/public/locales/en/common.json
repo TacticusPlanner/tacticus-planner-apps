@@ -1246,7 +1246,9 @@
       "doneBy": "Done by",
       "reorder": "Reorder",
       "reorderHandle": "Drag {{entity}} to reorder",
-      "priority": "Priority"
+      "priority": "Priority",
+      "duration": "Duration",
+      "durationHelp": "Days of raids this goal needs once it starts getting energy."
     },
     "status": {
       "Draft": "Draft",
@@ -1310,7 +1312,15 @@
       "selectRow": "Select {{entity}}",
       "selectMode": "Select goals",
       "selectDone": "Done",
-      "removeFromProject": "Remove from project"
+      "removeFromProject": "Remove from project",
+      "clearSelection": "Clear selection",
+      "selectMenu": "Choose which goals to select",
+      "presets": {
+        "all": "All",
+        "none": "None",
+        "Active": "Active",
+        "Paused": "Paused"
+      }
     },
     "delete": {
       "title_one": "Delete this goal?",
@@ -1755,7 +1765,11 @@
       "unlockDuringEvent": "during the campaign event",
       "unlockMore_one": "+{{count}} more location",
       "unlockMore_other": "+{{count}} more locations",
-      "unlockFewer": "Show fewer"
+      "unlockFewer": "Show fewer",
+      "duration_one": "{{count}} day",
+      "duration_other": "{{count}} days",
+      "durationLabel_one": "{{count}} day of raids",
+      "durationLabel_other": "{{count}} days of raids"
     },
     "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
     "filters": {
@@ -1781,11 +1795,13 @@
       "sort": "Sort",
       "sortOptions": {
         "priority": "Priority",
-        "finishDate": "Finish date"
+        "finishDate": "Finish date",
+        "duration": "Duration"
       },
       "sortHelp": {
         "priority": "Your priority order. Drag goals to reorder them.",
-        "finishDate": "Estimated finish date in your plan, soonest first."
+        "finishDate": "Estimated finish date in your plan, soonest first.",
+        "duration": "Days of raids each goal needs once it starts getting energy, shortest first."
       }
     },
     "seasonFit": {
@@ -1911,7 +1927,10 @@
         "levels": "{{count}} levels",
         "rankEnergy": "{{energy}} energy",
         "coveredByEarlierGoal": "Covered by an earlier goal",
-        "shards": "{{count}} shards"
+        "shards": "{{count}} shards",
+        "upgradeSlots_one": "{{count}} upgrade slot",
+        "upgradeSlots_other": "{{count}} upgrade slots",
+        "xp": "{{xp}} XP"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Progress details",
@@ -1928,7 +1947,8 @@
       "reachableCeilingReasonRarity": "capped by rarity",
       "reachableCeilingReasonLevel": "capped by level",
       "reachableCeilingReasonBoth": "capped by rarity and level",
-      "coveredBy": "Covered by the {{type}} → {{target}} goal"
+      "coveredBy": "Covered by the {{type}} → {{target}} goal",
+      "coveredByPriority": "Covered by #{{priority}} · {{goal}}"
     },
     "insights": {
       "selectProject": "Select a project",
@@ -2063,7 +2083,8 @@
         "cancel": "Cancel"
       },
       "sortBlocksReorder": "Goals are sorted by finish date, so you can't drag them to change their priority.",
-      "sortByPriority": "Sort by priority"
+      "sortByPriority": "Sort by priority",
+      "sortBlocksReorderDuration": "Goals are sorted by duration, so you can't drag them to change their priority."
     },
     "edit": {
       "title": "Edit goal",
@@ -2297,6 +2318,10 @@
         "select": {
           "title": "Select goals",
           "content": "Tap Select goals, then tick goals or use Select all. Pause, resume, add to a project or delete them together from the bar at the bottom, and tap Done to finish."
+        },
+        "selectDesktop": {
+          "title": "Select goals",
+          "content": "In the table, tick goals or use the select-all box and its menu (All, None, Active, Paused); Shift-click ticks a range. Pause, resume, add to a project or delete them together from the bar above the list, and press Esc or Clear selection to start over. In Cards, click Select goals first."
         },
         "createGoal": {
           "title": "Create a goal",

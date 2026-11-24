@@ -122,7 +122,13 @@ describe("GoalsList", () => {
 
     const estimateCells = screen.getAllByTestId("goal-row-estimate")
     expect(estimateCells).toHaveLength(1)
-    expect(estimateCells[0]).toHaveAttribute("title", "2026-01-06")
+    // The full date is a design-system hint on the short one, not a native title.
+    expect(estimateCells[0]).not.toHaveAttribute("title")
+    expect(
+      within(estimateCells[0]!).getByRole("button", {
+        name: "Tuesday, January 6, 2026",
+      })
+    ).toBeInTheDocument()
   })
 
   it("renders the formatted completion date and day-count caption on desktop (stacked, in its own column) and mobile (one line)", async () => {
@@ -280,12 +286,14 @@ describe("GoalsList", () => {
     expect(remainingColumn).toHaveTextContent("50")
     expect(remainingColumn).not.toHaveTextContent("slots")
     expect(
-      within(remainingColumn).getByRole("img", {
+      within(remainingColumn).getByRole("button", {
         name: /: 50$/,
       })
     ).toBeInTheDocument()
 
-    fireEvent.click(screen.getByTestId("goal-progress-info-trigger"))
+    // One "i" for the list, beside the Progress header; rows carry none on desktop.
+    expect(screen.queryByTestId("goal-progress-info-trigger")).toBeNull()
+    fireEvent.click(screen.getByTestId("goals-progress-info-trigger"))
     const explanation = screen.getByTestId("goal-progress-explanation")
     expect(explanation).toHaveTextContent(
       "Actual progress reflects your account's currently synced, owned state."
@@ -390,7 +398,8 @@ describe("GoalsList", () => {
         "goal-row-actions-trigger-goal-1"
       )
       const row = screen.getByTestId("goal-row")
-      expect(row).not.toHaveAttribute("tabindex")
+      // Out of the tab order: only a "Covered by" jump focuses the row itself.
+      expect(row).toHaveAttribute("tabindex", "-1")
       trigger.focus()
       expect(trigger).toHaveFocus()
       await user.keyboard("{Enter}")
@@ -497,12 +506,12 @@ describe("GoalsList", () => {
       await screen.findByText("Hero One")
 
       expect(numbers()).toEqual(["Priority 1", "Priority 3", "Priority 5"])
-      // The number sits in the same leading cell as the drag handle, not in a data column (Character, Projects, Goal, Status, Done by, Remaining, Progress).
+      // The number sits in the same leading cell as the drag handle, not in a data column (Character, Projects, Goal, Status, Done by, Duration, Remaining, Progress).
       const cell = screen.getAllByTestId("goal-row-priority")[0]!.closest("td")!
       expect(cell).toContainElement(
         screen.getAllByTestId("goal-row-drag-handle")[0]!
       )
-      expect(screen.getAllByRole("columnheader")).toHaveLength(8)
+      expect(screen.getAllByRole("columnheader")).toHaveLength(9)
     })
 
     it("shows the number for a Paused row and none for Reached, Completed, Archived or position-less rows", async () => {
@@ -723,7 +732,7 @@ describe("GoalsList reached rows and column layout", () => {
       expect(screen.queryByTestId("goal-remaining-column")).toBeNull()
       // The table keeps a "-" in its cells; a card drops the empty rows instead.
       expect(screen.queryAllByTestId("goal-reached-dash")).toHaveLength(
-        mobile ? 0 : 3
+        mobile ? 0 : 4
       )
       expect(screen.queryByTestId("goal-row-resume-goal-1")).toBeNull()
       expect(stubActions.setStatus).not.toHaveBeenCalled()
@@ -732,7 +741,7 @@ describe("GoalsList reached rows and column layout", () => {
     }
   )
 
-  it("shows dashes for progress, remaining and done-by in the three desktop cells of a reached row", async () => {
+  it("shows dashes for progress, remaining, done-by and duration in the four desktop cells of a reached row", async () => {
     render(
       <GoalsList
         view="Table"
@@ -745,7 +754,7 @@ describe("GoalsList reached rows and column layout", () => {
       />
     )
     await screen.findByTestId("goal-row")
-    expect(screen.getAllByTestId("goal-reached-dash")).toHaveLength(3)
+    expect(screen.getAllByTestId("goal-reached-dash")).toHaveLength(4)
   })
 
   it("leaves a not-reached row untinted with its own status and progress", async () => {
@@ -819,19 +828,20 @@ describe("GoalsList reached rows and column layout", () => {
       "Goal",
       "Status",
       "Done by",
+      "Duration",
       "Remaining",
       "Progress",
     ])
     const [first, second] = screen.getAllByTestId("goal-row")
     const cells = first!.querySelectorAll("td")
-    expect(cells).toHaveLength(8)
+    expect(cells).toHaveLength(9)
     expect(cells[1]).not.toContainElement(
       screen.getAllByTestId("goal-project-memberships")[0]!
     )
     expect(cells[2]).toHaveTextContent("My Goals")
     expect(cells[2]).toHaveTextContent("Neuro")
     // A goal in no project: empty cell, same alignment.
-    expect(second!.querySelectorAll("td")).toHaveLength(8)
+    expect(second!.querySelectorAll("td")).toHaveLength(9)
     expect(second!.querySelectorAll("td")[2]!.textContent).toBe("")
   })
 
@@ -847,7 +857,8 @@ describe("GoalsList reached rows and column layout", () => {
     )
     const notes = await screen.findByTestId("goal-row-notes")
     expect(notes).toHaveClass("truncate")
-    expect(notes).toHaveAttribute("title", long)
+    expect(notes).not.toHaveAttribute("title")
+    expect(notes).toHaveAccessibleName(long.trim())
     // Directly beneath the name, in the same block.
     expect(notes.previousElementSibling).toContainElement(
       await screen.findByText("Hero One")
@@ -1010,15 +1021,15 @@ describe("GoalsList goal line on mobile", () => {
 describe("GoalsList selection", () => {
   beforeEach(() => useIsMobileMock.mockReturnValue(false))
 
-  it("puts a select-all header checkbox and per-row checkboxes in the leading cell", async () => {
+  it("puts the grip and per-row checkboxes in the leading cell, leaving select-all to the page's bar on desktop", async () => {
     const onToggleSelected = vi.fn()
-    const onSelectAllVisible = vi.fn()
+    const onSelectRange = vi.fn()
     const user = userEvent.setup()
     render(
       <GoalsList
         view="Table"
         actions={stubActions}
-        onSelectAllVisible={onSelectAllVisible}
+        onSelectRange={onSelectRange}
         onToggleSelected={onToggleSelected}
         reorderEnabled
         rows={rows}
@@ -1028,10 +1039,7 @@ describe("GoalsList selection", () => {
     )
     await screen.findByText("Hero One")
 
-    expect(screen.getByTestId("goals-select-all")).toHaveAttribute(
-      "aria-checked",
-      "mixed"
-    )
+    expect(screen.queryByTestId("goals-select-all")).toBeNull()
     const rowBox = screen.getByTestId("goal-row-select-goal-1")
     expect(rowBox).toBeChecked()
     expect(rowBox.closest("td")).toContainElement(
@@ -1040,15 +1048,42 @@ describe("GoalsList selection", () => {
 
     await user.click(screen.getByTestId("goal-row-select-goal-2"))
     expect(onToggleSelected).toHaveBeenCalledExactlyOnceWith("goal-2")
-    await user.click(screen.getByTestId("goals-select-all"))
-    expect(onSelectAllVisible).toHaveBeenCalledOnce()
+    expect(onSelectRange).not.toHaveBeenCalled()
   })
 
-  it("shows the header checkbox checked when every visible id is selected (ids across groups)", async () => {
+  it("selects a range on Shift-click instead of toggling one goal", async () => {
+    const onToggleSelected = vi.fn()
+    const onSelectRange = vi.fn()
+    const user = userEvent.setup()
     render(
       <GoalsList
         view="Table"
         actions={stubActions}
+        onSelectRange={onSelectRange}
+        onToggleSelected={onToggleSelected}
+        rows={rows}
+        selectActive
+        selection={new Set(["goal-1"])}
+      />
+    )
+    await screen.findByText("Hero One")
+
+    await user.keyboard("{Shift>}")
+    await user.click(screen.getByTestId("goal-row-select-goal-2"))
+    await user.keyboard("{/Shift}")
+    expect(onSelectRange).toHaveBeenCalledExactlyOnceWith("goal-2")
+    expect(onToggleSelected).not.toHaveBeenCalled()
+  })
+
+  it("shows the mobile header checkbox checked when every visible id is selected (ids across groups)", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    const onSelectAllVisible = vi.fn()
+    const user = userEvent.setup()
+    render(
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        onSelectAllVisible={onSelectAllVisible}
         rows={[rows[0]!]}
         selectActive
         selection={new Set(["goal-1", "goal-2"])}
@@ -1058,6 +1093,8 @@ describe("GoalsList selection", () => {
     await screen.findByText("Hero One")
 
     expect(screen.getByTestId("goals-select-all")).toBeChecked()
+    await user.click(screen.getByTestId("goals-select-all"))
+    expect(onSelectAllVisible).toHaveBeenCalledOnce()
   })
 
   it("shows mobile checkboxes only in select mode, without opening the menu", async () => {
@@ -1144,5 +1181,62 @@ describe("GoalsList catalog reads", () => {
     for (const [store, count] of readsByStore) {
       expect({ store, count }).toEqual({ store, count: 1 })
     }
+  })
+})
+
+describe("GoalsList duration", () => {
+  beforeEach(() => useIsMobileMock.mockReturnValue(false))
+
+  const estimates = new Map([
+    [
+      "goal-1",
+      {
+        days: 12,
+        date: "2026-09-28",
+        energyTotal: 100,
+        raidsTotal: 10,
+        firstRaidDay: 4,
+      },
+    ],
+    ["goal-2", { days: 0, date: "2026-09-16", energyTotal: 0, raidsTotal: 0 }],
+  ])
+
+  it("shows the days of raids in the Duration column, and a dash for a goal with no raids", async () => {
+    render(
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        estimates={estimates}
+        reorderEnabled={false}
+        rows={rows}
+      />
+    )
+    await screen.findByText("Hero One")
+
+    const duration = screen.getByTestId("goal-duration")
+    expect(duration).toHaveTextContent("9 days")
+    expect(duration.closest("td")?.cellIndex).toBe(6)
+    expect(screen.getByTestId("goal-duration-none")).toHaveTextContent("-")
+    expect(screen.getByTestId("goals-duration-header")).toHaveTextContent(
+      "Duration"
+    )
+  })
+
+  it("adds an hourglass with the duration to a card's date line", async () => {
+    render(
+      <GoalsList
+        view="Cards"
+        actions={stubActions}
+        estimates={estimates}
+        reorderEnabled={false}
+        rows={rows}
+      />
+    )
+    await screen.findByText("Hero One")
+
+    expect(
+      screen.getByRole("button", { name: "9 days of raids" })
+    ).toHaveTextContent("9 days")
+    expect(screen.queryByTestId("goal-duration-none")).toBeNull()
   })
 })

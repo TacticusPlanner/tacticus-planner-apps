@@ -132,7 +132,7 @@ Insights and every Dailies page that offers the shared project selector (Shops, 
 
 ### Requirement: The Goals page is the single goals list and plan
 
-The Plan section SHALL have one goals page, **Goals** at `/plan/goals`, replacing both the former All Goals page and the former Global Plan page. Goals SHALL list goals in canonical global priority order by default and SHALL offer only the Sort options in "Goals sorts by priority or finish date". Wherever another requirement in the specs says "Overview", "Goals Overview", "All Goals", or "Global Plan" for this page, it means Goals. The Plan section's child pages are Goals, Projects, Insights, Schedule, and Event shop, in that order.
+The Plan section SHALL have one goals page, **Goals** at `/plan/goals`, replacing both the former All Goals page and the former Global Plan page. Goals SHALL list goals in canonical global priority order by default and SHALL offer only the Sort options in "Goals sorts by priority, finish date or duration". Wherever another requirement in the specs says "Overview", "Goals Overview", "All Goals", or "Global Plan" for this page, it means Goals. The Plan section's child pages are Goals, Projects, Insights, Schedule, and Event shop, in that order.
 
 #### Scenario: Plan tabs
 
@@ -142,7 +142,7 @@ The Plan section SHALL have one goals page, **Goals** at `/plan/goals`, replacin
 #### Scenario: Sort offers two orders
 
 - **WHEN** the user opens Goals for the first time on a device
-- **THEN** the controls offer status, Type, project-membership filters, Group by and a Sort reading Priority, with Finish date as its only other option
+- **THEN** the controls offer status, Type, project-membership filters, Group by and a Sort reading Priority, with Finish date and Duration as its other options
 
 ### Requirement: Goals project filter is independent of the project selection
 
@@ -286,17 +286,18 @@ On every subpage with a project selector (Goals, Insights, Schedule, Today, HSE,
 
 ### Requirement: Goals controls form one toolbar on desktop
 
-At or above the 768px desktop breakpoint, Goals SHALL render the page toolbar (`app-page-layout`) and no other row of controls. Its Find slot SHALL hold, in order, the project select, the status filter, the Type filter and the Select goals button (`goal-bulk-actions`); its View slot SHALL hold Layout, Group by, Sort, Season fit and Collapse all; its Actions slot, at the far right, SHALL hold the filled Create Goal action. Planning Settings SHALL be the page header's Settings button. The bulk actions SHALL NOT render in the toolbar; they live in the select bar (`goal-bulk-actions`). When the window is too narrow for one line, the View and Actions slots SHALL wrap together under Find, still at the right, so Create Goal is never alone on a line.
+At or above the 768px desktop breakpoint, Goals SHALL render the page toolbar (`app-page-layout`) and no other row of controls. Its Find slot SHALL hold, in order, the project select, the status filter, the Type filter and, in Cards view, the Select goals button (`goal-bulk-actions`; the desktop table has no select mode); its View slot SHALL hold Layout, Group by, Sort, Season fit and Collapse all; its Actions slot, at the far right, SHALL hold the filled Create Goal action. Planning Settings SHALL be the page header's Settings button. The bulk actions SHALL NOT render in the toolbar; they live in the select bar (`goal-bulk-actions`). When the window is too narrow for one line, the View and Actions slots SHALL wrap together under Find, still at the right, so Create Goal is never alone on a line.
 
 #### Scenario: Desktop Goals renders one toolbar
 
 - **WHEN** Goals is viewed at or above the 768px breakpoint outside select mode
-- **THEN** the toolbar holds the project select, status filter, Type filter and Select goals on the left, Layout, Group by, Sort, Season fit and Collapse all toward the right, Create Goal at the far right, and no bulk actions; Settings sits at the right end of the page header
+- **THEN** the toolbar holds the project select, status filter, Type filter and (in Cards view) Select goals on the left, Layout, Group by, Sort, Season fit and Collapse all toward the right, Create Goal at the far right, and no bulk actions; Settings sits at the right end of the page header
 
 #### Scenario: Select goals opens the select bar
 
+- **GIVEN** desktop Cards view
 - **WHEN** the user presses Select goals
-- **THEN** the select bar with Pause, Resume, Add to project and Delete appears at the bottom of the viewport, Select goals leaves the toolbar, and Done brings it back
+- **THEN** the select bar appears at the top of the list (the bulk actions join it once a goal is selected), Select goals leaves the toolbar, and Done brings it back
 
 ### Requirement: Goals list controls are URL state
 
@@ -343,16 +344,16 @@ Goals SHALL NOT show a priority-order explanation in its toolbar or above the li
 - **WHEN** the user runs the Goals page tour
 - **THEN** its reorder step explains the account-wide order, where a move applies, the skipping numbers in a project, and that dragging needs Sort set to Priority
 
-### Requirement: Goals sorts by priority or finish date
+### Requirement: Goals sorts by priority, finish date or duration
 
-Goals SHALL offer **Sort** in the toolbar's View slot after Group by: a labelled segmented control (`app-page-layout`) with Priority (the account-wide priority order, the default) and Finish date (the estimated finish date in the plan, soonest first; goals without an estimate last, in priority order). The choice SHALL be remembered per device.
+Goals SHALL offer **Sort** in the toolbar's View slot after Group by: a labelled segmented control (`app-page-layout`) with Priority (the account-wide priority order, the default), Finish date (the estimated finish date in the plan, soonest first; goals without an estimate last, in priority order) and Duration (the days of raids each goal needs once it starts getting energy, its first raid day through its done day, shortest first; goals with no raids or no estimate last, in priority order). The choice SHALL be remembered per device.
 
 Group by SHALL follow the sort: groups appear in the order of their first goal in the sorted list, and goals inside a group keep the sorted order. Grouping SHALL NOT reorder goals by goal type.
 
 Goals can be dragged only in priority order. While Sort is not Priority:
 
 - drag handles, the row menu's move items and the mobile Reorder toggle SHALL be unavailable, and leaving Priority SHALL end reorder mode;
-- while goals are listed, a notice above the list SHALL say that goals are sorted by finish date so they cannot be dragged to change their priority, with a **Sort by priority** action that sets Sort to Priority.
+- while goals are listed, a notice above the list SHALL name the sort in effect (finish date or duration) and say that goals therefore cannot be dragged to change their priority, with a **Sort by priority** action that sets Sort to Priority.
 
 A stored grouping value that is no longer offered SHALL fall back to None.
 
@@ -361,6 +362,12 @@ A stored grouping value that is no longer offered SHALL fall back to None.
 - **GIVEN** goals A (priority 1, finishing in 30 days), B (priority 2, finishing in 5 days) and C (priority 3, no estimate)
 - **WHEN** the user sets Sort to Finish date
 - **THEN** the list reads B, A, C and the choice is kept on the next visit from this device
+
+#### Scenario: Duration order
+
+- **GIVEN** goals A (priority 1, raided from day 1 to day 9), B (priority 2, raided from day 10 to day 11) and C (priority 3, needing no raids)
+- **WHEN** the user sets Sort to Duration
+- **THEN** the list reads B (2 days), A (9 days), C, and drag handles are unavailable
 
 #### Scenario: Type groups follow the sort
 

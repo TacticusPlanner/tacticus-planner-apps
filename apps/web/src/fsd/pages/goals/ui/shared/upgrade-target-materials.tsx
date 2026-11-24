@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Link2 } from "lucide-react"
 
-import { UpgradeIcon } from "@/shared/ui"
+import { HintLines, HintTrigger, UpgradeIcon } from "@/shared/ui"
 
 import type { GoalProgress } from "@/features/goal-planning"
 import { upgradeMaterialLabel } from "./upgrade-target-material-label"
@@ -36,11 +36,10 @@ export function UpgradeTargetMaterials({
         const label = labelOf(material)
         return (
           <li key={material.upgradeId}>
-            <span
-              aria-label={label}
-              className="flex items-center gap-1 tabular-nums"
-              role="img"
-              title={label}
+            <HintTrigger
+              className="gap-1 tabular-nums"
+              hint={<HintLines lines={label.split("\n")} />}
+              label={label}
             >
               <UpgradeIcon
                 className="shrink-0"
@@ -58,21 +57,29 @@ export function UpgradeTargetMaterials({
                   data-testid="goal-upgrade-material-held"
                 />
               ) : null}
-            </span>
+            </HintTrigger>
           </li>
         )
       })}
       {hidden.length > 0 ? (
         <li>
-          <span
-            aria-label={hiddenLabel}
+          <HintTrigger
             className="rounded-md bg-muted px-1.5 py-0.5 text-muted-foreground tabular-nums"
             data-testid="goal-upgrade-materials-more"
-            role="img"
-            title={hiddenLabel}
+            hint={
+              <span className="grid gap-1">
+                {hidden.map((material) => (
+                  <HintLines
+                    key={material.upgradeId}
+                    lines={labelOf(material).split("\n")}
+                  />
+                ))}
+              </span>
+            }
+            label={hiddenLabel}
           >
             <span aria-hidden>+{hidden.length}</span>
-          </span>
+          </HintTrigger>
         </li>
       ) : null}
     </ul>
