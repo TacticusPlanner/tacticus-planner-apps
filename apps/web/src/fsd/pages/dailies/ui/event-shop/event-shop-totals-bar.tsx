@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, FLOATING_BAR_SURFACE } from "@/shared/ui"
 
 import type { EventShopController } from "./use-event-shop-controller"
 import type { EventShopFormat } from "./use-event-shop-format"
@@ -48,8 +48,11 @@ export function EventShopShoppingListTotalsBar({
       )}
     >
       <button
-        // Light on dark (dark on light), as on the canvas: readable over any page content.
-        className="flex min-h-12 flex-wrap items-center gap-x-2 rounded-xl bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-lg transition-opacity hover:opacity-90"
+        // The shared floating bar surface, readable over any page content in both themes.
+        className={cn(
+          FLOATING_BAR_SURFACE,
+          "flex min-h-12 flex-wrap items-center gap-x-2 px-4 py-2 text-sm font-semibold transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        )}
         data-testid={
           kind === "button"
             ? "event-shop-list-button"

@@ -4,6 +4,8 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { FloatingBar } from "./floating-bar"
+
 export type UnsavedChangesBarProps = {
   open: boolean
   isSaving: boolean
@@ -33,13 +35,13 @@ export function UnsavedChangesBar({
   const isMobile = useIsMobile()
   if (!open) return null
   return (
-    <div
+    <FloatingBar
       role="region"
       aria-label={typeof message === "string" ? message : undefined}
       data-testid="unsaved-changes-bar"
       data-mobile={isMobile ? "true" : undefined}
       className={cn(
-        "sticky z-30 flex items-center gap-2 rounded-xl border bg-background/95 px-3 shadow-lg backdrop-blur-sm",
+        "sticky z-30 flex items-center gap-2 px-3",
         isMobile
           ? "bottom-[calc(var(--mobile-nav-height)+1rem)] mr-14 min-h-12 py-1.5"
           : "bottom-4 py-2"
@@ -66,6 +68,6 @@ export function UnsavedChangesBar({
         {isSaving ? <Spinner /> : null}
         {saveLabel}
       </Button>
-    </div>
+    </FloatingBar>
   )
 }
