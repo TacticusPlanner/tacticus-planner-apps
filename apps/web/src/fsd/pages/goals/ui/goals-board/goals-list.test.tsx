@@ -122,7 +122,13 @@ describe("GoalsList", () => {
 
     const estimateCells = screen.getAllByTestId("goal-row-estimate")
     expect(estimateCells).toHaveLength(1)
-    expect(estimateCells[0]).toHaveAttribute("title", "2026-01-06")
+    // The full date is a design-system hint on the short one, not a native title.
+    expect(estimateCells[0]).not.toHaveAttribute("title")
+    expect(
+      within(estimateCells[0]!).getByRole("button", {
+        name: "Tuesday, January 6, 2026",
+      })
+    ).toBeInTheDocument()
   })
 
   it("renders the formatted completion date and day-count caption on desktop (stacked, in its own column) and mobile (one line)", async () => {
@@ -280,7 +286,7 @@ describe("GoalsList", () => {
     expect(remainingColumn).toHaveTextContent("50")
     expect(remainingColumn).not.toHaveTextContent("slots")
     expect(
-      within(remainingColumn).getByRole("img", {
+      within(remainingColumn).getByRole("button", {
         name: /: 50$/,
       })
     ).toBeInTheDocument()
@@ -851,7 +857,8 @@ describe("GoalsList reached rows and column layout", () => {
     )
     const notes = await screen.findByTestId("goal-row-notes")
     expect(notes).toHaveClass("truncate")
-    expect(notes).toHaveAttribute("title", long)
+    expect(notes).not.toHaveAttribute("title")
+    expect(notes).toHaveAccessibleName(long.trim())
     // Directly beneath the name, in the same block.
     expect(notes.previousElementSibling).toContainElement(
       await screen.findByText("Hero One")

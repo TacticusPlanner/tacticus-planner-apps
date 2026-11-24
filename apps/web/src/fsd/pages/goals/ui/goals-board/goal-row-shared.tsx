@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Calendar, Hourglass } from "lucide-react"
 import {
@@ -7,6 +8,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
+import { HintTrigger } from "@/shared/ui"
 
 import { goalRaidDuration } from "@/entities/goal-farming"
 import type { EstimateOutcome } from "@/entities/goal-farming"
@@ -90,6 +92,16 @@ export function EstimateCell({
   // cannot import it from here — see `shared/lib/format-time/format-estimate-date`, which also documents the
   // UTC parsing this value needs.
   const formattedDate = formatEstimateDate(estimate.date, dateLocale)
+  // The short date's tooltip: the same day with its weekday and year.
+  const fullDate = formatEstimateDate(estimate.date, dateLocale, "full")
+  const dateFace = (content: ReactNode) =>
+    fullDate ? (
+      <HintTrigger className="gap-1.5" label={fullDate}>
+        {content}
+      </HintTrigger>
+    ) : (
+      content
+    )
   const days = t("goals.estimate.days", { days: estimate.days })
   if (stacked) {
     // Desktop "Done by" column: the date is the row's headline figure, the day count sits beneath.
@@ -97,11 +109,14 @@ export function EstimateCell({
       <span
         className="grid gap-0.5 whitespace-nowrap"
         data-testid="goal-row-estimate"
-        title={estimate.date}
       >
         <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-          <Calendar className="size-4 shrink-0 text-muted-foreground" />
-          {formattedDate}
+          {dateFace(
+            <>
+              <Calendar className="size-4 shrink-0 text-muted-foreground" />
+              {formattedDate}
+            </>
+          )}
         </span>
         <span className="text-xs text-muted-foreground">{days}</span>
       </span>
@@ -111,12 +126,14 @@ export function EstimateCell({
     <span
       className="flex items-center gap-1 text-sm text-muted-foreground"
       data-testid="goal-row-estimate"
-      title={estimate.date}
     >
-      <Calendar className="size-3.5 shrink-0" />
-      <span className="font-medium text-foreground">
-        {formattedDate}
-      </span> · {days}
+      {dateFace(
+        <>
+          <Calendar className="size-3.5 shrink-0" />
+          <span className="font-medium text-foreground">{formattedDate}</span>
+        </>
+      )}{" "}
+      · {days}
       {goalRaidDuration(estimate) === undefined ? null : (
         <>
           {" · "}

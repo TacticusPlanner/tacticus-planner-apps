@@ -4,7 +4,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { xpBookIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HintTrigger } from "@/shared/ui"
 
 import type { LevelRequirementProgress } from "@/features/goal-planning"
 import { GoalProgressDisplay, GoalTargetDisplay } from "./goal-progress-visuals"
@@ -66,16 +66,14 @@ export function LevelRequirementLine({
     </span>
   )
   const books = book ? (
-    <span
-      aria-label={bookLabel}
-      className="flex items-center gap-1 whitespace-nowrap tabular-nums"
+    <HintTrigger
+      className="gap-1 whitespace-nowrap tabular-nums"
       data-testid="level-requirement-books"
-      role="img"
-      title={bookLabel}
+      label={bookLabel ?? ""}
     >
       <EntityIcon size="inline" alt="" src={xpBookIcon(book.rarity)} />
       <span aria-hidden>{bookText}</span>
-    </span>
+    </HintTrigger>
   ) : null
 
   const bar = (

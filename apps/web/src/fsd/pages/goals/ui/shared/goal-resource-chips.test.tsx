@@ -23,10 +23,14 @@ const abilityMaterials = {
   components: 30,
 }
 
+// A folded chip's button adds ". Show by rarity" to the same name; compare the chip's own name.
 const chipNames = () =>
-  screen
-    .queryAllByTestId("goal-resource-chip")
-    .map((chip) => within(chip).getByRole("img").getAttribute("aria-label"))
+  screen.queryAllByTestId("goal-resource-chip").map((chip) =>
+    within(chip)
+      .getByRole("button")
+      .getAttribute("aria-label")
+      ?.replace(/\. Show by rarity$/, "")
+  )
 
 describe("GoalResourceChips", () => {
   it("shows gold in thousands (k, rounded down) but keeps the full value in the label", () => {
@@ -43,7 +47,7 @@ describe("GoalResourceChips", () => {
       const chip = screen.getByTestId("goal-resource-chip")
       return {
         text: chip.textContent,
-        label: within(chip).getByRole("img").getAttribute("aria-label"),
+        label: within(chip).getByRole("button").getAttribute("aria-label"),
       }
     }
     expect(shown(42_235)).toEqual({
@@ -447,7 +451,7 @@ describe("GoalResourceChips", () => {
     )
     const chip = screen.getByTestId("goal-resource-chip")
     expect(chip).toHaveTextContent("1,995")
-    const title = within(chip).getByRole("img").getAttribute("title")
+    const title = within(chip).getByRole("button").getAttribute("aria-label")
     expect(title).toContain("Energy: 1,995")
     expect(title).toContain("Standalone: 12 upgrade slots, 3,410 energy")
   })
@@ -464,8 +468,8 @@ describe("GoalResourceChips", () => {
     )
     expect(
       within(screen.getByTestId("goal-resource-chip"))
-        .getByRole("img")
-        .getAttribute("title")
+        .getByRole("button")
+        .getAttribute("aria-label")
     ).not.toContain("Standalone")
   })
   describe("shop currency", () => {

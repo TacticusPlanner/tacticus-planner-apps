@@ -25,6 +25,14 @@ describe("formatEstimateDate", () => {
   })
 })
 
+describe("formatEstimateDate full style", () => {
+  it("writes the day out with its weekday and year, in UTC", () => {
+    expect(formatEstimateDate("2026-01-06", "en-US", "full")).toBe(
+      "Tuesday, January 6, 2026"
+    )
+  })
+})
+
 describe("localIsoDate", () => {
   it("reads the viewer's date, not the UTC one", () => {
     vi.stubEnv("TZ", "America/New_York")

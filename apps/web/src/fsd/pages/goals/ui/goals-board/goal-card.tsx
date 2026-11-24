@@ -11,6 +11,7 @@ import {
   GoalUnitIcon,
 } from "@/features/goal-planning"
 import type { GoalMenuMoves } from "@/features/goal-planning"
+import { HintTrigger } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { GoalResourceChipList } from "../shared/goal-resource-chips"
 import { useGoalResourceChips } from "../shared/use-goal-resource-chips"
@@ -342,13 +343,14 @@ export const GoalCard = memo(
 
         {row.notes ? (
           <div className="border-t pt-2.5">
-            <p
+            {/* Clamped to two lines; the full note is the hint. */}
+            <HintTrigger
               className="line-clamp-2 border-l-2 border-primary/40 pl-2 text-xs/snug text-muted-foreground"
               data-testid="goal-row-notes"
-              title={row.notes}
+              label={row.notes}
             >
               {row.notes}
-            </p>
+            </HintTrigger>
           </div>
         ) : null}
 

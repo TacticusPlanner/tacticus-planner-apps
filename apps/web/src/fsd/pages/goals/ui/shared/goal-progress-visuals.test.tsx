@@ -604,7 +604,7 @@ describe("GoalTargetDisplay for Upgrade goals", () => {
         }
       />
     )
-    const materials = screen.getAllByRole("img")
+    const materials = screen.getAllByRole("button")
     expect(materials).toHaveLength(2)
     expect(materials[0]).toHaveAccessibleName("Sword: 5 / 10")
     expect(materials[0]).toHaveTextContent("5/10")
@@ -626,10 +626,10 @@ describe("GoalTargetDisplay for Upgrade goals", () => {
         progress={{ kind: "Upgrade", ratio: 0.3, materials } as never}
       />
     )
-    expect(screen.getAllByRole("img")).toHaveLength(5)
+    expect(screen.getAllByRole("button")).toHaveLength(5)
     const more = screen.getByTestId("goal-upgrade-materials-more")
     expect(more).toHaveTextContent("+3")
-    expect(more.getAttribute("title")?.split("\n")).toEqual(
+    expect(more.getAttribute("aria-label")?.split("\n")).toEqual(
       [4, 5, 6].map((index) => `Mat ${index}: ${index} / 10`)
     )
   })

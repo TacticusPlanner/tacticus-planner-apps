@@ -230,6 +230,22 @@ The Goal cell (desktop) and goal line (mobile card) SHALL identify the goal kind
 - **WHEN** its Goal cell renders
 - **THEN** it shows the two compact progressions (rarity icon, star and count) with an arrow and no rarity or goal-type text
 
+### Requirement: Goals list hints use design-system tooltips
+
+Every hint in the Goals list (a material, resource or XP-book chip's name and count, the "+N" materials chip, a truncated note, the Projects cell, the Done by date) SHALL be a design-system tooltip on a focusable control named by the same text, never a native `title`: keyboard users reach it by Tab, and on a touch screen a tap opens it as a popover. A material chip's hint SHALL lead with its name and owned/needed count, then one line per goal ranked ahead that holds some of it. The Done by date's hint SHALL be the same day written out with its weekday and year.
+
+#### Scenario: A material chip's hint by keyboard
+
+- **GIVEN** a goal row with an upgrade material that goal #2 holds some of
+- **WHEN** the user tabs to the material chip
+- **THEN** a tooltip shows the material's name and count, then the line naming goal #2
+
+#### Scenario: A hint on a phone
+
+- **GIVEN** a goal card on a touch screen
+- **WHEN** the user taps a resource chip
+- **THEN** a popover shows the chip's name and quantity
+
 ### Requirement: A covered-by note names and links to the covering goal
 
 When a higher-priority goal of the same unit and type already reaches a goal's target, the goal's covered-by note SHALL name that goal by its account-wide priority and target ("Covered by #3 · Rank → Gold I"; without a priority it keeps "Covered by the Rank → Gold I goal"), in the desktop Goal cell and on the card. On the Goals page the note SHALL be a link: activating it scrolls the covering goal's row or card into view (instantly under reduced motion), flashes it with the same highlight a row-menu move uses, and moves focus to it. When that goal is not in the list on screen (filtered out, in a collapsed group, or on another tab), activating the note SHALL open the goal's Edit dialog instead, and SHALL NOT change any filter.

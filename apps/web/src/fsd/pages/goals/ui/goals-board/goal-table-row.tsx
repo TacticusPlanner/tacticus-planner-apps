@@ -20,6 +20,7 @@ import { goalAbilityIds } from "../shared/goal-ability-ids"
 import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
+import { HintTrigger } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import { HreSourceIndicator } from "../shared/hre-source-indicator"
@@ -169,13 +170,13 @@ export const GoalRowCells = memo(function GoalRowCells({
           <div>
             <GoalNameLink remainingText={remainingText} row={row} />
             {row.notes ? (
-              <p
-                className="max-w-64 truncate text-xs font-normal text-muted-foreground"
+              <HintTrigger
+                className="block max-w-64 truncate text-xs font-normal text-muted-foreground"
                 data-testid="goal-row-notes"
-                title={row.notes}
+                label={row.notes}
               >
                 {row.notes}
-              </p>
+              </HintTrigger>
             ) : null}
           </div>
           <div
@@ -202,13 +203,19 @@ export const GoalRowCells = memo(function GoalRowCells({
       </TableCell>
       <TableCell>
         {/* At most two lines inside the fixed row height; the full list is the tooltip. */}
-        <div
-          className="max-h-10 w-max max-w-48 overflow-hidden"
-          data-testid="goal-row-projects"
-          title={(row.projects ?? []).map((project) => project.name).join(", ")}
-        >
-          <GoalProjectBadges projects={row.projects ?? []} />
-        </div>
+        {(row.projects ?? []).length > 0 ? (
+          <HintTrigger
+            className="block max-h-10 w-max max-w-48 overflow-hidden"
+            data-testid="goal-row-projects"
+            label={(row.projects ?? [])
+              .map((project) => project.name)
+              .join(", ")}
+          >
+            <GoalProjectBadges projects={row.projects ?? []} />
+          </HintTrigger>
+        ) : (
+          <div data-testid="goal-row-projects" />
+        )}
       </TableCell>
       <TableCell>
         <GoalTargetDisplay

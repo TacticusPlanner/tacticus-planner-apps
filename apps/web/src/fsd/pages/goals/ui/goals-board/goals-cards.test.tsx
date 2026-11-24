@@ -322,7 +322,9 @@ describe("Goal card rows", () => {
     const chipNames = (scope: HTMLElement) =>
       within(scope)
         .queryAllByTestId("goal-resource-chip")
-        .map((chip) => within(chip).getByRole("img").getAttribute("aria-label"))
+        .map((chip) =>
+          within(chip).getByRole("button").getAttribute("aria-label")
+        )
     expect(chipNames(targetRow)).toEqual([expect.stringMatching(/energy/i)])
     expect(chipNames(levelRow)).toEqual([expect.stringMatching(/gold/i)])
     // Each chip renders once: nothing is repeated in a chip row below.
@@ -356,10 +358,14 @@ describe("Goal card rows", () => {
     const card = await screen.findByTestId("goal-row")
     const targetRow = within(card).getByTestId("goal-card-target-row")
     expect(
-      within(targetRow).getByRole("img", { name: /onslaught/i })
+      within(targetRow).getByRole("button", { name: /onslaught/i })
     ).toBeInTheDocument()
-    expect(within(targetRow).queryByRole("img", { name: /shard/i })).toBeNull()
-    expect(within(card).getAllByRole("img", { name: /shard/i })).toHaveLength(1)
+    expect(
+      within(targetRow).queryByRole("button", { name: /shard/i })
+    ).toBeNull()
+    expect(
+      within(card).getAllByRole("button", { name: /shard/i })
+    ).toHaveLength(1)
     expect(within(card).queryByTestId("goal-card-level-row")).toBeNull()
   })
 
@@ -392,7 +398,7 @@ describe("Goal card rows", () => {
     )
 
     const card = await screen.findByTestId("goal-row")
-    const orbs = within(card).getAllByRole("img", { name: /^Orbs/ })
+    const orbs = within(card).getAllByRole("button", { name: /^Orbs/ })
     expect(orbs).toHaveLength(1)
     const shards = within(card).getByTestId("goal-shard-progress-shards")
     expect(
@@ -434,9 +440,11 @@ describe("Goal card rows", () => {
     const card = await screen.findByTestId("goal-row")
     const targetRow = within(card).getByTestId("goal-card-target-row")
     expect(
-      within(targetRow).getByRole("img", { name: /energy/i })
+      within(targetRow).getByRole("button", { name: /energy/i })
     ).toBeInTheDocument()
-    expect(within(card).getByRole("img", { name: /orbs/i })).toBeInTheDocument()
+    expect(
+      within(card).getByRole("button", { name: /orbs/i })
+    ).toBeInTheDocument()
     const shards = within(card).getByTestId("goal-shard-progress-shards")
     expect(shards).toHaveTextContent("Shards")
     expect(shards).toHaveTextContent("120 / 400")
@@ -447,7 +455,7 @@ describe("Goal card rows", () => {
     expect(
       within(card).queryByTestId("goal-shard-progress-mythicShards")
     ).toBeNull()
-    expect(within(card).queryByRole("img", { name: /shards:/i })).toBeNull()
+    expect(within(card).queryByRole("button", { name: /shards:/i })).toBeNull()
     expect(within(card).queryByTestId("goal-progress-percent")).toBeNull()
   })
 
@@ -494,7 +502,9 @@ describe("Goal card rows", () => {
     const costRow = within(card).getByTestId("goal-card-cost-row")
     const chipNames = within(costRow)
       .getAllByTestId("goal-resource-chip")
-      .map((chip) => within(chip).getByRole("img").getAttribute("aria-label"))
+      .map((chip) =>
+        within(chip).getByRole("button").getAttribute("aria-label")
+      )
     expect(chipNames).toEqual([
       expect.stringMatching(/gold/i),
       expect.stringMatching(/ability badges/i),
