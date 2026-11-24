@@ -168,13 +168,14 @@ sizes, chosen by its role, never by the page.
 | ----------- | ------------------------------------------------------------------------------------------ | --------------------------- | ------------- |
 | Inline      | Next to text or a number: faction, trait, damage type, stat, currency, medal, rank in text | 16px `size-4`               | 20px `size-5` |
 | Badge       | Overlay on a portrait: rarity stars, rank, shard, faction corner                           | ⅓ of the portrait, min 16px | same          |
+| Emblem      | Solid emblem in a list/table row beside rank emblems: rarity icon in the Goals table       | 24px `size-6`               | 24px          |
 | Row         | Item in a list/table row: upgrade material, equipment, ability, reward, event icon         | 32px `size-8`               | 32px          |
 | Tile        | Item in a card or grid: shop offer, reward tile, ability on a detail page                  | 48px `size-12`              | 48px          |
 | Portrait sm | Unit in a row, chip, LRE lane, table                                                       | 40px `size-10`              | 40px          |
 | Portrait md | Unit in a grid, LRE lane on touch                                                          | 64px `size-16`              | 64px          |
 | Portrait lg | Unit card, detail header (128px `size-32` only for the detail hero)                        | 96px `size-24`              | 96px          |
 
-- In code: `<EntityIcon size="inline" | "row" | "tile" | "badge-sm" … />`
+- In code: `<EntityIcon size="inline" | "emblem" | "row" | "tile" | "badge-sm" … />`
   (a badge names the portrait it sits on; `portrait-sm` … is a bare,
   ringless portrait such as an NPC or a unit in a chip) and
   `<UnitPortrait size="sm" | "md" | "lg" | "hero" />` for a unit with its
@@ -184,7 +185,10 @@ sizes, chosen by its role, never by the page.
   exceptions.
 - No game icon below 16px.
 - Migrating an off-scale size: round to the nearest step, ties go up (17/18 →
-  20 inline; 22/28 → 32 row; 36 → 40; 56/62 → 64).
+  20 inline; 22/28 → 32 row; 36 → 40; 56/62 → 64). Emblem is chosen by role,
+  never by rounding: a solid icon (the rarity hexagon) fills its box, so beside
+  a row-size rank emblem, whose art leaves space around it, it reads the same
+  at 24px.
 - Item icons at row and tile size sit on their rarity frame
   (`ui_frame_upgrades_*`); inline icons never have a frame.
 - Portrait badges: `sm` shows one (rank or stars), `md` two, `lg` all.

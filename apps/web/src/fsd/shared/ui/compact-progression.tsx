@@ -17,11 +17,15 @@ export function CompactProgression({
   value,
   className,
   fade,
+  size = "inline",
   "data-testid": testId,
 }: {
   value: Progression
   className?: string
   fade?: "rarity" | "stars"
+  /** `emblem` for a table row beside rank emblems (the Goals table's Goal column): a 24px rarity
+   *  icon and body-size star count. */
+  size?: "inline" | "emblem"
   "data-testid"?: string
 }) {
   const { t } = useTranslation(["progression"])
@@ -36,9 +40,13 @@ export function CompactProgression({
       <RarityIcon
         className={fade === "rarity" ? fadedPart : undefined}
         rarity={progressionRarity(value)}
+        size={size}
       />
       <CompactStars
-        className={fade === "stars" ? fadedPart : undefined}
+        className={cn(
+          size === "emblem" && "text-sm",
+          fade === "stars" && fadedPart
+        )}
         progression={value}
       />
     </span>

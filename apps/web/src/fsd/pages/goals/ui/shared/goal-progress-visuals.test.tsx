@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@/test/render"
+import { fireEvent, render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
@@ -427,6 +427,41 @@ describe("GoalTargetDisplay for Ability goals", () => {
     expect(pill("primary")).toBeNull()
     expect(pill("secondary")).toBeInTheDocument()
   })
+
+  it("draws each ability's icon at row size in the table, named by track and ability", () => {
+    render(
+      <GoalTargetDisplay
+        abilityIds={["AmmoBandolier", "Dakka"]}
+        entityType="Mow"
+        progress={ability(47, 50, 12, 15)}
+        size="lg"
+      />
+    )
+    const icon = screen.getByRole("button", {
+      name: "Primary · AmmoBandolier",
+    })
+    expect(
+      screen.getByRole("button", { name: "Secondary · Dakka" })
+    ).toBeInTheDocument()
+    expect(within(icon).getByRole("presentation")).toHaveClass("size-8")
+    // The icon stands in for the track label in the table.
+    expect(pill("primary")).toHaveTextContent(/^4750$/)
+  })
+
+  it("keeps the labelled pill with an inline icon outside the table", () => {
+    render(
+      <GoalTargetDisplay
+        abilityIds={["AmmoBandolier", "Dakka"]}
+        entityType="Mow"
+        progress={ability(47, 50, 12, 15)}
+      />
+    )
+    expect(pill("primary")).toHaveTextContent("Primary4750")
+    const icon = screen.getByRole("button", {
+      name: "Primary · AmmoBandolier",
+    })
+    expect(within(icon).getByRole("presentation")).toHaveClass("size-4")
+  })
 })
 
 describe("Goal kind without a type label", () => {
@@ -444,6 +479,29 @@ describe("Goal kind without a type label", () => {
       />
     )
     expect(screen.queryByText("Ascension")).not.toBeInTheDocument()
+  })
+
+  it("shows Ascension in its compact form, the rarity icon at emblem size in the table", () => {
+    render(
+      <GoalTargetDisplay
+        progress={
+          {
+            kind: "Ascension",
+            current: "Epic:OneStar",
+            target: "Legendary:OneStar",
+            ratio: 0.5,
+          } as never
+        }
+        size="lg"
+      />
+    )
+    expect(
+      screen
+        .getAllByRole("img")
+        .map((mark) => mark.dataset.progression)
+        .filter(Boolean)
+    ).toEqual(["Epic:OneStar", "Legendary:OneStar"])
+    expect(screen.getByAltText("Epic")).toHaveClass("size-6")
   })
 
   it("shows the word Unlock in the Goal cell and the shard count beside the bar", () => {

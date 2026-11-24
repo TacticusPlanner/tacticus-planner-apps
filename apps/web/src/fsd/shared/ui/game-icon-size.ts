@@ -2,7 +2,7 @@
  * The game icon size scale from the UI style guide (rule 6). Every datamine or curated icon is drawn
  * at one of these sizes, picked by its role rather than by the page.
  *
- * Two ramps: item icons (`inline`, `row`, `tile`) and unit portraits (`sm`, `md`, `lg`, and `hero`
+ * Two ramps: item icons (`inline`, `emblem`, `row`, `tile`) and unit portraits (`sm`, `md`, `lg`, and `hero`
  * only for a unit page's header). A badge over a portrait is a third of that portrait, never below
  * 16px, so its size names the portrait it sits on.
  */
@@ -13,6 +13,7 @@ export type PortraitSize = "sm" | "md" | "lg" | "hero"
  *  portrait of that size. A ringed unit portrait is `UnitPortrait`. */
 export type EntityIconSize =
   | "inline"
+  | "emblem"
   | "row"
   | "tile"
   | `badge-${PortraitSize}`
@@ -28,6 +29,9 @@ const PORTRAIT_CLASS_NAMES: Record<PortraitSize, string> = {
 const ENTITY_ICON_CLASS_NAMES: Record<EntityIconSize, string> = {
   // Next to text or a number: 16px with a mouse, 20px on touch.
   inline: "size-4 pointer-coarse:size-5",
+  // A solid emblem (the rarity hexagon) in a list or table row beside rank emblems: their open art
+  // reads smaller than its box, so the solid one is drawn a step smaller to match.
+  emblem: "size-6",
   // An item in a list or table row.
   row: "size-8",
   // An item in a card or grid.
