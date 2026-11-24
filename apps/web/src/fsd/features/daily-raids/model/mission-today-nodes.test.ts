@@ -25,6 +25,27 @@ describe("missionTodayNodes", () => {
     expect(missionTodayNodes(undefined, battles, eventGroups)).toBeUndefined()
   })
 
+  it("prefers 5 and 6 energy nodes for the battles fought by hand", () => {
+    const rules = missionTodayNodes(
+      {
+        battlesToGo: 0,
+        eventOnly: false,
+        manual: {
+          needs: [{ toGo: 150, per: "abilityUses" }],
+          preferLightning: false,
+          countsAsRaids: false,
+        },
+      },
+      battles,
+      eventGroups
+    )
+    expect([...(rules?.preferredBattleIds ?? [])]).toEqual([
+      "I15",
+      "M10",
+      "T25B",
+    ])
+  })
+
   it("keeps lightning victories to event-campaign nodes", () => {
     const rules = missionTodayNodes(
       { battlesToGo: 25, eventOnly: true },

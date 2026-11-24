@@ -388,6 +388,31 @@ describe("planMissionRaids from Today's raids", () => {
     )
     expect(raidsOf(plan.rows)).toEqual({ I25: 2, I15: 4 })
   })
+
+  it("fights Today's nodes by hand first, in Today's order, when they pass the battle rules", () => {
+    const plan = planMissionRaids(
+      base({
+        battlesToGo: 0,
+        unlimitedEnergy: true,
+        // 150 ability uses to go, 5 a battle: 30 battles over 10-attempt nodes.
+        manual: {
+          needs: [{ toGo: 150, per: "abilityUses" }],
+          preferLightning: false,
+          countsAsRaids: false,
+        },
+        battleYield: (_, per) => (per === "abilityUses" ? 5 : 0),
+        // I20 fails the battle rules (say, the hero's faction can't deploy there).
+        passesBattlesFilter: (battleId) => battleId !== id("I20"),
+        goalNodesByBattle: new Map([[id("I15"), goal("dropI15")]]),
+        todayEntries: [entry("I28", 1), entry("I20", 2), entry("I25", 1)],
+      })
+    )
+    expect(plan.battles?.rows.map((row) => [row.battleId, row.raids])).toEqual([
+      ["I28", 10],
+      ["I25", 10],
+      ["I15", 10],
+    ])
+  })
 })
 
 describe("buildMissionGoalNodes", () => {

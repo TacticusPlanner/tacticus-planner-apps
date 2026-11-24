@@ -524,7 +524,9 @@ function raidsForGoal(
 /**
  * The battles to fight by hand for the mission's manual objectives, over every node that passes
  * `passesBattlesFilter` (drops or not: a kill counts anywhere). Nodes with a lightning condition
- * come first while lightning victories are open; then the nodes that feed a goal; then
+ * come first while lightning victories are open; then Today's nodes under the mission's node rules
+ * (`todayEntries`), in Today's order, so a battle fought by hand also farms what Today would raid
+ * there (Severyn, 2026-11); then the nodes that feed a goal; then
  * the least energy to finish the first estimated objective at that node alone (its battles times
  * their cost, so a node with more enemies than the kills left is no better than one with just
  * enough), then the fewest of those battles; then
@@ -564,6 +566,7 @@ function planMissionBattles(
     kills
       ? rows.map((row) => ({ ...row, enemies: yieldOf(row.battleId, kills) }))
       : rows
+  const todayRank = todayOrder(input.todayEntries)
   const candidates = input.battles
     .filter(
       (battle) =>
@@ -577,6 +580,7 @@ function planMissionBattles(
           ? Number(a.lightningCondition === false) -
               Number(b.lightningCondition === false)
           : 0,
+        todayRank(a) - todayRank(b),
         Number(!input.goalNodesByBattle.has(a.id)) -
           Number(!input.goalNodesByBattle.has(b.id)),
         finishCost(a) - finishCost(b),
@@ -632,6 +636,17 @@ function planMissionBattles(
     left.some((value) => value > 0),
     attemptsBlocked ? "no-attempts" : "no-energy"
   )
+}
+
+/** Each node's first place in Today's entries; a node Today does not raid ranks after them all. */
+function todayOrder(
+  entries: PlanMissionRaidsInput["todayEntries"]
+): (battle: MissionRaidBattle) => number {
+  const ranks = new Map<BattleId, number>()
+  for (const [index, entry] of (entries ?? []).entries()) {
+    if (!ranks.has(entry.battleId)) ranks.set(entry.battleId, index)
+  }
+  return (battle) => ranks.get(battle.id) ?? Number.MAX_SAFE_INTEGER
 }
 
 const row = (
