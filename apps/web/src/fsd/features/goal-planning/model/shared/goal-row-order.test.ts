@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  orderRowsByDuration,
   orderRowsByFinishDate,
   orderRowsByGlobalPriority,
 } from "./goal-row-order"
@@ -67,5 +68,22 @@ describe("orderRowsByFinishDate", () => {
       "b",
       "d",
     ])
+  })
+})
+
+describe("orderRowsByDuration", () => {
+  it("puts the shortest raid duration first and goals without raids last, keeping priority on ties", () => {
+    const rows = ["a", "b", "c", "d"].map((goalId) => ({ goalId }) as GoalRow)
+    const durations = new Map([
+      ["a", 9],
+      ["c", 2],
+      ["d", 9],
+    ])
+
+    expect(
+      orderRowsByDuration(rows, (goalId) => durations.get(goalId)).map(
+        (r) => r.goalId
+      )
+    ).toEqual(["c", "a", "d", "b"])
   })
 })

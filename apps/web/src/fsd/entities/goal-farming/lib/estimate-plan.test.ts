@@ -152,6 +152,38 @@ describe("raid schedule breakdown", () => {
     })
   })
 
+  it("records the plan day each goal is first raided on", () => {
+    const plan = estimatePlanSchedule({
+      goals: [
+        {
+          goalId: "a",
+          priority: 1,
+          needs: [{ id: upgradeId("U1"), count: 4 }],
+        },
+        {
+          goalId: "b",
+          priority: 2,
+          needs: [{ id: upgradeId("U2"), count: 2 }],
+        },
+        {
+          goalId: "owned",
+          priority: 3,
+          needs: [{ id: upgradeId("U3"), count: 1 }],
+        },
+      ],
+      upgradesById: resources(["U1", "B1"], ["U2", "B1"], ["U3", "B1"]),
+      battlesById: new Map([battle("B1", 2)]),
+      dailyEnergy: 100,
+      inventory: [{ id: upgradeId("U3"), count: 1 }],
+      referenceDate,
+    })
+
+    // "a" takes the shared cap on days 1 and 2, so "b" waits until day 3.
+    expect(plan.outcomes.get("a")).toMatchObject({ days: 2, firstRaidDay: 1 })
+    expect(plan.outcomes.get("b")).toMatchObject({ days: 3, firstRaidDay: 3 })
+    expect(plan.outcomes.get("owned")).not.toHaveProperty("firstRaidDay")
+  })
+
   it("uses Today as the completion date for a one-day plan", () => {
     const plan = estimatePlanSchedule({
       goals: [

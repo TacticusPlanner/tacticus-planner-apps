@@ -1,6 +1,11 @@
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Table,
@@ -13,7 +18,10 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useGoalCatalog } from "@/features/goal-planning"
 import { SortableList } from "@/shared/ui"
-import { ProgressLegend } from "../shared/goal-progress-visuals"
+import {
+  ProgressExplainer,
+  ProgressLegend,
+} from "../shared/goal-progress-visuals"
 import { GoalRowCells } from "./goal-table-row"
 import { GoalsCards } from "./goals-cards"
 import {
@@ -56,7 +64,7 @@ export function GoalsList({
 
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()
 /** Header columns in `GoalsTable`, spanned by the season cut-off row. */
-const COLUMN_COUNT = 8
+const COLUMN_COUNT = 9
 /** A header class that shrinks its column to the widest cell's content. */
 const FIT_COLUMN = "w-px"
 
@@ -92,9 +100,6 @@ function GoalsTable({
 }: GoalsListProps & { isMobile: boolean }) {
   const { t } = useTranslation()
   const { getEntityName } = useGoalCatalog()
-  const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
-    null
-  )
   // Select-all covers every visible row (across groups), not just this table's rows.
   const scopeIds = visibleIds ?? rows.map((row) => row.goalId)
   const selectedCount = scopeIds.filter((id) => selection.has(id)).length
@@ -151,11 +156,30 @@ function GoalsTable({
           <TableHead className={FIT_COLUMN}>
             {t("goals.columns.doneBy")}
           </TableHead>
+          <TableHead className={FIT_COLUMN}>
+            {/* Not obvious from the word alone how it differs from Done by: the tooltip says. */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="cursor-default rounded-sm underline decoration-dotted underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  data-testid="goals-duration-header"
+                  type="button"
+                >
+                  {t("goals.columns.duration")}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>{t("goals.columns.durationHelp")}</TooltipContent>
+            </Tooltip>
+          </TableHead>
           <TableHead>{t("goals.columns.remaining")}</TableHead>
           <TableHead className="w-40">
             {showLegend ? (
               <div className="grid gap-0.5 py-1">
-                {t("goals.columns.progress")}
+                <span className="flex items-center justify-between gap-1">
+                  {t("goals.columns.progress")}
+                  {/* The list's one "i": the rows carry no per-goal explanation on desktop. */}
+                  {isMobile ? null : <ProgressExplainer />}
+                </span>
                 {/* Stacked: side by side it would widen this deliberately narrow column. */}
                 <ProgressLegend className="flex-col items-start gap-0" />
               </div>
@@ -225,7 +249,6 @@ function GoalsTable({
                     moves={menuMoves?.get(row.goalId)}
                     onEdit={onEdit}
                     onMenuMove={onMenuMove}
-                    popoverOpen={openPopoverGoalId === row.goalId}
                     potentialProgress={potentialProgress}
                     onToggleSelected={onToggleSelected}
                     selected={selection.has(row.goalId)}
@@ -233,7 +256,6 @@ function GoalsTable({
                     reorderEnabled={reorderEnabled && !isMobile}
                     row={row}
                     showCheckbox={showCheckboxes}
-                    setOpenPopoverGoalId={setOpenPopoverGoalId}
                     seasonFit={seasonFit}
                     xpBook={xpBook}
                   />

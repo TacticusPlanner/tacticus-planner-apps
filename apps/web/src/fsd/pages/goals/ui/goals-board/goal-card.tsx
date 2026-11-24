@@ -1,5 +1,4 @@
 import { memo } from "react"
-import type { Dispatch, SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
 import { Trash2 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -93,8 +92,6 @@ type GoalCardProps = Pick<
   showDragHandle: boolean
   /** Absent where the card isn't in a sortable list. */
   dragHandle?: SortableRenderProps["dragHandle"]
-  popoverOpen: boolean
-  setOpenPopoverGoalId: Dispatch<SetStateAction<string | null>>
 }
 
 /**
@@ -121,8 +118,6 @@ export const GoalCard = memo(
     showCheckbox,
     showDragHandle,
     dragHandle,
-    popoverOpen,
-    setOpenPopoverGoalId,
     ...sources
   }: GoalCardProps) {
     const { t, i18n } = useTranslation()
@@ -219,9 +214,6 @@ export const GoalCard = memo(
               onMove={(displacedGoalId) =>
                 onMenuMove?.(row.goalId, displacedGoalId)
               }
-              onOpenChange={(open) => {
-                if (open) setOpenPopoverGoalId(null)
-              }}
               projectRemoval={projectRemoval}
               reached={data.reached}
               row={row}
@@ -318,10 +310,6 @@ export const GoalCard = memo(
               >
                 <GoalProgressDisplay
                   energy={data.energy}
-                  onOpenChange={(open) =>
-                    setOpenPopoverGoalId(open ? row.goalId : null)
-                  }
-                  open={popoverOpen}
                   potentialRatio={potentialProgress?.get(row.goalId)}
                   progress={data.progress}
                   remaining={data.remaining}

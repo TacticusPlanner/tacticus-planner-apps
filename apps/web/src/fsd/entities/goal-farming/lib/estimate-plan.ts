@@ -318,11 +318,16 @@ function runPlanSchedule(
   // Each day's energy budget (day 1 is what is left today), for the unused-energy count.
   const dayBudgets: number[] = []
 
+  // The plan day each goal is first raided on, for its raid duration (first raid day → done).
+  const firstRaidDayByGoal = new Map<string, number>()
   const addGoalTotals = (
     goalId: string,
     energySpent: number,
     raids: number
   ) => {
+    if (raids > 0 && !firstRaidDayByGoal.has(goalId)) {
+      firstRaidDayByGoal.set(goalId, days)
+    }
     energyTotalByGoal.set(
       goalId,
       (energyTotalByGoal.get(goalId) ?? 0) + energySpent
@@ -345,6 +350,10 @@ function runPlanSchedule(
   const checkpointsField = (goalId: string) => {
     const reached = checkpointsByGoal.get(goalId)
     return reached ? { checkpoints: toCheckpoints(reached, referenceDate) } : {}
+  }
+  const firstRaidDayField = (goalId: string) => {
+    const firstRaidDay = firstRaidDayByGoal.get(goalId)
+    return firstRaidDay === undefined ? {} : { firstRaidDay }
   }
   const completeIfDone = (goal: GoalNeed) => {
     const stages = required(
@@ -380,6 +389,7 @@ function runPlanSchedule(
                 goal.flatSuppliers
               ),
               ...checkpointsField(goal.goalId),
+              ...firstRaidDayField(goal.goalId),
             }
       )
       pending.delete(goal.goalId)

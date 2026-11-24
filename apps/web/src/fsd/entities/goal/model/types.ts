@@ -15,7 +15,7 @@ export function isGoalGroupValue(value: unknown): value is GoalGroupValue {
 
 /** Type guard for the remembered Goals sort. */
 export function isGoalSortValue(value: unknown): value is GoalSortValue {
-  return value === "priority" || value === "finishDate"
+  return value === "priority" || value === "finishDate" || value === "duration"
 }
 
 export const STATUS_VALUES: readonly GoalStatusFilterValue[] = [

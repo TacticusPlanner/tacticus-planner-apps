@@ -27,6 +27,7 @@ import type { GoalAbilityIds } from "./goal-ability-ids"
 import {
   formatGenericRemainingText,
   formatGoalRemainingText,
+  formatProgressTooltipText,
 } from "./goal-remaining-text"
 import { StackedProgressBar } from "./stacked-progress-bar"
 import { UpgradeTargetMaterials } from "./upgrade-target-materials"
@@ -296,6 +297,66 @@ function GoalTargetPreviewDisplay({
   }
 }
 
+/** What Actual and Potential progress mean, with the legend swatches. `actual`/`potential` add a goal's own
+ *  figures to each line (the mobile card's expanded footer); the list-wide "i" shows it without. */
+function ProgressExplanation({
+  actual,
+  potential,
+}: {
+  actual?: { heading: string; extra: string | null }
+  potential?: { heading: string; extra: string | null }
+}) {
+  const { t } = useTranslation()
+  return (
+    <div className="grid gap-3 text-sm" data-testid="goal-progress-explanation">
+      <p className="flex items-start gap-2">
+        <ProgressSwatch variant="actual" />
+        <span>
+          <span className="font-medium">
+            {actual?.heading ?? t("goals.overview.actualProgress")}
+          </span>
+          : {t("goals.overview.actualProgressDescription")}
+          {actual?.extra ? ` ${actual.extra}` : null}
+        </span>
+      </p>
+      <p className="flex items-start gap-2">
+        <ProgressSwatch variant="potential" />
+        <span>
+          <span className="font-medium">
+            {potential?.heading ?? t("goals.overview.potentialProgress")}
+          </span>
+          : {t("goals.overview.potentialProgressDescription")}
+          {potential?.extra ? ` ${potential.extra}` : null}
+        </span>
+      </p>
+    </div>
+  )
+}
+
+/** The one "i" per list that explains Actual and Potential progress (goal-list-layout): beside the
+ *  Progress header in the table, beside the legend above the cards. Each goal's own figures are in its
+ *  percent readout's tooltip. */
+export function ProgressExplainer() {
+  const { t } = useTranslation()
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          aria-label={t("goals.overview.progressDetails")}
+          data-testid="goals-progress-info-trigger"
+          size="icon-sm"
+          variant="ghost"
+        >
+          <Info />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80">
+        <ProgressExplanation />
+      </PopoverContent>
+    </Popover>
+  )
+}
+
 /** The once-per-list Actual/Potential key (goal-list-layout: never repeated per row or card). */
 export function ProgressLegend({ className }: { className?: string }) {
   const { t } = useTranslation()
@@ -428,9 +489,9 @@ export function GoalTargetDisplay({
  * kind beyond a still-available remaining-text line (player data for this goal hasn't synced yet, or
  * the goal kind has no ratio to show at all).
  *
- * `open`/`onOpenChange` make the desktop popover a controlled component when the caller needs to
- * coordinate one-open-at-a-time across a list (see `goals-list.tsx`'s `openPopoverGoalId`); omit
- * both for an uncontrolled popover (Radix manages its own state) in a single-instance context.
+ * At or above the mobile breakpoint there is no per-goal "i": the list explains Actual and Potential
+ * once (`ProgressExplainer`), and the goal's own figures (upgrade slots, energy, levels, XP) are the
+ * percent readout's tooltip.
  *
  * `potentialOnly` drops the actual reading: the bar renders fully in
  * the striped "potential" style, the percent shows only the small potential-styled reading, and the
@@ -441,16 +502,12 @@ export function GoalProgressDisplay({
   potentialOnly = false,
   remaining = null,
   energy,
-  open,
-  onOpenChange,
 }: {
   progress: GoalProgress
   potentialRatio?: number
   potentialOnly?: boolean
   remaining?: ResourceNeed | null
   energy?: number
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
 }) {
   const { t, i18n } = useTranslation()
   const isMobile = useIsMobile()
@@ -532,7 +589,14 @@ export function GoalProgressDisplay({
     </span>
   )
 
-  const percentWithTooltip = remainingText ? (
+  const tooltipText = formatProgressTooltipText(
+    t,
+    i18n.resolvedLanguage,
+    progress,
+    remaining,
+    energy
+  )
+  const percentWithTooltip = tooltipText ? (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
@@ -544,91 +608,47 @@ export function GoalProgressDisplay({
         </button>
       </TooltipTrigger>
       <TooltipContent data-testid="goal-remaining-text">
-        {remainingText}
+        {tooltipText}
       </TooltipContent>
     </Tooltip>
   ) : (
     <span data-testid="goal-progress-percent">{percentLabel}</span>
   )
 
+  const fmt = (value: number) => formatNumber(i18n.resolvedLanguage, value)
+  const slotsRemaining = remaining?.upgradeSlotsRemaining ?? 0
+  // The mobile card's expanded footer: the shared explanation with this goal's own figures.
   const explanation = hasExplanation ? (
-    <div className="grid gap-3 text-sm" data-testid="goal-progress-explanation">
-      <p className="flex items-start gap-2">
-        <ProgressSwatch variant="actual" />
-        <span>
-          <span className="font-medium">
-            {t("goals.overview.actualProgress")} {actualPct}%
-          </span>
-          : {t("goals.overview.actualProgressDescription")}
-          {progress.kind === "Rank" &&
-          remaining &&
-          (remaining.upgradeSlotsRemaining ?? 0) > 0 ? (
-            <>
-              {" "}
-              {t("goals.overview.actualSlotsRemaining", {
-                count: remaining.upgradeSlotsRemaining,
-              })}
-            </>
-          ) : null}
-          {progress.kind === "LevelRequirement" &&
-          progress.target > progress.current ? (
-            <>
-              {" "}
-              {t("goals.overview.actualLevelsRemaining", {
-                count: progress.target - progress.current,
-              })}
-            </>
-          ) : null}
-        </span>
-      </p>
-      <p className="flex items-start gap-2">
-        <ProgressSwatch variant="potential" />
-        <span>
-          <span className="font-medium">
-            {t("goals.overview.potentialProgress")} {potentialPct}%
-          </span>
-          : {t("goals.overview.potentialProgressDescription")}
-          {progress.kind === "Rank" && energy !== undefined ? (
-            <>
-              {" "}
-              {t("goals.overview.potentialEnergyRemaining", {
-                energy: formatNumber(i18n.resolvedLanguage, energy),
-              })}
-            </>
-          ) : null}
-          {progress.kind === "LevelRequirement" && progress.remainingXp > 0 ? (
-            <>
-              {" "}
-              {t("goals.overview.potentialXpRemaining", {
-                xp: formatNumber(i18n.resolvedLanguage, progress.remainingXp),
-              })}
-            </>
-          ) : null}
-        </span>
-      </p>
-    </div>
+    <ProgressExplanation
+      actual={{
+        heading: `${t("goals.overview.actualProgress")} ${actualPct}%`,
+        extra:
+          progress.kind === "Rank" && slotsRemaining > 0
+            ? t("goals.overview.actualSlotsRemaining", {
+                count: slotsRemaining,
+              })
+            : progress.kind === "LevelRequirement" &&
+                progress.target > progress.current
+              ? t("goals.overview.actualLevelsRemaining", {
+                  count: progress.target - progress.current,
+                })
+              : null,
+      }}
+      potential={{
+        heading: `${t("goals.overview.potentialProgress")} ${potentialPct}%`,
+        extra:
+          progress.kind === "Rank" && energy !== undefined
+            ? t("goals.overview.potentialEnergyRemaining", {
+                energy: fmt(energy),
+              })
+            : progress.kind === "LevelRequirement" && progress.remainingXp > 0
+              ? t("goals.overview.potentialXpRemaining", {
+                  xp: fmt(progress.remainingXp),
+                })
+              : null,
+      }}
+    />
   ) : null
-
-  const infoTrigger = hasExplanation ? (
-    <Popover onOpenChange={onOpenChange} open={open}>
-      <PopoverTrigger asChild>
-        <Button
-          aria-expanded={open}
-          aria-label={t("goals.overview.progressDetails")}
-          data-testid="goal-progress-info-trigger"
-          size="icon-sm"
-          variant="ghost"
-        >
-          <Info className="size-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-80">
-        {explanation}
-      </PopoverContent>
-    </Popover>
-  ) : (
-    <span aria-hidden="true" className="inline-block size-7 shrink-0" />
-  )
 
   const ceilingLabel = reachableCeilingLabel(t, progress)
 
@@ -677,7 +697,6 @@ export function GoalProgressDisplay({
         </div>
         {unlockCount}
         {percentWithTooltip}
-        {!isMobile ? infoTrigger : null}
       </div>
       {isMobile ? mobileFooter : null}
     </div>

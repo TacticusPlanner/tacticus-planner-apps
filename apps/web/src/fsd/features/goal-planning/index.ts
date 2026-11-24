@@ -95,6 +95,7 @@ export {
   type ProjectFitCount,
 } from "./model/deadline-fit/use-project-deadline-fit"
 export {
+  orderRowsByDuration,
   orderRowsByFinishDate,
   orderRowsByGlobalPriority,
 } from "./model/shared/goal-row-order"

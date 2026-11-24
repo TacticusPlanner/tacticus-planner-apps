@@ -172,14 +172,13 @@ export type RowSliceProps = Pick<
   row: GoalRow
   selected: boolean
   dragHandle?: unknown
-  popoverOpen: boolean
 }
 
 /** Memo comparator for a goal row or card: maps and `actions` are rebuilt on every page render (a
  *  pause/resume rebuilds the cascade context, estimates and `pendingIds` for the whole list), so compare
  *  only this goal's slice of each. Functions other than `onToggleSelected` are omitted on purpose:
  *  `actions`, `onEdit` and `onMenuMove` only act on ids/state read at call time (a move's target is the
- *  compared `moves`), and `setOpenPopoverGoalId` is a state setter. `extra` adds a surface's own scalar props. */
+ *  compared `moves`). `extra` adds a surface's own scalar props. */
 /** Whether a goal's row or card draws a Potential bar, which is what the legend explains. Cards draw
  *  shard bars with no Potential for Ascension, and an Ability card's only one is on its level row. */
 export function drawsPotentialBar(
@@ -217,7 +216,6 @@ export function sameRowSlice<P extends RowSliceProps>(
   if (id !== b.row.goalId || a.row !== b.row) return false
   const scalar = (props: P) => [
     props.selected,
-    props.popoverOpen,
     props.xpBook,
     props.actions.pendingIds.has(id),
     props.onToggleSelected,

@@ -32,7 +32,25 @@ export function orderRowsByFinishDate(
   rows: readonly GoalRow[],
   finishDays: ReadonlyMap<string, { days?: number }>
 ): GoalRow[] {
-  const daysOf = (row: GoalRow) => finishDays.get(row.goalId)?.days
+  return orderRowsByDays(rows, (row) => finishDays.get(row.goalId)?.days)
+}
+
+/**
+ * The Duration sort: rows by their days of raids once they start getting energy (first raid day →
+ * done, `goalRaidDuration`), shortest first, then the rest (no raids, blocked, reached or not
+ * estimated yet) in their incoming order. Ties keep the incoming (priority) order.
+ */
+export function orderRowsByDuration(
+  rows: readonly GoalRow[],
+  durationOf: (goalId: string) => number | undefined
+): GoalRow[] {
+  return orderRowsByDays(rows, (row) => durationOf(row.goalId))
+}
+
+function orderRowsByDays(
+  rows: readonly GoalRow[],
+  daysOf: (row: GoalRow) => number | undefined
+): GoalRow[] {
   return rows
     .map((row, index) => ({ row, index, days: daysOf(row) }))
     .toSorted((left, right) => {

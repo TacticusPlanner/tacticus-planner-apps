@@ -1246,7 +1246,9 @@
       "doneBy": "Done by",
       "reorder": "Reorder",
       "reorderHandle": "Drag {{entity}} to reorder",
-      "priority": "Priority"
+      "priority": "Priority",
+      "duration": "Duration",
+      "durationHelp": "Days of raids this goal needs once it starts getting energy."
     },
     "status": {
       "Draft": "Draft",
@@ -1755,7 +1757,11 @@
       "unlockDuringEvent": "during the campaign event",
       "unlockMore_one": "+{{count}} more location",
       "unlockMore_other": "+{{count}} more locations",
-      "unlockFewer": "Show fewer"
+      "unlockFewer": "Show fewer",
+      "duration_one": "{{count}} day",
+      "duration_other": "{{count}} days",
+      "durationLabel_one": "{{count}} day of raids",
+      "durationLabel_other": "{{count}} days of raids"
     },
     "unlockFlavor": "Gather the character's shards and prepare them to join your roster.",
     "filters": {
@@ -1781,11 +1787,13 @@
       "sort": "Sort",
       "sortOptions": {
         "priority": "Priority",
-        "finishDate": "Finish date"
+        "finishDate": "Finish date",
+        "duration": "Duration"
       },
       "sortHelp": {
         "priority": "Your priority order. Drag goals to reorder them.",
-        "finishDate": "Estimated finish date in your plan, soonest first."
+        "finishDate": "Estimated finish date in your plan, soonest first.",
+        "duration": "Days of raids each goal needs once it starts getting energy, shortest first."
       }
     },
     "seasonFit": {
@@ -1911,7 +1919,10 @@
         "levels": "{{count}} levels",
         "rankEnergy": "{{energy}} energy",
         "coveredByEarlierGoal": "Covered by an earlier goal",
-        "shards": "{{count}} shards"
+        "shards": "{{count}} shards",
+        "upgradeSlots_one": "{{count}} upgrade slot",
+        "upgradeSlots_other": "{{count}} upgrade slots",
+        "xp": "{{xp}} XP"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Progress details",
@@ -2063,7 +2074,8 @@
         "cancel": "Cancel"
       },
       "sortBlocksReorder": "Goals are sorted by finish date, so you can't drag them to change their priority.",
-      "sortByPriority": "Sort by priority"
+      "sortByPriority": "Sort by priority",
+      "sortBlocksReorderDuration": "Goals are sorted by duration, so you can't drag them to change their priority."
     },
     "edit": {
       "title": "Edit goal",

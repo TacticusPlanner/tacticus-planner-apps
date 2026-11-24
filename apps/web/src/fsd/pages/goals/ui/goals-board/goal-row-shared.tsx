@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Calendar } from "lucide-react"
+import { Calendar, Hourglass } from "lucide-react"
 import {
   Tooltip,
   TooltipContent,
@@ -8,10 +8,64 @@ import {
 
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
 
+import { goalRaidDuration } from "@/entities/goal-farming"
 import type { EstimateOutcome } from "@/entities/goal-farming"
 import type { GoalRow } from "@/features/goal-planning"
 import { useGoalCatalog } from "@/features/goal-planning"
 import { isInFlightStatus } from "./goal-row-utils"
+
+/** A goal's days of raids once it starts getting energy (`goalRaidDuration`): the table's Duration
+ *  column, and an hourglass on the card's date line, whose tooltip says what the figure means. A goal
+ *  with no raids shows a dash in the column and nothing on the card. */
+export function GoalDuration({
+  estimate,
+  icon = false,
+}: {
+  estimate: EstimateOutcome | undefined
+  /** The card's date line: an hourglass and a tooltip stand in for the table's column header. */
+  icon?: boolean
+}) {
+  const { t } = useTranslation()
+  const duration = goalRaidDuration(estimate)
+  if (duration === undefined) {
+    // The column keeps a dash so a goal with no raids doesn't read as still loading.
+    return icon ? null : (
+      <span
+        className="text-sm text-muted-foreground"
+        data-testid="goal-duration-none"
+      >
+        -
+      </span>
+    )
+  }
+  const text = t("goals.estimate.duration", { count: duration })
+  if (!icon) {
+    return (
+      <span
+        className="text-sm whitespace-nowrap tabular-nums"
+        data-testid="goal-duration"
+      >
+        {text}
+      </span>
+    )
+  }
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          aria-label={t("goals.estimate.durationLabel", { count: duration })}
+          className="inline-flex cursor-default items-center gap-1 rounded-sm whitespace-nowrap tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          data-testid="goal-duration"
+          type="button"
+        >
+          <Hourglass aria-hidden="true" className="size-3.5 shrink-0" />
+          {text}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>{t("goals.columns.durationHelp")}</TooltipContent>
+    </Tooltip>
+  )
+}
 
 /** The formatted completion date + "in {{days}} days" caption for a computed estimate, nothing when
  * there's no entry for this goal (no project selected, non-Rank goal type) or the farm is blocked —
@@ -63,6 +117,12 @@ export function EstimateCell({
       <span className="font-medium text-foreground">
         {formattedDate}
       </span> · {days}
+      {goalRaidDuration(estimate) === undefined ? null : (
+        <>
+          {" · "}
+          <GoalDuration estimate={estimate} icon />
+        </>
+      )}
     </span>
   )
 }

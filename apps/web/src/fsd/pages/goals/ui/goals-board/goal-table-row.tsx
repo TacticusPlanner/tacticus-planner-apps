@@ -1,5 +1,4 @@
 import { memo } from "react"
-import type { Dispatch, SetStateAction } from "react"
 import { useTranslation } from "react-i18next"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
@@ -27,6 +26,7 @@ import { HreSourceIndicator } from "../shared/hre-source-indicator"
 import { SeasonFitLabel } from "./season-fit-ui"
 import {
   EstimateCell,
+  GoalDuration,
   GoalNameLink,
   GoalPriorityNumber,
   ReachedDash,
@@ -67,8 +67,6 @@ type GoalRowCellsProps = Pick<
   /** Stable across drag-state changes (unlike the row's transform/isDragging), so a drag moving
    *  other rows never re-renders this row's cells. */
   dragHandle: SortableRenderProps["dragHandle"]
-  popoverOpen: boolean
-  setOpenPopoverGoalId: Dispatch<SetStateAction<string | null>>
 }
 
 /** A goal row's cells. Memoized so the drag (which re-renders every sortable row shell on
@@ -95,8 +93,6 @@ export const GoalRowCells = memo(function GoalRowCells({
   reorderEnabled,
   showCheckbox,
   dragHandle,
-  popoverOpen,
-  setOpenPopoverGoalId,
 }: GoalRowCellsProps) {
   const { t, i18n } = useTranslation()
   const catalog = useGoalCatalog()
@@ -196,9 +192,6 @@ export const GoalRowCells = memo(function GoalRowCells({
               onMove={(displacedGoalId) =>
                 onMenuMove?.(row.goalId, displacedGoalId)
               }
-              onOpenChange={(open) => {
-                if (open) setOpenPopoverGoalId(null)
-              }}
               reached={reached}
               row={row}
             />
@@ -231,7 +224,9 @@ export const GoalRowCells = memo(function GoalRowCells({
         )}
       </TableCell>
       <TableCell>
-        <div className="flex items-center gap-1">
+        {/* Two lines: the status toggle, then its flags (Blocked/Restricted, HRE source) side by side,
+            so the column stays narrow and the toggle always sits in the same place. */}
+        <div className="grid justify-items-start gap-1">
           <StatusBadge
             className="px-2.5 py-1 text-sm"
             disabled={actions.pendingIds.has(row.goalId)}
@@ -241,20 +236,26 @@ export const GoalRowCells = memo(function GoalRowCells({
             reached={reached}
             status={row.status}
           />
-          <BlockedIndicator
-            className="px-2.5 py-1 text-sm"
-            blockers={blockers}
-            estimate={estimates?.get(row.goalId)}
-            progress={progress}
-          />
-          {reached ? null : (
-            <HreSourceIndicator
-              className="px-2.5 py-1 text-sm"
-              isUnlock={row.goalType === "Unlock"}
-              source={hreSource}
-              unitName={getEntityName(row.entityType, row.entityId)}
+          <div
+            className="flex items-center gap-1 empty:hidden"
+            data-testid="goal-row-status-flags"
+          >
+            {/* Smaller than the toggle above, so both lines fit the row's height. */}
+            <BlockedIndicator
+              className="px-2 py-0.5 text-xs"
+              blockers={blockers}
+              estimate={estimates?.get(row.goalId)}
+              progress={progress}
             />
-          )}
+            {reached ? null : (
+              <HreSourceIndicator
+                className="px-2 py-0.5 text-xs"
+                isUnlock={row.goalType === "Unlock"}
+                source={hreSource}
+                unitName={getEntityName(row.entityType, row.entityId)}
+              />
+            )}
+          </div>
         </div>
       </TableCell>
       <TableCell>
@@ -265,6 +266,13 @@ export const GoalRowCells = memo(function GoalRowCells({
             <EstimateCell estimate={estimates.get(row.goalId)} stacked />
             <SeasonFitLabel goalId={row.goalId} seasonFit={seasonFit} />
           </div>
+        ) : null}
+      </TableCell>
+      <TableCell>
+        {reached ? (
+          <ReachedDash />
+        ) : estimates ? (
+          <GoalDuration estimate={estimates.get(row.goalId)} />
         ) : null}
       </TableCell>
       {/* The one column without a fixed or content width: it takes whatever the table has left, and
@@ -298,10 +306,6 @@ export const GoalRowCells = memo(function GoalRowCells({
           <>
             <GoalProgressDisplay
               energy={energy}
-              onOpenChange={(open) =>
-                setOpenPopoverGoalId(open ? row.goalId : null)
-              }
-              open={popoverOpen}
               potentialRatio={potentialProgress?.get(row.goalId)}
               progress={progress}
               remaining={remaining}

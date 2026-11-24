@@ -59,10 +59,6 @@ type Props = {
   actions: ReturnType<typeof useGoalActions>
   /** Opens the Edit goal dialog for this goal. */
   onEdit: (goalId: string) => void
-  /** Notified when this menu opens/closes — lets a list close an unrelated open info popover
-   *  (`goal-progress-display`'s "closes on ... opening the row menu" requirement) rather than
-   *  letting both float over the row at once. */
-  onOpenChange?: (open: boolean) => void
   /** Whether this goal's target has been reached — hides pause/resume (`goal-status-actions`: "A
    *  Reached goal shows neither control"); the stored status is untouched. Absent renders as
    *  not-reached. */
@@ -88,7 +84,6 @@ export function GoalRowActions({
   row,
   actions,
   onEdit,
-  onOpenChange,
   reached = false,
   cascadeContext,
   projectRemoval,
@@ -128,7 +123,7 @@ export function GoalRowActions({
 
   return (
     <>
-      <DropdownMenu onOpenChange={onOpenChange}>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             aria-label={t("goals.actions.openMenu")}

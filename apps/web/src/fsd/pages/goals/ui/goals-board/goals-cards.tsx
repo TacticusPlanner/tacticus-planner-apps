@@ -1,10 +1,13 @@
-import { Fragment, useState } from "react"
+import { Fragment } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useGoalCatalog } from "@/features/goal-planning"
 import { SortableList } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
-import { ProgressLegend } from "../shared/goal-progress-visuals"
+import {
+  ProgressExplainer,
+  ProgressLegend,
+} from "../shared/goal-progress-visuals"
 import { GoalCard } from "./goal-card"
 import {
   drawsPotentialBar,
@@ -56,9 +59,6 @@ export function GoalsCards({
   eventEndCutoffGoalId,
 }: GoalsListProps & { isMobile: boolean }) {
   const { getEntityName } = useGoalCatalog()
-  const [openPopoverGoalId, setOpenPopoverGoalId] = useState<string | null>(
-    null
-  )
   const showLegend = rows.some((row) =>
     drawsPotentialBar(
       row,
@@ -113,14 +113,12 @@ export function GoalsCards({
             onEdit={onEdit}
             onMenuMove={onMenuMove}
             onToggleSelected={onToggleSelected}
-            popoverOpen={openPopoverGoalId === row.goalId}
             potentialProgress={potentialProgress}
             projectRemoval={projectRemoval}
             reachedByGoalId={reachedByGoalId}
             row={row}
             seasonFit={seasonFit}
             selected={selection.has(row.goalId)}
-            setOpenPopoverGoalId={setOpenPopoverGoalId}
             showCheckbox={selectActive}
             showDragHandle={!isMobile && reorderEnabled}
             xpBook={xpBook}
@@ -132,7 +130,13 @@ export function GoalsCards({
 
   return (
     <div className="flex flex-col gap-3">
-      {showLegend ? <ProgressLegend /> : null}
+      {showLegend ? (
+        <div className="flex items-center gap-1">
+          <ProgressLegend />
+          {/* The list's one "i"; a phone's cards keep their own footer explanation. */}
+          {isMobile ? null : <ProgressExplainer />}
+        </div>
+      ) : null}
       <ul className={GRID_CLASS} data-testid="goals-list-cards">
         {/* Phones reorder in their own mode, so nothing here could start a drag. */}
         {isMobile ? (

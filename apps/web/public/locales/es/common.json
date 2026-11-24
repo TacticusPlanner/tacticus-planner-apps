@@ -1246,7 +1246,9 @@
       "doneBy": "Fecha fin",
       "reorder": "Reordenar",
       "reorderHandle": "Arrastrar {{entity}} para reordenar",
-      "priority": "Prioridad"
+      "priority": "Prioridad",
+      "duration": "Duración",
+      "durationHelp": "Días de incursiones que necesita este objetivo una vez que empieza a recibir energía."
     },
     "status": {
       "Draft": "Borrador",
@@ -1755,7 +1757,11 @@
       "unlockDuringEvent": "durante el evento de campaña",
       "unlockMore_one": "+{{count}} ubicación más",
       "unlockMore_other": "+{{count}} ubicaciones más",
-      "unlockFewer": "Mostrar menos"
+      "unlockFewer": "Mostrar menos",
+      "duration_one": "{{count}} día",
+      "duration_other": "{{count}} días",
+      "durationLabel_one": "{{count}} día de incursiones",
+      "durationLabel_other": "{{count}} días de incursiones"
     },
     "unlockFlavor": "Reúne los fragmentos del personaje y prepáralo para unirse a tu plantel.",
     "filters": {
@@ -1781,11 +1787,13 @@
       "sort": "Ordenar",
       "sortOptions": {
         "priority": "Prioridad",
-        "finishDate": "Fecha de fin"
+        "finishDate": "Fecha de fin",
+        "duration": "Duración"
       },
       "sortHelp": {
         "priority": "Tu orden de prioridad. Arrastra los objetivos para reordenarlos.",
-        "finishDate": "Fecha estimada de fin en tu plan, la más cercana primero."
+        "finishDate": "Fecha estimada de fin en tu plan, la más cercana primero.",
+        "duration": "Días de incursiones que necesita cada objetivo una vez que empieza a recibir energía, el más corto primero."
       }
     },
     "seasonFit": {
@@ -1911,7 +1919,10 @@
         "levels": "{{count}} niveles",
         "rankEnergy": "{{energy}} energía",
         "coveredByEarlierGoal": "Cubierto por un objetivo anterior",
-        "shards": "{{count}} fragmentos"
+        "shards": "{{count}} fragmentos",
+        "upgradeSlots_one": "{{count}} ranura de mejora",
+        "upgradeSlots_other": "{{count}} ranuras de mejora",
+        "xp": "{{xp}} XP"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Detalles del progreso",
@@ -2063,7 +2074,8 @@
         "cancel": "Cancelar"
       },
       "sortBlocksReorder": "Los objetivos están ordenados por fecha de fin, así que no puedes arrastrarlos para cambiar su prioridad.",
-      "sortByPriority": "Ordenar por prioridad"
+      "sortByPriority": "Ordenar por prioridad",
+      "sortBlocksReorderDuration": "Los objetivos están ordenados por duración, así que no puedes arrastrarlos para cambiar su prioridad."
     },
     "edit": {
       "title": "Editar objetivo",

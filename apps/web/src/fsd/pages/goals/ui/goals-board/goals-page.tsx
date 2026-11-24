@@ -16,6 +16,7 @@ import {
   useGoalAttainmentState,
   useGoalsOverviewMetrics,
   usePlanInsights,
+  orderRowsByDuration,
   orderRowsByFinishDate,
   orderRowsByGlobalPriority,
   expandedRows,
@@ -82,7 +83,7 @@ import { GoalsSelectButton } from "./goals-select-button"
 import { GoalsSelectBar } from "./goals-select-bar"
 import { SortBlocksReorderNotice } from "./sort-blocks-reorder-notice"
 import { GoalsMoveProjectGoalsButton } from "./goals-move-project-goals-button"
-import { useLevelRules } from "@/entities/goal-farming"
+import { goalRaidDuration, useLevelRules } from "@/entities/goal-farming"
 import { buildCascadeContext } from "./goal-row-utils"
 import type { SelectedXpBook } from "./goal-row-utils"
 import { PageTourButton } from "@/shared/tour"
@@ -282,7 +283,11 @@ export function GoalsPage() {
   const rows =
     sort === "finishDate"
       ? orderRowsByFinishDate(priorityRows, stableEstimates)
-      : priorityRows
+      : sort === "duration"
+        ? orderRowsByDuration(priorityRows, (goalId) =>
+            goalRaidDuration(stableEstimates.get(goalId))
+          )
+        : priorityRows
   const tabCounts = {
     all: filteredNonArchivedRows.length,
     toReach: filteredNonArchivedRows.filter((row) => !isReached(row.goalId))
@@ -583,11 +588,14 @@ export function GoalsPage() {
         showPristineEmptyState={showPristineEmptyState}
       />
 
-      {sortBlocksReorder &&
+      {sort !== "priority" &&
       orderHasMovableGoals &&
       !isLoading &&
       rows.length > 0 ? (
-        <SortBlocksReorderNotice onReset={() => changeSort("priority")} />
+        <SortBlocksReorderNotice
+          onReset={() => changeSort("priority")}
+          sort={sort}
+        />
       ) : null}
 
       <div

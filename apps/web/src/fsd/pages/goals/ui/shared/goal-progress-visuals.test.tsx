@@ -9,7 +9,11 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => useIsMobileMock(),
 }))
 
-import { GoalProgressDisplay, GoalTargetDisplay } from "./goal-progress-visuals"
+import {
+  GoalProgressDisplay,
+  GoalTargetDisplay,
+  ProgressExplainer,
+} from "./goal-progress-visuals"
 
 describe("GoalProgressDisplay", () => {
   it("never shows 100% unless the ratio has truly reached 1, even when rounding would otherwise round up", () => {
@@ -136,9 +140,38 @@ describe("GoalProgressDisplay", () => {
     expect(screen.queryByTestId("goal-progress-mobile-footer")).toBeNull()
   })
 
-  it("opens the popover on click and closes on a second click (desktop)", () => {
+  it("has no per-goal info button on desktop: the list's one explainer opens and closes on click", () => {
+    render(
+      <>
+        <ProgressExplainer />
+        <GoalProgressDisplay
+          potentialRatio={0.47}
+          progress={
+            {
+              kind: "Rank",
+              current: "Stone1",
+              target: "Iron1",
+              ratio: 0.25,
+              reachableRatio: null,
+            } as never
+          }
+        />
+      </>
+    )
+
+    expect(screen.queryByTestId("goal-progress-info-trigger")).toBeNull()
+    const trigger = screen.getByTestId("goals-progress-info-trigger")
+    expect(screen.queryByTestId("goal-progress-explanation")).toBeNull()
+    fireEvent.click(trigger)
+    expect(screen.getByTestId("goal-progress-explanation")).toBeInTheDocument()
+    fireEvent.click(trigger)
+    expect(screen.queryByTestId("goal-progress-explanation")).toBeNull()
+  })
+
+  it("puts a Rank goal's upgrade slots and energy in its percent tooltip", async () => {
     render(
       <GoalProgressDisplay
+        energy={12_400}
         potentialRatio={0.47}
         progress={
           {
@@ -149,18 +182,17 @@ describe("GoalProgressDisplay", () => {
             reachableRatio: null,
           } as never
         }
+        remaining={{ upgradeSlotsRemaining: 3 } as never}
       />
     )
 
-    const trigger = screen.getByTestId("goal-progress-info-trigger")
-    expect(screen.queryByTestId("goal-progress-explanation")).toBeNull()
-    fireEvent.click(trigger)
-    expect(screen.getByTestId("goal-progress-explanation")).toBeInTheDocument()
-    fireEvent.click(trigger)
-    expect(screen.queryByTestId("goal-progress-explanation")).toBeNull()
+    await userEvent.hover(screen.getByTestId("goal-progress-percent"))
+    expect(
+      (await screen.findAllByTestId("goal-remaining-text"))[0]
+    ).toHaveTextContent("3 upgrade slots · 12,400 energy")
   })
 
-  it("shows levels/xp remaining in the explanation popover for a level requirement with a potential ratio", () => {
+  it("puts a level requirement's levels and XP in its percent tooltip", async () => {
     render(
       <GoalProgressDisplay
         potentialRatio={0.8}
@@ -178,11 +210,36 @@ describe("GoalProgressDisplay", () => {
       />
     )
 
-    const trigger = screen.getByTestId("goal-progress-info-trigger")
-    fireEvent.click(trigger)
+    await userEvent.hover(screen.getByTestId("goal-progress-percent"))
+    expect(
+      (await screen.findAllByTestId("goal-remaining-text"))[0]
+    ).toHaveTextContent("6 levels · 12,674 XP")
+  })
+
+  it("shows levels/xp remaining in the mobile explanation for a level requirement with a potential ratio", () => {
+    useIsMobileMock.mockReturnValue(true)
+    render(
+      <GoalProgressDisplay
+        potentialRatio={0.8}
+        progress={
+          {
+            kind: "LevelRequirement",
+            current: 44,
+            target: 50,
+            ratio: 0.5,
+            reachableRatio: null,
+            reachableLevel: null,
+            remainingXp: 12_674,
+          } as never
+        }
+      />
+    )
+
+    fireEvent.click(screen.getByTestId("goal-progress-mobile-footer"))
     const explanation = screen.getByTestId("goal-progress-explanation")
     expect(explanation).toHaveTextContent("6 levels remaining.")
     expect(explanation).toHaveTextContent("12,674 XP remaining.")
+    useIsMobileMock.mockReturnValue(false)
   })
 
   it("renders a ceiling marker naming the reachable rank, for a Rank goal with a currently-reachable ratio", async () => {

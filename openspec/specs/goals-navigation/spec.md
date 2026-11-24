@@ -132,7 +132,7 @@ Insights and every Dailies page that offers the shared project selector (Shops, 
 
 ### Requirement: The Goals page is the single goals list and plan
 
-The Plan section SHALL have one goals page, **Goals** at `/plan/goals`, replacing both the former All Goals page and the former Global Plan page. Goals SHALL list goals in canonical global priority order by default and SHALL offer only the Sort options in "Goals sorts by priority or finish date". Wherever another requirement in the specs says "Overview", "Goals Overview", "All Goals", or "Global Plan" for this page, it means Goals. The Plan section's child pages are Goals, Projects, Insights, Schedule, and Event shop, in that order.
+The Plan section SHALL have one goals page, **Goals** at `/plan/goals`, replacing both the former All Goals page and the former Global Plan page. Goals SHALL list goals in canonical global priority order by default and SHALL offer only the Sort options in "Goals sorts by priority, finish date or duration". Wherever another requirement in the specs says "Overview", "Goals Overview", "All Goals", or "Global Plan" for this page, it means Goals. The Plan section's child pages are Goals, Projects, Insights, Schedule, and Event shop, in that order.
 
 #### Scenario: Plan tabs
 
@@ -142,7 +142,7 @@ The Plan section SHALL have one goals page, **Goals** at `/plan/goals`, replacin
 #### Scenario: Sort offers two orders
 
 - **WHEN** the user opens Goals for the first time on a device
-- **THEN** the controls offer status, Type, project-membership filters, Group by and a Sort reading Priority, with Finish date as its only other option
+- **THEN** the controls offer status, Type, project-membership filters, Group by and a Sort reading Priority, with Finish date and Duration as its other options
 
 ### Requirement: Goals project filter is independent of the project selection
 
@@ -343,16 +343,16 @@ Goals SHALL NOT show a priority-order explanation in its toolbar or above the li
 - **WHEN** the user runs the Goals page tour
 - **THEN** its reorder step explains the account-wide order, where a move applies, the skipping numbers in a project, and that dragging needs Sort set to Priority
 
-### Requirement: Goals sorts by priority or finish date
+### Requirement: Goals sorts by priority, finish date or duration
 
-Goals SHALL offer **Sort** in the toolbar's View slot after Group by: a labelled segmented control (`app-page-layout`) with Priority (the account-wide priority order, the default) and Finish date (the estimated finish date in the plan, soonest first; goals without an estimate last, in priority order). The choice SHALL be remembered per device.
+Goals SHALL offer **Sort** in the toolbar's View slot after Group by: a labelled segmented control (`app-page-layout`) with Priority (the account-wide priority order, the default), Finish date (the estimated finish date in the plan, soonest first; goals without an estimate last, in priority order) and Duration (the days of raids each goal needs once it starts getting energy, its first raid day through its done day, shortest first; goals with no raids or no estimate last, in priority order). The choice SHALL be remembered per device.
 
 Group by SHALL follow the sort: groups appear in the order of their first goal in the sorted list, and goals inside a group keep the sorted order. Grouping SHALL NOT reorder goals by goal type.
 
 Goals can be dragged only in priority order. While Sort is not Priority:
 
 - drag handles, the row menu's move items and the mobile Reorder toggle SHALL be unavailable, and leaving Priority SHALL end reorder mode;
-- while goals are listed, a notice above the list SHALL say that goals are sorted by finish date so they cannot be dragged to change their priority, with a **Sort by priority** action that sets Sort to Priority.
+- while goals are listed, a notice above the list SHALL name the sort in effect (finish date or duration) and say that goals therefore cannot be dragged to change their priority, with a **Sort by priority** action that sets Sort to Priority.
 
 A stored grouping value that is no longer offered SHALL fall back to None.
 
@@ -361,6 +361,12 @@ A stored grouping value that is no longer offered SHALL fall back to None.
 - **GIVEN** goals A (priority 1, finishing in 30 days), B (priority 2, finishing in 5 days) and C (priority 3, no estimate)
 - **WHEN** the user sets Sort to Finish date
 - **THEN** the list reads B, A, C and the choice is kept on the next visit from this device
+
+#### Scenario: Duration order
+
+- **GIVEN** goals A (priority 1, raided from day 1 to day 9), B (priority 2, raided from day 10 to day 11) and C (priority 3, needing no raids)
+- **WHEN** the user sets Sort to Duration
+- **THEN** the list reads B (2 days), A (9 days), C, and drag handles are unavailable
 
 #### Scenario: Type groups follow the sort
 

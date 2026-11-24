@@ -1246,7 +1246,9 @@
       "doneBy": "Fertig am",
       "reorder": "Neu anordnen",
       "reorderHandle": "{{entity}} ziehen, um neu zu priorisieren",
-      "priority": "Priorität"
+      "priority": "Priorität",
+      "duration": "Dauer",
+      "durationHelp": "Raid-Tage, die dieses Ziel braucht, sobald es Energie bekommt."
     },
     "status": {
       "Draft": "Entwurf",
@@ -1755,7 +1757,11 @@
       "unlockDuringEvent": "während des Kampagnen-Events",
       "unlockMore_one": "+{{count}} weiterer Ort",
       "unlockMore_other": "+{{count}} weitere Orte",
-      "unlockFewer": "Weniger anzeigen"
+      "unlockFewer": "Weniger anzeigen",
+      "duration_one": "{{count}} Tag",
+      "duration_other": "{{count}} Tage",
+      "durationLabel_one": "{{count}} Raid-Tag",
+      "durationLabel_other": "{{count}} Raid-Tage"
     },
     "unlockFlavor": "Sammle die Scherben des Charakters und bereite ihn darauf vor, deinem Kader beizutreten.",
     "filters": {
@@ -1781,11 +1787,13 @@
       "sort": "Sortierung",
       "sortOptions": {
         "priority": "Priorität",
-        "finishDate": "Fertigstellung"
+        "finishDate": "Fertigstellung",
+        "duration": "Dauer"
       },
       "sortHelp": {
         "priority": "Deine Prioritätsreihenfolge. Ziehe Ziele, um sie umzuordnen.",
-        "finishDate": "Geschätztes Fertigstellungsdatum in deinem Plan, früheste zuerst."
+        "finishDate": "Geschätztes Fertigstellungsdatum in deinem Plan, früheste zuerst.",
+        "duration": "Raid-Tage, die jedes Ziel braucht, sobald es Energie bekommt, kürzeste zuerst."
       }
     },
     "seasonFit": {
@@ -1911,7 +1919,10 @@
         "levels": "{{count}} Stufen",
         "rankEnergy": "{{energy}} Energie",
         "coveredByEarlierGoal": "Durch ein früheres Ziel abgedeckt",
-        "shards": "{{count}} Scherben"
+        "shards": "{{count}} Scherben",
+        "upgradeSlots_one": "{{count}} Upgrade-Slot",
+        "upgradeSlots_other": "{{count}} Upgrade-Slots",
+        "xp": "{{xp}} EP"
       },
       "potentialIndicator": "↗ {{percent}}%",
       "progressDetails": "Fortschrittsdetails",
@@ -2063,7 +2074,8 @@
         "cancel": "Abbrechen"
       },
       "sortBlocksReorder": "Die Ziele sind nach Fertigstellung sortiert, daher kannst du sie nicht ziehen, um ihre Priorität zu ändern.",
-      "sortByPriority": "Nach Priorität sortieren"
+      "sortByPriority": "Nach Priorität sortieren",
+      "sortBlocksReorderDuration": "Die Ziele sind nach Dauer sortiert, daher kannst du sie nicht ziehen, um ihre Priorität zu ändern."
     },
     "edit": {
       "title": "Ziel bearbeiten",
