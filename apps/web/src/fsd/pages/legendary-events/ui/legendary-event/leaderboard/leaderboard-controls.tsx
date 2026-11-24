@@ -133,7 +133,7 @@ export function LeaderboardControls({
               >
                 {goals.availability === "loading" ? (
                   <>
-                    <Spinner aria-hidden className="size-3" />
+                    <Spinner aria-hidden className="size-icon-sm" />
                     <span className="sr-only">{t("goalsPreview.loading")}</span>
                   </>
                 ) : null}
@@ -192,7 +192,7 @@ export function LeaderboardControls({
                       key={chip.key}
                       value={chip.key}
                     >
-                      <ObjectiveIcon className="size-4" icon={chip.icon} />
+                      <ObjectiveIcon icon={chip.icon} />
                       {chip.label}
                       {chip.count ? (
                         <span

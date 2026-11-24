@@ -259,7 +259,7 @@ export function PlanWizard({
           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
           to={eventPath}
         >
-          <ArrowLeft aria-hidden="true" className="size-4" />
+          <ArrowLeft aria-hidden="true" className="size-icon" />
           {t("planWizard.states.backToEvent")}
         </Link>
         <h2 className="text-xl font-semibold">

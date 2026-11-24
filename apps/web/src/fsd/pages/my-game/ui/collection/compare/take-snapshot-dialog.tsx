@@ -169,7 +169,7 @@ export function TakeSnapshotDialog({
             <p className="flex items-start gap-2">
               <AlertTriangle
                 aria-hidden
-                className="mt-0.5 size-4 shrink-0 text-destructive"
+                className="mt-0.5 size-icon shrink-0 text-destructive"
               />
               <span>
                 {failure.kind === "limitReached"

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
 
+import { classStrings, jsxOpeningTags } from "@/test/jsx-source-scan"
+
 // The UI style guide's rule 6: a game icon's size comes from its role (`size="inline"`, `row`,
 // `tile`, a badge or a portrait), never from size classes at the call site. Fills of a sized frame
 // (`size-full`, fractions) and wide art sized by its height (`h-4 w-auto`) are the exceptions.
@@ -14,43 +16,8 @@ const SOURCES = import.meta.glob<string>(
 /** The icon components whose size is a role: `EntityIcon` and `RarityIcon`. */
 const ICON_COMPONENTS = ["<EntityIcon", "<RarityIcon"]
 
-/** Each opening tag of `component` (default `<EntityIcon`) in the source, with its line. */
-function entityIconTags(
-  source: string,
-  component = "<EntityIcon"
-): { tag: string; line: number }[] {
-  const tags: { tag: string; line: number }[] = []
-  let start = source.indexOf(component)
-  while (start !== -1) {
-    let depth = 0
-    let end = start + component.length
-    for (; end < source.length; end++) {
-      const char = source[end]
-      if (char === "{") depth++
-      else if (char === "}") depth--
-      else if (depth === 0 && (char === ">" || source.startsWith("/>", end)))
-        break
-    }
-    tags.push({
-      tag: source.slice(start, end),
-      line: source.slice(0, start).split("\n").length,
-    })
-    start = source.indexOf(component, end)
-  }
-  return tags
-}
-
 const FIXED_SIZE = /(?<![\w:[-])(?:[a-z-]+:)?size-\d+(?:\.\d+)?(?![\w./%-])/
 const FIXED_EDGE = /(?<![\w:[-])(?:[a-z-]+:)?[hw]-\d+(?:\.\d+)?(?![\w./%-])/
-
-/** The class strings in a tag's `className`, string literals only. */
-function classStrings(tag: string): string[] {
-  const match = /className=(\{[\s\S]*?\}|"[^"]*")\s*(?:\w[\w-]*=|\/?$)/.exec(
-    tag
-  )
-  if (!match?.[1]) return []
-  return [...match[1].matchAll(/"([^"]*)"/g)].map((literal) => literal[1] ?? "")
-}
 
 function offences(classes: string): boolean {
   if (FIXED_SIZE.test(classes)) return true
@@ -61,7 +28,7 @@ describe("game icon sizes (UI style guide, rule 6)", () => {
   it("sizes every EntityIcon and RarityIcon by its role, not by size classes", () => {
     const tags = Object.entries(SOURCES).flatMap(([file, source]) => {
       return ICON_COMPONENTS.flatMap((component) =>
-        entityIconTags(source, component).map((found) => ({ ...found, file }))
+        jsxOpeningTags(source, component).map((found) => ({ ...found, file }))
       )
     })
     const found = tags
@@ -73,14 +40,17 @@ describe("game icon sizes (UI style guide, rule 6)", () => {
   })
 
   it("reads the classes of a multi-line className", () => {
-    const [found] = entityIconTags(`<EntityIcon
+    const [found] = jsxOpeningTags(
+      `<EntityIcon
       alt=""
       className={cn(
         "size-7 rounded-full",
         locked && "opacity-50"
       )}
       src={icon}
-    />`)
+    />`,
+      "<EntityIcon"
+    )
     expect(found && classStrings(found.tag)).toEqual([
       "size-7 rounded-full",
       "opacity-50",

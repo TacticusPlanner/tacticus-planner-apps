@@ -229,7 +229,10 @@ export function ToggleButton({
       variant="ghost"
     >
       <ChevronDown
-        className={cn("size-4 transition-transform", !open && "-rotate-90")}
+        className={cn(
+          "size-icon-sm transition-transform",
+          !open && "-rotate-90"
+        )}
       />
       {label}
     </Button>

@@ -61,7 +61,7 @@ export function GoalDuration({
           data-testid="goal-duration"
           type="button"
         >
-          <Hourglass aria-hidden="true" className="size-3.5 shrink-0" />
+          <Hourglass aria-hidden="true" className="size-icon shrink-0" />
           {text}
         </button>
       </TooltipTrigger>
@@ -114,7 +114,7 @@ export function EstimateCell({
         <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
           {dateFace(
             <>
-              <Calendar className="size-4 shrink-0 text-muted-foreground" />
+              <Calendar className="size-icon shrink-0 text-muted-foreground" />
               {formattedDate}
             </>
           )}
@@ -132,7 +132,7 @@ export function EstimateCell({
       <span className="inline-flex items-center gap-1 whitespace-nowrap">
         {dateFace(
           <>
-            <Calendar className="size-3.5 shrink-0" />
+            <Calendar className="size-icon shrink-0" />
             <span className="font-medium text-foreground">{formattedDate}</span>
           </>
         )}{" "}

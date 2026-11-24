@@ -133,7 +133,7 @@ export function PlanSummary({
           <ChevronDown
             aria-hidden="true"
             className={cn(
-              "size-4 transition-transform",
+              "size-icon-sm transition-transform",
               expanded && "rotate-180"
             )}
           />

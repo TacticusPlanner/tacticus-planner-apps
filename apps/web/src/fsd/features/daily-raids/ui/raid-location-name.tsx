@@ -88,7 +88,7 @@ export function RaidLocationName({
         {/* Named by the icon, so the line's text stays the location's name alone. */}
         <Info
           aria-label={t("locationDetails.open")}
-          className="ms-1 inline size-3.5 align-[-0.125em] text-muted-foreground"
+          className="ms-1 inline size-icon-sm align-[-0.125em] text-muted-foreground"
           role="img"
         />
       </button>

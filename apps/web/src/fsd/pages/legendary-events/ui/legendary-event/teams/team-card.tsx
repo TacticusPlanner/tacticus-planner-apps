@@ -243,7 +243,7 @@ export function TeamCard({
           className="flex items-center gap-1.5 text-xs font-medium text-destructive"
           data-testid="team-card-incomplete"
         >
-          <TriangleAlert aria-hidden className="size-4 shrink-0" />
+          <TriangleAlert aria-hidden className="size-icon-sm shrink-0" />
           {t("teams.incomplete", { min: MIN_TEAM_MEMBERS })}
         </span>
       ) : (
@@ -297,7 +297,7 @@ export function TeamCard({
         <summary className="flex w-fit cursor-pointer list-none items-center gap-1 text-xs text-muted-foreground select-none hover:text-foreground">
           <ChevronRight
             aria-hidden
-            className="size-3.5 transition-transform group-open:rotate-90"
+            className="size-icon-sm transition-transform group-open:rotate-90"
           />
           {t("teams.details")}
         </summary>
@@ -400,7 +400,7 @@ function CoverageStrip({
             {cleared ? (
               <Check
                 aria-hidden
-                className="absolute -top-1 -right-0.5 size-3 text-success-foreground"
+                className="absolute -top-1 -right-0.5 size-icon-xs text-success-foreground"
               />
             ) : null}
             <span className="sr-only">{label}</span>

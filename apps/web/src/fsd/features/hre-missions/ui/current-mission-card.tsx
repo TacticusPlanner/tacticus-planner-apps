@@ -143,7 +143,7 @@ export function CurrentMissionCard({
                   {done ? (
                     <CheckCircle2
                       aria-label={t("tracker.objectiveDone")}
-                      className="size-4 shrink-0 text-primary"
+                      className="size-icon shrink-0 text-primary"
                       data-testid={`${testId}-done`}
                       role="img"
                     />

@@ -73,7 +73,7 @@ export function StatusBadge({
         data-testid="goal-status-badge"
         variant="outline"
       >
-        <Check aria-hidden="true" className="size-3.5" />
+        <Check aria-hidden="true" className="size-icon-xs" />
         {t("goals.status.Reached")}
       </Badge>
     )
@@ -106,9 +106,15 @@ export function StatusBadge({
               type="button"
             >
               {shown === "Active" ? (
-                <Pause aria-hidden="true" className="size-3 fill-current" />
+                <Pause
+                  aria-hidden="true"
+                  className="size-icon-xs fill-current"
+                />
               ) : (
-                <Play aria-hidden="true" className="size-3 fill-current" />
+                <Play
+                  aria-hidden="true"
+                  className="size-icon-xs fill-current"
+                />
               )}
               {t(`goals.status.${shown}`)}
             </button>
@@ -210,7 +216,7 @@ export function BlockedIndicator({
               )}
               variant="outline"
             >
-              <Link2 className="size-3.5" />
+              <Link2 className="size-icon-xs" />
               {t("goals.blocked.restrictedLabel")}
             </Badge>
           </button>
@@ -241,7 +247,7 @@ export function BlockedIndicator({
             )}
             variant="outline"
           >
-            <LockKeyhole className="size-3.5" />
+            <LockKeyhole className="size-icon-xs" />
             {t("goals.blocked.label")}
           </Badge>
         </button>

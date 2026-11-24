@@ -83,7 +83,7 @@ function AbilityChip({
         <ChevronDown
           aria-hidden
           className={cn(
-            "ml-auto size-4 shrink-0 text-muted-foreground transition-transform",
+            "ml-auto size-icon-sm shrink-0 text-muted-foreground transition-transform",
             open && "rotate-180"
           )}
         />

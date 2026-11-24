@@ -537,7 +537,7 @@ function UnitDiffDetails({
         className="inline-flex items-center gap-1 self-start text-sm font-medium text-primary hover:underline"
         data-testid="compare-library-link"
       >
-        <ExternalLink aria-hidden className="size-3.5" />
+        <ExternalLink aria-hidden className="size-icon-sm" />
         {t("myGame.collection.compare.details.openLibrary")}
       </Link>
     </div>

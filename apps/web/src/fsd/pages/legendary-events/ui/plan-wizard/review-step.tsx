@@ -266,7 +266,7 @@ export function ReviewStep({
                 data-testid="plan-wizard-create-item"
                 key={item.key}
               >
-                <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+                <Icon aria-hidden="true" className="size-icon shrink-0" />
                 <span className="flex flex-col">
                   <span>
                     {itemLabel(item)}
@@ -326,7 +326,7 @@ function Line({
       )}
       data-testid={testId}
     >
-      <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+      <Icon aria-hidden="true" className="size-icon shrink-0" />
       <span>{text}</span>
     </li>
   )

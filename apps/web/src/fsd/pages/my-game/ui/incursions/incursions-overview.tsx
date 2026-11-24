@@ -131,7 +131,7 @@ export function IncursionsOverview() {
                   ) : null}
                 </div>
                 <ChevronRight
-                  className="size-5 shrink-0 text-muted-foreground"
+                  className="size-icon shrink-0 text-muted-foreground"
                   aria-hidden="true"
                 />
               </Link>

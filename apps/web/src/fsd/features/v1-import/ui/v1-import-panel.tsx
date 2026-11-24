@@ -200,7 +200,7 @@ export function V1ImportPanel({
             <span className="flex items-center gap-1.5">
               {t(part.label)}
               {locked ? (
-                <Lock aria-hidden className="size-3.5 text-muted-foreground" />
+                <Lock aria-hidden className="size-icon text-muted-foreground" />
               ) : null}
             </span>
             {locked ? (

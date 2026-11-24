@@ -342,7 +342,7 @@ function Chevron({ open, className }: { open: boolean; className?: string }) {
     <ChevronDownIcon
       aria-hidden
       className={cn(
-        "size-4 shrink-0 text-muted-foreground transition-transform duration-200",
+        "size-icon-sm shrink-0 text-muted-foreground transition-transform duration-200",
         open && "rotate-180",
         className
       )}

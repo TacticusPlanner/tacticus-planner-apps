@@ -43,7 +43,7 @@ export function EventStatusLine({
         className="flex min-h-12 items-center"
         data-testid="hse-status-loading"
       >
-        <Spinner className="size-5" />
+        <Spinner className="size-icon" />
       </div>
     )
   }

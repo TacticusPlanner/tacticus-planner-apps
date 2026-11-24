@@ -30,7 +30,7 @@ export function TeamPickerUnitState({
       {previewed ? (
         <Eye
           aria-label={t("goalsPreview.marker")}
-          className="size-3.5 text-primary"
+          className="size-icon-sm text-primary"
           data-testid="team-picker-preview-marker"
         />
       ) : null}

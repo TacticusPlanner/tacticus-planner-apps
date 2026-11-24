@@ -63,7 +63,7 @@ export function CampaignInsightList<TId extends string>({
               aria-label={hint ?? t("unitLookup.usefulnessScoreHint")}
               className="text-muted-foreground hover:text-foreground"
             >
-              <Info className="size-3.5" />
+              <Info className="size-icon-sm" />
             </button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">

@@ -69,7 +69,7 @@ export function MissionList({
                 {status === "done" ? (
                   <Check
                     aria-label={t("tracker.done")}
-                    className="size-4 shrink-0 text-primary"
+                    className="size-icon shrink-0 text-primary"
                     role="img"
                   />
                 ) : status === "locked" ? (

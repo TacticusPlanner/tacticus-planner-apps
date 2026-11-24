@@ -75,7 +75,7 @@ export function LeaderboardTable({
               >
                 <span className="inline-flex justify-center">
                   {icon ? (
-                    <ObjectiveIcon className="size-4" icon={icon} />
+                    <ObjectiveIcon icon={icon} />
                   ) : (
                     <span aria-hidden="true">{index + 1}</span>
                   )}

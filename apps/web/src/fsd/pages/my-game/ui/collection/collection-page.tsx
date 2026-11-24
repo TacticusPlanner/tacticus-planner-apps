@@ -375,7 +375,7 @@ function SnapshotsSignInPrompt() {
       className="flex items-center gap-2 text-sm text-muted-foreground"
       data-testid="snapshots-sign-in-prompt"
     >
-      <History aria-hidden className="size-4 shrink-0" />
+      <History aria-hidden className="size-icon shrink-0" />
       {t("myGame.collection.snapshots.signIn")}
     </p>
   )

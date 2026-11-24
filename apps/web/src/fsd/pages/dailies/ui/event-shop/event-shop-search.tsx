@@ -89,7 +89,7 @@ function SearchInput({
     >
       <Search
         aria-hidden="true"
-        className="size-4 shrink-0 text-muted-foreground"
+        className="size-icon shrink-0 text-muted-foreground"
       />
       <input
         aria-label={t("search.title")}
@@ -109,7 +109,7 @@ function SearchInput({
           onClick={() => onQueryChange("")}
           type="button"
         >
-          <X aria-hidden="true" className="size-4" />
+          <X aria-hidden="true" className="size-icon" />
         </button>
       ) : null}
     </label>

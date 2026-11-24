@@ -84,7 +84,7 @@ function LandingHero({
               data-testid="landing-sign-in-required"
               role="status"
             >
-              <Lock aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+              <Lock aria-hidden="true" className="mt-0.5 size-icon shrink-0" />
               <div className="flex flex-col gap-1">
                 <p className="font-semibold">
                   {signInRequired.pageTitle
@@ -162,7 +162,7 @@ function LandingHero({
           <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
             {trustPoints.map((point) => (
               <li className="flex items-center gap-1.5" key={point}>
-                <Check aria-hidden="true" className="size-4 text-primary" />
+                <Check aria-hidden="true" className="size-icon text-primary" />
                 {point}
               </li>
             ))}
@@ -302,7 +302,7 @@ function LibrarySection() {
                 {t(`library.${card.key}.title`)}
                 <ArrowRight
                   aria-hidden="true"
-                  className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                  className="size-icon text-muted-foreground transition-transform group-hover:translate-x-0.5"
                 />
               </h3>
               <p className="text-sm text-muted-foreground">

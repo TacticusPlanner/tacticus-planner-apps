@@ -120,7 +120,7 @@ export function OverlaysShowcase() {
               <span className="text-sm tabular-nums">120</span>
             </HintTrigger>
             <HintTrigger label="Counts only goals in active projects.">
-              <Info className="size-4 text-muted-foreground" />
+              <Info className="size-icon-sm text-muted-foreground" />
             </HintTrigger>
           </div>
           <div className="w-48 text-sm">

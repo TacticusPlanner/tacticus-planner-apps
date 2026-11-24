@@ -42,7 +42,10 @@ export function ObjectiveGuidance({
           className="flex gap-2 text-xs text-muted-foreground"
           data-testid={index === 0 ? `${testId}-tip` : `${testId}-tip-${key}`}
         >
-          <Lightbulb aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+          <Lightbulb
+            aria-hidden="true"
+            className="mt-0.5 size-icon-sm shrink-0"
+          />
           <span>{t(`tips.${key}` as never)}</span>
         </p>
       ))}

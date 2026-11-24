@@ -56,7 +56,7 @@ export function TeamPickerObjectiveChips({
             onClick={() => onToggle(objective.index)}
             type="button"
           >
-            <ObjectiveIcon className="size-4" icon={icon} />
+            <ObjectiveIcon icon={icon} />
             <span>{label}</span>
             <span className="font-semibold tabular-nums">
               {number.format(objective.points)}

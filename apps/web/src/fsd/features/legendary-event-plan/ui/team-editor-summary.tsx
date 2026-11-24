@@ -83,7 +83,7 @@ export function TeamEditorSummary({
                 data-testid="team-editor-summary-objective"
                 key={objective.index}
               >
-                <ObjectiveIcon className="size-4" icon={icon} />
+                <ObjectiveIcon className="size-icon-sm" icon={icon} />
                 <span data-testid="team-editor-summary-objective-label">
                   {label}
                 </span>
@@ -91,7 +91,7 @@ export function TeamEditorSummary({
                   <>
                     <Check
                       aria-hidden
-                      className="size-3.5 shrink-0 text-muted-foreground"
+                      className="size-icon-sm shrink-0 text-muted-foreground"
                       data-testid="team-editor-summary-objective-cleared"
                     />
                     <span className="sr-only">

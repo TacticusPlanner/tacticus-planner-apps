@@ -144,7 +144,7 @@ function MaterialSection({
         <span className="flex-1">
           {t(materialId, { defaultValue: materialId })}
         </span>
-        <Chevron className="size-4 shrink-0 text-muted-foreground" />
+        <Chevron className="size-icon-sm shrink-0 text-muted-foreground" />
       </button>
       {expanded ? <div className="grid gap-2">{children}</div> : null}
     </div>

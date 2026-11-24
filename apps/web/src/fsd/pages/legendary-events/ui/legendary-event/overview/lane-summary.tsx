@@ -173,7 +173,7 @@ function LaneSummaryRow({
       </span>
       <ChevronRight
         aria-hidden="true"
-        className="size-4 shrink-0 text-muted-foreground"
+        className="size-icon-sm shrink-0 text-muted-foreground"
       />
     </button>
   )
@@ -218,7 +218,7 @@ function LaneObjectivesLine({
             role="listitem"
             title={text}
           >
-            <ObjectiveIcon className="size-4" icon={icon} />
+            <ObjectiveIcon icon={icon} />
             <span className="sr-only">{text}</span>
             <span aria-hidden="true" className="tabular-nums">
               {number.format(cleared)} / {number.format(total)}

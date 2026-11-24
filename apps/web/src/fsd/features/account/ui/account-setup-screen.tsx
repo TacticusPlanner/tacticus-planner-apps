@@ -136,7 +136,7 @@ export function AccountSetupScreen({
           className="flex items-center gap-2 text-sm text-muted-foreground"
           data-testid="account-setup-confirming"
         >
-          <Spinner className="size-4" />
+          <Spinner className="size-icon" />
           {t("onboarding.confirming")}
         </p>
       ) : (
@@ -302,7 +302,7 @@ function PathCard({
           </span>
           <span className="text-sm text-muted-foreground">{description}</span>
         </span>
-        <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+        <ChevronRight className="mt-0.5 size-icon-sm shrink-0 text-muted-foreground" />
       </button>
     </Card>
   )

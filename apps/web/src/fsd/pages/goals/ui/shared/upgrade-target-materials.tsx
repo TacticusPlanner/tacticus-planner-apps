@@ -53,7 +53,7 @@ export function UpgradeTargetMaterials({
               {material.heldBy ? (
                 <Link2
                   aria-hidden
-                  className="size-3 text-muted-foreground"
+                  className="size-icon-sm text-muted-foreground"
                   data-testid="goal-upgrade-material-held"
                 />
               ) : null}

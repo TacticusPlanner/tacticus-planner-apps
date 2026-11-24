@@ -289,7 +289,7 @@ function RailToggle() {
   return (
     <button
       aria-expanded={open}
-      className="flex h-8 w-full items-center justify-end rounded-xl px-2 text-sidebar-foreground outline-hidden group-data-[collapsible=icon]:justify-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-3 focus-visible:ring-sidebar-ring [&>svg]:size-4"
+      className="flex h-8 w-full items-center justify-end rounded-xl px-2 text-sidebar-foreground outline-hidden group-data-[collapsible=icon]:justify-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-3 focus-visible:ring-sidebar-ring [&>svg]:size-icon"
       data-slot="sidebar-trigger"
       onClick={toggleSidebar}
       type="button"

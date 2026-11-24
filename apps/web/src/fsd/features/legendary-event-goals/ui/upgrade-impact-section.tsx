@@ -334,7 +334,7 @@ export function UpgradeImpactSection({
             <ChevronDown
               aria-hidden
               className={cn(
-                "size-5 shrink-0 transition-transform",
+                "size-icon shrink-0 transition-transform",
                 open && "rotate-180"
               )}
             />

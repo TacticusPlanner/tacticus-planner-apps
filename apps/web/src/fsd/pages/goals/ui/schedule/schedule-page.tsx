@@ -155,7 +155,7 @@ function SchedulePlan({ raids }: { raids: DailyRaidsReadyViewModel }) {
             >
               <span
                 aria-hidden="true"
-                className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground [&>svg]:size-4"
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground [&>svg]:size-icon"
               >
                 {icon}
               </span>

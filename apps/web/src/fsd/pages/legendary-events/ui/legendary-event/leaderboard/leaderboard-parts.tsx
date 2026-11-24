@@ -87,7 +87,7 @@ export function LeaderboardUnit({
           data-testid="leaderboard-preview-marker"
           title={t("goalsPreview.marker")}
         >
-          <Eye aria-hidden="true" className="size-4" />
+          <Eye aria-hidden="true" className="size-icon" />
           <span className="sr-only">{t("goalsPreview.marker")}</span>
         </span>
       ) : null}
@@ -96,7 +96,7 @@ export function LeaderboardUnit({
           className="inline-flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs text-muted-foreground"
           data-testid="leaderboard-locked"
         >
-          <Lock aria-hidden="true" className="size-3" />
+          <Lock aria-hidden="true" className="size-icon-sm" />
           {t("leaderboard.locked")}
         </span>
       ) : null}

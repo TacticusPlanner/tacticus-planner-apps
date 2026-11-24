@@ -393,9 +393,7 @@ function UnitRow({
       data-status={status?.status}
       data-testid="bulk-goal-unit"
     >
-      {Icon ? (
-        <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-      ) : null}
+      {Icon ? <Icon aria-hidden="true" className="size-icon shrink-0" /> : null}
       <UnitPortrait
         size="sm"
         src={

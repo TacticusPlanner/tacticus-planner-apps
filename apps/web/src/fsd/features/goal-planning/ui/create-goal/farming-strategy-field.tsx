@@ -188,7 +188,7 @@ function renderStageChain(
     if (index > 0) {
       nodes.push(
         <ArrowRight
-          className="size-3.5 shrink-0 text-muted-foreground"
+          className="size-icon-sm shrink-0 text-muted-foreground"
           key={`arrow-${index}`}
         />
       )

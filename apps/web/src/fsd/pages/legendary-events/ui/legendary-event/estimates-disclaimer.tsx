@@ -10,7 +10,7 @@ export function EstimatesDisclaimer() {
       className="flex items-start gap-1.5 text-xs text-muted-foreground"
       data-testid="legendary-event-estimates-disclaimer"
     >
-      <Info aria-hidden="true" className="mt-px size-3.5 shrink-0" />
+      <Info aria-hidden="true" className="mt-px size-icon-sm shrink-0" />
       <span>{t("estimates.disclaimer")}</span>
     </p>
   )

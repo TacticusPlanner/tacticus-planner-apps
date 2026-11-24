@@ -15,7 +15,10 @@ export function NavChildIcon({
       <img
         alt=""
         aria-hidden="true"
-        className={cn("size-5 shrink-0 rounded-full object-cover", className)}
+        className={cn(
+          "size-icon shrink-0 rounded-full object-cover",
+          className
+        )}
         src={child.iconSrc}
       />
     )
@@ -25,7 +28,7 @@ export function NavChildIcon({
       <img
         alt=""
         aria-hidden="true"
-        className={cn("size-5 shrink-0 object-contain", className)}
+        className={cn("size-icon shrink-0 object-contain", className)}
         src={child.artSrc}
       />
     )
@@ -63,6 +66,6 @@ export function NavItemIcon({
   }
   const Icon = item.icon
   return (
-    <Icon aria-hidden="true" className={cn("size-5 shrink-0", className)} />
+    <Icon aria-hidden="true" className={cn("size-icon shrink-0", className)} />
   )
 }

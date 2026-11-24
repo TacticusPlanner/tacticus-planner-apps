@@ -86,7 +86,10 @@ export function MilestoneGrid({
                         className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground"
                         title={td("hse.details.endless")}
                       >
-                        <InfinityIcon aria-hidden="true" className="size-3.5" />
+                        <InfinityIcon
+                          aria-hidden="true"
+                          className="size-icon-xs"
+                        />
                       </span>
                     ) : null}
                     <span className="flex items-center gap-1">

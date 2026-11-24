@@ -37,7 +37,7 @@ export function EventDetails({
       case "loading":
         return (
           <div className="flex min-h-12 items-center">
-            <Spinner className="size-5" />
+            <Spinner className="size-icon" />
           </div>
         )
       case "error":

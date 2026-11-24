@@ -46,7 +46,7 @@ export function MasterTableUnit({
               className="inline-flex items-center gap-1"
               data-testid="master-table-locked"
             >
-              <Lock aria-hidden="true" className="size-3" />
+              <Lock aria-hidden="true" className="size-icon-sm" />
               {t("leaderboard.locked")}
             </span>
           ) : null}

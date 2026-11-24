@@ -31,7 +31,7 @@ export function UnitGoalBadge({
     "inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary",
     className
   )
-  const icon = <Target aria-hidden className="size-3.5" />
+  const icon = <Target aria-hidden className="size-icon-xs" />
   if (!tooltip)
     return (
       <span

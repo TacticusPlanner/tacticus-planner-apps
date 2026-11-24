@@ -101,7 +101,7 @@ export function LegendaryEventCard({
                   data-testid={`legendary-event-run-${run}`}
                   key={run}
                 >
-                  <Icon aria-hidden="true" className="size-3.5 shrink-0" />
+                  <Icon aria-hidden="true" className="size-icon-sm shrink-0" />
                   <span className="sr-only">
                     {t(`hub.runStatus.${status}`)}
                   </span>

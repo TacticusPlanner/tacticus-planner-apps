@@ -355,7 +355,7 @@ function StoryCard({
                 )}
                 <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap">
                   {t("dailies:battleProgress.edit")}
-                  <ChevronRight aria-hidden className="size-4" />
+                  <ChevronRight aria-hidden className="size-icon-sm" />
                 </span>
               </Button>
               {track.unclaimed ? (

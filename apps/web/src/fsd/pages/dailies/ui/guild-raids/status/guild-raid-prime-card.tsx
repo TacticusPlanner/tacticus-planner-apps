@@ -116,7 +116,7 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
             )}
             <ChevronRight
               aria-hidden="true"
-              className="size-4 shrink-0 text-muted-foreground"
+              className="size-icon-sm shrink-0 text-muted-foreground"
             />
           </button>
         }

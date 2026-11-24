@@ -317,7 +317,7 @@ function MobileBottomNav({
             )}
             data-testid="mobile-menu-trigger"
           >
-            <Menu className="size-5" />
+            <Menu className="size-icon" />
             <span>{t("nav.menu")}</span>
           </button>
         </DrawerTrigger>

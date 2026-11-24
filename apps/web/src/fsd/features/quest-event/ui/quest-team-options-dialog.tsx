@@ -67,7 +67,9 @@ export function QuestTeamOptionsDialog({
             <li>
               <OptionRow
                 atCap={featured.atCap}
-                lead={<Pin aria-hidden className="size-4 text-(--primary)" />}
+                lead={
+                  <Pin aria-hidden className="size-icon text-(--primary)" />
+                }
                 name={`${nameOf(featured.unitId)} · ${t("team.featured")}`}
                 power={featured.power}
                 selected
@@ -85,7 +87,7 @@ export function QuestTeamOptionsDialog({
                     selected ? (
                       <Check
                         aria-hidden
-                        className="size-4 text-(--primary)"
+                        className="size-icon text-(--primary)"
                         data-testid="quest-team-option-selected"
                       />
                     ) : (

@@ -48,7 +48,7 @@ export function CoveredByNote({
       }}
       type="button"
     >
-      <CornerLeftUp aria-hidden="true" className="size-3 shrink-0" />
+      <CornerLeftUp aria-hidden="true" className="size-icon-sm shrink-0" />
       {text}
     </button>
   )

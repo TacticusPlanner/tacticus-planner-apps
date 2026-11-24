@@ -351,7 +351,7 @@ export function RewardsCard({
                   </span>
                   {opened ? (
                     <span className="inline-flex items-center gap-0.5 text-green-700 dark:text-green-400">
-                      <CheckIcon aria-hidden className="size-3.5" />
+                      <CheckIcon aria-hidden className="size-icon" />
                       {t("rewards.opened")}
                     </span>
                   ) : next ? (
@@ -406,7 +406,7 @@ export function RewardsCard({
             <ChevronDownIcon
               aria-hidden
               className={cn(
-                "size-4 transition-transform",
+                "size-icon-sm transition-transform",
                 open && "rotate-180"
               )}
             />

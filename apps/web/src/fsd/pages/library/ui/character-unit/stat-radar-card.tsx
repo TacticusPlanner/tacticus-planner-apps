@@ -208,7 +208,7 @@ export function StatRadarCard({
           data-testid="unit-radar-damage-link"
         >
           {t("characterUnit.compare.damageLink")}
-          <ExternalLink className="size-3" aria-hidden="true" />
+          <ExternalLink className="size-icon-sm" aria-hidden="true" />
         </a>
       </div>
     </div>

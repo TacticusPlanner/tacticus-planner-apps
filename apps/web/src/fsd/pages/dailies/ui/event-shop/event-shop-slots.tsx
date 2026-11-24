@@ -190,7 +190,7 @@ function BoughtTick({
       onClick={onToggle}
       type="button"
     >
-      <Check aria-hidden="true" className="size-4" strokeWidth={2.5} />
+      <Check aria-hidden="true" className="size-icon" strokeWidth={2.5} />
     </button>
   )
 }
@@ -357,7 +357,7 @@ export function CartControls({
             BOUGHT_TEXT
           )}
         >
-          <Check aria-hidden="true" className="size-4" strokeWidth={3} />
+          <Check aria-hidden="true" className="size-icon" strokeWidth={3} />
           {t("slot.boughtState", { count: quantity })}
         </p>
       ) : purchasedQuantity > 0 ? (
@@ -544,7 +544,7 @@ function SlotCard({
                 ) : planned ? (
                   <Check
                     aria-hidden="true"
-                    className="size-4 shrink-0 text-primary"
+                    className="size-icon shrink-0 text-primary"
                   />
                 ) : (
                   <Button
@@ -616,7 +616,7 @@ export function SlotGrid({
             hint={t("slot.tierRule")}
             label={t("slot.tierRuleLabel")}
           >
-            <Info aria-hidden="true" className="size-4" />
+            <Info aria-hidden="true" className="size-icon-sm" />
           </HintTrigger>
         ) : null}
       </div>
@@ -679,7 +679,11 @@ function SlotTile({
           {allBought ? (
             <span className="absolute inset-0 flex items-center justify-center">
               <span className="flex size-7 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm dark:bg-emerald-500">
-                <Check aria-hidden="true" className="size-4" strokeWidth={3} />
+                <Check
+                  aria-hidden="true"
+                  className="size-icon"
+                  strokeWidth={3}
+                />
               </span>
             </span>
           ) : null}
@@ -745,7 +749,7 @@ function SlotTile({
             )}
           >
             {allBought ? (
-              <Check aria-hidden="true" className="size-3.5" />
+              <Check aria-hidden="true" className="size-icon-xs" />
             ) : null}
           </span>
         </button>

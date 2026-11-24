@@ -177,7 +177,7 @@ function FooterExternalLink({
       target="_blank"
     >
       {children}
-      <ExternalLink aria-hidden="true" className="size-3" />
+      <ExternalLink aria-hidden="true" className="size-icon-sm" />
     </a>
   )
 }

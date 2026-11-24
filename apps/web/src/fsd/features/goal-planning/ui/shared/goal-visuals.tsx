@@ -200,7 +200,7 @@ export function GoalTypeCard({
               {title}
               <ChevronDownIcon
                 className={cn(
-                  "size-4 shrink-0 text-muted-foreground transition-transform",
+                  "size-icon-sm shrink-0 text-muted-foreground transition-transform",
                   issueCount === 0 && "ml-auto",
                   expanded && "rotate-180"
                 )}

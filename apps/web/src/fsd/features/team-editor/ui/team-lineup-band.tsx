@@ -98,7 +98,7 @@ function BandSlot({
         />
         <GripVertical
           aria-hidden="true"
-          className="absolute top-0 -left-2 size-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
+          className="absolute top-0 -left-2 size-icon text-muted-foreground opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
         />
       </button>
       <span className="w-full truncate text-xs font-medium" title={name}>
@@ -138,7 +138,7 @@ function BandSlot({
           role="img"
           title={t("lineup.campaignCore", { name })}
         >
-          <Lock className="size-3.5" />
+          <Lock className="size-icon-xs" />
         </span>
       ) : (
         <Button

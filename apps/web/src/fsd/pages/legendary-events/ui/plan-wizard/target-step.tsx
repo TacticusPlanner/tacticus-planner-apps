@@ -390,7 +390,7 @@ function Disclosure({
         <ChevronDown
           aria-hidden="true"
           className={cn(
-            "size-4 shrink-0 transition-transform",
+            "size-icon-sm shrink-0 transition-transform",
             open && "rotate-180"
           )}
         />

@@ -74,7 +74,7 @@ ${chip.hint}`
                   <ChipFace chip={chip} />
                   <ChevronDown
                     aria-hidden="true"
-                    className="size-3 text-muted-foreground"
+                    className="size-icon-sm text-muted-foreground"
                   />
                 </button>
               </PopoverTrigger>

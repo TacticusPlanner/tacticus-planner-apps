@@ -301,7 +301,7 @@ export function TeamModesField({
         >
           <TriangleAlert
             aria-hidden="true"
-            className="mt-px size-3.5 shrink-0"
+            className="mt-px size-icon-sm shrink-0"
           />
           {sizeReason}
         </p>

@@ -334,7 +334,7 @@ export function EventUnitChip({
         className="pointer-events-none absolute top-0.5 right-0.5 hidden rounded-sm bg-primary text-primary-foreground group-hover:block group-focus-visible:block"
         data-testid="event-unit-chip-start-team"
       >
-        <Plus className="size-3" strokeWidth={3} />
+        <Plus className="size-icon-xs" strokeWidth={3} />
       </span>
       <span hidden id={hintId}>
         {action.hint}

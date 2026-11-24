@@ -75,7 +75,7 @@ export function MissionChecklist({
         <ChevronDown
           aria-hidden="true"
           className={cn(
-            "size-4 shrink-0 transition-transform",
+            "size-icon-sm shrink-0 transition-transform",
             open && "rotate-180"
           )}
         />
@@ -199,7 +199,7 @@ function MissionRow({
             state === "current" && "border-primary text-primary"
           )}
         >
-          {state === "done" ? <Check className="size-3.5" /> : number}
+          {state === "done" ? <Check className="size-icon-sm" /> : number}
         </span>
         <span
           className={cn(

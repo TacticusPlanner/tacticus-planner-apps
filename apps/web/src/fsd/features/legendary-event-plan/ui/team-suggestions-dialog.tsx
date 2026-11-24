@@ -297,14 +297,17 @@ export function TeamSuggestionsDialog({
                         }
                       >
                         <ObjectiveIcon
-                          className="size-3.5"
+                          className="size-icon-sm"
                           icon={icon}
                           muted={cleared}
                         />
                         {label}
                         {cleared ? (
                           <>
-                            <Check aria-hidden className="size-3 shrink-0" />
+                            <Check
+                              aria-hidden
+                              className="size-icon-sm shrink-0"
+                            />
                             <span className="sr-only">
                               {t("teams.clearedThrough", {
                                 battle: suggestion.depth,

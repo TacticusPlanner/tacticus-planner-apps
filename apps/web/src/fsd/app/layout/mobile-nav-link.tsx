@@ -32,7 +32,7 @@ export function MobileNavLink({
       to={item.path}
     >
       <span className="relative flex">
-        <item.icon className="size-5" />
+        <item.icon className="size-icon" />
         <NavLiveDot corner item={item} />
       </span>
       <span>{t(item.labelKey)}</span>

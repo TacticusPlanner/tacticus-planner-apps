@@ -99,7 +99,7 @@ export function InstallAppDialog({
                     </span>
                     <Icon
                       aria-hidden="true"
-                      className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                      className="size-icon shrink-0 text-muted-foreground"
                     />
                     <span>{t(step.key)}</span>
                   </li>

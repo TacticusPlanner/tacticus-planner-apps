@@ -63,7 +63,7 @@ export function SelectableUnit({
             selected && "border-primary bg-primary text-primary-foreground"
           )}
         >
-          {selected ? <Check className="size-3.5" /> : null}
+          {selected ? <Check className="size-icon-xs" /> : null}
         </span>
       </button>
     </div>

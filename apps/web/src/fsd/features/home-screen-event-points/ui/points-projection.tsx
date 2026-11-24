@@ -79,7 +79,7 @@ export function PointsProjection({
         className="flex min-h-12 items-center"
         data-testid="hse-projection-loading"
       >
-        <Spinner className="size-5" />
+        <Spinner className="size-icon" />
       </div>
     )
   if (state.status !== "ready") return null

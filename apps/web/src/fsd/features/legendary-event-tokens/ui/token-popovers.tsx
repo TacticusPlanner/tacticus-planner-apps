@@ -49,7 +49,7 @@ export function TokenMissionsPopover({
           type="button"
           variant="outline"
         >
-          <ListChecks aria-hidden="true" className="size-3.5" />
+          <ListChecks aria-hidden="true" className="size-icon-sm" />
           {number.format(gains.length)}
         </Button>
       </PopoverTrigger>

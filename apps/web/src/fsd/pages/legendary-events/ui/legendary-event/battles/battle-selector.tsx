@@ -92,7 +92,7 @@ export function BattleSelector({
             >
               {battle.number}
               {battle.complete ? (
-                <CheckIcon aria-hidden className="size-3" />
+                <CheckIcon aria-hidden className="size-icon-sm" />
               ) : null}
             </ToggleGroupItem>
           ))}
@@ -118,7 +118,7 @@ export function BattleSelector({
             })}
             {selected?.complete ? (
               <>
-                <CheckIcon aria-hidden className="size-4" />
+                <CheckIcon aria-hidden className="size-icon" />
                 <span className="sr-only">
                   {" "}
                   {t("battles.selector.complete")}

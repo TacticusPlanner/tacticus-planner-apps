@@ -71,7 +71,7 @@ export function LegalDocument({
             target="_blank"
           >
             {t("publicSite.discord")}
-            <ExternalLink aria-hidden="true" className="size-3" />
+            <ExternalLink aria-hidden="true" className="size-icon-sm" />
           </a>
         </li>
         <li>
@@ -82,7 +82,7 @@ export function LegalDocument({
             target="_blank"
           >
             {t("publicSite.github")}
-            <ExternalLink aria-hidden="true" className="size-3" />
+            <ExternalLink aria-hidden="true" className="size-icon-sm" />
           </a>
         </li>
       </ul>

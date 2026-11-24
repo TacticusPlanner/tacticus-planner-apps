@@ -51,7 +51,7 @@ export function IncursionStarsBar({
       </span>
       {full ? (
         <Check
-          className="size-4 shrink-0 text-sky-500"
+          className="size-icon shrink-0 text-sky-500"
           aria-hidden="true"
           data-testid={testId ? `${testId}-full` : undefined}
         />

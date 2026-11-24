@@ -57,7 +57,7 @@ export function CatalogSyncStatusBadge({
             <Icon
               aria-hidden="true"
               className={
-                status === "syncing" ? "size-4 animate-spin" : "size-4"
+                status === "syncing" ? "size-icon animate-spin" : "size-icon"
               }
             />
             {progressLabel ? (

@@ -10,7 +10,7 @@ export function InfoHint({ text }: { text: string }) {
       role="img"
       title={text}
     >
-      <Info aria-hidden className="size-3.5" />
+      <Info aria-hidden className="size-icon-sm" />
     </span>
   )
 }
