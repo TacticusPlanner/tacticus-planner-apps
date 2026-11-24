@@ -35,7 +35,7 @@ export function ObjectiveIcon({
     <span
       aria-hidden="true"
       className={cn(
-        // Inline by default (ui-style-guide game icon sizes): 16px with a mouse, 20px on touch.
+        // Inline by default (ui-style-guide game icon sizes): the 20px icon baseline.
         "relative inline-flex size-4 shrink-0 pointer-coarse:size-5",
         muted && "opacity-25 grayscale",
         className

@@ -517,7 +517,7 @@ describe("GoalTargetDisplay for Ability goals", () => {
     const icon = screen.getByRole("button", {
       name: "Primary · AmmoBandolier",
     })
-    expect(within(icon).getByRole("presentation")).toHaveClass("size-4")
+    expect(within(icon).getByRole("presentation")).toHaveClass("size-icon")
   })
 })
 

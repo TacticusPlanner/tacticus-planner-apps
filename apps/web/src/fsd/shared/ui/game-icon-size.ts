@@ -27,8 +27,8 @@ const PORTRAIT_CLASS_NAMES: Record<PortraitSize, string> = {
 }
 
 const ENTITY_ICON_CLASS_NAMES: Record<EntityIconSize, string> = {
-  // Next to text or a number: 16px with a mouse, 20px on touch.
-  inline: "size-4 pointer-coarse:size-5",
+  // Next to text or a number: the 20px icon baseline, on every pointer.
+  inline: "size-icon",
   // A solid emblem (the rarity hexagon) in a list or table row beside rank emblems: their open art
   // reads smaller than its box, so the solid one is drawn a step smaller to match.
   emblem: "size-6",

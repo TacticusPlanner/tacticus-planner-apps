@@ -67,8 +67,7 @@ describe("EntityIcon", () => {
     )
     fireEvent.error(screen.getByRole("img", { name: "Faction" }))
     expect(screen.getByRole("img", { name: "Faction" })).toHaveClass(
-      "size-4",
-      "pointer-coarse:size-5"
+      "size-icon"
     )
   })
 })

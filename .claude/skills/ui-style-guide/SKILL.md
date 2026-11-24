@@ -170,16 +170,16 @@ One row directly under the header, three fixed slots, left to right:
 Every datamine/curated icon (`EntityIcon`, unit portraits) uses one of these
 sizes, chosen by its role, never by the page.
 
-| Role        | What                                                                                       | Mouse                       | Touch         |
-| ----------- | ------------------------------------------------------------------------------------------ | --------------------------- | ------------- |
-| Inline      | Next to text or a number: faction, trait, damage type, stat, currency, medal, rank in text | 16px `size-4`               | 20px `size-5` |
-| Badge       | Overlay on a portrait: rarity stars, rank, shard, faction corner                           | ⅓ of the portrait, min 16px | same          |
-| Emblem      | Solid emblem in a list/table row beside rank emblems: rarity icon in the Goals table       | 24px `size-6`               | 24px          |
-| Row         | Item in a list/table row: upgrade material, equipment, ability, reward, event icon         | 32px `size-8`               | 32px          |
-| Tile        | Item in a card or grid: shop offer, reward tile, ability on a detail page                  | 48px `size-12`              | 48px          |
-| Portrait sm | Unit in a row, chip, LRE lane, table                                                       | 40px `size-10`              | 40px          |
-| Portrait md | Unit in a grid, LRE lane on touch                                                          | 64px `size-16`              | 64px          |
-| Portrait lg | Unit card, detail header (128px `size-32` only for the detail hero)                        | 96px `size-24`              | 96px          |
+| Role        | What                                                                                       | Mouse                       | Touch |
+| ----------- | ------------------------------------------------------------------------------------------ | --------------------------- | ----- |
+| Inline      | Next to text or a number: faction, trait, damage type, stat, currency, medal, rank in text | 20px `size-icon`            | 20px  |
+| Badge       | Overlay on a portrait: rarity stars, rank, shard, faction corner                           | ⅓ of the portrait, min 16px | same  |
+| Emblem      | Solid emblem in a list/table row beside rank emblems: rarity icon in the Goals table       | 24px `size-6`               | 24px  |
+| Row         | Item in a list/table row: upgrade material, equipment, ability, reward, event icon         | 32px `size-8`               | 32px  |
+| Tile        | Item in a card or grid: shop offer, reward tile, ability on a detail page                  | 48px `size-12`              | 48px  |
+| Portrait sm | Unit in a row, chip, LRE lane, table                                                       | 40px `size-10`              | 40px  |
+| Portrait md | Unit in a grid, LRE lane on touch                                                          | 64px `size-16`              | 64px  |
+| Portrait lg | Unit card, detail header (128px `size-32` only for the detail hero)                        | 96px `size-24`              | 96px  |
 
 - In code: `<EntityIcon size="inline" | "emblem" | "row" | "tile" | "badge-sm" … />`
   (a badge names the portrait it sits on; `portrait-sm` … is a bare,
@@ -190,7 +190,7 @@ sizes, chosen by its role, never by the page.
   (`size-full`) and wide art sized by height (`h-4 w-auto`) are the only
   exceptions.
 - No game icon below 16px.
-- Migrating an off-scale size: round to the nearest step, ties go up (17/18 →
+- Migrating an off-scale size: round to the nearest step, ties go up (14 to 18 →
   20 inline; 22/28 → 32 row; 36 → 40; 56/62 → 64). Emblem is chosen by role,
   never by rounding: a solid icon (the rarity hexagon) fills its box, so beside
   a row-size rank emblem, whose art leaves space around it, it reads the same
@@ -359,6 +359,7 @@ back to the control that opened it (`onCloseAutoFocus`).
 - [ ] No new tab, segmented or pill style; no hand-rolled `aria-pressed` toggles.
 - [ ] Controls meet 48px on touch; no `size="sm"` in toolbars.
 - [ ] Every game icon uses a size from rule 6.
+- [ ] Other icons are 20px (`size-icon`) unless they fall under an exception in `ui-sizing`.
 - [ ] Every game entity with an icon shows it; no raw ids reach the screen.
 - [ ] Each overlay is the one rule 8 names for its job, with a title, a rule 8 footer and one of the three widths.
 - [ ] New or changed strings pass the copy rules.
