@@ -15,9 +15,9 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Tabs, TabsContent } from "@workspace/ui/components/tabs"
 
 import {
+  CompactProgression,
   PageTabsList,
   PageTabsTrigger,
-  ProgressionBadge,
   RankBadge,
 } from "@/shared/ui"
 import type {
@@ -40,7 +40,7 @@ function ThresholdStrip({
       data-testid="guild-raid-exact-meta-target"
     >
       <span>{t("guildRaids.exactMeta.target")}</span>
-      <ProgressionBadge value={threshold.progression} />
+      <CompactProgression value={threshold.progression} />
       <RankBadge rank={threshold.requiredRank} />
       <span className="font-medium text-foreground">
         {t("guildRaids.exactMeta.targetAbilities", {

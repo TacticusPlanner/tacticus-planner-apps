@@ -13,8 +13,8 @@ import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
+  CompactProgression,
   EntityIcon,
-  ProgressionBadge,
   RankBadge,
   ResponsiveDialog,
   ResponsiveDialogBody,
@@ -122,7 +122,7 @@ export function IncursionEligibleDialog({
                     {unit.progression || unit.rank ? (
                       <span className="flex items-center gap-2">
                         {unit.progression ? (
-                          <ProgressionBadge value={unit.progression} />
+                          <CompactProgression value={unit.progression} />
                         ) : null}
                         {unit.rank ? (
                           <RankBadge

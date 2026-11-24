@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { isProgression, rankAt } from "@workspace/game-domain"
 
 import type { CombinedGoalSpec } from "@/entities/goal"
-import { ProgressionBadge, RankBadge } from "@/shared/ui"
+import { CompactProgression, RankBadge } from "@/shared/ui"
 
 /**
  * A goal's start → target in one line, from a creation spec or a stored goal's config: "Gold II →
@@ -35,9 +35,9 @@ export function GoalRangeSummary({
         isProgression(progression.start) &&
         isProgression(progression.end) ? (
         <span className="inline-flex flex-wrap items-center gap-1">
-          <ProgressionBadge value={progression.start} />
+          <CompactProgression value={progression.start} />
           {arrow}
-          <ProgressionBadge value={progression.end} />
+          <CompactProgression value={progression.end} />
         </span>
       ) : null
     }

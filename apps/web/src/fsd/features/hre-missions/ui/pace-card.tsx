@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { EntityIcon, ProgressionBadge } from "@/shared/ui"
+import { CompactProgression, EntityIcon } from "@/shared/ui"
 
 import {
   bracketRange,
@@ -471,7 +471,7 @@ function StepLabel({
   return (
     <span className="inline-flex items-center gap-2">
       <span aria-hidden="true" className="inline-flex">
-        <ProgressionBadge value={progression as Progression} />
+        <CompactProgression value={progression as Progression} />
       </span>
       {name}
     </span>

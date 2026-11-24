@@ -7,8 +7,8 @@ import { shardIcon } from "@workspace/game-catalog"
 import type { Progression, Rank } from "@workspace/game-domain"
 
 import {
+  CompactProgression,
   EntityIcon,
-  ProgressionBadge,
   RankBadge,
   ReadOnlyField,
 } from "@/shared/ui"
@@ -18,7 +18,7 @@ import {
  * any goal type — distinct from the per-goal-type "current" fields already shown inside
  * `RankGoalFields`/`AbilityGoalFields`/etc. once a card is expanded (this renders unconditionally
  * for the selected entity; those only render once their own goal type is toggled on). Reuses the
- * same `ReadOnlyField`/`RankBadge`/`ProgressionBadge` building blocks for visual consistency.
+ * same `ReadOnlyField`/`RankBadge`/`CompactProgression` building blocks for visual consistency.
  */
 export function UnitInfoCard({
   entityType,
@@ -100,7 +100,7 @@ export function UnitInfoCard({
               </ReadOnlyField>
             ) : null}
             <ReadOnlyField label={t("goals.create.ascension.start")}>
-              <ProgressionBadge value={progression} />
+              <CompactProgression value={progression} />
             </ReadOnlyField>
           </>
         ) : null}
@@ -135,7 +135,7 @@ export function UnitStatusSummary(props: Parameters<typeof UnitInfoCard>[0]) {
           {props.isOwned ? (
             <>
               {props.rank ? <RankBadge rank={props.rank} /> : null}
-              <ProgressionBadge value={props.progression} />
+              <CompactProgression value={props.progression} />
               {props.level !== undefined ? (
                 <span>
                   {t("goals.create.info.levelShort", { level: props.level })}
