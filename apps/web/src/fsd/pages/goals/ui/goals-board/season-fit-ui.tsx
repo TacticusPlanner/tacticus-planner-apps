@@ -17,6 +17,7 @@ import {
 import type { CutoffEdge, GoalFitView } from "./season-fit-copy"
 import type { SeasonFitOffset } from "@/features/goal-planning"
 import { useDateLocale } from "@/shared/lib"
+import { ListDivider } from "@/shared/ui"
 
 /** The fit label beside a goal's Done By date, nothing for a goal without a fit (goal-season-fit
  *  spec: ineligible goals keep their Done By content unchanged). Same on desktop and mobile. */
@@ -131,9 +132,9 @@ export function SeasonCutoffItem({
   )
 }
 
-/** A labelled marker, not a row border: the label is a chip at the left edge, where the eye scans
- *  the priority numbers and names, and a 2px line in the fit colour runs from it to the right edge.
- *  On a narrow phone the chip's text wraps rather than pushing the list wider. */
+/** A labelled marker, not a row border: the shared list divider with its label in a chip at the left
+ *  edge, where the eye scans the priority numbers and names, and a 2px line in the fit colour. On a
+ *  narrow phone the chip's text wraps rather than pushing the list wider. */
 function SeasonCutoffLine({
   text,
   offset,
@@ -143,20 +144,18 @@ function SeasonCutoffLine({
 }) {
   const tone = offset ?? 3
   return (
-    <div className="flex items-center gap-2" role="separator" aria-label={text}>
-      <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border bg-card px-2.5 py-0.5 text-sm font-medium text-foreground">
+    <ListDivider
+      chip
+      className="py-0"
+      icon={
         <CalendarClock
           aria-hidden="true"
           className={cn("size-4 shrink-0", CUTOFF_ICON_CLASS[tone])}
         />
-        {text}
-      </span>
-      <span
-        className={cn(
-          "h-0.5 min-w-4 flex-1 rounded-full",
-          CUTOFF_LINE_CLASS[tone]
-        )}
-      />
-    </div>
+      }
+      label={text}
+      lineClassName={cn("h-0.5 rounded-full", CUTOFF_LINE_CLASS[tone])}
+      tone="default"
+    />
   )
 }

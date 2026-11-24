@@ -33,16 +33,20 @@ export function CollectionRoster({
   showOwned,
   origins,
   selection,
+  alwaysSelectable = false,
 }: {
   groups: readonly CollectionFactionGroup[]
   showOwned: boolean
   origins: Record<UnitKind, unknown>
   selection?: CollectionSelection
+  /** Desktop: every row carries its checkbox, with no select mode (see `SelectableUnit`). */
+  alwaysSelectable?: boolean
 }) {
   const row = useRosterRow(
     groups.flatMap((group) => group.units),
     origins,
-    selection
+    selection,
+    alwaysSelectable
   )
 
   return (
@@ -73,15 +77,19 @@ export function CollectionRosterList({
   units,
   origins,
   selection,
+  alwaysSelectable = false,
 }: {
   units: readonly CollectionListedUnit[]
   origins: Record<UnitKind, unknown>
   selection?: CollectionSelection
+  /** Desktop: every row carries its checkbox, with no select mode (see `SelectableUnit`). */
+  alwaysSelectable?: boolean
 }) {
   const row = useRosterRow(
     units.map((entry) => entry.unit),
     origins,
-    selection
+    selection,
+    alwaysSelectable
   )
 
   return (
@@ -108,7 +116,8 @@ const rowKey = (unit: UnitTileUnit) => `${unit.kind}:${unit.unitId}`
 function useRosterRow(
   units: readonly UnitTileUnit[],
   origins: Record<UnitKind, unknown>,
-  selection: CollectionSelection | undefined
+  selection: CollectionSelection | undefined,
+  alwaysSelectable: boolean
 ) {
   const isMobile = useIsMobile()
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -123,7 +132,11 @@ function useRosterRow(
     const key = rowKey(unit)
     return (
       <li key={key} className="min-w-0 border-b">
-        <SelectableUnit unit={unit} selection={selection}>
+        <SelectableUnit
+          checkbox={alwaysSelectable && !isMobile}
+          selection={selection}
+          unit={unit}
+        >
           <UnitRosterRow
             unit={unit}
             faction={faction}

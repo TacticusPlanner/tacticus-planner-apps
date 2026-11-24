@@ -1903,7 +1903,8 @@ describe("CreateGoalSheet", () => {
     expect(info).toHaveTextContent("3")
     expect(info).toHaveTextContent("2")
     expect(info).toHaveTextContent("Stone II")
-    expect(within(info).getByAltText(/ 1★$/)).toBeInTheDocument()
+    // The compact progression is one image named by its short text.
+    expect(within(info).getByRole("img", { name: / 1★$/ })).toBeInTheDocument()
   })
 
   it("shows only the Mythic Shard count once an owned character's progression reaches the Mythic tier", async () => {

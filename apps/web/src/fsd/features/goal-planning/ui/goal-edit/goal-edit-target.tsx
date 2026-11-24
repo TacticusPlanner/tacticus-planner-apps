@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { rankAt } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
-import { ProgressionBadge, RankBadge } from "@/shared/ui"
+import { CompactProgression, RankBadge } from "@/shared/ui"
 
 import { hasGoalTargetStart } from "../../model/target-edit/goal-target-edit"
 import { InfoHint } from "../shared/info-hint"
@@ -53,7 +53,7 @@ function GoalTargetStart({ detail }: { detail: GoalDetail }) {
       return config.rank ? <RankBadge rank={rankAt(config.rank.start)} /> : null
     case "Ascension":
       return config.progression ? (
-        <ProgressionBadge value={config.progression.start} />
+        <CompactProgression value={config.progression.start} />
       ) : null
     case "Ability":
       return config.ability ? (

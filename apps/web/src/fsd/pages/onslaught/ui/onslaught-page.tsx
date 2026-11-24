@@ -23,9 +23,9 @@ import type {
 import { useRevisionedDraft } from "@/shared/api"
 import { useCatalogDataset } from "@/shared/local-data"
 import {
+  CompactProgression,
   EntityIcon,
   LocalReadFailure,
-  ProgressionBadge,
   UnsavedChangesBar,
   UnsavedChangesGuard,
 } from "@/shared/ui"
@@ -168,7 +168,7 @@ export function OnslaughtPage() {
                     className="px-3 py-2 text-center whitespace-nowrap"
                   >
                     <div className="flex justify-center">
-                      <ProgressionBadge value={rewardProgression[key]} />
+                      <CompactProgression value={rewardProgression[key]} />
                     </div>
                   </th>
                 ))}

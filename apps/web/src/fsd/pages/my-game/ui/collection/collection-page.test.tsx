@@ -1674,6 +1674,81 @@ describe("CollectionPage select mode", () => {
     ).not.toBeInTheDocument()
   })
 
+  it("keeps a checkbox on every desktop Roster row, without select mode, and the rows still link", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280, "/my-game/collection?view=roster")
+
+    expect(
+      screen.queryByTestId("collection-select-toggle")
+    ).not.toBeInTheDocument()
+    expect(tour.steps?.desktop.map((step) => step.target)).not.toContain(
+      '[data-testid="collection-select-toggle"]'
+    )
+    expect(screen.getAllByTestId("collection-select-unit")).toHaveLength(4)
+    expect(screen.getAllByTestId("collection-owned-row")[0]).toHaveAttribute(
+      "href"
+    )
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Titus" }))
+    expect(screen.getByRole("checkbox", { name: "Select Titus" })).toBeChecked()
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "1 selected"
+    )
+
+    fireEvent.click(screen.getByTestId("collection-select-done"))
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole("checkbox", { name: "Select Titus" })
+    ).not.toBeChecked()
+  })
+
+  it("keeps select mode for the Roster on a phone", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(420, "/my-game/collection?view=roster")
+
+    expect(screen.getByTestId("collection-select-toggle")).toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-select-unit")
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    expect(
+      screen.getByRole("button", { name: "Select Titus" })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "1 selected"
+    )
+    expect(screen.queryByTestId("unit-page")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("collection-select-done"))
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-select-unit")
+    ).not.toBeInTheDocument()
+  })
+
+  it("keeps the bar while a Roster pick stays selected after leaving the Roster", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280, "/my-game/collection?view=roster")
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Titus" }))
+    fireEvent.click(screen.getByRole("radio", { name: "Cards" }))
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "1 selected"
+    )
+  })
+
   it("ends select mode when Compare is turned on", () => {
     msal.authenticated = true
     ready(synced)

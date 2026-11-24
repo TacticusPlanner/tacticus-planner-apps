@@ -68,6 +68,7 @@
   },
   "slot": {
     "number": "Slot {{number}}",
+    "heading": "Slots",
     "pack": "×{{qty}}",
     "cap": "max {{count}} a day",
     "free": "Free {{reward}} ×{{qty}}",
@@ -78,6 +79,7 @@
       "high": "High"
     },
     "tierRule": "Low: power level below 20. Mid: 20 or more. High: 20 or more with a character or Machine of War at Legendary one blue star or above.",
+    "tierRuleLabel": "How tiers work",
     "thenMythic": "Then mythic shards at max legendary",
     "dependsOnTier": "Depends on your tier",
     "dependsOnProgress": "Depends on unit progress",

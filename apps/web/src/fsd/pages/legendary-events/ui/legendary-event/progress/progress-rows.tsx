@@ -12,6 +12,7 @@ import type { ProgressColumn } from "./progress-columns"
 import type { LaneMarks } from "./progress-marks"
 import { splitClearedBattles } from "./progress-order"
 import { ProgressCell, ProgressColumnIcon } from "./progress-parts"
+import { ListDivider } from "@/shared/ui"
 
 // One grid for the header and every row (rows are subgrids), so the auto-sized points column is
 // as wide as its widest entry and the six cell columns line up from row to row.
@@ -147,11 +148,10 @@ export function ProgressRows({
       <ol className={cn(ROW_GRID, "min-w-0")}>
         {open.map(renderRow)}
         {cleared.length > 0 ? (
-          <li
-            className="col-span-full border-t-2 border-border pt-2 pb-0.5 text-xs text-muted-foreground"
-            data-testid="progress-cleared-divider"
-          >
-            {t("progress.clearedDivider", { count: cleared.length })}
+          <li className="col-span-full" data-testid="progress-cleared-divider">
+            <ListDivider
+              label={t("progress.clearedDivider", { count: cleared.length })}
+            />
           </li>
         ) : null}
         {cleared.map(renderRow)}

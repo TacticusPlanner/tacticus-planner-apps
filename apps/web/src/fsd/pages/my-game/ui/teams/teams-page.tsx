@@ -36,7 +36,12 @@ import {
 } from "@/entities/team"
 import type { Team, TeamMode, TeamRoster } from "@/entities/team"
 import { usePersistedSelection } from "@/shared/lib"
-import { ConfirmationDialog, EmptyState, SortableList } from "@/shared/ui"
+import {
+  ConfirmationDialog,
+  EmptyState,
+  SORTABLE_ITEM_GROUP,
+  SortableList,
+} from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import {
@@ -196,7 +201,10 @@ function TeamsBody({
           return (
             <li
               aria-label={team.name}
-              className="data-dragging:relative data-dragging:z-10"
+              className={cn(
+                SORTABLE_ITEM_GROUP,
+                "data-dragging:relative data-dragging:z-10"
+              )}
               data-dragging={sortable.isDragging || undefined}
               data-team={team.id}
               data-testid="team-card"

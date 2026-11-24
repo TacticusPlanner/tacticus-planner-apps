@@ -1994,6 +1994,7 @@
       "excludedTitle": "Goals not in this date",
       "notEstimated": "Nothing left to farm, so there is no farming estimate.",
       "goalLabel": "{{name}} · {{goalType}}",
+      "goalLabelPriority": "#{{priority}} {{name}} · {{goalType}}",
       "unknownGoal": "Unknown goal",
       "holdingBackTitle": "What's holding you back",
       "holdingBackDescription": "What no farming clears, then the resources that take the most energy at your chosen nodes.",

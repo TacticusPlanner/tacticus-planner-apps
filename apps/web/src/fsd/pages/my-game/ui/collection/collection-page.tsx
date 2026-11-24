@@ -16,6 +16,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@workspace/ui/components/alert"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
@@ -93,6 +94,7 @@ export function CollectionPage() {
   const options = useCollectionOptions()
   const { query, update, clear } = useCollectionQuery(options)
   const isAuthenticated = useIsAuthenticated()
+  const isMobile = useIsMobile()
   const compareQuery = useCompareQuery()
   const { state: compare, toRoster } = useCollectionCompare(compareQuery)
   const snapshots = useRosterSnapshots(isAuthenticated)
@@ -102,7 +104,8 @@ export function CollectionPage() {
   const selection = useCollectionSelection()
   const comparing = compare.mode !== "off" && compare.mode !== "guest"
   // Turning Compare on ends select mode and discards the selection.
-  if (comparing && selection.active) selection.end()
+  if (comparing && (selection.active || selection.selected.size > 0))
+    selection.end()
   const bulkUnits = useMemo(
     () => [...selection.selected.values()].map(toBulkGoalUnit),
     [selection.selected]
@@ -140,7 +143,12 @@ export function CollectionPage() {
       hasUnowned,
       hasSnapshotActions: isAuthenticated,
       compareReady: compare.mode === "ready",
-      hasSelectToggle: hasSummary && isAuthenticated && !selection.active,
+      // The desktop Roster has no Select units: its rows always carry checkboxes.
+      hasSelectToggle:
+        hasSummary &&
+        isAuthenticated &&
+        !selection.active &&
+        (applied.view !== "roster" || isMobile),
     })
   )
   const view = state.status === "ready" ? state.view : undefined
@@ -187,9 +195,22 @@ export function CollectionPage() {
   const { quickFilters, retry } = state
   const listed = state.view
   const rosterAvailable = listed.rosterState === "available"
+  // The desktop Roster keeps a checkbox on every row, like the Goals table: no select mode there,
+  // and its bar shows once something is picked.
+  const rosterSelectable =
+    isAuthenticated &&
+    !isMobile &&
+    !comparing &&
+    rosterAvailable &&
+    listed.total > 0 &&
+    listed.query.view === "roster"
   // Select units sits in the toolbar while there are units to pick and select mode is off.
   const canSelect =
-    !comparing && !selection.active && rosterAvailable && listed.total > 0
+    !comparing &&
+    !selection.active &&
+    !rosterSelectable &&
+    rosterAvailable &&
+    listed.total > 0
 
   return (
     <div className="space-y-6" data-testid="collection-page">
@@ -257,6 +278,7 @@ export function CollectionPage() {
       {comparing || listed.groups.length === 0 ? null : !grouped ? (
         listed.query.view === "roster" ? (
           <CollectionRosterList
+            alwaysSelectable={rosterSelectable}
             units={listed.units}
             origins={origins}
             selection={selection}
@@ -270,6 +292,7 @@ export function CollectionPage() {
         )
       ) : listed.query.view === "roster" ? (
         <CollectionRoster
+          alwaysSelectable={rosterSelectable}
           groups={listed.groups}
           showOwned={rosterAvailable}
           origins={origins}
@@ -297,7 +320,8 @@ export function CollectionPage() {
       ) : (
         <NoMatches onClear={clear} />
       )}
-      {selection.active && !comparing ? (
+      {/* A pick survives a switch away from the Roster, so the bar stays while anything is picked. */}
+      {(selection.active || selection.selected.size > 0) && !comparing ? (
         <CollectionSelectBar
           count={selection.selected.size}
           onSelectAll={() =>

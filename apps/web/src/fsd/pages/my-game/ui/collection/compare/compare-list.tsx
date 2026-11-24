@@ -35,6 +35,7 @@ import type {
 } from "../../../model/compare-chips"
 import { formatSigned } from "../../../model/compare-labels"
 import type { CompareField, CompareItem } from "../../../model/compare-view"
+import { useAbilityName } from "../../../model/use-ability-name"
 import { useMarkLabels } from "../../../model/use-mark-labels"
 import {
   AbilityMark,
@@ -263,6 +264,7 @@ function abilityLabelKey(unitKind: CompareItem["unit"]["kind"], slot: number) {
 
 function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
   const { t, i18n } = useTranslation(["common", "progression"])
+  const abilityName = useAbilityName()
   const labels = useMarkLabels()
   const signed = (count: number) => formatSigned(count, i18n.language)
   const text = (
@@ -293,7 +295,7 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
         )
       }
       case "ability": {
-        const name = t(abilityLabelKey(unitKind, chip.slot))
+        const name = `${t(abilityLabelKey(unitKind, chip.slot))} · ${abilityName(chip.abilityId)}`
         return (
           <FromToMarks
             from={

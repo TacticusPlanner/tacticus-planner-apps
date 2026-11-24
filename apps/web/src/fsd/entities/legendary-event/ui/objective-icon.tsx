@@ -18,7 +18,7 @@ const BADGES = {
 /**
  * An objective's icon (design D6): the game asset with a red-X badge for a negated filter or a
  * "≥" / "≤" badge for a hits bound. `muted` fades it for a not-satisfied state. Decorative: the
- * label or accessible text beside it carries the meaning.
+ * label or accessible text beside it carries the meaning. Inline size unless `className` says otherwise.
  */
 export function ObjectiveIcon({
   icon,
@@ -35,7 +35,8 @@ export function ObjectiveIcon({
     <span
       aria-hidden="true"
       className={cn(
-        "relative inline-flex size-5 shrink-0",
+        // Inline by default (ui-style-guide game icon sizes): 16px with a mouse, 20px on touch.
+        "relative inline-flex size-4 shrink-0 pointer-coarse:size-5",
         muted && "opacity-25 grayscale",
         className
       )}

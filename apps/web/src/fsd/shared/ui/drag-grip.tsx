@@ -19,6 +19,7 @@ export function DragGrip({
   label,
   reveal = "hover",
   size = "default",
+  disabled = false,
   className,
   "data-testid": testId,
 }: {
@@ -27,6 +28,7 @@ export function DragGrip({
   reveal?: "hover" | "always"
   /** `touch`: the larger hit area of a phone's reorder mode. */
   size?: "default" | "touch"
+  disabled?: boolean
   className?: string
   "data-testid"?: string
 }) {
@@ -37,13 +39,14 @@ export function DragGrip({
       {...listeners}
       aria-label={label}
       className={cn(
-        "inline-flex shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring active:cursor-grabbing",
+        "inline-flex shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50",
         size === "touch" ? "size-11" : "size-8 pointer-coarse:size-11",
         reveal === "hover" &&
           "pointer-fine:opacity-0 pointer-fine:group-hover/sortable:opacity-100 pointer-fine:group-has-focus-visible/sortable:opacity-100 pointer-fine:group-data-dragging/sortable:opacity-100 pointer-fine:focus-visible:opacity-100",
         className
       )}
       data-testid={testId}
+      disabled={disabled}
       ref={ref}
       type="button"
     >

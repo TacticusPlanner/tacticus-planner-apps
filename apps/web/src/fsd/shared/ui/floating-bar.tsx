@@ -8,12 +8,10 @@ import { cn } from "@workspace/ui/lib/utils"
  */
 export function FloatingBar({ className, ...props }: ComponentProps<"div">) {
   return (
-    <div
-      className={cn(
-        "z-20 rounded-2xl bg-popover text-popover-foreground shadow-lg ring-1 ring-primary",
-        className
-      )}
-      {...props}
-    />
+    <div className={cn("z-20", FLOATING_BAR_SURFACE, className)} {...props} />
   )
 }
+
+/** The bar's surface alone, for a floating control that is itself a button. */
+export const FLOATING_BAR_SURFACE =
+  "rounded-2xl bg-popover text-popover-foreground shadow-lg ring-1 ring-primary"

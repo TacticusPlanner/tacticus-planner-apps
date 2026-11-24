@@ -68,6 +68,7 @@
   },
   "slot": {
     "number": "Platz {{number}}",
+    "heading": "Plätze",
     "pack": "×{{qty}}",
     "cap": "Max. {{count}} pro Tag",
     "free": "Gratis {{reward}} ×{{qty}}",
@@ -78,6 +79,7 @@
       "high": "Hoch"
     },
     "tierRule": "Niedrig: Machtstufe unter 20. Mittel: 20 oder mehr. Hoch: 20 oder mehr mit einem Charakter oder einer Kriegsmaschine auf Legendär mit einem blauen Stern oder höher.",
+    "tierRuleLabel": "So funktionieren die Stufen",
     "thenMythic": "Danach mythische Splitter bei max. Legendär",
     "dependsOnTier": "Hängt von deiner Stufe ab",
     "dependsOnProgress": "Hängt vom Fortschritt der Einheit ab",

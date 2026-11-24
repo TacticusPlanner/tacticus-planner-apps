@@ -5,14 +5,9 @@ import type { ResolvedShopOffer } from "@workspace/game-catalog"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Slider } from "@workspace/ui/components/slider"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HintTrigger } from "@/shared/ui"
 
 import { DESTRUCTIVE_TEXT } from "./day-state-style"
 import { slotViews, useSlotLabelText } from "./slot-view"
@@ -68,27 +63,8 @@ export function Cost({
 }
 
 function SlotSubtitle({ view }: { view: SlotView }) {
-  const { t } = useTranslation("eventShops")
   const text = useSlotLabelText()(view.label)
   if (!text) return null
-  if (view.label?.kind === "tier") {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            className="inline-flex min-h-6 max-w-full items-center gap-1 text-left text-xs text-muted-foreground"
-            type="button"
-          >
-            <span className="line-clamp-2">{text}</span>
-            <Info aria-hidden="true" className="size-3 shrink-0" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent className="max-w-72">
-          {t("slot.tierRule")}
-        </TooltipContent>
-      </Tooltip>
-    )
-  }
   if (view.label?.kind === "thenMythic") {
     // "Then mythic shards at max legendary", led by the mythic shard icon.
     return (
@@ -621,18 +597,41 @@ export function SlotGrid({
   if (views.length === 0) {
     return <p className="text-sm text-muted-foreground">{t("slot.noSlots")}</p>
   }
+  // One "i" for the list, beside its heading, instead of one on every tier-priced slot: the rule is
+  // the same for each.
+  const tiered = views.some((view) => view.label?.kind === "tier")
   return (
-    // Three a row at every width, like the in-game shop, so slot N sits where the player sees it.
-    <div className="grid grid-cols-3 gap-3" data-testid="event-shop-slots">
-      {views.map((view) => (
-        <SlotCard
-          key={view.ref.slotIndex}
-          controller={controller}
-          format={format}
-          view={view}
-        />
-      ))}
-    </div>
+    <section
+      aria-labelledby="event-shop-slots-heading"
+      className="flex flex-col gap-2"
+    >
+      <div className="flex items-center gap-1.5">
+        <h3 className="text-sm font-medium" id="event-shop-slots-heading">
+          {t("slot.heading")}
+        </h3>
+        {tiered ? (
+          <HintTrigger
+            className="size-6 justify-center text-muted-foreground pointer-coarse:size-12"
+            data-testid="event-shop-tier-rule"
+            hint={t("slot.tierRule")}
+            label={t("slot.tierRuleLabel")}
+          >
+            <Info aria-hidden="true" className="size-4" />
+          </HintTrigger>
+        ) : null}
+      </div>
+      {/* Three a row at every width, like the in-game shop, so slot N sits where the player sees it. */}
+      <div className="grid grid-cols-3 gap-3" data-testid="event-shop-slots">
+        {views.map((view) => (
+          <SlotCard
+            key={view.ref.slotIndex}
+            controller={controller}
+            format={format}
+            view={view}
+          />
+        ))}
+      </div>
+    </section>
   )
 }
 

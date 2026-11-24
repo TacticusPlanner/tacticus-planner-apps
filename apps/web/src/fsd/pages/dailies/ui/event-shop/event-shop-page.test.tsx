@@ -313,6 +313,52 @@ describe("desktop", () => {
     expect(shards).toHaveTextContent("slot.thenMythic")
   })
 
+  it("explains the tiers once, beside the Slots heading, not on each slot", () => {
+    renderPage("/plan/event-shop/october-2026")
+    expect(
+      screen.getByRole("heading", { name: "slot.heading" })
+    ).toBeInTheDocument()
+    expect(screen.getAllByTestId("event-shop-tier-rule")).toHaveLength(1)
+    expect(
+      screen.getByRole("button", { name: "slot.tierRuleLabel" })
+    ).toBeInTheDocument()
+  })
+
+  const withSlots = (
+    pick: (
+      slots: GameCatalogEventShop["weeks"][number]["slots"]
+    ) => GameCatalogEventShop["weeks"][number]["slots"]
+  ): GameCatalogEventShop => ({
+    ...runningEvent,
+    weeks: runningEvent.weeks.map((week) => ({
+      ...week,
+      slots: pick(week.slots),
+    })),
+  })
+
+  it("leaves out the tier hint when no slot depends on the tier", () => {
+    // Slot 1 is the only tier-gated slot.
+    events = [withSlots((slots) => slots.filter((_, index) => index !== 1))]
+    renderPage("/plan/event-shop/october-2026")
+    expect(
+      screen.getByRole("heading", { name: "slot.heading" })
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId("event-shop-tier-rule")).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "slot.tierRuleLabel" })
+    ).not.toBeInTheDocument()
+  })
+
+  it("leaves out the tier hint when the day sells nothing", () => {
+    events = [withSlots(() => [])]
+    renderPage("/plan/event-shop/october-2026")
+    expect(screen.getAllByText("slot.noSlots").length).toBeGreaterThan(0)
+    expect(screen.queryByTestId("event-shop-tier-rule")).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "slot.tierRuleLabel" })
+    ).not.toBeInTheDocument()
+  })
+
   it("keeps a planned reward on its card after the roster resolves the slot to another", () => {
     // Yarrick at 3 stars resolves slot 0 to shards; the plan still holds mythic shards from before.
     storedPlan = plan([cartEntry("THU", 0, "mythicShards_astraYarrick", 1)])

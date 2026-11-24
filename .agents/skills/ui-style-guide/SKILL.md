@@ -158,6 +158,12 @@ One row directly under the header, three fixed slots, left to right:
 - Selection colour in content is `primary`. The gold `accent` is only for app
   navigation (active nav item).
 - Section labels are sentence case `text-sm font-medium`, not small uppercase.
+- A divider between parts of one list (Raided, Shops, Cleared, Flex, a season
+  cut-off) is the shared `ListDivider`: label at the left, rule to the right.
+  Never a centred label between two rules or a bare border with a caption.
+- A drag handle is the shared `DragGrip` (shown on row hover or keyboard focus,
+  always on touch; 32px hit area). A bar that floats over a page (selection,
+  unsaved changes, totals) is the shared `FloatingBar`.
 
 ## 6. Game icon sizes
 

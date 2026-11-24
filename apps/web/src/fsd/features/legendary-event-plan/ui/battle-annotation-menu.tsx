@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
+import { Eraser } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +63,7 @@ export function BattleAnnotationMenu({
           data-testid="battle-annotation-clear"
           onSelect={() => onChange(null)}
         >
+          <Eraser aria-hidden="true" />
           {t("annotations.clearMarks")}
         </DropdownMenuItem>
       </DropdownMenuContent>

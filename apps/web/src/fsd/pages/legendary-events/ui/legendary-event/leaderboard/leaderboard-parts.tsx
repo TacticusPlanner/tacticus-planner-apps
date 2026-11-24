@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Eye, Lock, MoreHorizontal } from "lucide-react"
+import { Eye, Lock, MoreHorizontal, Target, UserPlus } from "lucide-react"
 import { characterIcon, rankIcon, traitIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -145,6 +145,7 @@ export function LeaderboardRowActions({
           data-testid="leaderboard-create-goal"
           onSelect={onCreateGoal}
         >
+          <Target />
           {t("leaderboardActions.createGoal")}
         </DropdownMenuItem>
         {addToTeam?.laneIds.map((laneId) => (
@@ -154,6 +155,7 @@ export function LeaderboardRowActions({
             key={laneId}
             onSelect={() => addToTeam.onSelect(laneId)}
           >
+            <UserPlus />
             {addToTeam.nameLane
               ? t("leaderboardActions.addToTeamOnLane", {
                   lane: t(`lanes.${laneId}`),
@@ -257,11 +259,7 @@ export function ObjectiveIndicator({
       title={text}
     >
       {icon ? (
-        <ObjectiveIcon
-          className={size === "sm" ? "size-4" : "size-5"}
-          icon={icon}
-          muted={!met}
-        />
+        <ObjectiveIcon icon={icon} muted={!met} />
       ) : (
         <span
           aria-hidden="true"

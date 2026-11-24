@@ -14,6 +14,7 @@ import {
   ProgressCell,
   ProgressColumnIcon,
 } from "./progress-parts"
+import { ListDivider } from "@/shared/ui"
 
 /** Desktop: one lane's battles (rows, open battles first, then the fully cleared ones struck
  *  through below a divider) by defeat-all and the five objectives, each
@@ -144,11 +145,10 @@ export function ProgressGrid({
         {open.map(renderRow)}
         {cleared.length > 0 ? (
           <tr data-testid="progress-cleared-divider">
-            <td
-              className="border-t-2 border-border pt-2 pb-0.5 text-xs text-muted-foreground"
-              colSpan={columns.length + (marks?.editable ? 3 : 2)}
-            >
-              {t("progress.clearedDivider", { count: cleared.length })}
+            <td colSpan={columns.length + (marks?.editable ? 3 : 2)}>
+              <ListDivider
+                label={t("progress.clearedDivider", { count: cleared.length })}
+              />
             </td>
           </tr>
         ) : null}

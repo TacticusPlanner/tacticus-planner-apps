@@ -4,6 +4,8 @@ import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { FloatingBar } from "@/shared/ui"
+
 /**
  * Select mode's bar, pinned to the bottom of the viewport: the selected count, Select all shown,
  * Clear, Create goals and Done (player-collection spec). On mobile it sits above the fixed bottom nav
@@ -25,9 +27,9 @@ export function CollectionSelectBar({
   const { t } = useTranslation("common")
   const isMobile = useIsMobile()
   return (
-    <div
+    <FloatingBar
       className={cn(
-        "sticky z-20 flex flex-wrap items-center gap-2 rounded-2xl border bg-card p-2 pl-4 shadow-lg",
+        "sticky flex flex-wrap items-center gap-2 p-2 pl-4",
         isMobile
           ? "bottom-[calc(var(--mobile-nav-height)+1rem)] mr-14"
           : "bottom-3"
@@ -37,7 +39,7 @@ export function CollectionSelectBar({
     >
       <p
         aria-live="polite"
-        className="mr-auto text-sm text-muted-foreground"
+        className="mr-auto text-sm font-medium"
         data-testid="collection-select-count"
       >
         {t("myGame.collection.select.count", { count })}
@@ -79,6 +81,6 @@ export function CollectionSelectBar({
         <Check aria-hidden />
         {t("myGame.collection.select.done")}
       </Button>
-    </div>
+    </FloatingBar>
   )
 }
