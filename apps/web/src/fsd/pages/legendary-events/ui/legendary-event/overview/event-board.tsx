@@ -13,6 +13,11 @@ import { Label } from "@workspace/ui/components/label"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
@@ -633,48 +638,54 @@ function ObjectiveHeading({
                 total: number.format(entry.battles),
               })
         return (
-          <button
-            aria-pressed={isSelected}
-            className={cn(
-              "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent px-0.5 py-1 text-center transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-              uncovered && "border-dashed border-muted-foreground/60",
-              isSelected && "bg-primary/15"
-            )}
-            data-testid="event-board-objective"
-            data-uncovered={uncovered ? "true" : undefined}
-            key={entry.objective.index}
-            onClick={() => onToggle(entry.objective.index)}
-            title={[label, cleared, uncovered ? t("eventBoard.noTeam") : ""]
-              .filter(Boolean)
-              .join(" · ")}
-            type="button"
-          >
-            {isSelected ? (
-              <Check
-                aria-hidden="true"
-                className="absolute top-0.5 right-0.5 size-icon-xs text-primary"
-              />
-            ) : null}
-            <span className="text-xs font-semibold tabular-nums">
-              {number.format(entry.objective.points)}
-            </span>
-            <ObjectiveIcon icon={icon} />
-            {entry.cleared === null ? null : (
-              <span
-                aria-hidden="true"
-                className="text-xs text-muted-foreground tabular-nums"
+          <Tooltip key={entry.objective.index}>
+            <TooltipTrigger asChild disableTouchToggle>
+              <button
+                aria-pressed={isSelected}
+                className={cn(
+                  "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent px-0.5 py-1 text-center transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                  uncovered && "border-dashed border-muted-foreground/60",
+                  isSelected && "bg-primary/15"
+                )}
+                data-testid="event-board-objective"
+                data-uncovered={uncovered ? "true" : undefined}
+                onClick={() => onToggle(entry.objective.index)}
+                type="button"
               >
-                {number.format(entry.cleared)}/{number.format(entry.battles)}
-              </span>
-            )}
-            <span className="line-clamp-2 text-xs/tight">{label}</span>
-            {cleared ? <span className="sr-only">{cleared}</span> : null}
-            {uncovered ? (
-              <span className="text-xs text-muted-foreground">
-                {t("eventBoard.noTeam")}
-              </span>
-            ) : null}
-          </button>
+                {isSelected ? (
+                  <Check
+                    aria-hidden="true"
+                    className="absolute top-0.5 right-0.5 size-icon-xs text-primary"
+                  />
+                ) : null}
+                <span className="text-xs font-semibold tabular-nums">
+                  {number.format(entry.objective.points)}
+                </span>
+                <ObjectiveIcon icon={icon} />
+                {entry.cleared === null ? null : (
+                  <span
+                    aria-hidden="true"
+                    className="text-xs text-muted-foreground tabular-nums"
+                  >
+                    {number.format(entry.cleared)}/
+                    {number.format(entry.battles)}
+                  </span>
+                )}
+                <span className="line-clamp-2 text-xs/tight">{label}</span>
+                {cleared ? <span className="sr-only">{cleared}</span> : null}
+                {uncovered ? (
+                  <span className="text-xs text-muted-foreground">
+                    {t("eventBoard.noTeam")}
+                  </span>
+                ) : null}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {[label, cleared, uncovered ? t("eventBoard.noTeam") : ""]
+                .filter(Boolean)
+                .join(" · ")}
+            </TooltipContent>
+          </Tooltip>
         )
       })}
     </div>

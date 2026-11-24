@@ -5,6 +5,11 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type {
   RunHistory,
@@ -173,17 +178,22 @@ function TeamHistory({ entry }: { entry: RunHistoryTeam }) {
         {unitIds.map((unitId) => {
           const name = unitName("Character", unitId)
           return (
-            <li data-unit={unitId} key={unitId} title={name}>
-              <EntityIcon
-                size="portrait-sm"
-                alt={name}
-                className={cn(
-                  "rounded-full",
-                  unitId === team.reserveUnitId && "border border-dashed"
-                )}
-                src={characterIcon(unitId as UnitId)}
-              />
-            </li>
+            <Tooltip key={unitId}>
+              <TooltipTrigger asChild>
+                <li data-unit={unitId}>
+                  <EntityIcon
+                    size="portrait-sm"
+                    alt={name}
+                    className={cn(
+                      "rounded-full",
+                      unitId === team.reserveUnitId && "border border-dashed"
+                    )}
+                    src={characterIcon(unitId as UnitId)}
+                  />
+                </li>
+              </TooltipTrigger>
+              <TooltipContent>{name}</TooltipContent>
+            </Tooltip>
           )
         })}
       </ul>

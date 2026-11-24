@@ -1,6 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type { ClearEstimate } from "@/entities/legendary-event"
 
@@ -57,22 +62,26 @@ export function ClearDepthField({
         )}
       >
         {display.kind === "estimate" ? (
-          <span
-            className="rounded-full border border-dashed px-1.5 text-xs text-muted-foreground"
-            data-testid={`${testId}-estimated`}
-            title={
-              display.estimate.calibrated
-                ? t("estimates.howItWorks")
-                : t("estimates.uncalibrated")
-            }
-          >
-            {t("estimates.estimated")}
-            {display.estimate.calibrated ? null : (
-              <span className="sr-only">
-                {` · ${t("estimates.uncalibrated")}`}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className="rounded-full border border-dashed px-1.5 text-xs text-muted-foreground"
+                data-testid={`${testId}-estimated`}
+              >
+                {t("estimates.estimated")}
+                {display.estimate.calibrated ? null : (
+                  <span className="sr-only">
+                    {` · ${t("estimates.uncalibrated")}`}
+                  </span>
+                )}
               </span>
-            )}
-          </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {display.estimate.calibrated
+                ? t("estimates.howItWorks")
+                : t("estimates.uncalibrated")}
+            </TooltipContent>
+          </Tooltip>
         ) : null}
         <ClearDepthStepper
           battleCount={battleCount}

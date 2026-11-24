@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type {
   BattleProgressView,
@@ -134,14 +139,15 @@ export function ProgressRows({
       >
         <span>#</span>
         {columns.map((column, index) => (
-          <span
-            className="flex flex-col items-center"
-            key={index}
-            title={column.label}
-          >
-            <ProgressColumnIcon column={column} />
-            <span className="tabular-nums">{column.points}</span>
-          </span>
+          <Tooltip key={index}>
+            <TooltipTrigger asChild>
+              <span className="flex flex-col items-center">
+                <ProgressColumnIcon column={column} />
+                <span className="tabular-nums">{column.points}</span>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>{column.label}</TooltipContent>
+          </Tooltip>
         ))}
         <span className="text-right">{t("progress.points")}</span>
       </div>

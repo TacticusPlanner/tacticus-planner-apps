@@ -269,12 +269,14 @@ describe("TeamUnitPicker", () => {
       })
       await screen.findByText("Beth")
       const power = screen.getByTestId("team-picker-sort-power")
-      expect(power).toBeDisabled()
+      expect(power).toHaveAttribute("aria-disabled", "true")
       expect(power).toHaveAccessibleDescription("Power data unavailable")
+      fireEvent.click(power)
       expect(screen.getByTestId("team-picker-sort-points")).toHaveAttribute(
         "data-state",
         "on"
       )
+      expect(power).toHaveAttribute("data-state", "off")
     })
   })
 

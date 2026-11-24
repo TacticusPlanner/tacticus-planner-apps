@@ -4,6 +4,11 @@ import { ChevronRight } from "lucide-react"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Progress } from "@workspace/ui/components/progress"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
@@ -210,28 +215,31 @@ function LaneObjectivesLine({
           total: number.format(total),
         })
         return (
-          <span
-            className="flex items-center gap-1 text-xs text-muted-foreground"
-            data-objective={objective.index}
-            data-testid="lane-summary-objective"
-            key={objective.index}
-            role="listitem"
-            title={text}
-          >
-            <ObjectiveIcon icon={icon} />
-            <span className="sr-only">{text}</span>
-            <span aria-hidden="true" className="tabular-nums">
-              {number.format(cleared)} / {number.format(total)}
-            </span>
-            <Progress
-              aria-hidden="true"
-              className="h-1 w-8"
-              data-testid="lane-summary-objective-bar"
-              indicatorClassName="bg-(--event-legendary)"
-              max={100}
-              value={total > 0 ? Math.min(100, (cleared / total) * 100) : 0}
-            />
-          </span>
+          <Tooltip key={objective.index}>
+            <TooltipTrigger asChild>
+              <span
+                className="flex items-center gap-1 text-xs text-muted-foreground"
+                data-objective={objective.index}
+                data-testid="lane-summary-objective"
+                role="listitem"
+              >
+                <ObjectiveIcon icon={icon} />
+                <span className="sr-only">{text}</span>
+                <span aria-hidden="true" className="tabular-nums">
+                  {number.format(cleared)} / {number.format(total)}
+                </span>
+                <Progress
+                  aria-hidden="true"
+                  className="h-1 w-8"
+                  data-testid="lane-summary-objective-bar"
+                  indicatorClassName="bg-(--event-legendary)"
+                  max={100}
+                  value={total > 0 ? Math.min(100, (cleared / total) * 100) : 0}
+                />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>{text}</TooltipContent>
+          </Tooltip>
         )
       })}
     </span>

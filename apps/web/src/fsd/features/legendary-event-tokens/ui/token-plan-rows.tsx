@@ -11,6 +11,11 @@ import type {
 } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { gainsFromSteps } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
@@ -246,21 +251,25 @@ function TokenCount({ count }: { count: number }) {
   const { t } = useTranslation("legendaryEvents")
   const label = t("tokenPlan.plan.tokens", { count })
   return (
-    <span
-      className="inline-flex shrink-0 items-center gap-0.5 text-muted-foreground tabular-nums"
-      data-count={count}
-      data-testid="token-plan-token-count"
-      title={label}
-    >
-      <EntityIcon
-        size="inline"
-        alt=""
-        className="shrink-0"
-        src={legendaryEventResourceIcon("tokens")}
-      />
-      <span aria-hidden="true">{count}</span>
-      <span className="sr-only">{label}</span>
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild disableTouchToggle>
+        <span
+          className="inline-flex shrink-0 items-center gap-0.5 text-muted-foreground tabular-nums"
+          data-count={count}
+          data-testid="token-plan-token-count"
+        >
+          <EntityIcon
+            size="inline"
+            alt=""
+            className="shrink-0"
+            src={legendaryEventResourceIcon("tokens")}
+          />
+          <span aria-hidden="true">{count}</span>
+          <span className="sr-only">{label}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   )
 }
 

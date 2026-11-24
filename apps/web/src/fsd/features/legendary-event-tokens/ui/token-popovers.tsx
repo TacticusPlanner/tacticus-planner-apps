@@ -10,6 +10,11 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { EventUnitChip, useMissionLabel } from "@/entities/legendary-event"
 import type { EventUnitChipData } from "@/entities/legendary-event"
@@ -39,20 +44,24 @@ export function TokenMissionsPopover({
   })
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          aria-label={label}
-          className="h-7 gap-1 px-2 tabular-nums"
-          data-testid={testId}
-          size="sm"
-          title={label}
-          type="button"
-          variant="outline"
-        >
-          <ListChecks aria-hidden="true" className="size-icon-sm" />
-          {number.format(gains.length)}
-        </Button>
-      </PopoverTrigger>
+      <Tooltip>
+        <PopoverTrigger asChild>
+          <TooltipTrigger asChild disableTouchToggle>
+            <Button
+              aria-label={label}
+              className="h-7 gap-1 px-2 tabular-nums"
+              data-testid={testId}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <ListChecks aria-hidden="true" className="size-icon-sm" />
+              {number.format(gains.length)}
+            </Button>
+          </TooltipTrigger>
+        </PopoverTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
       <PopoverContent
         align="start"
         className="gap-2"
@@ -119,34 +128,38 @@ export function TokenTeamPopover({
   const label = t("tokenPlan.nextToken.team", { team: teamName })
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          aria-label={label}
-          className="h-8 rounded-full px-1"
-          data-testid={testId}
-          size="sm"
-          title={label}
-          type="button"
-          variant="ghost"
-        >
-          <span aria-hidden="true" className="flex -space-x-2">
-            {members.map((unit) => (
-              <span
-                className="size-7 shrink-0 overflow-hidden rounded-full bg-muted ring-2 ring-card"
-                data-testid={`${testId}-portrait`}
-                data-unit={unit.unitId}
-                key={unit.unitId}
-              >
-                <EntityIcon
-                  alt=""
-                  className="size-full object-cover"
-                  src={characterIcon(unit.unitId as UnitId)}
-                />
+      <Tooltip>
+        <PopoverTrigger asChild>
+          <TooltipTrigger asChild disableTouchToggle>
+            <Button
+              aria-label={label}
+              className="h-8 rounded-full px-1"
+              data-testid={testId}
+              size="sm"
+              type="button"
+              variant="ghost"
+            >
+              <span aria-hidden="true" className="flex -space-x-2">
+                {members.map((unit) => (
+                  <span
+                    className="size-7 shrink-0 overflow-hidden rounded-full bg-muted ring-2 ring-card"
+                    data-testid={`${testId}-portrait`}
+                    data-unit={unit.unitId}
+                    key={unit.unitId}
+                  >
+                    <EntityIcon
+                      alt=""
+                      className="size-full object-cover"
+                      src={characterIcon(unit.unitId as UnitId)}
+                    />
+                  </span>
+                ))}
               </span>
-            ))}
-          </span>
-        </Button>
-      </PopoverTrigger>
+            </Button>
+          </TooltipTrigger>
+        </PopoverTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
       <PopoverContent
         align="start"
         className="w-80 max-w-[calc(100vw-2rem)] gap-2"

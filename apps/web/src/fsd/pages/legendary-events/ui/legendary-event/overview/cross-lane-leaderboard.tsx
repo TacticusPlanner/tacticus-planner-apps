@@ -282,7 +282,6 @@ function SortHead({
   label: string
   className?: string
 }) {
-  const { t } = useTranslation("legendaryEvents")
   const direction = sort?.key === sortKey ? sort.direction : undefined
   const Icon =
     direction === "desc"
@@ -306,7 +305,6 @@ function SortHead({
         data-sort={sortKey}
         data-testid="leaderboard-sort"
         onClick={() => onSort(sortKey)}
-        title={t("leaderboard.sortBy", { column: label })}
         type="button"
       >
         {label}

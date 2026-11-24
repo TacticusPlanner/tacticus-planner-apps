@@ -615,10 +615,6 @@ describe("TeamsSection", () => {
     it("shows them by their covered objectives or Team N, and sends no write", () => {
       const actions = renderSection(ready(importedPlan))
       expect(cardNames()).toEqual(["α · Melee · Min 5 hits", "α · Team 2"])
-      expect(screen.getAllByTestId("team-card-name")[0]).toHaveAttribute(
-        "title",
-        "α · Melee · Min 5 hits"
-      )
       for (const action of [
         actions.createTeam,
         actions.updateTeam,

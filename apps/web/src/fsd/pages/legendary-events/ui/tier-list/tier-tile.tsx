@@ -9,6 +9,11 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type {
   HordeRelicRating,
@@ -57,16 +62,26 @@ function TierTileButton({
         {formatMultiplier(tile.multiplier, i18n.language)}
       </span>
       {tile.overridden ? (
-        <span data-testid="tier-tile-override" title={t("tierList.override")}>
-          <span aria-hidden="true">*</span>
-          <span className="sr-only">{t("tierList.override")}</span>
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild disableTouchToggle>
+            <span data-testid="tier-tile-override">
+              <span aria-hidden="true">*</span>
+              <span className="sr-only">{t("tierList.override")}</span>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{t("tierList.override")}</TooltipContent>
+        </Tooltip>
       ) : null}
       {hasRelics ? (
-        <span data-testid="tier-tile-relic" title={t("tierList.relicMark")}>
-          <Gem aria-hidden="true" className="size-icon-sm" />
-          <span className="sr-only">{t("tierList.relicMark")}</span>
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild disableTouchToggle>
+            <span data-testid="tier-tile-relic">
+              <Gem aria-hidden="true" className="size-icon-sm" />
+              <span className="sr-only">{t("tierList.relicMark")}</span>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{t("tierList.relicMark")}</TooltipContent>
+        </Tooltip>
       ) : null}
     </span>
   )

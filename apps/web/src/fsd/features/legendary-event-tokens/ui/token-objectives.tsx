@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import {
   defeatAllIcon,
@@ -32,18 +37,21 @@ export function TokenObjectives({
         if (id === 0) {
           const label = t("progress.defeatAll")
           return (
-            <li
-              className="flex items-center gap-1 text-xs"
-              data-objective="0"
-              key={id}
-              title={label}
-            >
-              <ObjectiveIcon
-                className="overflow-hidden rounded-md"
-                icon={{ src: defeatAllIcon }}
-              />
-              <span className={cn(compact && "sr-only")}>{label}</span>
-            </li>
+            <Tooltip key={id}>
+              <TooltipTrigger asChild>
+                <li
+                  className="flex items-center gap-1 text-xs"
+                  data-objective="0"
+                >
+                  <ObjectiveIcon
+                    className="overflow-hidden rounded-md"
+                    icon={{ src: defeatAllIcon }}
+                  />
+                  <span className={cn(compact && "sr-only")}>{label}</span>
+                </li>
+              </TooltipTrigger>
+              <TooltipContent>{label}</TooltipContent>
+            </Tooltip>
           )
         }
         const objective = lane.unitsRestrictions.find(
@@ -52,15 +60,18 @@ export function TokenObjectives({
         if (!objective) return null
         const { label, icon } = objectiveLabel(objective)
         return (
-          <li
-            className="flex items-center gap-1 text-xs"
-            data-objective={id}
-            key={id}
-            title={label}
-          >
-            <ObjectiveIcon icon={icon} />
-            <span className={cn(compact && "sr-only")}>{label}</span>
-          </li>
+          <Tooltip key={id}>
+            <TooltipTrigger asChild>
+              <li
+                className="flex items-center gap-1 text-xs"
+                data-objective={id}
+              >
+                <ObjectiveIcon icon={icon} />
+                <span className={cn(compact && "sr-only")}>{label}</span>
+              </li>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+          </Tooltip>
         )
       })}
     </ul>

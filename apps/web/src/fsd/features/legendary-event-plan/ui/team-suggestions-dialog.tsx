@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react"
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
@@ -7,6 +14,11 @@ import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Switch } from "@workspace/ui/components/switch"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { UnitGoalBadge } from "@/entities/goal"
@@ -278,45 +290,51 @@ export function TeamSuggestionsDialog({
                     })}
                   </ul>
                   <ul className="flex flex-wrap gap-1.5">
-                    {covered.map(({ objectiveIndex, label, icon, cleared }) => (
-                      <li
-                        className={cn(
-                          "flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs",
-                          cleared && "text-muted-foreground"
-                        )}
-                        data-cleared={cleared ? "true" : undefined}
-                        data-index={objectiveIndex}
-                        data-testid="team-suggestion-objective"
-                        key={objectiveIndex}
-                        title={
-                          cleared
-                            ? t("teams.clearedThrough", {
-                                battle: suggestion.depth,
-                              })
-                            : undefined
-                        }
-                      >
-                        <ObjectiveIcon
-                          className="size-icon-sm"
-                          icon={icon}
-                          muted={cleared}
-                        />
-                        {label}
-                        {cleared ? (
-                          <>
-                            <Check
-                              aria-hidden
-                              className="size-icon-sm shrink-0"
-                            />
-                            <span className="sr-only">
-                              {t("teams.clearedThrough", {
-                                battle: suggestion.depth,
-                              })}
-                            </span>
-                          </>
-                        ) : null}
-                      </li>
-                    ))}
+                    {covered.map(({ objectiveIndex, label, icon, cleared }) => {
+                      const chip = (
+                        <li
+                          className={cn(
+                            "flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs",
+                            cleared && "text-muted-foreground"
+                          )}
+                          data-cleared={cleared ? "true" : undefined}
+                          data-index={objectiveIndex}
+                          data-testid="team-suggestion-objective"
+                        >
+                          <ObjectiveIcon
+                            className="size-icon-sm"
+                            icon={icon}
+                            muted={cleared}
+                          />
+                          {label}
+                          {cleared ? (
+                            <>
+                              <Check
+                                aria-hidden
+                                className="size-icon-sm shrink-0"
+                              />
+                              <span className="sr-only">
+                                {t("teams.clearedThrough", {
+                                  battle: suggestion.depth,
+                                })}
+                              </span>
+                            </>
+                          ) : null}
+                        </li>
+                      )
+                      if (!cleared)
+                        return <Fragment key={objectiveIndex}>{chip}</Fragment>
+                      return (
+                        <Tooltip key={objectiveIndex}>
+                          <TooltipTrigger asChild>{chip}</TooltipTrigger>
+                          <TooltipContent>
+                            {t("teams.clearedThrough", {
+                              battle: suggestion.depth,
+                            })}
+                          </TooltipContent>
+                        </Tooltip>
+                      )
+                    })}
                   </ul>
                   <p
                     className="text-sm text-muted-foreground"

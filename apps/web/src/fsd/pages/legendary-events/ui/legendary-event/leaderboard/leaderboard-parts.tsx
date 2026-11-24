@@ -9,6 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { ObjectiveIcon, rankTone } from "@/entities/legendary-event"
 import type {
@@ -69,27 +74,34 @@ export function LeaderboardUnit({
       {markers.map((trait) => {
         const label = t(`traits:${trait}`, { defaultValue: trait })
         return (
-          <span
-            className="inline-flex shrink-0"
-            data-testid="leaderboard-trait"
-            data-trait={trait}
-            key={trait}
-            title={label}
-          >
-            <EntityIcon size="inline" alt="" src={traitIcon(trait)} />
-            <span className="sr-only">{label}</span>
-          </span>
+          <Tooltip key={trait}>
+            <TooltipTrigger asChild>
+              <span
+                className="inline-flex shrink-0"
+                data-testid="leaderboard-trait"
+                data-trait={trait}
+              >
+                <EntityIcon size="inline" alt="" src={traitIcon(trait)} />
+                <span className="sr-only">{label}</span>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+          </Tooltip>
         )
       })}
       {previewed ? (
-        <span
-          className="inline-flex shrink-0 text-primary"
-          data-testid="leaderboard-preview-marker"
-          title={t("goalsPreview.marker")}
-        >
-          <Eye aria-hidden="true" className="size-icon" />
-          <span className="sr-only">{t("goalsPreview.marker")}</span>
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              className="inline-flex shrink-0 text-primary"
+              data-testid="leaderboard-preview-marker"
+            >
+              <Eye aria-hidden="true" className="size-icon" />
+              <span className="sr-only">{t("goalsPreview.marker")}</span>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{t("goalsPreview.marker")}</TooltipContent>
+        </Tooltip>
       ) : null}
       {row.ownership === "locked" ? (
         <span
@@ -200,16 +212,20 @@ export function LeaderboardRankTile({ row }: { row: LeaderboardUnitRow }) {
   if (!row.rank) return null
   const label = t(`ranks.${row.rank}`)
   return (
-    <span
-      className="inline-flex h-7 w-10 items-center justify-center rounded-md border"
-      data-rank={row.rank}
-      data-testid="leaderboard-rank"
-      style={rankTone(row.rank)}
-      title={label}
-    >
-      <EntityIcon size="inline" alt="" src={rankIcon(row.rank)} />
-      <span className="sr-only">{label}</span>
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="inline-flex h-7 w-10 items-center justify-center rounded-md border"
+          data-rank={row.rank}
+          data-testid="leaderboard-rank"
+          style={rankTone(row.rank)}
+        >
+          <EntityIcon size="inline" alt="" src={rankIcon(row.rank)} />
+          <span className="sr-only">{label}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -249,28 +265,32 @@ export function ObjectiveIndicator({
     { objective: label }
   )
   return (
-    <span
-      className={cn(
-        "inline-flex items-center justify-center",
-        size === "sm" ? "size-5" : "size-6"
-      )}
-      data-met={met}
-      data-testid="leaderboard-objective"
-      title={text}
-    >
-      {icon ? (
-        <ObjectiveIcon icon={icon} muted={!met} />
-      ) : (
+    <Tooltip>
+      <TooltipTrigger asChild>
         <span
-          aria-hidden="true"
           className={cn(
-            "size-2.5 rounded-full",
-            met ? "bg-(--event-legendary)" : "bg-muted-foreground/30"
+            "inline-flex items-center justify-center",
+            size === "sm" ? "size-5" : "size-6"
           )}
-        />
-      )}
-      <span className="sr-only">{text}</span>
-    </span>
+          data-met={met}
+          data-testid="leaderboard-objective"
+        >
+          {icon ? (
+            <ObjectiveIcon icon={icon} muted={!met} />
+          ) : (
+            <span
+              aria-hidden="true"
+              className={cn(
+                "size-2.5 rounded-full",
+                met ? "bg-(--event-legendary)" : "bg-muted-foreground/30"
+              )}
+            />
+          )}
+          <span className="sr-only">{text}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{text}</TooltipContent>
+    </Tooltip>
   )
 }
 
