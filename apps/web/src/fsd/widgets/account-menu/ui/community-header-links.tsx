@@ -12,7 +12,7 @@ export function CommunityHeaderLinks() {
 
   return (
     <>
-      <Button asChild size="icon" variant="ghost">
+      <Button asChild className="size-10" size="icon" variant="ghost">
         <a
           aria-label={t("community.discordLabel")}
           data-testid="header-discord"
@@ -21,10 +21,10 @@ export function CommunityHeaderLinks() {
           target="_blank"
           title={t("community.discordLabel")}
         >
-          <DiscordIcon className="size-4" />
+          <DiscordIcon className="size-icon" />
         </a>
       </Button>
-      <Button asChild size="icon" variant="ghost">
+      <Button asChild className="size-10" size="icon" variant="ghost">
         <a
           aria-label={t("community.buyMeACoffeeLabel")}
           data-testid="header-buy-me-a-coffee"

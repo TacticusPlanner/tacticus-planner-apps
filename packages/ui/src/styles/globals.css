@@ -103,6 +103,10 @@
   --chart-grid: #e6e9ee;
   --hl: #e3ecfb;
   --radius: 0.625rem;
+  /* Desktop top bar height: the bar itself and the sticky offsets of the sidebar and the section
+     menu under it all read this one value. 3.5rem matches the icon rail's width, so the 40px logo
+     sits centred over the rail icons (ui-style-guide, app shell). */
+  --desktop-top-bar-height: 3.5rem;
   --sidebar: oklch(0.955 0.008 252.392);
   --sidebar-foreground: oklch(0.243 0.015 261.655);
   --sidebar-primary: oklch(0.47 0.125 246.682);

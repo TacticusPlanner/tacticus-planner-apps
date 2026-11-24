@@ -218,7 +218,10 @@ function AppSidebar({
   }, [isAuthenticated, onCreateGoal])
 
   return (
-    <Sidebar className="top-12! h-[calc(100svh-3rem)]" collapsible="icon">
+    <Sidebar
+      className="top-(--desktop-top-bar-height)! h-[calc(100svh-var(--desktop-top-bar-height))]"
+      collapsible="icon"
+    >
       <SidebarHeader>
         {/* Rail tools come first: the expand/collapse toggle, then the general tour. */}
         <div

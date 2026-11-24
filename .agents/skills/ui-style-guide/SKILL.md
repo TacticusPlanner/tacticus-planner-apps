@@ -49,6 +49,10 @@ Run it after changing a page's controls (instructions at the top of the spec).
   page" is always there. Mark a step `data: { optional: true }` when its target
   can be missing (empty, loading, leaders-only), so the tour skips it.
 - The first heading inside the page never repeats the page title.
+- App shell on desktop: the top bar is 56px (`--desktop-top-bar-height`, set
+  in `packages/ui` `globals.css`) with a 40px logo, the same logo size as the mobile
+  header; its search launcher and icon buttons are 40px with 20px icons.
+  Anything sticky under the bar offsets by the variable, never `top-12`.
 - The shell renders the page's only `<h1>` (the `PageHeader` title on desktop,
   the mobile header on phones). Headings inside a page start at `<h2>`.
 

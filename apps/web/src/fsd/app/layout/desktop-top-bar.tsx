@@ -45,15 +45,15 @@ export function DesktopTopBar({
 
   return (
     <div
-      className="sticky top-0 z-30 flex h-12 shrink-0 items-center gap-3 border-b bg-topbar px-3"
+      className="sticky top-0 z-30 flex h-(--desktop-top-bar-height) shrink-0 items-center gap-3 border-b bg-topbar px-2"
       data-testid="desktop-top-bar"
     >
       <AppLogoHomeLink
         className="flex min-w-0 shrink-0 items-center gap-2 rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
         isAuthenticated={isAuthenticated}
       >
-        <AppLogo className="size-8 shrink-0" />
-        <span className="hidden truncate text-sm font-semibold tracking-tight lg:inline">
+        <AppLogo className="size-10 shrink-0" />
+        <span className="hidden truncate text-base font-semibold tracking-tight lg:inline">
           {t("app.name")}
         </span>
         <EnvironmentBadge />
@@ -61,13 +61,13 @@ export function DesktopTopBar({
       <div className="flex min-w-0 flex-1 justify-center">
         <button
           aria-label={t("nav.search")}
-          className="flex h-8 w-full max-w-xl min-w-0 items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-10 w-full max-w-xl min-w-0 items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
           data-testid="desktop-navigation-search"
           onClick={() => setNavigationOpen(true)}
           ref={launcherRef}
           type="button"
         >
-          <Search className="size-4 shrink-0" />
+          <Search className="size-icon shrink-0" />
           <span className="min-w-0 flex-1 truncate text-left">
             {t("nav.search")}
           </span>
