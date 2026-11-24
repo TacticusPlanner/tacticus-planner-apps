@@ -82,10 +82,7 @@ export function MilestoneGrid({
                     type="button"
                   >
                     {cell.endless ? (
-                      <span
-                        className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground"
-                        title={td("hse.details.endless")}
-                      >
+                      <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
                         <InfinityIcon
                           aria-hidden="true"
                           className="size-icon-xs"

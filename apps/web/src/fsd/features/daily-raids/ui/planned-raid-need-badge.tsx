@@ -1,6 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type { PlannedRaidNeed } from "../model/planned-raid-need"
 
@@ -35,13 +40,17 @@ export function PlannedRaidNeedBadge({
     )
   }
   return (
-    <Badge
-      className={cn("shrink-0 text-sm tabular-nums", className)}
-      title={full}
-      variant="outline"
-    >
-      <span aria-hidden>{t("schedule.more", { count: need.count })}</span>
-      <span className="sr-only">{full}</span>
-    </Badge>
+    <Tooltip>
+      <TooltipTrigger asChild disableTouchToggle>
+        <Badge
+          className={cn("shrink-0 text-sm tabular-nums", className)}
+          variant="outline"
+        >
+          <span aria-hidden>{t("schedule.more", { count: need.count })}</span>
+          <span className="sr-only">{full}</span>
+        </Badge>
+      </TooltipTrigger>
+      <TooltipContent>{full}</TooltipContent>
+    </Tooltip>
   )
 }

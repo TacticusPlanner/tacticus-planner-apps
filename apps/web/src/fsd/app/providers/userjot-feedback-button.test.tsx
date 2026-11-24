@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
+import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -17,7 +18,7 @@ describe("UserJotFeedbackButton", () => {
   it("opens the widget's default view on click when there is no unread activity", () => {
     const open = vi.fn()
     useUserJotMock.mockReturnValue({ open, unreadCount: 0 })
-    render(<UserJotFeedbackButton />)
+    render(<UserJotFeedbackButton />, { wrapper: TooltipProvider })
 
     const button = screen.getByTestId("userjot-feedback-button")
     expect(button).toHaveAccessibleName("feedback.button")
@@ -29,7 +30,7 @@ describe("UserJotFeedbackButton", () => {
   it("opens the Changelog on click while there is unread activity, so it can be read and cleared", () => {
     const open = vi.fn()
     useUserJotMock.mockReturnValue({ open, unreadCount: 1 })
-    render(<UserJotFeedbackButton />)
+    render(<UserJotFeedbackButton />, { wrapper: TooltipProvider })
 
     const button = screen.getByTestId("userjot-feedback-button")
     expect(button).toHaveAccessibleName("feedback.changelog")
@@ -40,7 +41,7 @@ describe("UserJotFeedbackButton", () => {
 
   it("shows no unread indicator when there is no unread activity", () => {
     useUserJotMock.mockReturnValue({ open: vi.fn(), unreadCount: 0 })
-    render(<UserJotFeedbackButton />)
+    render(<UserJotFeedbackButton />, { wrapper: TooltipProvider })
 
     expect(
       screen.queryByTestId("userjot-feedback-unread-indicator")
@@ -49,7 +50,7 @@ describe("UserJotFeedbackButton", () => {
 
   it("shows an unread indicator when the widget reports unread activity", () => {
     useUserJotMock.mockReturnValue({ open: vi.fn(), unreadCount: 3 })
-    render(<UserJotFeedbackButton />)
+    render(<UserJotFeedbackButton />, { wrapper: TooltipProvider })
 
     expect(
       screen.getByTestId("userjot-feedback-unread-indicator")
@@ -57,18 +58,20 @@ describe("UserJotFeedbackButton", () => {
   })
 
   it("is disabled with an explanation when the widget failed to load", () => {
+    const open = vi.fn()
     useUserJotMock.mockReturnValue({
-      open: vi.fn(),
+      open,
       unreadCount: 0,
       status: "failed",
     })
-    render(<UserJotFeedbackButton />)
+    render(<UserJotFeedbackButton />, { wrapper: TooltipProvider })
 
     const button = screen.getByTestId("userjot-feedback-button")
-    expect(button).toBeDisabled()
-    expect(button).toHaveAttribute(
-      "title",
+    expect(button).toHaveAttribute("aria-disabled", "true")
+    expect(button).toHaveAccessibleDescription(
       "nav.quickActions.feedbackUnavailable"
     )
+    fireEvent.click(button)
+    expect(open).not.toHaveBeenCalled()
   })
 })

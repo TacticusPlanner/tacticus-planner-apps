@@ -45,7 +45,6 @@ export function NavLiveDot({
         corner && className
       )}
       data-testid="nav-live-dot"
-      title={corner ? t("nav.eventLive") : undefined}
     />
   )
 
@@ -58,7 +57,6 @@ export function NavLiveDot({
           aria-hidden="true"
           className={cn("ml-1.5 bg-success text-success-foreground", className)}
           data-testid="nav-live-badge"
-          title={t("nav.eventLive")}
         >
           {dot}
           {t("nav.live")}

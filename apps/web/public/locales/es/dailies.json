@@ -615,6 +615,7 @@
   },
   "quickFilters": {
     "label": "Filtros rápidos",
+    "helpLabel": "Qué hacen los filtros rápidos",
     "chip": {
       "fewerRaids": "Menos incursiones",
       "combineGoals": "Combinar objetivos",

@@ -319,7 +319,11 @@ describe("UpgradeGoalCard", () => {
       />
     )
 
-    expect(screen.getByRole("button", { name: "Remove" })).toBeDisabled()
+    const remove = screen.getByRole("button", { name: "Remove" })
+    expect(remove).toHaveAttribute("aria-disabled", "true")
+    expect(remove).toHaveAccessibleDescription(
+      "An Upgrade goal needs at least one material."
+    )
   })
 
   it("adds every unpicked material of a rarity at the range's quantities", async () => {

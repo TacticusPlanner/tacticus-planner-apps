@@ -1,7 +1,7 @@
 import { useLocation } from "react-router"
 import { PanelLeftOpen } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 
 import { findActiveChild } from "./find-active-child"
 import { subItemLabel } from "./nav-items"
@@ -69,18 +69,17 @@ export function DesktopSectionHeader({
 
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <Button
+      <IconButton
         aria-expanded={false}
         aria-keyshortcuts={shortcut.aria}
-        aria-label={toggleLabel}
         data-testid="desktop-section-toggle"
+        label={toggleLabel}
         onClick={() => onSectionExpandedChange?.(true)}
+        shortcut={shortcut.hint}
         size="icon-sm"
-        title={`${toggleLabel} (${shortcut.hint})`}
-        variant="ghost"
       >
         <PanelLeftOpen />
-      </Button>
+      </IconButton>
       <nav
         aria-label={t("nav.breadcrumb")}
         className="flex shrink-0 items-center gap-1.5 text-sm text-muted-foreground"

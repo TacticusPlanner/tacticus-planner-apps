@@ -20,7 +20,7 @@ export function RaidGroupingSwitch() {
       options={RAID_GROUPINGS.map((item) => ({
         value: item,
         label: t(`grouping.${item}`),
-        title: t(`grouping.help.${item}`),
+        hint: t(`grouping.help.${item}`),
         testId: `raid-grouping-${item}`,
       }))}
       testId="raid-grouping"

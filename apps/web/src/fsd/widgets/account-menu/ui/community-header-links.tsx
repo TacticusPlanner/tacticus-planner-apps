@@ -1,6 +1,6 @@
 import { Coffee } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 
 import { BUY_ME_A_COFFEE_URL, DISCORD_INVITE_URL } from "@/shared/config"
 
@@ -12,30 +12,34 @@ export function CommunityHeaderLinks() {
 
   return (
     <>
-      <Button asChild className="size-10" size="icon" variant="ghost">
+      <IconButton
+        asChild
+        className="size-10"
+        label={t("community.discordLabel")}
+      >
         <a
-          aria-label={t("community.discordLabel")}
           data-testid="header-discord"
           href={DISCORD_INVITE_URL}
           rel="noopener noreferrer"
           target="_blank"
-          title={t("community.discordLabel")}
         >
           <DiscordIcon className="size-icon" />
         </a>
-      </Button>
-      <Button asChild className="size-10" size="icon" variant="ghost">
+      </IconButton>
+      <IconButton
+        asChild
+        className="size-10"
+        label={t("community.buyMeACoffeeLabel")}
+      >
         <a
-          aria-label={t("community.buyMeACoffeeLabel")}
           data-testid="header-buy-me-a-coffee"
           href={BUY_ME_A_COFFEE_URL}
           rel="noopener noreferrer"
           target="_blank"
-          title={t("community.buyMeACoffeeLabel")}
         >
           <Coffee />
         </a>
-      </Button>
+      </IconButton>
     </>
   )
 }

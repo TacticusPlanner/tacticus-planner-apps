@@ -4,6 +4,8 @@ import { createPortal } from "react-dom"
 import { Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
+import type { IconButtonProps } from "@workspace/ui/components/icon-button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -109,23 +111,20 @@ export function PageSettingsButton({
   /** Optional when the button is a Radix trigger (`asChild`), which passes its own handler. */
   onClick?: ComponentProps<typeof Button>["onClick"]
   testId?: string
-} & Omit<ComponentProps<typeof Button>, "onClick" | "children">) {
+} & Omit<IconButtonProps, "label" | "onClick" | "children" | "size">) {
   const { t } = useTranslation("common")
   const isMobile = useIsMobile()
   const label = t("settings.label")
   return isMobile ? (
-    <Button
-      aria-label={label}
+    <IconButton
       className="size-10 rounded-full"
       data-testid={testId}
+      label={label}
       onClick={onClick}
-      size="icon"
-      title={label}
-      variant="ghost"
       {...props}
     >
       <Settings />
-    </Button>
+    </IconButton>
   ) : (
     <Button data-testid={testId} onClick={onClick} variant="outline" {...props}>
       <Settings data-icon="inline-start" />

@@ -590,7 +590,7 @@ describe("DesktopShell", () => {
     expect(screen.getByTestId("desktop-section-navigation")).toBeInTheDocument()
   })
 
-  it("Ctrl+B moves focus to the reopen button when it hides the panel holding focus", () => {
+  it("Ctrl+B moves focus to the reopen button when it hides the panel holding focus", async () => {
     render(
       <MemoryRouter initialEntries={["/library/characters"]}>
         <TooltipProvider>
@@ -614,9 +614,10 @@ describe("DesktopShell", () => {
     fireEvent.keyDown(link, { ctrlKey: true, key: "b" })
 
     expect(screen.getByTestId("desktop-section-toggle")).toHaveFocus()
-    expect(
-      screen.getByTestId("desktop-section-toggle").getAttribute("title")
-    ).toMatch(/(Ctrl\+B|⌘B)\)$/)
+    // Focus shows its tooltip: the label, then the shortcut as a key.
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      /(Ctrl\+B|⌘B)$/
+    )
   })
 
   it("Ctrl+B does nothing on a childless page", () => {

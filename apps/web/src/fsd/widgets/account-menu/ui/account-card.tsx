@@ -16,6 +16,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { SignInMethod } from "@/shared/auth"
+import { TruncatedText } from "@/shared/ui"
 
 import { AccountAvatar } from "./account-avatar"
 import {
@@ -121,16 +122,11 @@ export function AccountCard({
           </div>
         ) : (
           <div className="min-w-0 flex-1 text-left leading-tight">
-            <div className="truncate font-medium" title={accountName}>
-              {accountName}
-            </div>
+            <TruncatedText className="font-medium">{accountName}</TruncatedText>
             {accountEmail ? (
-              <div
-                className="truncate text-xs text-muted-foreground"
-                title={accountEmail}
-              >
+              <TruncatedText className="text-xs text-muted-foreground">
                 {accountEmail}
-              </div>
+              </TruncatedText>
             ) : null}
             <div
               className="truncate text-xs text-muted-foreground"
@@ -177,8 +173,8 @@ export function AccountCard({
           disabled={Boolean(feedbackUnavailable)}
           icon={MessageSquareText}
           label={t("feedback.send")}
+          description={feedbackUnavailable}
           onClick={onFeedback}
-          title={feedbackUnavailable}
         />
         {tourRow}
         <MenuLinkRow
@@ -193,8 +189,8 @@ export function AccountCard({
           disabled={Boolean(feedbackUnavailable)}
           icon={Newspaper}
           label={t("feedback.changelog")}
+          description={feedbackUnavailable}
           onClick={onChangelog}
-          title={feedbackUnavailable}
           trailing={
             changelogUnread ? (
               <UnreadDot data-testid="auth-changelog-unread-indicator" />

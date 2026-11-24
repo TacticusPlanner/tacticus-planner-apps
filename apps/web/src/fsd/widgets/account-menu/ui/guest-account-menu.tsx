@@ -64,8 +64,8 @@ export function GuestPreferencesCard({
             disabled={Boolean(changelogUnavailable)}
             icon={Newspaper}
             label={t("feedback.changelog")}
+            description={changelogUnavailable}
             onClick={onChangelog}
-            title={changelogUnavailable}
           />
         ) : null}
       </MenuSection>

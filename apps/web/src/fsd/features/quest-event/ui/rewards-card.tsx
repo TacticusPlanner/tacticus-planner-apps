@@ -19,6 +19,11 @@ import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { EntityIcon, progressionText } from "@/shared/ui"
 
@@ -81,20 +86,23 @@ function CrateRewards({
                 max: number.format(reward.max),
               })
         return (
-          <li
-            className="inline-flex items-center gap-0.5 text-sm"
-            key={`${reward.type}-${index}`}
-            title={name}
-          >
-            <EntityIcon
-              size="inline"
-              alt=""
-              className="object-contain"
-              src={rewardIcon(reward, alliance)}
-            />
-            <span className="sr-only">{name}</span>
-            <span className="text-muted-foreground tabular-nums">{amount}</span>
-          </li>
+          <Tooltip key={`${reward.type}-${index}`}>
+            <TooltipTrigger asChild>
+              <li className="inline-flex items-center gap-0.5 text-sm">
+                <EntityIcon
+                  size="inline"
+                  alt=""
+                  className="object-contain"
+                  src={rewardIcon(reward, alliance)}
+                />
+                <span className="sr-only">{name}</span>
+                <span className="text-muted-foreground tabular-nums">
+                  {amount}
+                </span>
+              </li>
+            </TooltipTrigger>
+            <TooltipContent>{name}</TooltipContent>
+          </Tooltip>
         )
       })}
     </ul>
@@ -129,26 +137,32 @@ function RewardsLeftStrip({
         {t("rewards.left.title")}
       </p>
       <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold tabular-nums">
-        <li
-          className="inline-flex items-center gap-1"
-          title={t("rewards.left.medals")}
-        >
-          <EntityIcon size="inline" alt="" src={heroStarIcon()} />
-          <span className="sr-only">{t("rewards.left.medals")}</span>
-          <span data-testid="quest-left-medals">
-            {number.format(left.medals)}
-          </span>
-        </li>
-        <li
-          className="inline-flex items-center gap-1"
-          title={t("rewards.left.shards", { hero })}
-        >
-          <EntityIcon size="inline" alt="" src={shardIcon("Regular")} />
-          <span className="sr-only">{t("rewards.left.shards", { hero })}</span>
-          <span data-testid="quest-left-shards">
-            {number.format(left.shards)}
-          </span>
-        </li>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <li className="inline-flex items-center gap-1">
+              <EntityIcon size="inline" alt="" src={heroStarIcon()} />
+              <span className="sr-only">{t("rewards.left.medals")}</span>
+              <span data-testid="quest-left-medals">
+                {number.format(left.medals)}
+              </span>
+            </li>
+          </TooltipTrigger>
+          <TooltipContent>{t("rewards.left.medals")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <li className="inline-flex items-center gap-1">
+              <EntityIcon size="inline" alt="" src={shardIcon("Regular")} />
+              <span className="sr-only">
+                {t("rewards.left.shards", { hero })}
+              </span>
+              <span data-testid="quest-left-shards">
+                {number.format(left.shards)}
+              </span>
+            </li>
+          </TooltipTrigger>
+          <TooltipContent>{t("rewards.left.shards", { hero })}</TooltipContent>
+        </Tooltip>
         <li className="inline-flex items-center gap-1">
           <EntityIcon size="inline" alt="" src={chestIcon("wood")} />
           <span data-testid="quest-left-crates">

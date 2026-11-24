@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import type { LevelRequirementPreview } from "../../model/goal-creation-form/use-level-requirement-preview"
+import { InfoHint } from "../shared/info-hint"
 
 /** The level a Rank/Ability target needs, on that goal's own creation card — required level, current
  * level, the raw XP gap, and (after owned XP books) the books and gold still to apply. Ordinary
@@ -25,13 +26,13 @@ export function LevelRequirementNote({
     <div
       className="grid gap-0.5 rounded-2xl border p-3 text-sm"
       data-testid="create-goal-level-requirement"
-      title={t("goals.create.levelRequirement.note")}
     >
-      <p className="font-medium">
+      <p className="flex items-center gap-1.5 font-medium">
         {t("goals.create.levelRequirement.title", {
           required: preview.requiredLevel,
           current: preview.currentLevel,
         })}
+        <InfoHint text={t("goals.create.levelRequirement.note")} />
       </p>
       <p>
         {t("goals.create.levelRequirement.xpRemaining", {

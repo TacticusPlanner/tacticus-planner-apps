@@ -1,12 +1,15 @@
 import { useId, useState } from "react"
 import type { ReactNode } from "react"
+import { HelpCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
+import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import {
+  FILTER_CHIP_CLASS_NAME,
+  HintedToggleGroupItem,
+  HintLines,
+  HintTrigger,
+} from "@/shared/ui"
 
 import {
   TODAY_QUICK_FILTERS,
@@ -45,9 +48,28 @@ export function TodayQuickFilterChips({
     setSelected(value)
   }
 
+  const shown = TODAY_QUICK_FILTERS.filter((quick) => !hidden.includes(quick))
+  // Hover or focus explains one chip; touch has no hover, so one (?) explains them all.
   const caption = (
-    <span id={labelId} className="text-xs text-muted-foreground">
-      {t("quickFilters.label")}
+    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+      <span id={labelId}>{t("quickFilters.label")}</span>
+      <HintTrigger
+        data-testid="today-quick-filters-help"
+        hint={
+          <HintLines
+            lines={[
+              t("quickFilters.label"),
+              ...shown.map(
+                (quick) =>
+                  `${t(`quickFilters.chip.${quick}`)}: ${t(`quickFilters.help.${quick}`)}`
+              ),
+            ]}
+          />
+        }
+        label={t("quickFilters.helpLabel")}
+      >
+        <HelpCircle aria-hidden className="size-icon-sm" />
+      </HintTrigger>
     </span>
   )
   const group = (
@@ -65,19 +87,17 @@ export function TodayQuickFilterChips({
         onChange(next)
       }}
     >
-      {TODAY_QUICK_FILTERS.filter((quick) => !hidden.includes(quick)).map(
-        (quick) => (
-          <ToggleGroupItem
-            key={quick}
-            value={quick}
-            className={FILTER_CHIP_CLASS_NAME}
-            title={t(`quickFilters.help.${quick}`)}
-            data-testid={`today-quick-filter-${quick}`}
-          >
-            {t(`quickFilters.chip.${quick}`)}
-          </ToggleGroupItem>
-        )
-      )}
+      {shown.map((quick) => (
+        <HintedToggleGroupItem
+          key={quick}
+          value={quick}
+          className={FILTER_CHIP_CLASS_NAME}
+          hint={t(`quickFilters.help.${quick}`)}
+          data-testid={`today-quick-filter-${quick}`}
+        >
+          {t(`quickFilters.chip.${quick}`)}
+        </HintedToggleGroupItem>
+      ))}
     </ToggleGroup>
   )
   const chips = hasNode(extra) ? (

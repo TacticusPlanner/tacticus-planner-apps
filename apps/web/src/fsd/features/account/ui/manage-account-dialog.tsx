@@ -48,6 +48,7 @@ import {
   ResponsiveDialogTitle,
   PageTabsList,
   PageTabsTrigger,
+  TruncatedText,
 } from "@/shared/ui"
 
 import { rememberSignInAccountKept } from "../model/sign-in-account-kept-notice"
@@ -509,13 +510,12 @@ function AccountTab({
             <span className="shrink-0 text-muted-foreground">
               {t("manageAccount.account.email")}
             </span>
-            <span
-              className="min-w-0 truncate"
+            <TruncatedText
+              className="min-w-0"
               data-testid="manage-account-email"
-              title={accountEmail}
             >
               {accountEmail}
-            </span>
+            </TruncatedText>
           </div>
         ) : null}
         <p className="text-sm text-muted-foreground">

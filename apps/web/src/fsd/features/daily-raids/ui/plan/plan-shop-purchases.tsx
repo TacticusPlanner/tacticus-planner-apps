@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { shopIcon } from "@workspace/game-catalog"
@@ -115,18 +120,20 @@ export function PlanShopPurchases({
                   </span>
                 </div>
               </div>
-              <span
-                className="flex shrink-0 items-center gap-1 text-xs tabular-nums"
-                title={currency}
-              >
-                <EntityIcon
-                  size="inline"
-                  alt=""
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="flex shrink-0 items-center gap-1 text-xs tabular-nums">
+                    <EntityIcon
+                      size="inline"
+                      alt=""
 
-                  src={shopCurrencyIcon(purchase.currency)}
-                />
-                {number.format(spend)}
-              </span>
+                      src={shopCurrencyIcon(purchase.currency)}
+                    />
+                    {number.format(spend)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{currency}</TooltipContent>
+              </Tooltip>
             </li>
           )
         })}

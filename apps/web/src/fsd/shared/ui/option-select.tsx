@@ -3,6 +3,11 @@ import type { ReactNode } from "react"
 import { ChevronDown, X } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { selectTriggerClassName } from "@workspace/ui/lib/select-trigger"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -291,14 +296,21 @@ function FittingChips({
         <Chip key={option.value} option={option} />
       ))}
       {hidden.length > 0 ? (
-        <Badge
-          variant="secondary"
-          className="h-6 shrink-0 px-1.5"
-          title={hidden.map((option) => option.label).join(", ")}
-          data-testid="select-more-chip"
-        >
-          +{hidden.length}
-        </Badge>
+        // Hover names the hidden options; a tap keeps opening the list, which shows them all.
+        <Tooltip>
+          <TooltipTrigger asChild disableTouchToggle>
+            <Badge
+              variant="secondary"
+              className="h-6 shrink-0 px-1.5"
+              data-testid="select-more-chip"
+            >
+              +{hidden.length}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            {hidden.map((option) => option.label).join(", ")}
+          </TooltipContent>
+        </Tooltip>
       ) : null}
       <span
         ref={measureRef}

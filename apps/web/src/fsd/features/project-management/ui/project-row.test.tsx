@@ -457,9 +457,9 @@ describe("ProjectRow", () => {
     )
 
     await openActions(user, otherProject.projectId)
-    expect(screen.getByTestId("project-move-goals")).toHaveAttribute(
-      "data-disabled"
-    )
+    const item = screen.getByTestId("project-move-goals")
+    expect(item).toHaveAttribute("data-disabled")
+    expect(item).toHaveTextContent("goals.order.projectMove.alreadyFirst")
   })
 
   it("hides Move goals to top on an archived row", async () => {

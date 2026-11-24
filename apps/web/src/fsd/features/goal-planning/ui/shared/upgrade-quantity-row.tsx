@@ -1,7 +1,7 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { X } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 import { Input } from "@workspace/ui/components/input"
 
 import type { UpgradeId } from "@workspace/game-domain"
@@ -97,17 +97,14 @@ export function UpgradeQuantityRow({
           value={Number.isNaN(quantity) ? "" : quantity}
         />
         {onRemove ? (
-          <Button
-            aria-label={t("goals.create.upgrade.remove")}
-            disabled={!!removeDisabledReason}
+          <IconButton
+            disabledReason={removeDisabledReason}
+            label={t("goals.create.upgrade.remove")}
             onClick={onRemove}
-            size="icon"
-            title={removeDisabledReason}
             type="button"
-            variant="ghost"
           >
             <X />
-          </Button>
+          </IconButton>
         ) : null}
       </div>
       {error ? (

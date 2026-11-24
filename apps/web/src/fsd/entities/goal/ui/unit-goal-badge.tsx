@@ -10,7 +10,7 @@ import { cn } from "@workspace/ui/lib/utils"
  * A small mark beside a unit's name that it has goals, listing each one ("Rank to Gold II") in the
  * tooltip and the accessible name. The caller localizes the lines; renders nothing without goals.
  * Inside another control (a picker tile's button) pass `tooltip={false}`: the badge is then not
- * focusable and its lines are its title.
+ * focusable, and its tooltip opens on hover only (a tap keeps the control's job).
  */
 export function UnitGoalBadge({
   label,
@@ -32,31 +32,33 @@ export function UnitGoalBadge({
     className
   )
   const icon = <Target aria-hidden className="size-icon-xs" />
-  if (!tooltip)
-    return (
-      <span
-        aria-label={name}
-        className={badgeClass}
-        data-testid="unit-goal-badge"
-        role="img"
-        title={name}
-      >
-        {icon}
-      </span>
-    )
-  // A real button so the tooltip is reachable by keyboard.
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          aria-label={name}
-          className={badgeClass}
-          data-testid="unit-goal-badge"
-          type="button"
-        >
-          {icon}
-        </button>
-      </TooltipTrigger>
+      {tooltip ? (
+        // A real button so the tooltip is reachable by keyboard.
+        <TooltipTrigger asChild>
+          <button
+            aria-label={name}
+            className={badgeClass}
+            data-testid="unit-goal-badge"
+            type="button"
+          >
+            {icon}
+          </button>
+        </TooltipTrigger>
+      ) : (
+        // Inside another control: hover only, so a tap keeps that control's job.
+        <TooltipTrigger asChild disableTouchToggle>
+          <span
+            aria-label={name}
+            className={badgeClass}
+            data-testid="unit-goal-badge"
+            role="img"
+          >
+            {icon}
+          </span>
+        </TooltipTrigger>
+      )}
       <TooltipContent>
         <ul className="flex flex-col gap-0.5">
           {lines.map((line) => (

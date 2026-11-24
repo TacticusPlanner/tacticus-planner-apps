@@ -1,7 +1,7 @@
 import { MessageSquareText } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 
 import { useUserJot } from "./userjot-provider"
 
@@ -16,18 +16,16 @@ export function UserJotFeedbackButton() {
 
   return (
     <div className="relative">
-      <Button
-        aria-label={hasUnread ? t("feedback.changelog") : t("feedback.button")}
-        data-testid="userjot-feedback-button"
-        disabled={Boolean(unavailable)}
-        onClick={() => (hasUnread ? open({ to: "updates" }) : open())}
-        title={unavailable}
+      <IconButton
         className="size-10"
-        size="icon"
+        data-testid="userjot-feedback-button"
+        disabledReason={unavailable}
+        label={hasUnread ? t("feedback.changelog") : t("feedback.button")}
+        onClick={() => (hasUnread ? open({ to: "updates" }) : open())}
         variant="outline"
       >
         <MessageSquareText />
-      </Button>
+      </IconButton>
       {hasUnread ? (
         <span
           aria-hidden="true"

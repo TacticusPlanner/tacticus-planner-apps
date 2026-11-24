@@ -313,7 +313,7 @@ describe("nav live indicator accessibility", () => {
 
     expect(badge).toHaveTextContent("nav.live")
     expect(badge).toHaveAttribute("aria-hidden", "true")
-    expect(badge).toHaveAttribute("title", TEXT)
+    expect(within(tab).getByText(TEXT)).toHaveClass("sr-only")
     expect(badge).toHaveClass("bg-success", "text-success-foreground")
     expect(within(tab).getByTestId("nav-live-dot")).toHaveClass(
       "bg-success-foreground"
@@ -321,12 +321,12 @@ describe("nav live indicator accessibility", () => {
     expect(tab.innerHTML).not.toContain("red-")
   })
 
-  it("gives the icon-corner dot a tooltip instead of a badge", () => {
+  it("gives the icon-corner dot a screen-reader label instead of a badge", () => {
     hseState.current = ready(hunt)
     shell(<NavLiveDot corner item={{ liveIndicator: "hse" }} />)
     const dot = screen.getByTestId("nav-live-dot")
 
-    expect(dot).toHaveAttribute("title", TEXT)
+    expect(screen.getByText(TEXT)).toHaveClass("sr-only")
     expect(dot).toHaveClass("absolute", "bg-success-foreground")
     expect(screen.queryByTestId("nav-live-badge")).toBeNull()
   })

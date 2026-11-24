@@ -12,6 +12,11 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 import { eventIcon } from "@workspace/game-catalog"
 
@@ -240,9 +245,9 @@ function PhaseList({ phases }: { phases: EventPhase[] }) {
   )
 }
 
-/** War windows drawn as darker blocks across the bar, placed by time within the bar's day window. */
+/** War windows drawn as darker blocks across the bar, placed by time within the bar's day window.
+ *  The bar's details popover lists them by name. */
 function PhaseOverlay({ entry }: { entry: PositionedEventEntry }) {
-  const { t } = useTranslation("events")
   const windowMs = entry.barEndMs - entry.barStartMs
   if (windowMs <= 0) return null
 
@@ -260,7 +265,6 @@ function PhaseOverlay({ entry }: { entry: PositionedEventEntry }) {
               className="absolute inset-y-0 -z-10 bg-(--event-family-guild)/35"
               data-testid="event-war-phase"
               key={phase.startUtc}
-              title={t("details.phases.row", { war: phase.war })}
               style={{
                 left: `${((startMs - entry.barStartMs) / windowMs) * 100}%`,
                 width: `${((endMs - startMs) / windowMs) * 100}%`,
@@ -290,46 +294,51 @@ export function EventBar({
   const showIconOnly = iconOnly && !isBreak
 
   return (
-    <EventDetailsPopover entry={entry}>
-      <button
-        className={cn(
-          "isolate flex size-full min-w-0 items-center gap-1.5 overflow-hidden rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
-          showIconOnly && "justify-center px-0",
-          isBreak && "justify-center pl-1 text-muted-foreground",
-          entrySurfaceClass(entry)
-        )}
-        data-active={entry.isActiveNow}
-        data-confirmed={entry.confirmed}
-        data-testid="event-entry-card"
-        title={displayName}
-        type="button"
-      >
-        {entry.phases.length > 0 ? <PhaseOverlay entry={entry} /> : null}
-        <EventIcon
-          size={isBreak || compact ? "inline" : "row"}
-          className="shrink-0"
-          definitionId={entry.definitionId}
-          definitionType={entry.definitionType}
-          parameters={entry.parameters}
-        />
-        {isBreak ? (
-          <>
-            <span aria-hidden="true" className="truncate">
-              {t("badges.break")}
-            </span>
-            <span className="sr-only">{displayName}</span>
-          </>
-        ) : (
-          <>
-            <span className={showIconOnly ? "sr-only" : "min-w-0 truncate"}>
-              {displayName}
-            </span>
-            {showIconOnly ? null : <SubjectIcons entry={entry} />}
-          </>
-        )}
-        <EntryStateText entry={entry} />
-      </button>
-    </EventDetailsPopover>
+    // Hover names a cut-off or icon-only bar; a tap or click opens its details.
+    <Tooltip>
+      <EventDetailsPopover entry={entry}>
+        <TooltipTrigger asChild disableTouchToggle>
+          <button
+            className={cn(
+              "isolate flex size-full min-w-0 items-center gap-1.5 overflow-hidden rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
+              showIconOnly && "justify-center px-0",
+              isBreak && "justify-center pl-1 text-muted-foreground",
+              entrySurfaceClass(entry)
+            )}
+            data-active={entry.isActiveNow}
+            data-confirmed={entry.confirmed}
+            data-testid="event-entry-card"
+            type="button"
+          >
+            {entry.phases.length > 0 ? <PhaseOverlay entry={entry} /> : null}
+            <EventIcon
+              size={isBreak || compact ? "inline" : "row"}
+              className="shrink-0"
+              definitionId={entry.definitionId}
+              definitionType={entry.definitionType}
+              parameters={entry.parameters}
+            />
+            {isBreak ? (
+              <>
+                <span aria-hidden="true" className="truncate">
+                  {t("badges.break")}
+                </span>
+                <span className="sr-only">{displayName}</span>
+              </>
+            ) : (
+              <>
+                <span className={showIconOnly ? "sr-only" : "min-w-0 truncate"}>
+                  {displayName}
+                </span>
+                {showIconOnly ? null : <SubjectIcons entry={entry} />}
+              </>
+            )}
+            <EntryStateText entry={entry} />
+          </button>
+        </TooltipTrigger>
+      </EventDetailsPopover>
+      <TooltipContent>{displayName}</TooltipContent>
+    </Tooltip>
   )
 }
 

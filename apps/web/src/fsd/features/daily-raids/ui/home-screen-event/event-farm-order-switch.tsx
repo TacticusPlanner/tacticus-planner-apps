@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
+import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 
-import { FILTER_CHIP_CLASS_NAME, SegmentedControl } from "@/shared/ui"
+import {
+  FILTER_CHIP_CLASS_NAME,
+  HintedToggleGroupItem,
+  SegmentedControl,
+} from "@/shared/ui"
 
 import type { EventFarmOrder } from "../../model/home-screen-event-farm"
 
@@ -30,7 +31,7 @@ export function HseSortControl({
       options={ORDERS.map((order) => ({
         value: order,
         label: t(`hse.raids.order.${order}`),
-        title: t(`hse.raids.order.help.${order}`),
+        hint: t(`hse.raids.order.help.${order}`),
         testId: `hse-raids-order-${order}`,
       }))}
       testId="hse-raids-order"
@@ -61,14 +62,14 @@ export function HseIgnoreGoalsChip({
       value={view.ignoreGoals ? [IGNORE_GOALS] : []}
       variant="outline"
     >
-      <ToggleGroupItem
+      <HintedToggleGroupItem
         className={FILTER_CHIP_CLASS_NAME}
         data-testid="hse-raids-ignore-goals"
-        title={t("hse.raids.order.help.ignoreGoals")}
+        hint={t("hse.raids.order.help.ignoreGoals")}
         value={IGNORE_GOALS}
       >
         {t("hse.raids.order.ignoreGoals")}
-      </ToggleGroupItem>
+      </HintedToggleGroupItem>
     </ToggleGroup>
   )
 }

@@ -545,12 +545,13 @@ describe("GoalEditDialog", () => {
       const reachedNote =
         "An already-reached target is fine: it needs nothing more, and the goal keeps its status until you complete it."
       expect(screen.queryByText(priorityHint)).toBeNull()
-      expect(screen.getByTitle(priorityHint)).toHaveAttribute(
-        "aria-label",
-        priorityHint
-      )
+      expect(
+        screen.getByRole("button", { name: priorityHint })
+      ).toBeInTheDocument()
       expect(screen.queryByText(reachedNote)).toBeNull()
-      expect(screen.getByTitle(reachedNote)).toBeInTheDocument()
+      expect(
+        screen.getByRole("button", { name: reachedNote })
+      ).toBeInTheDocument()
     })
 
     it("renders the same form in the bottom sheet below 768px", async () => {
@@ -871,7 +872,7 @@ describe("GoalEditDialog", () => {
           within(
             screen.getByTestId("create-goal-upgrade-target-upgHpC014")
           ).getByRole("button", { name: "Remove" })
-        ).toBeDisabled()
+        ).toHaveAttribute("aria-disabled", "true")
         fireEvent.click(screen.getByTestId("goal-edit-save"))
 
         await vi.waitFor(() => expect(editGoal).toHaveBeenCalled())
@@ -1261,12 +1262,14 @@ describe("GoalEditDialog", () => {
 
       fireEvent.click(screen.getByTestId("goal-edit-priority-select"))
       const listbox = await screen.findByRole("listbox")
-      expect(
-        within(listbox).getByTestId("priority-option-occupant-2")
-      ).toHaveAttribute("title", "Entity unit-b · Ascension")
-      expect(
-        within(listbox).getByTestId("priority-option-occupant-2")
-      ).toContainElement(within(listbox).getByAltText("Ascension"))
+      const occupant = within(listbox).getByTestId("priority-option-occupant-2")
+      expect(occupant).toContainElement(
+        within(listbox).getByAltText("Ascension")
+      )
+      fireEvent.pointerMove(occupant, { pointerType: "mouse" })
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(
+        "Entity unit-b · Ascension"
+      )
     })
 
     it("moves C down to position 5", async () => {
