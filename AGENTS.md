@@ -203,3 +203,9 @@ releases, fix defects on `main` first and backport the squash commit through a
 pull request into the release branch (`release/X.Y` or `release/X.Y.Z`), then
 run the Release workflow's `hotfix` bump from it. See `RELEASING.md` for the
 complete release, patch and hotfix process.
+
+For stacked pull requests (one based on another's branch), once the lower pull
+request is squash-merged, rebase the upper branch's own commits onto `main`
+(`git rebase --onto origin/main <old base head>`) and force-push with lease.
+Don't merge `main` into it: that drags the squash commit and merge commits into
+its history.
