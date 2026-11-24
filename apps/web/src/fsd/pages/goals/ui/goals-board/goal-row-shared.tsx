@@ -123,23 +123,26 @@ export function EstimateCell({
       </span>
     )
   }
+  // Each part keeps to one line; on a narrow card the duration wraps under the date as a whole.
   return (
     <span
-      className="flex items-center gap-1 text-sm text-muted-foreground"
+      className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-sm text-muted-foreground"
       data-testid="goal-row-estimate"
     >
-      {dateFace(
-        <>
-          <Calendar className="size-3.5 shrink-0" />
-          <span className="font-medium text-foreground">{formattedDate}</span>
-        </>
-      )}{" "}
-      · {days}
+      <span className="inline-flex items-center gap-1 whitespace-nowrap">
+        {dateFace(
+          <>
+            <Calendar className="size-3.5 shrink-0" />
+            <span className="font-medium text-foreground">{formattedDate}</span>
+          </>
+        )}{" "}
+        · {days}
+      </span>
       {goalRaidDuration(estimate) === undefined ? null : (
-        <>
+        <span className="inline-flex items-center gap-1 whitespace-nowrap">
           {" · "}
           <GoalDuration estimate={estimate} icon />
-        </>
+        </span>
       )}
     </span>
   )

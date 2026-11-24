@@ -73,7 +73,7 @@ export function GoalsSelectBar({
   if (placement === "bottom") {
     return (
       <FloatingBar
-        className="sticky bottom-3 flex flex-wrap items-center gap-3 p-2 pl-4"
+        className="sticky bottom-[calc(var(--mobile-nav-height)+0.75rem)] flex flex-wrap items-center gap-3 p-2 pl-4"
         data-testid="goals-select-bar"
       >
         {countText}

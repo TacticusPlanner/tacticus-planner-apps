@@ -20,7 +20,7 @@ export function MobileReorderBar({
   const { t } = useTranslation()
   return (
     <FloatingBar
-      className="sticky bottom-3 flex items-center justify-between gap-3 p-2 pl-4"
+      className="sticky bottom-[calc(var(--mobile-nav-height)+0.75rem)] flex items-center justify-between gap-3 p-2 pl-4"
       data-testid="mobile-reorder-bar"
     >
       <p
