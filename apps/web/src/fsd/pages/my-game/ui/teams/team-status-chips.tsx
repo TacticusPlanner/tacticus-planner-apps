@@ -28,7 +28,14 @@ function StatusChip({ item }: { item: TeamStatusItem }) {
   )
 }
 
-/** A team's chips: in a row on a card, stacked in a table cell. */
+const SEVERITY: Record<TeamStatusItem["kind"], number> = {
+  error: 0,
+  warn: 1,
+  cap: 2,
+}
+
+/** A team's chips: in a row on a card. In a table cell (`stacked`) on two lines, as the Goals table
+ *  does: the most serious chip alone on the first, the rest side by side on the second. */
 export function TeamStatusChips({
   items,
   stacked = false,
@@ -39,13 +46,29 @@ export function TeamStatusChips({
   className?: string
 }) {
   if (items.length === 0) return null
+  if (stacked) {
+    const [first, ...rest] = items.toSorted(
+      (a, b) => SEVERITY[a.kind] - SEVERITY[b.kind]
+    )
+    return (
+      <div
+        className={cn("grid justify-items-start gap-1", className)}
+        data-testid="team-status"
+      >
+        {first ? <StatusChip item={first} /> : null}
+        {rest.length > 0 ? (
+          <div className="flex max-w-full flex-wrap gap-1">
+            {rest.map((item) => (
+              <StatusChip item={item} key={item.key} />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    )
+  }
   return (
     <div
-      className={cn(
-        "flex gap-1",
-        stacked ? "flex-col items-start" : "flex-wrap",
-        className
-      )}
+      className={cn("flex flex-wrap gap-1", className)}
       data-testid="team-status"
     >
       {items.map((item) => (

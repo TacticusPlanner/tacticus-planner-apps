@@ -80,7 +80,7 @@ export function TeamsTable({
             <th className="w-32 p-2 font-medium" scope="col">
               {t("table.mow")}
             </th>
-            <th className="w-56 p-2 font-medium" scope="col">
+            <th className="w-44 p-2 font-medium" scope="col">
               {t("table.status")}
             </th>
             <th className="w-24 p-2" scope="col">
