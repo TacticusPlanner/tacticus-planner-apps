@@ -611,7 +611,7 @@ export function SlotGrid({
         </h3>
         {tiered ? (
           <HintTrigger
-            className="size-6 justify-center text-muted-foreground"
+            className="size-6 justify-center text-muted-foreground pointer-coarse:size-12"
             data-testid="event-shop-tier-rule"
             hint={t("slot.tierRule")}
             label={t("slot.tierRuleLabel")}

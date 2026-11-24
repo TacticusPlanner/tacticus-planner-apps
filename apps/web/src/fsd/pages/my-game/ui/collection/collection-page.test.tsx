@@ -1717,6 +1717,36 @@ describe("CollectionPage select mode", () => {
     expect(
       screen.queryByTestId("collection-select-unit")
     ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("collection-select-toggle"))
+    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    expect(
+      screen.getByRole("button", { name: "Select Titus" })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "1 selected"
+    )
+    expect(screen.queryByTestId("unit-page")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId("collection-select-done"))
+    expect(
+      screen.queryByTestId("collection-select-bar")
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId("collection-select-unit")
+    ).not.toBeInTheDocument()
+  })
+
+  it("keeps the bar while a Roster pick stays selected after leaving the Roster", () => {
+    msal.authenticated = true
+    ready(synced)
+    renderPage(1280, "/my-game/collection?view=roster")
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Titus" }))
+    fireEvent.click(screen.getByRole("radio", { name: "Cards" }))
+    expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
+      "1 selected"
+    )
   })
 
   it("ends select mode when Compare is turned on", () => {

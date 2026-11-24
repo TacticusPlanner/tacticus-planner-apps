@@ -320,9 +320,8 @@ export function CollectionPage() {
       ) : (
         <NoMatches onClear={clear} />
       )}
-      {(selection.active ||
-        (rosterSelectable && selection.selected.size > 0)) &&
-      !comparing ? (
+      {/* A pick survives a switch away from the Roster, so the bar stays while anything is picked. */}
+      {(selection.active || selection.selected.size > 0) && !comparing ? (
         <CollectionSelectBar
           count={selection.selected.size}
           onSelectAll={() =>
