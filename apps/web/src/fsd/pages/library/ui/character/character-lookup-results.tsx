@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   Accordion,
@@ -46,6 +46,9 @@ export function CharacterLookupResults({
   // Set by clicking a "top upgrade by rarity" insight chip; briefly highlights the matching row/
   // card in the Base Upgrades section below after scrolling to it.
   const [highlightedId, setHighlightedId] = useState<string | null>(null)
+  const highlightTimeoutRef = useRef<number | undefined>(undefined)
+  // Drop a pending highlight reset on unmount so it never fires against a torn-down tree.
+  useEffect(() => () => window.clearTimeout(highlightTimeoutRef.current), [])
 
   if (baseUpgrades.length === 0) {
     return (
@@ -72,8 +75,9 @@ export function CharacterLookupResults({
       .getElementById(`base-upgrade-${id}`)
       ?.scrollIntoView({ behavior: "smooth", block: "center" })
     setHighlightedId(id)
-    window.setTimeout(
-      () => setHighlightedId((current) => (current === id ? null : current)),
+    window.clearTimeout(highlightTimeoutRef.current)
+    highlightTimeoutRef.current = window.setTimeout(
+      () => setHighlightedId(null),
       1500
     )
   }
