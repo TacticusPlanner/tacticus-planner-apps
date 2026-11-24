@@ -41,6 +41,7 @@ import { SelectedChip } from "./team-picker-selected-chip"
 import { TeamPickerSort } from "./team-picker-sort"
 import { TeamPickerTileMarkers } from "./team-picker-tile-markers"
 import { TeamPickerUnitState } from "./team-picker-unit-state"
+import { ListDivider } from "@/shared/ui"
 
 /**
  * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, an owned
@@ -312,18 +313,10 @@ export function TeamUnitPicker({
               <Fragment key={id}>
                 {at === dividerAt ? (
                   <li
-                    className="col-span-full flex items-center gap-2 py-1 text-xs text-muted-foreground"
+                    className="col-span-full"
                     data-testid="team-picker-not-matching-divider"
                   >
-                    <span
-                      aria-hidden="true"
-                      className="h-px flex-1 bg-border"
-                    />
-                    {t("teams.picker.notMatchingDivider")}
-                    <span
-                      aria-hidden="true"
-                      className="h-px flex-1 bg-border"
-                    />
+                    <ListDivider label={t("teams.picker.notMatchingDivider")} />
                   </li>
                 ) : null}
                 <li

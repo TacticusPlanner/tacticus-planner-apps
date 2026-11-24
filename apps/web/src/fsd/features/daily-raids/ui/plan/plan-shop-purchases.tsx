@@ -5,7 +5,7 @@ import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { shopIcon } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 
-import { EntityIcon, UpgradeIcon } from "@/shared/ui"
+import { EntityIcon, ListDivider, UpgradeIcon } from "@/shared/ui"
 import type { PlanShopPurchase } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
 
@@ -34,14 +34,11 @@ export function PlanShopPurchases({
 
   return (
     <>
-      <div
-        className="flex items-center gap-3 text-xs font-medium text-muted-foreground"
+      <ListDivider
         data-testid={`plan-day-${day}-shops-divider`}
-      >
-        <span aria-hidden="true" className="h-px flex-1 bg-border" />
-        <h3>{t("dailies:plan.shops")}</h3>
-        <span aria-hidden="true" className="h-px flex-1 bg-border" />
-      </div>
+        heading="h3"
+        label={t("dailies:plan.shops")}
+      />
       <ul className="space-y-1.5" data-testid={`plan-day-${day}-shops`}>
         {purchases.map((purchase) => {
           const dimmed =

@@ -5,7 +5,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { DailyRaidsReadyViewModel } from "../../model/daily-raids.domain"
 import type { RaidDaySchedule } from "@/entities/goal-farming"
-import { energyIconUrl, EntityIcon } from "@/shared/ui"
+import { energyIconUrl, EntityIcon, ListDivider } from "@/shared/ui"
 import type { PlanCell, PlanDayCells } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
 import { PlanMaterialCell } from "./plan-material-cell"
@@ -133,14 +133,11 @@ export function PlanDayCard({
             : null}
           {cells.raided.length > 0 ? (
             <>
-              <div
-                className="flex items-center gap-3 text-xs font-medium text-muted-foreground"
+              <ListDivider
                 data-testid={`plan-day-${day.day}-raided-divider`}
-              >
-                <span aria-hidden="true" className="h-px flex-1 bg-border" />
-                <h3>{t("plan.raided")}</h3>
-                <span aria-hidden="true" className="h-px flex-1 bg-border" />
-              </div>
+                heading="h3"
+                label={t("plan.raided")}
+              />
               {renderCells(cells.raided, `plan-day-${day.day}-raided`)}
             </>
           ) : null}

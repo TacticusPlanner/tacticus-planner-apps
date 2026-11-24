@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { onslaughtTokenIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, ListDivider } from "@/shared/ui"
 import type { PlanOnslaughtRun } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
 
@@ -25,14 +25,11 @@ export function PlanOnslaughtRuns({
 
   return (
     <>
-      <div
-        className="flex items-center gap-3 text-xs font-medium text-muted-foreground"
+      <ListDivider
         data-testid={`plan-day-${day}-onslaught-divider`}
-      >
-        <span aria-hidden="true" className="h-px flex-1 bg-border" />
-        <h3>{t("plan.onslaught")}</h3>
-        <span aria-hidden="true" className="h-px flex-1 bg-border" />
-      </div>
+        heading="h3"
+        label={t("plan.onslaught")}
+      />
       <OnslaughtRunList
         rowTestId={(unitId) => `plan-onslaught-${day}-${unitId}`}
         runs={runs}

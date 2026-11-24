@@ -7,7 +7,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { TeamUnitPortrait } from "@/entities/team"
 import type { TeamRoster, TeamUnitView } from "@/entities/team"
-import { SortableList } from "@/shared/ui"
+import { ListDivider, SortableList } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -216,7 +216,7 @@ export function TeamEditorLineup({
         "flex items-center justify-center text-center",
         count === 0
           ? "my-1 min-h-14 flex-col gap-0.5 rounded-lg border-2 border-dashed border-muted-foreground/50 bg-muted/30 p-2"
-          : "gap-3 pt-2 pb-1"
+          : "block"
       )}
       data-testid="team-lineup-flex-divider"
       key={FLEX_DIVIDER}
@@ -232,11 +232,7 @@ export function TeamEditorLineup({
         </>
       ) : (
         // A labelled rule: core above it, flex below.
-        <>
-          <span aria-hidden="true" className="h-px flex-1 bg-border" />
-          <h5 className="text-sm font-semibold">{t("lineup.flex")}</h5>
-          <span aria-hidden="true" className="h-px flex-1 bg-border" />
-        </>
+        <ListDivider heading="h5" label={t("lineup.flex")} />
       )}
     </li>
   )
