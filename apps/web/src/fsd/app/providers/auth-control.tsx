@@ -294,7 +294,7 @@ export function AuthControl() {
           >
             <AccountAvatar
               applicationAccountId={applicationAccountId}
-              className="size-6 shrink-0 text-xs"
+              className="size-8 shrink-0 text-xs"
               displayName={accountName}
               pending={identityPending}
             />

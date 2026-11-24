@@ -47,7 +47,7 @@ export function DesktopSectionNavigation({
     <div
       aria-hidden={!expanded}
       className={cn(
-        "sticky top-12 h-[calc(100svh-3rem)] shrink-0 self-start overflow-hidden transition-[width,visibility] duration-200 ease-linear motion-reduce:transition-none",
+        "sticky top-(--desktop-top-bar-height) h-[calc(100svh-var(--desktop-top-bar-height))] shrink-0 self-start overflow-hidden transition-[width,visibility] duration-200 ease-linear motion-reduce:transition-none",
         expanded ? "w-52" : "invisible w-0"
       )}
       data-testid="desktop-section-column"

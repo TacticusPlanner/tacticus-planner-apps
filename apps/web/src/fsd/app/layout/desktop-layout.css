@@ -1,0 +1,6 @@
+/* Desktop top bar height: the bar itself, and the sticky offsets of the sidebar and the section
+   menu under it, all read this one variable. 3.5rem matches the icon rail's width, so the 40px
+   logo sits centred over the rail icons (ui-style-guide, app shell). */
+:root {
+  --desktop-top-bar-height: 3.5rem;
+}

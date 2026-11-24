@@ -22,6 +22,7 @@ export function UserJotFeedbackButton() {
         disabled={Boolean(unavailable)}
         onClick={() => (hasUnread ? open({ to: "updates" }) : open())}
         title={unavailable}
+        className="size-10"
         size="icon"
         variant="outline"
       >
