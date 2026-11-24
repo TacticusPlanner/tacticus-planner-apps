@@ -6,7 +6,6 @@ import {
   ArrowUp,
   Check,
   ChevronRight,
-  GripVertical,
   MoreHorizontal,
   Pencil,
   Trash2,
@@ -39,6 +38,7 @@ import {
 } from "@/features/legendary-event-plan"
 import type { DepthEstimateContext } from "@/features/legendary-event-plan"
 import { useDebouncedCommit } from "@/shared/lib"
+import { DragGrip, SORTABLE_ITEM_GROUP } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
@@ -125,9 +125,11 @@ export function TeamCard({
   return (
     <li
       className={cn(
+        SORTABLE_ITEM_GROUP,
         "@container/card flex min-w-0 scroll-mt-[calc(var(--mobile-header-height)+6.25rem)] flex-col gap-3 rounded-xl border bg-card p-3 md:scroll-mt-4",
         sortable?.isDragging && "relative z-10 shadow-lg"
       )}
+      data-dragging={sortable?.isDragging || undefined}
       data-team={card.id}
       data-testid="legendary-event-team-card"
       ref={sortable?.setNodeRef}
@@ -138,8 +140,10 @@ export function TeamCard({
           gives them a line of their own under the name rather than squeezing the name out. */}
       <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
         {sortable ? (
-          <DragHandle
-            handle={sortable.dragHandle}
+          <DragGrip
+            className="-ml-1"
+            data-testid="team-card-drag-handle"
+            dragHandle={sortable.dragHandle}
             label={t("teams.dragHandle", { name: card.name })}
           />
         ) : null}
@@ -554,29 +558,6 @@ function TeamDepthBar({
         ))}
       </span>
     </div>
-  )
-}
-
-function DragHandle({
-  handle,
-  label,
-}: {
-  handle: SortableRenderProps["dragHandle"]
-  label: string
-}) {
-  const { ref, attributes, listeners } = handle
-  return (
-    <button
-      {...attributes}
-      {...listeners}
-      aria-label={label}
-      className="-ml-1 cursor-grab touch-none rounded-sm p-0.5 text-muted-foreground"
-      data-testid="team-card-drag-handle"
-      ref={ref}
-      type="button"
-    >
-      <GripVertical className="size-4" />
-    </button>
   )
 }
 

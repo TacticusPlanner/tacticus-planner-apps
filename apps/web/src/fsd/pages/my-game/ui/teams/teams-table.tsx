@@ -3,7 +3,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { TEAM_LIMITS, useTeamModeLabel } from "@/entities/team"
 import type { Team, TeamMode, TeamRoster } from "@/entities/team"
-import { SortableList } from "@/shared/ui"
+import { SORTABLE_ITEM_GROUP, SortableList } from "@/shared/ui"
 
 import { teamLineup } from "../../model/teams-view"
 import { TeamActionButtons } from "./team-actions"
@@ -117,6 +117,7 @@ export function TeamsTable({
               return (
                 <tr
                   className={cn(
+                    SORTABLE_ITEM_GROUP,
                     "border-b bg-card align-middle last:border-b-0 data-dragging:relative data-dragging:z-10 data-dragging:shadow-lg",
                     team.issues.length > 0 && "bg-destructive/14"
                   )}

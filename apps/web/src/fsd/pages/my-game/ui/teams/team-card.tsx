@@ -1,6 +1,5 @@
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
-import { GripVertical } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -10,6 +9,7 @@ import {
   useTeamModeLabel,
 } from "@/entities/team"
 import type { Team, TeamMode, TeamRoster } from "@/entities/team"
+import { DragGrip } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -66,36 +66,9 @@ export function TeamUnitGroup({
   )
 }
 
-/** A team's drag grip: 32px with a mouse, 48px on touch. */
-function TeamGrip({
-  dragHandle,
-  label,
-  disabled,
-}: {
-  dragHandle: SortableRenderProps["dragHandle"]
-  label: string
-  disabled: boolean
-}) {
-  const { ref, attributes, listeners } = dragHandle
-  return (
-    <button
-      {...attributes}
-      {...listeners}
-      aria-label={label}
-      className="grid size-8 shrink-0 cursor-grab touch-none place-items-center rounded-md text-muted-foreground outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring active:cursor-grabbing disabled:cursor-not-allowed pointer-coarse:size-12"
-      data-testid="team-card-drag"
-      disabled={disabled}
-      ref={ref}
-      type="button"
-    >
-      <GripVertical className="size-4" />
-    </button>
-  )
-}
-
 /**
- * A team's place in the order, as on the Goals board: its position number and, when the list can
- * be reordered, a drag grip (32px with a mouse, 48px on touch).
+ * A team's place in the order, as on the Goals board: when the list can be reordered the shared drag
+ * grip (shown on hover or keyboard focus, always on touch), then its position number.
  */
 export function TeamOrderHandle({
   team,
@@ -109,6 +82,14 @@ export function TeamOrderHandle({
   const { t } = useTranslation("teams")
   return (
     <span className="relative z-10 flex shrink-0 items-center">
+      {dragHandle ? (
+        <DragGrip
+          data-testid="team-card-drag"
+          disabled={disabled}
+          dragHandle={dragHandle}
+          label={t("card.drag", { name: team.name })}
+        />
+      ) : null}
       <span
         className="min-w-5 text-center text-xs font-semibold tabular-nums"
         data-testid="team-position"
@@ -116,13 +97,6 @@ export function TeamOrderHandle({
         <span className="sr-only">{t("card.positionLabel")} </span>
         {team.position}
       </span>
-      {dragHandle ? (
-        <TeamGrip
-          disabled={disabled}
-          dragHandle={dragHandle}
-          label={t("card.drag", { name: team.name })}
-        />
-      ) : null}
     </span>
   )
 }

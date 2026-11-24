@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { GripVertical, Lock, X } from "lucide-react"
+import { Lock, X } from "lucide-react"
 import type { Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -7,7 +7,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { TeamUnitPortrait } from "@/entities/team"
 import type { TeamRoster, TeamUnitView } from "@/entities/team"
-import { ListDivider, SortableList } from "@/shared/ui"
+import { DragGrip, ListDivider, SortableList } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -104,16 +104,12 @@ export function TeamEditorLineup({
         ref={sortable.setNodeRef}
         style={sortable.style}
       >
-        <button
-          {...sortable.dragHandle.attributes}
-          {...sortable.dragHandle.listeners}
-          aria-label={t("lineup.drag", { name })}
-          className="grid size-8 shrink-0 cursor-grab touch-none place-items-center rounded-md text-muted-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring active:cursor-grabbing pointer-coarse:size-12"
-          ref={sortable.dragHandle.ref}
-          type="button"
-        >
-          <GripVertical className="size-4" />
-        </button>
+        {/* Dragging is how a lineup is arranged (core vs flex), so its grip always shows. */}
+        <DragGrip
+          dragHandle={sortable.dragHandle}
+          label={t("lineup.drag", { name })}
+          reveal="always"
+        />
         <TeamUnitPortrait unit={cappedView(kind, unitId, roster, rarityCap)} />
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-sm font-medium" title={name}>
