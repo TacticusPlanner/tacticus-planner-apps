@@ -76,10 +76,14 @@ export function GoalsCards({
     return (
       <Fragment key={row.goalId}>
         {seasonFit && seasonCutoffGoalId === row.goalId ? (
-          <SeasonCutoffItem seasonFit={seasonFit} />
+          <SeasonCutoffItem goalId={row.goalId} seasonFit={seasonFit} />
         ) : null}
         {seasonFit && eventEndCutoffGoalId === row.goalId ? (
-          <SeasonCutoffItem edge="end" seasonFit={seasonFit} />
+          <SeasonCutoffItem
+            edge="end"
+            goalId={row.goalId}
+            seasonFit={seasonFit}
+          />
         ) : null}
         <li
           className={cn(

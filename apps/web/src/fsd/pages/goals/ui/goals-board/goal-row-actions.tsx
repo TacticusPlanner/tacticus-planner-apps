@@ -1,6 +1,20 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { MoreHorizontal } from "lucide-react"
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpToLine,
+  FolderInput,
+  FolderMinus,
+  FolderPlus,
+  ListOrdered,
+  MoreHorizontal,
+  Pause,
+  Pencil,
+  Play,
+  Trash2,
+} from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import {
   DropdownMenu,
@@ -32,6 +46,13 @@ const MOVE_LABEL_KEYS = {
   up: "goals.actions.moveUp",
   down: "goals.actions.moveDown",
 } as const satisfies Record<MoveDirection, string>
+
+/** Every item carries an icon, the same one the select bar uses for the same action. */
+const MOVE_ICONS: Record<MoveDirection, LucideIcon> = {
+  top: ArrowUpToLine,
+  up: ArrowUp,
+  down: ArrowDown,
+}
 
 type Props = {
   row: GoalRow
@@ -124,6 +145,7 @@ export function GoalRowActions({
             disabled={pending}
             onSelect={() => onEdit(goalId)}
           >
+            <Pencil />
             {t("goals.actions.edit")}
           </DropdownMenuItem>
           {/* Memberships are known once the goal and project lists have loaded. */}
@@ -132,19 +154,25 @@ export function GoalRowActions({
             disabled={pending || row.projects === undefined}
             onSelect={() => setProjectsOpen(true)}
           >
+            <FolderPlus />
             {t("goals.project.addToAnother")}
           </DropdownMenuItem>
           {hasMoves ? <DropdownMenuSeparator /> : null}
-          {moveItems.map(([direction, displacedGoalId]) => (
-            <DropdownMenuItem
-              key={direction}
-              onSelect={() => onMove?.(displacedGoalId)}
-            >
-              {t(MOVE_LABEL_KEYS[direction])}
-            </DropdownMenuItem>
-          ))}
+          {moveItems.map(([direction, displacedGoalId]) => {
+            const Icon = MOVE_ICONS[direction]
+            return (
+              <DropdownMenuItem
+                key={direction}
+                onSelect={() => onMove?.(displacedGoalId)}
+              >
+                <Icon />
+                {t(MOVE_LABEL_KEYS[direction])}
+              </DropdownMenuItem>
+            )
+          })}
           {priorityOrder ? (
             <DropdownMenuItem onSelect={() => setPriorityOpen(true)}>
+              <ListOrdered />
               {t("goals.actions.moveToPriority")}
             </DropdownMenuItem>
           ) : null}
@@ -158,6 +186,7 @@ export function GoalRowActions({
               disabled={pending}
               onSelect={() => setStatus("Paused")}
             >
+              <Pause />
               {t("goals.actions.pause")}
             </DropdownMenuItem>
           ) : null}
@@ -167,6 +196,7 @@ export function GoalRowActions({
               disabled={pending}
               onSelect={() => setStatus("Active")}
             >
+              <Play />
               {t("goals.actions.resume")}
             </DropdownMenuItem>
           ) : null}
@@ -177,9 +207,9 @@ export function GoalRowActions({
               disabled={pending || !canRemoveFromProject(projectRemoval, row)}
               onSelect={() => projectRemoval.request([row])}
             >
-              {removalMovesRow(projectRemoval, row)
-                ? t("goals.project.moveToProject")
-                : t("goals.project.removeFromProject")}
+              <RemovalItemContent
+                moves={removalMovesRow(projectRemoval, row)}
+              />
             </DropdownMenuItem>
           ) : null}
           <DropdownMenuSeparator />
@@ -192,6 +222,7 @@ export function GoalRowActions({
               reached ? void actions.remove(goalId) : setConfirmOpen(true)
             }
           >
+            <Trash2 />
             {t("goals.actions.delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -231,6 +262,22 @@ export function GoalRowActions({
         pending={pending}
         projectName={projectRemoval?.project.name}
       />
+    </>
+  )
+}
+
+/** "Move to project" when removing re-homes the goal, otherwise "Remove from project". */
+function RemovalItemContent({ moves }: { moves: boolean }) {
+  const { t } = useTranslation()
+  return moves ? (
+    <>
+      <FolderInput />
+      {t("goals.project.moveToProject")}
+    </>
+  ) : (
+    <>
+      <FolderMinus />
+      {t("goals.project.removeFromProject")}
     </>
   )
 }

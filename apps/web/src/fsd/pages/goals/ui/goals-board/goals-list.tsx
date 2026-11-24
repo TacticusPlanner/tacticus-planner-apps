@@ -182,12 +182,14 @@ function GoalsTable({
               <Fragment key={row.goalId}>
                 {seasonFit && seasonCutoffGoalId === row.goalId ? (
                   <SeasonCutoffRow
+                    goalId={row.goalId}
                     colSpan={COLUMN_COUNT}
                     seasonFit={seasonFit}
                   />
                 ) : null}
                 {seasonFit && eventEndCutoffGoalId === row.goalId ? (
                   <SeasonCutoffRow
+                    goalId={row.goalId}
                     colSpan={COLUMN_COUNT}
                     edge="end"
                     seasonFit={seasonFit}

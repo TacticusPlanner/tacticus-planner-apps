@@ -111,6 +111,7 @@ Assumptions:
 
 With a mode on and Group set to None, the list SHALL render a divider immediately before the first eligible goal in display order (account-wide priority order) whose offset is 1 or more. The divider SHALL read "{season} ends {date}. The next goal finishes later." for Battle Pass and Guild Raid, and "{season} starts {date}. The next goal finishes after it." for Guild War, where {season} includes the season number when known.
 
+- The divider SHALL read as a marker, not a row border: its text SHALL be a chip at the left edge of the list (calendar icon, body-size text in the foreground colour), followed by a 2px line to the right edge. The line and the icon SHALL take the fit accent colour of the first goal below the divider, so the divider joins the accents of the goals it introduces.
 - When every eligible goal has offset 0, or when no goal is eligible, there SHALL be no divider.
 - With Group set to Type or Unit there SHALL be no divider, though labels and accents still show.
 - The divider SHALL NOT be draggable or selectable and SHALL NOT change the priority order or the drag targets. During a drag it stays where it was, and it moves after the drop.
