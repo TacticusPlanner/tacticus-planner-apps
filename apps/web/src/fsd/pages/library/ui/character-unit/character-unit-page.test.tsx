@@ -399,11 +399,12 @@ describe("CharacterUnitPage", () => {
     expect(
       within(screen.getByTestId("unit-glance-health")).getByText("7,955")
     ).toBeInTheDocument()
+    // The panels show their steppers once the rules text has loaded, which renderUnit doesn't await.
     expect(
-      screen.getByTestId("unit-ability-active-stepper-value")
+      await screen.findByTestId("unit-ability-active-stepper-value")
     ).toHaveTextContent("Lv 58")
     expect(
-      screen.getByTestId("unit-ability-passive-stepper-value")
+      await screen.findByTestId("unit-ability-passive-stepper-value")
     ).toHaveTextContent("Lv 46")
     expect(screen.getByTestId("unit-values-base")).toHaveTextContent(
       "Your unit"
