@@ -313,6 +313,17 @@ describe("desktop", () => {
     expect(shards).toHaveTextContent("slot.thenMythic")
   })
 
+  it("explains the tiers once, beside the Slots heading, not on each slot", () => {
+    renderPage("/plan/event-shop/october-2026")
+    expect(
+      screen.getByRole("heading", { name: "slot.heading" })
+    ).toBeInTheDocument()
+    expect(screen.getAllByTestId("event-shop-tier-rule")).toHaveLength(1)
+    expect(
+      screen.getByRole("button", { name: "slot.tierRuleLabel" })
+    ).toBeInTheDocument()
+  })
+
   it("keeps a planned reward on its card after the roster resolves the slot to another", () => {
     // Yarrick at 3 stars resolves slot 0 to shards; the plan still holds mythic shards from before.
     storedPlan = plan([cartEntry("THU", 0, "mythicShards_astraYarrick", 1)])

@@ -68,6 +68,7 @@
   },
   "slot": {
     "number": "Emplacement {{number}}",
+    "heading": "Emplacements",
     "pack": "×{{qty}}",
     "cap": "max. {{count}} par jour",
     "free": "{{reward}} offert ×{{qty}}",
@@ -78,6 +79,7 @@
       "high": "Haut"
     },
     "tierRule": "Bas : niveau de puissance inférieur à 20. Moyen : 20 ou plus. Haut : 20 ou plus avec un personnage ou une Machine de guerre en Légendaire une étoile bleue ou plus.",
+    "tierRuleLabel": "Fonctionnement des paliers",
     "thenMythic": "Puis fragments mythiques au légendaire max.",
     "dependsOnTier": "Dépend de votre palier",
     "dependsOnProgress": "Dépend de la progression de l'unité",

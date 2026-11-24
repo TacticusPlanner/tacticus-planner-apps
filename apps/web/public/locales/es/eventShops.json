@@ -68,6 +68,7 @@
   },
   "slot": {
     "number": "Espacio {{number}}",
+    "heading": "Espacios",
     "pack": "×{{qty}}",
     "cap": "máx. {{count}} al día",
     "free": "Gratis {{reward}} ×{{qty}}",
@@ -78,6 +79,7 @@
       "high": "Alto"
     },
     "tierRule": "Bajo: nivel de poder inferior a 20. Medio: 20 o más. Alto: 20 o más con un personaje o una Máquina de Guerra en Legendario con una estrella azul o más.",
+    "tierRuleLabel": "Cómo funcionan los niveles",
     "thenMythic": "Después, fragmentos míticos en legendario máximo",
     "dependsOnTier": "Depende de tu nivel",
     "dependsOnProgress": "Depende del progreso de la unidad",
