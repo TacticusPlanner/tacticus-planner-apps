@@ -30,7 +30,6 @@ import { RouteLoadingFill } from "./route-loading-fill"
 import { SectionActions } from "./section-actions"
 import { SkipLink } from "./skip-link"
 import { useFocusPageHeadingOnNavigate } from "./use-focus-page-heading"
-import "./desktop-layout.css"
 
 export function DesktopShell({
   activeSection,
