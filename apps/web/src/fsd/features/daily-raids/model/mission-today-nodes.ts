@@ -16,7 +16,8 @@ export type MissionTodayNodes = {
  * 2026-11): for lightning victories only event-campaign nodes count, so only they are raided; for
  * campaign wins and raids any node counts, so each material is farmed at a cheap node (5 or 6
  * energy) when one drops it, for more battles per energy, or at the running campaign event's node
- * with "CE nodes first" on. None without battles to go.
+ * with "CE nodes first" on. Battles fought by hand for the manual objectives start from the same
+ * run. None without battles to go or a manual objective.
  */
 export function missionTodayNodes(
   request: MissionRaidsRequest | undefined,
@@ -28,7 +29,8 @@ export function missionTodayNodes(
   eventGroupIds: ReadonlySet<string>,
   ceNodesFirst?: ReadonlySet<BattleId>
 ): MissionTodayNodes | undefined {
-  if (!request || request.battlesToGo <= 0) return undefined
+  if (!request || (request.battlesToGo <= 0 && !request.manual))
+    return undefined
   if (request.eventOnly) {
     const eventIds = new Set(
       battles
