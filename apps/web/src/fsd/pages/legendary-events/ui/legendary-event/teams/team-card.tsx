@@ -358,7 +358,7 @@ function CoverageStrip({
               key={objective.index}
               title={label}
             >
-              <ObjectiveIcon className="size-5" icon={icon} muted />
+              <ObjectiveIcon icon={icon} muted />
               <span aria-hidden="true" className="text-xs/3">
                 &nbsp;
               </span>
@@ -388,11 +388,7 @@ function CoverageStrip({
               .filter(Boolean)
               .join(" · ")}
           >
-            <ObjectiveIcon
-              className="size-5"
-              icon={icon}
-              muted={muted || cleared}
-            />
+            <ObjectiveIcon icon={icon} muted={muted || cleared} />
             <span
               className={cn(
                 "text-xs/3 font-semibold tabular-nums",

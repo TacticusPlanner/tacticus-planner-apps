@@ -259,11 +259,7 @@ export function ObjectiveIndicator({
       title={text}
     >
       {icon ? (
-        <ObjectiveIcon
-          className={size === "sm" ? "size-4" : "size-5"}
-          icon={icon}
-          muted={!met}
-        />
+        <ObjectiveIcon icon={icon} muted={!met} />
       ) : (
         <span
           aria-hidden="true"

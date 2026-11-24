@@ -7,6 +7,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { CompactProgression, EntityIcon } from "@/shared/ui"
 
 import type { ProgressionPart } from "../../../model/compare-chips"
+import { useAbilityName } from "../../../model/use-ability-name"
 
 /**
  * A before → after pair drawn with icons. The icons are decorative; `label` is the text a screen
@@ -73,11 +74,13 @@ export function RankMark({ rank }: { rank: Rank }) {
   )
 }
 
+/** An ability's icon, named by the ability (the compare chips also say it in their label). */
 export function AbilityMark({ abilityId }: { abilityId: string }) {
+  const name = useAbilityName()(abilityId)
   return (
     <EntityIcon
       size="inline"
-      alt=""
+      alt={name}
       src={abilityIcon(abilityId)}
       className="shrink-0 rounded-sm"
     />
@@ -93,7 +96,7 @@ export function ItemMark({
   level: number
 }) {
   return (
-    <span className="relative inline-flex size-7 shrink-0 overflow-hidden rounded-sm border bg-muted">
+    <span className="relative inline-flex size-8 shrink-0 overflow-hidden rounded-sm border bg-muted">
       <EntityIcon
         alt=""
         src={EquipmentIcons.icon(equipmentIdSchema.parse(equipmentId))}

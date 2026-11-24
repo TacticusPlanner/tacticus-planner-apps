@@ -39,10 +39,7 @@ export function TokenObjectives({
               title={label}
             >
               <ObjectiveIcon
-                className={cn(
-                  "overflow-hidden rounded-md",
-                  compact ? "size-6" : "size-5"
-                )}
+                className="overflow-hidden rounded-md"
                 icon={{ src: defeatAllIcon }}
               />
               <span className={cn(compact && "sr-only")}>{label}</span>
@@ -61,10 +58,7 @@ export function TokenObjectives({
             key={id}
             title={label}
           >
-            <ObjectiveIcon
-              className={compact ? "size-6" : "size-5"}
-              icon={icon}
-            />
+            <ObjectiveIcon icon={icon} />
             <span className={cn(compact && "sr-only")}>{label}</span>
           </li>
         )

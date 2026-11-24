@@ -658,7 +658,7 @@ function ObjectiveHeading({
             <span className="text-xs font-semibold tabular-nums">
               {number.format(entry.objective.points)}
             </span>
-            <ObjectiveIcon className="size-5" icon={icon} />
+            <ObjectiveIcon icon={icon} />
             {entry.cleared === null ? null : (
               <span
                 aria-hidden="true"
