@@ -928,11 +928,13 @@ The selected view SHALL be held in the page URL's `view` query parameter, and th
 
 ### Requirement: Collection has a select mode for creating goals
 
-Collection SHALL show a **Select units** button in the toolbar's Find slot when the player is signed in, the roster is available, at least one unit is listed and Compare is off, at every width; it SHALL be hidden while select mode is on. Pressing it SHALL enter select mode:
+Collection SHALL show a **Select units** button in the toolbar's Find slot when the player is signed in, the roster is available, at least one unit is listed and Compare is off, at every width, except in the Roster view at or above the mobile breakpoint (see below); it SHALL be hidden while select mode is on. Pressing it SHALL enter select mode:
 
 - every listed tile (Cards) and row (Roster, including the mobile expandable rows) SHALL show a checkbox, and activating the tile or row SHALL toggle its selection instead of opening the unit page;
 - each selectable item SHALL be a checkbox with an accessible name naming the unit and its checked state;
 - a bar pinned to the bottom of the viewport SHALL show the number of selected units, **Select all shown** (adds every listed unit), **Clear**, **Create goals** (disabled with nothing selected) and **Done**.
+
+At or above the mobile breakpoint the **Roster** view SHALL have no select mode, like the Goals table: under the same conditions every row SHALL always show a leading checkbox named for its unit, outside the row's link, so the row still opens the unit page; checking one SHALL show the bar, which stays while anything is selected.
 
 The selection SHALL survive search, sort, filter, quick filter, grouping and view changes, and SHALL count units no longer listed. Done, turning Compare on, or leaving the page SHALL end select mode and discard the selection. After the dialog creates every unit's goals, select mode SHALL end.
 
@@ -953,6 +955,14 @@ The selection SHALL survive search, sort, filter, quick filter, grouping and vie
 - **GIVEN** two units are selected
 - **WHEN** the player changes the faction filter so neither is listed
 - **THEN** the bar still reads "2 selected"
+
+#### Scenario: The desktop Roster always has checkboxes
+
+- **GIVEN** a signed-in, synced player on Collection in the Roster view on desktop
+- **WHEN** the page renders
+- **THEN** every row shows a checkbox, there is no Select units button, and activating a row's name still opens the unit page
+- **WHEN** the player checks Titus
+- **THEN** the bar appears reading "1 selected", and Done clears it and hides the bar
 
 #### Scenario: Not available without a roster
 

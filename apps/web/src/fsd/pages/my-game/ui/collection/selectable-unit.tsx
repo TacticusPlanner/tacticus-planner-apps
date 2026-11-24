@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { UnitTileUnit } from "@/entities/unit"
@@ -10,17 +11,35 @@ import type { CollectionSelection } from "../../model/collection-selection"
 /**
  * A tile or roster row in select mode: the unit stays visible but inert (no link), covered by a
  * toggle button with a checkbox mark. Outside select mode it renders the unit as is.
+ *
+ * `checkbox` (the desktop Roster, like the Goals table): a leading checkbox always shown, with or
+ * without select mode, and the row's link keeps working beside it.
  */
 export function SelectableUnit({
   unit,
   selection,
+  checkbox = false,
   children,
 }: {
   unit: UnitTileUnit
   selection: CollectionSelection | undefined
+  checkbox?: boolean
   children: ReactNode
 }) {
   const { t } = useTranslation("common")
+  if (selection && checkbox) {
+    return (
+      <div className="flex items-center gap-1 pl-2">
+        <Checkbox
+          aria-label={t("myGame.collection.select.unit", { name: unit.name })}
+          checked={selection.isSelected(unit)}
+          data-testid="collection-select-unit"
+          onCheckedChange={() => selection.toggle(unit)}
+        />
+        <div className="min-w-0 flex-1">{children}</div>
+      </div>
+    )
+  }
   if (!selection?.active) return children
   const selected = selection.isSelected(unit)
   return (
