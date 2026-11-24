@@ -1005,6 +1005,58 @@ describe("CharacterUnitPage", () => {
     )
   })
 
+  it("shows no ranged percentage for a character without a ranged attack", async () => {
+    await renderUnit("/library/characters/ultraCalgar")
+    for (const axis of ["rangedVsInfiniteArmour", "rangedVsZeroArmour"]) {
+      const row = screen.getByTestId(`unit-radar-${axis}`)
+      expect(row).toHaveTextContent("No ranged attack")
+      expect(row).not.toHaveTextContent("%")
+      expect(screen.getByTestId(`unit-radar-${axis}-info`)).toBeInTheDocument()
+    }
+    expect(screen.getByTestId("unit-radar")).toHaveTextContent(
+      "Ranged damage vs infinite armour No ranged attack, Ranged damage vs 0 armour No ranged attack"
+    )
+  })
+
+  it("ranks a shooter's ranged axes among shooters", async () => {
+    await renderUnit("/library/characters/ultraTigurius")
+    // Of the two shooters, Tigurius is the lower vs 0 armour; Calgar (melee only) doesn't count.
+    expect(
+      screen.getByTestId("unit-radar-rangedVsZeroArmour")
+    ).toHaveTextContent("0%")
+    expect(screen.getByTestId("unit-radar-list")).not.toHaveTextContent(
+      "No ranged attack"
+    )
+  })
+
+  it.each(["focus", "tap"])(
+    "says on %s that the ranged axes compare only shooters",
+    async (how) => {
+      await renderUnit("/library/characters/ultraTigurius")
+      const list = within(screen.getByTestId("unit-radar-list"))
+      const buttons = list.getAllByRole("button", {
+        name: "About this comparison",
+      })
+      // Both ranged axes, and none of the other four.
+      expect(list.getAllByRole("button")).toHaveLength(2)
+      for (const button of buttons) {
+        if (how === "focus") fireEvent.focus(button)
+        else {
+          fireEvent.pointerDown(button, { pointerType: "touch" })
+          fireEvent.click(button)
+        }
+        expect(await screen.findByRole("tooltip")).toHaveTextContent(
+          "Compared only with characters that have a ranged attack."
+        )
+        if (how === "focus") fireEvent.blur(button)
+        else fireEvent.click(button)
+        await waitFor(() =>
+          expect(screen.queryByRole("tooltip")).not.toBeInTheDocument()
+        )
+      }
+    }
+  )
+
   it("links the comparison to the wiki's damage explanation in a new tab", async () => {
     await renderUnit("/library/characters/ultraTigurius")
     const link = screen.getByRole("link", {

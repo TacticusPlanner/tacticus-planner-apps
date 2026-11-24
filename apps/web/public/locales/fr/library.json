@@ -527,6 +527,9 @@
         "rangedVsZeroArmour": "Distance 0"
       },
       "percent": "{{value}} %",
+      "noRangedAttack": "Aucune attaque à distance",
+      "rangedOnly": "Comparé uniquement aux personnages dotés d'une attaque à distance.",
+      "rangedOnlyLabel": "À propos de cette comparaison",
       "caption": "Centiles : {{values}}.",
       "footnote": "Pointillés = personnage médian. {{value}} % d'armure signifie que {{name}} a plus d'armure que {{value}} % des personnages à Mythic Wings, Adamantium II.",
       "damageLink": "Fonctionnement des dégâts (wiki Tacticus)",
@@ -566,7 +569,7 @@
         },
         "compare": {
           "title": "Comparé aux autres personnages",
-          "content": "Comment les statistiques de ce personnage se classent parmi tous les personnages, à Mythic Wings, Adamantium II."
+          "content": "Comment les statistiques de ce personnage se classent parmi tous les personnages, à Mythic Wings, Adamantium II. Les dégâts à distance ne sont comparés qu'à ceux des personnages dotés d'une attaque à distance."
         },
         "rankup": {
           "title": "Matériaux de rang",

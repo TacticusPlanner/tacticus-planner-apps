@@ -526,6 +526,9 @@
         "rangedVsZeroArmour": "Fernkampf 0"
       },
       "percent": "{{value}} %",
+      "noRangedAttack": "Kein Fernkampfangriff",
+      "rangedOnly": "Nur mit Charakteren verglichen, die einen Fernkampfangriff haben.",
+      "rangedOnlyLabel": "Über diesen Vergleich",
       "caption": "Perzentile: {{values}}.",
       "footnote": "Gestrichelt = mittlerer Charakter. {{value}} % Rüstung heißt: {{name}} hat mehr Rüstung als {{value}} % der Charaktere bei Mythic Wings, Adamant II.",
       "damageLink": "So funktioniert Schaden (Tacticus-Wiki)",
@@ -565,7 +568,7 @@
         },
         "compare": {
           "title": "Im Vergleich zu anderen Charakteren",
-          "content": "Wie die Werte dieses Charakters unter allen Charakteren abschneiden, bei Mythic Wings, Adamant II."
+          "content": "Wie die Werte dieses Charakters unter allen Charakteren abschneiden, bei Mythic Wings, Adamant II. Fernkampfschaden wird nur mit Charakteren verglichen, die einen Fernkampfangriff haben."
         },
         "rankup": {
           "title": "Rangaufstieg-Materialien",
