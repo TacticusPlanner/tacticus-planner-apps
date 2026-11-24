@@ -51,7 +51,6 @@ export {
   reportError,
   safeStorage,
   setErrorReporter,
-  useLongPress,
   usePersistedSelection,
   useSearchParamState,
   useCoarsePointer,

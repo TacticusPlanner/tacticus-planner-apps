@@ -227,15 +227,15 @@ Strings live in `apps/web/public/locales/en`; see the `react-i18next` skill.
 Pick the overlay by the job, then use its shared component. Mobile means below
 `md` (768px), as `useIsMobile` does.
 
-| Job                                                                 | Desktop                                                                              | Mobile                                                            | Use                                                                      |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| A task: fields to fill, a list to pick from, an editor              | Centered dialog                                                                      | Bottom sheet                                                      | `ResponsiveDialog`                                                       |
-| Filters                                                             | Popover (`size="compact"`) for a short list; dialog (`size="form"`) for a longer one | Bottom sheet                                                      | `FiltersControl`                                                         |
-| Confirm one step that can't be undone (delete, discard, overwrite)  | Small centered dialog                                                                | Same                                                              | `ConfirmationDialog`                                                     |
-| A panel the page keeps reacting to (run inputs, a shopping list)    | Right `Sheet`                                                                        | Bottom sheet                                                      | `Sheet side="right"` / `ResponsiveDialog`                                |
-| Details of one thing the player tapped (a unit, an enemy, a reward) | `Popover`                                                                            | Content-height bottom sheet with a drag handle                    | `DetailsOverlay` (or `DetailsSheet` when desktop shows them another way) |
-| Name or explain one control or icon                                 | `Tooltip`                                                                            | No tooltip: the name must also be in visible text or `aria-label` | `Tooltip`                                                                |
-| Choose one of a few actions                                         | `DropdownMenu`                                                                       | Same                                                              | `DropdownMenu`                                                           |
+| Job                                                                 | Desktop                                                                              | Mobile                                                                         | Use                                                                           |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| A task: fields to fill, a list to pick from, an editor              | Centered dialog                                                                      | Bottom sheet                                                                   | `ResponsiveDialog`                                                            |
+| Filters                                                             | Popover (`size="compact"`) for a short list; dialog (`size="form"`) for a longer one | Bottom sheet                                                                   | `FiltersControl`                                                              |
+| Confirm one step that can't be undone (delete, discard, overwrite)  | Small centered dialog                                                                | Same                                                                           | `ConfirmationDialog`                                                          |
+| A panel the page keeps reacting to (run inputs, a shopping list)    | Right `Sheet`                                                                        | Bottom sheet                                                                   | `Sheet side="right"` / `ResponsiveDialog`                                     |
+| Details of one thing the player tapped (a unit, an enemy, a reward) | `Popover`                                                                            | Content-height bottom sheet with a drag handle                                 | `DetailsOverlay` (or `DetailsSheet` when desktop shows them another way)      |
+| Name or explain one control or icon                                 | `Tooltip` on hover and focus                                                         | A tap does the control's job; the name is also in `aria-label` or visible text | `IconButton`, `HintTrigger`, `TruncatedText`, `disabledReason` (see Tooltips) |
+| Choose one of a few actions                                         | `DropdownMenu`                                                                       | Same                                                                           | `DropdownMenu`                                                                |
 
 - No raw `Dialog` for a task: on a phone it is a cramped box, not a sheet.
   Raw `Dialog` is only for `ConfirmationDialog` and desktop-only chrome.
@@ -246,6 +246,30 @@ Pick the overlay by the job, then use its shared component. Mobile means below
   comes from `ResponsiveDialog` or `Sheet side="bottom"`.
 - No overlay opens another overlay, except a confirm on top of the dialog it
   guards (unsaved changes, delete).
+
+**Tooltips.** Never a native `title`: it shows late, can't be styled, and never
+shows on touch or to keyboard users. Pick the wrapper by what carries the name:
+
+- Icon-only button or link: `IconButton` (`@workspace/ui/components/icon-button`).
+  `label` is its accessible name and its tooltip; `shortcut` adds a key hint.
+  On touch a tap runs the action and a long-press shows the label (an icon
+  link keeps the phone's own long-press menu).
+- Non-interactive icon, badge or value (a medal count, a reward, an info
+  glyph): `HintTrigger` (`@/shared/ui`). It is a focusable button, so keyboard
+  users reach it; on touch a tap opens the same text in a popover. Never put
+  it inside another button or link: name the outer control in its
+  `aria-label` instead.
+- Text cut off by `truncate` or `line-clamp`: `TruncatedText` (`@/shared/ui`).
+  The tooltip opens only while the text is cut off; inside a link or button a
+  tap keeps its own job.
+- A control that is disabled for a reason: `disabledReason` on `IconButton` or
+  on a `SegmentedControl` option. It stays focusable (`aria-disabled`) and the
+  reason shows on hover, focus and tap. A disabled menu item shows its reason
+  as a muted second line in the item instead.
+- Help on a segment or toggle chip: `hint` on the option (hover and focus
+  only, since a tap picks it); give touch users one `HintTrigger` beside the group.
+- The app's `TooltipProvider` waits 300 ms before the first tooltip, then
+  opens the next ones instantly while the pointer moves between triggers.
 
 **Anatomy.** Every dialog and sheet has a title (`…Title`; `sr-only` only when
 the content's own heading says the same). An optional one-line description is

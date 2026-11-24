@@ -49,7 +49,9 @@ async function bootstrap() {
           <QueryProvider>
             <ThemeProvider>
               <TourProvider>
-                <TooltipProvider>
+                {/* 300 ms before the first tooltip, then instant while moving between triggers,
+                    so dense grids don't flash one on every mouse move. */}
+                <TooltipProvider delayDuration={300}>
                   <App />
                 </TooltipProvider>
               </TourProvider>

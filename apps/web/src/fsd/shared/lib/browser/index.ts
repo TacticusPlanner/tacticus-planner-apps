@@ -5,7 +5,6 @@ export {
   setErrorReporter,
 } from "./report-error"
 export { isMacPlatform } from "./is-mac-platform"
-export { useLongPress } from "./use-long-press"
 export {
   accountStorageKey,
   accountStoragePrefix,
