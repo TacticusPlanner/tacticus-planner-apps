@@ -210,7 +210,7 @@ function InsightsLocationsControl({
       options={INSIGHTS_LOCATIONS.map((option) => ({
         value: option,
         label: t(`goals.insights.locations.${option}`),
-        title: t(`goals.insights.locations.${option}Hint`),
+        hint: t(`goals.insights.locations.${option}Hint`),
         testId: `insights-locations-${option}`,
       }))}
       testId="insights-locations"

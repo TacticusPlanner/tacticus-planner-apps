@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen, within } from "@/test/render"
 
-import { GroupByControl, PageToolbar } from "./page-toolbar"
+import { GroupByControl, PageToolbar, SegmentedControl } from "./page-toolbar"
 
 const mobile = vi.hoisted(() => ({ value: false }))
 vi.mock("@workspace/ui/hooks/use-mobile", () => ({
@@ -88,5 +88,59 @@ describe("PageToolbar", () => {
     ).toBeInTheDocument()
     await userEvent.click(within(sheet).getByRole("button", { name: "Done" }))
     expect(screen.queryByRole("dialog")).toBeNull()
+  })
+})
+
+function Layout({ onChange = vi.fn() }: { onChange?: (v: string) => void }) {
+  return (
+    <SegmentedControl
+      label="Layout"
+      onValueChange={onChange}
+      options={[
+        { value: "cards", label: "Cards", hint: "One card per team" },
+        { value: "table", label: "Table" },
+        {
+          value: "map",
+          label: "Map",
+          disabledReason: "Needs a synced roster.",
+        },
+      ]}
+      value="table"
+    />
+  )
+}
+
+describe("SegmentedControl", () => {
+  it("shows an option's hint on hover and keeps its pressed state", async () => {
+    const onChange = vi.fn()
+    render(<Layout onChange={onChange} />)
+    const cards = screen.getByRole("radio", { name: "Cards" })
+    expect(cards).toHaveAttribute("data-state", "off")
+    expect(screen.getByRole("radio", { name: "Table" })).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+
+    await userEvent.hover(cards)
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "One card per team"
+    )
+
+    await userEvent.click(cards)
+    expect(onChange).toHaveBeenCalledWith("cards")
+  })
+
+  it("keeps a disabled-with-reason option focusable, unpickable and explained", async () => {
+    const onChange = vi.fn()
+    render(<Layout onChange={onChange} />)
+    const map = screen.getByRole("radio", { name: "Map" })
+    expect(map).toHaveAttribute("aria-disabled", "true")
+    expect(map).not.toBeDisabled()
+
+    await userEvent.click(map)
+    expect(onChange).not.toHaveBeenCalled()
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "Needs a synced roster."
+    )
   })
 })

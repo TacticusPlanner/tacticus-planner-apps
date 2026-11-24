@@ -1,4 +1,10 @@
-import { ChevronsUpDown } from "lucide-react"
+import {
+  Archive,
+  ChevronsUpDown,
+  Info,
+  PanelLeftOpen,
+  Pencil,
+} from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -29,6 +35,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@workspace/ui/components/drawer"
+import { IconButton } from "@workspace/ui/components/icon-button"
 import {
   Popover,
   PopoverContent,
@@ -40,9 +47,18 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import { energyIconUrl, EntityIcon } from "@/shared/ui"
+import {
+  energyIconUrl,
+  EntityIcon,
+  HintTrigger,
+  SegmentedControl,
+  TruncatedText,
+} from "@/shared/ui"
 
 import { UiKitShowcaseCard } from "./ui-kit-showcase-card"
+
+const LONG_TEAM_NAME =
+  "Ultramarines and friends for the Tyranid mythic boss, second phase"
 
 export function OverlaysShowcase() {
   return (
@@ -77,6 +93,53 @@ export function OverlaysShowcase() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </div>
+      </UiKitShowcaseCard>
+
+      <UiKitShowcaseCard
+        description="Hover or focus on desktop. On touch, a tap does what the control is for: an icon button runs its action (long-press shows its name), a disabled reason shows on tap, and a hint opens a popover."
+        title="Tooltips"
+      >
+        <div className="flex flex-col gap-4" data-testid="overlay-tooltips">
+          <div className="flex flex-wrap items-center gap-3">
+            <IconButton label="Edit team">
+              <Pencil />
+            </IconButton>
+            <IconButton label="Expand navigation" shortcut="Ctrl+B">
+              <PanelLeftOpen />
+            </IconButton>
+            <IconButton
+              disabledReason="Move or delete its goals first."
+              label="Archive project"
+              variant="destructive"
+            >
+              <Archive />
+            </IconButton>
+            <HintTrigger label="Energy">
+              <EntityIcon alt="" size="inline" src={energyIconUrl} />
+              <span className="text-sm tabular-nums">120</span>
+            </HintTrigger>
+            <HintTrigger label="Counts only goals in active projects.">
+              <Info className="size-4 text-muted-foreground" />
+            </HintTrigger>
+          </div>
+          <div className="w-48 text-sm">
+            <TruncatedText>{LONG_TEAM_NAME}</TruncatedText>
+          </div>
+          <SegmentedControl
+            label="Layout"
+            onValueChange={() => {}}
+            options={[
+              { value: "cards", label: "Cards", hint: "One card per team" },
+              { value: "table", label: "Table", hint: "One row per team" },
+              {
+                value: "map",
+                label: "Map",
+                disabledReason: "Needs a synced roster.",
+              },
+            ]}
+            value="cards"
+          />
         </div>
       </UiKitShowcaseCard>
 

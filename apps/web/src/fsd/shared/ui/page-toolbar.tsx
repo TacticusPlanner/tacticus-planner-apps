@@ -7,6 +7,11 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -216,13 +221,16 @@ export function ToolbarField({
 type SegmentedOption<T extends string> = {
   value: T
   label: string
-  /** Extra help on hover (a native title: a Radix tooltip would overwrite the item's state). */
-  title?: string
+  /** Extra help in a tooltip on hover and focus. A tap on touch still picks the option. */
+  hint?: string
   icon?: ReactNode
   /** Shown after the label, e.g. a loading spinner. */
   trailing?: ReactNode
   /** This one choice cannot be picked right now (its data is missing or still loading). */
   disabled?: boolean
+  /** Why this choice can't be picked now: the option stays focusable and shows the reason in a
+   *  tooltip (a tap too) instead of going silently grey. */
+  disabledReason?: string
   testId?: string
 }
 
@@ -257,7 +265,8 @@ export function SegmentedControl<T extends string>({
         disabled={disabled}
         onValueChange={(next) => {
           const option = options.find((item) => item.value === next)
-          if (option) onValueChange(option.value)
+          if (option && option.disabledReason === undefined)
+            onValueChange(option.value)
         }}
         spacing={0}
         type="single"
@@ -265,21 +274,71 @@ export function SegmentedControl<T extends string>({
         variant="outline"
       >
         {options.map((option) => (
-          <ToggleGroupItem
-            className={cn("px-3", stretch && "flex-auto")}
-            data-testid={option.testId}
-            disabled={option.disabled}
-            key={option.value}
-            title={option.title}
-            value={option.value}
-          >
-            {option.icon}
-            {option.label}
-            {option.trailing}
-          </ToggleGroupItem>
+          <SegmentedItem key={option.value} option={option} stretch={stretch} />
         ))}
       </ToggleGroup>
     </ToolbarField>
+  )
+}
+
+/** One segment. With a hint or a disabled reason, the item renders through the tooltip trigger
+ *  (item outside, trigger inside) so the trigger's `data-state` doesn't replace the item's on/off
+ *  state. */
+function SegmentedItem<T extends string>({
+  option,
+  stretch,
+}: {
+  option: SegmentedOption<T>
+  stretch: boolean
+}) {
+  const blocked = option.disabledReason !== undefined
+  const tooltip = option.disabledReason ?? option.hint
+  const content = (
+    <>
+      {option.icon}
+      {option.label}
+      {option.trailing}
+    </>
+  )
+  const item = (
+    <ToggleGroupItem
+      aria-disabled={blocked || undefined}
+      asChild={tooltip !== undefined}
+      className={cn(
+        "px-3 aria-disabled:cursor-not-allowed aria-disabled:opacity-50",
+        stretch && "flex-auto"
+      )}
+      data-testid={option.testId}
+      disabled={option.disabled}
+      value={option.value}
+    >
+      {tooltip === undefined ? (
+        content
+      ) : (
+        <TooltipTrigger
+          disableTouchToggle={!blocked}
+          // A blocked option ignores the press, and its reason stays open (Radix closes a tooltip
+          // on pointerdown and on click unless the event is cancelled).
+          onClick={blocked ? (event) => event.preventDefault() : undefined}
+          onPointerDown={
+            blocked
+              ? (event) => {
+                  if (event.pointerType !== "touch") event.preventDefault()
+                }
+              : undefined
+          }
+        >
+          {content}
+        </TooltipTrigger>
+      )}
+    </ToggleGroupItem>
+  )
+  if (tooltip === undefined) return item
+  return (
+    <Tooltip>
+      {item}
+      <TooltipContent>{tooltip}</TooltipContent>
+    </Tooltip>
   )
 }
 

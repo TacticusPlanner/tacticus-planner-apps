@@ -15,9 +15,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { useLongPress } from "@workspace/ui/hooks/use-long-press"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { useLongPress } from "@/shared/lib"
 import { EntityIcon, portraitClassName } from "@/shared/ui"
 
 import type { EventUnitChipData } from "../lib/event-unit-chip-data"
