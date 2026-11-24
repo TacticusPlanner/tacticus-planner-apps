@@ -293,7 +293,7 @@ async function renderPage(
     ...(playerCharacters && { characters: playerCharacters }),
     ...(inventoryUpgrades && { "inventory-upgrades": inventoryUpgrades }),
   })
-  render(<TabForRoute />, {
+  const view = render(<TabForRoute />, {
     route: "/library/characters/:entityId",
     initialEntries,
     auth: { authenticated },
@@ -305,6 +305,7 @@ async function renderPage(
     await screen.findByText("Indomitus Standard")
     await screen.findByText("Adeptus Mechanicus")
   }
+  return view
 }
 
 describe("CharacterRankUpTab", () => {
@@ -561,6 +562,35 @@ describe("CharacterRankUpTab", () => {
       block: "center",
     })
     expect(scrollIntoView.mock.instances[0]).toBe(targetRow)
+  })
+
+  it("clears the base-upgrade highlight after a moment, and drops the pending reset on unmount", async () => {
+    const { unmount } = await renderPage()
+    vi.useFakeTimers()
+    try {
+      fireEvent.click(at(screen.getAllByText("Armour Base"), 0))
+      const targetRow = document.getElementById("base-upgrade-a1")
+      expect(targetRow).toHaveClass("bg-primary/10")
+
+      act(() => {
+        vi.advanceTimersByTime(1500)
+      })
+      expect(targetRow).not.toHaveClass("bg-primary/10")
+
+      const setTimeoutSpy = vi.spyOn(window, "setTimeout")
+      const clearTimeoutSpy = vi.spyOn(window, "clearTimeout")
+      fireEvent.click(at(screen.getAllByText("Armour Base"), 0))
+      const resetCall = setTimeoutSpy.mock.calls.findIndex(
+        ([, delay]) => delay === 1500
+      )
+      const resetTimer = setTimeoutSpy.mock.results[resetCall]?.value
+      expect(resetTimer).toBeDefined()
+      unmount()
+      expect(clearTimeoutSpy).toHaveBeenCalledWith(resetTimer)
+    } finally {
+      vi.restoreAllMocks()
+      vi.useRealTimers()
+    }
   })
 
   it("splits farm locations into campaign and campaign-event columns, labeled by campaign + short code + node numbers", async () => {
