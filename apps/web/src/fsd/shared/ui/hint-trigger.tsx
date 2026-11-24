@@ -11,7 +11,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { useCoarsePointer } from "@/shared/lib"
+import { useCoarsePointer } from "../lib"
 
 /**
  * A design-system hint on something small that has no visible name of its own (an icon chip, a
