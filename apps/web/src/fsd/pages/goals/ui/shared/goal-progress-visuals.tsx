@@ -69,7 +69,7 @@ function AbilityIconTrigger({
   return (
     // A popover on touch, with the hit area grown past the small icon so a finger can reach it.
     <HintTrigger
-      className="relative shrink-0 pointer-coarse:after:absolute pointer-coarse:after:-inset-3"
+      className="relative shrink-0 pointer-coarse:after:absolute pointer-coarse:after:-inset-3.5"
       data-testid="goal-ability-icon"
       label={label}
     >
