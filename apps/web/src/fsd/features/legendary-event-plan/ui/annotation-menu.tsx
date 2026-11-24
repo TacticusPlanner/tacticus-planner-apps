@@ -61,7 +61,7 @@ export function AnnotationMenu({
           type="button"
         >
           {status === null ? null : (
-            <AnnotationMarkIcon className="size-5" status={status} />
+            <AnnotationMarkIcon className="size-icon" status={status} />
           )}
           <span className="sr-only">{text}</span>
         </button>

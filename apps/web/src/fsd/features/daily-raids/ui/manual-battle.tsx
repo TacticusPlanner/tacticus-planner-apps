@@ -31,7 +31,7 @@ export function ManualBattleBadge({
       title={t("manualBattle.help")}
       data-testid="manual-battle-badge"
     >
-      <Swords aria-hidden className="size-3.5" />
+      <Swords aria-hidden className="size-icon-sm" />
       <span className={cn(compact && "sr-only")}>
         {t("manualBattle.badge")}
       </span>
@@ -65,7 +65,7 @@ export function CantRaidMenu({
           aria-label={t("manualBattle.menu")}
           data-testid="cant-raid-menu"
         >
-          <EllipsisVertical aria-hidden className="size-4" />
+          <EllipsisVertical aria-hidden className="size-icon" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

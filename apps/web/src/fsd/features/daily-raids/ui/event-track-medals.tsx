@@ -90,7 +90,7 @@ export function EventTrackMedals({
             <MedalStats stats={stats} />
             <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap">
               {t("battleProgress.edit")}
-              <ChevronRight aria-hidden className="size-4" />
+              <ChevronRight aria-hidden className="size-icon-sm" />
             </span>
           </>
         ) : (

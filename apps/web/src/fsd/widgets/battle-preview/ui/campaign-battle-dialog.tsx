@@ -146,7 +146,7 @@ function CampaignBattleContent({
               })}
             </li>
             <li className="inline-flex items-center gap-1">
-              <UsersIcon aria-hidden className="size-4" />
+              <UsersIcon aria-hidden className="size-icon" />
               {t("locationDetails.slots", {
                 count: battle.slots,
                 formatted: number.format(battle.slots),

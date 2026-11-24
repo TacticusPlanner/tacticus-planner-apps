@@ -189,9 +189,9 @@ export function TeamList({
                     onClick={() => onToggleLock(member.unitId)}
                   >
                     {member.locked ? (
-                      <Lock className="size-4" />
+                      <Lock className="size-icon" />
                     ) : (
-                      <LockOpen className="size-4 text-muted-foreground" />
+                      <LockOpen className="size-icon text-muted-foreground" />
                     )}
                   </Button>
                 </TooltipTrigger>

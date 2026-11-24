@@ -141,7 +141,7 @@ function SelectShell({
             >
               {summary}
             </span>
-            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+            <ChevronDown className="size-icon-sm shrink-0 text-muted-foreground" />
           </button>
         </PopoverTrigger>
         {trailing}

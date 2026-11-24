@@ -111,7 +111,7 @@ export function UnitRosterRow({
           <ChevronDown
             aria-hidden
             className={cn(
-              "size-4 text-muted-foreground transition-transform motion-reduce:transition-none",
+              "size-icon-sm text-muted-foreground transition-transform motion-reduce:transition-none",
               expanded && "rotate-180"
             )}
           />

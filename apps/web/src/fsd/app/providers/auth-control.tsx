@@ -309,7 +309,7 @@ export function AuthControl() {
                   role="status"
                 >
                   <LoaderCircle
-                    className="size-3 animate-spin"
+                    className="size-icon-sm animate-spin"
                     aria-hidden="true"
                   />
                   {t("auth.accountLoading")}

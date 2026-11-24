@@ -161,7 +161,7 @@ export function GoalProjectsField({
                   onClick={() => remove(project.projectId)}
                   type="button"
                 >
-                  <X className="size-3" />
+                  <X className="size-icon-xs" />
                 </button>
               </Badge>
             </div>
@@ -215,7 +215,7 @@ export function GoalProjectsField({
                   >
                     <ProjectColorDot color={project.color} />
                     <span className="flex-1">{project.name}</span>
-                    {project.isDefault ? <Check className="size-4" /> : null}
+                    {project.isDefault ? <Check className="size-icon" /> : null}
                   </CommandItem>
                 ))}
                 {canCreate ? (
@@ -226,7 +226,7 @@ export function GoalProjectsField({
                     onSelect={() => void createAndSelect()}
                     value={`create-project:${searched}`}
                   >
-                    <Plus className="size-4" />
+                    <Plus className="size-icon" />
                     <span className="flex-1 break-all">
                       {creating
                         ? t("goals.project.creatingInline", { name: searched })

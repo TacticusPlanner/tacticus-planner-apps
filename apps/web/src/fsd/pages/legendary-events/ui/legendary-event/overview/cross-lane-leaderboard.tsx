@@ -312,7 +312,7 @@ function SortHead({
         {label}
         <Icon
           aria-hidden
-          className={direction ? "size-3.5" : "size-3.5 opacity-40"}
+          className={direction ? "size-icon-sm" : "size-icon-sm opacity-40"}
         />
       </button>
     </TableHead>

@@ -160,7 +160,7 @@ export function TeamEditorLineup({
           role="img"
           title={t("lineup.campaignCore", { name })}
         >
-          <Lock className="size-4" />
+          <Lock className="size-icon" />
         </span>
       )
     }

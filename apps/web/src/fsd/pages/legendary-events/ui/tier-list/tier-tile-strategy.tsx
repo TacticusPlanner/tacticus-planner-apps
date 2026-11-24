@@ -58,7 +58,10 @@ export function TierTileStrategy({ unitId }: { unitId: string }) {
         {t("tierList.strategy.title")}
         <ChevronDown
           aria-hidden="true"
-          className={cn("size-4 transition-transform", open && "rotate-180")}
+          className={cn(
+            "size-icon-sm transition-transform",
+            open && "rotate-180"
+          )}
         />
       </button>
       {open ? (

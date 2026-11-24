@@ -94,7 +94,7 @@ function AbilityLevels({
   return (
     <span className="inline-flex items-center gap-1">
       <span className="text-muted-foreground tabular-nums">{current}</span>
-      <ArrowRight aria-hidden="true" className="size-3" />
+      <ArrowRight aria-hidden="true" className="size-icon-sm" />
       <span className="font-semibold tabular-nums">{target}</span>
     </span>
   )
@@ -411,7 +411,10 @@ export function GoalTargetDisplay({
   const progressionSize = large ? "emblem" : "inline"
   // `w-max` on each target row: the Goal column shrinks to its content's minimum width, and Tailwind's
   // `max-width: 100%` on images gives a row of icons almost none, which squashed them into the next cell.
-  const arrowClass = cn("text-muted-foreground", large ? "size-4" : "size-3.5")
+  const arrowClass = cn(
+    "text-muted-foreground",
+    large ? "size-icon" : "size-icon-sm"
+  )
 
   if (progress.kind === "Unknown") {
     return progress.preview ? (
@@ -663,7 +666,7 @@ export function GoalProgressDisplay({
         type="button"
       >
         {remainingText ?? t("goals.overview.progressDetails")}
-        <Info className="size-3.5 shrink-0" />
+        <Info className="size-icon-sm shrink-0" />
       </button>
       {mobileExpanded ? (
         <div data-testid="goal-progress-mobile-explanation">{explanation}</div>

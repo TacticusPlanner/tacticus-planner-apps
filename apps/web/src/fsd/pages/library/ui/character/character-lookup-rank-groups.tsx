@@ -103,7 +103,7 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
           {upgrade.owned ? (
             <CheckCircle2
               aria-hidden="true"
-              className="absolute -right-1 -bottom-1 size-5 rounded-full bg-background text-primary"
+              className="absolute -right-1 -bottom-1 size-icon rounded-full bg-background text-primary"
             />
           ) : null}
         </button>
@@ -120,7 +120,7 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
           </span>
           {upgrade.owned ? (
             <Badge variant="secondary" className="gap-1">
-              <CheckCircle2 className="size-3" aria-hidden="true" />
+              <CheckCircle2 className="size-icon-xs" aria-hidden="true" />
               {t("unitLookup.alreadyApplied")}
             </Badge>
           ) : null}

@@ -235,7 +235,7 @@ function BattleGroup({
           {alternative.locked ? (
             <Lock
               aria-label={t("plan.cell.locked")}
-              className="size-3 shrink-0"
+              className="size-icon-sm shrink-0"
               role="img"
             />
           ) : null}

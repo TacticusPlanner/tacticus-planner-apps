@@ -162,7 +162,7 @@ export function QuestBattleDetail({
         </h3>
         <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
           <IconLine
-            icon={<UsersIcon aria-hidden className="size-4" />}
+            icon={<UsersIcon aria-hidden className="size-icon" />}
             testId="quest-battle-slots-line"
           >
             {t("quest:detail.slots", {

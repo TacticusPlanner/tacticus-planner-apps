@@ -83,7 +83,7 @@ export const UnitTile = memo(function UnitTile({
             className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground"
             data-testid="team-picker-selected"
           >
-            <Check className="size-3.5" strokeWidth={3} />
+            <Check className="size-icon-xs" strokeWidth={3} />
           </span>
         ) : null}
         <TeamUnitPortrait

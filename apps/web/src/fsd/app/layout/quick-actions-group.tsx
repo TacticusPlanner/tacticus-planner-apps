@@ -42,7 +42,7 @@ export function QuickActionsGroup({
             onClick={() => onSelect(action.id)}
             type="button"
           >
-            <action.icon aria-hidden="true" className="size-5 shrink-0" />
+            <action.icon aria-hidden="true" className="size-icon shrink-0" />
             <span className="flex min-w-0 flex-col">
               <span className="truncate">{action.label}</span>
               <span className="truncate text-xs font-normal text-muted-foreground group-hover/nav-row:text-accent-foreground">

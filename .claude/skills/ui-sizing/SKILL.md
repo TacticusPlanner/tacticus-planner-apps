@@ -54,16 +54,19 @@ an icon inside them.
 
 An icon is smaller only when what is around it is smaller than 20px:
 
-| Exception                                                                                                          | Size | Class          |
-| ------------------------------------------------------------------------------------------------------------------ | ---- | -------------- |
-| In a `text-xs` line (captions, metadata)                                                                           | 16px | `size-icon-sm` |
-| Trailing affordance: select / combobox chevron, sort arrow, disclosure chevron, external-link mark, selected check | 16px | `size-icon-sm` |
-| Compact control: `xs`, `icon-xs`, `icon-sm` buttons, `xs` input group                                              | 16px | `size-icon-sm` |
-| Inside a badge, count badge or status pill                                                                         | 12px | `size-icon-xs` |
-| Corner mark on a portrait or tile (selected check, lock, plus), on a solid badge                                   | 12px | `size-icon-xs` |
+| Exception                                                                                                                                                         | Size | Class          |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | -------------- |
+| In a `text-xs` line (captions, metadata)                                                                                                                          | 16px | `size-icon-sm` |
+| Small mark beside content: select / combobox chevron, sort arrow, disclosure chevron, external-link mark, selected check, info (i) hint, arrow between two values | 16px | `size-icon-sm` |
+| Compact control: `xs`, `icon-xs`, `icon-sm` buttons, `xs` input group                                                                                             | 16px | `size-icon-sm` |
+| Inside a badge, count badge or status pill                                                                                                                        | 12px | `size-icon-xs` |
+| Corner mark on a portrait or tile (selected check, lock, plus), on a solid badge                                                                                  | 12px | `size-icon-xs` |
 
 No icon uses `size-3`, `size-3.5`, `size-4` or `size-5`: use the tokens, so a
-later retune is one line in `packages/ui/src/styles/globals.css`. A size other
+later retune is one line in `packages/ui/src/styles/globals.css`
+(`cn` knows the tokens, so they merge like any size). `icon-sizes.test.ts`
+fails on a raw `size-3` to `size-5` on a lucide icon, the spinner, or an
+`[&_svg]:size-*` selector. A size other
 than 20px needs one of the reasons above; when none fits, use 20px. Standalone
 icons with no label beside them are 24px (`size-6`); the empty state's icon is
 32px. Not icons, so not covered here: status dots, the checkbox check and radio

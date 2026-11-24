@@ -88,7 +88,10 @@ export function BoardMap({
         {toggleLabel ?? t("battles.map.toggle")}
         <ChevronDownIcon
           aria-hidden
-          className={cn("size-4 transition-transform", open && "rotate-180")}
+          className={cn(
+            "size-icon-sm transition-transform",
+            open && "rotate-180"
+          )}
         />
       </button>
       <div hidden={!open} id={disclosureId}>

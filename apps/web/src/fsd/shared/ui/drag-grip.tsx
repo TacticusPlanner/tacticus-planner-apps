@@ -50,7 +50,7 @@ export function DragGrip({
       ref={ref}
       type="button"
     >
-      <GripVertical className={size === "touch" ? "size-6" : "size-4"} />
+      <GripVertical className={size === "touch" ? "size-6" : "size-icon"} />
     </button>
   )
 }

@@ -64,7 +64,7 @@ function TierTileButton({
       ) : null}
       {hasRelics ? (
         <span data-testid="tier-tile-relic" title={t("tierList.relicMark")}>
-          <Gem aria-hidden="true" className="size-3" />
+          <Gem aria-hidden="true" className="size-icon-sm" />
           <span className="sr-only">{t("tierList.relicMark")}</span>
         </span>
       ) : null}

@@ -73,7 +73,7 @@ export function TeamsModeSection({
             data-testid="teams-section-shared"
             title={shared.length > 1 ? names : undefined}
           >
-            <AlertTriangle aria-hidden="true" className="size-3.5" />
+            <AlertTriangle aria-hidden="true" className="size-icon-sm" />
             {shared.length > 1
               ? t("page.sectionSharedMany", { count: shared.length, names })
               : t("page.sectionShared", {

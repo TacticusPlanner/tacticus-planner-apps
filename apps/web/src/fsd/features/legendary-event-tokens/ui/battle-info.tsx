@@ -32,7 +32,7 @@ export function BattleInfoButton({
       type="button"
     >
       <span className="truncate">{children}</span>
-      <Info aria-hidden="true" className="size-3.5 shrink-0" />
+      <Info aria-hidden="true" className="size-icon-sm shrink-0" />
     </button>
   )
 }

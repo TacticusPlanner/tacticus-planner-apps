@@ -56,7 +56,7 @@ function KindIcon({ kind, label }: { kind: PushKind; label?: string }) {
     )
   }
   const Icon = kind === "stopHere" ? Users : ChevronsUp
-  return <Icon className="size-4 shrink-0 text-muted-foreground" {...a11y} />
+  return <Icon className="size-icon shrink-0 text-muted-foreground" {...a11y} />
 }
 
 function IconText({
@@ -93,7 +93,7 @@ export function MilestoneGapSection({ gap }: { gap: MilestoneGap }) {
   )
   const [firstPush] = gap.pushes
   const sharedRetry = retries.size === 1 && firstPush ? firstPush.retry : null
-  const footIcon = "size-3.5 shrink-0"
+  const footIcon = "size-icon-sm shrink-0"
   return (
     <section
       aria-labelledby={`milestone-gap-title-${gap.run}`}
@@ -104,7 +104,7 @@ export function MilestoneGapSection({ gap }: { gap: MilestoneGap }) {
         className="flex items-center gap-1.5 text-sm font-semibold"
         id={`milestone-gap-title-${gap.run}`}
       >
-        <Target aria-hidden="true" className="size-4 shrink-0" />
+        <Target aria-hidden="true" className="size-icon shrink-0" />
         {t("tokenPlan.closeGap.title", {
           points: number.format(gap.pointsNeeded),
           step: t(`outlook.steps.${gap.step}`),
@@ -185,7 +185,7 @@ function PushRow({
   const { t, i18n } = useTranslation("legendaryEvents")
   const number = new Intl.NumberFormat(i18n.language)
   const where = useWhere()
-  const small = "size-3.5 shrink-0"
+  const small = "size-icon-sm shrink-0"
   return (
     <li
       className="flex min-w-0 flex-col text-sm"
@@ -203,7 +203,7 @@ function PushRow({
           {push.closesGap ? (
             <CircleCheck
               aria-label={t("tokenPlan.closeGap.closes")}
-              className="size-4 shrink-0 text-emerald-700 dark:text-emerald-400"
+              className="size-icon shrink-0 text-emerald-700 dark:text-emerald-400"
               role="img"
             />
           ) : null}

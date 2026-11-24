@@ -108,7 +108,7 @@ export function TodaysAttemptsCard({
                       data-testid={`todays-attempt-${battleId}-progress`}
                     >
                       {progress.done ? (
-                        <CheckIcon aria-hidden className="size-3.5" />
+                        <CheckIcon aria-hidden className="size-icon-sm" />
                       ) : null}
                       {progress.owned} / {progress.target}
                       {progress.done ? (

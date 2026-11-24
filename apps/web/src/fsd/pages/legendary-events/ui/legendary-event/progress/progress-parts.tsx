@@ -21,8 +21,8 @@ import { progressHeadingId } from "./progress-heading"
 import type { LaneMarks } from "./progress-marks"
 
 export function ProgressColumnIcon({ column }: { column: ProgressColumn }) {
-  if (!column.icon) return <Circle aria-hidden="true" className="size-4" />
-  return <ObjectiveIcon className="size-4" icon={column.icon} />
+  if (!column.icon) return <Circle aria-hidden="true" className="size-icon" />
+  return <ObjectiveIcon icon={column.icon} />
 }
 
 /** A cleared / not-cleared cell: an icon plus "cleared" / "not cleared" text, never colour
@@ -44,7 +44,7 @@ function ClearedCell({ cleared, label }: { cleared: boolean; label: string }) {
       data-testid="progress-cell"
       title={text}
     >
-      {cleared ? <Check aria-hidden="true" className="size-4" /> : null}
+      {cleared ? <Check aria-hidden="true" className="size-icon" /> : null}
       <span className="sr-only">{text}</span>
     </span>
   )
@@ -68,7 +68,7 @@ function MarkedCell({
       data-testid="progress-cell"
       title={text}
     >
-      <AnnotationMarkIcon className="size-5" status={status} />
+      <AnnotationMarkIcon className="size-icon" status={status} />
       <span className="sr-only">{text}</span>
     </span>
   )

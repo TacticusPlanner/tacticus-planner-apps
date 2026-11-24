@@ -70,7 +70,7 @@ export function MasterTableTable({
       >
         {label}
         {sort === key ? (
-          <ArrowDown aria-hidden="true" className="size-3.5" />
+          <ArrowDown aria-hidden="true" className="size-icon-sm" />
         ) : null}
       </button>
     </th>

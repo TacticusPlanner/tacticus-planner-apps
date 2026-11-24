@@ -150,7 +150,7 @@ export function UnitStatusSummary(props: Parameters<typeof UnitInfoCard>[0]) {
         </span>
         <ChevronDownIcon
           className={cn(
-            "size-4 shrink-0 text-muted-foreground transition-transform",
+            "size-icon-sm shrink-0 text-muted-foreground transition-transform",
             expanded && "rotate-180"
           )}
         />

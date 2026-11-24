@@ -11,7 +11,7 @@ function Tip({ text, testId }: { text: string; testId: string }) {
       className="flex gap-2 text-xs text-muted-foreground"
       data-testid={testId}
     >
-      <Lightbulb aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
+      <Lightbulb aria-hidden="true" className="mt-0.5 size-icon-sm shrink-0" />
       <span>{text}</span>
     </p>
   )

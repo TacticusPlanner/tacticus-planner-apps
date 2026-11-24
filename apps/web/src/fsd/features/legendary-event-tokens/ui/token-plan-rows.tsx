@@ -235,7 +235,7 @@ function TeamName({
       <span className="truncate">{teamName}</span>
       <Pencil
         aria-hidden="true"
-        className="size-3.5 shrink-0 text-muted-foreground group-hover:text-foreground"
+        className="size-icon-sm shrink-0 text-muted-foreground group-hover:text-foreground"
       />
     </button>
   )
@@ -380,7 +380,7 @@ function TokenBattleRunRow({
     >
       <ChevronRight
         aria-hidden="true"
-        className={expanded ? "size-4 rotate-90" : "size-4"}
+        className={expanded ? "size-icon-sm rotate-90" : "size-icon-sm"}
       />
     </button>
   )
@@ -531,7 +531,7 @@ function TokenMarkerList({
       className="inline-flex items-center gap-1 text-muted-foreground"
       key={key}
     >
-      <Flag aria-hidden="true" className="size-3 shrink-0" />
+      <Flag aria-hidden="true" className="size-icon-sm shrink-0" />
       {text}
     </li>
   )

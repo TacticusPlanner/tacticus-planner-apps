@@ -113,7 +113,7 @@ export function AccountCard({
             <Skeleton className="h-4 w-28 rounded-md" />
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <LoaderCircle
-                className="size-3 animate-spin"
+                className="size-icon-sm animate-spin"
                 aria-hidden="true"
               />
               {t("auth.accountLoading")}

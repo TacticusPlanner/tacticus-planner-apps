@@ -43,7 +43,7 @@ export function GoalGroupSection({
           <ChevronDown
             aria-hidden="true"
             className={cn(
-              "size-5 shrink-0 transition-transform",
+              "size-icon shrink-0 transition-transform",
               shownCollapsed && "-rotate-90"
             )}
           />

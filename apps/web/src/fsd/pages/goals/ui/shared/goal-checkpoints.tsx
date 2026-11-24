@@ -51,7 +51,7 @@ export function GoalCheckpoints({
           data-testid="goal-checkpoints-trigger"
           type="button"
         >
-          <Flag aria-hidden="true" className="size-3.5 shrink-0" />
+          <Flag aria-hidden="true" className="size-icon-sm shrink-0" />
           <span>
             {t("goals.estimate.checkpoints.summary", {
               count: view.rows.length,

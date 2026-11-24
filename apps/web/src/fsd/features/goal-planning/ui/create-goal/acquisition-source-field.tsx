@@ -287,7 +287,7 @@ function SourceGroup({
           onClick={() => setExpanded((current) => !current)}
           type="button"
         >
-          <Chevron className="size-4 shrink-0" />
+          <Chevron className="size-icon-sm shrink-0" />
         </button>
       </div>
       {hasNode(headerNote) ? (

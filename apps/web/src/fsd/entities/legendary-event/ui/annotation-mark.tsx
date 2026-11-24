@@ -17,7 +17,7 @@ export function AnnotationMarkIcon({
     <Icon
       aria-hidden="true"
       className={cn(
-        "size-4",
+        "size-icon",
         status === "maybeClear"
           ? "text-amber-600 dark:text-amber-400"
           : "text-destructive",

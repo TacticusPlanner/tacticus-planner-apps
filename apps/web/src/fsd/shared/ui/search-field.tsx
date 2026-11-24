@@ -71,7 +71,7 @@ export function SearchField({
     <div className={cn("relative min-w-40 flex-1 sm:max-w-sm", className)}>
       <Search
         aria-hidden
-        className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute top-1/2 left-2.5 size-icon -translate-y-1/2 text-muted-foreground"
       />
       <Input
         aria-label={label}
@@ -91,7 +91,7 @@ export function SearchField({
           onClick={() => change("")}
           type="button"
         >
-          <X aria-hidden className="size-4" />
+          <X aria-hidden className="size-icon" />
         </button>
       )}
     </div>

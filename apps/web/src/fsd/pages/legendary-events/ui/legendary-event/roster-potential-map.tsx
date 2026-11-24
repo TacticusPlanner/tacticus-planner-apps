@@ -71,7 +71,7 @@ export function RosterPotentialMap({
         <div aria-hidden className="flex shrink-0 flex-col gap-px pt-0">
           {columns.map((column, row) => (
             <span className="flex h-3.5 items-center" key={row}>
-              <ObjectiveIcon className="size-3.5" icon={column.icon} />
+              <ObjectiveIcon className="size-icon-sm" icon={column.icon} />
             </span>
           ))}
         </div>

@@ -30,7 +30,7 @@ export function MobileReorderBar({
       >
         {pending ? (
           <>
-            <Loader2 aria-hidden className="size-4 animate-spin" />
+            <Loader2 aria-hidden className="size-icon animate-spin" />
             {t("goals.order.saving")}
           </>
         ) : (

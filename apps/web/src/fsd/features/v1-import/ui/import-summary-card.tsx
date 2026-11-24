@@ -60,7 +60,7 @@ export function ImportSummaryCard({
       <ul className="grid gap-1">
         {lines.map((line) => (
           <li className="flex items-center gap-2" key={line}>
-            <CircleCheck aria-hidden className="size-4 text-primary" />
+            <CircleCheck aria-hidden className="size-icon text-primary" />
             {line}
           </li>
         ))}

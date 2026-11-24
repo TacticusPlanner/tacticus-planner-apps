@@ -222,7 +222,7 @@ function UnitSetControl({
             (set === "unlocked" && unitSets.unlocked !== "ready") ||
             (set === "inTeams" && unitSets.inTeams !== "ready"),
           trailing: loading ? (
-            <Spinner aria-label={loading} className="size-3" />
+            <Spinner aria-label={loading} className="size-icon-sm" />
           ) : undefined,
         }
       })}
@@ -251,7 +251,7 @@ function PointsModeControl({
           mode === "estimated" && estimated === "loading" ? (
             <Spinner
               aria-label={t("masterTable.points.estimatesLoading")}
-              className="size-3"
+              className="size-icon-sm"
             />
           ) : undefined,
       }))}

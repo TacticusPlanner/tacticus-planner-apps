@@ -71,7 +71,10 @@ export function ObjectiveChips({
             data-testid="quest-objective-chip"
             key={`${objective.type}-${index}`}
           >
-            <Icon aria-hidden className="size-3.5 shrink-0" />
+            <Icon
+              aria-hidden
+              className={cn("shrink-0", compact ? "size-icon-sm" : "size-icon")}
+            />
             {restriction ? (
               <span className="sr-only">{t("objectives.restriction")}: </span>
             ) : null}

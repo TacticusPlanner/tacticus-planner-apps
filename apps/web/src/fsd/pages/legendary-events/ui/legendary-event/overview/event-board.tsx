@@ -652,7 +652,7 @@ function ObjectiveHeading({
             {isSelected ? (
               <Check
                 aria-hidden="true"
-                className="absolute top-0.5 right-0.5 size-3 text-primary"
+                className="absolute top-0.5 right-0.5 size-icon-xs text-primary"
               />
             ) : null}
             <span className="text-xs font-semibold tabular-nums">

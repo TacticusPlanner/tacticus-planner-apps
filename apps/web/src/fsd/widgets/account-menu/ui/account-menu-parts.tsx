@@ -48,11 +48,11 @@ export function MenuLinkRow({
       target="_blank"
       {...props}
     >
-      <Icon className="size-4 shrink-0" />
+      <Icon className="size-icon shrink-0" />
       <span className="min-w-0 flex-1 truncate">{label}</span>
       <ExternalLink
         aria-hidden="true"
-        className="size-3.5 shrink-0 text-muted-foreground"
+        className="size-icon-sm shrink-0 text-muted-foreground"
       />
     </a>
   )
@@ -168,7 +168,7 @@ export function MenuRow({
       type="button"
       {...props}
     >
-      {Icon ? <Icon className="size-4 shrink-0" /> : null}
+      {Icon ? <Icon className="size-icon shrink-0" /> : null}
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {hasNode(trailing) ? (
         <span className="shrink-0 text-xs text-muted-foreground">
@@ -178,7 +178,7 @@ export function MenuRow({
       {chevron ? (
         <ChevronRight
           aria-hidden="true"
-          className="size-4 shrink-0 text-muted-foreground"
+          className="size-icon-sm shrink-0 text-muted-foreground"
         />
       ) : null}
     </button>
@@ -273,7 +273,7 @@ export function LanguagePickerView({ onBack }: { onBack: () => void }) {
             role="radio"
             trailing={
               locale.code === language ? (
-                <Check aria-hidden="true" className="size-4" />
+                <Check aria-hidden="true" className="size-icon" />
               ) : undefined
             }
           />

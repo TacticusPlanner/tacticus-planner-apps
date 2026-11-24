@@ -107,7 +107,7 @@ export function BattleList({
                   <ChevronDownIcon
                     aria-hidden
                     className={cn(
-                      "size-4 shrink-0 transition-transform",
+                      "size-icon-sm shrink-0 transition-transform",
                       open && "rotate-180"
                     )}
                   />
@@ -160,7 +160,7 @@ export function BattleList({
                               className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground"
                               data-testid="quest-battle-slots"
                             >
-                              <UsersIcon aria-hidden className="size-3.5" />
+                              <UsersIcon aria-hidden className="size-icon-sm" />
                               {t("quest:battles.slots", {
                                 count: battle.deploySlots,
                               })}
@@ -213,7 +213,7 @@ export function BattleList({
                           </span>
                           <ChevronRightIcon
                             aria-hidden
-                            className="size-4 shrink-0 self-center text-muted-foreground"
+                            className="size-icon-sm shrink-0 self-center text-muted-foreground"
                           />
                         </button>
                       </li>

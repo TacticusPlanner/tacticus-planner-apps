@@ -194,7 +194,7 @@ export function CurrentRunStatus({
 
 function RowIcon({ resource }: { resource: LegendaryEventResource | null }) {
   if (resource === null) {
-    return <Coins aria-hidden="true" className="size-4 shrink-0" />
+    return <Coins aria-hidden="true" className="size-icon shrink-0" />
   }
   return (
     <EntityIcon
@@ -262,7 +262,7 @@ function GlyphLine({
     <li className="flex items-center gap-1.5" data-testid={testId}>
       <Icon
         aria-hidden="true"
-        className="size-4 shrink-0 text-muted-foreground"
+        className="size-icon shrink-0 text-muted-foreground"
       />
       <span className="min-w-0">{children}</span>
     </li>

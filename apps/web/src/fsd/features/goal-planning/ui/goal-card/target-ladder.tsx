@@ -157,7 +157,7 @@ export function TargetLadder({
             onClick={() => setExpanded(true)}
             type="button"
           >
-            <ChevronsLeftRight className="size-3.5 shrink-0" />
+            <ChevronsLeftRight className="size-icon-sm shrink-0" />
             <span className="truncate">
               {t("goals.card.ladder.belowRange", {
                 from: firstHidden.name,

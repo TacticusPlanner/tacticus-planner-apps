@@ -36,7 +36,7 @@ export function ObjectiveIcon({
       aria-hidden="true"
       className={cn(
         // Inline by default (ui-style-guide game icon sizes): the 20px icon baseline.
-        "relative inline-flex size-4 shrink-0 pointer-coarse:size-5",
+        "relative inline-flex size-icon shrink-0",
         muted && "opacity-25 grayscale",
         className
       )}

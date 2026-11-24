@@ -99,7 +99,7 @@ function PlannedRow({
         {hasNode(start) && hasNode(end) ? (
           <>
             {start}
-            <ArrowRight className="size-3.5 shrink-0" />
+            <ArrowRight className="size-icon-sm shrink-0" />
             {end}
           </>
         ) : null}

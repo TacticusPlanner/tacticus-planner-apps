@@ -103,7 +103,7 @@ export function IncursionEligibleDialog({
                   <span className="flex w-6 shrink-0 justify-end text-xs text-muted-foreground tabular-nums">
                     {selected ? (
                       <Check
-                        className="size-4 text-(--primary)"
+                        className="size-icon-sm text-(--primary)"
                         aria-hidden="true"
                         data-testid="incursion-eligible-selected"
                       />

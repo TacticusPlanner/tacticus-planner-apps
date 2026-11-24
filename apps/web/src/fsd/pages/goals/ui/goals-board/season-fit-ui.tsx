@@ -150,7 +150,7 @@ function SeasonCutoffLine({
       icon={
         <CalendarClock
           aria-hidden="true"
-          className={cn("size-4 shrink-0", CUTOFF_ICON_CLASS[tone])}
+          className={cn("size-icon shrink-0", CUTOFF_ICON_CLASS[tone])}
         />
       }
       label={text}

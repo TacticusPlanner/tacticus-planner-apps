@@ -392,7 +392,7 @@ export function TeamUnitPicker({
                     <span className="flex flex-wrap justify-center gap-0.5">
                       {objectives.map((objective) => (
                         <ObjectiveIcon
-                          className="size-4"
+                          className="size-icon-sm"
                           icon={objectiveLabel(objective).icon}
                           key={objective.index}
                           muted={!tile.satisfied.includes(objective.index)}
