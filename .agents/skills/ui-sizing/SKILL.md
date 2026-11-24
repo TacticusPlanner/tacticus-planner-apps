@@ -27,10 +27,10 @@ screen width.
 | Default UI text (labels, table cells)        | 14px                       | 14px                         | `text-sm`                        |
 | Caption, metadata — the floor                | 12px                       | 12px                         | `text-xs`                        |
 | Numerals or glyphs on a solid badge over art | 10px                       | 10px                         | `text-2xs` (badges only)         |
-| Icon inline with text                        | 16px                       | 16px                         | `size-4`                         |
-| Icon in a button / nav item                  | 20px                       | 16px                         | `size-5` / `size-4`              |
-| Standalone icon                              | 24px                       | 20px                         | `size-6` / `size-5`              |
-| Decorative icon inside a badge               | 12–14px                    | 12–14px                      | `size-3` / `size-3.5`            |
+| Icon: the baseline (see Icons below)         | 20px                       | 20px                         | `size-icon`                      |
+| Standalone icon, or beside `text-2xl`        | 24px                       | 24px                         | `size-6`                         |
+| Icon exception: 16px (see Icons below)       | 16px                       | 16px                         | `size-icon-sm`                   |
+| Icon exception: 12px (see Icons below)       | 12px                       | 12px                         | `size-icon-xs`                   |
 | Button / input height                        | 40px visual, 48px hit area | 32px (`sm` 28px in toolbars) | `h-10` / `h-8`                   |
 | Smallest tap target                          | 48px                       | 24px                         | —                                |
 | Portrait in a list, chip or lane             | 40px                       | 40px                         | `size-10`                        |
@@ -42,6 +42,32 @@ Text classes: `text-2xs` (only numerals or glyphs such as ≥ on a solid badge o
 `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl`. Never
 an arbitrary `text-[…]`. Line height: the class default, a `leading-*` step,
 or the `text-sm/5` shorthand.
+
+## Icons
+
+Every icon is 20px (`size-icon`) on mouse and touch: inline with `text-sm` or
+larger text, in a button, toggle, tab, menu, select or command item, input
+adornment, alert, nav item or the top bar. A 20px icon fits the 20px line height
+of `text-sm`, so it doesn't make a row taller. The shared controls in
+`packages/ui` already default their icons to `size-icon`; don't pass a size to
+an icon inside them.
+
+An icon is smaller only when what is around it is smaller than 20px:
+
+| Exception                                                                                                          | Size | Class          |
+| ------------------------------------------------------------------------------------------------------------------ | ---- | -------------- |
+| In a `text-xs` line (captions, metadata)                                                                           | 16px | `size-icon-sm` |
+| Trailing affordance: select / combobox chevron, sort arrow, disclosure chevron, external-link mark, selected check | 16px | `size-icon-sm` |
+| Compact control: `xs`, `icon-xs`, `icon-sm` buttons, `xs` input group                                              | 16px | `size-icon-sm` |
+| Inside a badge, count badge or status pill                                                                         | 12px | `size-icon-xs` |
+| Corner mark on a portrait or tile (selected check, lock, plus), on a solid badge                                   | 12px | `size-icon-xs` |
+
+No icon uses `size-3`, `size-3.5`, `size-4` or `size-5`: use the tokens, so a
+later retune is one line in `packages/ui/src/styles/globals.css`. A size other
+than 20px needs one of the reasons above; when none fits, use 20px. Standalone
+icons with no label beside them are 24px (`size-6`); the empty state's icon is
+32px. Not icons, so not covered here: status dots, the checkbox check and radio
+dot, colour swatches and legend squares.
 
 Game icons (portraits, upgrades, equipment, factions, traits…) use the role
 sizes in the `ui-style-guide` skill (rule 6). Layout, controls and copy are
@@ -61,7 +87,7 @@ Snap to the nearest allowed class within ±2px; on a tie pick the larger one.
 | `text-[10px]`, `text-[11px]` elsewhere             | `text-xs`                                                |
 | `text-[13px]`, `text-[15px]`                       | `text-sm`, `text-base`                                   |
 | `text-[22px]`, `text-[26px]`                       | `text-2xl`                                               |
-| `size-[13px]`, `size-[18px]`, `size-[22px]`        | `size-3.5`, `size-5`, `size-6`                           |
+| `size-[13px]`, `size-[18px]`, `size-[22px]` (icon) | `size-icon-sm`, `size-icon`, `size-6`                    |
 | Layout lengths (`w-[420px]`, `min-h-[52px]`)       | the exact spacing step: `w-105`, `min-h-13` (px ÷ 4)     |
 | `rounded-[10px]`, `rounded-[5px]`, `rounded-[2px]` | `rounded-lg`, `rounded-sm`, `rounded-xs`                 |
 | `ring-[3px]`, `border-b-[3px]`                     | `ring-3`, `border-b-3`                                   |

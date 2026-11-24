@@ -35,7 +35,7 @@ export function NavChildIcon({
     return (
       <Icon
         aria-hidden="true"
-        className={cn("size-4 shrink-0", className)}
+        className={cn("size-icon shrink-0", className)}
         data-testid="nav-child-icon"
       />
     )

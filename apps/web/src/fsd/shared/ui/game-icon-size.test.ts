@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest"
 import { entityIconClassName, portraitClassName } from "./game-icon-size"
 
 describe("game icon sizes", () => {
-  it("draws an inline icon at 16px with a mouse and 20px on touch", () => {
-    expect(entityIconClassName("inline")).toBe("size-4 pointer-coarse:size-5")
+  it("draws an inline icon at the 20px baseline on every pointer", () => {
+    expect(entityIconClassName("inline")).toBe("size-icon")
   })
 
   it.each([
