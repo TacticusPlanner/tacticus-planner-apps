@@ -1,7 +1,15 @@
 import { useState } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown, ChevronRight, MoreHorizontal } from "lucide-react"
+import {
+  CalendarDays,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  MoreHorizontal,
+  Undo2,
+  X,
+} from "lucide-react"
 import { eventDay } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -557,6 +565,7 @@ function ListRow({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={() => onGoToDay(entry.dayIndex)}>
+            <CalendarDays />
             {t("list.goToDay")}
           </DropdownMenuItem>
           {entry.state === "needsReview" ? (
@@ -567,6 +576,7 @@ function ListRow({
                 controller.openDialog({ kind: "boughtSome", entry })
               }
             >
+              <Check />
               {t("list.boughtSome")}
             </DropdownMenuItem>
           ) : null}
@@ -575,6 +585,7 @@ function ListRow({
               disabled={disabled}
               onSelect={() => controller.undoBought(ref)}
             >
+              <Undo2 />
               {t("list.undoBought")}
             </DropdownMenuItem>
           ) : null}
@@ -583,6 +594,7 @@ function ListRow({
             onSelect={() => controller.remove(ref)}
             variant="destructive"
           >
+            <X />
             {t("list.remove")}
           </DropdownMenuItem>
         </DropdownMenuContent>

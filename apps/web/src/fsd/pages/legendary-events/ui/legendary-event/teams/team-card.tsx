@@ -2,11 +2,14 @@ import { useState } from "react"
 import type { CSSProperties } from "react"
 import { useTranslation } from "react-i18next"
 import {
+  ArrowDown,
+  ArrowUp,
   Check,
   ChevronRight,
   GripVertical,
   MoreHorizontal,
   Pencil,
+  Trash2,
   TriangleAlert,
 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
@@ -14,6 +17,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
@@ -180,6 +184,7 @@ export function TeamCard({
               data-testid="team-card-edit"
               onSelect={actions.onEdit}
             >
+              <Pencil />
               {t("teams.menu.edit")}
             </DropdownMenuItem>
             {actions.onMoveUp ? (
@@ -187,6 +192,7 @@ export function TeamCard({
                 data-testid="team-card-move-up"
                 onSelect={actions.onMoveUp}
               >
+                <ArrowUp />
                 {t("teams.menu.moveUp")}
               </DropdownMenuItem>
             ) : null}
@@ -195,14 +201,17 @@ export function TeamCard({
                 data-testid="team-card-move-down"
                 onSelect={actions.onMoveDown}
               >
+                <ArrowDown />
                 {t("teams.menu.moveDown")}
               </DropdownMenuItem>
             ) : null}
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               data-testid="team-card-delete"
               onSelect={actions.onDelete}
               variant="destructive"
             >
+              <Trash2 />
               {t("teams.menu.delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
