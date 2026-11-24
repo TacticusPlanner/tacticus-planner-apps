@@ -17,7 +17,12 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { abilityIcon } from "@workspace/game-catalog"
 
-import { CompactProgression, EntityIcon, RankBadge } from "@/shared/ui"
+import {
+  CompactProgression,
+  EntityIcon,
+  HintTrigger,
+  RankBadge,
+} from "@/shared/ui"
 import type { EntityIconSize } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/entities/goal-farming"
@@ -62,24 +67,19 @@ function AbilityIconTrigger({
   const { t } = useTranslation("abilities")
   const label = `${trackLabel} · ${t(abilityId, { defaultValue: abilityId })}`
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          aria-label={label}
-          className="inline-flex shrink-0 cursor-default rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-          data-testid="goal-ability-icon"
-          type="button"
-        >
-          <EntityIcon
-            alt=""
-            className="rounded-sm"
-            size={size}
-            src={abilityIcon(abilityId)}
-          />
-        </button>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
+    // A popover on touch, with the hit area grown past the small icon so a finger can reach it.
+    <HintTrigger
+      className="relative shrink-0 pointer-coarse:after:absolute pointer-coarse:after:-inset-3"
+      data-testid="goal-ability-icon"
+      label={label}
+    >
+      <EntityIcon
+        alt=""
+        className="rounded-sm"
+        size={size}
+        src={abilityIcon(abilityId)}
+      />
+    </HintTrigger>
   )
 }
 

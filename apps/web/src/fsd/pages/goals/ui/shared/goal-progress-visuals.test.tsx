@@ -160,7 +160,7 @@ describe("GoalProgressDisplay", () => {
     )
 
     expect(screen.queryByTestId("goal-progress-info-trigger")).toBeNull()
-    const trigger = screen.getByTestId("goals-progress-info-trigger")
+    const trigger = screen.getByRole("button", { name: "Progress details" })
     expect(screen.queryByTestId("goal-progress-explanation")).toBeNull()
     fireEvent.click(trigger)
     expect(screen.getByTestId("goal-progress-explanation")).toBeInTheDocument()
@@ -186,7 +186,7 @@ describe("GoalProgressDisplay", () => {
       />
     )
 
-    await userEvent.hover(screen.getByTestId("goal-progress-percent"))
+    await userEvent.hover(screen.getByRole("button", { name: /^25%/ }))
     expect(
       (await screen.findAllByTestId("goal-remaining-text"))[0]
     ).toHaveTextContent("3 upgrade slots · 12,400 energy")
@@ -210,7 +210,7 @@ describe("GoalProgressDisplay", () => {
       />
     )
 
-    await userEvent.hover(screen.getByTestId("goal-progress-percent"))
+    await userEvent.hover(screen.getByRole("button", { name: /^50%/ }))
     expect(
       (await screen.findAllByTestId("goal-remaining-text"))[0]
     ).toHaveTextContent("6 levels · 12,674 XP")
@@ -235,7 +235,7 @@ describe("GoalProgressDisplay", () => {
       />
     )
 
-    fireEvent.click(screen.getByTestId("goal-progress-mobile-footer"))
+    fireEvent.click(screen.getByRole("button", { name: /6 levels/ }))
     const explanation = screen.getByTestId("goal-progress-explanation")
     expect(explanation).toHaveTextContent("6 levels remaining.")
     expect(explanation).toHaveTextContent("12,674 XP remaining.")

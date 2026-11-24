@@ -132,7 +132,8 @@ export function SeasonCutoffItem({
 }
 
 /** A labelled marker, not a row border: the label is a chip at the left edge, where the eye scans
- *  the priority numbers and names, and a 2px line in the fit colour runs from it to the right edge. */
+ *  the priority numbers and names, and a 2px line in the fit colour runs from it to the right edge.
+ *  On a narrow phone the chip's text wraps rather than pushing the list wider. */
 function SeasonCutoffLine({
   text,
   offset,
@@ -143,7 +144,7 @@ function SeasonCutoffLine({
   const tone = offset ?? 3
   return (
     <div className="flex items-center gap-2" role="separator" aria-label={text}>
-      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border bg-card px-2.5 py-0.5 text-sm font-medium text-foreground">
+      <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border bg-card px-2.5 py-0.5 text-sm font-medium text-foreground">
         <CalendarClock
           aria-hidden="true"
           className={cn("size-4 shrink-0", CUTOFF_ICON_CLASS[tone])}
@@ -151,7 +152,10 @@ function SeasonCutoffLine({
         {text}
       </span>
       <span
-        className={cn("h-0.5 flex-1 rounded-full", CUTOFF_LINE_CLASS[tone])}
+        className={cn(
+          "h-0.5 min-w-4 flex-1 rounded-full",
+          CUTOFF_LINE_CLASS[tone]
+        )}
       />
     </div>
   )

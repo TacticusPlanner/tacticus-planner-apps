@@ -440,7 +440,7 @@ describe("GoalResourceChips", () => {
     })
   })
 
-  it("adds the standalone slots and energy to the energy chip's tooltip, keeping the marginal figure", () => {
+  it("adds the standalone slots and energy to the energy chip's tooltip, keeping the marginal figure", async () => {
     render(
       <GoalResourceChips
         energy={1995}
@@ -454,9 +454,13 @@ describe("GoalResourceChips", () => {
     const title = within(chip).getByRole("button").getAttribute("aria-label")
     expect(title).toContain("Energy: 1,995")
     expect(title).toContain("Standalone: 12 upgrade slots, 3,410 energy")
+    await userEvent.hover(within(chip).getByRole("button"))
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "Standalone: 12 upgrade slots, 3,410 energy"
+    )
   })
 
-  it("shows no standalone tooltip content without overlap", () => {
+  it("shows no standalone tooltip content without overlap", async () => {
     cleanup()
     render(
       <GoalResourceChips
@@ -471,6 +475,12 @@ describe("GoalResourceChips", () => {
         .getByRole("button")
         .getAttribute("aria-label")
     ).not.toContain("Standalone")
+    await userEvent.hover(
+      within(screen.getByTestId("goal-resource-chip")).getByRole("button")
+    )
+    const tooltip = await screen.findByRole("tooltip")
+    expect(tooltip).toHaveTextContent("Energy: 1,995")
+    expect(tooltip).not.toHaveTextContent("Standalone")
   })
   describe("shop currency", () => {
     it("shows the currency still to spend beside the shard chip, grouped per currency", () => {

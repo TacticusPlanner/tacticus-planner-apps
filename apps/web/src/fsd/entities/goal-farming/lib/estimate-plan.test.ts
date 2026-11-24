@@ -184,6 +184,33 @@ describe("raid schedule breakdown", () => {
     expect(plan.outcomes.get("owned")).not.toHaveProperty("firstRaidDay")
   })
 
+  it("records a first raid day for a goal fed from a pooled resource it does not own", () => {
+    const plan = estimatePlanSchedule({
+      goals: [
+        {
+          goalId: "a",
+          priority: 1,
+          needs: [{ id: upgradeId("U1"), count: 1 }],
+        },
+        {
+          goalId: "b",
+          priority: 2,
+          needs: [{ id: upgradeId("U1"), count: 1 }],
+        },
+      ],
+      upgradesById: resources(["U1", "B1"]),
+      battlesById: new Map([battle("B1")]),
+      dailyEnergy: 100,
+      inventory: [],
+      referenceDate,
+      combineGoals: true,
+    })
+
+    // "a" owns U1's raids, but "b" takes one of the units farmed the same day.
+    expect(plan.outcomes.get("a")).toMatchObject({ firstRaidDay: 1 })
+    expect(plan.outcomes.get("b")).toMatchObject({ firstRaidDay: 1 })
+  })
+
   it("uses Today as the completion date for a one-day plan", () => {
     const plan = estimatePlanSchedule({
       goals: [

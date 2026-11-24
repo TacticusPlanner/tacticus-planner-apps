@@ -112,6 +112,7 @@ function toCheckpoints(
  * resource is farmed at the nodes picked for the highest-priority goal that needs it; what it yields
  * is taken off the goals' stages in priority order, and each raid entry is credited to that same
  * highest-priority goal so Today keeps its per-goal grouping. Stages a day empties are dropped.
+ * `fedGoalIds` names every goal that took farmed material that day, owner or not, for its first raid day.
  */
 function spendPooledDay(
   goals: readonly GoalNeed[],
@@ -124,6 +125,7 @@ function spendPooledDay(
   energySpent: number
   entries: RaidBreakdownEntry[]
   doneStages: { goalId: string; stage: StageState }[]
+  fedGoalIds: Set<string>
 } {
   const pool = new Map<EstimateResourceId, number>()
   const nodesById = new Map<EstimateResourceId, FarmNode[]>()
@@ -140,9 +142,15 @@ function spendPooledDay(
     }
   }
   if (energy <= 0 || pool.size === 0)
-    return { energySpent: 0, entries: [], doneStages: [] }
+    return {
+      energySpent: 0,
+      entries: [],
+      doneStages: [],
+      fedGoalIds: new Set(),
+    }
 
   const before = new Map(pool)
+  const fedGoalIds = new Set<string>()
   const spent = spendDay(
     pool,
     nodesById,
@@ -160,6 +168,7 @@ function spendPooledDay(
         if (need === undefined || need === 0) continue
         const taken = Math.min(need, farmed)
         farmed -= taken
+        fedGoalIds.add(goal.goalId)
         if (need - taken <= 0) stage.remaining.delete(id)
         else stage.remaining.set(id, need - taken)
         if (farmed <= 0) break
@@ -179,6 +188,7 @@ function spendPooledDay(
   }
   return {
     doneStages,
+    fedGoalIds,
     energySpent: spent.energySpent,
     entries: spent.breakdown.map((entry) => ({
       goalId: required(
@@ -534,6 +544,11 @@ function runPlanSchedule(
       energy -= spent.energySpent
       for (const entry of spent.entries) {
         addGoalTotals(entry.goalId, entry.energySpent, entry.raidsPerformed)
+      }
+      // A goal fed from a resource another goal owns is raided for too, though no entry is its own.
+      for (const goalId of spent.fedGoalIds) {
+        if (!firstRaidDayByGoal.has(goalId))
+          firstRaidDayByGoal.set(goalId, days)
       }
       // The pool spends the day as one, so a checkpoint reached today is credited all of it.
       for (const { goalId, stage } of spent.doneStages) {

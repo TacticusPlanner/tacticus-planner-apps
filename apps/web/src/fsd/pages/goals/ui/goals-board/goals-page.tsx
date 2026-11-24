@@ -499,7 +499,8 @@ export function GoalsPage() {
     )
   const selectBar = (placement: "top" | "bottom") => (
     <GoalsSelectBar
-      count={selection.size}
+      // Visible selected goals only, so Select all reads unchecked once a selected goal leaves the list.
+      count={selectedRows.length}
       onClear={clearSelection}
       onDone={tableSelectable ? undefined : exitSelect}
       onPreset={selectPreset}

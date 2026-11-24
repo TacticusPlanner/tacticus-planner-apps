@@ -252,7 +252,7 @@ Where Actual and Potential ratios render together, their explanation SHALL be re
 
 ### Requirement: Remaining resource text uses a per-goal-kind formatter for Rank and Unlock goals with thousands separators
 
-Wherever the goal progress display shows a still-needed resource text for a goal outside the list's Remaining column (the tooltip on the Progress column's percent readout or a screen-reader label), it SHALL use one formatter per goal kind: a Rank goal SHALL show "{{energy}} energy" when a farming energy estimate is available and no upgrade-slot count; an Unlock goal SHALL show "{{shards}} shards" (remaining shard need, per `goal-farming-estimates`' zero-once-owned rule). The Goals list's Remaining column itself renders chips per `goal-remaining-resources`. A level requirement's remaining text is defined by "A Rank or Ability goal's level requirement carries its own remaining text and explanation". Every number formatted by this requirement SHALL render with the locale's thousands separator.
+Wherever the goal progress display shows a still-needed resource text for a goal outside the list's Remaining column (a mobile card's footer line or a screen-reader label), it SHALL use one formatter per goal kind: a Rank goal SHALL show "{{energy}} energy" when a farming energy estimate is available and no upgrade-slot count; an Unlock goal SHALL show "{{shards}} shards" (remaining shard need, per `goal-farming-estimates`' zero-once-owned rule). The Goals list's Remaining column itself renders chips per `goal-remaining-resources`. A level requirement's remaining text is defined by "A Rank or Ability goal's level requirement carries its own remaining text and explanation". The percent readout's tooltip builds on this text: for a Rank goal it leads with the upgrade slots left ("3 upgrade slots · 12,400 energy", per "Actual Progress and Potential Progress captions carry a visible explanation on every goal kind"). Every number formatted by this requirement SHALL render with the locale's thousands separator.
 
 Assumptions:
 
@@ -262,8 +262,9 @@ Assumptions:
 #### Scenario: Rank goal with both slots and energy available
 
 - **GIVEN** a Rank goal has 9 upgrade slots remaining and a farming estimate of 1,674 remaining energy
-- **WHEN** its remaining text renders in the progress tooltip
+- **WHEN** its remaining text renders in the mobile footer or a screen-reader label
 - **THEN** it reads "1,674 energy", with no slot count
+- **AND** its percent readout's tooltip reads "9 upgrade slots · 1,674 energy"
 
 #### Scenario: Unlock goal
 

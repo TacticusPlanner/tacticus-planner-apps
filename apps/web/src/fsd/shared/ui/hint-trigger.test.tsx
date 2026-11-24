@@ -1,4 +1,4 @@
-import { render, screen } from "@/test/render"
+import { render, screen, waitFor } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
@@ -42,5 +42,38 @@ describe("HintTrigger", () => {
     expect(await screen.findByRole("dialog")).toHaveTextContent(
       "Held by #2 Z'Kar"
     )
+  })
+
+  it("opens from the keyboard and closes on Escape with a mouse", async () => {
+    stubPointer(false)
+    const user = userEvent.setup()
+    render(<HintTrigger label="Energy: 1,674">1,674</HintTrigger>)
+    await user.tab()
+    expect(screen.getByRole("button")).toHaveFocus()
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "Energy: 1,674"
+    )
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
+  })
+
+  it("opens from the keyboard, closes on Escape and reopens with a coarse pointer", async () => {
+    stubPointer(true)
+    const user = userEvent.setup()
+    render(
+      <HintTrigger hint="Held by #2 Z'Kar" label="Mat: 3 / 10">
+        3/10
+      </HintTrigger>
+    )
+    await user.tab()
+    expect(screen.getByRole("button")).toHaveFocus()
+    await user.keyboard("{Enter}")
+    expect(await screen.findByRole("dialog")).toHaveTextContent(
+      "Held by #2 Z'Kar"
+    )
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
+    await user.click(screen.getByRole("button"))
+    expect(await screen.findByRole("dialog")).toBeInTheDocument()
   })
 })
