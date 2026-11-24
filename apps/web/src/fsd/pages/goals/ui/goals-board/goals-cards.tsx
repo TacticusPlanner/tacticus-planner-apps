@@ -44,6 +44,7 @@ export function GoalsCards({
   menuMoves,
   onMenuMove,
   highlightedGoalId,
+  onJumpToGoal,
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
@@ -87,7 +88,7 @@ export function GoalsCards({
         ) : null}
         <li
           className={cn(
-            "flex min-w-0 flex-col gap-2.5 rounded-2xl border bg-card p-3 text-sm shadow-xs transition-colors duration-700 data-dragging:relative data-dragging:z-10 data-dragging:border-ring data-dragging:shadow-lg data-just-moved:bg-accent",
+            "flex min-w-0 flex-col gap-2.5 rounded-2xl border bg-card p-3 text-sm shadow-xs transition-colors duration-700 focus-visible:outline-2 focus-visible:outline-ring data-dragging:relative data-dragging:z-10 data-dragging:border-ring data-dragging:shadow-lg data-just-moved:bg-accent",
             reached && REACHED_ROW_CLASS,
             fitOffset !== undefined && SEASON_FIT_CARD_ACCENT[fitOffset]
           )}
@@ -97,6 +98,7 @@ export function GoalsCards({
           data-reached={reached || undefined}
           data-season-fit={fitOffset}
           data-testid="goal-row"
+          tabIndex={-1}
           ref={sortable?.setNodeRef}
           style={sortable?.style}
         >
@@ -111,6 +113,7 @@ export function GoalsCards({
             metrics={metrics}
             moves={menuMoves?.get(row.goalId)}
             onEdit={onEdit}
+            onJumpToGoal={onJumpToGoal}
             onMenuMove={onMenuMove}
             onToggleSelected={onToggleSelected}
             potentialProgress={potentialProgress}

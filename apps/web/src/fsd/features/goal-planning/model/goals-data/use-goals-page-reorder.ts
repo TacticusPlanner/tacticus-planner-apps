@@ -67,13 +67,17 @@ export function useGoalsPageReorder(allRows: readonly GoalRow[]) {
     afterNextPaint(() => {
       void orderActions.moveGoal({ goalId, displacedGoalId })
       setLastMovedGoalId(goalId)
-      setHighlightedGoalId(goalId)
-      clearTimeout(highlightTimer.current)
-      highlightTimer.current = setTimeout(
-        () => setHighlightedGoalId(null),
-        MOVED_HIGHLIGHT_MS
-      )
+      highlightGoal(goalId)
     })
+  /** Flashes a goal's row briefly: after a menu move, or when a "Covered by" note jumps to it. */
+  const highlightGoal = (goalId: string) => {
+    setHighlightedGoalId(goalId)
+    clearTimeout(highlightTimer.current)
+    highlightTimer.current = setTimeout(
+      () => setHighlightedGoalId(null),
+      MOVED_HIGHLIGHT_MS
+    )
+  }
   useEffect(() => () => clearTimeout(highlightTimer.current), [])
 
   return {
@@ -90,6 +94,7 @@ export function useGoalsPageReorder(allRows: readonly GoalRow[]) {
           }
         : null,
     highlightedGoalId,
+    highlightGoal,
     reorderAvailable,
     reorderActive: active && reorderAvailable,
     toggleReorder,

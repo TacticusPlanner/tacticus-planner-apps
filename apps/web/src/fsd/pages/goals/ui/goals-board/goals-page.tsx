@@ -58,6 +58,7 @@ import { GoalsLateNotices } from "./goals-estimates-error"
 import { GoalsPageStates } from "./goals-page-states"
 import { ProjectSelect, useProjects } from "@/entities/project"
 import { GoalsList } from ".//goals-list"
+import { jumpToGoalRow } from "./jump-to-goal"
 import { GoalGroupSection } from "./goal-group-section"
 import { GoalsBulkControls } from "./goals-bulk-controls"
 import { useProjectRemovalFlow } from "./project-removal-flow"
@@ -401,12 +402,20 @@ export function GoalsPage() {
     menuMovePosition,
     priorityOrder,
     highlightedGoalId,
+    highlightGoal,
     reorderAvailable: orderHasMovableGoals,
     reorderActive,
     toggleReorder,
     exitReorder,
     listRef,
   } = useGoalsPageReorder(nonArchivedRows)
+  // A "Covered by" link: show the covering goal where it is, or open it when the list hides it (a
+  // filter, a collapsed group or another tab). Filters are left as the user set them.
+  const jumpToGoal = (goalId: string) => {
+    if (jumpToGoalRow(goalId, listRef.current ?? document))
+      highlightGoal(goalId)
+    else openEditGoal(goalId)
+  }
   // Dragging changes the priority order, so it only works while the list shows that order.
   const sortBlocksReorder = sort !== "priority"
   const reorderAvailable = orderHasMovableGoals && !sortBlocksReorder
@@ -620,6 +629,7 @@ export function GoalsPage() {
               onMenuMove={handleMenuMove}
               onReorder={handleReorder}
               onEdit={openEditGoal}
+              onJumpToGoal={jumpToGoal}
               onSelectAllVisible={selectAllVisible}
               onToggleSelected={onToggleSelected}
               potentialProgress={insights.potentialProgressByGoalId}

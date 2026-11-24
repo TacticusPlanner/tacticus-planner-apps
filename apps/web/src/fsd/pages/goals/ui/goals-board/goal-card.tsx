@@ -72,6 +72,7 @@ type GoalCardProps = Pick<
   | "metrics"
   | "potentialProgress"
   | "onEdit"
+  | "onJumpToGoal"
   | "levelPotentialProgress"
   | "levelChargedXp"
   | "levelPoolXpAvailable"
@@ -105,6 +106,7 @@ export const GoalCard = memo(
     row,
     actions,
     onEdit = () => undefined,
+    onJumpToGoal,
     potentialProgress,
     levelPotentialProgress,
     estimates,
@@ -262,6 +264,7 @@ export const GoalCard = memo(
           </div>
           <CoveredByNote
             coveredBy={sources.metrics?.get(row.goalId)?.coveredBy}
+            onJump={onJumpToGoal}
           />
           {data.reached ? null : (
             <GoalCheckpoints

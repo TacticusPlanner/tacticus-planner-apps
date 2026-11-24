@@ -1939,7 +1939,8 @@
       "reachableCeilingReasonRarity": "begrenzt durch Seltenheit",
       "reachableCeilingReasonLevel": "begrenzt durch Stufe",
       "reachableCeilingReasonBoth": "begrenzt durch Seltenheit und Stufe",
-      "coveredBy": "Abgedeckt durch das Ziel {{type}} → {{target}}"
+      "coveredBy": "Abgedeckt durch das Ziel {{type}} → {{target}}",
+      "coveredByPriority": "Abgedeckt durch #{{priority}} · {{goal}}"
     },
     "insights": {
       "selectProject": "Wähle ein Projekt",

@@ -230,6 +230,22 @@ The Goal cell (desktop) and goal line (mobile card) SHALL identify the goal kind
 - **WHEN** its Goal cell renders
 - **THEN** it shows the two compact progressions (rarity icon, star and count) with an arrow and no rarity or goal-type text
 
+### Requirement: A covered-by note names and links to the covering goal
+
+When a higher-priority goal of the same unit and type already reaches a goal's target, the goal's covered-by note SHALL name that goal by its account-wide priority and target ("Covered by #3 · Rank → Gold I"; without a priority it keeps "Covered by the Rank → Gold I goal"), in the desktop Goal cell and on the card. On the Goals page the note SHALL be a link: activating it scrolls the covering goal's row or card into view (instantly under reduced motion), flashes it with the same highlight a row-menu move uses, and moves focus to it. When that goal is not in the list on screen (filtered out, in a collapsed group, or on another tab), activating the note SHALL open the goal's Edit dialog instead, and SHALL NOT change any filter.
+
+#### Scenario: The note jumps to the covering goal
+
+- **GIVEN** a Rank goal to Gold I covered by goal #3, and goal #3 is in the list
+- **WHEN** the user activates the note "Covered by #3 · Rank → Gold I"
+- **THEN** goal #3 scrolls into view, flashes and takes focus
+
+#### Scenario: The covering goal is filtered out
+
+- **GIVEN** a covered goal whose covering goal is hidden by the Type filter
+- **WHEN** the user activates the note
+- **THEN** the covering goal's Edit dialog opens and the filter stays as it was
+
 ### Requirement: Desktop table uses static columns with a leading control cell and a row menu
 
 While the Table view is selected (see "Users choose between a Cards view and a Table view, Cards by default"), the Goals list SHALL render as a table with these data columns, in order: Character, Projects, Goal, Status, "Done by", Duration, Remaining, and Progress. Progress is last and narrow: it is the least-scanned figure in the row (UserJot "V2 Goals Page Is Harder to Scan"), so the status, completion date, day count and energy come before it. These columns SHALL remain static: none of them SHALL be hidden or added based on the table's or viewport's width — the only layout change at any desktop width is the fixed set of columns above, and below the mobile breakpoint the same columns scroll sideways inside the list. A column set that changes with width was tried and rejected: it made the page feel like it was "jumping" as the table resized. Progress SHALL be the last column at a fixed narrow width; Remaining chips wrap within their own cell.

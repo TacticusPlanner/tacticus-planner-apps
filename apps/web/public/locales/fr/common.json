@@ -1939,7 +1939,8 @@
       "reachableCeilingReasonRarity": "limité par la rareté",
       "reachableCeilingReasonLevel": "limité par le niveau",
       "reachableCeilingReasonBoth": "limité par la rareté et le niveau",
-      "coveredBy": "Couvert par l'objectif {{type}} → {{target}}"
+      "coveredBy": "Couvert par l'objectif {{type}} → {{target}}",
+      "coveredByPriority": "Couvert par #{{priority}} · {{goal}}"
     },
     "insights": {
       "selectProject": "Sélectionnez un projet",

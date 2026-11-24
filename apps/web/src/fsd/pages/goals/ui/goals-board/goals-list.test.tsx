@@ -392,7 +392,8 @@ describe("GoalsList", () => {
         "goal-row-actions-trigger-goal-1"
       )
       const row = screen.getByTestId("goal-row")
-      expect(row).not.toHaveAttribute("tabindex")
+      // Out of the tab order: only a "Covered by" jump focuses the row itself.
+      expect(row).toHaveAttribute("tabindex", "-1")
       trigger.focus()
       expect(trigger).toHaveFocus()
       await user.keyboard("{Enter}")

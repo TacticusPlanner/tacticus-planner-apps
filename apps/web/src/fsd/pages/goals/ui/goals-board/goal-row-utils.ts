@@ -121,6 +121,9 @@ export type GoalsListProps = {
   highlightedGoalId?: string | null
   /** Opens the Edit goal dialog for a goal (the row's Edit action). */
   onEdit?: (goalId: string) => void
+  /** A "Covered by" note's link: shows the covering goal (scroll, flash, focus), or opens it when it
+   *  isn't in the list on screen. */
+  onJumpToGoal?: (goalId: string) => void
   /** Priority-shared plan estimate per goal id (plan §16 phase 4) — absent, or `null` for a goal
    *  entry, both render as the "—" placeholder (no project selected, non-Rank goal, or blocked). */
   estimates?: ReadonlyMap<string, EstimateOutcome>

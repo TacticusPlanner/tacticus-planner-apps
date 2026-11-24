@@ -47,6 +47,7 @@ type GoalRowCellsProps = Pick<
   | "metrics"
   | "potentialProgress"
   | "onEdit"
+  | "onJumpToGoal"
   | "levelPotentialProgress"
   | "levelChargedXp"
   | "levelPoolXpAvailable"
@@ -78,6 +79,7 @@ export const GoalRowCells = memo(function GoalRowCells({
   metrics,
   potentialProgress,
   onEdit = () => undefined,
+  onJumpToGoal,
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
@@ -215,7 +217,10 @@ export const GoalRowCells = memo(function GoalRowCells({
           progress={progress}
           size="lg"
         />
-        <CoveredByNote coveredBy={metrics?.get(row.goalId)?.coveredBy} />
+        <CoveredByNote
+          coveredBy={metrics?.get(row.goalId)?.coveredBy}
+          onJump={onJumpToGoal}
+        />
         {reached ? null : (
           <GoalCheckpoints
             estimate={estimates?.get(row.goalId)}

@@ -82,6 +82,7 @@ function GoalsTable({
   menuMoves,
   onMenuMove,
   highlightedGoalId,
+  onJumpToGoal,
   levelPotentialProgress,
   levelChargedXp,
   levelPoolXpAvailable,
@@ -221,7 +222,7 @@ function GoalsTable({
                 ) : null}
                 <TableRow
                   className={cn(
-                    "h-16 transition-colors duration-700 data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:outline-2 data-dragging:-outline-offset-2 data-dragging:outline-ring data-just-moved:bg-accent",
+                    "h-16 transition-colors duration-700 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:outline-2 data-dragging:-outline-offset-2 data-dragging:outline-ring data-just-moved:bg-accent",
                     reached && REACHED_ROW_CLASS,
                     fitOffset !== undefined && SEASON_FIT_ROW_ACCENT[fitOffset]
                   )}
@@ -233,6 +234,7 @@ function GoalsTable({
                   data-reached={reached || undefined}
                   data-season-fit={fitOffset}
                   data-testid="goal-row"
+                  tabIndex={-1}
                   ref={sortable.setNodeRef}
                   style={sortable.style}
                 >
@@ -248,6 +250,7 @@ function GoalsTable({
                     metrics={metrics}
                     moves={menuMoves?.get(row.goalId)}
                     onEdit={onEdit}
+                    onJumpToGoal={onJumpToGoal}
                     onMenuMove={onMenuMove}
                     potentialProgress={potentialProgress}
                     onToggleSelected={onToggleSelected}
