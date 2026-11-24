@@ -1994,6 +1994,7 @@
       "excludedTitle": "Ziele, die nicht in diesem Datum enthalten sind",
       "notEstimated": "Nichts mehr zu farmen, daher keine Farming-Schätzung.",
       "goalLabel": "{{name}} · {{goalType}}",
+      "goalLabelPriority": "#{{priority}} {{name}} · {{goalType}}",
       "unknownGoal": "Unbekanntes Ziel",
       "holdingBackTitle": "Was dich aufhält",
       "holdingBackDescription": "Was kein Farmen löst, danach die Ressourcen, die an deinen gewählten Knoten die meiste Energie kosten.",

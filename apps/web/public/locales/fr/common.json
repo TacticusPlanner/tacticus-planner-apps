@@ -1994,6 +1994,7 @@
       "excludedTitle": "Objectifs hors de cette date",
       "notEstimated": "Plus rien à farmer, donc pas d'estimation de farming.",
       "goalLabel": "{{name}} · {{goalType}}",
+      "goalLabelPriority": "#{{priority}} {{name}} · {{goalType}}",
       "unknownGoal": "Objectif inconnu",
       "holdingBackTitle": "Ce qui vous freine",
       "holdingBackDescription": "Ce qu'aucun farming ne résout, puis les ressources qui coûtent le plus d'énergie sur les nœuds choisis.",

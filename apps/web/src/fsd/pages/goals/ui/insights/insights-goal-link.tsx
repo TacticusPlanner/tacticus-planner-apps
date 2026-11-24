@@ -11,7 +11,7 @@ import { EntityIcon } from "@/shared/ui"
 import { goalHref } from "./insights-view"
 import type { InsightsGoalInfo } from "./insights-view"
 
-/** A goal shown as its unit's portrait, the unit's name and the goal type's icon (the type is
+/** A goal shown as its unit's portrait, its priority ("#3"), the unit's name and the goal type's icon (the type is
  *  spelled out for screen readers), opening its edit dialog on the Goals list. `row` sizes the
  *  portrait for a list row; `chip` is a compact pill for a goal list under a material. */
 export function GoalLink({
@@ -40,10 +40,16 @@ export function GoalLink({
   const typeIcon = info
     ? goalTypeIcon(info.goalType as GoalKind, info.entityType)
     : undefined
+  // The same "#3" the Goals list and its covered-by notes use, so a goal reads the same everywhere.
+  const priority = info?.globalPriority ?? undefined
 
   return (
     <Link
-      aria-label={t("goals.insights.goalLabel", label)}
+      aria-label={
+        priority === undefined
+          ? t("goals.insights.goalLabel", label)
+          : t("goals.insights.goalLabelPriority", { ...label, priority })
+      }
       className={cn(
         "group relative flex min-w-0 items-center underline-offset-4 pointer-coarse:min-h-10 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1.5",
         variant === "chip"
@@ -60,6 +66,14 @@ export function GoalLink({
           src={portrait}
         />
       ) : null}
+      {priority === undefined ? null : (
+        <span
+          className="shrink-0 font-semibold tabular-nums"
+          data-testid="insights-goal-priority"
+        >
+          #{priority}
+        </span>
+      )}
       <span className="min-w-0 truncate group-hover:underline">
         {label.name}
       </span>

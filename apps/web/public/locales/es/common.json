@@ -1994,6 +1994,7 @@
       "excludedTitle": "Objetivos fuera de esta fecha",
       "notEstimated": "No queda nada por farmear, así que no hay estimación de farmeo.",
       "goalLabel": "{{name}} · {{goalType}}",
+      "goalLabelPriority": "#{{priority}} {{name}} · {{goalType}}",
       "unknownGoal": "Objetivo desconocido",
       "holdingBackTitle": "Qué te frena",
       "holdingBackDescription": "Lo que ningún farmeo resuelve y, después, los recursos que más energía cuestan en los nodos que elegiste.",

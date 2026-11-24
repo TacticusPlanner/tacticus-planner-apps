@@ -79,6 +79,7 @@ export function InsightsPage() {
         entityType: member.goal.entityType,
         entityId: member.goal.entityId,
         goalType: member.goal.goalType,
+        globalPriority: member.goal.globalPriority,
       },
     ])
   )

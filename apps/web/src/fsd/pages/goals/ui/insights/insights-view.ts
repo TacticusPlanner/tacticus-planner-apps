@@ -7,6 +7,8 @@ export type InsightsGoalInfo = {
   entityType: string
   entityId: string
   goalType: string
+  /** The goal's place in the account-wide order (Active and Paused goals only). */
+  globalPriority?: number | null
 }
 
 /** How many goals the outlook names as setting the plan's date. */
