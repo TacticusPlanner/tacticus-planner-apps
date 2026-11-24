@@ -1,7 +1,13 @@
-import { useState } from "react"
+import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { ArrowUpDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import type { ProjectSummary } from "@/entities/project"
@@ -34,25 +40,63 @@ export function GoalsMoveProjectGoalsButton({
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const [open, setOpen] = useState(false)
+  const reasonId = useId()
   const choices = moveGoalsChoices(project.projectId, projects, goals)
   if (choices.movedIds.length === 0) return null
   const stuck = !choices.topChanges && choices.references.length === 0
   const label = t("goals.order.projectMove.menuItem")
+  const reason = stuck ? t("goals.order.projectMove.alreadyFirst") : undefined
 
   return (
     <>
-      <Button
-        aria-label={isMobile ? label : undefined}
-        data-testid="project-move-goals"
-        disabled={stuck}
-        onClick={() => setOpen(true)}
-        size={isMobile ? "icon" : "sm"}
-        title={stuck ? t("goals.order.projectMove.alreadyFirst") : undefined}
-        variant="outline"
-      >
-        <ArrowUpDown />
-        {isMobile ? null : label}
-      </Button>
+      {isMobile ? (
+        <IconButton
+          data-testid="project-move-goals"
+          disabledReason={reason}
+          label={label}
+          onClick={() => setOpen(true)}
+          variant="outline"
+        >
+          <ArrowUpDown />
+        </IconButton>
+      ) : reason ? (
+        // Stays focusable and hoverable (`aria-disabled`) so the reason can show; a click does nothing.
+        <>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                aria-describedby={reasonId}
+                aria-disabled
+                className="aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+                data-testid="project-move-goals"
+                onPointerDown={(event) => {
+                  // Keep the reason open under a mouse press (Radix closes it on pointerdown).
+                  if (event.pointerType !== "touch") event.preventDefault()
+                }}
+                size="sm"
+                variant="outline"
+              >
+                <ArrowUpDown />
+                {label}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{reason}</TooltipContent>
+          </Tooltip>
+          <span hidden id={reasonId}>
+            {reason}
+          </span>
+        </>
+      ) : (
+        <Button
+          data-testid="project-move-goals"
+          onClick={() => setOpen(true)}
+          size="sm"
+          variant="outline"
+        >
+          <ArrowUpDown />
+          {label}
+        </Button>
+      )}
       {open ? (
         <MoveProjectGoalsDialog
           goals={goals}

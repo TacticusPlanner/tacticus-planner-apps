@@ -85,7 +85,6 @@ describe("DesktopSectionNavigation", () => {
         for (const key of ["raids", "hse", "hre", "quest", "guild-raids"]) {
           const label = tabs[key as keyof typeof tabs]
           const link = menu.getByRole("link", { name: label })
-          expect(link).toHaveAttribute("title", label)
           const text = within(link).getByText(label)
           expect(text).toHaveClass("wrap-break-word")
           expect(text).not.toHaveClass("truncate")

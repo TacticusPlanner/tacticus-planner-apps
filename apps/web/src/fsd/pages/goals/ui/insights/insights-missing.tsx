@@ -6,6 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import {
   abilityBadgeIcon,
@@ -320,24 +325,27 @@ function MissingRow({
               quantity: fmt(item.count),
             })
             return (
-              <li
-                aria-label={label}
-                className="flex items-center gap-1 text-sm font-medium tabular-nums"
-                key={item.key}
-                title={label}
-              >
-                <span className="relative inline-flex">
-                  <EntityIcon size="row" alt="" src={item.icon} />
-                  {item.overlay ? (
-                    <img
-                      alt=""
-                      className="absolute top-1/2 left-1/2 size-4 -translate-1/2 object-contain"
-                      src={item.overlay}
-                    />
-                  ) : null}
-                </span>
-                <span aria-hidden>{fmt(item.count)}</span>
-              </li>
+              <Tooltip key={item.key}>
+                <TooltipTrigger asChild>
+                  <li
+                    aria-label={label}
+                    className="flex items-center gap-1 text-sm font-medium tabular-nums"
+                  >
+                    <span className="relative inline-flex">
+                      <EntityIcon size="row" alt="" src={item.icon} />
+                      {item.overlay ? (
+                        <img
+                          alt=""
+                          className="absolute top-1/2 left-1/2 size-4 -translate-1/2 object-contain"
+                          src={item.overlay}
+                        />
+                      ) : null}
+                    </span>
+                    <span aria-hidden>{fmt(item.count)}</span>
+                  </li>
+                </TooltipTrigger>
+                <TooltipContent>{label}</TooltipContent>
+              </Tooltip>
             )
           })}
         </ul>

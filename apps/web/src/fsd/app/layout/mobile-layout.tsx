@@ -150,7 +150,6 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
         className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-semibold text-primary"
         data-testid="mobile-create-goal-button"
         onClick={onCreateGoal}
-        title={t("nav.createGoal")}
       >
         <span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
           <PlusCircle className="size-6" aria-hidden="true" />
@@ -164,7 +163,6 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
         data-testid="mobile-sync-button"
         disabled={syncDisabled}
         onClick={syncNow}
-        title={syncLabel}
       >
         <span
           className={cn(

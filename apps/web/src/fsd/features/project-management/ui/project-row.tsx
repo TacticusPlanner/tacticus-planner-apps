@@ -217,14 +217,17 @@ export function ProjectRow({
                 data-testid="project-move-goals"
                 disabled={moveGoals === "disabled"}
                 onSelect={() => onMoveGoals(project)}
-                title={
-                  moveGoals === "disabled"
-                    ? t("goals.order.projectMove.alreadyFirst")
-                    : undefined
-                }
               >
                 <ArrowUpDown />
-                {t("goals.order.projectMove.menuItem")}
+                {/* A disabled item names its reason on a second line: menus have no hover hint. */}
+                <span className="grid">
+                  {t("goals.order.projectMove.menuItem")}
+                  {moveGoals === "disabled" ? (
+                    <span className="text-xs text-muted-foreground">
+                      {t("goals.order.projectMove.alreadyFirst")}
+                    </span>
+                  ) : null}
+                </span>
               </DropdownMenuItem>
             ) : null}
             <DropdownMenuItem
@@ -251,11 +254,6 @@ export function ProjectRow({
                 disabled={archiveDisabled}
                 onSelect={() =>
                   void actions.save(project, { ...project, status: "Archived" })
-                }
-                title={
-                  archiveDisabled
-                    ? t("goals.project.archiveUnavailable")
-                    : undefined
                 }
                 variant="destructive"
               >

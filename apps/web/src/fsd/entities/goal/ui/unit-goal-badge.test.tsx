@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { render, screen } from "@/test/render"
+import { fireEvent, render, screen } from "@/test/render"
 
 import { UnitGoalBadge } from "./unit-goal-badge"
 
@@ -31,10 +31,11 @@ describe("UnitGoalBadge", () => {
     expect(screen.queryByTestId("unit-goal-badge")).not.toBeInTheDocument()
   })
 
-  it("is a plain titled mark without a tooltip", () => {
+  it("is a plain named mark, hover only, without a focusable tooltip", async () => {
     render(<UnitGoalBadge label="Goals" lines={["Unlock"]} tooltip={false} />)
-    const badge = screen.getByTestId("unit-goal-badge")
-    expect(badge).toHaveAttribute("title", "Goals: Unlock")
+    const badge = screen.getByRole("img", { name: "Goals: Unlock" })
     expect(badge).not.toHaveAttribute("tabindex")
+    fireEvent.pointerMove(badge, { pointerType: "mouse" })
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Unlock")
   })
 })

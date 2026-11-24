@@ -7,6 +7,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { goalTypeIcon } from "@/entities/goal"
@@ -136,24 +141,31 @@ function PriorityOption({
     >
       <span className="min-w-16 tabular-nums">{label}</span>
       {occupant ? (
-        <span
-          className="flex items-center gap-1"
-          data-testid={`priority-option-occupant-${value}`}
-          title={`${name} · ${t(`goals.create.goalTypes.${occupant.goalType}`)}`}
-        >
-          <GoalUnitIcon
-            size="inline"
-            entityId={occupant.entityId}
-            entityType={occupant.entityType}
-            name={name}
-          />
-          <EntityIcon
-            size="inline"
-            alt={t(`goals.create.goalTypes.${occupant.goalType}`)}
-
-            src={goalTypeIcon(occupant.goalType, occupant.entityType)}
-          />
-        </span>
+        // Hover names the occupant; a tap keeps picking the option (the icons' alt text names it
+        // for screen readers).
+        <Tooltip>
+          <TooltipTrigger asChild disableTouchToggle>
+            <span
+              className="flex items-center gap-1"
+              data-testid={`priority-option-occupant-${value}`}
+            >
+              <GoalUnitIcon
+                size="inline"
+                entityId={occupant.entityId}
+                entityType={occupant.entityType}
+                name={name}
+              />
+              <EntityIcon
+                size="inline"
+                alt={t(`goals.create.goalTypes.${occupant.goalType}`)}
+                src={goalTypeIcon(occupant.goalType, occupant.entityType)}
+              />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            {`${name} · ${t(`goals.create.goalTypes.${occupant.goalType}`)}`}
+          </TooltipContent>
+        </Tooltip>
       ) : null}
     </SelectItem>
   )

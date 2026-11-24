@@ -92,7 +92,8 @@ describe("option-select", () => {
     expect(screen.queryByRole("button", { name: /clear/i })).toBeNull()
   })
 
-  it("shows as many chips as fit, then +N naming the rest", () => {
+  it("shows as many chips as fit, then +N naming the rest", async () => {
+    const user = userEvent.setup()
     // A 100px trigger and 40px chips: one chip plus room for "+N" fits, a second does not.
     vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(100)
     vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(40)
@@ -108,8 +109,9 @@ describe("option-select", () => {
     const trigger = screen.getByRole("combobox", { name: "All letters" })
     const more = screen.getByTestId("select-more-chip")
     expect(more).toHaveTextContent("+2")
-    expect(more).toHaveAttribute("title", "Beta, Gamma")
     expect(trigger).toHaveTextContent(/^Alpha\+2/)
+    await user.hover(more)
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Beta, Gamma")
     vi.restoreAllMocks()
   })
 

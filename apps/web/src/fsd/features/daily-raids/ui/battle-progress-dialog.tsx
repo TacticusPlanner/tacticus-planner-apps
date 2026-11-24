@@ -35,6 +35,7 @@ import { combineReadStates, useCampaignDisplay, hasNode } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
   EntityIcon,
+  HintedToggleGroupItem,
   ResponsiveDialog,
   ResponsiveDialogBody,
   ResponsiveDialogDescription,
@@ -488,17 +489,17 @@ function ExtraControls({
               onChange({ lightningVictory: value.includes("lightning") })
             }
           >
-            <ToggleGroupItem
+            <HintedToggleGroupItem
               value="lightning"
               aria-label={t("battleProgress.lightningVictoryFor", {
                 battle: label,
               })}
-              title={t("battleProgress.lightningVictory")}
+              hint={t("battleProgress.lightningVictory")}
               className="data-[state=off]:opacity-40 data-[state=off]:grayscale"
               data-testid={`battle-progress-${battleId}-lightning`}
             >
               <EntityIcon size="inline" alt="" src={lightningVictoryIcon} />
-            </ToggleGroupItem>
+            </HintedToggleGroupItem>
           </ToggleGroup>
         ) : null}
         {tiers.length > 0 ? (
@@ -524,16 +525,16 @@ function ExtraControls({
               {t("battleProgress.milestones.none")}
             </ToggleGroupItem>
             {tiers.map((tier) => (
-              <ToggleGroupItem
+              <HintedToggleGroupItem
                 key={tier}
                 value={tier}
                 aria-label={t(`battleProgress.milestones.${tier}`)}
-                title={t(`battleProgress.milestones.${tier}`)}
+                hint={t(`battleProgress.milestones.${tier}`)}
                 className="data-[state=off]:opacity-40 data-[state=off]:grayscale"
                 data-testid={`battle-progress-${battleId}-milestone-${tier}`}
               >
                 <EntityIcon size="inline" alt="" src={milestoneIcons[tier]} />
-              </ToggleGroupItem>
+              </HintedToggleGroupItem>
             ))}
           </ToggleGroup>
         ) : null}

@@ -9,6 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type { DailyRaidLocationViewModel } from "../model/daily-raids.domain"
 
@@ -23,19 +28,24 @@ export function ManualBattleBadge({
 }) {
   const { t } = useTranslation("dailies")
   return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center gap-1 text-xs text-amber-700 dark:text-amber-400",
-        className
-      )}
-      title={t("manualBattle.help")}
-      data-testid="manual-battle-badge"
-    >
-      <Swords aria-hidden className="size-icon-sm" />
-      <span className={cn(compact && "sr-only")}>
-        {t("manualBattle.badge")}
-      </span>
-    </span>
+    // Hover explains it; a tap keeps the job of the chip or row it sits in.
+    <Tooltip>
+      <TooltipTrigger asChild disableTouchToggle>
+        <span
+          className={cn(
+            "inline-flex shrink-0 items-center gap-1 text-xs text-amber-700 dark:text-amber-400",
+            className
+          )}
+          data-testid="manual-battle-badge"
+        >
+          <Swords aria-hidden className="size-icon-sm" />
+          <span className={cn(compact && "sr-only")}>
+            {t("manualBattle.badge")}
+          </span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{t("manualBattle.help")}</TooltipContent>
+    </Tooltip>
   )
 }
 

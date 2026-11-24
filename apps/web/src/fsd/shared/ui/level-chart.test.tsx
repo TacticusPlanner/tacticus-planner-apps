@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react"
+import { fireEvent, render, screen, within } from "@/test/render"
 import { describe, expect, it, vi } from "vitest"
 
 import { LevelChart } from "./level-chart"
@@ -43,7 +43,7 @@ describe("level chart scale", () => {
 })
 
 describe("LevelChart", () => {
-  it("names an icon tick with its label as tooltip and alt text", () => {
+  it("names an icon tick with its label as tooltip and alt text", async () => {
     render(
       <LevelChart
         title="Health"
@@ -56,10 +56,10 @@ describe("LevelChart", () => {
       />
     )
     const iconTick = screen.getByTestId("chart-tick-0")
-    expect(iconTick).toHaveAttribute("title", "Lv 1")
-    expect(within(iconTick).getByAltText("Lv 1")).toBeInTheDocument()
+    const icon = within(iconTick).getByAltText("Lv 1")
     expect(screen.getByTestId("chart-tick-1")).toHaveTextContent("Lv 2")
-    expect(screen.getByTestId("chart-tick-1")).not.toHaveAttribute("title")
+    fireEvent.pointerMove(icon, { pointerType: "mouse" })
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Lv 1")
   })
 
   it("fades the columns from dimFrom on and marks their readout", () => {

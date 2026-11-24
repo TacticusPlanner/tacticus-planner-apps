@@ -14,6 +14,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import { useGameCatalogStatus } from "@/shared/game-catalog-status"
+import { HintTrigger } from "@/shared/ui"
 import type { GameCatalogStatus } from "@/shared/game-catalog-status"
 
 const statusIcons: Record<GameCatalogStatus, typeof CheckCircle2> = {
@@ -81,9 +82,14 @@ export function CatalogSyncStatusBadge({
             : "px-2 text-xs text-muted-foreground"
         }
         data-testid="catalog-sync-status"
-        title={error ?? label}
       >
-        {label}
+        {error ? (
+          <HintTrigger hint={error} label={label}>
+            {label}
+          </HintTrigger>
+        ) : (
+          label
+        )}
       </p>
     )
   }
@@ -91,12 +97,14 @@ export function CatalogSyncStatusBadge({
   const variant = status === "error" ? "destructive" : "outline"
 
   return (
-    <Badge
-      data-testid="catalog-sync-status"
-      title={error ?? label}
-      variant={variant}
-    >
-      {label}
+    <Badge data-testid="catalog-sync-status" variant={variant}>
+      {error ? (
+        <HintTrigger hint={error} label={label}>
+          {label}
+        </HintTrigger>
+      ) : (
+        label
+      )}
     </Badge>
   )
 }

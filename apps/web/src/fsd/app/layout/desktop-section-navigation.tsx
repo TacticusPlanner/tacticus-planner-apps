@@ -69,7 +69,6 @@ export function DesktopSectionNavigation({
             className="h-8 w-full justify-between px-2"
             data-testid={expanded ? "desktop-section-toggle" : undefined}
             onClick={() => onExpandedChange(false)}
-            title={`${toggleLabel} (${shortcut.hint})`}
             variant="ghost"
           >
             <span className="truncate text-sm font-semibold">{label}</span>
@@ -98,7 +97,6 @@ export function DesktopSectionNavigation({
                       ? "bg-accent font-medium text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
                       : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
-                  title={subItemLabel(t, child)}
                   to={child.path}
                 >
                   <NavChildIcon child={child} className="mr-2" />

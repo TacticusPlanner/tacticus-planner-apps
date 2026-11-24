@@ -17,7 +17,7 @@ import { Field, FieldLabel } from "@workspace/ui/components/field"
 
 import { goalTypeIcon } from "@/entities/goal"
 import type { GoalKind } from "@/entities/goal"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, TruncatedText } from "@/shared/ui"
 import type { EntityIconSize } from "@/shared/ui"
 
 import type { GoalProject } from "../../model/shared/types"
@@ -239,12 +239,11 @@ export function GoalProjectBadges({
         <Badge
           className={cn("gap-1", truncate && "max-w-40")}
           key={project.projectId}
-          title={truncate ? project.name : undefined}
           variant="secondary"
         >
           <ProjectColorDot color={project.color} />
           {truncate ? (
-            <span className="truncate">{project.name}</span>
+            <TruncatedText className="min-w-0">{project.name}</TruncatedText>
           ) : (
             project.name
           )}

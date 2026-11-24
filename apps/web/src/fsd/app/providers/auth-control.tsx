@@ -50,6 +50,7 @@ import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
 import { useUserJot } from "./userjot-provider"
 import { hasNode } from "@/shared/lib"
+import { TruncatedText } from "@/shared/ui"
 
 type AuthOperation = "api-access" | "sign-out"
 
@@ -315,13 +316,9 @@ export function AuthControl() {
                   {t("auth.accountLoading")}
                 </div>
               ) : (
-                <div
-                  className="truncate"
-                  data-testid="auth-account-name"
-                  title={accountName}
-                >
+                <TruncatedText data-testid="auth-account-name">
                   {accountName}
-                </div>
+                </TruncatedText>
               )}
             </div>
           </button>

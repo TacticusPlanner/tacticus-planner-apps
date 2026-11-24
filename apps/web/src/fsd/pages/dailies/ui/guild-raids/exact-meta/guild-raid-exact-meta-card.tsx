@@ -3,6 +3,11 @@ import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Card, CardContent, CardHeader } from "@workspace/ui/components/card"
 import { Progress } from "@workspace/ui/components/progress"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, RankBadge } from "@/shared/ui"
@@ -111,13 +116,19 @@ function SlotTile({
     <span className="text-xs font-medium text-muted-foreground">
       {slotLabel(slot)}
       {slot.essential ? (
-        <span
-          className="text-primary"
-          title={t("guildRaids.exactMeta.essential")}
-        >
-          {" "}
-          ●
-        </span>
+        // Hover names the dot; a tap keeps opening the slot it sits on.
+        <Tooltip>
+          <TooltipTrigger asChild disableTouchToggle>
+            <span className="text-primary">
+              {" "}
+              <span aria-hidden="true">●</span>
+              <span className="sr-only">
+                {t("guildRaids.exactMeta.essential")}
+              </span>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{t("guildRaids.exactMeta.essential")}</TooltipContent>
+        </Tooltip>
       ) : null}
     </span>
   )

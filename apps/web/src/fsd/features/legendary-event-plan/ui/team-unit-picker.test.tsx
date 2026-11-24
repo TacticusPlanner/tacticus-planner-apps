@@ -192,8 +192,8 @@ describe("TeamUnitPicker", () => {
       within(tile(teamUnits.b.id)).getByTestId("team-picker-unit-state")
     ).toHaveTextContent("~2")
     expect(
-      within(tile(teamUnits.b.id)).getByTestId("unit-goal-badge")
-    ).toHaveAttribute("title", "Goals: Unlock")
+      within(tile(teamUnits.b.id)).getByRole("img", { name: "Goals: Unlock" })
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("team-picker-goals-preview"))
     expect(onToggle).toHaveBeenCalledWith(false)

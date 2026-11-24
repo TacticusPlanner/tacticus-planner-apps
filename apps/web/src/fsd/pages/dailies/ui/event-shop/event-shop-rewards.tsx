@@ -16,6 +16,11 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -195,55 +200,59 @@ function TierTile({
     )
     .join(", ")
   return (
-    <li
-      aria-label={`${t("rewards.points", {
-        points: format.number(tile.requiredProgress),
-      })}: ${label}`}
-      className={cn(
-        "flex min-w-0 flex-col gap-0.5 rounded-md border bg-card p-2",
-        // A highlighted tier spans two columns: its rewards are named, not just counted.
-        tile.special && "col-span-2 border-primary bg-primary/10"
-      )}
-      data-special={tile.special ? "true" : "false"}
-      title={label}
-    >
-      <span className="text-xs font-bold text-muted-foreground tabular-nums">
-        {format.number(tile.requiredProgress)}
-      </span>
-      {main ? (
-        <span className="flex min-w-0 items-start gap-1 text-sm font-bold">
-          <EntityIcon
-            size="inline"
-            alt=""
-            className="shrink-0"
-            src={format.reward(main.reward.type).iconUrl}
-          />
-          <span className="line-clamp-2 wrap-break-word tabular-nums">
-            {single(main.reward)
-              ? format.reward(main.reward.type).label
-              : amount(main.reward, main.shown)}
-          </span>
-        </span>
-      ) : null}
-      {extras.map((extra) => (
-        <span
-          key={extra.reward.type}
-          className="flex min-w-0 items-start gap-1 text-xs text-muted-foreground"
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <li
+          aria-label={`${t("rewards.points", {
+            points: format.number(tile.requiredProgress),
+          })}: ${label}`}
+          className={cn(
+            "flex min-w-0 flex-col gap-0.5 rounded-md border bg-card p-2",
+            // A highlighted tier spans two columns: its rewards are named, not just counted.
+            tile.special && "col-span-2 border-primary bg-primary/10"
+          )}
+          data-special={tile.special ? "true" : "false"}
         >
-          <EntityIcon
-            size="inline"
-            alt=""
-            className="shrink-0"
-            src={format.reward(extra.reward.type).iconUrl}
-          />
-          <span className="line-clamp-2 wrap-break-word tabular-nums">
-            {single(extra.reward)
-              ? `+ ${format.reward(extra.reward.type).label}`
-              : `+${amount(extra.reward, extra.shown)}`}
+          <span className="text-xs font-bold text-muted-foreground tabular-nums">
+            {format.number(tile.requiredProgress)}
           </span>
-        </span>
-      ))}
-    </li>
+          {main ? (
+            <span className="flex min-w-0 items-start gap-1 text-sm font-bold">
+              <EntityIcon
+                size="inline"
+                alt=""
+                className="shrink-0"
+                src={format.reward(main.reward.type).iconUrl}
+              />
+              <span className="line-clamp-2 wrap-break-word tabular-nums">
+                {single(main.reward)
+                  ? format.reward(main.reward.type).label
+                  : amount(main.reward, main.shown)}
+              </span>
+            </span>
+          ) : null}
+          {extras.map((extra) => (
+            <span
+              key={extra.reward.type}
+              className="flex min-w-0 items-start gap-1 text-xs text-muted-foreground"
+            >
+              <EntityIcon
+                size="inline"
+                alt=""
+                className="shrink-0"
+                src={format.reward(extra.reward.type).iconUrl}
+              />
+              <span className="line-clamp-2 wrap-break-word tabular-nums">
+                {single(extra.reward)
+                  ? `+ ${format.reward(extra.reward.type).label}`
+                  : `+${amount(extra.reward, extra.shown)}`}
+              </span>
+            </span>
+          ))}
+        </li>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -446,15 +455,18 @@ function ChainCard({
         {missions.map((mission, index) => {
           const target = mission.tasks[0]?.target ?? 0
           return (
-            <span
-              key={mission.id}
-              className={cn(
-                "min-h-1.5 flex-1 rounded-t-sm",
-                kind === "premium" ? "bg-amber-500" : "bg-primary"
-              )}
-              style={{ height: `${Math.round((target / highest) * 100)}%` }}
-              title={`${index + 1}: ${format.number(target)}`}
-            />
+            <Tooltip key={mission.id}>
+              <TooltipTrigger asChild>
+                <span
+                  className={cn(
+                    "min-h-1.5 flex-1 rounded-t-sm",
+                    kind === "premium" ? "bg-amber-500" : "bg-primary"
+                  )}
+                  style={{ height: `${Math.round((target / highest) * 100)}%` }}
+                />
+              </TooltipTrigger>
+              <TooltipContent>{`${index + 1}: ${format.number(target)}`}</TooltipContent>
+            </Tooltip>
           )
         })}
       </div>

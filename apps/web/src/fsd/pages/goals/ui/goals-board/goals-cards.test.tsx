@@ -551,9 +551,13 @@ describe("Goal card rows", () => {
     const meta = within(await screen.findByTestId("goal-row")).getByTestId(
       "goal-card-meta"
     )
-    const badge = within(meta).getByTitle(name)
+    expect(within(meta).getByText(name)).toHaveClass("truncate")
+    const badge = within(meta).getByText(
+      (_, element) =>
+        element?.getAttribute("data-slot") === "badge" &&
+        element.textContent === name
+    )
     expect(badge).toHaveClass("max-w-40")
-    expect(within(badge).getByText(name)).toHaveClass("truncate")
   })
 })
 

@@ -1,5 +1,10 @@
 import { useId, useState } from "react"
 import type { ReactNode } from "react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "./entity-icon"
@@ -272,11 +277,23 @@ export function LevelChart({
                   key={index}
                   className="absolute -translate-x-1/2 whitespace-nowrap"
                   style={{ left: `${((index + 0.5) / count) * 100}%` }}
-                  title={icon ? label : undefined}
                   data-testid={testId && `${testId}-tick-${index}`}
                 >
                   {icon ? (
-                    <EntityIcon size="inline" alt={label ?? ""} src={icon} />
+                    // The chart is hidden from screen readers (the caption describes it), so the
+                    // icon's name is a plain tooltip: hover, or a tap on touch.
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex">
+                          <EntityIcon
+                            size="inline"
+                            alt={label ?? ""}
+                            src={icon}
+                          />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>{label}</TooltipContent>
+                    </Tooltip>
                   ) : (
                     label
                   )}

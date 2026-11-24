@@ -1,3 +1,4 @@
+import { useId } from "react"
 import type { ComponentType, ReactNode } from "react"
 import {
   Check,
@@ -150,18 +151,23 @@ export function UnreadDot({
 export function MenuRow({
   chevron,
   className,
+  description,
   icon: Icon,
   label,
   trailing,
   ...props
-}: Omit<React.ComponentProps<"button">, "children"> & {
+}: Omit<React.ComponentProps<"button">, "children" | "title"> & {
   chevron?: boolean
+  /** A muted second line, such as why the row is disabled (a menu has no hover hint). */
+  description?: string
   icon?: LucideIcon
   label: string
   trailing?: ReactNode
 }) {
+  const descriptionId = useId()
   return (
     <button
+      aria-describedby={description ? descriptionId : undefined}
       aria-label={label}
       data-slot="menu-row"
       className={cn(menuRowClass, className)}
@@ -169,7 +175,16 @@ export function MenuRow({
       {...props}
     >
       {Icon ? <Icon className="size-icon shrink-0" /> : null}
-      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {description ? (
+        <span className="grid min-w-0 flex-1">
+          <span className="truncate">{label}</span>
+          <span className="text-xs text-muted-foreground" id={descriptionId}>
+            {description}
+          </span>
+        </span>
+      ) : (
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+      )}
       {hasNode(trailing) ? (
         <span className="shrink-0 text-xs text-muted-foreground">
           {trailing}

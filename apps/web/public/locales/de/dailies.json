@@ -615,6 +615,7 @@
   },
   "quickFilters": {
     "label": "Schnellfilter",
+    "helpLabel": "Was die Schnellfilter tun",
     "chip": {
       "fewerRaids": "Weniger Raids",
       "combineGoals": "Ziele kombinieren",
