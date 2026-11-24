@@ -19,7 +19,10 @@ describe("useGoalsOverviewTutorial", () => {
 
     expect(steps.desktop.length).toBeGreaterThanOrEqual(3)
     for (const step of steps.desktop) {
-      expect(step.target).toMatch(/^\[data-testid="[a-z-]+"\]$/)
+      // One target, or a list of alternatives when the target depends on the layout.
+      expect(step.target).toMatch(
+        /^\[data-testid="[a-z-]+"\](, \[data-testid="[a-z-]+"\])*$/
+      )
       // Real English copy, never a raw key.
       expect(step.title).not.toMatch(/^$|tour\.overview\.steps/)
       expect(step.content).not.toMatch(/^$|tour\.overview\.steps/)
@@ -31,7 +34,8 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-season-fit"]',
       '[data-testid="goals-view-toggle"]',
       '[data-testid="goal-row-drag-handle"]',
-      '[data-testid="goals-select-toggle"]',
+      // Cards' Select goals, or the desktop table's always-shown select bar.
+      '[data-testid="goals-select-toggle"], [data-testid="goals-select-bar"]',
       '[data-testid="goals-create-goal"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',

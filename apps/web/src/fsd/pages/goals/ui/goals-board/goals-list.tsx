@@ -17,7 +17,7 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useGoalCatalog } from "@/features/goal-planning"
-import { SortableList } from "@/shared/ui"
+import { SORTABLE_ITEM_GROUP, SortableList } from "@/shared/ui"
 import {
   ProgressExplainer,
   ProgressLegend,
@@ -92,6 +92,7 @@ function GoalsTable({
   projectRemoval,
   selection = EMPTY_SELECTION,
   onToggleSelected,
+  onSelectRange,
   visibleIds,
   onSelectAllVisible,
   selectActive = false,
@@ -125,7 +126,8 @@ function GoalsTable({
               table layout"). */}
           <TableHead className={FIT_COLUMN}>
             <div className="flex items-center gap-2">
-              {showCheckboxes ? (
+              {/* Desktop's select-all lives in the bar above the list. */}
+              {showCheckboxes && isMobile ? (
                 <Checkbox
                   aria-label={t("goals.bulk.selectAll")}
                   checked={
@@ -222,6 +224,7 @@ function GoalsTable({
                 ) : null}
                 <TableRow
                   className={cn(
+                    SORTABLE_ITEM_GROUP,
                     "h-16 transition-colors duration-700 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring data-dragging:relative data-dragging:z-10 data-dragging:bg-card data-dragging:outline-2 data-dragging:-outline-offset-2 data-dragging:outline-ring data-just-moved:bg-accent",
                     reached && REACHED_ROW_CLASS,
                     fitOffset !== undefined && SEASON_FIT_ROW_ACCENT[fitOffset]
@@ -254,6 +257,7 @@ function GoalsTable({
                     onMenuMove={onMenuMove}
                     potentialProgress={potentialProgress}
                     onToggleSelected={onToggleSelected}
+                    onSelectRange={onSelectRange}
                     selected={selection.has(row.goalId)}
                     reachedByGoalId={reachedByGoalId}
                     reorderEnabled={reorderEnabled && !isMobile}

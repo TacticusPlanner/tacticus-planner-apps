@@ -8,6 +8,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 import { HintTrigger } from "@/shared/ui"
 
 import { goalRaidDuration } from "@/entities/goal-farming"
@@ -208,5 +209,36 @@ export function GoalPriorityNumber({ row }: { row: GoalRow }) {
       <span className="sr-only">{t("goals.columns.priority")} </span>
       {row.priority}
     </span>
+  )
+}
+
+/** A goal's selection checkbox. Shift-click selects the range from the goal last toggled (Gmail). */
+export function GoalSelectCheckbox({
+  goalId,
+  entityName,
+  selected,
+  onToggle,
+  onSelectRange,
+}: {
+  goalId: string
+  entityName: string
+  selected: boolean
+  onToggle?: (goalId: string) => void
+  onSelectRange?: (goalId: string) => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <Checkbox
+      aria-label={t("goals.bulk.selectRow", { entity: entityName })}
+      checked={selected}
+      data-testid={`goal-row-select-${goalId}`}
+      onCheckedChange={() => onToggle?.(goalId)}
+      onClick={(event) => {
+        if (!event.shiftKey || !onSelectRange) return
+        // The range replaces the plain toggle.
+        event.preventDefault()
+        onSelectRange(goalId)
+      }}
+    />
   )
 }

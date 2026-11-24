@@ -902,8 +902,9 @@ describe("GoalsPage", () => {
       screen.queryByTestId(`goal-row-menu-${activeGoal.goalId}`)
     ).not.toBeInTheDocument()
     // Select-all only reaches the sections still open.
-    await user.click(screen.getByTestId("goals-select-toggle"))
-    await user.click(screen.getByTestId("goals-select-bar-all"))
+    const startSelect = screen.queryByTestId("goals-select-toggle")
+    if (startSelect) await user.click(startSelect)
+    await user.click(screen.getByTestId("goals-select-all"))
     expect(screen.getByTestId("goals-select-count")).toHaveTextContent(
       "1 selected"
     )
@@ -1733,7 +1734,7 @@ describe("GoalsPage bulk actions", () => {
     await startSelect(user)
     await user.click(screen.getByTestId(`goal-row-select-${id}`))
   }
-  /** The table header's select-all, which select mode shows. */
+  /** The top select bar's select-all checkbox. */
   const selectAll = async (user: ReturnType<typeof userEvent.setup>) => {
     await startSelect(user)
     await user.click(screen.getByTestId("goals-select-all"))
@@ -1765,22 +1766,77 @@ describe("GoalsPage bulk actions", () => {
     ).toBeTruthy()
   })
 
-  it("shows the bulk actions in the select bar only in select mode, enabling the applicable ones", async () => {
+  it("keeps the desktop table's checkboxes and top bar up without a select mode, adding the bulk actions once a goal is selected", async () => {
     const user = userEvent.setup()
     renderPage()
     await screen.findByTestId("goals-list-table")
 
+    expect(screen.queryByTestId("goals-select-toggle")).toBeNull()
+    const bar = screen.getByTestId("goals-select-bar")
+    expect(bar).toHaveAttribute("data-placement", "top")
+    expect(within(bar).getByTestId("goals-select-all")).not.toBeChecked()
     expect(screen.queryByTestId("goals-bulk-actions")).toBeNull()
-    expect(screen.queryByTestId("goal-row-select-goal-p")).toBeNull()
+    expect(screen.queryByTestId("goals-select-done")).toBeNull()
+    expect(screen.getByTestId("goal-row-select-goal-p")).not.toBeChecked()
 
     await select(user, "goal-p")
-    expect(screen.queryByTestId("goals-select-toggle")).toBeNull()
-    expect(screen.getByTestId("goals-select-bar")).toContainElement(
-      screen.getByTestId("goals-bulk-actions")
+    expect(bar).toContainElement(screen.getByTestId("goals-bulk-actions"))
+    expect(screen.getByTestId("goals-select-count")).toHaveTextContent(
+      "1 selected"
     )
     expect(screen.getByTestId("goals-bulk-pause")).toBeDisabled()
     expect(screen.getByTestId("goals-bulk-resume")).toBeEnabled()
     expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
+  })
+
+  it("clears the table selection from Clear selection and from Escape", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+
+    await select(user, "goal-1")
+    await user.click(screen.getByTestId("goals-select-clear"))
+    expect(screen.getByTestId("goal-row-select-goal-1")).not.toBeChecked()
+    expect(screen.queryByTestId("goals-bulk-actions")).toBeNull()
+
+    await select(user, "goal-1")
+    await user.keyboard("{Escape}")
+    expect(screen.getByTestId("goal-row-select-goal-1")).not.toBeChecked()
+  })
+
+  it("selects a range with Shift-click from the last ticked goal", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+
+    await select(user, "goal-1")
+    await user.keyboard("{Shift>}")
+    await user.click(screen.getByTestId("goal-row-select-goal-p"))
+    await user.keyboard("{/Shift}")
+
+    for (const id of ["goal-1", "goal-b", "goal-p"])
+      expect(screen.getByTestId(`goal-row-select-${id}`)).toBeChecked()
+  })
+
+  it("selects by status from the select-all menu", async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await screen.findByTestId("goals-list-table")
+
+    await user.click(screen.getByTestId("goals-select-menu"))
+    await user.click(await screen.findByTestId("goals-select-preset-Paused"))
+    expect(screen.getByTestId("goal-row-select-goal-p")).toBeChecked()
+    expect(screen.getByTestId("goal-row-select-goal-1")).not.toBeChecked()
+
+    await user.click(screen.getByTestId("goals-select-menu"))
+    await user.click(await screen.findByTestId("goals-select-preset-Active"))
+    expect(screen.getByTestId("goal-row-select-goal-1")).toBeChecked()
+    expect(screen.getByTestId("goal-row-select-goal-b")).toBeChecked()
+    expect(screen.getByTestId("goal-row-select-goal-p")).not.toBeChecked()
+
+    await user.click(screen.getByTestId("goals-select-menu"))
+    await user.click(await screen.findByTestId("goals-select-preset-none"))
+    expect(screen.queryByTestId("goals-bulk-actions")).toBeNull()
   })
 
   it("bulk pause acts on the selected active goals only, then clears the selection", async () => {
@@ -1821,18 +1877,27 @@ describe("GoalsPage bulk actions", () => {
     )
   })
 
-  it("selects every visible goal from the select bar's Select all in Cards view", async () => {
+  it("selects every visible goal from the top bar's select-all in Cards view, ending with Done", async () => {
     window.localStorage.setItem("goals.overview.view", "Cards")
     const user = userEvent.setup()
     renderPage()
     await screen.findByTestId("goals-list-cards")
 
+    expect(screen.queryByTestId("goals-select-bar")).toBeNull()
     await startSelect(user)
-    await user.click(screen.getByTestId("goals-select-bar-all"))
+    expect(screen.getByTestId("goals-select-bar")).toHaveAttribute(
+      "data-placement",
+      "top"
+    )
+    await user.click(screen.getByTestId("goals-select-all"))
 
     for (const id of ["goal-1", "goal-b", "goal-p"])
       expect(screen.getByTestId(`goal-row-select-${id}`)).toBeChecked()
     expect(screen.getByTestId("goals-bulk-delete")).toBeEnabled()
+
+    await user.click(screen.getByTestId("goals-select-done"))
+    expect(screen.queryByTestId("goals-select-bar")).toBeNull()
+    expect(screen.queryByTestId("goal-row-select-goal-1")).toBeNull()
   })
 
   it("clears the selection when the status filter changes", async () => {
@@ -1846,7 +1911,7 @@ describe("GoalsPage bulk actions", () => {
     await user.click(await screen.findByRole("option", { name: /^Paused/ }))
 
     await vi.waitFor(() =>
-      expect(screen.getByTestId("goals-bulk-delete")).toBeDisabled()
+      expect(screen.queryByTestId("goals-bulk-actions")).toBeNull()
     )
     expect(screen.getByTestId("goal-row-select-goal-p")).not.toBeChecked()
   })
@@ -2199,7 +2264,7 @@ describe("GoalsPage Goals view", () => {
         "goals-type-filter",
         "goals-season-fit",
         "goals-view-toggle",
-        "goals-select-toggle",
+        view === "Cards" ? "goals-select-toggle" : "goals-select-bar",
         "goals-create-goal",
         "goals-planning-settings",
         "goals-page",

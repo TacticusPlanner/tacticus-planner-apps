@@ -1312,7 +1312,15 @@
       "selectRow": "Seleccionar {{entity}}",
       "selectMode": "Seleccionar objetivos",
       "selectDone": "Listo",
-      "removeFromProject": "Quitar del proyecto"
+      "removeFromProject": "Quitar del proyecto",
+      "clearSelection": "Borrar selección",
+      "selectMenu": "Elegir qué objetivos seleccionar",
+      "presets": {
+        "all": "Todos",
+        "none": "Ninguno",
+        "Active": "Activos",
+        "Paused": "En pausa"
+      }
     },
     "delete": {
       "title_one": "¿Eliminar este objetivo?",
@@ -2310,6 +2318,10 @@
         "select": {
           "title": "Seleccionar objetivos",
           "content": "Toca Seleccionar objetivos y marca objetivos o usa Seleccionar todos los objetivos. Pausa, reanuda, añade a un proyecto o elimina varios a la vez desde la barra inferior y toca Listo."
+        },
+        "selectDesktop": {
+          "title": "Seleccionar objetivos",
+          "content": "En la tabla, marca objetivos o usa la casilla de seleccionar todos y su menú (Todos, Ninguno, Activos, En pausa); Mayús + clic marca un rango. Pausa, reanuda, añade a un proyecto o elimina varios a la vez desde la barra sobre la lista, y pulsa Esc o Borrar selección para empezar de nuevo. En Tarjetas, haz clic primero en Seleccionar objetivos."
         },
         "createGoal": {
           "title": "Crear un objetivo",

@@ -1021,15 +1021,15 @@ describe("GoalsList goal line on mobile", () => {
 describe("GoalsList selection", () => {
   beforeEach(() => useIsMobileMock.mockReturnValue(false))
 
-  it("puts a select-all header checkbox and per-row checkboxes in the leading cell", async () => {
+  it("puts the grip and per-row checkboxes in the leading cell, leaving select-all to the page's bar on desktop", async () => {
     const onToggleSelected = vi.fn()
-    const onSelectAllVisible = vi.fn()
+    const onSelectRange = vi.fn()
     const user = userEvent.setup()
     render(
       <GoalsList
         view="Table"
         actions={stubActions}
-        onSelectAllVisible={onSelectAllVisible}
+        onSelectRange={onSelectRange}
         onToggleSelected={onToggleSelected}
         reorderEnabled
         rows={rows}
@@ -1039,10 +1039,7 @@ describe("GoalsList selection", () => {
     )
     await screen.findByText("Hero One")
 
-    expect(screen.getByTestId("goals-select-all")).toHaveAttribute(
-      "aria-checked",
-      "mixed"
-    )
+    expect(screen.queryByTestId("goals-select-all")).toBeNull()
     const rowBox = screen.getByTestId("goal-row-select-goal-1")
     expect(rowBox).toBeChecked()
     expect(rowBox.closest("td")).toContainElement(
@@ -1051,15 +1048,42 @@ describe("GoalsList selection", () => {
 
     await user.click(screen.getByTestId("goal-row-select-goal-2"))
     expect(onToggleSelected).toHaveBeenCalledExactlyOnceWith("goal-2")
-    await user.click(screen.getByTestId("goals-select-all"))
-    expect(onSelectAllVisible).toHaveBeenCalledOnce()
+    expect(onSelectRange).not.toHaveBeenCalled()
   })
 
-  it("shows the header checkbox checked when every visible id is selected (ids across groups)", async () => {
+  it("selects a range on Shift-click instead of toggling one goal", async () => {
+    const onToggleSelected = vi.fn()
+    const onSelectRange = vi.fn()
+    const user = userEvent.setup()
     render(
       <GoalsList
         view="Table"
         actions={stubActions}
+        onSelectRange={onSelectRange}
+        onToggleSelected={onToggleSelected}
+        rows={rows}
+        selectActive
+        selection={new Set(["goal-1"])}
+      />
+    )
+    await screen.findByText("Hero One")
+
+    await user.keyboard("{Shift>}")
+    await user.click(screen.getByTestId("goal-row-select-goal-2"))
+    await user.keyboard("{/Shift}")
+    expect(onSelectRange).toHaveBeenCalledExactlyOnceWith("goal-2")
+    expect(onToggleSelected).not.toHaveBeenCalled()
+  })
+
+  it("shows the mobile header checkbox checked when every visible id is selected (ids across groups)", async () => {
+    useIsMobileMock.mockReturnValue(true)
+    const onSelectAllVisible = vi.fn()
+    const user = userEvent.setup()
+    render(
+      <GoalsList
+        view="Table"
+        actions={stubActions}
+        onSelectAllVisible={onSelectAllVisible}
         rows={[rows[0]!]}
         selectActive
         selection={new Set(["goal-1", "goal-2"])}
@@ -1069,6 +1093,8 @@ describe("GoalsList selection", () => {
     await screen.findByText("Hero One")
 
     expect(screen.getByTestId("goals-select-all")).toBeChecked()
+    await user.click(screen.getByTestId("goals-select-all"))
+    expect(onSelectAllVisible).toHaveBeenCalledOnce()
   })
 
   it("shows mobile checkboxes only in select mode, without opening the menu", async () => {

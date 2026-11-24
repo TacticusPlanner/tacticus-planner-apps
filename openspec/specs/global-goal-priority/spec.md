@@ -42,7 +42,7 @@ The view SHALL distinguish initial loading, failed goal/order loading with retry
 
 ### Requirement: Owner can reorder from Goals
 
-Reordering SHALL be available only while Goals is sorted by Priority. At or above 768px, every Active or Paused goal on the Goals page SHALL then have an accessible drag handle that commits a completed move to the account-wide order. The handle sits in the row's leading cell in Table view and in the card header in Cards view. In Cards view a goal SHALL be movable to any position in the grid, including across grid rows, and the other cards SHALL shift in reading order (left to right, then top to bottom) to preview the drop.
+Reordering SHALL be available only while Goals is sorted by Priority. At or above 768px, every Active or Paused goal on the Goals page SHALL then have an accessible drag handle that commits a completed move to the account-wide order. The handle is the shared drag grip: it sits first in the row's leading cell in Table view and first in the card header in Cards view, shows on hover or keyboard focus with a fine pointer (always with a coarse one), and is the only part of a row or card that starts a drag. In Cards view a goal SHALL be movable to any position in the grid, including across grid rows, and the other cards SHALL shift in reading order (left to right, then top to bottom) to preview the drop.
 
 Below 768px, a dedicated reorder mode SHALL collapse cards to identity and target and provide touch-sized drag handles. Entering it SHALL bring the reorder list into the visible viewport, and a Done/exit affordance SHALL remain reachable while interacting with lower rows.
 

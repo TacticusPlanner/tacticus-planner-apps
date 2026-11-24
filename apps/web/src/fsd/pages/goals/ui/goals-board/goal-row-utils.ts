@@ -119,6 +119,8 @@ export type GoalsListProps = {
   onMenuMove?: (goalId: string, displacedGoalId: string) => void
   /** The goal just moved from its row menu, highlighted briefly so the move can be seen. */
   highlightedGoalId?: string | null
+  /** Shift-click on a checkbox: selects the visible goals from the last one toggled through this one. */
+  onSelectRange?: (goalId: string) => void
   /** Opens the Edit goal dialog for a goal (the row's Edit action). */
   onEdit?: (goalId: string) => void
   /** A "Covered by" note's link: shows the covering goal (scroll, flash, focus), or opens it when it
@@ -167,6 +169,7 @@ export type RowSliceProps = Pick<
   | "levelPoolXpAvailable"
   | "xpBook"
   | "onToggleSelected"
+  | "onSelectRange"
   | "reachedByGoalId"
   | "cascadeContext"
   | "seasonFit"
@@ -222,6 +225,7 @@ export function sameRowSlice<P extends RowSliceProps>(
     props.xpBook,
     props.actions.pendingIds.has(id),
     props.onToggleSelected,
+    props.onSelectRange,
     props.dragHandle,
     props.moves?.top,
     props.moves?.up,

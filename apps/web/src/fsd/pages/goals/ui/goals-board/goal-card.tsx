@@ -2,7 +2,6 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { Trash2 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 
 import { GoalTypeBadge } from "@/entities/goal"
 import {
@@ -37,6 +36,7 @@ import {
   EstimateCell,
   GoalNameLink,
   GoalPriorityNumber,
+  GoalSelectCheckbox,
 } from "./goal-row-shared"
 import {
   isInFlightStatus,
@@ -79,6 +79,7 @@ type GoalCardProps = Pick<
   | "levelPoolXpAvailable"
   | "xpBook"
   | "onToggleSelected"
+  | "onSelectRange"
   | "reachedByGoalId"
   | "cascadeContext"
   | "projectRemoval"
@@ -117,6 +118,7 @@ export const GoalCard = memo(
     moves,
     onMenuMove,
     onToggleSelected,
+    onSelectRange,
     selected,
     showCheckbox,
     showDragHandle,
@@ -165,18 +167,20 @@ export const GoalCard = memo(
             role="presentation"
             onClick={stopRowNavigation}
           >
-            {showCheckbox ? (
-              <Checkbox
-                aria-label={t("goals.bulk.selectRow", { entity: name })}
-                checked={selected}
-                data-testid={`goal-row-select-${row.goalId}`}
-                onCheckedChange={() => onToggleSelected?.(row.goalId)}
-              />
-            ) : null}
-            <GoalPriorityNumber row={row} />
+            {/* Grip first, as in the table; it shows on the card's hover or focus. */}
             {showDragHandle && dragHandle && isInFlightStatus(row.status) ? (
               <GoalDragHandle dragHandle={dragHandle} entityName={name} />
             ) : null}
+            {showCheckbox ? (
+              <GoalSelectCheckbox
+                entityName={name}
+                goalId={row.goalId}
+                onSelectRange={onSelectRange}
+                onToggle={onToggleSelected}
+                selected={selected}
+              />
+            ) : null}
+            <GoalPriorityNumber row={row} />
           </div>
           <GoalUnitIcon
             className="shrink-0"

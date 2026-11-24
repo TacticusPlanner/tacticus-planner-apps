@@ -20,7 +20,7 @@ The list SHALL render as the cards or the table according to this device's store
 
 - **GIVEN** the viewport is narrower than 768px and the stored Goals view is `Table`
 - **WHEN** the Goals list renders
-- **THEN** it renders as the table with its full column set, scrolling sideways inside the list while the page itself does not scroll sideways, with no checkboxes until select mode and no drag handles until reorder mode
+- **THEN** it renders as the table with its full column set, scrolling sideways inside the list while the page itself does not scroll sideways, with no checkboxes until select mode and no drag handles until reorder mode (at or above it the table's checkboxes are always shown, see `goal-bulk-actions`)
 
 #### Scenario: At or above the mobile breakpoint, Cards view
 
@@ -270,7 +270,7 @@ The Character column SHALL show the unit's avatar (drawn larger than the 40px V2
 
 Each row SHALL render at a fixed height sized to one line of content per column (with the Character column's name-and-notes lines and the "Done by" column's date-and-days lines accommodated within that same fixed height). Two exceptions SHALL exist: a row whose Progress cell carries level-requirement sub-lines, and a row whose Remaining chips wrap beyond two lines (see `goal-remaining-resources`: every chip renders) — such a row SHALL grow only as far as its wrapped content needs, and no other row SHALL change height because of it. The existing alternating row (zebra) striping SHALL be preserved.
 
-Every row SHALL have a leading cell before the Character column holding, in order: the selection checkbox (only in select mode, see `goal-bulk-actions`), the account-wide priority number for an in-flight row, and — when the table renders on a route where inline reordering is available (the Goals page, with or without a project scope — see `global-goal-priority`'s "Owner can reorder from Goals") and at or above the mobile breakpoint — while Sort is Priority, a drag handle for each Active or Paused row. This cell holds control affordances, not a data column, and does not change the seven static columns above; the handle is present only in a reorderable context and absent elsewhere, which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
+Every row SHALL have a leading cell before the Character column holding, in order: a drag grip for each Active or Paused row, when the table renders on a route where inline reordering is available (the Goals page, with or without a project scope, see `global-goal-priority`'s "Owner can reorder from Goals"), at or above the mobile breakpoint, while Sort is Priority (a same-width blank keeps the other rows aligned), in the cell's left gutter with minimal padding; the selection checkbox (always on the desktop Goals page, otherwise only in select mode, see `goal-bulk-actions`); and the account-wide priority number for an in-flight row. With a fine pointer the grip SHALL be invisible until the row is hovered, holds keyboard focus or is being dragged; with a coarse pointer it SHALL always show. Its hit area SHALL be at least 32px square (44px on a coarse pointer). Only the grip starts a drag; the rest of the row does not. This cell holds control affordances, not a data column, and does not change the seven static columns above; the handle is present only in a reorderable context and absent elsewhere, which is a context-conditional distinction, not the width-conditional column-hiding this requirement otherwise prohibits.
 
 Assumptions:
 
@@ -394,9 +394,9 @@ Wherever the Goals list renders as cards, each goal SHALL render as one card in 
 Each card SHALL contain, from top to bottom:
 
 1. **A header.** In order:
+   - the drag grip, for an Active or Paused goal at or above the mobile breakpoint where reordering is available, shown on hover or keyboard focus as in the table;
    - the selection checkbox, only while select mode is active (see `goal-bulk-actions`);
    - the account-wide priority number;
-   - the drag handle, for an Active or Paused goal at or above the mobile breakpoint where reordering is available;
    - the unit avatar;
    - the unit name with, beneath it, a meta line holding the "Done By" date and day count (when an estimate exists), the season-fit label (when a mode is on), and the goal's project badges (when it has projects), wrapping as needed; a long project name is truncated at a fixed badge width, with the full name as its tooltip;
    - the "⋯" row-actions menu at the trailing edge.
@@ -422,7 +422,7 @@ The goal type SHALL lead the goal line as a badge, because a card has no Goal co
 
 - **GIVEN** an Active Rank goal at priority 3, with notes, in project "Neuro", with a completion estimate of Oct 11 (in 22 days)
 - **WHEN** it renders in Cards view at 1280px wide
-- **THEN** outside select mode its header shows "3", a drag handle, the avatar, the name and a meta line "📅 Oct 11 · 22 days" with the "Neuro" badge, and a "⋯" menu; its body shows the rank emblems with the energy chip at the right end of their row, then the progress bar, then the level line with the gold chip at its right end; a ruled section shows the notes; and its footer shows the "Active" chip with a pause action
+- **THEN** outside select mode its header shows a drag grip while hovered, "3", the avatar, the name and a meta line "📅 Oct 11 · 22 days" with the "Neuro" badge, and a "⋯" menu; its body shows the rank emblems with the energy chip at the right end of their row, then the progress bar, then the level line with the gold chip at its right end; a ruled section shows the notes; and its footer shows the "Active" chip with a pause action
 
 #### Scenario: The grid fills the width
 

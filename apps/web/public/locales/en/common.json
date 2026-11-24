@@ -1312,7 +1312,15 @@
       "selectRow": "Select {{entity}}",
       "selectMode": "Select goals",
       "selectDone": "Done",
-      "removeFromProject": "Remove from project"
+      "removeFromProject": "Remove from project",
+      "clearSelection": "Clear selection",
+      "selectMenu": "Choose which goals to select",
+      "presets": {
+        "all": "All",
+        "none": "None",
+        "Active": "Active",
+        "Paused": "Paused"
+      }
     },
     "delete": {
       "title_one": "Delete this goal?",
@@ -2310,6 +2318,10 @@
         "select": {
           "title": "Select goals",
           "content": "Tap Select goals, then tick goals or use Select all. Pause, resume, add to a project or delete them together from the bar at the bottom, and tap Done to finish."
+        },
+        "selectDesktop": {
+          "title": "Select goals",
+          "content": "In the table, tick goals or use the select-all box and its menu (All, None, Active, Paused); Shift-click ticks a range. Pause, resume, add to a project or delete them together from the bar above the list, and press Esc or Clear selection to start over. In Cards, click Select goals first."
         },
         "createGoal": {
           "title": "Create a goal",

@@ -2,7 +2,7 @@ import { Fragment } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useGoalCatalog } from "@/features/goal-planning"
-import { SortableList } from "@/shared/ui"
+import { SORTABLE_ITEM_GROUP, SortableList } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import {
   ProgressExplainer,
@@ -54,6 +54,7 @@ export function GoalsCards({
   projectRemoval,
   selection = EMPTY_SELECTION,
   onToggleSelected,
+  onSelectRange,
   selectActive = false,
   seasonFit,
   seasonCutoffGoalId,
@@ -88,6 +89,7 @@ export function GoalsCards({
         ) : null}
         <li
           className={cn(
+            SORTABLE_ITEM_GROUP,
             "flex min-w-0 flex-col gap-2.5 rounded-2xl border bg-card p-3 text-sm shadow-xs transition-colors duration-700 focus-visible:outline-2 focus-visible:outline-ring data-dragging:relative data-dragging:z-10 data-dragging:border-ring data-dragging:shadow-lg data-just-moved:bg-accent",
             reached && REACHED_ROW_CLASS,
             fitOffset !== undefined && SEASON_FIT_CARD_ACCENT[fitOffset]
@@ -116,6 +118,7 @@ export function GoalsCards({
             onJumpToGoal={onJumpToGoal}
             onMenuMove={onMenuMove}
             onToggleSelected={onToggleSelected}
+            onSelectRange={onSelectRange}
             potentialProgress={potentialProgress}
             projectRemoval={projectRemoval}
             reachedByGoalId={reachedByGoalId}

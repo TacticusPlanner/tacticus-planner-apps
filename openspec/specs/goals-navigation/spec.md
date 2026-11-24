@@ -286,17 +286,18 @@ On every subpage with a project selector (Goals, Insights, Schedule, Today, HSE,
 
 ### Requirement: Goals controls form one toolbar on desktop
 
-At or above the 768px desktop breakpoint, Goals SHALL render the page toolbar (`app-page-layout`) and no other row of controls. Its Find slot SHALL hold, in order, the project select, the status filter, the Type filter and the Select goals button (`goal-bulk-actions`); its View slot SHALL hold Layout, Group by, Sort, Season fit and Collapse all; its Actions slot, at the far right, SHALL hold the filled Create Goal action. Planning Settings SHALL be the page header's Settings button. The bulk actions SHALL NOT render in the toolbar; they live in the select bar (`goal-bulk-actions`). When the window is too narrow for one line, the View and Actions slots SHALL wrap together under Find, still at the right, so Create Goal is never alone on a line.
+At or above the 768px desktop breakpoint, Goals SHALL render the page toolbar (`app-page-layout`) and no other row of controls. Its Find slot SHALL hold, in order, the project select, the status filter, the Type filter and, in Cards view, the Select goals button (`goal-bulk-actions`; the desktop table has no select mode); its View slot SHALL hold Layout, Group by, Sort, Season fit and Collapse all; its Actions slot, at the far right, SHALL hold the filled Create Goal action. Planning Settings SHALL be the page header's Settings button. The bulk actions SHALL NOT render in the toolbar; they live in the select bar (`goal-bulk-actions`). When the window is too narrow for one line, the View and Actions slots SHALL wrap together under Find, still at the right, so Create Goal is never alone on a line.
 
 #### Scenario: Desktop Goals renders one toolbar
 
 - **WHEN** Goals is viewed at or above the 768px breakpoint outside select mode
-- **THEN** the toolbar holds the project select, status filter, Type filter and Select goals on the left, Layout, Group by, Sort, Season fit and Collapse all toward the right, Create Goal at the far right, and no bulk actions; Settings sits at the right end of the page header
+- **THEN** the toolbar holds the project select, status filter, Type filter and (in Cards view) Select goals on the left, Layout, Group by, Sort, Season fit and Collapse all toward the right, Create Goal at the far right, and no bulk actions; Settings sits at the right end of the page header
 
 #### Scenario: Select goals opens the select bar
 
+- **GIVEN** desktop Cards view
 - **WHEN** the user presses Select goals
-- **THEN** the select bar with Pause, Resume, Add to project and Delete appears at the bottom of the viewport, Select goals leaves the toolbar, and Done brings it back
+- **THEN** the select bar appears at the top of the list (the bulk actions join it once a goal is selected), Select goals leaves the toolbar, and Done brings it back
 
 ### Requirement: Goals list controls are URL state
 

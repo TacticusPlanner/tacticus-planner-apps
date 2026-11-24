@@ -1,6 +1,5 @@
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 import { TableCell } from "@workspace/ui/components/table"
 
 import {
@@ -30,6 +29,7 @@ import {
   GoalDuration,
   GoalNameLink,
   GoalPriorityNumber,
+  GoalSelectCheckbox,
   ReachedDash,
 } from "./goal-row-shared"
 import { deriveGoalRowData } from "./goal-row-data"
@@ -54,6 +54,7 @@ type GoalRowCellsProps = Pick<
   | "levelPoolXpAvailable"
   | "xpBook"
   | "onToggleSelected"
+  | "onSelectRange"
   | "reachedByGoalId"
   | "cascadeContext"
   | "projectRemoval"
@@ -92,6 +93,7 @@ export const GoalRowCells = memo(function GoalRowCells({
   moves,
   onMenuMove,
   onToggleSelected,
+  onSelectRange,
   selected,
   reorderEnabled,
   showCheckbox,
@@ -130,30 +132,34 @@ export const GoalRowCells = memo(function GoalRowCells({
     <>
       {/* No onKeyDown stop here: dnd-kit's keyboard sensor reads the drag handle's arrow, drop and
           Escape keys on the document, so they must bubble. */}
-      <TableCell onClick={stopRowNavigation}>
-        <div className="flex items-center gap-2">
-          {showCheckbox ? (
-            <Checkbox
-              aria-label={t("goals.bulk.selectRow", {
-                entity: getEntityName(row.entityType, row.entityId),
-              })}
-              checked={selected}
-              data-testid={`goal-row-select-${row.goalId}`}
-              onCheckedChange={() => onToggleSelected?.(row.goalId)}
-            />
-          ) : null}
-          <div className="flex items-center gap-1">
-            <GoalPriorityNumber row={row} />
-            {/* Only an in-flight row can be dragged *from* — a historical row in the same
-            sorted list has no handle, though it can still be a drop anchor (a neighbor
-            another drag lands next to); see spliceGoalOrder. */}
-            {reorderEnabled && isInFlightStatus(row.status) ? (
+      {/* Grip, checkbox, priority. The grip comes first, in the row's leading gutter, and shows on the
+          row's hover or focus; its space is kept so the checkboxes line up. */}
+      <TableCell className="pl-0" onClick={stopRowNavigation}>
+        <div className="flex items-center gap-1">
+          {/* Only an in-flight row can be dragged *from* — a historical row in the same sorted list has
+              no grip, though it can still be a drop anchor (see spliceGoalOrder). */}
+          {reorderEnabled ? (
+            isInFlightStatus(row.status) ? (
               <GoalDragHandle
                 dragHandle={dragHandle}
                 entityName={getEntityName(row.entityType, row.entityId)}
               />
-            ) : null}
-          </div>
+            ) : (
+              <span aria-hidden className="size-8 shrink-0" />
+            )
+          ) : null}
+          {showCheckbox ? (
+            <GoalSelectCheckbox
+              entityName={getEntityName(row.entityType, row.entityId)}
+              goalId={row.goalId}
+              onSelectRange={onSelectRange}
+              onToggle={onToggleSelected}
+              selected={selected}
+            />
+          ) : null}
+          <span className="pl-1">
+            <GoalPriorityNumber row={row} />
+          </span>
         </div>
       </TableCell>
       <TableCell className="font-medium">
