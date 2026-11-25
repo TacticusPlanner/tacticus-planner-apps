@@ -46,6 +46,10 @@ const sources = {
 const SAME_AS_ENGLISH = new Set([
   "summary.tokensValue",
   "summary.resultsValue",
+  "attack.target",
+  "log.notesCount",
+  // "Notes" in French.
+  "log.notes",
   "target.zone",
   "tour.log.title",
 ])
