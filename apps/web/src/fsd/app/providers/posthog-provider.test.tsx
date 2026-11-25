@@ -35,7 +35,8 @@ const identifyUser = vi.fn()
 const clearIdentity = vi.fn()
 const captureEvent = vi.fn()
 const isReady = vi.fn(() => true)
-vi.mock("@/shared/analytics", () => ({
+vi.mock("@/shared/analytics", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/analytics")>()),
   AnalyticsProvider: ({ children }: { children: React.ReactNode }) => children,
   useAnalyticsActions: () => ({
     isReady: isReady(),
@@ -45,7 +46,8 @@ vi.mock("@/shared/analytics", () => ({
   }),
 }))
 
-import { redirectOnlyHandle, reportError } from "@/shared/lib"
+import { redirectOnlyHandle } from "@/shared/analytics"
+import { reportError } from "@/shared/lib"
 
 import { PostHogProvider } from "./posthog-provider"
 

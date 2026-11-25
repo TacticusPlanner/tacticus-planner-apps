@@ -7,9 +7,13 @@ import type { Params } from "react-router"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import { useCurrentUser } from "@/entities/account"
-import { AnalyticsProvider, useAnalyticsActions } from "@/shared/analytics"
+import {
+  AnalyticsProvider,
+  reportsPageView,
+  useAnalyticsActions,
+} from "@/shared/analytics"
 import { takeAuthJournal } from "@/shared/auth"
-import { reportsPageView, setErrorReporter } from "@/shared/lib"
+import { setErrorReporter } from "@/shared/lib"
 
 import { mapJournaledAuthStepToEvent } from "./auth-step-event"
 

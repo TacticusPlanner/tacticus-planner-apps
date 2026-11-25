@@ -12,7 +12,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { InteractionStatus } from "@azure/msal-browser"
 
-import { redirectOnlyHandle } from "@/shared/lib"
+import { redirectOnlyHandle } from "@/shared/analytics"
 import { render, screen } from "@/test/render"
 
 vi.mock("@azure/msal-react", () => ({

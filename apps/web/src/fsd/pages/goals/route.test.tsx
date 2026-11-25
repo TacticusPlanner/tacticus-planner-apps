@@ -8,7 +8,7 @@ import {
   Routes,
 } from "react-router"
 
-import { redirectOnlyHandle } from "@/shared/lib"
+import { redirectOnlyHandle } from "@/shared/analytics"
 
 import { routes } from "./route"
 

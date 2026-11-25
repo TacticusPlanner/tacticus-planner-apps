@@ -1,7 +1,7 @@
 import { createMemoryRouter, RouterProvider } from "react-router"
 import { describe, expect, it } from "vitest"
 
-import { redirectOnlyHandle } from "@/shared/lib"
+import { redirectOnlyHandle } from "@/shared/analytics"
 import { render, screen, waitFor } from "@/test/render"
 
 import { eventShopRoutes, routes } from "./route"

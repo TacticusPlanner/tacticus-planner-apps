@@ -3,7 +3,8 @@ import { lazy } from "react"
 import { Navigate, useLocation, useParams } from "react-router"
 import type { RouteObject } from "react-router"
 
-import { preloadOnMatch, redirectOnlyHandle } from "@/shared/lib"
+import { redirectOnlyHandle } from "@/shared/analytics"
+import { preloadOnMatch } from "@/shared/lib"
 
 // The section layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
 // never statically pulls the layout into the entry chunk).
