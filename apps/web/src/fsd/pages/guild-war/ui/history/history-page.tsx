@@ -160,7 +160,6 @@ export function HistoryPage() {
           {past.hasNextPage ? (
             <Button
               className="self-center"
-              data-testid="guild-war-load-more"
               disabled={past.isFetchingNextPage}
               onClick={() => void past.fetchNextPage()}
               variant="outline"

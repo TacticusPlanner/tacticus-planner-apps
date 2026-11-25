@@ -238,7 +238,7 @@ describe("OffensePage", () => {
 
     for (const id of CHARACTERS) await user.click(await tile(id))
 
-    expect(screen.getByTestId("guild-war-log-attack")).toBeDisabled()
+    expect(screen.getByRole("button", { name: "Log attack" })).toBeDisabled()
     expect(screen.getByTestId("guild-war-log-blocked")).toHaveTextContent(
       "Pick at most 5 characters"
     )
@@ -262,23 +262,23 @@ describe("OffensePage", () => {
     renderOffense()
 
     await user.click(await tile("ultraCalgar"))
-    await user.click(screen.getByTestId("guild-war-log-attack"))
+    await user.click(screen.getByRole("button", { name: "Log attack" }))
     const dialog = await screen.findByTestId("guild-war-log-dialog")
-    expect(within(dialog).getByTestId("guild-war-zone")).toHaveTextContent(
-      "Armoury"
-    )
+    expect(
+      within(dialog).getByRole("combobox", { name: "Zone" })
+    ).toHaveTextContent("Armoury")
     // A Legendary lineup starts on the Legendary defenders; the player picks Epic.
     expect(
       within(dialog).getByRole("radio", { name: "Legendary" })
     ).toBeChecked()
     await user.click(within(dialog).getByRole("radio", { name: "Epic" }))
     await user.click(within(dialog).getByRole("radio", { name: "Won" }))
-    await user.click(within(dialog).getByTestId("guild-war-lost-ultraCalgar"))
+    await user.click(within(dialog).getByRole("button", { name: /lost$/ }))
     await user.type(
-      within(dialog).getByTestId("guild-war-log-notes"),
+      within(dialog).getByRole("textbox", { name: "Notes" }),
       " Close one. "
     )
-    await user.click(within(dialog).getByTestId("guild-war-log-save"))
+    await user.click(within(dialog).getByRole("button", { name: "Log attack" }))
 
     await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(2))
     expect(api.setCurrent).toHaveBeenCalledWith({
@@ -311,20 +311,56 @@ describe("OffensePage", () => {
     expect(screen.queryByTestId("guild-war-selection-bar")).toBeNull()
   })
 
+  it("logs the first attack in a war another device just started", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({ war: null })
+    api.createAttack
+      .mockRejectedValueOnce(
+        new ApiError(409, "No current war", {
+          issueCode: "guildWarNotStarted",
+        })
+      )
+      .mockResolvedValueOnce(
+        war({ tokensUsed: 1, deployedUnitIds: ["ultraCalgar"] })
+      )
+    api.setCurrent.mockRejectedValue(
+      new ApiError(409, "Stale", {
+        issueCode: "guildWarRevisionStale",
+        current: war({ revision: 1 }),
+      })
+    )
+    window.localStorage.setItem("guildWar.zone", "Armoury")
+    renderOffense()
+
+    await user.click(await tile("ultraCalgar"))
+    await user.click(screen.getByRole("button", { name: "Log attack" }))
+    const dialog = await screen.findByTestId("guild-war-log-dialog")
+    await user.click(within(dialog).getByRole("button", { name: "Log attack" }))
+
+    await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(2))
+    await waitFor(() =>
+      expect(screen.queryByTestId("guild-war-log-dialog")).toBeNull()
+    )
+  })
+
   it("needs a zone before an attack can be logged", async () => {
     const user = userEvent.setup()
     api.current.mockResolvedValue({ war: war() })
     renderOffense()
 
     await user.click(await tile("ultraCalgar"))
-    await user.click(screen.getByTestId("guild-war-log-attack"))
+    await user.click(screen.getByRole("button", { name: "Log attack" }))
     const dialog = await screen.findByTestId("guild-war-log-dialog")
-    expect(within(dialog).getByTestId("guild-war-log-save")).toBeDisabled()
+    expect(
+      within(dialog).getByRole("button", { name: "Log attack" })
+    ).toBeDisabled()
     expect(within(dialog).queryByTestId("guild-war-log-rarity")).toBeNull()
 
-    await user.click(within(dialog).getByTestId("guild-war-zone"))
+    await user.click(within(dialog).getByRole("combobox", { name: "Zone" }))
     await user.click(await screen.findByRole("option", { name: /Armoury/ }))
-    expect(within(dialog).getByTestId("guild-war-log-save")).toBeEnabled()
+    expect(
+      within(dialog).getByRole("button", { name: "Log attack" })
+    ).toBeEnabled()
     expect(
       within(dialog).getByTestId("guild-war-log-rarity")
     ).toBeInTheDocument()
@@ -348,7 +384,7 @@ describe("OffensePage", () => {
     expect(within(log).getByTestId("attack-notes")).toHaveTextContent(
       "Close one."
     )
-    await user.click(within(log).getByTestId("guild-war-undo"))
+    await user.click(within(log).getByRole("button", { name: "Undo" }))
 
     await waitFor(() =>
       expect(api.deleteAttack).toHaveBeenCalledWith("war-1", "attack-1")

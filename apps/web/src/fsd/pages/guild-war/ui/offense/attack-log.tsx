@@ -7,16 +7,16 @@ import type { GuildWar, GuildWarAttack } from "../../model/types"
 import { AttackRow } from "../attack-row"
 
 /** The current war's attacks, newest first, each with Undo (no confirm: logging it again undoes
- *  the Undo). */
+ *  the Undo). Every Undo waits while one is in flight, so two never race. */
 export function AttackLog({
   war,
   season,
-  undoingId,
+  undoing,
   onUndo,
 }: {
   war: GuildWar
   season: GuildWarSeason | undefined
-  undoingId: string | null
+  undoing: boolean
   onUndo: (attack: GuildWarAttack) => void
 }) {
   const { t, i18n } = useTranslation("guildWar")
@@ -34,8 +34,7 @@ export function AttackLog({
           <AttackRow
             actions={
               <Button
-                data-testid="guild-war-undo"
-                disabled={undoingId === attack.id}
+                disabled={undoing}
                 onClick={() => onUndo(attack)}
                 size="sm"
                 variant="ghost"

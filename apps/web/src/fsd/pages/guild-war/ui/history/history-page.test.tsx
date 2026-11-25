@@ -157,7 +157,7 @@ describe("HistoryPage", () => {
     expect(
       within(rows[1] as HTMLElement).getByTestId("attack-enemy")
     ).toBeInTheDocument()
-    expect(screen.queryByTestId("guild-war-load-more")).toBeNull()
+    expect(screen.queryByRole("button", { name: "Load more wars" })).toBeNull()
   })
 
   it("loads the next page with the returned cursor", async () => {
@@ -171,12 +171,14 @@ describe("HistoryPage", () => {
     )
     renderHistory()
 
-    await user.click(await screen.findByTestId("guild-war-load-more"))
+    await user.click(
+      await screen.findByRole("button", { name: "Load more wars" })
+    )
 
     await waitFor(() =>
       expect(screen.getAllByTestId("guild-war-past-war")).toHaveLength(2)
     )
     expect(api.past).toHaveBeenLastCalledWith("cursor-1")
-    expect(screen.queryByTestId("guild-war-load-more")).toBeNull()
+    expect(screen.queryByRole("button", { name: "Load more wars" })).toBeNull()
   })
 })

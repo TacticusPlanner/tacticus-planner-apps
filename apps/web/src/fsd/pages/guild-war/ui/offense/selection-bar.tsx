@@ -74,7 +74,6 @@ export function SelectionBar({
       </Button>
       <Button
         aria-describedby={block ? reasonId : undefined}
-        data-testid="guild-war-log-attack"
         disabled={block !== null}
         onClick={onLog}
       >

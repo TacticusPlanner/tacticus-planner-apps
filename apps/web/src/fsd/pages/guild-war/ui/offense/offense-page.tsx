@@ -243,7 +243,6 @@ export function OffensePage() {
         <UnitsLeft roster={roster} deployed={deployed} />
         <div className="ml-auto self-center">
           <Button
-            data-testid="guild-war-start"
             disabled={!war || startWar.isPending}
             onClick={() => setConfirmStart(true)}
             variant="outline"
@@ -280,7 +279,7 @@ export function OffensePage() {
         <AttackLog
           onUndo={undoAttack}
           season={season}
-          undoingId={undo.isPending ? undo.variables.attackId : null}
+          undoing={undo.isPending}
           war={war}
         />
       ) : null}

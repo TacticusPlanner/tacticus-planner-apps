@@ -31,7 +31,7 @@ import {
 } from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { TeamUnitPortrait } from "@/entities/team"
+import { TeamUnitPortrait, teamUnitView } from "@/entities/team"
 import type { TeamRoster } from "@/entities/team"
 import type { PickerUnit } from "@/features/team-editor"
 import {
@@ -82,12 +82,7 @@ function ZoneSelect({
     <FilterField label={t("target.zone")}>
       {({ id, labelId }) => (
         <Select disabled={!season} onValueChange={onChange} value={value ?? ""}>
-          <SelectTrigger
-            aria-labelledby={labelId}
-            className="w-full"
-            data-testid="guild-war-zone"
-            id={id}
-          >
+          <SelectTrigger aria-labelledby={labelId} className="w-full" id={id}>
             <SelectValue placeholder={t("target.zonePlaceholder")} />
           </SelectTrigger>
           <SelectContent position="popper">
@@ -150,7 +145,7 @@ function LineupPicker({
         unit={
           rarity
             ? cappedView(kind, id, roster, rarity)
-            : { kind, unitId: id, owned: undefined }
+            : teamUnitView(kind, id, roster)
         }
       />
     ),
@@ -181,7 +176,6 @@ function LineupPicker({
           <ToggleGroupItem
             aria-label={t("log.markLost", { name: unit.name })}
             className="relative h-auto p-0.5"
-            data-testid={`guild-war-lost-${unit.id}`}
             key={unit.id}
             value={unit.id}
           >
@@ -324,7 +318,6 @@ export function LogAttackDialog({
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={notesId}>{t("log.notes")}</Label>
           <Textarea
-            data-testid="guild-war-log-notes"
             id={notesId}
             maxLength={GUILD_WAR_NOTES_MAX}
             onChange={(event) => setNotes(event.target.value)}
@@ -364,11 +357,7 @@ export function LogAttackDialog({
         <Button onClick={() => onOpenChange(false)} variant="outline">
           {t("log.cancel")}
         </Button>
-        <Button
-          data-testid="guild-war-log-save"
-          disabled={pending || zoneId === null || !target}
-          onClick={save}
-        >
+        <Button disabled={pending || zoneId === null || !target} onClick={save}>
           {t("log.save")}
         </Button>
       </ResponsiveDialogFooter>

@@ -134,7 +134,6 @@ export function GuildWarLayout() {
         <PageSettingsButton
           disabled={!context}
           onClick={() => setSettingsOpen(true)}
-          testId="guild-war-settings-button"
         />
       </PageHeaderSettings>
       <div className="flex flex-col gap-5">{content}</div>

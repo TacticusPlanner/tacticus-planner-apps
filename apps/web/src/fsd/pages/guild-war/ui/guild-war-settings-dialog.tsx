@@ -68,6 +68,12 @@ export function GuildWarSettingsDialog({
     })
   }
 
+  // The dialog stays mounted, so a failed save is cleared on close rather than shown on reopen.
+  const changeOpen = (next: boolean) => {
+    if (!next) save.reset()
+    onOpenChange(next)
+  }
+
   let error: string | null = null
   if (save.isError) {
     if (staleGuildWar(save.error)) error = t("settings.stale")
@@ -79,7 +85,7 @@ export function GuildWarSettingsDialog({
   return (
     <ResponsiveDialog
       data-testid="guild-war-settings"
-      onOpenChange={onOpenChange}
+      onOpenChange={changeOpen}
       open={open}
       width="narrow"
     >
@@ -101,7 +107,6 @@ export function GuildWarSettingsDialog({
                 aria-labelledby={labelId}
                 id={id}
                 className="w-full"
-                data-testid="guild-war-season"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -133,7 +138,6 @@ export function GuildWarSettingsDialog({
                 aria-labelledby={labelId}
                 id={id}
                 className="w-full"
-                data-testid="guild-war-level"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -165,9 +169,7 @@ export function GuildWarSettingsDialog({
         ) : null}
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
-        <Button onClick={() => onOpenChange(false)}>
-          {t("settings.done")}
-        </Button>
+        <Button onClick={() => changeOpen(false)}>{t("settings.done")}</Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>
   )

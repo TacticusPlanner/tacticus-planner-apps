@@ -126,7 +126,7 @@ export function DesktopSectionNavigation({
         <ul className="flex flex-col gap-0.5 px-2 pb-2" id={LIST_ID}>
           {groupNavChildren(item.children ?? []).map((group, index) =>
             group.labelKey ? (
-              <li key={group.labelKey}>
+              <li className="not-first:pt-2" key={group.labelKey}>
                 <NavGroupLabel
                   id={`${LIST_ID}-group-${index}`}
                   labelKey={group.labelKey}

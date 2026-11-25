@@ -111,11 +111,15 @@ describe("GuildWarLayout", () => {
     // The summary line opens Settings too.
     await user.click(await screen.findByTestId("guild-war-settings-summary"))
     const dialog = await screen.findByTestId("guild-war-settings")
-    expect(within(dialog).getByTestId("guild-war-season")).toBeDisabled()
+    expect(
+      within(dialog).getByRole("combobox", { name: "Season" })
+    ).toBeDisabled()
     expect(
       within(dialog).getByTestId("guild-war-season-locked")
     ).toBeInTheDocument()
-    expect(within(dialog).getByTestId("guild-war-level")).toBeEnabled()
+    expect(
+      within(dialog).getByRole("combobox", { name: "Battlefield level" })
+    ).toBeEnabled()
   })
 
   it("saves a new battlefield level from Settings over the war's revision", async () => {
@@ -128,9 +132,11 @@ describe("GuildWarLayout", () => {
     })
     renderAt("/guild/war/offense")
 
-    await user.click(await screen.findByTestId("guild-war-settings-button"))
+    await user.click(await screen.findByRole("button", { name: "Settings" }))
     const dialog = await screen.findByTestId("guild-war-settings")
-    await user.click(within(dialog).getByTestId("guild-war-level"))
+    await user.click(
+      within(dialog).getByRole("combobox", { name: "Battlefield level" })
+    )
     await user.click(await screen.findByRole("option", { name: "Level 4" }))
 
     await waitFor(() =>
@@ -144,5 +150,25 @@ describe("GuildWarLayout", () => {
     expect(
       await screen.findByTestId("guild-war-settings-summary")
     ).toHaveTextContent("Season D · Battlefield level 4")
+  })
+
+  it("clears a failed save when Settings closes", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({ war: war() })
+    api.setCurrent.mockRejectedValue(new Error("offline"))
+    renderAt("/guild/war/offense")
+
+    await user.click(await screen.findByRole("button", { name: "Settings" }))
+    let dialog = await screen.findByTestId("guild-war-settings")
+    await user.click(
+      within(dialog).getByRole("combobox", { name: "Battlefield level" })
+    )
+    await user.click(await screen.findByRole("option", { name: "Level 4" }))
+    expect(await within(dialog).findByRole("alert")).toBeInTheDocument()
+
+    await user.click(within(dialog).getByRole("button", { name: "Done" }))
+    await user.click(await screen.findByRole("button", { name: "Settings" }))
+    dialog = await screen.findByTestId("guild-war-settings")
+    expect(within(dialog).queryByRole("alert")).toBeNull()
   })
 })

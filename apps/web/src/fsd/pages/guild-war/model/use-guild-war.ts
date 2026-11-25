@@ -121,7 +121,12 @@ export function useLogGuildWarAttack() {
         return await createAttack(fields)
       } catch (error) {
         if (!isGuildWarNotStarted(error)) throw error
-        await setCurrentWar(settings, 0)
+        try {
+          await setCurrentWar(settings, 0)
+        } catch (startError) {
+          // Another tab or device started the war in between: log the attack in that one.
+          if (!staleGuildWar(startError)) throw startError
+        }
         return createAttack(fields)
       }
     },
