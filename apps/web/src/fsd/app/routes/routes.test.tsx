@@ -100,9 +100,27 @@ describe("app routes", () => {
     expect(findRoute(routes, "/events")).toBeUndefined()
   })
 
+  it("keeps the guild boundary on the Guild group and serves Guild War beside it", () => {
+    const section = findRoute(routes, "/guild")
+    const [guildGroup, war] = section?.children ?? []
+    // Pathless: Members and Settings stay at /guild/members and /guild/settings, inside the
+    // boundary element; Guild War is a sibling, outside it.
+    expect(guildGroup?.path).toBeUndefined()
+    expect(guildGroup?.children?.map((child) => child.path ?? "index")).toEqual(
+      ["index", "members", "settings"]
+    )
+    expect(war?.path).toBe("war")
+    expect(war?.children?.map((child) => child.path ?? "index")).toEqual([
+      "index",
+      "offense",
+      "history",
+    ])
+  })
+
   it.each([
     ["/plan", "/plan/goals"],
     ["/legendary-events", "/legendary-events/astarLysander"],
+    ["/guild", "/guild/war/offense"],
   ])("bounces an anonymous visitor from %s to sign-in", (path, entry) => {
     renderSection(path, findRoute(routes, path)?.element, entry)
 

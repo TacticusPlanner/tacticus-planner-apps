@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import type { RefObject } from "react"
 import { Link, useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
@@ -12,6 +12,8 @@ import {
 import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { NavGroupLabel } from "./nav-group-label"
+import { groupNavChildren } from "./nav-groups"
 import { NavItemIcon } from "./nav-child-icon"
 import { NavChildRow } from "./nav-child-row"
 import { filterNavigationItems } from "./navigation-filter"
@@ -138,14 +140,21 @@ export function DesktopNavigationDialog({
                       </Link>
                       {item.children && item.children.length > 0 ? (
                         <div className="mt-1 ml-8 space-y-1 border-l pl-3">
-                          {item.children.map((child) => (
-                            <NavChildRow
-                              key={child.path}
-                              child={child}
-                              hideLive={isSearching}
-                              isActive={pathname === child.path}
-                              onSelect={() => handleOpenChange(false)}
-                            />
+                          {groupNavChildren(item.children).map((group) => (
+                            <Fragment key={group.labelKey ?? "children"}>
+                              {group.labelKey ? (
+                                <NavGroupLabel labelKey={group.labelKey} />
+                              ) : null}
+                              {group.children.map((child) => (
+                                <NavChildRow
+                                  key={child.path}
+                                  child={child}
+                                  hideLive={isSearching}
+                                  isActive={pathname === child.path}
+                                  onSelect={() => handleOpenChange(false)}
+                                />
+                              ))}
+                            </Fragment>
                           ))}
                         </div>
                       ) : null}

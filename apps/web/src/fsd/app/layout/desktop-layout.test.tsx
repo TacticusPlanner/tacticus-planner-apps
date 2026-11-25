@@ -460,11 +460,15 @@ describe("DesktopShell", () => {
       </MemoryRouter>
     )
 
+    const sectionMenu = within(screen.getByTestId("desktop-section-navigation"))
+    expect(sectionMenu.getAllByRole("link")).toHaveLength(4)
+    // Guild's children sit in two labelled groups: Guild, then Guild War.
     expect(
-      within(screen.getByTestId("desktop-section-navigation")).getAllByRole(
-        "link"
-      )
-    ).toHaveLength(2)
+      sectionMenu.getAllByTestId("nav-group-label").map((l) => l.textContent)
+    ).toEqual(["guild.groups.guild", "guild.groups.guildWar"])
+    expect(
+      sectionMenu.getByRole("list", { name: "guild.groups.guildWar" })
+    ).toBeInTheDocument()
 
     rerender(
       <MemoryRouter initialEntries={["/guild/members"]}>

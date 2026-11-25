@@ -496,9 +496,12 @@ export function TeamEditorDialog({
   teams,
   onClose,
   deleted = false,
+  newTeamModes = [],
 }: {
   /** The team to edit, or null to create one. */
   team: Team | null
+  /** The modes a new team starts with, for a page that creates teams for its own mode. */
+  newTeamModes?: readonly TeamMode[]
   /** The team was deleted elsewhere while open: the editor keeps showing it, and Save is off. */
   deleted?: boolean
   /** Every saved team, for the same-mode flags. */
@@ -509,7 +512,7 @@ export function TeamEditorDialog({
   const isMobile = useIsMobile()
   const editorData = useTeamEditorData()
   const [draft, setDraftState] = useState<TeamDraft>(() =>
-    team ? draftFromTeam(team) : emptyDraft()
+    team ? draftFromTeam(team) : emptyDraft(newTeamModes)
   )
   // What the draft started as, so closing can tell whether anything would be lost.
   const [initialFields] = useState(() => JSON.stringify(draftToFields(draft)))

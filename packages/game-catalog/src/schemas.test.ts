@@ -4,6 +4,7 @@ import type { BattleId, FactionId } from "@workspace/game-domain"
 import globalValues from "./schemas/global-values.fixture.json"
 import progressionRules from "./schemas/progression-rules.fixture.json"
 import hre from "./schemas/hre.fixture.json"
+import guildWar from "./schemas/guild-war.fixture.json"
 import incursions from "./schemas/incursions.fixture.json"
 import npcEncounters from "./schemas/npc-encounters.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
@@ -1250,6 +1251,28 @@ describe("incursions schema", () => {
             },
           ],
         },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("guild-war schema", () => {
+  it("parses the served seasons with each tier's five slot caps", () => {
+    const seasons = datasetPayloadSchemas["guild-war"].parse(guildWar)
+    const seasonA = seasons.find((season) => season.id === "guildWarSeasonA")
+    const level5 = seasonA?.levels.find((level) => level.battlefieldLevel === 5)
+    const armoury = level5?.zones.find((zone) => zone.zoneId === "Armoury")
+    expect(armoury?.tierId).toBe("Elite")
+    expect(
+      seasonA?.tiers.find((tier) => tier.id === "Elite")?.rarityCaps
+    ).toEqual(["Legendary", "Legendary", "Epic", "Epic", "Epic"])
+  })
+
+  it("rejects a tier without five slot caps", () => {
+    const [season] = guildWar
+    expect(
+      datasetPayloadSchemas["guild-war"].safeParse([
+        { ...season, tiers: [{ id: "Hero", rarityCaps: ["Mythic"] }] },
       ]).success
     ).toBe(false)
   })

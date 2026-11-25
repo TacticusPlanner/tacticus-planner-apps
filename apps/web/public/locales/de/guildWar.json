@@ -1,0 +1,199 @@
+{
+  "season": "Saison {{name}}",
+  "level": "Stufe {{level}}",
+  "settingsSummary": "{{season}} · Schlachtfeldstufe {{level}}",
+  "settingsOpen": "{{summary}}. Einstellungen öffnen",
+  "page": {
+    "loading": "Dein Krieg wird geladen",
+    "loadError": "Dein Krieg konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "noSeasons": "Gildenkriegsdaten sind noch nicht verfügbar."
+  },
+  "target": {
+    "zone": "Zone",
+    "zonePlaceholder": "Zone wählen"
+  },
+  "settings": {
+    "title": "Gildenkrieg-Einstellungen",
+    "description": "Saison und Schlachtfeldstufe deines aktuellen Kriegs.",
+    "season": "Saison",
+    "seasonFromCalendar": "Vom Event-Kalender festgelegt.",
+    "battlefieldLevel": "Schlachtfeldstufe",
+    "capsKept": "Bereits erfasste Angriffe behalten die Seltenheitsgrenze, mit der sie erfasst wurden.",
+    "stale": "Dein Krieg wurde auf einem anderen Gerät geändert. Er wird jetzt so angezeigt, wie er ist.",
+    "failed": "Die Einstellungen konnten nicht gespeichert werden. Versuch es erneut.",
+    "done": "Fertig",
+    "seasonLocked": "Dieser Krieg hat Angriffe, daher bleibt seine Saison. Starte einen neuen Krieg, um eine andere Saison zu spielen."
+  },
+  "summary": {
+    "tokens": "Verbrauchte Marken",
+    "tokensValue": "{{used}} / {{max}}",
+    "results": "Gewonnen · verloren",
+    "resultsValue": "{{won}} · {{lost}}",
+    "unitsLeft": "Verbleibende Charaktere"
+  },
+  "history": {
+    "empty": "Noch keine vergangenen Kriege.",
+    "emptyDescription": "Ein Krieg landet hier, wenn du unter Angriff einen neuen startest.",
+    "totals": "Gesamtwerte",
+    "byTier": "Siegquote nach Zonenstufe",
+    "byZone": "Siegquote nach Zone",
+    "byRarity": "Siegquote nach Verteidigerseltenheit",
+    "characters": "Meistgenutzte Charaktere",
+    "noCharacters": "Noch keine Angriffe erfasst.",
+    "lineups": "Mehrfach genutzte Aufstellungen",
+    "noResults": "Noch keine Ergebnisse erfasst.",
+    "noLineups": "Noch keine Aufstellung mehr als einmal genutzt.",
+    "enemies": "Gegner, gegen die du am häufigsten verloren hast",
+    "noEnemies": "Noch keine Gegner in verlorenen Angriffen erfasst.",
+    "winRate_one": "{{rate}} % · {{count}} Angriff",
+    "winRate_other": "{{rate}} % · {{count}} Angriffe",
+    "attackCount_one": "{{count}} Angriff",
+    "attackCount_other": "{{count}} Angriffe",
+    "lossCount_one": "{{count}} Niederlage",
+    "lossCount_other": "{{count}} Niederlagen",
+    "warSummary": "{{season}} · Stufe {{level}} ·",
+    "warResults": "{{tokens}} · {{won}} gewonnen · {{lost}} verloren",
+    "noAttacks": "In diesem Krieg wurden keine Angriffe erfasst.",
+    "loading": "Vergangene Kriege werden geladen",
+    "loadError": "Deine vergangenen Kriege konnten nicht geladen werden.",
+    "heading": "Vergangene Kriege",
+    "loadMore": "Weitere Kriege laden",
+    "overall": {
+      "attacks": "Angriffe",
+      "won": "Gewonnen",
+      "lost": "Verloren",
+      "unitsLost": "Verlorene Einheiten"
+    }
+  },
+  "tour": {
+    "settings": {
+      "title": "Saison und Stufe",
+      "content": "Saison und Schlachtfeldstufe deines Kriegs. Ändere sie oben rechts unter Einstellungen."
+    },
+    "summary": {
+      "title": "Dein Krieg",
+      "content": "Verbrauchte Marken dieses Kriegs, deine verbleibenden Einheiten je Seltenheit sowie gewonnene und verlorene Angriffe."
+    },
+    "teams": {
+      "title": "Angriffsteams",
+      "content": "Deine Kriegsangriff-Teams: zuerst die bereiten, dann die, bei denen eine Einheit schon angegriffen hat."
+    },
+    "units": {
+      "title": "Verfügbare Einheiten",
+      "content": "Deine Einheiten, die in diesem Krieg noch nicht angegriffen haben. Tippe Einheiten oder bei einem Team auf Auswählen, dann auf Angriff erfassen, um Zone und Verteidigerseltenheit zu wählen."
+    },
+    "log": {
+      "title": "Angriffsprotokoll",
+      "content": "Alle Angriffe dieses Kriegs, die neuesten zuerst. Rückgängig entfernt einen Fehlgriff und gibt seine Einheiten wieder frei."
+    },
+    "totals": {
+      "title": "Gesamtwerte",
+      "content": "Deine Angriffe, Siege und Niederlagen; Siegquoten nach Zonenstufe, Zone und Verteidigerseltenheit; deine meistgenutzten Charaktere und Aufstellungen; und die Gegner, gegen die du am häufigsten verloren hast, über die unten geladenen Kriege."
+    },
+    "wars": {
+      "title": "Vergangene Kriege",
+      "content": "Deine beendeten Kriege, die neuesten zuerst. Öffne einen, um seine Angriffe zu sehen."
+    }
+  },
+  "attack": {
+    "lineup": "Aufstellung",
+    "won": "Gewonnen",
+    "wonLost_one": "Gewonnen · {{count}} verloren",
+    "wonLost_other": "Gewonnen · {{count}} verloren",
+    "lost": "Verloren",
+    "noResult": "Kein Ergebnis",
+    "target": "{{zone}} · {{rarity}}",
+    "enemy": "Gegner",
+    "unitLost": "{{name}} (verloren)"
+  },
+  "teams": {
+    "heading": "Angriffsteams",
+    "newTeam": "Neues Team",
+    "empty": "Noch keine Kriegsangriff-Teams. Erstelle eins, um seine Einheiten mit einem Tippen auszuwählen.",
+    "select": "Auswählen",
+    "selectTeam": "{{name}} auswählen",
+    "core": "Stammeinheiten",
+    "blocked": "{{name}} hat in diesem Krieg schon angegriffen."
+  },
+  "units": {
+    "heading": "Verfügbare Einheiten",
+    "noRoster": "Synchronisiere mit Tacticus, um die Einheiten zu sehen, mit denen du angreifen kannst."
+  },
+  "select": {
+    "count_one": "{{count}} ausgewählt",
+    "count_other": "{{count}} ausgewählt",
+    "clear": "Leeren",
+    "log": "Angriff erfassen",
+    "blocked": {
+      "noCharacter": "Wähle mindestens 1 Charakter",
+      "tooManyCharacters": "Wähle höchstens 5 Charaktere",
+      "tooManyMows": "Wähle höchstens 1 Kriegsmaschine",
+      "deployed": "{{name}} hat in diesem Krieg schon angegriffen",
+      "notOwned": "{{name}} ist nicht in deinem synchronisierten Kader",
+      "noTokens": "In diesem Krieg sind keine Marken mehr übrig"
+    }
+  },
+  "log": {
+    "title": "Angriff erfassen",
+    "rarity": "Seltenheit der Verteidiger",
+    "result": "Ergebnis",
+    "resultNone": "Nicht erfasst",
+    "resultWon": "Gewonnen",
+    "resultLost": "Verloren",
+    "tapLost": "Tippe auf die Einheiten, die du verloren hast",
+    "markLost": "{{name}} verloren",
+    "notes": "Notizen",
+    "notesPlaceholder": "Optional: was passiert ist, was du nächstes Mal versuchst",
+    "notesCount": "{{count}} / {{max}}",
+    "enemyDetails": "Gegnerdetails (optional)",
+    "cancel": "Abbrechen",
+    "save": "Angriff erfassen",
+    "logged": "Angriff erfasst.",
+    "errors": {
+      "guildWarUnknownZone": "Diese Zone gibt es auf dem Schlachtfeld dieser Saison nicht. Wähle eine andere Zone.",
+      "guildWarUnknownUnit": "Eine Einheit in diesem Angriff ist unbekannt. Prüfe Aufstellung und Gegnerdetails.",
+      "guildWarUnitDeployed": "Eine Einheit dieser Aufstellung hat in diesem Krieg schon angegriffen.",
+      "guildWarTokensSpent": "In diesem Krieg sind keine Marken mehr übrig.",
+      "failed": "Der Angriff konnte nicht erfasst werden. Versuch es erneut."
+    }
+  },
+  "enemy": {
+    "characters": "Gegnerische Charaktere",
+    "addCharacter": "Gegnerischen Charakter hinzufügen",
+    "mow": "Gegnerische Kriegsmaschine",
+    "addMow": "Gegnerische Kriegsmaschine hinzufügen",
+    "noUnit": "Keine Einheit gefunden.",
+    "remove": "{{name}} entfernen",
+    "rarity": "Seltenheit von {{name}}",
+    "rarityAny": "Seltenheit nicht erfasst",
+    "rank": "Rang von {{name}}",
+    "rankAny": "Rang nicht erfasst",
+    "state": "Ausgang für {{name}}",
+    "stateAny": "Nicht erfasst",
+    "states": {
+      "killed": "Getötet",
+      "damaged": "Beschädigt"
+    },
+    "buffs": "Aktive Zonenboni",
+    "map": "Karte",
+    "mapAny": "Karte nicht erfasst",
+    "mapOption": "Karte {{number}}"
+  },
+  "attackLog": {
+    "heading": "Angriffsprotokoll",
+    "undo": "Rückgängig",
+    "undone": "Angriff rückgängig gemacht.",
+    "undoFailed": "Der Angriff konnte nicht rückgängig gemacht werden. Versuch es erneut."
+  },
+  "startWar": {
+    "action": "Neuen Krieg starten",
+    "title": "Neuen Krieg starten?",
+    "description_one": "Dein aktueller Krieg endet mit {{count}} Angriff und wandert in den Verlauf.",
+    "description_other": "Dein aktueller Krieg endet mit {{count}} Angriffen und wandert in den Verlauf.",
+    "confirm": "Neuen Krieg starten",
+    "cancel": "Abbrechen",
+    "started": "Neuer Krieg gestartet.",
+    "failed": "Es konnte kein neuer Krieg gestartet werden. Versuch es erneut."
+  }
+}

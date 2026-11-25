@@ -1,0 +1,199 @@
+{
+  "season": "Saison {{name}}",
+  "level": "Niveau {{level}}",
+  "settingsSummary": "{{season}} · Niveau du champ de bataille {{level}}",
+  "settingsOpen": "{{summary}}. Ouvrir les paramètres",
+  "page": {
+    "loading": "Chargement de votre guerre",
+    "loadError": "Impossible de charger votre guerre.",
+    "retry": "Réessayer",
+    "noSeasons": "Les données de Guerre de guilde ne sont pas encore disponibles."
+  },
+  "target": {
+    "zone": "Zone",
+    "zonePlaceholder": "Choisir une zone"
+  },
+  "settings": {
+    "title": "Paramètres de Guerre de guilde",
+    "description": "La saison et le niveau du champ de bataille de votre guerre en cours.",
+    "season": "Saison",
+    "seasonFromCalendar": "Fixée par le calendrier des événements.",
+    "battlefieldLevel": "Niveau du champ de bataille",
+    "capsKept": "Les attaques déjà notées gardent la limite de rareté avec laquelle elles ont été notées.",
+    "stale": "Votre guerre a changé sur un autre appareil. Elle s'affiche telle qu'elle est maintenant.",
+    "failed": "Impossible d'enregistrer les paramètres. Réessayez.",
+    "done": "Terminé",
+    "seasonLocked": "Cette guerre a des attaques, sa saison reste donc la même. Commencez une nouvelle guerre pour jouer une autre saison."
+  },
+  "summary": {
+    "tokens": "Jetons utilisés",
+    "tokensValue": "{{used}} / {{max}}",
+    "results": "Gagnées · perdues",
+    "resultsValue": "{{won}} · {{lost}}",
+    "unitsLeft": "Personnages restants"
+  },
+  "history": {
+    "empty": "Aucune guerre passée pour l'instant.",
+    "emptyDescription": "Une guerre arrive ici quand vous en commencez une nouvelle depuis Attaque.",
+    "totals": "Totaux",
+    "byTier": "Taux de victoire par palier de zone",
+    "byZone": "Taux de victoire par zone",
+    "byRarity": "Taux de victoire par rareté des défenseurs",
+    "characters": "Personnages les plus utilisés",
+    "noCharacters": "Aucune attaque notée pour l'instant.",
+    "lineups": "Compositions utilisées plus d'une fois",
+    "noResults": "Aucun résultat enregistré pour l'instant.",
+    "noLineups": "Aucune composition utilisée plus d'une fois pour l'instant.",
+    "enemies": "Ennemis contre lesquels vous avez le plus perdu",
+    "noEnemies": "Aucun ennemi noté dans les attaques perdues pour l'instant.",
+    "winRate_one": "{{rate}} % · {{count}} attaque",
+    "winRate_other": "{{rate}} % · {{count}} attaques",
+    "attackCount_one": "{{count}} attaque",
+    "attackCount_other": "{{count}} attaques",
+    "lossCount_one": "{{count}} défaite",
+    "lossCount_other": "{{count}} défaites",
+    "warSummary": "{{season}} · Niveau {{level}} ·",
+    "warResults": "{{tokens}} · {{won}} gagnées · {{lost}} perdues",
+    "noAttacks": "Aucune attaque n'a été enregistrée dans cette guerre.",
+    "loading": "Chargement des guerres passées",
+    "loadError": "Impossible de charger vos guerres passées.",
+    "heading": "Guerres passées",
+    "loadMore": "Charger plus de guerres",
+    "overall": {
+      "attacks": "Attaques",
+      "won": "Gagnées",
+      "lost": "Perdues",
+      "unitsLost": "Unités perdues"
+    }
+  },
+  "tour": {
+    "settings": {
+      "title": "Saison et niveau",
+      "content": "La saison et le niveau du champ de bataille de votre guerre. Modifiez-les avec Paramètres en haut à droite."
+    },
+    "summary": {
+      "title": "Votre guerre",
+      "content": "Jetons utilisés sur les tentatives de cette guerre, unités restantes par rareté, et attaques gagnées et perdues."
+    },
+    "teams": {
+      "title": "Équipes d'attaque",
+      "content": "Vos équipes d'Attaque de guerre : d'abord celles qui sont prêtes, puis celles bloquées par une unité qui a déjà attaqué."
+    },
+    "units": {
+      "title": "Unités disponibles",
+      "content": "Vos unités qui n'ont pas attaqué dans cette guerre. Touchez des unités ou Sélectionner sur une équipe, puis Noter l'attaque pour choisir la zone et la rareté des défenseurs."
+    },
+    "log": {
+      "title": "Journal des attaques",
+      "content": "Toutes les attaques de cette guerre, les plus récentes d'abord. Annuler retire une erreur et libère ses unités."
+    },
+    "totals": {
+      "title": "Totaux",
+      "content": "Vos attaques, gagnées et perdues ; les taux de victoire par palier de zone, zone et rareté des défenseurs ; vos personnages et compositions les plus utilisés ; et les ennemis contre lesquels vous avez le plus perdu, sur les guerres chargées ci-dessous."
+    },
+    "wars": {
+      "title": "Guerres passées",
+      "content": "Vos guerres terminées, les plus récentes d'abord. Ouvrez-en une pour voir ses attaques."
+    }
+  },
+  "attack": {
+    "lineup": "Composition",
+    "won": "Gagnée",
+    "wonLost_one": "Gagnée · {{count}} perdue",
+    "wonLost_other": "Gagnée · {{count}} perdues",
+    "lost": "Perdue",
+    "noResult": "Pas de résultat",
+    "target": "{{zone}} · {{rarity}}",
+    "enemy": "Ennemi",
+    "unitLost": "{{name}} (perdue)"
+  },
+  "teams": {
+    "heading": "Équipes d'attaque",
+    "newTeam": "Nouvelle équipe",
+    "empty": "Aucune équipe Attaque de guerre pour l'instant. Créez-en une pour sélectionner ses unités en un geste.",
+    "select": "Sélectionner",
+    "selectTeam": "Sélectionner {{name}}",
+    "core": "Unités principales",
+    "blocked": "{{name}} a déjà attaqué dans cette guerre."
+  },
+  "units": {
+    "heading": "Unités disponibles",
+    "noRoster": "Synchronisez avec Tacticus pour voir les unités avec lesquelles vous pouvez attaquer."
+  },
+  "select": {
+    "count_one": "{{count}} sélectionnée",
+    "count_other": "{{count}} sélectionnées",
+    "clear": "Effacer",
+    "log": "Noter l'attaque",
+    "blocked": {
+      "noCharacter": "Choisissez au moins 1 personnage",
+      "tooManyCharacters": "Choisissez au plus 5 personnages",
+      "tooManyMows": "Choisissez au plus 1 Machine de guerre",
+      "deployed": "{{name}} a déjà attaqué dans cette guerre",
+      "notOwned": "{{name}} n'est pas dans votre effectif synchronisé",
+      "noTokens": "Plus aucun jeton dans cette guerre"
+    }
+  },
+  "log": {
+    "title": "Noter l'attaque",
+    "rarity": "Rareté des défenseurs",
+    "result": "Résultat",
+    "resultNone": "Non noté",
+    "resultWon": "Gagnée",
+    "resultLost": "Perdue",
+    "tapLost": "Touchez les unités que vous avez perdues",
+    "markLost": "{{name}} perdue",
+    "notes": "Notes",
+    "notesPlaceholder": "Facultatif : ce qui s'est passé, quoi essayer la prochaine fois",
+    "notesCount": "{{count}} / {{max}}",
+    "enemyDetails": "Détails de l'ennemi (facultatif)",
+    "cancel": "Annuler",
+    "save": "Noter l'attaque",
+    "logged": "Attaque notée.",
+    "errors": {
+      "guildWarUnknownZone": "Cette zone n'existe pas sur le champ de bataille de cette saison. Choisissez une autre zone.",
+      "guildWarUnknownUnit": "Une unité de cette attaque est inconnue. Vérifiez la composition et les détails de l'ennemi.",
+      "guildWarUnitDeployed": "Une unité de cette composition a déjà attaqué dans cette guerre.",
+      "guildWarTokensSpent": "Cette guerre n'a plus de jetons.",
+      "failed": "Impossible de noter l'attaque. Réessayez."
+    }
+  },
+  "enemy": {
+    "characters": "Personnages ennemis",
+    "addCharacter": "Ajouter un personnage ennemi",
+    "mow": "Machine de guerre ennemie",
+    "addMow": "Ajouter une Machine de guerre ennemie",
+    "noUnit": "Aucune unité trouvée.",
+    "remove": "Retirer {{name}}",
+    "rarity": "Rareté de {{name}}",
+    "rarityAny": "Rareté non notée",
+    "rank": "Rang de {{name}}",
+    "rankAny": "Rang non noté",
+    "state": "Issue pour {{name}}",
+    "stateAny": "Non noté",
+    "states": {
+      "killed": "Tuée",
+      "damaged": "Endommagée"
+    },
+    "buffs": "Bonus de zone actifs",
+    "map": "Carte",
+    "mapAny": "Carte non notée",
+    "mapOption": "Carte {{number}}"
+  },
+  "attackLog": {
+    "heading": "Journal des attaques",
+    "undo": "Annuler",
+    "undone": "Attaque annulée.",
+    "undoFailed": "Impossible d'annuler l'attaque. Réessayez."
+  },
+  "startWar": {
+    "action": "Commencer une nouvelle guerre",
+    "title": "Commencer une nouvelle guerre ?",
+    "description_one": "Votre guerre en cours se termine avec {{count}} attaque et passe dans l'Historique.",
+    "description_other": "Votre guerre en cours se termine avec {{count}} attaques et passe dans l'Historique.",
+    "confirm": "Commencer une nouvelle guerre",
+    "cancel": "Annuler",
+    "started": "Nouvelle guerre commencée.",
+    "failed": "Impossible de commencer une nouvelle guerre. Réessayez."
+  }
+}

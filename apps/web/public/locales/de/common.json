@@ -977,7 +977,15 @@
       "members": "Mitglieder",
       "membersDescription": "Die Mitgliederliste deiner Gilde.",
       "settings": "Einstellungen",
-      "settingsDescription": "Die Planner-Einstellungen deiner Gilde."
+      "settingsDescription": "Die Planner-Einstellungen deiner Gilde.",
+      "warOffense": "Angriff",
+      "warOffenseDescription": "Erfasse deine Gildenkriegsangriffe und sieh, welche Einheiten und Teams noch frei sind.",
+      "warHistory": "Verlauf",
+      "warHistoryDescription": "Deine vergangenen Gildenkriege, ihre Angriffe und Siegquoten."
+    },
+    "groups": {
+      "guild": "Gilde",
+      "guildWar": "Gildenkrieg"
     },
     "members": {
       "empty": "Keine Mitglieder gefunden.",

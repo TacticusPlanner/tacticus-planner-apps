@@ -195,6 +195,7 @@ export {
   type ProgressionRulesStorageModel,
   type HreStorageModel,
   type IncursionStorageModel,
+  type GuildWarSeasonStorageModel,
   type NpcEncounterStorageModel,
 } from "./game-catalog.storage"
 
@@ -270,6 +271,9 @@ export {
   incursionBoardImage,
   incursionEnhancementIcon,
   incursionTokenIcon,
+  guildWarBuffIcon,
+  guildWarTokenIcon,
+  guildWarZoneIcon,
   raidBossPortrait,
   fieldNpcIcon,
   raidBossSplashPortrait,

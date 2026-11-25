@@ -1,0 +1,199 @@
+{
+  "season": "Season {{name}}",
+  "level": "Level {{level}}",
+  "settingsSummary": "{{season}} · Battlefield level {{level}}",
+  "settingsOpen": "{{summary}}. Open settings",
+  "page": {
+    "loading": "Loading your war",
+    "loadError": "Couldn't load your war.",
+    "retry": "Retry",
+    "noSeasons": "Guild War data isn't available yet."
+  },
+  "target": {
+    "zone": "Zone",
+    "zonePlaceholder": "Pick a zone"
+  },
+  "settings": {
+    "title": "Guild War settings",
+    "description": "The season and battlefield level of your current war.",
+    "season": "Season",
+    "seasonFromCalendar": "Set by the events calendar.",
+    "battlefieldLevel": "Battlefield level",
+    "capsKept": "Attacks already logged keep the rarity cap they were logged at.",
+    "stale": "Your war changed on another device. It shows as it is now.",
+    "failed": "Couldn't save the settings. Try again.",
+    "done": "Done",
+    "seasonLocked": "This war has attacks, so its season stays. Start a new war to play another season."
+  },
+  "summary": {
+    "tokens": "Tokens used",
+    "tokensValue": "{{used}} / {{max}}",
+    "results": "Won · lost",
+    "resultsValue": "{{won}} · {{lost}}",
+    "unitsLeft": "Characters left"
+  },
+  "history": {
+    "empty": "No past wars yet.",
+    "emptyDescription": "A war moves here when you start a new one from Offense.",
+    "totals": "Totals",
+    "byTier": "Win rate by zone tier",
+    "byZone": "Win rate by zone",
+    "byRarity": "Win rate by defender rarity",
+    "characters": "Most used characters",
+    "noCharacters": "No attacks logged yet.",
+    "lineups": "Lineups used more than once",
+    "noResults": "No results recorded yet.",
+    "noLineups": "No lineup used more than once yet.",
+    "enemies": "Enemies you lost to most",
+    "noEnemies": "No enemies noted in lost attacks yet.",
+    "winRate_one": "{{rate}}% · {{count}} attack",
+    "winRate_other": "{{rate}}% · {{count}} attacks",
+    "attackCount_one": "{{count}} attack",
+    "attackCount_other": "{{count}} attacks",
+    "lossCount_one": "{{count}} loss",
+    "lossCount_other": "{{count}} losses",
+    "warSummary": "{{season}} · Level {{level}} ·",
+    "warResults": "{{tokens}} · {{won}} won · {{lost}} lost",
+    "noAttacks": "No attacks were logged in this war.",
+    "loading": "Loading past wars",
+    "loadError": "Couldn't load your past wars.",
+    "heading": "Past wars",
+    "loadMore": "Load more wars",
+    "overall": {
+      "attacks": "Attacks",
+      "won": "Won",
+      "lost": "Lost",
+      "unitsLost": "Units lost"
+    }
+  },
+  "tour": {
+    "settings": {
+      "title": "Season and level",
+      "content": "Your war's season and battlefield level. Change them with Settings at the top right."
+    },
+    "summary": {
+      "title": "Your war",
+      "content": "Tokens used of this war's attempts, units you still have per rarity, and attacks won and lost."
+    },
+    "teams": {
+      "title": "Offense teams",
+      "content": "Your War Offense teams: ready ones first, then the ones blocked by a unit that already attacked."
+    },
+    "units": {
+      "title": "Available units",
+      "content": "Your units that have not attacked in this war. Tap units or a team's Select, then Log attack to pick the zone and the defenders' rarity."
+    },
+    "log": {
+      "title": "Attack log",
+      "content": "Every attack of this war, newest first. Undo removes a mistap and frees its units."
+    },
+    "totals": {
+      "title": "Totals",
+      "content": "Your attacks, won and lost; win rates by zone tier, zone and defender rarity; your most used characters and lineups; and the enemies you lost to most, across the wars loaded below."
+    },
+    "wars": {
+      "title": "Past wars",
+      "content": "Your ended wars, newest first. Open one to see its attacks."
+    }
+  },
+  "attack": {
+    "lineup": "Lineup",
+    "won": "Won",
+    "wonLost_one": "Won · {{count}} lost",
+    "wonLost_other": "Won · {{count}} lost",
+    "lost": "Lost",
+    "noResult": "No result",
+    "target": "{{zone}} · {{rarity}}",
+    "enemy": "Enemy",
+    "unitLost": "{{name}} (lost)"
+  },
+  "teams": {
+    "heading": "Offense teams",
+    "newTeam": "New team",
+    "empty": "No War Offense teams yet. Create one to select its units in one tap.",
+    "select": "Select",
+    "selectTeam": "Select {{name}}",
+    "core": "Core units",
+    "blocked": "{{name}} already attacked in this war."
+  },
+  "units": {
+    "heading": "Available units",
+    "noRoster": "Sync with Tacticus to see the units you can attack with."
+  },
+  "select": {
+    "count_one": "{{count}} selected",
+    "count_other": "{{count}} selected",
+    "clear": "Clear",
+    "log": "Log attack",
+    "blocked": {
+      "noCharacter": "Pick at least 1 character",
+      "tooManyCharacters": "Pick at most 5 characters",
+      "tooManyMows": "Pick at most 1 Machine of War",
+      "deployed": "{{name}} already attacked in this war",
+      "notOwned": "{{name}} isn't in your synced roster",
+      "noTokens": "No tokens left in this war"
+    }
+  },
+  "log": {
+    "title": "Log attack",
+    "rarity": "Defenders' rarity",
+    "result": "Result",
+    "resultNone": "Not recorded",
+    "resultWon": "Won",
+    "resultLost": "Lost",
+    "tapLost": "Tap the units you lost",
+    "markLost": "{{name}} lost",
+    "notes": "Notes",
+    "notesPlaceholder": "Optional: what happened, what to try next time",
+    "notesCount": "{{count}} / {{max}}",
+    "enemyDetails": "Enemy details (optional)",
+    "cancel": "Cancel",
+    "save": "Log attack",
+    "logged": "Attack logged.",
+    "errors": {
+      "guildWarUnknownZone": "That zone isn't on this season's battlefield. Pick another zone.",
+      "guildWarUnknownUnit": "A unit in this attack isn't known. Check the lineup and enemy details.",
+      "guildWarUnitDeployed": "A unit in this lineup already attacked in this war.",
+      "guildWarTokensSpent": "This war has no tokens left.",
+      "failed": "Couldn't log the attack. Try again."
+    }
+  },
+  "enemy": {
+    "characters": "Enemy characters",
+    "addCharacter": "Add an enemy character",
+    "mow": "Enemy Machine of War",
+    "addMow": "Add an enemy Machine of War",
+    "noUnit": "No unit found.",
+    "remove": "Remove {{name}}",
+    "rarity": "Rarity of {{name}}",
+    "rarityAny": "Rarity not noted",
+    "rank": "Rank of {{name}}",
+    "rankAny": "Rank not noted",
+    "state": "Outcome for {{name}}",
+    "stateAny": "Not noted",
+    "states": {
+      "killed": "Killed",
+      "damaged": "Damaged"
+    },
+    "buffs": "Active zone buffs",
+    "map": "Map",
+    "mapAny": "Map not noted",
+    "mapOption": "Map {{number}}"
+  },
+  "attackLog": {
+    "heading": "Attack log",
+    "undo": "Undo",
+    "undone": "Attack undone.",
+    "undoFailed": "Couldn't undo the attack. Try again."
+  },
+  "startWar": {
+    "action": "Start new war",
+    "title": "Start a new war?",
+    "description_one": "Your current war ends with {{count}} attack and moves to History.",
+    "description_other": "Your current war ends with {{count}} attacks and moves to History.",
+    "confirm": "Start new war",
+    "cancel": "Cancel",
+    "started": "New war started.",
+    "failed": "Couldn't start a new war. Try again."
+  }
+}

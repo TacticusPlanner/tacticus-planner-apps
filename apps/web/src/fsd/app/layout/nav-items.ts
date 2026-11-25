@@ -6,6 +6,7 @@ import {
   BookOpen,
   Folders,
   Gamepad2,
+  History,
   Home,
   LayoutGrid,
   ListOrdered,
@@ -49,6 +50,8 @@ type NavLabelKey =
   | "legendaryEvents.tabs.tierList"
   | "guild.tabs.members"
   | "guild.tabs.settings"
+  | "guild.tabs.warOffense"
+  | "guild.tabs.warHistory"
   // Namespace-prefixed ("dailies:...") rather than living in `common.json` like every other
   // section's tab keys: `dailies` is its own long-standing i18n namespace/file, and duplicating
   // its content into `common.json` is an explicitly disallowed regression (see
@@ -82,7 +85,12 @@ type NavDescriptionKey =
   | "library:collections.raidBosses.description"
   | "library:collections.shops.description"
 
-export type NavTranslate = (key: NavLabelKey | NavDescriptionKey) => string
+/** The label of a group of a section's children (see `NavSubItemBase.groupLabelKey`). */
+export type NavGroupLabelKey = "guild.groups.guild" | "guild.groups.guildWar"
+
+export type NavTranslate = (
+  key: NavLabelKey | NavDescriptionKey | NavGroupLabelKey
+) => string
 
 interface NavSubItemBase {
   path: string
@@ -102,6 +110,10 @@ interface NavSubItemBase {
   anonymousAllowed?: boolean
   // Hides this child until the named feature flag is on (resolved by `use-nav-items.ts`).
   featureFlag?: FeatureFlag
+  // Names the group this child belongs to: the section menu and drawer label each group above its
+  // first child, and the page tabs list only the active child's group (see `nav-groups.ts`). The
+  // children of one group are listed together. Absent on every child means an ungrouped section.
+  groupLabelKey?: NavGroupLabelKey
 }
 
 /** A static child, labelled through i18n keys like its section, with an optional icon: the game's
@@ -350,12 +362,28 @@ export const navItems: NavItem[] = [
         artSrc: gameMenuIcon("guild"),
         labelKey: "guild.tabs.members",
         descriptionKey: "guild.tabs.membersDescription",
+        groupLabelKey: "guild.groups.guild",
       },
       {
         path: "/guild/settings",
         icon: Settings,
         labelKey: "guild.tabs.settings",
         descriptionKey: "guild.tabs.settingsDescription",
+        groupLabelKey: "guild.groups.guild",
+      },
+      {
+        path: "/guild/war/offense",
+        artSrc: gameMenuIcon("guildWar"),
+        labelKey: "guild.tabs.warOffense",
+        descriptionKey: "guild.tabs.warOffenseDescription",
+        groupLabelKey: "guild.groups.guildWar",
+      },
+      {
+        path: "/guild/war/history",
+        icon: History,
+        labelKey: "guild.tabs.warHistory",
+        descriptionKey: "guild.tabs.warHistoryDescription",
+        groupLabelKey: "guild.groups.guildWar",
       },
     ],
   },

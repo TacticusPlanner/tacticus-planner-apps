@@ -33,7 +33,7 @@ import {
 import { useSignInRedirect } from "@/shared/auth"
 import { NavItemIcon } from "./nav-child-icon"
 import { matchesNavPath } from "./find-active-child"
-import { MobileDrawerSubItem } from "./mobile-drawer-sub-item"
+import { MobileDrawerSubItems } from "./mobile-drawer-sub-item"
 import { MobileHeader } from "./mobile-header"
 import "./mobile-layout.css"
 import { MobileNavLink } from "./mobile-nav-link"
@@ -405,15 +405,12 @@ function MobileBottomNav({
                         </Link>
                         {item.children && item.children.length > 0 ? (
                           <div className="mt-1 ml-8 space-y-1 border-l pl-3">
-                            {item.children.map((child) => (
-                              <MobileDrawerSubItem
-                                key={child.path}
-                                hideLive={isSearching}
-                                item={child}
-                                onSelect={closeForNavigation}
-                                pathname={pathname}
-                              />
-                            ))}
+                            <MobileDrawerSubItems
+                              hideLive={isSearching}
+                              items={item.children}
+                              onSelect={closeForNavigation}
+                              pathname={pathname}
+                            />
                           </div>
                         ) : null}
                       </div>

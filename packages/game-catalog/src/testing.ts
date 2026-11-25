@@ -25,3 +25,6 @@ export { hreFixture } from "./hre.fixtures"
 
 // Served `incursions` records (trimmed tiers), parsed through the catalog schema and keyed by MoW id.
 export { incursionsFixture } from "./incursions.fixtures"
+
+// Served `guild-war` records (Seasons A and D, trimmed buff values), parsed through the catalog schema.
+export { guildWarFixture } from "./guild-war.fixtures"

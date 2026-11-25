@@ -27,11 +27,11 @@ export interface TeamDraft {
   rarityCap: Rarity | null
 }
 
-export function emptyDraft(): TeamDraft {
+export function emptyDraft(modes: readonly TeamMode[] = []): TeamDraft {
   return {
     name: "",
     notes: "",
-    modes: [],
+    modes: [...modes],
     characterIds: [],
     flexStartIndex: null,
     mowIds: [],

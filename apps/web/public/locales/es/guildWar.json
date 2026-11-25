@@ -1,0 +1,199 @@
+{
+  "season": "Temporada {{name}}",
+  "level": "Nivel {{level}}",
+  "settingsSummary": "{{season}} · Nivel de campo de batalla {{level}}",
+  "settingsOpen": "{{summary}}. Abrir ajustes",
+  "page": {
+    "loading": "Cargando tu guerra",
+    "loadError": "No se pudo cargar tu guerra.",
+    "retry": "Reintentar",
+    "noSeasons": "Los datos de la Guerra de gremios aún no están disponibles."
+  },
+  "target": {
+    "zone": "Zona",
+    "zonePlaceholder": "Elige una zona"
+  },
+  "settings": {
+    "title": "Ajustes de la Guerra de gremios",
+    "description": "La temporada y el nivel de campo de batalla de tu guerra actual.",
+    "season": "Temporada",
+    "seasonFromCalendar": "La fija el calendario de eventos.",
+    "battlefieldLevel": "Nivel de campo de batalla",
+    "capsKept": "Los ataques ya registrados conservan el límite de rareza con el que se registraron.",
+    "stale": "Tu guerra cambió en otro dispositivo. Se muestra tal como está ahora.",
+    "failed": "No se pudieron guardar los ajustes. Inténtalo de nuevo.",
+    "done": "Listo",
+    "seasonLocked": "Esta guerra tiene ataques, así que su temporada se mantiene. Empieza una guerra nueva para jugar otra temporada."
+  },
+  "summary": {
+    "tokens": "Fichas usadas",
+    "tokensValue": "{{used}} / {{max}}",
+    "results": "Ganados · perdidos",
+    "resultsValue": "{{won}} · {{lost}}",
+    "unitsLeft": "Personajes restantes"
+  },
+  "history": {
+    "empty": "Aún no hay guerras pasadas.",
+    "emptyDescription": "Una guerra pasa aquí cuando empiezas una nueva desde Ataque.",
+    "totals": "Totales",
+    "byTier": "Victorias por nivel de zona",
+    "byZone": "Victorias por zona",
+    "byRarity": "Victorias por rareza de los defensores",
+    "characters": "Personajes más usados",
+    "noCharacters": "Aún no hay ataques registrados.",
+    "lineups": "Alineaciones usadas más de una vez",
+    "noResults": "Aún no hay resultados registrados.",
+    "noLineups": "Aún no has usado ninguna alineación más de una vez.",
+    "enemies": "Enemigos contra los que más perdiste",
+    "noEnemies": "Aún no hay enemigos anotados en ataques perdidos.",
+    "winRate_one": "{{rate}} % · {{count}} ataque",
+    "winRate_other": "{{rate}} % · {{count}} ataques",
+    "attackCount_one": "{{count}} ataque",
+    "attackCount_other": "{{count}} ataques",
+    "lossCount_one": "{{count}} derrota",
+    "lossCount_other": "{{count}} derrotas",
+    "warSummary": "{{season}} · Nivel {{level}} ·",
+    "warResults": "{{tokens}} · {{won}} ganados · {{lost}} perdidos",
+    "noAttacks": "No se registraron ataques en esta guerra.",
+    "loading": "Cargando guerras anteriores",
+    "loadError": "No se pudieron cargar tus guerras anteriores.",
+    "heading": "Guerras anteriores",
+    "loadMore": "Cargar más guerras",
+    "overall": {
+      "attacks": "Ataques",
+      "won": "Ganados",
+      "lost": "Perdidos",
+      "unitsLost": "Unidades perdidas"
+    }
+  },
+  "tour": {
+    "settings": {
+      "title": "Temporada y nivel",
+      "content": "La temporada y el nivel de campo de batalla de tu guerra. Cámbialos con Ajustes arriba a la derecha."
+    },
+    "summary": {
+      "title": "Tu guerra",
+      "content": "Fichas usadas de los intentos de esta guerra, las unidades que te quedan por rareza y los ataques ganados y perdidos."
+    },
+    "teams": {
+      "title": "Equipos de ataque",
+      "content": "Tus equipos de Ataque de guerra: primero los listos y luego los bloqueados por una unidad que ya atacó."
+    },
+    "units": {
+      "title": "Unidades disponibles",
+      "content": "Tus unidades que no han atacado en esta guerra. Toca unidades o Seleccionar en un equipo y luego Registrar ataque para elegir la zona y la rareza de los defensores."
+    },
+    "log": {
+      "title": "Registro de ataques",
+      "content": "Todos los ataques de esta guerra, los más recientes primero. Deshacer quita un error y libera sus unidades."
+    },
+    "totals": {
+      "title": "Totales",
+      "content": "Tus ataques, ganados y perdidos; victorias por nivel de zona, zona y rareza de los defensores; tus personajes y alineaciones más usados; y los enemigos contra los que más perdiste, en las guerras cargadas abajo."
+    },
+    "wars": {
+      "title": "Guerras pasadas",
+      "content": "Tus guerras terminadas, las más recientes primero. Abre una para ver sus ataques."
+    }
+  },
+  "attack": {
+    "lineup": "Alineación",
+    "won": "Ganado",
+    "wonLost_one": "Ganado · {{count}} perdida",
+    "wonLost_other": "Ganado · {{count}} perdidas",
+    "lost": "Perdido",
+    "noResult": "Sin resultado",
+    "target": "{{zone}} · {{rarity}}",
+    "enemy": "Enemigo",
+    "unitLost": "{{name}} (perdida)"
+  },
+  "teams": {
+    "heading": "Equipos de ataque",
+    "newTeam": "Nuevo equipo",
+    "empty": "Aún no hay equipos de Ataque de guerra. Crea uno para seleccionar sus unidades con un toque.",
+    "select": "Seleccionar",
+    "selectTeam": "Seleccionar {{name}}",
+    "core": "Unidades principales",
+    "blocked": "{{name}} ya atacó en esta guerra."
+  },
+  "units": {
+    "heading": "Unidades disponibles",
+    "noRoster": "Sincroniza con Tacticus para ver las unidades con las que puedes atacar."
+  },
+  "select": {
+    "count_one": "{{count}} seleccionada",
+    "count_other": "{{count}} seleccionadas",
+    "clear": "Borrar",
+    "log": "Registrar ataque",
+    "blocked": {
+      "noCharacter": "Elige al menos 1 personaje",
+      "tooManyCharacters": "Elige como máximo 5 personajes",
+      "tooManyMows": "Elige como máximo 1 Máquina de guerra",
+      "deployed": "{{name}} ya atacó en esta guerra",
+      "notOwned": "{{name}} no está en tu plantel sincronizado",
+      "noTokens": "No quedan fichas en esta guerra"
+    }
+  },
+  "log": {
+    "title": "Registrar ataque",
+    "rarity": "Rareza de los defensores",
+    "result": "Resultado",
+    "resultNone": "Sin registrar",
+    "resultWon": "Ganado",
+    "resultLost": "Perdido",
+    "tapLost": "Toca las unidades que perdiste",
+    "markLost": "{{name}} perdida",
+    "notes": "Notas",
+    "notesPlaceholder": "Opcional: qué pasó, qué probar la próxima vez",
+    "notesCount": "{{count}} / {{max}}",
+    "enemyDetails": "Detalles del enemigo (opcional)",
+    "cancel": "Cancelar",
+    "save": "Registrar ataque",
+    "logged": "Ataque registrado.",
+    "errors": {
+      "guildWarUnknownZone": "Esa zona no está en el campo de batalla de esta temporada. Elige otra zona.",
+      "guildWarUnknownUnit": "Una unidad de este ataque es desconocida. Revisa la alineación y los detalles del enemigo.",
+      "guildWarUnitDeployed": "Una unidad de esta alineación ya atacó en esta guerra.",
+      "guildWarTokensSpent": "No quedan fichas en esta guerra.",
+      "failed": "No se pudo registrar el ataque. Inténtalo de nuevo."
+    }
+  },
+  "enemy": {
+    "characters": "Personajes enemigos",
+    "addCharacter": "Añadir un personaje enemigo",
+    "mow": "Máquina de guerra enemiga",
+    "addMow": "Añadir una Máquina de guerra enemiga",
+    "noUnit": "No se encontró ninguna unidad.",
+    "remove": "Quitar {{name}}",
+    "rarity": "Rareza de {{name}}",
+    "rarityAny": "Rareza sin registrar",
+    "rank": "Rango de {{name}}",
+    "rankAny": "Rango sin registrar",
+    "state": "Resultado para {{name}}",
+    "stateAny": "Sin registrar",
+    "states": {
+      "killed": "Eliminado",
+      "damaged": "Dañado"
+    },
+    "buffs": "Mejoras de zona activas",
+    "map": "Mapa",
+    "mapAny": "Mapa sin registrar",
+    "mapOption": "Mapa {{number}}"
+  },
+  "attackLog": {
+    "heading": "Registro de ataques",
+    "undo": "Deshacer",
+    "undone": "Ataque deshecho.",
+    "undoFailed": "No se pudo deshacer el ataque. Inténtalo de nuevo."
+  },
+  "startWar": {
+    "action": "Empezar nueva guerra",
+    "title": "¿Empezar una nueva guerra?",
+    "description_one": "Tu guerra actual termina con {{count}} ataque y pasa al Historial.",
+    "description_other": "Tu guerra actual termina con {{count}} ataques y pasa al Historial.",
+    "confirm": "Empezar nueva guerra",
+    "cancel": "Cancelar",
+    "started": "Nueva guerra empezada.",
+    "failed": "No se pudo empezar una nueva guerra. Inténtalo de nuevo."
+  }
+}

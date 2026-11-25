@@ -1,0 +1,1618 @@
+[
+  {
+    "id": "guildWarSeasonA",
+    "nextSeasonId": "guildWarSeasonB",
+    "maxAttempts": 10,
+    "zones": [
+      {
+        "id": "Trenches1",
+        "visualId": "trenches",
+        "buffId": null,
+        "canBeMoved": false,
+        "score": 10000,
+        "row": 0,
+        "column": 0
+      },
+      {
+        "id": "Trenches2",
+        "visualId": "trenches",
+        "buffId": null,
+        "canBeMoved": false,
+        "score": 10000,
+        "row": 0,
+        "column": 1
+      },
+      {
+        "id": "Trenches3",
+        "visualId": "trenches",
+        "buffId": null,
+        "canBeMoved": false,
+        "score": 10000,
+        "row": 0,
+        "column": 2
+      },
+      {
+        "id": "Bunker1",
+        "visualId": "bunker",
+        "buffId": "EnvFortified_Local",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 1,
+        "column": 0
+      },
+      {
+        "id": "LandingPad1",
+        "visualId": "landingPad",
+        "buffId": "EnvAngelsOfDeath_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "Bunker2",
+        "visualId": "bunker",
+        "buffId": "EnvFortified_Local",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 1,
+        "column": 2
+      },
+      {
+        "id": "ArtilleryPosition1",
+        "visualId": "artilleryPosition",
+        "buffId": "EnvArtillerySupport_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 2,
+        "column": 0
+      },
+      {
+        "id": "AntiAirBattery",
+        "visualId": "antiAirBattery",
+        "buffId": "EnvFlakFire_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 2,
+        "column": 1
+      },
+      {
+        "id": "ArtilleryPosition2",
+        "visualId": "artilleryPosition",
+        "buffId": "EnvArtillerySupport_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 2,
+        "column": 2
+      },
+      {
+        "id": "SupplyDepot",
+        "visualId": "supplyDump",
+        "buffId": null,
+        "canBeMoved": true,
+        "score": 30000,
+        "row": 3,
+        "column": 0
+      },
+      {
+        "id": "LandingPad2",
+        "visualId": "landingPad",
+        "buffId": "EnvAngelsOfDeath_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 3,
+        "column": 1
+      },
+      {
+        "id": "Armoury",
+        "visualId": "armory",
+        "buffId": "EnvArmourSupplies_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 3,
+        "column": 2
+      },
+      {
+        "id": "MedicaeStation1",
+        "visualId": "fieldHospital",
+        "buffId": "EnvDefenderHealthBuff2_Global",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 4,
+        "column": 0
+      },
+      {
+        "id": "HQ",
+        "visualId": "hq",
+        "buffId": null,
+        "canBeMoved": true,
+        "score": 40000,
+        "row": 4,
+        "column": 1
+      },
+      {
+        "id": "MedicaeStation2",
+        "visualId": "fieldHospital",
+        "buffId": "EnvDefenderHealthBuff2_Global",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 4,
+        "column": 2
+      }
+    ],
+    "tiers": [
+      {
+        "id": "Trooper",
+        "rarityCaps": ["Rare", "Rare", "Uncommon", "Uncommon", "Uncommon"]
+      },
+      {
+        "id": "Veteran",
+        "rarityCaps": ["Epic", "Epic", "Rare", "Rare", "Rare"]
+      },
+      {
+        "id": "Elite",
+        "rarityCaps": ["Legendary", "Legendary", "Epic", "Epic", "Epic"]
+      },
+      {
+        "id": "Hero",
+        "rarityCaps": [
+          "Mythic",
+          "Mythic",
+          "Legendary",
+          "Legendary",
+          "Legendary"
+        ]
+      }
+    ],
+    "levels": [
+      {
+        "battlefieldLevel": 0,
+        "attemptDebuffPercent": 0,
+        "scoreFactorPercent": null,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "LandingPad1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "AntiAirBattery",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "LandingPad2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Hero"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 1,
+        "attemptDebuffPercent": 30,
+        "scoreFactorPercent": 100,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "LandingPad1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "AntiAirBattery",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "LandingPad2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Trooper"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 2,
+        "attemptDebuffPercent": 25,
+        "scoreFactorPercent": 150,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "LandingPad1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "AntiAirBattery",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "LandingPad2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Trooper"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 3,
+        "attemptDebuffPercent": 20,
+        "scoreFactorPercent": 200,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "LandingPad1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "AntiAirBattery",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "LandingPad2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Veteran"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 4,
+        "attemptDebuffPercent": 15,
+        "scoreFactorPercent": 300,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "LandingPad1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "AntiAirBattery",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "LandingPad2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Veteran"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 5,
+        "attemptDebuffPercent": 10,
+        "scoreFactorPercent": 400,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "LandingPad1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "AntiAirBattery",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "LandingPad2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Elite"
+          }
+        ]
+      }
+    ],
+    "buffs": [
+      {
+        "id": "EnvAngelsOfDeath_Regional",
+        "scope": "Regional",
+        "abilities": [
+          {
+            "abilityId": "EnvAngelsOfDeath_Common",
+            "rarity": "Common",
+            "variables": {
+              "nrOfSummons": [2, 3],
+              "summonAbilityLevel": [4, 4]
+            }
+          },
+          {
+            "abilityId": "EnvAngelsOfDeath_Uncommon",
+            "rarity": "Uncommon",
+            "variables": {
+              "nrOfSummons": [2, 3],
+              "summonAbilityLevel": [9, 9]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvArmourSupplies_Regional",
+        "scope": "Regional",
+        "abilities": [
+          {
+            "abilityId": "EnvArmourSupplies",
+            "rarity": null,
+            "variables": {
+              "extraArmorPct": [10, 15]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvArtillerySupport_Regional",
+        "scope": "Regional",
+        "abilities": [
+          {
+            "abilityId": "EnvArtillerySupport",
+            "rarity": null,
+            "variables": {
+              "hpPct": [20, 20],
+              "nrOfProjectiles": [3, 6]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvDefenderHealthBuff2_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvDefenderHealthBuff2",
+            "rarity": null,
+            "variables": {
+              "hpPct": [25, 50]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvDefenderHealthBuff_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvDefenderHealthBuff",
+            "rarity": null,
+            "variables": {
+              "hpPct": [60, 120]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvFlakFire_Regional",
+        "scope": "Regional",
+        "abilities": [
+          {
+            "abilityId": "EnvFlakFire",
+            "rarity": null,
+            "variables": {
+              "hpPct": [40, 60],
+              "nrOfAttacks": [1, 1]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvFortified_Local",
+        "scope": "Local",
+        "abilities": [
+          {
+            "abilityId": "EnvFortified",
+            "rarity": null,
+            "variables": {
+              "extraArmorPct": [10, 10],
+              "extraDmgPct": [10, 10]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvGarrison_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvGarrison_Common",
+            "rarity": "Common",
+            "variables": {
+              "nrOfSummons": [2, 3],
+              "summonAbilityLevel": [4, 4]
+            }
+          },
+          {
+            "abilityId": "EnvGarrison_Uncommon",
+            "rarity": "Uncommon",
+            "variables": {
+              "nrOfSummons": [2, 3],
+              "summonAbilityLevel": [9, 9]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvThinVeil_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvThinVeil",
+            "rarity": null,
+            "variables": {
+              "summonDmg": [22, 26],
+              "summonDmg_2": [9, 11]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvValkyrieStrike_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvValkyrieStrike_Common",
+            "rarity": "Common",
+            "variables": {
+              "maxDmg": [100, 100],
+              "minDmg": [75, 75]
+            }
+          },
+          {
+            "abilityId": "EnvValkyrieStrike_Uncommon",
+            "rarity": "Uncommon",
+            "variables": {
+              "maxDmg": [240, 240],
+              "minDmg": [180, 180]
+            }
+          }
+        ]
+      }
+    ],
+    "maps": [
+      {
+        "boardId": "EC1_09",
+        "spawnPointsSet": 2
+      },
+      {
+        "boardId": "C1_37",
+        "spawnPointsSet": 5
+      },
+      {
+        "boardId": "EMC1_06",
+        "spawnPointsSet": 2
+      },
+      {
+        "boardId": "MC1_11",
+        "spawnPointsSet": 3
+      }
+    ],
+    "scoring": {
+      "unitKilled": 200,
+      "lineupEliminated": [
+        {
+          "maxAttempts": 1,
+          "maxUnitsLost": 0,
+          "score": 600
+        },
+        {
+          "maxAttempts": 1,
+          "maxUnitsLost": 1,
+          "score": 400
+        },
+        {
+          "maxAttempts": 1,
+          "maxUnitsLost": 2,
+          "score": 200
+        },
+        {
+          "maxAttempts": 1,
+          "maxUnitsLost": 5,
+          "score": 100
+        },
+        {
+          "maxAttempts": 2,
+          "maxUnitsLost": 10,
+          "score": 50
+        },
+        {
+          "maxAttempts": 999,
+          "maxUnitsLost": 999,
+          "score": 25
+        }
+      ]
+    },
+    "powerCaps": [
+      {
+        "rarity": "Common",
+        "maxPower": 330
+      },
+      {
+        "rarity": "Uncommon",
+        "maxPower": 1715
+      },
+      {
+        "rarity": "Rare",
+        "maxPower": 8800
+      },
+      {
+        "rarity": "Epic",
+        "maxPower": 42100
+      },
+      {
+        "rarity": "Legendary",
+        "maxPower": 566000
+      }
+    ]
+  },
+  {
+    "id": "guildWarSeasonD",
+    "nextSeasonId": "guildWarSeasonA",
+    "maxAttempts": 10,
+    "zones": [
+      {
+        "id": "Trenches1",
+        "visualId": "trenches",
+        "buffId": null,
+        "canBeMoved": false,
+        "score": 10000,
+        "row": 0,
+        "column": 0
+      },
+      {
+        "id": "Trenches2",
+        "visualId": "trenches",
+        "buffId": null,
+        "canBeMoved": false,
+        "score": 10000,
+        "row": 0,
+        "column": 1
+      },
+      {
+        "id": "Trenches3",
+        "visualId": "trenches",
+        "buffId": null,
+        "canBeMoved": false,
+        "score": 10000,
+        "row": 0,
+        "column": 2
+      },
+      {
+        "id": "Bunker1",
+        "visualId": "bunker",
+        "buffId": "EnvFortified_Local",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 1,
+        "column": 0
+      },
+      {
+        "id": "AntiAirBattery1",
+        "visualId": "antiAirBattery",
+        "buffId": "EnvFlakFire_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 1,
+        "column": 1
+      },
+      {
+        "id": "Bunker2",
+        "visualId": "bunker",
+        "buffId": "EnvFortified_Local",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 1,
+        "column": 2
+      },
+      {
+        "id": "ArtilleryPosition1",
+        "visualId": "artilleryPosition",
+        "buffId": "EnvArtillerySupport_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 2,
+        "column": 0
+      },
+      {
+        "id": "Armoury",
+        "visualId": "armory",
+        "buffId": "EnvArmourSupplies_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 2,
+        "column": 1
+      },
+      {
+        "id": "ArtilleryPosition2",
+        "visualId": "artilleryPosition",
+        "buffId": "EnvArtillerySupport_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 2,
+        "column": 2
+      },
+      {
+        "id": "MedicaeStation1",
+        "visualId": "fieldHospital",
+        "buffId": "EnvDefenderHealthBuff2_Global",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 3,
+        "column": 0
+      },
+      {
+        "id": "AntiAirBattery2",
+        "visualId": "antiAirBattery",
+        "buffId": "EnvFlakFire_Regional",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 3,
+        "column": 1
+      },
+      {
+        "id": "MedicaeStation2",
+        "visualId": "fieldHospital",
+        "buffId": "EnvDefenderHealthBuff2_Global",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 3,
+        "column": 2
+      },
+      {
+        "id": "SupplyDepot",
+        "visualId": "supplyDump",
+        "buffId": null,
+        "canBeMoved": true,
+        "score": 30000,
+        "row": 4,
+        "column": 0
+      },
+      {
+        "id": "HQ",
+        "visualId": "hq",
+        "buffId": null,
+        "canBeMoved": true,
+        "score": 40000,
+        "row": 4,
+        "column": 1
+      },
+      {
+        "id": "ComsStation",
+        "visualId": "radarStation",
+        "buffId": "EnvValkyrieStrike_Global",
+        "canBeMoved": true,
+        "score": 16000,
+        "row": 4,
+        "column": 2
+      }
+    ],
+    "tiers": [
+      {
+        "id": "Trooper",
+        "rarityCaps": ["Rare", "Rare", "Uncommon", "Uncommon", "Uncommon"]
+      },
+      {
+        "id": "Veteran",
+        "rarityCaps": ["Epic", "Epic", "Rare", "Rare", "Rare"]
+      },
+      {
+        "id": "Elite",
+        "rarityCaps": ["Legendary", "Legendary", "Epic", "Epic", "Epic"]
+      },
+      {
+        "id": "Hero",
+        "rarityCaps": [
+          "Mythic",
+          "Mythic",
+          "Legendary",
+          "Legendary",
+          "Legendary"
+        ]
+      }
+    ],
+    "levels": [
+      {
+        "battlefieldLevel": 0,
+        "attemptDebuffPercent": 0,
+        "scoreFactorPercent": null,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "AntiAirBattery1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "AntiAirBattery2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "ComsStation",
+            "tierId": "Hero"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 1,
+        "attemptDebuffPercent": 30,
+        "scoreFactorPercent": 100,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "AntiAirBattery1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "AntiAirBattery2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "ComsStation",
+            "tierId": "Trooper"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 2,
+        "attemptDebuffPercent": 25,
+        "scoreFactorPercent": 150,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "AntiAirBattery1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "AntiAirBattery2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "ComsStation",
+            "tierId": "Trooper"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 3,
+        "attemptDebuffPercent": 20,
+        "scoreFactorPercent": 200,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "AntiAirBattery1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Trooper"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "AntiAirBattery2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "ComsStation",
+            "tierId": "Trooper"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 4,
+        "attemptDebuffPercent": 15,
+        "scoreFactorPercent": 300,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "AntiAirBattery1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "AntiAirBattery2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "ComsStation",
+            "tierId": "Veteran"
+          }
+        ]
+      },
+      {
+        "battlefieldLevel": 5,
+        "attemptDebuffPercent": 10,
+        "scoreFactorPercent": 400,
+        "zones": [
+          {
+            "zoneId": "Trenches1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Trenches2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Trenches3",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Bunker1",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "AntiAirBattery1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "Bunker2",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "ArtilleryPosition1",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "Armoury",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "ArtilleryPosition2",
+            "tierId": "Veteran"
+          },
+          {
+            "zoneId": "MedicaeStation1",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "AntiAirBattery2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "MedicaeStation2",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "SupplyDepot",
+            "tierId": "Elite"
+          },
+          {
+            "zoneId": "HQ",
+            "tierId": "Hero"
+          },
+          {
+            "zoneId": "ComsStation",
+            "tierId": "Veteran"
+          }
+        ]
+      }
+    ],
+    "buffs": [
+      {
+        "id": "EnvAngelsOfDeath_Regional",
+        "scope": "Regional",
+        "abilities": [
+          {
+            "abilityId": "EnvAngelsOfDeath_Common",
+            "rarity": "Common",
+            "variables": {
+              "nrOfSummons": [2, 3],
+              "summonAbilityLevel": [4, 4]
+            }
+          },
+          {
+            "abilityId": "EnvAngelsOfDeath_Uncommon",
+            "rarity": "Uncommon",
+            "variables": {
+              "nrOfSummons": [2, 3],
+              "summonAbilityLevel": [9, 9]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvArmourSupplies_Regional",
+        "scope": "Regional",
+        "abilities": [
+          {
+            "abilityId": "EnvArmourSupplies",
+            "rarity": null,
+            "variables": {
+              "extraArmorPct": [10, 15]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvArtillerySupport_Regional",
+        "scope": "Regional",
+        "abilities": [
+          {
+            "abilityId": "EnvArtillerySupport",
+            "rarity": null,
+            "variables": {
+              "hpPct": [20, 20],
+              "nrOfProjectiles": [3, 6]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvDefenderHealthBuff2_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvDefenderHealthBuff2",
+            "rarity": null,
+            "variables": {
+              "hpPct": [25, 50]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvDefenderHealthBuff_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvDefenderHealthBuff",
+            "rarity": null,
+            "variables": {
+              "hpPct": [60, 120]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvFlakFire_Regional",
+        "scope": "Regional",
+        "abilities": [
+          {
+            "abilityId": "EnvFlakFire",
+            "rarity": null,
+            "variables": {
+              "hpPct": [40, 60],
+              "nrOfAttacks": [1, 1]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvFortified_Local",
+        "scope": "Local",
+        "abilities": [
+          {
+            "abilityId": "EnvFortified",
+            "rarity": null,
+            "variables": {
+              "extraArmorPct": [10, 10],
+              "extraDmgPct": [10, 10]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvGarrison_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvGarrison_Common",
+            "rarity": "Common",
+            "variables": {
+              "nrOfSummons": [2, 3],
+              "summonAbilityLevel": [4, 4]
+            }
+          },
+          {
+            "abilityId": "EnvGarrison_Uncommon",
+            "rarity": "Uncommon",
+            "variables": {
+              "nrOfSummons": [2, 3],
+              "summonAbilityLevel": [9, 9]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvThinVeil_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvThinVeil",
+            "rarity": null,
+            "variables": {
+              "summonDmg": [22, 26],
+              "summonDmg_2": [9, 11]
+            }
+          }
+        ]
+      },
+      {
+        "id": "EnvValkyrieStrike_Global",
+        "scope": "Global",
+        "abilities": [
+          {
+            "abilityId": "EnvValkyrieStrike_Common",
+            "rarity": "Common",
+            "variables": {
+              "maxDmg": [100, 100],
+              "minDmg": [75, 75]
+            }
+          },
+          {
+            "abilityId": "EnvValkyrieStrike_Uncommon",
+            "rarity": "Uncommon",
+            "variables": {
+              "maxDmg": [240, 240],
+              "minDmg": [180, 180]
+            }
+          }
+        ]
+      }
+    ],
+    "maps": [
+      {
+        "boardId": "EC1_09",
+        "spawnPointsSet": 2
+      },
+      {
+        "boardId": "C1_37",
+        "spawnPointsSet": 5
+      },
+      {
+        "boardId": "EMC1_06",
+        "spawnPointsSet": 2
+      },
+      {
+        "boardId": "MC1_11",
+        "spawnPointsSet": 3
+      }
+    ],
+    "scoring": {
+      "unitKilled": 200,
+      "lineupEliminated": [
+        {
+          "maxAttempts": 1,
+          "maxUnitsLost": 0,
+          "score": 600
+        },
+        {
+          "maxAttempts": 1,
+          "maxUnitsLost": 1,
+          "score": 400
+        },
+        {
+          "maxAttempts": 1,
+          "maxUnitsLost": 2,
+          "score": 200
+        },
+        {
+          "maxAttempts": 1,
+          "maxUnitsLost": 5,
+          "score": 100
+        },
+        {
+          "maxAttempts": 2,
+          "maxUnitsLost": 10,
+          "score": 50
+        },
+        {
+          "maxAttempts": 999,
+          "maxUnitsLost": 999,
+          "score": 25
+        }
+      ]
+    },
+    "powerCaps": [
+      {
+        "rarity": "Common",
+        "maxPower": 330
+      },
+      {
+        "rarity": "Uncommon",
+        "maxPower": 1715
+      },
+      {
+        "rarity": "Rare",
+        "maxPower": 8800
+      },
+      {
+        "rarity": "Epic",
+        "maxPower": 42100
+      },
+      {
+        "rarity": "Legendary",
+        "maxPower": 566000
+      }
+    ]
+  }
+]
