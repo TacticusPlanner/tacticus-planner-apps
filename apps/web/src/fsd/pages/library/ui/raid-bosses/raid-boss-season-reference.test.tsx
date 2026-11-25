@@ -93,8 +93,9 @@ describe("RaidBossSeasonReference", () => {
   })
 
   it("names the tier by rarity and the set by its boss, and badges boss, primes and primarchs", () => {
-    const tier = viewModel.tiers[0]!
-    const set = tier.sets[0]!
+    const [tier] = viewModel.tiers
+    const [set] = tier?.sets ?? []
+    if (!tier || !set) throw new Error("fixture has a tier and a set")
     render(
       <RaidBossSeasonReference
         viewModel={{
