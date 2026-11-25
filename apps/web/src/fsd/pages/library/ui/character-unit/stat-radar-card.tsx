@@ -194,7 +194,7 @@ export function StatRadarCard({
                         aria-label={t("characterUnit.compare.rangedOnlyLabel")}
                         data-testid={`unit-radar-${entry.axis}-info`}
                       >
-                        <Info className="size-4" aria-hidden="true" />
+                        <Info className="size-icon-sm" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
