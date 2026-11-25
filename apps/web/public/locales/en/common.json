@@ -463,7 +463,11 @@
         "quickFailed": "{{filters}}: its game data couldn't be loaded.",
         "rankRange": "Rank range",
         "groupUnit": "Unit",
-        "groupCombat": "Combat",
+        "groupProgression": "Progression",
+        "groupAttack": "Attack",
+        "groupAbilities": "Abilities",
+        "groupMore": "Traits and more",
+        "sectionCount": "{{section}} · {{count}}",
         "starsRange": "Stars range",
         "starsFrom": "Lowest stars",
         "starsTo": "Highest stars",
@@ -726,7 +730,20 @@
     "loadError": "Progress data is unexpectedly unavailable. Refresh and try again.",
     "campaigns": {
       "normal": "Normal campaigns",
-      "mirror": "Mirror campaigns"
+      "mirror": "Mirror campaigns",
+      "counters": {
+        "normal": "Normal",
+        "normalElite": "Normal Elite",
+        "mirror": "Mirror",
+        "mirrorElite": "Mirror Elite"
+      },
+      "unclaimedOnly": "Unclaimed rewards",
+      "unclaimedSummary_one": "Unclaimed rewards in {{count}} track",
+      "unclaimedSummary_other": "Unclaimed rewards in {{count}} tracks",
+      "toClaim_one": "{{count}} to claim",
+      "toClaim_other": "{{count}} to claim",
+      "percentBasisMedals": "Medals and Lightning Victories earned: {{done}} of {{total}}",
+      "percentBasisBattles": "Battles cleared: {{done}} of {{total}}"
     },
     "events": {
       "regular": "Regular battles",

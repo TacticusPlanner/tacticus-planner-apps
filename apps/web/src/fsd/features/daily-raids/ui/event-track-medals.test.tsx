@@ -88,7 +88,7 @@ describe("EventTrackMedals", () => {
 
     expect(
       await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
-    ).toHaveTextContent("Unclaimed one-time rewards · 1 battle")
+    ).toHaveTextContent("1 battle to claim")
     expect(screen.getByTestId("one-time-reward-gold")).toHaveTextContent("100")
   })
 
@@ -98,12 +98,15 @@ describe("EventTrackMedals", () => {
       auth: { authenticated: true },
     })
 
-    expect(
-      await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
-    ).toHaveTextContent("All one-time rewards claimed")
+    // Nothing to claim needs no line.
     await user.click(
-      screen.getByTestId("event-track-medals-open-eventCampaign1-Standard")
+      await screen.findByTestId(
+        "event-track-medals-open-eventCampaign1-Standard"
+      )
     )
+    expect(
+      screen.queryByTestId("event-track-unclaimed-eventCampaign1-Standard")
+    ).not.toBeInTheDocument()
     expect(
       await screen.findByTestId("battle-progress-row-AMS02")
     ).toBeInTheDocument()
@@ -117,7 +120,7 @@ describe("EventTrackMedals", () => {
 
     expect(
       await screen.findByTestId("event-track-medals-eventCampaign1-Standard")
-    ).toHaveTextContent("Unclaimed one-time rewards · 2 battles")
+    ).toHaveTextContent("2 battles to claim")
   })
 
   it("doesn't call rewards claimed while a challenge is still unbeaten", async () => {
@@ -136,8 +139,7 @@ describe("EventTrackMedals", () => {
       "event-track-medals-eventCampaign1-Standard"
     )
     // The unbeaten challenge still holds its medal and milestone rewards.
-    expect(line).toHaveTextContent("Unclaimed one-time rewards · 1 battle")
-    expect(line).not.toHaveTextContent("All one-time rewards claimed")
+    expect(line).toHaveTextContent("1 battle to claim")
     expect(screen.getByTestId("one-time-reward-gold")).toHaveTextContent("100")
   })
 

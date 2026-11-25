@@ -191,13 +191,43 @@ describe("CollectionFilterFields", () => {
     expect(screen.queryByRole("button", { name: /^Clear/ })).toBeNull()
   })
 
-  it("groups the controls under Unit and Combat", () => {
+  it("groups the controls into five sections", () => {
     renderFields()
-    const combat = screen.getByRole("region", { name: "Combat" })
-    expect(within(combat).getByLabelText("Attack type")).toBeInTheDocument()
-    expect(within(combat).getByLabelText("Summons")).toBeInTheDocument()
-    const unit = screen.getByRole("region", { name: "Unit" })
-    expect(within(unit).getByLabelText("Alliance")).toBeInTheDocument()
+    for (const [section, fields] of [
+      ["Unit", ["Alliance", "Unit type"]],
+      ["Progression", ["Rank range", "Stars range"]],
+      ["Attack", ["Attack type", "Hits", "Attack range"]],
+      ["Abilities", ["Ability role", "Ability target", "Summons"]],
+      ["Traits and more", ["Movement"]],
+    ] as const) {
+      const region = screen.getByRole("region", { name: section })
+      for (const field of fields) {
+        expect(within(region).getByLabelText(field)).toBeInTheDocument()
+      }
+    }
+  })
+
+  it("shows each section's active filter count beside its title", () => {
+    render(
+      <I18nextProvider i18n={i18n}>
+        <CollectionFilterFields
+          query={{
+            ...defaultCollectionQuery,
+            attack: "ranged",
+            hitsMin: 2,
+            hitsMax: 3,
+          }}
+          update={vi.fn()}
+          options={options}
+          rosterAvailable
+          layout="panel"
+        />
+      </I18nextProvider>
+    )
+    expect(
+      screen.getByRole("heading", { name: "Attack · 2" })
+    ).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Unit" })).toBeInTheDocument()
   })
 
   it("disables rank range and stars range without a roster and explains why", () => {

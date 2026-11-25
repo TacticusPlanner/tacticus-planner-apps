@@ -311,6 +311,19 @@ On mobile (below 768px):
 - the chip row SHALL scroll sideways in one line;
 - the page SHALL NOT scroll horizontally at 420px.
 
+The standalone filter controls SHALL be split into five titled sections, in this order: **Unit** (Alliance, Faction, Unit type), **Progression** (Rarity, Rank range, Stars range), **Attack** (Attack type, Hits, Attack range, Damage types), **Abilities** (Ability role, Ability target, Ability attack, Summons) and **Traits and more** (Traits, Movement, Shard source). Each section title SHALL be followed by how many of its filters are set, counted as for the Filters badge (for example "Attack · 2"), and SHALL show the title alone while none is set. A divider SHALL separate consecutive sections. Section titles and field labels SHALL use the regular UI text size; muted text is kept for hints such as the synced-roster note. In the desktop dialog each section SHALL be a fixed three-column grid: a single control takes one column, a range takes two, and the control after a range starts a new row, so every row starts at the left edge. In the mobile sheet each section SHALL stack one control per row.
+
+#### Scenario: Filter sections show their active counts
+
+- **GIVEN** the attack type ranged and a hits range from 2 to 3 are set, and no other standalone filter
+- **WHEN** the user opens Filters
+- **THEN** the sections read Unit, Progression, Attack · 2, Abilities and Traits and more, in that order
+
+#### Scenario: A range ends its row in the desktop dialog
+
+- **WHEN** the user opens Filters at 1280px
+- **THEN** in Attack, Attack type and Hits share the first row, Attack range starts the second row, and Damage types starts the third
+
 #### Scenario: Quick-filter chips show their counts
 
 - **GIVEN** a synced player with the Xenos alliance filter set, of whose listed Xenos units 3 are ready to rank up
@@ -399,8 +412,8 @@ The Filters control SHALL offer these standalone filters; every set filter SHALL
 - **Rank range:** a lowest and a highest rank (inclusive, either end optional); only owned characters can match while it is set. A range whose lowest rank is above its highest is read with its ends swapped.
 - **Stars range:** a lowest and a highest progression step (rarity and stars, inclusive, either end optional); only owned units, characters and Machines of War, can match while it is set. A range set backwards is read with its ends swapped.
 - **Unit kind:** characters, Machines of War, or all.
-- **Summons:** no summons, optional summons, conditional summons, forced summons, or any. A unit, character or Machine of War, matches when its catalog `summons` equals the picked value: `optional` when only an active ability summons, `conditional` when a passive summons only while the player keeps up a condition they can avoid (Tan Gi'da's active switched on, Vynn repairing), `forced` when a passive ability summons on its own. It sits in the Combat group but, unlike the combat filters below, also applies to Machines of War.
-- **Ability role, Ability target and Ability attack:** each one value or any. Role is damage, support or utility; target is no target, single target or area (AoE); attack is melee or ranged. They read the catalog's hand-curated `abilities` (each active and passive, or a Machine of War's primary and secondary, with its roles, its target and whether it is a melee or ranged attack). A unit, character or Machine of War, matches when one of its abilities carries every set value, so damage with area finds a unit with an AoE damage ability, not one whose damage ability is single target and whose other ability is AoE. They sit in the Combat group and, like Summons, also apply to Machines of War.
+- **Summons:** no summons, optional summons, conditional summons, forced summons, or any. A unit, character or Machine of War, matches when its catalog `summons` equals the picked value: `optional` when only an active ability summons, `conditional` when a passive summons only while the player keeps up a condition they can avoid (Tan Gi'da's active switched on, Vynn repairing), `forced` when a passive ability summons on its own. It sits in the Abilities section but, unlike the combat filters below, also applies to Machines of War.
+- **Ability role, Ability target and Ability attack:** each one value or any. Role is damage, support or utility; target is no target, single target or area (AoE); attack is melee or ranged. They read the catalog's hand-curated `abilities` (each active and passive, or a Machine of War's primary and secondary, with its roles, its target and whether it is a melee or ranged attack). A unit, character or Machine of War, matches when one of its abilities carries every set value, so damage with area finds a unit with an AoE damage ability, not one whose damage ability is single target and whose other ability is AoE. They sit in the Abilities section and, like Summons, also apply to Machines of War.
 
 There is no Ownership filter: hiding unowned units is the toolbar's Owned only chip, a display setting (see "Owned only shows or hides units the player does not own"), and listing only unowned units is not offered.
 

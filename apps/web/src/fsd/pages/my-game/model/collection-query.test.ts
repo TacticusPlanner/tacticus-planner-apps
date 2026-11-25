@@ -5,6 +5,7 @@ import {
   activeStandaloneFilterCount,
   clearedStandaloneFilters,
   defaultCollectionQuery,
+  sectionFilterCounts,
   isCollectionAlliance,
   isCollectionAttackType,
   isCollectionGrouping,
@@ -148,5 +149,32 @@ describe("activeFilterCount", () => {
     expect(
       activeFilterCount({ ...defaultCollectionQuery, search: "   " })
     ).toBe(0)
+  })
+})
+
+describe("sectionFilterCounts", () => {
+  it("counts each section's set filters, a range once", () => {
+    expect(
+      sectionFilterCounts({
+        ...defaultCollectionQuery,
+        alliance: "Chaos",
+        kind: "mow",
+        rankMin: "Gold1",
+        rankMax: "Diamond3",
+        hitsMin: 2,
+        rangeMax: 3,
+        damageTypes: ["Bolter"],
+        summons: "forced",
+        movement: 3,
+        search: "ti",
+        quick: "canPromote",
+      })
+    ).toEqual({ unit: 2, progression: 1, attack: 3, abilities: 1, more: 1 })
+  })
+
+  it("is zero everywhere by default", () => {
+    expect(Object.values(sectionFilterCounts(defaultCollectionQuery))).toEqual([
+      0, 0, 0, 0, 0,
+    ])
   })
 })

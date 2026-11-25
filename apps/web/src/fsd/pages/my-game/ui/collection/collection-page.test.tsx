@@ -954,7 +954,9 @@ describe("CollectionPage toolbar on desktop", () => {
       screen.getByRole("button", { name: "Filters, 1 active" })
     ).toBeInTheDocument()
     fireEvent.click(screen.getByRole("button", { name: "Filters, 1 active" }))
-    expect(screen.getByRole("region", { name: "Combat" })).toBeInTheDocument()
+    expect(
+      screen.getByRole("region", { name: "Traits and more · 1" })
+    ).toBeInTheDocument()
   })
 
   it("shows no toolbar while loading or after a catalog failure", () => {

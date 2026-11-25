@@ -1,18 +1,10 @@
 import { useMemo, useState } from "react"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, Gift } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import {
-  campaignDescriptor,
-  campaignIcon,
-  characterIcon,
-} from "@workspace/game-catalog"
-import type {
-  CampaignBattleStorageModel,
-  CampaignDefinitionStorageModel,
-} from "@workspace/game-catalog"
+import { campaignIcon, characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
-import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,
@@ -22,34 +14,79 @@ import {
 } from "@workspace/ui/components/card"
 import { Progress } from "@workspace/ui/components/progress"
 import { Spinner } from "@workspace/ui/components/spinner"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 
 import {
   BattleProgressDialog,
   MedalStats,
   medalIcon,
-  medalCompletion,
-  sumMedalStats,
-  trackMedalStats,
-  unclaimedTrackRewards,
   UnclaimedRewardsDetails,
   useSavedBattleProgress,
 } from "@/features/daily-raids"
-import type {
-  TrackMedalStats,
-  UnclaimedTrackRewards,
-} from "@/features/daily-raids"
-import { combineReadStates } from "@/shared/lib"
+import { combineReadStates, usePersistedSelection } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
-import { EntityIcon, LocalReadFailure } from "@/shared/ui"
+import {
+  EntityIcon,
+  FILTER_CHIP_CLASS_NAME,
+  LocalReadFailure,
+  PageToolbar,
+} from "@/shared/ui"
+
+import {
+  buildCampaignsModel,
+  completionOf,
+  completionOfTracks,
+  isEliteTrack,
+  percentLabel,
+  percentOf,
+} from "../model/campaigns-model"
+import type { BuiltStory, CampaignsModel } from "../model/campaigns-model"
 
 import { useCampaignsTutorial } from "./campaigns-page.tutorial"
 import { ProgressSummary } from "./progress-summary"
 
-type Story = {
-  key: string
-  nameKey: string
-  mirror: boolean
-  definitions: CampaignDefinitionStorageModel[]
+const UNCLAIMED_ONLY = "unclaimedOnly"
+const isOnOff = (value: unknown): value is "on" | "off" =>
+  value === "on" || value === "off"
+
+/** The four counters (campaign-progress), each over its own tracks: one row on desktop, two rows
+ *  of two on a phone, in the order of the track cards below. */
+function CampaignCounters({
+  summaries,
+}: {
+  summaries: CampaignsModel["summaries"]
+}) {
+  const { t } = useTranslation()
+  return (
+    <div
+      className="grid grid-cols-2 gap-6 lg:grid-cols-4"
+      data-testid="campaigns-summary"
+    >
+      <ProgressSummary
+        label={t("progress.campaigns.counters.normal")}
+        testId="campaigns-summary-normal"
+        {...summaries.normal}
+      />
+      <ProgressSummary
+        label={t("progress.campaigns.counters.normalElite")}
+        testId="campaigns-summary-normal-elite"
+        {...summaries.normalElite}
+      />
+      <ProgressSummary
+        label={t("progress.campaigns.counters.mirror")}
+        testId="campaigns-summary-mirror"
+        {...summaries.mirror}
+      />
+      <ProgressSummary
+        label={t("progress.campaigns.counters.mirrorElite")}
+        testId="campaigns-summary-mirror-elite"
+        {...summaries.mirrorElite}
+      />
+    </div>
+  )
 }
 
 export function CampaignsPage() {
@@ -64,13 +101,24 @@ export function CampaignsPage() {
     read.status === "ready" ? read.data : []
   const [medalsGroupId, setMedalsGroupId] = useState<string | null>(null)
   const overrides = useSavedBattleProgress()
+  const [unclaimedOnly, setUnclaimedOnly] = usePersistedSelection(
+    "progress.campaigns.unclaimed-only",
+    isOnOff,
+    "off"
+  )
   useCampaignsTutorial()
 
   // Keyed on each read's data (each referentially stable while unchanged), not on the combined tuple.
   const model = useMemo(
     () =>
       definitions && battles && progress
-        ? buildModel({ definitions, battles, progress, characters, overrides })
+        ? buildCampaignsModel({
+            definitions,
+            battles,
+            progress,
+            characters,
+            overrides,
+          })
         : null,
     [definitions, battles, progress, characters, overrides]
   )
@@ -84,17 +132,49 @@ export function CampaignsPage() {
     )
   }
 
+  const unclaimedFilter = unclaimedOnly === "on" && model.unclaimedTracks > 0
+  const shown = (stories: BuiltStory[]) =>
+    unclaimedFilter
+      ? stories.filter((story) => story.unclaimedBattles > 0)
+      : stories
+
   return (
     <div className="space-y-8" data-testid="campaigns-page">
-      <div className="flex flex-wrap gap-8" data-testid="campaigns-summary">
-        <ProgressSummary
-          label={t("progress.campaigns.normal")}
-          {...model.normalSummary}
+      {model.unclaimedTracks > 0 ? (
+        <PageToolbar
+          find={
+            <ToggleGroup
+              aria-label={t("progress.campaigns.unclaimedOnly")}
+              onValueChange={(values) =>
+                setUnclaimedOnly(values.includes(UNCLAIMED_ONLY) ? "on" : "off")
+              }
+              size="sm"
+              spacing={1}
+              type="multiple"
+              value={unclaimedFilter ? [UNCLAIMED_ONLY] : []}
+              variant="outline"
+            >
+              <ToggleGroupItem
+                className={FILTER_CHIP_CLASS_NAME}
+                data-testid="campaigns-unclaimed-only"
+                value={UNCLAIMED_ONLY}
+              >
+                {t("progress.campaigns.unclaimedOnly")}
+              </ToggleGroupItem>
+            </ToggleGroup>
+          }
+          testId="campaigns-toolbar"
         />
-        <ProgressSummary
-          label={t("progress.campaigns.mirror")}
-          {...model.mirrorSummary}
-        />
+      ) : null}
+      <div className="space-y-3">
+        <CampaignCounters summaries={model.summaries} />
+        {model.unclaimedTracks > 0 ? (
+          <p className="text-sm" data-testid="campaigns-unclaimed-summary">
+            {t("progress.campaigns.unclaimedSummary", {
+              count: model.unclaimedTracks,
+            })}
+          </p>
+        ) : null}
       </div>
       <div
         className="grid items-start gap-6 lg:grid-cols-2"
@@ -102,12 +182,12 @@ export function CampaignsPage() {
       >
         <StorySection
           title={t("progress.campaigns.normal")}
-          stories={model.normal}
+          stories={shown(model.normal)}
           onEditMedals={setMedalsGroupId}
         />
         <StorySection
           title={t("progress.campaigns.mirror")}
-          stories={model.mirror}
+          stories={shown(model.mirror)}
           onEditMedals={setMedalsGroupId}
         />
       </div>
@@ -122,144 +202,6 @@ export function CampaignsPage() {
       ) : null}
     </div>
   )
-}
-
-function buildModel(data: {
-  definitions: CampaignDefinitionStorageModel[]
-  battles: CampaignBattleStorageModel[]
-  progress: PlayerDataChunkDto<"campaign-progress">
-  characters: PlayerDataChunkDto<"characters"> | null | undefined
-  /** Saved battle progress; absent while signed out or before it has loaded. */
-  overrides?: Parameters<typeof trackMedalStats>[2]
-}) {
-  const battlesByGroup = new Map<string, CampaignBattleStorageModel[]>()
-  for (const battle of data.battles) {
-    const current = battlesByGroup.get(battle.campaignGroupId) ?? []
-    current.push(battle)
-    battlesByGroup.set(battle.campaignGroupId, current)
-  }
-  const progressByKey = new Map(
-    data.progress.map((entry) => [
-      `${entry.tacticusCampaignId}|${entry.type}`,
-      entry.highestCompletedBattleIndex,
-    ])
-  )
-  const owned = new Set(
-    (data.characters ?? []).map((character) => character.unitId)
-  )
-  const grouped = new Map<string, Story>()
-  for (const definition of data.definitions) {
-    if (definition.releaseType === "event") continue
-    const type = definition.types[0] ?? "Standard"
-    const descriptor = campaignDescriptor(definition.groupId, type)
-    if (!descriptor) continue
-    const key = `${descriptor.nameKey}|${descriptor.isMirror}`
-    const current = grouped.get(key)
-    if (current) current.definitions.push(definition)
-    else {
-      grouped.set(key, {
-        key,
-        nameKey: descriptor.nameKey,
-        mirror: descriptor.isMirror,
-        definitions: [definition],
-      })
-    }
-  }
-
-  const toStory = (story: Story) => ({
-    ...story,
-    definitions: story.definitions
-      .map((definition) => {
-        const type = definition.types[0] ?? "Standard"
-        const battles = (battlesByGroup.get(definition.groupId) ?? []).filter(
-          (battle) => battle.type === type && !battle.challenge
-        )
-        const max = battles.length
-        // The synced index is the frontier battle (not yet 3-medalled), so it equals the number of
-        // cleared battles before it — V1's `battles.length - 1`.
-        const frontierIndex = progressByKey.get(`${definition.groupId}|${type}`)
-        const completed = Math.max(0, Math.min(max, frontierIndex ?? 0))
-        const medals = data.overrides
-          ? trackMedalStats(battles, frontierIndex, data.overrides)
-          : undefined
-        // Battles before the frontier are beaten, matching trackMedalStats.
-        const beaten = new Set<string>(
-          battles
-            .filter((battle) => battle.battleIndex < (frontierIndex ?? -1))
-            .map((battle) => battle.id)
-        )
-        const unclaimed = data.overrides
-          ? unclaimedTrackRewards(
-              battles,
-              (battleId) => beaten.has(battleId),
-              data.overrides
-            )
-          : undefined
-        return { definition, type, max, completed, medals, unclaimed }
-      })
-      .toSorted((a, b) => a.max - b.max),
-    coreCharacters: [
-      ...new Set(
-        story.definitions.flatMap((definition) => definition.coreCharacters)
-      ),
-    ].filter((id) => owned.has(id)),
-  })
-  const stories = [...grouped.values()].map(toStory)
-  const normal = stories.filter((story) => !story.mirror)
-  const mirror = stories.filter((story) => story.mirror)
-  return {
-    normal,
-    mirror,
-    normalSummary: summarize(normal),
-    mirrorSummary: summarize(mirror),
-  }
-}
-
-/** A track's completion: medals and Lightning Victories when recorded, else battles cleared. */
-const completionOf = (track: BuiltTrack) =>
-  track.medals
-    ? medalCompletion(track.medals)
-    : { done: track.completed, total: track.max }
-
-const completionOfTracks = (tracks: readonly BuiltTrack[]) =>
-  tracks.map(completionOf).reduce(
-    (sum, part) => ({
-      done: sum.done + part.done,
-      total: sum.total + part.total,
-    }),
-    { done: 0, total: 0 }
-  )
-
-const percent = ({ done, total }: { done: number; total: number }) =>
-  total > 0 ? (done / total) * 100 : 0
-
-type BuiltTrack = {
-  definition: CampaignDefinitionStorageModel
-  type: string
-  max: number
-  completed: number
-  medals: TrackMedalStats | undefined
-  /** One-time rewards still to claim; absent while saved battle progress isn't available. */
-  unclaimed: UnclaimedTrackRewards | undefined
-}
-
-type BuiltStory = Omit<Story, "definitions"> & {
-  definitions: BuiltTrack[]
-  coreCharacters: string[]
-}
-
-function summarize(stories: BuiltStory[]) {
-  const tracks = stories.flatMap((story) => story.definitions)
-  const done = tracks.reduce((sum, track) => sum + track.completed, 0)
-  const total = tracks.reduce((sum, track) => sum + track.max, 0)
-  const completion = completionOfTracks(tracks)
-  return {
-    done,
-    total,
-    percent: Math.round(percent(completion)),
-    cleared: tracks.filter((track) => track.completed >= track.max).length,
-    medals: sumMedalStats(tracks.flatMap((track) => track.medals ?? [])),
-  }
 }
 
 function StorySection({
@@ -289,8 +231,8 @@ function StoryCard({
   story: BuiltStory
   onEditMedals: (groupId: string) => void
 }) {
-  const { t } = useTranslation(["campaigns", "dailies"])
-  const storyPercent = percent(completionOfTracks(story.definitions))
+  const { t } = useTranslation(["campaigns", "dailies", "common"])
+  const storyCompletion = completionOfTracks(story.definitions)
   const first = story.definitions[0]
   return (
     <Card>
@@ -305,10 +247,18 @@ function StoryCard({
           <CardTitle>
             {t(`names.${story.nameKey}`, { defaultValue: story.nameKey })}
           </CardTitle>
-          <Progress className="mt-2" value={storyPercent} />
+          <Progress className="mt-2" value={percentOf(storyCompletion)} />
         </div>
+        {story.unclaimedBattles > 0 ? (
+          <Badge data-testid={`campaign-story-unclaimed-${story.key}`}>
+            <Gift aria-hidden />
+            {t("common:progress.campaigns.toClaim", {
+              count: story.unclaimedBattles,
+            })}
+          </Badge>
+        ) : null}
         <span className="font-semibold tabular-nums">
-          {Math.round(storyPercent)}%
+          {percentLabel(storyCompletion)}%
         </span>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -332,14 +282,12 @@ function StoryCard({
               className="space-y-2 rounded-lg border p-3"
             >
               <div className="flex justify-between text-sm">
-                <span>
-                  {track.type.includes("Elite") ? "Elite" : "Standard"}
-                </span>
+                <span>{isEliteTrack(track) ? "Elite" : "Standard"}</span>
                 <strong className="tabular-nums">
                   {track.completed}/{track.max}
                 </strong>
               </div>
-              <Progress value={percent(completionOf(track))} />
+              <Progress value={percentOf(completionOf(track))} />
               <Button
                 variant="outline"
                 size="sm"
