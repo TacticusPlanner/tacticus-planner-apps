@@ -1,5 +1,5 @@
 {
-  "season": "Temporada {{letter}}",
+  "season": "Temporada {{name}}",
   "level": "Nivel {{level}}",
   "settingsSummary": "{{season}} · Nivel de campo de batalla {{level}}",
   "settingsOpen": "{{summary}}. Abrir ajustes",
@@ -17,6 +17,7 @@
     "title": "Ajustes de la Guerra de gremios",
     "description": "La temporada y el nivel de campo de batalla de tu guerra actual.",
     "season": "Temporada",
+    "seasonFromCalendar": "La fija el calendario de eventos.",
     "battlefieldLevel": "Nivel de campo de batalla",
     "capsKept": "Los ataques ya registrados conservan el límite de rareza con el que se registraron.",
     "stale": "Tu guerra cambió en otro dispositivo. Se muestra tal como está ahora.",
@@ -108,6 +109,8 @@
   },
   "teams": {
     "heading": "Equipos de ataque",
+    "newTeam": "Nuevo equipo",
+    "empty": "Aún no hay equipos de Ataque de guerra. Crea uno para seleccionar sus unidades con un toque.",
     "select": "Seleccionar",
     "selectTeam": "Seleccionar {{name}}",
     "core": "Unidades principales",

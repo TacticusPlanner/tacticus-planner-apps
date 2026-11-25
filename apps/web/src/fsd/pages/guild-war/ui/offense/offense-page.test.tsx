@@ -366,6 +366,18 @@ describe("OffensePage", () => {
     ).toBeInTheDocument()
   })
 
+  it("opens a new team with War Offense picked", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({ war: war() })
+    api.teams.mockResolvedValue({ teams: [] })
+    renderOffense()
+
+    await user.click(await screen.findByRole("button", { name: "New team" }))
+    expect(
+      await screen.findByRole("button", { name: "War Offense" })
+    ).toHaveAttribute("aria-pressed", "true")
+  })
+
   it("undoes an attack from the log", async () => {
     const user = userEvent.setup()
     api.current.mockResolvedValue({

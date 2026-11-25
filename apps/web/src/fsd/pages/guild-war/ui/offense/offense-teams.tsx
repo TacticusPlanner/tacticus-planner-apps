@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Plus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -11,16 +12,19 @@ import type { OffenseTeam, UnitKind } from "../../model/offense"
 
 /**
  * The player's War Offense teams: the ready ones first, then the blocked ones, each saying which of
- * its core units already attacked. Select puts a team's core units in the selection.
+ * its core units already attacked. Select puts a team's core units in the selection; New team
+ * opens the team editor with War Offense picked.
  */
 export function OffenseTeams({
   teams,
   roster,
   onSelect,
+  onNewTeam,
 }: {
   teams: readonly OffenseTeam[]
   roster: TeamRoster | null
   onSelect: (units: { id: string; kind: UnitKind }[]) => void
+  onNewTeam: () => void
 }) {
   const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
@@ -33,9 +37,18 @@ export function OffenseTeams({
       className="flex flex-col gap-2"
       data-testid="guild-war-teams"
     >
-      <h2 className="text-sm font-medium" id="guild-war-teams-heading">
-        {t("teams.heading")}
-      </h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-sm font-medium" id="guild-war-teams-heading">
+          {t("teams.heading")}
+        </h2>
+        <Button onClick={onNewTeam} size="sm" variant="ghost">
+          <Plus data-icon="inline-start" />
+          {t("teams.newTeam")}
+        </Button>
+      </div>
+      {teams.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{t("teams.empty")}</p>
+      ) : null}
       <ul className="grid gap-2 sm:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
         {teams.map(({ team, blockedBy }) => {
           const core = coreUnits(team)

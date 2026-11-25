@@ -17,9 +17,9 @@ import {
 } from "@/shared/ui"
 import { PageContainer } from "@/widgets/page-container"
 
-import { warSettings } from "../model/default-settings"
+import { newWarSettings, warSettings } from "../model/default-settings"
 import type { GuildWarContext } from "../model/guild-war-context"
-import { useGuildWarNames } from "../model/use-guild-war-names"
+import { useSeasonName } from "../model/use-season-name"
 import { GuildWarSettingsDialog } from "./guild-war-settings-dialog"
 
 /**
@@ -29,7 +29,7 @@ import { GuildWarSettingsDialog } from "./guild-war-settings-dialog"
  */
 export function GuildWarLayout() {
   const { t } = useTranslation("guildWar")
-  const { seasonName } = useGuildWarNames()
+  const { seasonName } = useSeasonName()
   const current = useCurrentGuildWar()
   const seasons = useCatalogDataset("guild-war")
   const calendar = useCatalogDataset("events-calendar")
@@ -50,10 +50,19 @@ export function GuildWarLayout() {
     ? warSettings(war, seasonList, running)
     : undefined
   const season = seasonList?.find((entry) => entry.id === settings?.seasonId)
+  // A war's season number is the one it started in; with no war, the one that counts now.
+  const seasonAt = war?.startedAt ?? nowMs
   const context = useMemo(
     (): GuildWarContext | undefined =>
-      settings ? { war, season, settings } : undefined,
-    [war, season, settings]
+      settings && seasonList
+        ? {
+            war,
+            season,
+            settings,
+            newWarSettings: newWarSettings(settings, seasonList, running),
+          }
+        : undefined,
+    [war, season, settings, seasonList, running]
   )
 
   let content
@@ -100,7 +109,7 @@ export function GuildWarLayout() {
         <Button
           aria-label={t("settingsOpen", {
             summary: t("settingsSummary", {
-              season: seasonName(settings.seasonId),
+              season: seasonName(settings.seasonId, seasonAt),
               level: settings.battlefieldLevel,
             }),
           })}
@@ -112,7 +121,7 @@ export function GuildWarLayout() {
         >
           <Settings data-icon="inline-start" />
           {t("settingsSummary", {
-            season: seasonName(settings.seasonId),
+            season: seasonName(settings.seasonId, seasonAt),
             level: settings.battlefieldLevel,
           })}
         </Button>
@@ -120,6 +129,7 @@ export function GuildWarLayout() {
         <GuildWarSettingsDialog
           onOpenChange={setSettingsOpen}
           open={settingsOpen}
+          seasonAt={seasonAt}
           seasons={seasonList ?? []}
           settings={settings}
           war={war}

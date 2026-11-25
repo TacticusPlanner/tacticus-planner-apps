@@ -122,4 +122,21 @@ describe("historyTotals", () => {
       { key: "y", count: 2 },
     ])
   })
+
+  it("counts a zone's copies as one zone, as players see them", () => {
+    const totals = historyTotals(
+      [
+        war(5, [
+          attack("Trenches1", "won", "Epic"),
+          attack("Trenches3", "lost", "Epic"),
+          attack("Bunker2", "won", "Mythic"),
+        ]),
+      ],
+      guildWarFixture
+    )
+    expect(totals.byZone).toEqual([
+      { key: "Trenches1", won: 1, decided: 2 },
+      { key: "Bunker1", won: 1, decided: 1 },
+    ])
+  })
 })

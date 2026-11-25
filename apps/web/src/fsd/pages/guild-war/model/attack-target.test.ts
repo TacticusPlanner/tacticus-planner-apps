@@ -12,6 +12,10 @@ describe("resolveZone", () => {
     expect(resolveZone("Armoury", seasonA)).toBe("Armoury")
   })
 
+  it("restores a stored copy as its kind's first zone", () => {
+    expect(resolveZone("Bunker2", seasonA)).toBe("Bunker1")
+  })
+
   it("clears a zone the season does not have, or before the catalog loads", () => {
     expect(resolveZone("LandingPad1", seasonD)).toBeNull()
     expect(resolveZone("HQ", undefined)).toBeNull()

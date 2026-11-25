@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Flag, RefreshCw } from "lucide-react"
@@ -13,13 +13,14 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import {
   TEAM_EDITOR_NAMESPACES,
+  TeamEditorDialog,
   TeamUnitPicker,
   defaultPickerFilters,
   usePickerUnits,
 } from "@/features/team-editor"
 import type { PickerFilters, PickerUnit } from "@/features/team-editor"
 import { DEFAULT_RARITY_CAP, useTeams } from "@/entities/team"
-import type { TeamRoster } from "@/entities/team"
+import type { TeamMode, TeamRoster } from "@/entities/team"
 import { ConfirmationDialog, LocalReadFailure, RarityIcon } from "@/shared/ui"
 
 import { maxAttempts } from "../../lib/season"
@@ -46,6 +47,8 @@ import { SelectionBar } from "./selection-bar"
 import { WarSummary } from "./war-summary"
 
 const NO_UNITS: readonly PickerUnit[] = []
+/** A team made from this page starts as a War Offense team. */
+const WAR_OFFENSE: readonly TeamMode[] = ["warOffense"]
 const EMPTY_SET: ReadonlySet<string> = new Set()
 const NO_USAGE: ReadonlyMap<string, string[]> = new Map()
 const OWNED_ONLY: PickerFilters = { ...defaultPickerFilters, ownedOnly: true }
@@ -156,7 +159,7 @@ function AvailableUnits({
  */
 export function OffensePage() {
   const { t, i18n } = useTranslation("guildWar")
-  const { war, season, settings } = useGuildWarContext()
+  const { war, season, settings, newWarSettings } = useGuildWarContext()
   const picker = usePickerUnits()
   const teamsQuery = useTeams()
   const logAttack = useLogGuildWarAttack()
@@ -167,6 +170,7 @@ export function OffensePage() {
   const [logOpen, setLogOpen] = useState(false)
   const [logError, setLogError] = useState<string | null>(null)
   const [confirmStart, setConfirmStart] = useState(false)
+  const [newTeamOpen, setNewTeamOpen] = useState(false)
   useGuildWarTutorial("offense")
   // The picker's copy (filters, factions, traits) loads with the page.
   useEffect(() => {
@@ -226,7 +230,7 @@ export function OffensePage() {
   const start = () => {
     setConfirmStart(false)
     startWar.mutate(
-      { settings, currentWarId: war?.id ?? null },
+      { settings: newWarSettings, currentWarId: war?.id ?? null },
       {
         onSuccess: () => {
           setSelection(new Map())
@@ -253,8 +257,22 @@ export function OffensePage() {
         </div>
       </WarSummary>
       {picker.status === "ready" && roster === null ? <SyncPrompt /> : null}
-      {teams.length > 0 ? (
-        <OffenseTeams onSelect={selectTeam} roster={roster} teams={teams} />
+      <OffenseTeams
+        onNewTeam={() => setNewTeamOpen(true)}
+        onSelect={selectTeam}
+        roster={roster}
+        teams={teams}
+      />
+      {newTeamOpen ? (
+        // Its own boundary: the editor's copy still loading suspends it, never the page.
+        <Suspense fallback={null}>
+          <TeamEditorDialog
+            newTeamModes={WAR_OFFENSE}
+            onClose={() => setNewTeamOpen(false)}
+            team={null}
+            teams={teamsQuery.data?.teams ?? []}
+          />
+        </Suspense>
       ) : null}
       <section
         aria-labelledby="guild-war-units-heading"

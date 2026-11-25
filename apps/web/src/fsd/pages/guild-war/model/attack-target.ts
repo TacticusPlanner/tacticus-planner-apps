@@ -5,7 +5,12 @@ import type { Rarity } from "@workspace/game-domain"
 import type { TeamRoster } from "@/entities/team"
 import { usePersistedSelection } from "@/shared/lib"
 
-import { GUILD_WAR_SLOTS, tierRarityCaps, zoneTierId } from "../lib/season"
+import {
+  GUILD_WAR_SLOTS,
+  tierRarityCaps,
+  zoneKindId,
+  zoneTierId,
+} from "../lib/season"
 import type { GuildWarSeason } from "../lib/season"
 import type { Selection } from "./offense"
 
@@ -15,13 +20,14 @@ const NONE = ""
 const isStoredString = (value: unknown): value is string =>
   typeof value === "string"
 
-/** A stored zone as it applies to a season: one the season does not have reads as not picked. */
+/** A stored zone as it applies to a season, as its kind (a stored "Bunker2" picks Bunker): one the
+ *  season does not have reads as not picked. */
 export function resolveZone(
   stored: string,
   season: GuildWarSeason | undefined
 ): string | null {
   return season?.zones.some((zone) => zone.id === stored) === true
-    ? stored
+    ? zoneKindId(season, stored)
     : null
 }
 

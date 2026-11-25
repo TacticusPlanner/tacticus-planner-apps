@@ -1,7 +1,7 @@
 import { rarityOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 
-import { zoneTierId } from "../lib/season"
+import { zoneKindId, zoneTierId } from "../lib/season"
 import type { GuildWarSeason } from "../lib/season"
 import type { GuildWar, GuildWarAttack } from "./types"
 
@@ -97,8 +97,12 @@ export function historyTotals(
   const rarities = tally(
     attacks.map(({ attack }) => ({ key: attack.rarityCap, attack }))
   )
+  // Copies of a zone kind (Frontline 1 to 3) count as one zone, as players see them.
   const zones = topUsage(
-    attacks.map(({ attack }) => ({ key: attack.zoneId, attack }))
+    attacks.map(({ war, attack }) => ({
+      key: zoneKindId(bySeason.get(war.seasonId), attack.zoneId),
+      attack,
+    }))
   )
   const characters = topUsage(
     attacks.flatMap(({ attack }) =>

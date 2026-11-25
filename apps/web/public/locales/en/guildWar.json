@@ -1,5 +1,5 @@
 {
-  "season": "Season {{letter}}",
+  "season": "Season {{name}}",
   "level": "Level {{level}}",
   "settingsSummary": "{{season}} · Battlefield level {{level}}",
   "settingsOpen": "{{summary}}. Open settings",
@@ -17,6 +17,7 @@
     "title": "Guild War settings",
     "description": "The season and battlefield level of your current war.",
     "season": "Season",
+    "seasonFromCalendar": "Set by the events calendar.",
     "battlefieldLevel": "Battlefield level",
     "capsKept": "Attacks already logged keep the rarity cap they were logged at.",
     "stale": "Your war changed on another device. It shows as it is now.",
@@ -108,6 +109,8 @@
   },
   "teams": {
     "heading": "Offense teams",
+    "newTeam": "New team",
+    "empty": "No War Offense teams yet. Create one to select its units in one tap.",
     "select": "Select",
     "selectTeam": "Select {{name}}",
     "core": "Core units",

@@ -1,10 +1,10 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
-import { seasonLetter, zoneNumber } from "../lib/season"
 import type { GuildWarSeason } from "../lib/season"
 
-/** The game's names for a season's zones, tiers and buffs, and the season's own name. */
+/** The game's names for a season's zones, tiers and buffs. A zone is named by its kind only
+ *  ("Bunker", not "Bunker 2"): the game shows no numbers, and copies of a kind are the same. */
 export function useGuildWarNames() {
   const { t } = useTranslation([
     "guildWar",
@@ -15,13 +15,11 @@ export function useGuildWarNames() {
   const zoneName = useCallback(
     (season: GuildWarSeason | undefined, zoneId: string) => {
       const zone = season?.zones.find((entry) => entry.id === zoneId)
-      // A zone of a season no longer served keeps its id's words ("Bunker2" → "Bunker 2").
-      if (!zone) return zoneId.replace(/(\D)(\d+)$/, "$1 $2")
-      const name = t(`guildWarZones:${zone.visualId}`, {
+      // A zone of a season no longer served keeps its id's words ("Bunker2" → "Bunker").
+      if (!zone) return zoneId.replace(/\d+$/, "")
+      return t(`guildWarZones:${zone.visualId}`, {
         defaultValue: zone.visualId,
       })
-      const number = zoneNumber(zone.id)
-      return number ? `${name} ${number}` : name
     },
     [t]
   )
@@ -33,10 +31,5 @@ export function useGuildWarNames() {
     (buffId: string) => t(`guildWarBuffs:${buffId}`, { defaultValue: buffId }),
     [t]
   )
-  const seasonName = useCallback(
-    (seasonId: string) =>
-      t("guildWar:season", { letter: seasonLetter(seasonId) }),
-    [t]
-  )
-  return { zoneName, tierName, buffName, seasonName }
+  return { zoneName, tierName, buffName }
 }

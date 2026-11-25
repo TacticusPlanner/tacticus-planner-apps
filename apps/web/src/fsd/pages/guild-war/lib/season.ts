@@ -49,23 +49,40 @@ export function slotRarityCap(
   ]
 }
 
-/** The season's zones grouped by their tier at a level, the tiers in the season's order (lowest
- *  first) and the zones in battlefield order. A zone the level does not place is left out. */
+/** Whether two zones are copies of one kind (Frontline 1 to 3, Bunker 1 and 2): the same picture
+ *  and buff. The game shows players no numbers, so copies are picked and counted as one. */
+const sameKind = (a: GuildWarZone, b: GuildWarZone) =>
+  a.visualId === b.visualId && a.buffId === b.buffId
+
+/** The zone that stands for a zone's kind: the season's first copy of it. A zone the season does
+ *  not have (its season is no longer served) stands for itself. */
+export function zoneKindId(
+  season: GuildWarSeason | undefined,
+  zoneId: string
+): string {
+  const zone = season?.zones.find((entry) => entry.id === zoneId)
+  if (!season || !zone) return zoneId
+  return season.zones.find((entry) => sameKind(entry, zone))?.id ?? zoneId
+}
+
+/** The season's zone kinds grouped by their tier at a level, the tiers in the season's order
+ *  (lowest first) and each kind once, as its first copy in that tier, in battlefield order. A zone
+ *  the level does not place is left out. */
 export function zonesByTier(
   season: GuildWarSeason,
   battlefieldLevel: number
 ): { tierId: string; zones: GuildWarZone[] }[] {
   return season.tiers.flatMap((tier) => {
-    const zones = season.zones.filter(
-      (zone) => zoneTierId(season, battlefieldLevel, zone.id) === tier.id
-    )
+    const zones = season.zones
+      .filter(
+        (zone) => zoneTierId(season, battlefieldLevel, zone.id) === tier.id
+      )
+      .filter(
+        (zone, index, inTier) =>
+          inTier.findIndex((other) => sameKind(other, zone)) === index
+      )
     return zones.length > 0 ? [{ tierId: tier.id, zones }] : []
   })
-}
-
-/** The number that tells same-kind zones apart (`Bunker2` → "2"), or "" for a single one. */
-export function zoneNumber(zoneId: string): string {
-  return /\d+$/.exec(zoneId)?.[0] ?? ""
 }
 
 /** The season's letter (`guildWarSeasonD` → "D"), or its id when it has no letter. */

@@ -20,3 +20,4 @@
 - [x] 4.2 Record lost units by tapping them and a 200-character note; show the zone picture, lost units, enemy units and buffs, and the note in each attack.
 - [x] 4.3 Default the season from the calendar's `seasonConfigId`, keep a war's season once it has attacks, and send `currentWarId` when starting a war.
 - [x] 4.4 Game pictures for zones, buff badges and the Guild War token; History totals by zone, characters, lineup win rates, enemies lost to and overall counts.
+- [x] 4.5 One Zone choice per zone kind (no copy numbers), seasons by their calendar number shown read-only in Settings, Start new war in the calendar's season, and New team with War Offense picked.

@@ -89,16 +89,25 @@ describe("GuildWarLayout", () => {
             confirmed: true,
             startUtc: "2020-01-03T09:00:00Z",
             endUtc: "2020-01-18T09:00:00Z",
-            parameters: { season: 1, seasonConfigId: "guildWarSeasonD" },
+            parameters: { season: 29, seasonConfigId: "guildWarSeasonD" },
           },
         ],
       },
     })
+    const user = userEvent.setup()
     renderAt("/guild/war/offense")
 
+    // Players know the season by its number, not the config letter it runs.
+    const summary = await screen.findByTestId("guild-war-settings-summary")
+    expect(summary).toHaveTextContent("Season 29 · Battlefield level 5")
+    await user.click(summary)
+    const dialog = await screen.findByTestId("guild-war-settings")
+    expect(within(dialog).getByTestId("guild-war-season")).toHaveTextContent(
+      "Season 29"
+    )
     expect(
-      await screen.findByTestId("guild-war-settings-summary")
-    ).toHaveTextContent("Season D · Battlefield level 5")
+      within(dialog).queryByRole("combobox", { name: "Season" })
+    ).toBeNull()
   })
 
   it("keeps the season of a war with attacks", async () => {

@@ -7,7 +7,7 @@ import {
   seasonLetter,
   slotRarityCap,
   tierRarityCaps,
-  zoneNumber,
+  zoneKindId,
   zonesByTier,
   zoneTierId,
 } from "./season"
@@ -42,24 +42,33 @@ describe("guild war season rules", () => {
     ])
   })
 
-  it("groups zones by tier, lowest tier first, in battlefield order", () => {
+  it("groups zone kinds by tier, lowest tier first, each kind once", () => {
     const groups = zonesByTier(seasonA, 5)
     expect(groups.map((group) => group.tierId)).toEqual([
       "Veteran",
       "Elite",
       "Hero",
     ])
+    // Frontline 1 to 3 and Bunker 1 and 2 are one pick each, as their first copy.
+    expect(
+      required(groups[0], "Veteran group").zones.map((zone) => zone.id)
+    ).toContain("Trenches1")
+    expect(
+      required(groups[0], "Veteran group").zones.map((zone) => zone.id)
+    ).not.toContain("Trenches2")
     expect(
       required(groups[2], "Hero group").zones.map((zone) => zone.id)
-    ).toEqual(["Bunker1", "Bunker2", "HQ"])
-    expect(groups.flatMap((group) => group.zones)).toHaveLength(
-      seasonA.zones.length
-    )
+    ).toEqual(["Bunker1", "HQ"])
   })
 
-  it("names zones and seasons", () => {
-    expect(zoneNumber("Bunker2")).toBe("2")
-    expect(zoneNumber("Armoury")).toBe("")
+  it("stands a zone's copies for its first one", () => {
+    expect(zoneKindId(seasonA, "Trenches3")).toBe("Trenches1")
+    expect(zoneKindId(seasonA, "Bunker2")).toBe("Bunker1")
+    expect(zoneKindId(seasonA, "Armoury")).toBe("Armoury")
+    expect(zoneKindId(undefined, "Bunker2")).toBe("Bunker2")
+  })
+
+  it("names seasons by letter", () => {
     expect(seasonLetter("guildWarSeasonD")).toBe("D")
     expect(seasonLetter("other")).toBe("other")
   })

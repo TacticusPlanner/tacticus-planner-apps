@@ -25,12 +25,13 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
-import { useGuildWarNames } from "../model/use-guild-war-names"
+import { useSeasonName } from "../model/use-season-name"
 
 /**
  * The page's Settings: the war's season and battlefield level. A change saves at once (creating
- * the current war when there is none), so the dialog ends with Done only. Once the war has attacks
- * its season is kept (they belong to its zones); a different season means a new war.
+ * the current war when there is none), so the dialog ends with Done only. The season comes from the
+ * events calendar and is only shown; without a calendar season it can be picked until the war has
+ * attacks (they belong to its zones).
  */
 export function GuildWarSettingsDialog({
   open,
@@ -38,19 +39,26 @@ export function GuildWarSettingsDialog({
   war,
   seasons,
   settings,
+  seasonAt,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   war: GuildWar | null
+  /** When the war started (now with no war), which picks its season number in the calendar. */
+  seasonAt: string | number
   seasons: readonly GuildWarSeason[]
   settings: GuildWarSettings
 }) {
   const { t } = useTranslation("guildWar")
-  const { seasonName } = useGuildWarNames()
+  const { seasonName, seasonNumber } = useSeasonName()
   const save = useSetGuildWarSettings()
   const season = seasons.find((entry) => entry.id === settings.seasonId)
   const levels = (season?.levels ?? []).map((level) => level.battlefieldLevel)
   const seasonLocked = (war?.attacks.length ?? 0) > 0
+  // The calendar names the season (Season 29), so it is shown, not picked; a season it does not
+  // name (a config letter) can still be picked.
+  const seasonFromCalendar =
+    seasonNumber(settings.seasonId, seasonAt) !== undefined
 
   const change = (next: GuildWarSettings) => {
     save.mutate({ settings: next, revision: war?.revision ?? 0 })
@@ -96,35 +104,47 @@ export function GuildWarSettingsDialog({
         </ResponsiveDialogDescription>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody className="gap-4">
-        <FilterField label={t("settings.season")}>
-          {({ id, labelId }) => (
-            <Select
-              disabled={save.isPending || seasonLocked}
-              onValueChange={changeSeason}
-              value={settings.seasonId}
-            >
-              <SelectTrigger
-                aria-labelledby={labelId}
-                id={id}
-                className="w-full"
+        {seasonFromCalendar ? (
+          <div className="flex flex-col gap-1" data-testid="guild-war-season">
+            <span className="text-sm font-medium">{t("settings.season")}</span>
+            <span className="text-sm">
+              {seasonName(settings.seasonId, seasonAt)}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {t("settings.seasonFromCalendar")}
+            </span>
+          </div>
+        ) : (
+          <FilterField label={t("settings.season")}>
+            {({ id, labelId }) => (
+              <Select
+                disabled={save.isPending || seasonLocked}
+                onValueChange={changeSeason}
+                value={settings.seasonId}
               >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent position="popper">
-                {season ? null : (
-                  <SelectItem value={settings.seasonId}>
-                    {seasonName(settings.seasonId)}
-                  </SelectItem>
-                )}
-                {seasons.map((entry) => (
-                  <SelectItem key={entry.id} value={entry.id}>
-                    {seasonName(entry.id)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </FilterField>
+                <SelectTrigger
+                  aria-labelledby={labelId}
+                  id={id}
+                  className="w-full"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {season ? null : (
+                    <SelectItem value={settings.seasonId}>
+                      {seasonName(settings.seasonId)}
+                    </SelectItem>
+                  )}
+                  {seasons.map((entry) => (
+                    <SelectItem key={entry.id} value={entry.id}>
+                      {seasonName(entry.id)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </FilterField>
+        )}
         <FilterField label={t("settings.battlefieldLevel")}>
           {({ id, labelId }) => (
             <Select
@@ -151,7 +171,7 @@ export function GuildWarSettingsDialog({
             </Select>
           )}
         </FilterField>
-        {seasonLocked ? (
+        {seasonLocked && !seasonFromCalendar ? (
           <p
             className="text-sm text-muted-foreground"
             data-testid="guild-war-season-locked"

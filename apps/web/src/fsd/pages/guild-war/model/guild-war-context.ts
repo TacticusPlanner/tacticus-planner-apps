@@ -13,6 +13,9 @@ export interface GuildWarContext {
   season: GuildWarSeason | undefined
   /** The war's season and level, or the defaults a first attack starts the war with. */
   settings: GuildWarSettings
+  /** What Start new war starts: the season the calendar says counts now, at the current level
+   *  when that season has it. */
+  newWarSettings: GuildWarSettings
 }
 
 export function useGuildWarContext() {

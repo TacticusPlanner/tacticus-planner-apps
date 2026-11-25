@@ -1,5 +1,5 @@
 {
-  "season": "Saison {{letter}}",
+  "season": "Saison {{name}}",
   "level": "Stufe {{level}}",
   "settingsSummary": "{{season}} · Schlachtfeldstufe {{level}}",
   "settingsOpen": "{{summary}}. Einstellungen öffnen",
@@ -17,6 +17,7 @@
     "title": "Gildenkrieg-Einstellungen",
     "description": "Saison und Schlachtfeldstufe deines aktuellen Kriegs.",
     "season": "Saison",
+    "seasonFromCalendar": "Vom Event-Kalender festgelegt.",
     "battlefieldLevel": "Schlachtfeldstufe",
     "capsKept": "Bereits erfasste Angriffe behalten die Seltenheitsgrenze, mit der sie erfasst wurden.",
     "stale": "Dein Krieg wurde auf einem anderen Gerät geändert. Er wird jetzt so angezeigt, wie er ist.",
@@ -108,6 +109,8 @@
   },
   "teams": {
     "heading": "Angriffsteams",
+    "newTeam": "Neues Team",
+    "empty": "Noch keine Kriegsangriff-Teams. Erstelle eins, um seine Einheiten mit einem Tippen auszuwählen.",
     "select": "Auswählen",
     "selectTeam": "{{name}} auswählen",
     "core": "Stammeinheiten",

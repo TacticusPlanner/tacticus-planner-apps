@@ -18,7 +18,7 @@ import type { GuildWarSeason } from "../../lib/season"
 import { historyTotals } from "../../model/history-totals"
 import type { GuildWar } from "../../model/types"
 import { usePastGuildWars } from "../../model/use-guild-war"
-import { useGuildWarNames } from "../../model/use-guild-war-names"
+import { useSeasonName } from "../../model/use-season-name"
 import { attackResults } from "../../model/war-stats"
 import { AttackRow } from "../attack-row"
 import { useGuildWarTutorial } from "../guild-war.tutorial"
@@ -35,7 +35,7 @@ function PastWar({
   season: GuildWarSeason | undefined
 }) {
   const { t, i18n } = useTranslation("guildWar")
-  const { seasonName } = useGuildWarNames()
+  const { seasonName } = useSeasonName()
   const { won, lost } = attackResults(war.attacks)
   return (
     <AccordionItem data-testid="guild-war-past-war" value={war.id}>
@@ -50,7 +50,7 @@ function PastWar({
           </span>
           <span className="flex flex-wrap items-center gap-1 text-xs font-normal text-muted-foreground">
             {t("history.warSummary", {
-              season: seasonName(war.seasonId),
+              season: seasonName(war.seasonId, war.startedAt),
               level: war.battlefieldLevel,
             })}
             <EntityIcon alt="" size="icon-sm" src={guildWarTokenIcon()} />
