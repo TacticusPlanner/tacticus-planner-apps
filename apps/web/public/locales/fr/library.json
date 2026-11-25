@@ -372,7 +372,12 @@
     "hasRanged": "Avec attaque à distance",
     "clearOne": "Effacer {{name}}",
     "anyDamageType": "N'importe quel type de dégâts",
-    "anyTrait": "N'importe quel trait"
+    "anyTrait": "N'importe quel trait",
+    "sections": {
+      "enemies": "Ennemis",
+      "playable": "Personnages jouables"
+    },
+    "seeCharacter": "Voir le personnage"
   },
   "unit": {
     "nav": {

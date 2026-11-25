@@ -21,6 +21,22 @@ describe("NpcPortrait", () => {
     )
   })
 
+  it("shows the playable character's portrait when the variation has none", () => {
+    render(
+      <NpcPortrait
+        characterId="bloodDante"
+        name="Dante"
+        size="portrait-sm"
+        variationId="notAnNpc"
+      />
+    )
+
+    expect(screen.getByRole("img", { name: "Dante" })).toHaveAttribute(
+      "src",
+      "/game_catalog/datamines/atlases/ui_image_RoundPortrait_blood_dante_01.webp"
+    )
+  })
+
   it("renders an initials badge when no portrait is mapped", () => {
     render(
       <NpcPortrait

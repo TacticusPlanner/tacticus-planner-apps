@@ -53,6 +53,9 @@ export function buildNpcGroups(records: readonly NpcRecord[]): NpcGroup[] {
       name,
       factionId: first.factionId,
       alliance: first.alliance,
+      characterId:
+        variations.find((variation) => variation.characterId)?.characterId ??
+        null,
       defaultVariationId: defaultVariationId(first, variations),
       variations,
     })

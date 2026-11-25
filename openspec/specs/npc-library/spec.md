@@ -633,10 +633,32 @@ Assumptions:
 
 ### Requirement: An NPC borrows a portrait from another of its variations
 
-The NPC list tile SHALL show the portrait of the NPC's default variation, and the NPC page the portrait of the selected variation. When no portrait asset is mapped for that variation, it SHALL show the portrait of the first variation of the same NPC that has one, and only when none has one an initials badge.
+The NPC list tile SHALL show the portrait of the NPC's default variation, and the NPC page the portrait of the selected variation. When no portrait asset is mapped for that variation, it SHALL show the portrait of the first variation of the same NPC that has one, then the portrait of the playable character the NPC is a version of (its served `characterId`), and only when none of those exists an initials badge.
 
 #### Scenario: Only the Survival variation has a portrait
 
 - **GIVEN** Dante, whose default variation has no mapped portrait and whose Survival variation has one
 - **WHEN** the visitor opens the NPC list
 - **THEN** Dante's tile shows the Survival variation's portrait instead of initials
+
+#### Scenario: No variation has a portrait but the NPC is a playable character
+
+- **GIVEN** an NPC whose variations have no mapped portrait and whose served `characterId` is `bloodDante`
+- **WHEN** the visitor opens the NPC list
+- **THEN** its tile shows Dante's character portrait instead of initials
+
+### Requirement: The list shows enemies first and playable characters apart
+
+The NPC list SHALL show two sections: Enemies (NPCs with no served `characterId`) first, then Playable characters (NPCs that are a version of a character a player can own), each titled with its count and each keeping the listed order within it. Search and filters SHALL apply across both sections, and a section with no matching NPC SHALL be hidden. Previous / Next on an NPC's page SHALL follow the same order: every listed enemy, then every listed playable character. The NPC's link to its character SHALL come from the served `characterId`, never from matching names in the app. An NPC's page SHALL show a "See character" link to that character's Library page when the NPC has one.
+
+#### Scenario: Two sections with counts
+
+- **GIVEN** Havoc, Imospekh and Termagant with no `characterId`, and Makhotep with `characterId` `necroWarden`
+- **WHEN** the visitor opens `/library/npcs`
+- **THEN** the list shows "Enemies 3" with Havoc, Imospekh and Termagant, then "Playable characters 1" with Makhotep, and Makhotep's page shows "4 of 4" and a "See character" link to `/library/characters/necroWarden`
+
+#### Scenario: An empty section hides
+
+- **GIVEN** no listed NPC has a `characterId`
+- **WHEN** the visitor opens `/library/npcs`
+- **THEN** only the Enemies section shows, and an enemy's page shows no "See character" link

@@ -30,6 +30,20 @@ describe("buildNpcGroups", () => {
     expect(makhotep.defaultVariationId).toBe("necroNpcWarden")
   })
 
+  it("links the playable character a variation names, else none", () => {
+    const [makhotep, warrior] = buildNpcGroups([
+      ...makhotepRecords.map((record) =>
+        record.id === "necroBossWarden"
+          ? { ...record, characterId: "necroWarden" }
+          : { ...record, characterId: null }
+      ),
+      npcRecord("necroNpc1Warrior", "Necron Warrior"),
+    ])
+
+    expect(makhotep?.characterId).toBe("necroWarden")
+    expect(warrior?.characterId).toBeNull()
+  })
+
   it("keeps each variation's ladder apart", () => {
     const makhotep = at(buildNpcGroups(makhotepRecords), 0)
     const boss = makhotep.variations.find((v) => v.id === "necroBossWarden")!

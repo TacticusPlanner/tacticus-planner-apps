@@ -22,6 +22,9 @@ export const npcSchema = z.looseObject({
   factionId: factionIdSchema,
   alliance: z.enum(Alliance),
   kind: npcKindSchema,
+  // The playable character this NPC is a version of (Dante for Dante's boss variations), else null.
+  // Optional until every served catalog carries it.
+  characterId: unitIdSchema.nullable().optional(),
   meleeDamage: z.string(),
   meleeHits: z.number(),
   rangedDamage: z.string().nullable(),

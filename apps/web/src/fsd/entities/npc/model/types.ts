@@ -21,6 +21,8 @@ export interface NpcRecord {
   factionId: string
   alliance: string
   kind: "unit" | "machineOfWar" | "object"
+  /** The playable character this NPC is a version of, else null (absent from older catalogs). */
+  characterId?: string | null
   meleeDamage: string
   meleeHits: number
   rangedDamage: string | null
@@ -46,6 +48,9 @@ export interface NpcGroup {
   name: string
   factionId: string
   alliance: string
+  /** The playable character the NPC is a version of (from its first variation that names one),
+   *  else null: the NPC is an enemy only. */
+  characterId: string | null
   /** The variation selected when the URL names none (or an unknown one). */
   defaultVariationId: string
   variations: readonly NpcVariation[]

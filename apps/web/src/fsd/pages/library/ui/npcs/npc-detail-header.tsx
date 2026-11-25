@@ -1,3 +1,4 @@
+import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { factionIcon } from "@workspace/game-catalog"
 import {
@@ -28,6 +29,7 @@ export function NpcDetailHeader({
   variationOptions,
   selectedVariationId,
   portraitVariationId,
+  characterId,
   onVariationChange,
   levels,
   selectedLevel,
@@ -42,6 +44,9 @@ export function NpcDetailHeader({
   /** The variation whose portrait to show: the selected one, or another of the NPC's when the
    *  selected one has none. */
   portraitVariationId: string
+  /** The playable character the NPC is a version of: its portrait stands in for a missing one, and
+   *  "See character" opens its page. */
+  characterId: string | null
   onVariationChange: (variationId: string) => void
   levels: NpcLevelOption[]
   selectedLevel: NpcLevelOption | undefined
@@ -57,6 +62,7 @@ export function NpcDetailHeader({
       <div className="flex items-center gap-3">
         <NpcPortrait
           variationId={portraitVariationId}
+          characterId={characterId}
           name={name}
           size="portrait-md"
         />
@@ -70,6 +76,15 @@ export function NpcDetailHeader({
           </p>
           {selectedLevel ? (
             <NpcLevelBadge row={selectedLevel.row} className="mt-1" />
+          ) : null}
+          {characterId ? (
+            <Link
+              to={`/library/characters/${encodeURIComponent(characterId)}`}
+              className="mt-1 block w-fit text-sm text-primary underline-offset-4 hover:underline"
+              data-testid="npc-see-character"
+            >
+              {t("npcs.seeCharacter")}
+            </Link>
           ) : null}
         </div>
       </div>

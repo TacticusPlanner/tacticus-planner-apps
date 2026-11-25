@@ -94,6 +94,7 @@ export function NpcDetail({
           selectedGroup,
           selectedVariation.id
         )}
+        characterId={selectedGroup.characterId}
         onVariationChange={onVariationChange}
         levels={levels}
         selectedLevel={selectedLevel}

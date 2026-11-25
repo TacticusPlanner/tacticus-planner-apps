@@ -372,7 +372,12 @@
     "hasRanged": "Has ranged",
     "clearOne": "Clear {{name}}",
     "anyDamageType": "Any damage type",
-    "anyTrait": "Any trait"
+    "anyTrait": "Any trait",
+    "sections": {
+      "enemies": "Enemies",
+      "playable": "Playable characters"
+    },
+    "seeCharacter": "See character"
   },
   "unit": {
     "nav": {
