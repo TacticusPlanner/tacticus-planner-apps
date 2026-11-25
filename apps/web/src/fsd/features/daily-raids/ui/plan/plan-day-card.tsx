@@ -3,7 +3,10 @@ import { useTranslation } from "react-i18next"
 import { raidTicketIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
+import type { BattleId } from "@workspace/game-domain"
+
 import type { DailyRaidsReadyViewModel } from "../../model/daily-raids.domain"
+import { exhaustedBattleIdsOf } from "../../model/material-details"
 import type { RaidDaySchedule } from "@/entities/goal-farming"
 import { energyIconUrl, EntityIcon, ListDivider } from "@/shared/ui"
 import type { PlanCell, PlanDayCells } from "../../model/plan-day-cells"
@@ -12,6 +15,8 @@ import { PlanMaterialCell } from "./plan-material-cell"
 import { PlanOnslaughtRuns } from "./plan-onslaught-runs"
 import { PlanShopPurchases } from "./plan-shop-purchases"
 import { useDateLocale } from "@/shared/lib"
+
+const NO_BATTLES: ReadonlySet<BattleId> = new Set()
 
 // V1's threshold for calling a day's energy budget "full".
 const FULL_ENERGY_RATIO = 0.95
@@ -38,13 +43,8 @@ export function PlanDayCard({
   date.setDate(date.getDate() + day.day - 1)
 
   // Today only: nodes whose real attempts are spent can't be an alternative until tomorrow.
-  const exhaustedBattleIds = new Set(
-    day.day === 1
-      ? [...raids.attemptsLeftByBattle]
-          .filter(([, left]) => left === 0)
-          .map(([battleId]) => battleId)
-      : []
-  )
+  const exhaustedBattleIds =
+    day.day === 1 ? exhaustedBattleIdsOf(raids) : NO_BATTLES
   const renderCells = (list: PlanCell[], testId: string) => (
     <div className="grid grid-cols-3 gap-1.5" data-testid={testId}>
       {list.map((cell) => (
@@ -55,11 +55,9 @@ export function PlanDayCard({
             selectedUnitId !== undefined &&
             cell.units.every((unit) => !(unit.unitId === selectedUnitId))
           }
-          eligibleBattleIds={raids.eligibleBattleIds}
           exhaustedBattleIds={exhaustedBattleIds}
-          sourcesByResource={raids.sourcesByResource}
           label={raids.resourceLabels.get(cell.resourceId) ?? cell.resourceId}
-          locationsByBattleId={raids.locationsByBattleId}
+          raids={raids}
           testId={`plan-cell-${day.day}-${cell.resourceId}`}
           visual={raids.resourceVisuals.get(cell.resourceId)}
         />

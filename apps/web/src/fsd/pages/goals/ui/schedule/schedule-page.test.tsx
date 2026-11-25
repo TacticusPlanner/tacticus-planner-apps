@@ -42,6 +42,23 @@ vi.mock("@/entities/planning-setting", async (importOriginal) => {
     }),
   }
 })
+// Goals' unlock paths read the whole catalog; the details popover only needs their wording.
+const { lockedNodes } = vi.hoisted(() => ({
+  lockedNodes: new Map<
+    string,
+    { battleId: string; distance: string; notes: string[] }[]
+  >(),
+}))
+vi.mock("@/features/goal-planning", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/goal-planning")>()),
+  LockedNodesOf: ({
+    resourceId,
+    children,
+  }: {
+    resourceId: string
+    children: (nodes: unknown[]) => React.ReactNode
+  }) => children(lockedNodes.get(resourceId) ?? []),
+}))
 vi.mock("@/shared/tour", () => ({
   useTourPageSteps: (steps: unknown) => registeredTours.push(steps),
 }))
@@ -377,28 +394,42 @@ describe("Schedule page", () => {
       expect(dragStart.defaultPrevented).toBe(true)
     })
 
-    it("shows the tooltip with units and nodes when a cell is focused", async () => {
+    it("names the material on hover and opens its details on click", async () => {
+      const user = userEvent.setup()
       render(<SchedulePage />)
 
       const cell = screen.getByTestId("plan-cell-1-U1")
       expect(cell).toHaveAccessibleName("Ceramite, 265 of 500 owned")
-      act(() => cell.focus())
-      const tooltip = await screen.findByRole("tooltip")
-      expect(tooltip).toHaveTextContent("Ceramite")
-      expect(tooltip).toHaveTextContent("Bellator")
-      expect(tooltip).toHaveTextContent("Indomitus")
+      await user.hover(cell)
+      expect(await screen.findByRole("tooltip")).toHaveTextContent("Ceramite")
+
+      await user.click(cell)
+      const details = await screen.findByRole("dialog", { name: "Ceramite" })
+      expect(details).toHaveTextContent("265 of 500 owned")
+      expect(details).toHaveTextContent("Needed by Bellator")
+      expect(
+        within(details).getByRole("list", { name: "Raids" })
+      ).toHaveTextContent("Indomitus")
       expect(
         screen.queryByTestId("plan-cell-1-U1-alternatives")
       ).not.toBeInTheDocument()
     })
 
     it("groups the material's other sources into campaign events and shops, marking locked nodes", async () => {
+      const user = userEvent.setup()
       const base = ready()
       const locationsByBattleId = new Map(base.locationsByBattleId)
       locationsByBattleId.set(offPlanBattle, {
         ...locationsByBattleId.get(offPlanBattle)!,
         isEvent: true,
       })
+      lockedNodes.set("U1", [
+        {
+          battleId: offPlanBattle,
+          distance: "during the campaign event",
+          notes: [],
+        },
+      ])
       useDailyRaids.mockReturnValue(
         ready({
           locationsByBattleId,
@@ -423,9 +454,11 @@ describe("Schedule page", () => {
       )
       render(<SchedulePage />)
 
-      act(() => screen.getByTestId("plan-cell-1-U1").focus())
-      await screen.findByRole("tooltip")
-      const alternatives = screen.getByTestId("plan-cell-1-U1-alternatives")
+      await user.click(screen.getByTestId("plan-cell-1-U1"))
+      const alternatives = await screen.findByTestId(
+        "plan-cell-1-U1-alternatives"
+      )
+      lockedNodes.clear()
       expect(alternatives).toHaveTextContent("Also available from")
       expect(alternatives).not.toHaveTextContent("Indomitus")
       expect(
@@ -434,6 +467,7 @@ describe("Schedule page", () => {
       const events = screen.getByTestId("plan-cell-1-U1-alternatives-events")
       expect(events).toHaveTextContent("Campaign events")
       expect(events).toHaveTextContent("Death Guard")
+      expect(events).toHaveTextContent("during the campaign event")
       expect(
         within(events).getByRole("img", { name: "Locked" })
       ).toBeInTheDocument()
@@ -443,6 +477,57 @@ describe("Schedule page", () => {
       expect(
         within(shops).getByRole("img", { name: /^2 for 150 / })
       ).toBeInTheDocument()
+    })
+
+    it("lists locked nodes closest first and folds a long list behind Show more", async () => {
+      const user = userEvent.setup()
+      const far = Array.from(
+        { length: 5 },
+        (_, index) => `far${index}` as never
+      )
+      const closest = "closest" as never
+      lockedNodes.set("U1", [
+        { battleId: closest, distance: "3 battles to go", notes: [] },
+        {
+          battleId: "far0",
+          distance: "20 battles to go",
+          notes: ["Reach Power Level 50 (you're at 40)"],
+        },
+      ])
+      useDailyRaids.mockReturnValue(
+        ready({
+          sourcesByResource: new Map([
+            ["U1", { battleIds: [battle, ...far, closest], shops: [] }],
+          ]),
+          eligibleBattleIds: new Set([battle]),
+        })
+      )
+      render(<SchedulePage />)
+
+      await user.click(screen.getByTestId("plan-cell-1-U1"))
+      const campaigns = await screen.findByTestId(
+        "plan-cell-1-U1-alternatives-campaigns"
+      )
+      lockedNodes.clear()
+      // Four shown, the closest locked node first, then the known one, then the rest in catalog order.
+      expect(
+        within(campaigns).getAllByRole("img", { name: "Locked" })
+      ).toHaveLength(4)
+      const text = campaigns.textContent
+      expect(text).toMatch(
+        /closest.*3 battles to go.*far0.*20 battles to go.*Reach Power Level 50.*far1.*far2/
+      )
+      expect(text).not.toContain("far3")
+
+      await user.click(
+        within(campaigns).getByRole("button", { name: "Show 2 more" })
+      )
+      expect(
+        within(campaigns).getAllByRole("img", { name: "Locked" })
+      ).toHaveLength(6)
+      expect(
+        within(campaigns).getByRole("button", { name: "Show fewer" })
+      ).toHaveAttribute("aria-expanded", "true")
     })
   })
 

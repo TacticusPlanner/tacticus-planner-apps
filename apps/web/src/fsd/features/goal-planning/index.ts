@@ -67,6 +67,16 @@ export {
   useFarmUnlockPaths,
   type FarmUnlockPathViewModel,
 } from "./model/unlock-paths/use-farm-unlock-paths"
+export {
+  useCampaignTrackLabel,
+  useLockReasonText,
+} from "./model/unlock-paths/use-lock-reason-text"
+export {
+  useLockedNodes,
+  type LockedNode,
+} from "./model/unlock-paths/use-locked-nodes"
+export { farmUnlockDistance } from "./model/unlock-paths/farm-unlock-distance"
+export { LockedNodesOf } from "./ui/unlock-paths/locked-nodes-of"
 export { isOnlyMemberOf } from "./model/projects/project-removal"
 export { useGoalsProjectScope } from "./model/projects/use-goals-project-scope"
 export { useProjectsByGoalId } from "./model/projects/use-projects-by-goal-id"

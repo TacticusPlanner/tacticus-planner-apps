@@ -129,7 +129,11 @@ export function ResourceCard({
             <UnitIcon goal={goal} />
           ) : (
             <div className="flex shrink-0 flex-col items-center gap-0.5">
-              <ResourceIconWithTooltip label={label} visual={visual} />
+              <ResourceIconWithTooltip
+                label={label}
+                resourceId={resourceId}
+                visual={visual}
+              />
               {progress ? (
                 <ResourceProgress progress={progress} standalone />
               ) : null}

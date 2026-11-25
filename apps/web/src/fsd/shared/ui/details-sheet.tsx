@@ -17,6 +17,11 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { hasNode } from "../lib"
@@ -77,13 +82,19 @@ export function DetailsSheet({
 
 /**
  * Details of one tapped item: a popover beside the item on desktop, a `DetailsSheet` on a phone.
- * `size="card"` widens the popover for a unit or enemy card (rule 8 widths).
+ * `size="card"` widens the popover for a unit or enemy card (rule 8 widths). `tooltip` names an
+ * icon-only trigger on hover (desktop only; on a phone the sheet's title says it).
  */
 export function DetailsOverlay({
   size = "default",
+  tooltip,
   trigger,
   ...props
-}: DetailsProps & { trigger: ReactElement; size?: "default" | "card" }) {
+}: DetailsProps & {
+  trigger: ReactElement
+  size?: "default" | "card"
+  tooltip?: ReactNode
+}) {
   const isMobile = useIsMobile()
   const titleId = useId()
   if (isMobile) return <DetailsSheet trigger={trigger} {...props} />
@@ -92,7 +103,18 @@ export function DetailsOverlay({
     props
   return (
     <Popover onOpenChange={onOpenChange} open={open}>
-      <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+      {hasNode(tooltip) ? (
+        <Tooltip>
+          <PopoverTrigger asChild>
+            <TooltipTrigger asChild disableTouchToggle>
+              {trigger}
+            </TooltipTrigger>
+          </PopoverTrigger>
+          <TooltipContent>{tooltip}</TooltipContent>
+        </Tooltip>
+      ) : (
+        <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+      )}
       <PopoverContent
         align="start"
         aria-labelledby={titleId}

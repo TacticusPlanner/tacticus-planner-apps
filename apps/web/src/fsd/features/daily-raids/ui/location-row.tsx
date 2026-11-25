@@ -63,6 +63,7 @@ export function LocationRow({
         <ResourceIconWithTooltip
           size="row"
           label={resourceLabel}
+          resourceId={entry.resourceId}
           visual={resourceVisual}
         />
         <ResourceStock

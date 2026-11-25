@@ -974,5 +974,12 @@
     "showNext_one": "Mostrar {{count}} más",
     "showNext_other": "Mostrar {{count}} más",
     "showAll": "Mostrar todo ({{count}})"
+  },
+  "materialDetails": {
+    "neededBy": "Lo necesitan {{units}}",
+    "raids": "Incursiones",
+    "showMore_one": "Mostrar {{count}} más",
+    "showMore_other": "Mostrar {{count}} más",
+    "showFewer": "Mostrar menos"
   }
 }

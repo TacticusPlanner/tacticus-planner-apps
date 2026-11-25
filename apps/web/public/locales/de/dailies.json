@@ -974,5 +974,12 @@
     "showNext_one": "Nächsten {{count}} zeigen",
     "showNext_other": "Nächste {{count}} zeigen",
     "showAll": "Alle zeigen ({{count}})"
+  },
+  "materialDetails": {
+    "neededBy": "Benötigt von {{units}}",
+    "raids": "Raids",
+    "showMore_one": "{{count}} weiteren anzeigen",
+    "showMore_other": "{{count}} weitere anzeigen",
+    "showFewer": "Weniger anzeigen"
   }
 }

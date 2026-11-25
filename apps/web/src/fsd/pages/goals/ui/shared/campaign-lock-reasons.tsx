@@ -6,9 +6,8 @@ import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { CreateGoalLauncherContext, useGoalsById } from "@/entities/goal"
+import { useLockReasonText } from "@/features/goal-planning"
 import type { PlanCampaignLockReason } from "@/features/goal-planning"
-
-import { useCampaignTrackLabel } from "./campaign-track-label"
 
 /** What stops the player from playing a campaign yet, one line per reason. A missing core hero
  *  gets a button that starts an Unlock goal for it, unless one already exists. */
@@ -19,38 +18,18 @@ export function CampaignLockReasons({
   reasons: readonly PlanCampaignLockReason[]
   className?: string
 }) {
-  const { t, i18n } = useTranslation()
-  const label = useCampaignTrackLabel()
+  const { t } = useTranslation()
+  const lockReasonText = useLockReasonText()
   const launch = useContext(CreateGoalLauncherContext)
   const { goalsById } = useGoalsById()
   if (reasons.length === 0) return null
 
-  const listFormat = new Intl.ListFormat(i18n.resolvedLanguage)
   const unitName = (unitId: string) =>
     t(`characters:${unitId}`, { defaultValue: unitId })
   const hasUnlockGoal = (unitId: string) =>
     [...goalsById.values()].some(
       (goal) => goal.goalType === "Unlock" && goal.entityId === unitId
     )
-
-  const lockReasonText = (reason: PlanCampaignLockReason): string => {
-    switch (reason.kind) {
-      case "MissingCoreCharacters":
-        return t("goals.insights.lockMissingCore", {
-          units: listFormat.format(reason.unitIds.map(unitName)),
-        })
-      case "RequiredCampaignNotCleared":
-        return t("goals.insights.lockRequiredCampaign", {
-          campaign: label(reason.campaignGroupId, reason.type),
-          count: reason.battlesLeft,
-        })
-      case "PowerLevelTooLow":
-        return t("goals.insights.lockPowerLevel", {
-          required: reason.required,
-          current: reason.current,
-        })
-    }
-  }
 
   return (
     <ul

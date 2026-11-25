@@ -2,7 +2,11 @@ import type { BattleId } from "@workspace/game-domain"
 import { useState } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { FilteredOutNotice } from "@/features/daily-raids"
+import {
+  FilteredOutNotice,
+  MaterialDetailsProvider,
+} from "@/features/daily-raids"
+import { LockedNodesOf } from "@/features/goal-planning"
 import type { DailyRaidsViewModel } from "@/features/daily-raids"
 import {
   CampaignBattleDialogHost,
@@ -75,50 +79,55 @@ export function TodayDashboard({
     ) : null
 
   return (
-    <div className="@container min-w-0 space-y-3.5" data-testid="today-page">
-      <TodayGlance shops={shopsGlanceOf(shopRecommendations)} view={view} />
-      <div
-        className={cn(
-          "grid items-start gap-3.5",
-          "@2xl:grid-cols-2",
-          "@[84rem]:grid-cols-4"
-        )}
-        data-testid="today-grid"
-      >
-        <div className="min-w-0 @2xl:col-span-2" data-testid="today-plan-area">
-          {bonusInPlanArea ? (
-            bonusCard(true)
-          ) : (
-            <TodayPlanCard
-              onCantRaid={onCantRaid}
-              onShowLocation={battleDialog.show}
-              raids={raids}
-              view={view}
-            />
+    <MaterialDetailsProvider LockedNodes={LockedNodesOf} raids={raids}>
+      <div className="@container min-w-0 space-y-3.5" data-testid="today-page">
+        <TodayGlance shops={shopsGlanceOf(shopRecommendations)} view={view} />
+        <div
+          className={cn(
+            "grid items-start gap-3.5",
+            "@2xl:grid-cols-2",
+            "@[84rem]:grid-cols-4"
           )}
-        </div>
-        <div className="flex min-w-0 flex-col gap-3.5">
-          {bonusBeside ? bonusCard(false) : null}
-          {/* On one track Shops sits below the plan card, which grows when the plan arrives and
+          data-testid="today-grid"
+        >
+          <div
+            className="min-w-0 @2xl:col-span-2"
+            data-testid="today-plan-area"
+          >
+            {bonusInPlanArea ? (
+              bonusCard(true)
+            ) : (
+              <TodayPlanCard
+                onCantRaid={onCantRaid}
+                onShowLocation={battleDialog.show}
+                raids={raids}
+                view={view}
+              />
+            )}
+          </div>
+          <div className="flex min-w-0 flex-col gap-3.5">
+            {bonusBeside ? bonusCard(false) : null}
+            {/* On one track Shops sits below the plan card, which grows when the plan arrives and
               would push Shops down the screen (layout shift), so there it waits for the plan. Side
               by side (two or four tracks) it shows while the plan loads. */}
-          <div
-            className={cn(raids.status === "loading" && "hidden @2xl:block")}
-            data-testid="today-shops-slot"
-          >
-            <TodayShops recommendations={shopRecommendations} />
+            <div
+              className={cn(raids.status === "loading" && "hidden @2xl:block")}
+              data-testid="today-shops-slot"
+            >
+              <TodayShops recommendations={shopRecommendations} />
+            </div>
           </div>
+          {raids.status === "ready" && view ? (
+            <div className="flex min-w-0 flex-col gap-3.5">
+              {view.onslaughtRuns.length > 0 ? (
+                <TodayOnslaughtCard view={view} />
+              ) : null}
+              <TodaysAttemptsCard raids={raids} view={view} />
+            </div>
+          ) : null}
         </div>
-        {raids.status === "ready" && view ? (
-          <div className="flex min-w-0 flex-col gap-3.5">
-            {view.onslaughtRuns.length > 0 ? (
-              <TodayOnslaughtCard view={view} />
-            ) : null}
-            <TodaysAttemptsCard raids={raids} view={view} />
-          </div>
-        ) : null}
+        <CampaignBattleDialogHost dialog={battleDialog} />
       </div>
-      <CampaignBattleDialogHost dialog={battleDialog} />
-    </div>
+    </MaterialDetailsProvider>
   )
 }

@@ -18,6 +18,7 @@ import {
   groupRowsByUpgradeCampaign,
   LocationRow,
   selectTodayRaids,
+  MaterialDetailsProvider,
   useDailyRaids,
 } from "@/features/daily-raids"
 import {
@@ -26,6 +27,7 @@ import {
 } from "@/widgets/battle-preview"
 
 import { homeCardLimit } from "../../model/home-card-limit"
+import { HomeLockedNodes } from "./home-locked-nodes"
 
 /** Home dashboard's Daily Raids widget: today's real (energy-budget) schedule for the account's Active
  * goals in global order (the same run as Today) — or, once today's real energy spend reaches the daily
@@ -189,7 +191,11 @@ export function RaidsWidget() {
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent>{body}</CardContent>
+      <CardContent>
+        <MaterialDetailsProvider LockedNodes={HomeLockedNodes} raids={raids}>
+          {body}
+        </MaterialDetailsProvider>
+      </CardContent>
       <CampaignBattleDialogHost dialog={battleDialog} />
     </Card>
   )
