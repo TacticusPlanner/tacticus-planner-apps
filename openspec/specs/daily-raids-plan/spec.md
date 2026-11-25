@@ -96,7 +96,7 @@ Every Raids Plan day SHALL use the same filtered battle catalog as Today, includ
 
 - **GIVEN** live progress identifies one active campaign event
 - **WHEN** Raids Plan calculates and renders its day schedules
-- **THEN** only that event campaign can contribute event locations, and a cell scheduled on an event node lists it in its tooltip with the localized campaign name, node number, and raid count used by Today
+- **THEN** only that event campaign can contribute event locations, and a cell scheduled on an event node lists it in its material details with the localized campaign name, node number, and raid count used by Today
 
 ### Requirement: Raids Plan uses an icon-led horizontal day strip
 
@@ -230,41 +230,54 @@ Each material cell SHALL show the material's art, an `owned/target` badge (the m
 - **WHEN** Raids Plan renders
 - **THEN** the cell shows that unit's portrait once and its progress includes both goals' amounts
 
-### Requirement: Material cell tooltip lists units and nodes
+### Requirement: Material cell opens its material details
 
-Hovering or focusing a material cell, or tapping it on a touch device, SHALL show a tooltip containing the localized material name, the localized names of the units it serves that day, and up to four scheduled nodes as "campaign node × raids", followed by "+N more" when the cell is scheduled on more than four nodes.
+Hovering a material cell on desktop SHALL show a tooltip with the localized material name. Clicking or tapping the cell SHALL open the shared material details (see "Material details list every source"): a popover beside the cell at or above the 768px breakpoint, which stays open until the user clicks elsewhere or presses Escape, and a content-height bottom sheet with a drag handle below it (swipe down, tap outside or Escape closes it; it scrolls once it reaches 90% of the screen). Its title SHALL be the material's name. For a Schedule cell the details SHALL show the cell's owned / target, the localized names of the units it serves that day ("Needed by …"), and a "Raids" list of the day's scheduled nodes as "campaign node × raids".
 
-#### Scenario: Tooltip on desktop
+#### Scenario: Details on desktop
 
 - **GIVEN** a Purity Seal cell scheduled on 5 nodes for Calgar and Tigurius
-- **WHEN** the user hovers or keyboard-focuses the cell at or above the 768px breakpoint
-- **THEN** the tooltip shows "Purity Seal", "Marneus Calgar, Chief Librarian Tigurius", the first four nodes each with its raid count, and "+1 more"
+- **WHEN** the user clicks the cell at or above the 768px breakpoint
+- **THEN** a popover titled "Purity Seal" shows its owned / target, "Needed by Marneus Calgar, Chief Librarian Tigurius", the first four nodes each with its raid count and "Show 1 more"
 
-#### Scenario: Tooltip on mobile
+#### Scenario: Hover names the material
+
+- **WHEN** the user hovers a material cell at or above the 768px breakpoint
+- **THEN** a tooltip names the material, and nothing else opens until the cell is clicked
+
+#### Scenario: Details on mobile
 
 - **WHEN** the user taps a material cell below the 768px breakpoint
-- **THEN** the same tooltip content is shown, and tapping elsewhere dismisses it
+- **THEN** the same details open in a bottom sheet titled with the material's name, with no tooltip
 
-### Requirement: Material cell tooltip lists alternative sources
+### Requirement: Material details list every source
 
-For an upgrade material or character shards, the material cell tooltip SHALL also list, under "Also available from", the resource's other catalog sources in three separately labelled groups, each omitted when empty:
+The material details (Plan > Schedule cells, and the material icons of Dailies > Raids and Home's Daily raids, see `daily-raids-today` "Material icons open their details") SHALL list, for an upgrade material or character shards, under "Also available from", the resource's other catalog sources in three separately labelled groups, each omitted when empty:
 
 - "Campaigns": standing-campaign nodes that drop it,
 - "Campaign events": campaign-event nodes that drop it,
 - "Shops": shops that sell it, each with its cheapest listing (quantity and price in the shop's currency).
 
-Campaign and campaign-event groups SHALL exclude nodes the cell's day already raids for it, list nodes the plan could raid first, then nodes the plan cannot use (campaign not unlocked or progressed far enough, campaign event not running or reached), each marked with a lock icon labelled "Locked". Each group SHALL list at most four entries, followed by "+N more". The whole section SHALL be omitted when every group is empty.
+Campaign and campaign-event groups SHALL exclude nodes the details' day already raids for it, and on today's details the nodes with no real attempts left today. They SHALL list nodes the plan could raid first, then nodes the plan cannot use (campaign not unlocked or progressed far enough, campaign event not running or reached, or a Raids Filter excludes it), each marked with a lock icon labelled "Locked". A locked node SHALL show how far away it is, as Goals' "Unlocks at" does: "N battles to go" counting the campaigns that must be cleared first ("not started, N battles to go" on a track with no progress), or "during the campaign event" for a campaign-event node, with any other blocker (Power Level, missing core heroes, a campaign to clear first) on its own line beneath. Locked nodes SHALL be ordered closest first, as "Unlocks at" orders them; a locked node "Unlocks at" doesn't list (one a Raids Filter excludes) follows them in catalog order with no distance.
+
+Every list in the details (Raids and each source group) SHALL show four entries, then a "Show N more" link button (N the hidden count) that expands the list in place, becoming "Show fewer" (with `aria-expanded`). The sources and distances SHALL be computed only while the details are open. The whole "Also available from" section SHALL be omitted when every group is empty.
 
 #### Scenario: Grouped sources
 
 - **GIVEN** an upgrade cell scheduled on Indomitus Elite 1, whose material also drops at a campaign-event node the player hasn't reached and is sold in the Arena shop
-- **WHEN** the user opens the cell's tooltip
-- **THEN** "Also available from" shows a "Campaign events" group with that node and a "Locked" icon, and a "Shops" group with the Arena shop and its price; there is no "Campaigns" group and Indomitus Elite 1 is not repeated
+- **WHEN** the user opens the cell's details
+- **THEN** "Also available from" shows a "Campaign events" group with that node, a "Locked" icon and "during the campaign event", and a "Shops" group with the Arena shop and its price; there is no "Campaigns" group and Indomitus Elite 1 is not repeated
+
+#### Scenario: Locked nodes closest first
+
+- **GIVEN** a material that drops at 6 locked standing-campaign nodes, the closest 3 battles away and the next 20 battles away behind Power Level 50
+- **WHEN** the user opens its details
+- **THEN** the Campaigns group lists the 3-battles node first with "3 battles to go", then the 20-battles node with "Reach Power Level 50 (you're at 40)" beneath it, then two more, and "Show 2 more" reveals the last two
 
 #### Scenario: Shard cell
 
 - **GIVEN** a shard cell for a character whose shards also drop at an unraided campaign node and are sold in a shop
-- **WHEN** the user opens the cell's tooltip
+- **WHEN** the user opens the cell's details
 - **THEN** the same grouped sources are listed for that character's shards
 
 ### Requirement: Every day separates raided materials

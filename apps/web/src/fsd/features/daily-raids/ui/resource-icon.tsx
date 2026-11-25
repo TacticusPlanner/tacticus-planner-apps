@@ -6,10 +6,17 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon, entityIconClassName, UpgradeIcon } from "@/shared/ui"
+import {
+  DetailsOverlay,
+  EntityIcon,
+  entityIconClassName,
+  UpgradeIcon,
+} from "@/shared/ui"
 import type { EntityIconSize } from "@/shared/ui"
 
 import type { DailyRaidResourceVisual } from "../model/daily-raids.domain"
+import { useMaterialDetailsSource } from "../model/material-details-context"
+import { TodaysMaterialDetails } from "./material-details"
 
 /** A resource's icon: an upgrade material's rarity-framed icon, or a unit's shard icon. Shared
  * between `pages/dailies`'s resource cards and the home Daily Raids widget's compact rows. `size`
@@ -53,27 +60,49 @@ export function ResourceIcon({
 type ResourceIconSize = Extract<EntityIconSize, "row" | "tile">
 
 /** `ResourceIcon` with its name available as a tooltip on hover/focus, since the icon alone
- * replaces the visible resource name in location-emphasis rendering. */
+ * replaces the visible resource name in location-emphasis rendering. Given its `resourceId` inside a
+ * `MaterialDetailsProvider`, a click or tap also opens the material's details (a popover on desktop,
+ * a bottom sheet on a phone). */
 export function ResourceIconWithTooltip({
   size,
   label,
   visual,
+  resourceId,
 }: {
   size?: ResourceIconSize
   label: string
   visual: DailyRaidResourceVisual | undefined
+  resourceId?: string
 }) {
+  const source = useMaterialDetailsSource()
+  const button = (
+    <button
+      aria-label={label}
+      className="shrink-0 rounded-sm border-0 bg-transparent p-0 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      type="button"
+    >
+      <ResourceIcon size={size} label={label} visual={visual} />
+    </button>
+  )
+  if (source && resourceId !== undefined) {
+    return (
+      <DetailsOverlay
+        testId={`material-details-${resourceId}-overlay`}
+        title={label}
+        tooltip={label}
+        trigger={button}
+      >
+        <TodaysMaterialDetails
+          resourceId={resourceId}
+          source={source}
+          testId={`material-details-${resourceId}`}
+        />
+      </DetailsOverlay>
+    )
+  }
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          aria-label={label}
-          className="shrink-0 border-0 bg-transparent p-0"
-          type="button"
-        >
-          <ResourceIcon size={size} label={label} visual={visual} />
-        </button>
-      </TooltipTrigger>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
   )

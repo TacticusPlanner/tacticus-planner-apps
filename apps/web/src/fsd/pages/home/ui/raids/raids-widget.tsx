@@ -18,8 +18,10 @@ import {
   groupRowsByUpgradeCampaign,
   LocationRow,
   selectTodayRaids,
+  MaterialDetailsProvider,
   useDailyRaids,
 } from "@/features/daily-raids"
+import { LockedNodesOf } from "@/features/goal-planning"
 import {
   CampaignBattleDialogHost,
   useCampaignBattleDialog,
@@ -189,7 +191,11 @@ export function RaidsWidget() {
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent>{body}</CardContent>
+      <CardContent>
+        <MaterialDetailsProvider LockedNodes={LockedNodesOf} raids={raids}>
+          {body}
+        </MaterialDetailsProvider>
+      </CardContent>
       <CampaignBattleDialogHost dialog={battleDialog} />
     </Card>
   )

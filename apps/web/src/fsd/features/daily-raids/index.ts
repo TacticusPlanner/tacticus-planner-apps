@@ -66,6 +66,8 @@ export type {
 } from "./model/daily-raids.domain"
 export type { MissionDeployGroup } from "./model/mission-deploy-groups"
 export { ResourceIconWithTooltip } from "./ui/resource-icon"
+// Material details (Raids, Plan > Schedule, Home): a material icon opens them inside the provider.
+export { MaterialDetailsProvider } from "./ui/material-details-provider"
 export { LocationRow } from "./ui/location-row"
 export { CampaignGroupedList } from "./ui/campaign-group"
 export { groupRowsByUpgradeCampaign } from "./model/campaign-groups"

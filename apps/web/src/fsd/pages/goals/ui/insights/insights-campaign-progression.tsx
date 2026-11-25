@@ -9,11 +9,11 @@ import {
 } from "@workspace/ui/components/card"
 import { campaignIcon } from "@workspace/game-catalog"
 
+import { useCampaignTrackLabel } from "@/features/goal-planning"
 import type { PlanCampaignProgression } from "@/features/goal-planning"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
 import { CampaignLockReasons } from "../shared/campaign-lock-reasons"
-import { useCampaignTrackLabel } from "../shared/campaign-track-label"
 import { GoalResourceIcon } from "../shared/goal-resource-icon"
 
 /** "Campaigns to push" (V1's Campaign Progression): the uncleared campaigns that would unblock the

@@ -534,6 +534,21 @@ Assumptions this requirement depends on:
 - **WHEN** the schedule is calculated
 - **THEN** the restricted locations are used as chosen, and no efficiency tie rule adds or removes any of them
 
+### Requirement: Material icons open their details
+
+On Dailies > Raids (Today's plan and Bonus raids, both Group by options) and in Home's Daily raids rows, a material's icon SHALL be a button that names the material in a tooltip on desktop hover and, when clicked or tapped, opens the shared material details (`daily-raids-plan` "Material details list every source"): a popover beside the icon on desktop, a content-height bottom sheet on a phone, titled with the material's name. For a Raids or Home icon the details SHALL show the material's owned / target over every goal in the run, the units that need it in goal-priority order ("Needed by …"; the units from the plan's later days when today doesn't raid it), a "Raids" list of today's raids for it across all its nodes as Plan > Schedule's day 1 has them, and every other source. A material icon outside a ready plan run (loading, or a list with no plan) only names its material.
+
+#### Scenario: A material opened from Today's plan
+
+- **GIVEN** Today raids Ceramite at Indomitus 1 for Bellator and Aleph-Null, and the player holds 265 of the 500 the goals need
+- **WHEN** the user clicks Ceramite's icon
+- **THEN** a popover titled "Ceramite" shows "265 of 500 owned", "Needed by Bellator, Aleph-Null", a "Raids" list with Indomitus 1 and its raids, and the other sources
+
+#### Scenario: On a phone
+
+- **WHEN** the user taps a material icon below the 768px breakpoint
+- **THEN** the same details open in a bottom sheet titled with the material's name
+
 ### Requirement: Today's Attempts section
 
 Today SHALL show a "Today's attempts" card (see "Today lays out its sections as a dashboard"), listing every campaign node — standing (standard/mirror/elite/eliteMirror) or event-campaign — the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real numeric raid count today (`attemptsUsed`), including when its real synced attempts remaining are zero. An event-campaign attempt record is matched to its battle by campaign group, `type` (Standard/Extremis), and battle index, distinguishing the two tiers rather than excluding them.

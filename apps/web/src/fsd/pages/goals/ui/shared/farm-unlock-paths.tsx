@@ -2,7 +2,10 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import { useFarmUnlockPaths } from "@/features/goal-planning"
+import {
+  farmUnlockDistance,
+  useFarmUnlockPaths,
+} from "@/features/goal-planning"
 import type { FarmUnlockPathViewModel } from "@/features/goal-planning"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 
@@ -93,9 +96,10 @@ function distanceText(
   t: ReturnType<typeof useTranslation>["t"],
   path: FarmUnlockPathViewModel
 ): string {
-  if (path.kind === "event") return t("goals.estimate.unlockDuringEvent")
-  const count = path.prerequisiteBattles + path.battlesToGo
-  return path.started
+  const distance = farmUnlockDistance(path)
+  if (distance.kind === "event") return t("goals.estimate.unlockDuringEvent")
+  const count = distance.battles
+  return distance.started
     ? t("goals.estimate.battlesToGo", { count })
     : t("goals.estimate.battlesToGoNotStarted", { count })
 }
