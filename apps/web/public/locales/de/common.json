@@ -1478,7 +1478,12 @@
       "deadlineChip": {
         "startsIn": "{{name}} · beginnt in {{when}}",
         "endsIn": "{{name}} · endet in {{when}}",
-        "ended": "{{name}} · beendet"
+        "ended": "{{name}} · beendet",
+        "short": {
+          "startsIn": "beginnt in {{when}}",
+          "endsIn": "endet in {{when}}",
+          "ended": "beendet"
+        }
       }
     },
     "toasts": {

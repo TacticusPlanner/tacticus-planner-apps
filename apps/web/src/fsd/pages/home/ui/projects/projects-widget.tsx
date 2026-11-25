@@ -43,8 +43,8 @@ export function ProjectsWidget() {
           className="flex flex-col gap-2"
           data-testid="home-projects-loading"
         >
-          <Skeleton className="h-16 w-full rounded-xl" />
-          <Skeleton className="h-16 w-full rounded-xl" />
+          <Skeleton className="h-18.5 w-full rounded-xl" />
+          <Skeleton className="h-18.5 w-full rounded-xl" />
         </div>
       )
     }
@@ -84,7 +84,7 @@ export function ProjectsWidget() {
         void navigate(`/plan/goals?project=${projectId}`),
     }
     return (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         <Suspense fallback={<ProjectsWidgetList {...listProps} />}>
           <ProjectsWidgetFitList {...listProps} />
         </Suspense>

@@ -57,7 +57,9 @@ The widget SHALL show the first 5 project cards at or above the 768px breakpoint
 
 ### Requirement: Project cards are condensed and identity-only
 
-Each card SHALL show that project's color, name, and a units/goals summary (the count of the project's in-flight goals and of the distinct units among them, derived from the project's `goalIds` joined with the loaded goals list — no per-project read), condensed for the smaller widget footprint. Each card SHALL also show a compact status line: the deadline chip for a targeted project (`project-deadline`, without its link, since the whole card is a button), the deadline fit count for a resolvable, not-ended target (`project-deadline-fit`), and "Done by" or "No date" with the not-estimated count (`plan-completion-outlook`). Reached and blocked counts are left out to keep the rows short. The home page computes these from one global-plan run, only when at least one listed project holds a goal. Cards in this widget SHALL NOT render lifecycle actions (Make current, Edit, Archive/Restore) — the widget is for navigation and at-a-glance status only.
+Each card SHALL be two lines tall whatever it holds. The first line SHALL show the project's color, name and Default badge, and for a targeted project the deadline chip's timing alone ("starts in 18 days", `project-deadline`, without its link since the whole card is a button; the event's name moves to the chip's tooltip and accessible text). The second line SHALL show the unit portraits and one line of facts that truncates rather than wraps, most useful first: the deadline fit count for a resolvable, not-ended target (`project-deadline-fit`), "Done by" or "No date" (`plan-completion-outlook`, its not-estimated count left out when the fit count already gives it), then the goal count. The count of in-flight goals and of the distinct units among them come from the project's `goalIds` joined with the loaded goals list — no per-project read; the units show as portraits rather than a count. Reached and blocked counts are left out to keep the rows short. The home page computes these from one global-plan run, only when at least one listed project holds a goal. Cards in this widget SHALL NOT render lifecycle actions (Make current, Edit, Archive/Restore) — the widget is for navigation and at-a-glance status only.
+
+A card SHALL be as tall as a Daily Raids row and an Upcoming events row, so the three widgets are the same height at or above 1024px when each shows its card count with its "Show N more" control.
 
 Implementation note: the estimate subsystem now lives in `features/goal-planning`, so `pages/home` can compose the status line without relocating it.
 
@@ -65,13 +67,19 @@ Implementation note: the estimate subsystem now lives in `features/goal-planning
 
 - **GIVEN** a project with a color, name, and the goals list loaded
 - **WHEN** its card renders in the widget
-- **THEN** the card shows the project's color, name, and its units/goals summary, without any action controls
+- **THEN** the card shows the project's color, name, unit portraits and goal count, without any action controls
 
 #### Scenario: Targeted card shows its fit count
 
 - **GIVEN** a project targeting the Legendary Event Uthar with 2 of 4 counted goals fitting
 - **WHEN** its card renders in the widget
-- **THEN** the card also shows "LE · Uthar · starts in 18 days" and "2 of 4 fit"
+- **THEN** the card's first line also shows "starts in 18 days" (read as "LE · Uthar · starts in 18 days" by a screen reader), and its facts start with "2 of 4 fit"
+
+#### Scenario: Cards match the other Home rows
+
+- **GIVEN** Daily Raids, Your Projects and Upcoming events each have more items than Home's card count
+- **WHEN** a signed-in user opens `/home` at or above the 1024px breakpoint
+- **THEN** each card in the three widgets is the same height, whatever facts a project card holds, and the three widgets end level
 
 #### Scenario: No goals, no plan run
 

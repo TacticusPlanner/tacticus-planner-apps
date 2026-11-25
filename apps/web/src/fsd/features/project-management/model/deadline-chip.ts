@@ -52,44 +52,46 @@ export function deadlineChipTiming(
   }
 }
 
-/** The chip's visible text: "LE · Lysander · starts in 18 days" (or "ends in 3 days", "ended"). */
+/** The chip's visible text: "LE · Lysander · starts in 18 days" (or "ends in 3 days", "ended"), and
+ *  `shortLabel`, the timing alone ("starts in 18 days") for Home's narrow rows. */
 export function useDeadlineChipText(model: DeadlineChipModel): {
   label: string
+  shortLabel: string
   hint: string | null
 } {
   const { t, i18n } = useTranslation()
   const name = t("goals.project.targetChip", { name: model.name })
   const { timing } = model
-  if (!timing) return { label: name, hint: null }
+  if (!timing) return { label: name, shortLabel: name, hint: null }
   const locale = i18n.resolvedLanguage ?? "en"
   const date = (ms: number) =>
     new Intl.DateTimeFormat(locale, {
       month: "short",
       day: "numeric",
     }).format(ms)
-  const label =
+  const key =
     timing.state === "ended"
-      ? t("goals.project.deadlineChip.ended", { name })
-      : t(
-          timing.state === "running"
-            ? "goals.project.deadlineChip.endsIn"
-            : "goals.project.deadlineChip.startsIn",
-          {
-            name,
-            when: formatEventCountdown(
-              timing.state === "running" ? timing.endMs : timing.startMs,
-              timing.nowMs,
-              locale
-            ),
-          }
+      ? "ended"
+      : timing.state === "running"
+        ? "endsIn"
+        : "startsIn"
+  const when =
+    timing.state === "ended"
+      ? undefined
+      : formatEventCountdown(
+          timing.state === "running" ? timing.endMs : timing.startMs,
+          timing.nowMs,
+          locale
         )
+  const label = t(`goals.project.deadlineChip.${key}`, { name, when })
+  const shortLabel = t(`goals.project.deadlineChip.short.${key}`, { when })
   const hint = t(
     timing.estimated
       ? "goals.deadlineFit.header.runsEstimated"
       : "goals.deadlineFit.header.runs",
     { date: date(timing.startMs), end: date(timing.endMs) }
   )
-  return { label, hint }
+  return { label, shortLabel, hint }
 }
 
 /** A project's deadline chip, or null without a deadline. */
