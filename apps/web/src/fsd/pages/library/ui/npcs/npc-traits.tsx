@@ -58,7 +58,7 @@ function TraitChip({
           <button
             type="button"
             aria-label={label}
-            className={`${chipClass} hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary`}
+            className={`${chipClass} interactive-surface`}
           >
             {chip}
           </button>

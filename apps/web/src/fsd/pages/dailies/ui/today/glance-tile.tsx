@@ -36,7 +36,7 @@ export function GlanceTile({
         "min-w-0 flex-row items-center justify-between gap-3 rounded-none bg-transparent px-0 py-2 shadow-none ring-0",
         "@2xl:min-h-19 @2xl:flex-col @2xl:items-stretch @2xl:justify-start @2xl:gap-1.5 @2xl:rounded-[min(var(--radius-4xl),24px)] @2xl:bg-card @2xl:px-4 @2xl:py-3 @2xl:shadow-sm @2xl:ring-1",
         href &&
-          "relative has-[a:focus-visible]:ring-3 has-[a:focus-visible]:ring-ring/50 @2xl:has-[a:hover]:bg-accent",
+          "relative has-[a:focus-visible]:ring-3 has-[a:focus-visible]:ring-ring/50 @2xl:interactive-surface",
         className
       )}
       data-testid={testId}

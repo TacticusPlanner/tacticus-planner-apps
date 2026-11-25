@@ -282,7 +282,7 @@ function SourceGroup({
           aria-label={t("goals.create.acquisitionSources.toggleGroup", {
             group: label,
           })}
-          className="relative rounded-full p-1 text-muted-foreground after:absolute after:-inset-1 hover:bg-muted"
+          className="relative rounded-full interactive-surface p-1 text-muted-foreground after:absolute after:-inset-1"
           data-testid={`create-goal-acquisition-group-${testId}-header`}
           onClick={() => setExpanded((current) => !current)}
           type="button"

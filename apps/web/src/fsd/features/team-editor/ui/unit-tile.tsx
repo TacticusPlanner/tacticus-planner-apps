@@ -64,8 +64,8 @@ export const UnitTile = memo(function UnitTile({
         aria-checked={selected}
         aria-label={unit.name}
         className={cn(
-          "relative flex w-full min-w-0 flex-col items-center justify-start gap-1 rounded-xl border bg-card p-1.5 text-center outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50",
-          selected && "border-primary bg-primary/25 hover:bg-primary/35"
+          "relative flex w-full min-w-0 flex-col items-center justify-start gap-1 rounded-xl border bg-card interactive-surface p-1.5 text-center disabled:opacity-50",
+          selected && "border-primary bg-primary/25"
         )}
         data-roving-item
         disabled={disabled}

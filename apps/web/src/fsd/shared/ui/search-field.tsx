@@ -86,7 +86,7 @@ export function SearchField({
       {shown === "" || disabled ? null : (
         <button
           aria-label={t("searchField.clear")}
-          className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary pointer-coarse:after:absolute pointer-coarse:after:-inset-3"
+          className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-sm interactive-surface text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary pointer-coarse:after:absolute pointer-coarse:after:-inset-3"
           data-testid={testId ? `${testId}-clear` : undefined}
           onClick={() => change("")}
           type="button"

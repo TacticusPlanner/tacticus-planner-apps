@@ -91,7 +91,7 @@ export function UnitRosterRow({
           aria-controls={panelId}
           onClick={onToggle}
           className={cn(
-            "grid h-12 w-full items-center gap-x-1.5 rounded-md px-2 text-left transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary",
+            "grid h-12 w-full items-center gap-x-1.5 rounded-md interactive-surface px-2 text-left",
             faction ? expandableColumnsWithFaction : expandableColumns
           )}
         >
@@ -167,10 +167,7 @@ export function UnitRosterRow({
       state={link.state}
       aria-label={label}
       {...rootData}
-      className={cn(
-        layout,
-        "rounded-md transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary"
-      )}
+      className={cn(layout, "rounded-md interactive-surface")}
     >
       {content}
     </Link>

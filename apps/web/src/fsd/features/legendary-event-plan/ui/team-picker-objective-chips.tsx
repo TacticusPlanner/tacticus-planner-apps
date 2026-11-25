@@ -48,7 +48,7 @@ export function TeamPickerObjectiveChips({
               "flex min-h-8 items-center gap-1.5 rounded-full border py-1 pr-2.5 pl-1.5 text-xs transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isSelected
                 ? "border-primary bg-primary/20 text-foreground ring-1 ring-primary"
-                : "bg-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                : "bg-transparent interactive-surface text-muted-foreground hover:text-foreground"
             )}
             data-count={count}
             data-index={objective.index}

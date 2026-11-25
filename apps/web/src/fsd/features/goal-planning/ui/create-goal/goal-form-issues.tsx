@@ -83,7 +83,7 @@ export function GoalFormIssueSummary({
           {issues.map((issue, index) => (
             <li key={index}>
               <button
-                className="w-full rounded-xl px-2 py-1.5 text-left text-sm hover:bg-muted"
+                className="w-full rounded-xl interactive-surface px-2 py-1.5 text-left text-sm"
                 data-testid="create-goal-issue-summary-item"
                 onClick={() => {
                   setOpen(false)

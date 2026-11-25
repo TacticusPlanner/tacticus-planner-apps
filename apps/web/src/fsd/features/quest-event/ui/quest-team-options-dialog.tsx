@@ -188,10 +188,7 @@ function OptionRow({
   return (
     <button
       aria-pressed={selected}
-      className={cn(
-        className,
-        "transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-      )}
+      className={cn(className, "interactive-surface")}
       data-testid="quest-team-option"
       data-unit={unitId}
       onClick={onPress}

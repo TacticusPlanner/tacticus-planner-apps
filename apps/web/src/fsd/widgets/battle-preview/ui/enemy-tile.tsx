@@ -30,7 +30,7 @@ export function EnemyTile({
   const trigger = (
     <button
       aria-label={tileLabel(tile)}
-      className="flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg border bg-card p-2 text-left transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className="flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg border bg-card interactive-surface p-2 text-left"
       data-level={tile.level}
       data-npc={tile.npcId}
       data-testid="battle-enemy-tile"

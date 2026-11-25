@@ -96,7 +96,7 @@ function TierTileButton({
     <button
       aria-label={hasRelics ? `${label}, ${t("tierList.relicMark")}` : label}
       className={cn(
-        "rounded-lg border bg-card text-left transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none",
+        "rounded-lg border bg-card interactive-surface text-left",
         isMobile
           ? "flex min-h-11 w-full min-w-0 flex-col items-center gap-0.5 p-1"
           : "flex min-w-0 items-center gap-2 py-1 pr-3 pl-1",

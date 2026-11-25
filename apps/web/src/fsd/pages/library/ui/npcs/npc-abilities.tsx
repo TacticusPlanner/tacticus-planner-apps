@@ -74,10 +74,7 @@ function AbilityChip({
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className={cn(
-          rowClass,
-          "hover:bg-accent/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
-        )}
+        className={cn(rowClass, "interactive-surface")}
       >
         {chip}
         <ChevronDown

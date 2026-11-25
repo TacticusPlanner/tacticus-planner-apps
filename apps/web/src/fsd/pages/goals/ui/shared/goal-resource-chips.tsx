@@ -67,7 +67,7 @@ ${chip.hint}`
                   aria-label={t("goals.resourceChips.byRarityLabel", {
                     label: tooltip(chip),
                   })}
-                  className="-mx-1 flex items-center gap-0.5 rounded-md px-1 hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  className="-mx-1 flex items-center gap-0.5 rounded-md interactive-surface px-1"
                   data-testid="goal-resource-chip-group"
                   type="button"
                 >

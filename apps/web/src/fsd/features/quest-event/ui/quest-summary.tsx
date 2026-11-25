@@ -103,7 +103,7 @@ export function QuestSummary({
             {score.pointsLeft.slice(0, POINTS_LEFT_SHOWN).map((battle) => (
               <li key={battle.number}>
                 <button
-                  className="relative inline-flex min-h-8 items-center gap-1 rounded-full border px-2.5 text-xs transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none pointer-coarse:min-h-10 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1"
+                  className="relative inline-flex min-h-8 items-center gap-1 rounded-full border interactive-surface px-2.5 text-xs pointer-coarse:min-h-10 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1"
                   data-battle={battle.number}
                   onClick={() => onSelect(battle.number)}
                   type="button"

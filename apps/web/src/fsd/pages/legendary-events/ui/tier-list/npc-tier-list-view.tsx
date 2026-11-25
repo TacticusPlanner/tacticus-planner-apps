@@ -255,7 +255,7 @@ function NpcTile({
   const trigger = (
     <button
       aria-label={t("npcTierList.tileLabel", { name, multiplier })}
-      className="flex w-full min-w-0 flex-col items-center gap-1 rounded-lg p-1 text-center hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      className="flex w-full min-w-0 flex-col items-center gap-1 rounded-lg interactive-surface p-1 text-center"
       data-npc={tile.npcId}
       data-testid="npc-tier-tile"
       type="button"

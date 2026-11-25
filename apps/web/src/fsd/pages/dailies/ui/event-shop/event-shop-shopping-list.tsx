@@ -451,7 +451,7 @@ function ListRow({
 
   return (
     <li
-      className="flex flex-wrap items-center gap-2 rounded-md p-1 hover:bg-muted/40"
+      className="flex flex-wrap items-center gap-2 rounded-md p-1 hover:bg-muted/50"
       data-state={entry.state}
       data-testid={`event-shop-row-${entry.dayIndex}-${ref.slotIndex}`}
     >

@@ -160,7 +160,7 @@ function CalendarDay({
       }`}
       aria-pressed={selected}
       className={cn(
-        "flex min-h-24 flex-col items-stretch gap-1 rounded-md border p-1.5 text-left transition-colors hover:bg-muted/60",
+        "flex min-h-24 flex-col items-stretch gap-1 rounded-md border interactive-surface p-1.5 text-left",
         selected && "border-primary bg-muted",
         past && !selected && "opacity-60"
       )}

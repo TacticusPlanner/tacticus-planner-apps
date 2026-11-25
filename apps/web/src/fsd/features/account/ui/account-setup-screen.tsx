@@ -286,7 +286,7 @@ function PathCard({
   return (
     <Card className="p-0">
       <button
-        className="flex w-full items-start gap-3 p-4 text-left hover:bg-accent/50"
+        className="flex w-full items-start gap-3 interactive-surface p-4 text-left"
         data-testid={testId}
         onClick={onSelect}
         type="button"

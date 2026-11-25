@@ -76,7 +76,7 @@ export function ObjectiveSuggestionRows({
             {items.map((item) => (
               <li key={item.id} data-testid={`${testId}-suggestion-${item.id}`}>
                 <button
-                  className="flex min-h-12 w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:min-h-8"
+                  className="flex min-h-12 w-full items-center gap-2 rounded-lg interactive-surface px-3 py-2 text-left text-sm md:min-h-8"
                   data-testid={`${testId}-suggestion-${item.id}-trigger`}
                   onClick={() => {
                     scrollToDetail(objectiveDetailId(index, item.id))
