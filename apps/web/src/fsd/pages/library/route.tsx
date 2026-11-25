@@ -5,7 +5,7 @@ import { lazy } from "react"
 import { Navigate } from "react-router"
 import type { RouteObject } from "react-router"
 
-import { preloadOnMatch } from "@/shared/lib"
+import { preloadOnMatch, redirectOnlyHandle } from "@/shared/lib"
 
 // The section layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
 // never statically pulls the layout into the entry chunk).
@@ -51,7 +51,11 @@ const ShopsBrowsePage = lazy(loadShopsBrowsePage)
 // Nested under "/library" вЂ” see app/routes.tsx, which owns the top-level path and the (unprotected)
 // layout element, and just splices this array in as `children`.
 export const routes: RouteObject[] = [
-  { index: true, element: <Navigate replace to="/library/characters" /> },
+  {
+    index: true,
+    element: <Navigate replace to="/library/characters" />,
+    handle: redirectOnlyHandle,
+  },
   {
     path: "characters",
     element: <CharactersListPage />,

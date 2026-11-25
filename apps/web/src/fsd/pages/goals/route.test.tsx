@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
-import { MemoryRouter, Route, Routes } from "react-router"
+import {
+  createMemoryRouter,
+  MemoryRouter,
+  Route,
+  RouterProvider,
+  Routes,
+} from "react-router"
+
+import { redirectOnlyHandle } from "@/shared/lib"
 
 import { routes } from "./route"
 
@@ -41,6 +49,32 @@ describe("plan routes", () => {
     renderPlanRoutes("/plan")
 
     expect(screen.getByTestId("goals-child")).toBeInTheDocument()
+  })
+
+  it("leaves no history entry for the bare /plan and reports no page view for it", async () => {
+    const index = routes.find((route) => route.index)
+    expect(index?.handle).toBe(redirectOnlyHandle)
+    const router = createMemoryRouter(
+      [
+        { path: "/home", element: <p>home</p> },
+        {
+          path: "/plan",
+          children: [
+            { index: true, element: index?.element },
+            { path: "goals", element: <p>goals</p> },
+          ],
+        },
+      ],
+      { initialEntries: ["/home"] }
+    )
+    render(<RouterProvider router={router} />)
+
+    await router.navigate("/plan")
+    expect(await screen.findByText("goals")).toBeVisible()
+    expect(router.state.location.pathname).toBe("/plan/goals")
+
+    await router.navigate(-1)
+    expect(await screen.findByText("home")).toBeVisible()
   })
 
   it.each([

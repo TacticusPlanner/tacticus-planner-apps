@@ -1,11 +1,18 @@
-import { Suspense } from "react"
+import { isValidElement, Suspense } from "react"
 import type { ReactNode } from "react"
-import { MemoryRouter, Route, Routes, useLocation } from "react-router"
+import {
+  MemoryRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router"
 import type { RouteObject } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
 import { InteractionStatus } from "@azure/msal-browser"
 
+import { redirectOnlyHandle } from "@/shared/lib"
 import { render, screen } from "@/test/render"
 
 vi.mock("@azure/msal-react", () => ({
@@ -25,6 +32,10 @@ function findRoute(tree: RouteObject[], path: string): RouteObject | undefined {
     if (nested) return nested
   }
   return undefined
+}
+
+function flatten(tree: RouteObject[]): RouteObject[] {
+  return tree.flatMap((route) => [route, ...flatten(route.children ?? [])])
 }
 
 function Probe() {
@@ -58,6 +69,24 @@ describe("app routes", () => {
       expect(shell?.children?.some((route) => route.path === path)).toBe(false)
     }
   )
+
+  it("reports no page view for any route that only redirects", () => {
+    const redirectOnly = flatten(routes).filter(
+      (route) =>
+        isValidElement(route.element) && route.element.type === Navigate
+    )
+
+    // The bare /dailies, /library, /plan and /guild, and the old /dailies/shops.
+    expect(redirectOnly).toHaveLength(5)
+    for (const route of redirectOnly) {
+      expect(route.handle).toBe(redirectOnlyHandle)
+    }
+    // The bare /my-game too, whose redirect is wrapped in the public-page guard.
+    const myGameIndex = findRoute(routes, "/my-game")?.children?.find(
+      (route) => route.index
+    )
+    expect(myGameIndex?.handle).toBe(redirectOnlyHandle)
+  })
 
   it("registers /legendary-events with the hub and the event page as children", () => {
     const section = findRoute(routes, "/legendary-events")
