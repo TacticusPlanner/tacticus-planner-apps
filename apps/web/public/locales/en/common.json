@@ -856,7 +856,6 @@
     },
     "events": {
       "title": "Upcoming events",
-      "live": "Live",
       "endsIn": "Ends in {{when}}",
       "endUnconfirmed": "End time not confirmed",
       "startsIn": "Starts in {{when}}",
@@ -888,12 +887,6 @@
       "copied": "Copied",
       "copyFailed": "Couldn't copy",
       "dismiss": "Dismiss promo code"
-    },
-    "incursion": {
-      "title": "Incursion",
-      "latest": "Newest: {{mow}}",
-      "arrives": "{{mow}} arrives {{date}}",
-      "track": "Track your progress: mark the tiers you've cleared to see the shards still to earn."
     }
   },
   "guild": {

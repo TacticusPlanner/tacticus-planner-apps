@@ -79,9 +79,6 @@ vi.mock("@/shared/local-data", async (importOriginal) => {
 vi.mock("@/entities/incursion", () => ({
   useIncursionWindow: () => incursionWindowMock(),
 }))
-vi.mock("../right-now/incursion-tile", () => ({
-  IncursionTile: () => <span data-testid="home-incursion" />,
-}))
 // Tokens have their own tests; this file covers the events half of Right now.
 vi.mock("../token-availability/token-availability", () => ({
   TokenAvailability: () => null,
@@ -231,13 +228,15 @@ describe("Home events (Right now + Upcoming events)", () => {
     expect(tiles).toHaveLength(2)
     expect(tiles[0]).toHaveAttribute("data-type", "homeScreen")
     expect(tiles[0]).toHaveTextContent("definitions.hse-machine-hunt")
-    // The navigation's green Live marker, with a still dot.
-    const badge = within(tiles[0]!).getByTestId("home-events-live-badge")
-    expect(badge).toHaveClass("bg-success", "text-success-foreground")
-    expect(within(badge).getByTestId("home-events-live-dot")).not.toHaveClass(
-      "motion-safe:animate-pulse"
-    )
+    // Everything in Right now is live, so no tile carries a Live marker.
+    expect(screen.queryByTestId("home-events-live-badge")).toBeNull()
     expect(tiles[1]).toHaveAttribute("data-type", "legendaryEvent")
+    // The Legendary Event spans both columns, for its points and plan action.
+    expect(
+      within(screen.getByTestId("home-live-events"))
+        .getAllByRole("listitem")
+        .at(1)
+    ).toHaveClass("col-span-2")
     expect(tiles[1]).toHaveTextContent("Lysander")
     expect(
       within(tiles[1]!).getByTestId("home-events-synced")
@@ -254,7 +253,9 @@ describe("Home events (Right now + Upcoming events)", () => {
     const items = upcomingItems()
     expect(items).toHaveLength(2)
     expect(items[0]).toHaveTextContent("definitions.hse-training-rush")
+    // Read out in full; shown as a compact "5d 20h".
     expect(items[0]).toHaveTextContent("home.events.startsIn:5 days 20 hr")
+    expect(items[0]).toHaveTextContent("5d 20h")
     expect(items[1]).toHaveTextContent("Uthar")
     expect(
       within(screen.getByTestId("home-events-widget")).queryByTestId(
@@ -294,7 +295,13 @@ describe("Home events (Right now + Upcoming events)", () => {
     legendaryMock.mockReturnValue(legendaryReady([uthar]))
     renderWidget()
 
-    expect(screen.getByTestId("home-incursion")).toBeInTheDocument()
+    const incursion = liveTiles().find(
+      (tile) => tile.dataset.type === "incursion"
+    )
+    expect(within(incursion!).getByTestId("home-events-row")).toHaveAttribute(
+      "href",
+      "/my-game/incursions"
+    )
     expect(screen.queryByTestId("home-live-none")).toBeNull()
     incursionWindowMock.mockReturnValue(null)
   })
@@ -473,7 +480,7 @@ describe("Home events (Right now + Upcoming events)", () => {
     legendaryMock.mockReturnValue(legendaryReady([uthar]))
     renderWidget()
 
-    expect(screen.queryByTestId("home-incursion")).toBeNull()
+    expect(liveTiles()).toHaveLength(0)
     expect(screen.getByTestId("home-live-none")).toBeInTheDocument()
     expect(
       screen.getAllByTestId("home-events-row").map((row) => row.dataset.type)

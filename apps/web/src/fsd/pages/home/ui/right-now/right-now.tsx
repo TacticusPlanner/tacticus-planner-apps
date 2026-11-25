@@ -1,6 +1,4 @@
-import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
-import { homeScreenEventBanner } from "@workspace/game-catalog"
 import {
   Card,
   CardContent,
@@ -14,7 +12,7 @@ import { useEffect, useState } from "react"
 
 import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEventCountdown } from "@/shared/lib"
-import { CountdownChip, LiveBadge } from "@/shared/ui"
+import { CountdownChip } from "@/shared/ui"
 
 import {
   homeRememberedCounts,
@@ -23,12 +21,10 @@ import {
 } from "../../model/remembered-count"
 import type { HomeEventRow } from "../../model/select-home-events"
 import type { HomeEventsState } from "../../model/use-home-events"
-import { HomeEventVisual } from "../events/home-event-visual"
+import { HomeEventTile } from "../events/home-event-tile"
 import { LegendaryEventPlanButton } from "../events/legendary-event-plan-button"
-import { useHomeEventName } from "../events/use-home-event-name"
 import { TokenAvailability } from "../token-availability/token-availability"
 import { BetaPromoTile } from "./beta-promo-tile"
-import { IncursionTile } from "./incursion-tile"
 
 /** Home's first card: token status and whatever event is live, the two things a glance at Home is
  *  for. Upcoming events live in their own card further down. */
@@ -40,7 +36,7 @@ export function RightNow({ events }: { events: HomeEventsState }) {
       <CardHeader>
         <CardTitle>{t("home.rightNow.title")}</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4 lg:grid-cols-2 lg:items-start">
+      <CardContent className="grid gap-4 lg:grid-cols-2 lg:items-center">
         <BetaPromoTile />
         <TokenAvailability />
         <LiveEvents events={events} />
@@ -73,12 +69,9 @@ function LiveEvents({ events }: { events: HomeEventsState }) {
       )
     }
     return (
-      <div
-        className="grid gap-2 sm:grid-cols-2"
-        data-testid="home-live-loading"
-      >
+      <div className="grid grid-cols-2 gap-2" data-testid="home-live-loading">
         {Array.from({ length: placeholders }, (_, index) => (
-          <Skeleton className="h-24 w-full rounded-xl" key={index} />
+          <Skeleton className="h-12 w-full rounded-xl" key={index} />
         ))}
       </div>
     )
@@ -98,78 +91,67 @@ function LiveEvents({ events }: { events: HomeEventsState }) {
   }
 
   return (
-    <ul className="grid gap-2 sm:grid-cols-2" data-testid="home-live-events">
+    // Two columns at every width: the tiles are small enough for a phone, and on desktop three rows
+    // end about level with the token rings beside them. Dense, so a full-width Legendary Event tile
+    // leaves no hole; the list's own order (soonest end first) is what screen readers follow.
+    <ul
+      className="grid grid-flow-row-dense grid-cols-2 gap-2"
+      data-testid="home-live-events"
+    >
       {live.map((row) => (
-        <li key={row.key}>
-          {row.type === "incursion" ? (
-            <IncursionTile nowMs={nowMs} />
-          ) : (
-            <LiveEventTile nowMs={nowMs} row={row} />
-          )}
+        <li
+          className={cn(row.type === "legendaryEvent" && "col-span-2")}
+          key={row.key}
+        >
+          <LiveEventTile nowMs={nowMs} row={row} />
         </li>
       ))}
     </ul>
   )
 }
 
+/** A live event as a compact tile: its name, then how long it has left. Everything here is live,
+ *  so there is no Live marker. A Legendary Event adds its synced run and points and its plan
+ *  action, and spans the grid's two columns to fit them. */
 function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
   const { t, i18n } = useTranslation("common")
-  const eventName = useHomeEventName()
-  const banner =
-    row.type === "homeScreen"
-      ? homeScreenEventBanner(row.definitionId, row.parameters)
-      : undefined
-  const endsIn = t("home.events.endsIn", {
-    when: formatEventCountdown(row.endMs, nowMs, i18n.language, {
+  const countdown = (narrow: boolean) =>
+    formatEventCountdown(row.endMs, nowMs, i18n.language, {
       withHours: true,
-    }),
-  })
+      narrow,
+    })
   // A projected Campaign Event end is the catalog's guess, not the game's: no countdown, as on Today.
   const endUnconfirmed = row.type === "campaignEvent" && !row.endConfirmed
+  const isLegendary = row.type === "legendaryEvent"
 
   return (
-    <div
-      className={cn(
-        "relative flex h-full min-h-24 items-center gap-2 overflow-hidden rounded-xl border p-3",
-        banner && "border-transparent text-white"
-      )}
+    <HomeEventTile
+      action={
+        isLegendary ? (
+          <LegendaryEventPlanButton eventId={row.unitId} />
+        ) : undefined
+      }
+      className="h-full"
+      compact
       data-testid="home-live-event"
-      data-type={row.type}
-    >
-      {banner ? (
+      details={
         <>
-          <img
-            alt=""
-            className="absolute inset-0 size-full object-cover"
-            loading="lazy"
-            src={banner}
-          />
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 bg-linear-to-r from-black/90 via-black/70 to-black/35"
-          />
-        </>
-      ) : null}
-      <Link
-        className="relative flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-        data-testid="home-events-row"
-        to={row.destination}
-      >
-        <HomeEventVisual size="icon-2xl" row={row} />
-        <span className="min-w-0 space-y-1">
-          <span className="flex flex-wrap items-center gap-2 font-semibold">
-            {eventName(row)}
-            {/* The navigation's Live marker, without its pulse: several tiles pulsing at once
-                would be busy. */}
-            <LiveBadge
-              data-testid="home-events-live-badge"
-              dotTestId="home-events-live-dot"
-              label={t("home.events.live")}
-            />
-          </span>
-          {row.type === "legendaryEvent" && row.points !== undefined ? (
+          {endUnconfirmed ? (
             <span
-              className="flex flex-wrap gap-x-3 text-sm"
+              className="whitespace-nowrap"
+              data-testid="home-events-end-unconfirmed"
+            >
+              {t("home.events.endUnconfirmed")}
+            </span>
+          ) : (
+            <CountdownChip
+              srText={t("home.events.endsIn", { when: countdown(false) })}
+              text={countdown(true)}
+            />
+          )}
+          {isLegendary && row.points !== undefined ? (
+            <span
+              className="flex flex-wrap gap-x-2"
               data-testid="home-events-synced"
             >
               {row.runNumber === null || row.runNumber === undefined ? null : (
@@ -184,23 +166,9 @@ function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
               </span>
             </span>
           ) : null}
-        </span>
-      </Link>
-      <div className="relative flex shrink-0 flex-col items-end gap-2">
-        {endUnconfirmed ? (
-          <span
-            className="text-xs whitespace-nowrap text-muted-foreground"
-            data-testid="home-events-end-unconfirmed"
-          >
-            {t("home.events.endUnconfirmed")}
-          </span>
-        ) : (
-          <CountdownChip text={endsIn} />
-        )}
-        {row.type === "legendaryEvent" ? (
-          <LegendaryEventPlanButton eventId={row.unitId} />
-        ) : null}
-      </div>
-    </div>
+        </>
+      }
+      row={row}
+    />
   )
 }

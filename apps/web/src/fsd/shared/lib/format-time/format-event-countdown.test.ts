@@ -65,4 +65,14 @@ describe("formatEventCountdown", () => {
     ).toBe("5 jours")
     expect(formatEventCountdown(after(5 * DAY), NOW, "es")).toBe("5 días")
   })
+
+  it("writes each unit in its narrowest form with narrow", () => {
+    const narrow = { withHours: true, narrow: true }
+    expect(
+      formatEventCountdown(after(2 * DAY + 10 * HOUR), NOW, "en", narrow)
+    ).toBe("2d 10h")
+    expect(
+      formatEventCountdown(after(3 * HOUR + 20 * MIN), NOW, "en", narrow)
+    ).toBe("3h 20m")
+  })
 })
