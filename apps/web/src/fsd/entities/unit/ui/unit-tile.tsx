@@ -134,11 +134,7 @@ export function UnitTile({
       to={link.to}
       state={link.state}
       {...rootProps}
-      className={cn(
-        layout,
-        "rounded-lg transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary",
-        className
-      )}
+      className={cn(layout, "rounded-lg interactive-surface", className)}
     >
       {content}
     </Link>

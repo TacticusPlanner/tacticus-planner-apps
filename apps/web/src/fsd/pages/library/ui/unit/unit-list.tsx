@@ -143,7 +143,7 @@ export function UnitList({
                 <Link
                   to={`${basePath}/${item.id}`}
                   state={origin}
-                  className="flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary"
+                  className="flex w-24 flex-col items-center gap-1.5 rounded-lg border interactive-surface p-2 text-center"
                   data-testid={`${tileTestIdPrefix}-${item.id}`}
                 >
                   <span className="relative">

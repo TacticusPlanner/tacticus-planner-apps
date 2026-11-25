@@ -410,7 +410,7 @@ function PlaceNpcs({
             const chip = cn(
               "flex max-w-full min-w-0 items-center gap-1.5 rounded-full border py-0.5 pr-2.5 pl-0.5 text-xs",
               current && "border-primary font-medium",
-              href && "hover:bg-muted"
+              href && "interactive-surface"
             )
             const content: ReactNode = (
               <>
@@ -488,7 +488,7 @@ function DisclosureRow({
     <li className={cn("rounded-md", open && "bg-muted/50")}>
       <button
         type="button"
-        className="flex w-full items-center justify-between gap-2 rounded-md px-2 py-1 text-left hover:bg-muted/50"
+        className="flex w-full items-center justify-between gap-2 rounded-md interactive-surface px-2 py-1 text-left"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
         data-testid={testId}

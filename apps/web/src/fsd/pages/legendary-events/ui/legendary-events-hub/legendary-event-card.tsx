@@ -57,7 +57,7 @@ export function LegendaryEventCard({
     <Link
       className={cn(
         "flex min-w-0 items-start gap-3 rounded-xl border bg-card p-3 text-card-foreground transition-colors",
-        "border-l-4 border-l-(--event-legendary) hover:bg-muted/50",
+        "border-l-4 border-l-(--event-legendary) interactive-surface",
         "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
       )}
       data-state={card.lifecycle.state}

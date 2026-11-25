@@ -136,7 +136,7 @@ function SeasonTile({
       type="button"
       aria-label={located.item.name}
       onClick={() => onSelect(located)}
-      className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-lg border p-2 text-center transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary lg:w-32"
+      className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-lg border interactive-surface p-2 text-center lg:w-32"
       data-testid={`raid-boss-season-tile-${located.encounterIndex}`}
     >
       <RaidBossPortrait

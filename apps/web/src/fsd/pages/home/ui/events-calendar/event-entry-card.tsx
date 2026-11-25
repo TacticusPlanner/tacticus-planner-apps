@@ -76,10 +76,9 @@ function entrySurfaceClass(entry: EventEntryViewModel): string {
   return cn(
     // `relative` anchors the sr-only state text: without it, inside the Ongoing strip's scroller it
     // positions against the page and widens the document (pushing the fixed bottom nav off-screen).
-    "relative border border-l-4 text-foreground transition-colors",
-    "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+    "relative border border-l-4 interactive-surface text-foreground",
     // A break between Guild Raid seasons keeps the guild stripe on a plain surface: nothing to raid.
-    isBreak ? "bg-muted/40 hover:bg-muted" : eventFamilySurfaceClass(family),
+    isBreak ? "bg-muted/40" : eventFamilySurfaceClass(family),
     eventFamilyStripeClass(family),
     entry.isPast && "opacity-55 grayscale hover:opacity-80",
     entry.confirmed

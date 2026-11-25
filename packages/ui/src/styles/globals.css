@@ -353,3 +353,31 @@
     cursor: pointer;
   }
 }
+
+/*
+ * Hover, press and focus of a hand-built card, tile, row or option whose whole area is the target
+ * (ui-style-guide rule 9). A gold tint goes over whatever the surface already is (card, page, event
+ * tint, selected tint) instead of replacing it, so it shows the same way on every surface and in
+ * both themes. It changes no other colour: selection stays `border-primary bg-primary/10`.
+ */
+@utility interactive-surface {
+  &:focus-visible {
+    outline: 3px solid color-mix(in oklab, var(--ring) 50%, transparent);
+    outline-offset: 0;
+  }
+  @variant hover {
+    background-image: linear-gradient(
+      color-mix(in oklab, var(--accent) 10%, transparent),
+      color-mix(in oklab, var(--accent) 10%, transparent)
+    );
+  }
+  &:active {
+    background-image: linear-gradient(
+      color-mix(in oklab, var(--accent) 16%, transparent),
+      color-mix(in oklab, var(--accent) 16%, transparent)
+    );
+  }
+  &:is(:disabled, [aria-disabled="true"]) {
+    background-image: none;
+  }
+}

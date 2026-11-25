@@ -52,10 +52,8 @@ export function CompareSummary({
         aria-pressed={active}
         onClick={() => onSelect(active ? null : metric)}
         className={cn(
-          "flex shrink-0 flex-col items-start rounded-lg border px-3 py-1.5 text-left transition-colors disabled:opacity-50",
-          active
-            ? "border-primary bg-primary/10"
-            : "hover:bg-accent/10 disabled:hover:bg-transparent"
+          "flex shrink-0 flex-col items-start rounded-lg border interactive-surface px-3 py-1.5 text-left disabled:opacity-50",
+          active && "border-primary bg-primary/10"
         )}
         data-testid="compare-metric"
         data-metric={metric}

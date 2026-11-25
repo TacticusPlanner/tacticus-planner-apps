@@ -211,7 +211,7 @@ export function TargetStep({
                     "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
                     checked
                       ? "border-primary bg-primary/10"
-                      : "hover:bg-muted/50"
+                      : "interactive-surface"
                   )}
                   data-testid={`plan-wizard-horizon-${run}`}
                   key={run}

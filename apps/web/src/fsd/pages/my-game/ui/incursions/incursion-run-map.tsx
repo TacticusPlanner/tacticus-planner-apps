@@ -142,9 +142,9 @@ export function IncursionRunMap({
                             aria-label={nodeLabel(node)}
                             onClick={() => onSelect(node)}
                             className={cn(
-                              "rounded-md p-0.5 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                              "rounded-md interactive-surface p-0.5",
                               node === selected &&
-                                "bg-accent ring-2 ring-(--primary)"
+                                "bg-primary/10 ring-2 ring-primary"
                             )}
                             data-testid={`incursion-map-node-${node.index}`}
                           >

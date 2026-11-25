@@ -109,7 +109,7 @@ function DiffTile({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex w-full min-w-0 flex-col items-center rounded-lg transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary"
+          className="flex w-full min-w-0 flex-col items-center rounded-lg interactive-surface"
           data-testid="compare-tile"
           data-unit={item.unit.unitId}
           data-changed={item.diff.changed}

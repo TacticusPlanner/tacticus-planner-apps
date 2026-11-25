@@ -15,7 +15,7 @@ import {
 } from "../model/landing-content"
 
 const cardLinkClass =
-  "group flex h-full flex-col gap-3 rounded-xl border bg-card p-5 text-left text-card-foreground transition-colors hover:border-primary/50 hover:bg-accent/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+  "group flex h-full flex-col gap-3 rounded-xl border bg-card p-5 text-left text-card-foreground interactive-surface"
 
 /** Why a signed-out visitor is here instead of the page they asked for: a sign-in-only address sent
  *  them (spec: landing-page). `pageTitle` names that page when the app knows it. */

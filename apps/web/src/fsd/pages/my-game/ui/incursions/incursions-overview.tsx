@@ -91,7 +91,7 @@ export function IncursionsOverview() {
             <li key={incursion.mowId} data-testid={testId}>
               <Link
                 to={incursionPath(incursion.mowId)}
-                className="flex h-full items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                className="flex h-full items-center gap-3 rounded-lg border bg-card interactive-surface p-3"
                 data-testid={`${testId}-open`}
               >
                 <EntityIcon

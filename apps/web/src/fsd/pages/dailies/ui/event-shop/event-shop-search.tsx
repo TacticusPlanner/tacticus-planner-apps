@@ -170,7 +170,7 @@ function SearchResults({
                     day.past ? `, ${t("search.past")}` : ""
                   }`}
                   className={cn(
-                    "flex flex-col items-start rounded-md border px-2 py-1 text-left text-xs hover:bg-muted",
+                    "flex flex-col items-start rounded-md border interactive-surface px-2 py-1 text-left text-xs",
                     day.past && "opacity-50",
                     day.index === controller.todayIndex && "border-primary"
                   )}

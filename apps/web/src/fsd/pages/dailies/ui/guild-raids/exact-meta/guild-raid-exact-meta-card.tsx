@@ -142,7 +142,7 @@ function SlotTile({
       aria-controls={panelId}
       onClick={onToggle}
       className={cn(
-        "rounded-xl border bg-card text-left transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        "rounded-xl border bg-card interactive-surface text-left",
         expanded && "border-primary ring-1 ring-primary",
         empty && "border-dashed",
         isMobile

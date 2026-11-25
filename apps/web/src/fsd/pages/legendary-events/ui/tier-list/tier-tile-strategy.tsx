@@ -92,7 +92,7 @@ export function TierTileStrategy({ unitId }: { unitId: string }) {
                 {strategy.teammates.map((teammate) => (
                   <li key={teammate}>
                     <Link
-                      className="flex items-center gap-1.5 rounded-md border border-border px-1.5 py-1 hover:bg-muted"
+                      className="flex items-center gap-1.5 rounded-md border border-border interactive-surface px-1.5 py-1"
                       data-testid="tier-strategy-teammate"
                       to={`/library/characters/${teammate}`}
                     >

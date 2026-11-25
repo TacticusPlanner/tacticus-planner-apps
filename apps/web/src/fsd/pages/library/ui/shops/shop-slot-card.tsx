@@ -79,7 +79,7 @@ export function ShopSlotCard({
   const trigger = (
     <button
       type="button"
-      className="flex w-full flex-col gap-2 rounded-lg border bg-card p-3 text-left text-card-foreground shadow-sm transition-colors hover:border-primary"
+      className="flex w-full flex-col gap-2 rounded-lg border bg-card interactive-surface p-3 text-left text-card-foreground shadow-sm"
       data-testid={`shop-slot-${index}`}
       data-random="true"
     >

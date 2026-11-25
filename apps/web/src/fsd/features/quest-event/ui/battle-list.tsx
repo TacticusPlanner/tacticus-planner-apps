@@ -140,7 +140,7 @@ export function BattleList({
                             number: battle.number,
                           })}
                           className={cn(
-                            "flex w-full min-w-0 items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                            "flex w-full min-w-0 items-center gap-2.5 rounded-xl border interactive-surface px-2.5 py-2 text-left",
                             selected === battle.number &&
                               "border-primary bg-muted"
                           )}

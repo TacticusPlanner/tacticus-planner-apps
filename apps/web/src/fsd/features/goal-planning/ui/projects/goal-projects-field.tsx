@@ -157,7 +157,7 @@ export function GoalProjectsField({
                   aria-label={t("goals.project.removeMembership", {
                     project: project.name,
                   })}
-                  className="relative rounded-full p-0.5 after:absolute after:-inset-1 hover:bg-muted"
+                  className="relative rounded-full interactive-surface p-0.5 after:absolute after:-inset-1"
                   onClick={() => remove(project.projectId)}
                   type="button"
                 >

@@ -51,7 +51,7 @@ export function EventShopShoppingListTotalsBar({
         // The shared floating bar surface, readable over any page content in both themes.
         className={cn(
           FLOATING_BAR_SURFACE,
-          "flex min-h-12 flex-wrap items-center gap-x-2 px-4 py-2 text-sm font-semibold transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          "flex min-h-12 flex-wrap items-center gap-x-2 interactive-surface px-4 py-2 text-sm font-semibold"
         )}
         data-testid={
           kind === "button"

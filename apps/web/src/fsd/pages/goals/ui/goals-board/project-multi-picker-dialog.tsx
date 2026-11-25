@@ -64,7 +64,7 @@ export function ProjectMultiPickerDialog({
         <ul className="grid gap-1 pb-3">
           {projects.map((project) => (
             <li key={project.projectId}>
-              <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-md px-2 hover:bg-muted md:min-h-8">
+              <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-md interactive-surface px-2 md:min-h-8">
                 <Checkbox
                   checked={checked.has(project.projectId)}
                   data-testid={`project-picker-option-${project.projectId}`}

@@ -643,7 +643,7 @@ function ObjectiveHeading({
               <button
                 aria-pressed={isSelected}
                 className={cn(
-                  "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent px-0.5 py-1 text-center transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                  "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent interactive-surface px-0.5 py-1 text-center",
                   uncovered && "border-dashed border-muted-foreground/60",
                   isSelected && "bg-primary/15"
                 )}

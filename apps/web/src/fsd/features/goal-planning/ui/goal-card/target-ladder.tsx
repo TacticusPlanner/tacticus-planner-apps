@@ -150,7 +150,7 @@ export function TargetLadder({
               to: lastHidden.name,
             })}
             className={cn(
-              "flex h-12 min-w-14 items-center justify-center gap-1 rounded-xl border border-dashed px-1.5 py-1 text-xs text-muted-foreground transition-colors outline-none hover:border-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              "flex h-12 min-w-14 items-center justify-center gap-1 rounded-xl border border-dashed interactive-surface px-1.5 py-1 text-xs text-muted-foreground",
               stepClassName
             )}
             data-testid={`${testId}-collapsed`}
@@ -198,7 +198,7 @@ export function TargetLadder({
                       "border-primary bg-primary text-primary-foreground",
                     state.disabled && !state.selected
                       ? "cursor-not-allowed opacity-60"
-                      : "hover:border-primary",
+                      : "interactive-surface",
                     state.current && "border-dashed opacity-100"
                   )}
                   data-state={

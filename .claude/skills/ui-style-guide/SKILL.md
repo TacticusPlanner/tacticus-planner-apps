@@ -6,7 +6,7 @@ description: Style guide for the V2 web app — page header, page toolbar slots,
 # UI style guide
 
 The same job looks the same and sits in the same place on every page. This
-guide covers layout, controls, game icons, copy and overlays; the `ui-sizing` skill is
+guide covers layout, controls, game icons, copy, overlays and hover; the `ui-sizing` skill is
 its sizing chapter (type, icon, control and spacing scale, and the lint rule
 that bans hardcoded px) and still applies in full.
 
@@ -163,8 +163,9 @@ One row directly under the header, three fixed slots, left to right:
   dense rows (table cells, cards).
 - Body copy and descriptions are `text-sm`; `text-xs` is for captions and
   metadata only.
-- Selection colour in content is `primary`. The gold `accent` is only for app
-  navigation (active nav item).
+- Selection colour in content is `primary`. The gold `accent` is for app
+  navigation (active nav item) and, as a light tint, for hover (rule 9). Never
+  a solid gold fill in content.
 - Section labels are sentence case `text-sm font-medium`, not small uppercase.
 - A divider between parts of one list (Raided, Shops, Cleared, Flex, a season
   cut-off) is the shared `ListDivider`: label at the left, rule to the right.
@@ -362,6 +363,32 @@ default), or `w-80` for a unit or enemy card, and never wider than
 area on touch). A dialog opened from state, not from its trigger, sends focus
 back to the control that opened it (`onCloseAutoFocus`).
 
+## 9. Hover and press
+
+One hover for anything clickable in the page content: a light gold tint laid
+over the surface, never a fill that replaces it.
+
+| What                                                                                   | Use                                                           |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Hand-built card, tile, list row, option, chip-sized link, small hand-built icon button | `interactive-surface` (hover 10% gold, press 16%, focus ring) |
+| Shared `Button`, `ToggleGroup`, `Tabs`, menu items, `TableRow`                         | Their own hover; add nothing                                  |
+| Text link                                                                              | `hover:underline` or `hover:text-foreground`                  |
+| A non-clickable row highlighted to help scanning a dense list                          | `hover:bg-muted/50` (the `TableRow` hover)                    |
+| A target that is all art (a portrait chip with nothing around it)                      | `hover:brightness-110`: no fill would show                    |
+
+- `interactive-surface` (`packages/ui` `globals.css`) lays the tint over
+  whatever the surface already is (`bg-card`, the page, an event colour, a
+  selected `bg-primary/10`), so it shows on every surface in both themes. It
+  also draws the focus ring, so pass no `hover:bg-*`, `focus-visible:*` or
+  `transition-colors` with it. It goes on the element the pointer is over; for
+  a card whose link is stretched over it (`after:inset-0`), that is the card.
+- Never `hover:bg-accent` (solid gold), `hover:bg-accent/N`,
+  `hover:bg-muted/N` or a `hover:border-*` on a card, tile or row: those are the
+  styles this rule replaces.
+- Selection is not hover: selected is `border-primary bg-primary/10` (the
+  filter chip), and a selected item still gets the hover tint on top.
+- App chrome (side and top navigation, account menu) keeps its own nav hover.
+
 ## Review checklist
 
 - [ ] Page has the standard header; settings (if any) is the labelled button at its right.
@@ -372,6 +399,7 @@ back to the control that opened it (`onCloseAutoFocus`).
 - [ ] No new tab, segmented or pill style; no hand-rolled `aria-pressed` toggles.
 - [ ] Controls meet 48px on touch; no `size="sm"` in toolbars.
 - [ ] Every game icon uses a size from rule 6.
+- [ ] Clickable cards, tiles and rows use `interactive-surface` (rule 9); no solid or page-specific hover.
 - [ ] Other icons are 20px (`size-icon`) unless they fall under an exception in `ui-sizing`.
 - [ ] Every game entity with an icon shows it; no raw ids reach the screen.
 - [ ] Each overlay is the one rule 8 names for its job, with a title, a rule 8 footer and one of the three widths.

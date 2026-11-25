@@ -382,7 +382,7 @@ function TokenBattleRunRow({
         expanded ? "tokenPlan.plan.collapseRun" : "tokenPlan.plan.expandRun",
         { count: tokens.length }
       )}
-      className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm interactive-surface"
       data-testid="token-plan-run-toggle"
       onClick={() => setExpanded(!expanded)}
       type="button"

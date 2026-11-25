@@ -89,7 +89,7 @@ export function QuestGoalDrops({
                   {drop.battles.map((battle) => (
                     <li key={battle.number}>
                       <button
-                        className="inline-flex min-h-8 items-center gap-1 rounded-full border px-2 text-xs transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        className="inline-flex min-h-8 items-center gap-1 rounded-full border interactive-surface px-2 text-xs"
                         data-testid="quest-goal-drop-battle"
                         onClick={() => onSelect(battle.number)}
                         type="button"

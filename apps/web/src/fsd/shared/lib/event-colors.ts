@@ -45,18 +45,15 @@ const familyStripeClass: Record<EventFamily, string> = {
 // `other` keeps the neutral surface.
 const familySurfaceClass: Record<EventFamily, string> = {
   campaigns:
-    "bg-(--event-family-campaigns)/20 hover:bg-(--event-family-campaigns)/30 dark:bg-(--event-family-campaigns)/30 dark:hover:bg-(--event-family-campaigns)/40",
-  heroes:
-    "bg-(--event-family-heroes)/20 hover:bg-(--event-family-heroes)/30 dark:bg-(--event-family-heroes)/30 dark:hover:bg-(--event-family-heroes)/40",
-  pvp: "bg-(--event-family-pvp)/20 hover:bg-(--event-family-pvp)/30 dark:bg-(--event-family-pvp)/30 dark:hover:bg-(--event-family-pvp)/40",
-  guild:
-    "bg-(--event-family-guild)/20 hover:bg-(--event-family-guild)/30 dark:bg-(--event-family-guild)/30 dark:hover:bg-(--event-family-guild)/40",
-  passes:
-    "bg-(--event-family-passes)/20 hover:bg-(--event-family-passes)/30 dark:bg-(--event-family-passes)/30 dark:hover:bg-(--event-family-passes)/40",
-  other: "bg-muted/50 hover:bg-muted",
+    "bg-(--event-family-campaigns)/20 dark:bg-(--event-family-campaigns)/30",
+  heroes: "bg-(--event-family-heroes)/20 dark:bg-(--event-family-heroes)/30",
+  pvp: "bg-(--event-family-pvp)/20 dark:bg-(--event-family-pvp)/30",
+  guild: "bg-(--event-family-guild)/20 dark:bg-(--event-family-guild)/30",
+  passes: "bg-(--event-family-passes)/20 dark:bg-(--event-family-passes)/30",
+  other: "bg-muted/50",
 }
 
-/** The entry's tinted fill (with its hover); pair it with the stripe. */
+/** The entry's tinted fill; pair it with the stripe. A clickable entry adds `interactive-surface`. */
 export function eventFamilySurfaceClass(family: EventFamily): string {
   return familySurfaceClass[family]
 }
