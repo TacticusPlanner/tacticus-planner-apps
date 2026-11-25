@@ -35,6 +35,17 @@ const PAGE_H1 = {
     "The page title is the shell's `<h1>` (ui-style-guide rule 1: `PageHeader` on desktop, the mobile header). Use `<h2>` or below inside a page.",
 }
 
+// ui-style-guide (tooltips): a native `title` shows late, never on touch and never on focus. Name an
+// icon button with `IconButton`, cut text with `TruncatedText`, and anything else with `Tooltip`.
+// Lowercase elements and the shared components that pass `title` through to the DOM; a component's
+// own `title` prop (a dialog's or a card's heading) is not a tooltip. An `<iframe>` needs its title.
+const NATIVE_TITLE = {
+  selector:
+    "JSXOpeningElement:matches([name.name=/^(?!iframe$)[a-z]/], [name.name=/^(Button|Badge|ToggleGroupItem|Link|DropdownMenuItem|TableHead)$/]) > JSXAttribute[name.name='title']",
+  message:
+    "Native `title` tooltip (ui-style-guide: tooltips). Use `IconButton` for an icon-only button, `TruncatedText` for text that may be cut off, or `Tooltip` for anything else.",
+}
+
 export default defineConfig([
   // schema.d.ts is generated from the API's OpenAPI document (pnpm api:types).
   globalIgnores(["dist", "coverage", "src/fsd/shared/api/schema.d.ts"]),
@@ -286,7 +297,12 @@ export default defineConfig([
     files: ["src/fsd/**/*.tsx"],
     ignores: ["**/*.test.tsx"],
     rules: {
-      "no-restricted-syntax": ["error", HAND_ROLLED_TOGGLE, PAGE_H1],
+      "no-restricted-syntax": [
+        "error",
+        HAND_ROLLED_TOGGLE,
+        PAGE_H1,
+        NATIVE_TITLE,
+      ],
     },
   },
   {
@@ -294,7 +310,7 @@ export default defineConfig([
     files: ["src/fsd/app/layout/**/*.tsx"],
     ignores: ["**/*.test.tsx"],
     rules: {
-      "no-restricted-syntax": ["error", HAND_ROLLED_TOGGLE],
+      "no-restricted-syntax": ["error", HAND_ROLLED_TOGGLE, NATIVE_TITLE],
     },
   },
   tailwindSizingConfig,

@@ -9,8 +9,13 @@ import {
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
-import { EntityIcon, HowToRead } from "@/shared/ui"
+import { EntityIcon, HowToRead, TruncatedText } from "@/shared/ui"
 
 import type { IncursionPlans } from "../../model/use-incursion-plans"
 import type { Incursion } from "../../model/incursions.model"
@@ -99,10 +104,19 @@ export function IncursionTeam({
           })}
         </span>
         {plan.sustained ? (
-          <Badge variant="secondary" title={t("team.sustainHint")}>
-            <EntityIcon size="inline" alt="" src={battleGlyphIcon("heal")} />
-            {t("team.sustain")}
-          </Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="secondary">
+                <EntityIcon
+                  size="inline"
+                  alt=""
+                  src={battleGlyphIcon("heal")}
+                />
+                {t("team.sustain")}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>{t("team.sustainHint")}</TooltipContent>
+          </Tooltip>
         ) : null}
         <span className="ml-auto">{browse}</span>
       </div>
@@ -113,7 +127,6 @@ export function IncursionTeam({
             <li
               key={member.id}
               className="flex items-center gap-1.5 rounded-md border px-1.5 py-1 text-xs"
-              title={name}
               data-unit-id={member.id}
             >
               <EntityIcon
@@ -122,7 +135,7 @@ export function IncursionTeam({
                 alt=""
                 className="rounded-sm"
               />
-              <span className="max-w-28 truncate">{name}</span>
+              <TruncatedText className="max-w-28">{name}</TruncatedText>
             </li>
           )
         })}

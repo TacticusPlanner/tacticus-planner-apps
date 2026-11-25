@@ -1,12 +1,17 @@
 import { useTranslation } from "react-i18next"
 import { GripVertical, Lock, X } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { TEAM_LIMITS, TeamUnitPortrait } from "@/entities/team"
 import type { TeamUnitView } from "@/entities/team"
-import { SortableList } from "@/shared/ui"
+import { SortableList, TruncatedText } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -89,7 +94,6 @@ function BandSlot({
         aria-label={t("lineup.drag", { name })}
         className="group relative cursor-grab touch-none rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring active:cursor-grabbing"
         ref={ref}
-        title={name}
         type="button"
       >
         <TeamUnitPortrait
@@ -101,20 +105,20 @@ function BandSlot({
           className="absolute top-0 -left-2 size-icon text-muted-foreground opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
         />
       </button>
-      <span className="w-full truncate text-xs font-medium" title={name}>
+      <TruncatedText className="w-full text-xs font-medium">
         {name}
-      </span>
+      </TruncatedText>
       {capped && under ? (
         <UnitAbilities levels={capped.abilityLevels} under={under.abilities} />
       ) : null}
       {under?.any ? (
-        <span
-          className="line-clamp-2 w-full text-xs text-amber-800 dark:text-amber-400"
+        <TruncatedText
+          className="w-full text-xs text-amber-800 dark:text-amber-400"
           data-testid="team-lineup-under-cap"
-          title={underCapText(under, rarityCap) ?? undefined}
+          lines={2}
         >
-          {underCapText(under, rarityCap)}
-        </span>
+          {underCapText(under, rarityCap) ?? ""}
+        </TruncatedText>
       ) : null}
       {marks.map((mark) => (
         <Badge className="max-w-full truncate" key={mark} variant="destructive">
@@ -132,26 +136,27 @@ function BandSlot({
         role={isFlex ? "flex" : "core"}
       />
       {locked ? (
-        <span
-          aria-label={t("lineup.campaignCore", { name })}
-          className="absolute top-0.5 right-0.5 grid size-6 place-items-center text-muted-foreground"
-          role="img"
-          title={t("lineup.campaignCore", { name })}
-        >
-          <Lock className="size-icon-xs" />
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              aria-label={t("lineup.campaignCore", { name })}
+              className="absolute top-0.5 right-0.5 grid size-6 place-items-center text-muted-foreground"
+              role="img"
+            >
+              <Lock className="size-icon-xs" />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{t("lineup.campaignCore", { name })}</TooltipContent>
+        </Tooltip>
       ) : (
-        <Button
-          aria-label={t("lineup.remove", { name })}
+        <IconButton
           className="absolute top-0.5 right-0.5 size-6 text-muted-foreground hover:text-foreground"
+          label={t("lineup.remove", { name })}
           onClick={onRemove}
-          size="icon"
-          title={t("lineup.remove", { name })}
           type="button"
-          variant="ghost"
         >
           <X />
-        </Button>
+        </IconButton>
       )}
     </li>
   )

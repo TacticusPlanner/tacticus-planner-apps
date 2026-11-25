@@ -12,6 +12,11 @@ import {
 } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type {
   UnitProfileViewModel,
@@ -196,11 +201,19 @@ function HdaCell({
         {label}
       </span>
       <span className="flex items-baseline gap-1 text-sm tabular-nums">
-        <span title={t("unitLookup.current")} className="font-semibold">
-          {pair.current ?? "—"}
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="font-semibold">{pair.current ?? "—"}</span>
+          </TooltipTrigger>
+          <TooltipContent>{t("unitLookup.current")}</TooltipContent>
+        </Tooltip>
         <span className="text-muted-foreground">→</span>
-        <span title={t("unitLookup.target")}>{pair.target ?? "—"}</span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>{pair.target ?? "—"}</span>
+          </TooltipTrigger>
+          <TooltipContent>{t("unitLookup.target")}</TooltipContent>
+        </Tooltip>
       </span>
     </div>
   )

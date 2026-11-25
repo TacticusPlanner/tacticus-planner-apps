@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Pencil, Trash2 } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { Team } from "@/entities/team"
@@ -33,28 +33,24 @@ export function TeamActionButtons({
       className={cn("relative z-10 flex shrink-0 items-center", className)}
       data-testid="team-actions"
     >
-      <Button
-        aria-label={edit}
+      <IconButton
         className="text-muted-foreground hover:text-foreground pointer-coarse:size-12"
+        label={edit}
         onClick={() => actions.onEdit(team)}
         size="icon-sm"
-        title={edit}
         type="button"
-        variant="ghost"
       >
         <Pencil />
-      </Button>
-      <Button
-        aria-label={remove}
+      </IconButton>
+      <IconButton
         className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive pointer-coarse:size-12"
+        label={remove}
         onClick={() => actions.onDelete(team)}
         size="icon-sm"
-        title={remove}
         type="button"
-        variant="ghost"
       >
         <Trash2 />
-      </Button>
+      </IconButton>
     </span>
   )
 }

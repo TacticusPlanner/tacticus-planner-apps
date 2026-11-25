@@ -1,6 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { powerIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -34,26 +39,35 @@ export function IncursionPower({
       ? powerStanding(power, teamPower)
       : undefined
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 tabular-nums",
-        standing && STANDING_CLASS[standing],
-        className
-      )}
-      title={
-        standing && teamPower !== undefined
+    <Tooltip>
+      <TooltipTrigger asChild disableTouchToggle>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 tabular-nums",
+            standing && STANDING_CLASS[standing],
+            className
+          )}
+          data-testid={testId}
+          data-standing={standing}
+        >
+          <EntityIcon
+            size="inline"
+            src={powerIcon()}
+            alt=""
+            className="shrink-0"
+          />
+          {number.format(Math.round(power))}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>
+        {standing && teamPower !== undefined
           ? t("power.vsTeam", {
               ratio: new Intl.NumberFormat(i18n.language, {
                 maximumFractionDigits: 1,
               }).format(power / teamPower),
             })
-          : t("power.enemy")
-      }
-      data-testid={testId}
-      data-standing={standing}
-    >
-      <EntityIcon size="inline" src={powerIcon()} alt="" className="shrink-0" />
-      {number.format(Math.round(power))}
-    </span>
+          : t("power.enemy")}
+      </TooltipContent>
+    </Tooltip>
   )
 }

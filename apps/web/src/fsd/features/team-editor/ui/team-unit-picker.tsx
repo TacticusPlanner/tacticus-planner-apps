@@ -1,14 +1,15 @@
 import { useId, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rarity } from "@workspace/game-domain"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
+import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { TeamRoster } from "@/entities/team"
-import { FILTER_CHIP_CLASS_NAME, SearchField } from "@/shared/ui"
+import {
+  FILTER_CHIP_CLASS_NAME,
+  HintedToggleGroupItem,
+  SearchField,
+} from "@/shared/ui"
 
 import { filterPickerUnits, pickerFilterOptions } from "../model/unit-picker"
 import type { PickerFilters, PickerUnit } from "../model/unit-picker"
@@ -92,21 +93,20 @@ function OwnedOnlyChip({
   return (
     <>
       <ToggleGroup
-        disabled={!rosterAvailable}
         onValueChange={(values) => onChange(values.includes("owned"))}
         type="multiple"
         value={rosterAvailable && on ? ["owned"] : []}
         variant="outline"
       >
-        <ToggleGroupItem
+        <HintedToggleGroupItem
           aria-describedby={hint ? hintId : undefined}
           className={FILTER_CHIP_CLASS_NAME}
           data-testid="team-picker-owned-only"
-          title={hint}
+          disabledReason={hint}
           value="owned"
         >
           {t("picker.ownedOnly")}
-        </ToggleGroupItem>
+        </HintedToggleGroupItem>
       </ToggleGroup>
       {hint ? (
         <span className="sr-only" id={hintId}>

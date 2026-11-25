@@ -22,10 +22,17 @@ export function HintedToggleGroupItem({
   children,
   ...props
 }: ComponentProps<typeof ToggleGroupItem> & {
-  hint: string
+  hint?: string
   disabledReason?: string
 }) {
   const blocked = disabledReason !== undefined
+  const tooltip = disabledReason ?? hint
+  if (tooltip === undefined)
+    return (
+      <ToggleGroupItem className={className} {...props}>
+        {children}
+      </ToggleGroupItem>
+    )
   return (
     <Tooltip>
       <ToggleGroupItem
@@ -53,7 +60,7 @@ export function HintedToggleGroupItem({
           {children}
         </TooltipTrigger>
       </ToggleGroupItem>
-      <TooltipContent>{disabledReason ?? hint}</TooltipContent>
+      <TooltipContent>{tooltip}</TooltipContent>
     </Tooltip>
   )
 }

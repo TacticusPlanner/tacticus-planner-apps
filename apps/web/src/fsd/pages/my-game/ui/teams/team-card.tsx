@@ -2,6 +2,11 @@ import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import {
   TeamUnitPortrait,
@@ -9,7 +14,7 @@ import {
   useTeamModeLabel,
 } from "@/entities/team"
 import type { Team, TeamMode, TeamRoster } from "@/entities/team"
-import { DragGrip } from "@/shared/ui"
+import { DragGrip, TruncatedText } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -48,17 +53,20 @@ export function TeamUnitGroup({
           const view = teamUnitView(kind, id, roster)
           const name = unitName(kind === "mow" ? "Mow" : "Character", id)
           return (
-            <li
-              aria-label={
-                view.owned === false ? t("card.locked", { name }) : name
-              }
-              data-locked={view.owned === false ? "true" : undefined}
-              data-unit={id}
-              key={`${kind}:${id}`}
-              title={name}
-            >
-              <TeamUnitPortrait unit={view} />
-            </li>
+            <Tooltip key={`${kind}:${id}`}>
+              <TooltipTrigger asChild>
+                <li
+                  aria-label={
+                    view.owned === false ? t("card.locked", { name }) : name
+                  }
+                  data-locked={view.owned === false ? "true" : undefined}
+                  data-unit={id}
+                >
+                  <TeamUnitPortrait unit={view} />
+                </li>
+              </TooltipTrigger>
+              <TooltipContent>{name}</TooltipContent>
+            </Tooltip>
           )
         })}
       </ul>
@@ -150,13 +158,13 @@ export const TeamCard = memo(function TeamCard({
         <h2 className="min-w-0 flex-1 font-heading text-base/snug font-semibold">
           {/* As on Goals cards, the card opens nothing: Edit does, so a stray tap on a phone
               never opens the editor. */}
-          <span
-            className="line-clamp-2 wrap-break-word"
+          <TruncatedText
+            className="wrap-break-word"
             data-testid="team-card-name"
-            title={team.name}
+            lines={2}
           >
             {team.name}
-          </span>
+          </TruncatedText>
         </h2>
         <TeamActionButtons actions={actions} team={team} />
       </div>
@@ -172,11 +180,10 @@ export const TeamCard = memo(function TeamCard({
       ) : null}
       {context ? (
         <p
-          className="-mt-1 truncate text-xs text-muted-foreground"
+          className="-mt-1 min-w-0 text-xs text-muted-foreground"
           data-testid="team-card-context"
-          title={context}
         >
-          {context}
+          <TruncatedText>{context}</TruncatedText>
         </p>
       ) : null}
 
@@ -210,11 +217,10 @@ export const TeamCard = memo(function TeamCard({
       ) : null}
       {team.notes ? (
         <p
-          className="line-clamp-2 text-sm wrap-break-word text-muted-foreground italic"
+          className="min-w-0 text-sm wrap-break-word text-muted-foreground italic"
           data-testid="team-card-notes"
-          title={team.notes}
         >
-          {team.notes}
+          <TruncatedText lines={2}>{team.notes}</TruncatedText>
         </p>
       ) : null}
 

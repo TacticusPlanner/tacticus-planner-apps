@@ -274,12 +274,17 @@ shows on touch or to keyboard users. Pick the wrapper by what carries the name:
   tap keeps its own job.
 - A control that is disabled for a reason: `disabledReason` on `IconButton` or
   on a `SegmentedControl` option. It stays focusable (`aria-disabled`) and the
-  reason shows on hover, focus and tap. A disabled menu item shows its reason
-  as a muted second line in the item instead.
+  reason shows on hover, focus and tap. On a toggle chip use
+  `HintedToggleGroupItem`'s `disabledReason`. A disabled menu item shows its
+  reason as a muted second line in the item instead.
 - Help on a segment or toggle chip: `hint` on the option (hover and focus
   only, since a tap picks it); give touch users one `HintTrigger` beside the group.
 - The app's `TooltipProvider` waits 300 ms before the first tooltip, then
   opens the next ones instantly while the pointer moves between triggers.
+- Anything else (a portrait, a chip, a bar segment): wrap it in `Tooltip`. The
+  `no-restricted-syntax` lint rule rejects `title` on DOM elements and on
+  `Button`, `Badge`, `ToggleGroupItem`, `Link`, `DropdownMenuItem` and
+  `TableHead`.
 
 **Anatomy.** Every dialog and sheet has a title (`…Title`; `sr-only` only when
 the content's own heading says the same). An optional one-line description is

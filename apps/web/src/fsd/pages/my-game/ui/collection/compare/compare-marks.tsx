@@ -3,6 +3,11 @@ import { abilityIcon, EquipmentIcons, rankIcon } from "@workspace/game-catalog"
 import { equipmentIdSchema } from "@workspace/game-domain"
 import type { Progression, Rank } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { CompactProgression, EntityIcon } from "@/shared/ui"
 
@@ -25,17 +30,19 @@ export function FromToMarks({
   className?: string
 }) {
   return (
-    <span
-      className={cn("inline-flex items-center gap-1", className)}
-      title={label}
-    >
-      <span aria-hidden className="inline-flex items-center gap-1">
-        {from}
-        <span className="text-muted-foreground">→</span>
-        {to}
-      </span>
-      <span className="sr-only">{label}</span>
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild disableTouchToggle>
+        <span className={cn("inline-flex items-center gap-1", className)}>
+          <span aria-hidden className="inline-flex items-center gap-1">
+            {from}
+            <span className="text-muted-foreground">→</span>
+            {to}
+          </span>
+          <span className="sr-only">{label}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   )
 }
 

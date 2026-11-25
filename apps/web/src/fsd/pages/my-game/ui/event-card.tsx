@@ -16,6 +16,11 @@ import {
 import { Progress } from "@workspace/ui/components/progress"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -120,21 +125,22 @@ function EventDetails({
                 ? name
                 : t("progress.events.notOwned", { name })
               return (
-                <li
-                  key={id}
-                  title={label}
-                  data-owned={owned ? "true" : "false"}
-                >
-                  <EntityIcon
-                    size="portrait-sm"
-                    src={characterIcon(id as UnitId)}
-                    alt={label}
-                    className={cn(
-                      "rounded-sm",
-                      !owned && "opacity-40 grayscale"
-                    )}
-                  />
-                </li>
+                <Tooltip key={id}>
+                  <TooltipTrigger asChild>
+                    <li data-owned={owned ? "true" : "false"}>
+                      <EntityIcon
+                        size="portrait-sm"
+                        src={characterIcon(id as UnitId)}
+                        alt={label}
+                        className={cn(
+                          "rounded-sm",
+                          !owned && "opacity-40 grayscale"
+                        )}
+                      />
+                    </li>
+                  </TooltipTrigger>
+                  <TooltipContent>{label}</TooltipContent>
+                </Tooltip>
               )
             })}
           </ul>

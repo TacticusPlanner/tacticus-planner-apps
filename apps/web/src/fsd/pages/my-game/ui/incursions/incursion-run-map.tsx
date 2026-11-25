@@ -4,6 +4,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import type { NpcStorageModel } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type { TierStars } from "../../model/incursion-progress.model"
 import { enhancementSubject, nodeName } from "../../model/incursions.model"
@@ -129,27 +134,31 @@ export function IncursionRunMap({
                           {t("map.or")}
                         </span>
                       ) : null}
-                      <button
-                        type="button"
-                        aria-pressed={node === selected}
-                        aria-label={nodeLabel(node)}
-                        title={nodeLabel(node)}
-                        onClick={() => onSelect(node)}
-                        className={cn(
-                          "rounded-md p-0.5 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                          node === selected &&
-                            "bg-accent ring-2 ring-(--primary)"
-                        )}
-                        data-testid={`incursion-map-node-${node.index}`}
-                      >
-                        <IncursionNodeMarker
-                          node={node}
-                          incursion={incursion}
-                          challenge={battle?.challenge ?? false}
-                          stars={starsOf(node)}
-                          size="sm"
-                        />
-                      </button>
+                      <Tooltip>
+                        <TooltipTrigger asChild disableTouchToggle>
+                          <button
+                            type="button"
+                            aria-pressed={node === selected}
+                            aria-label={nodeLabel(node)}
+                            onClick={() => onSelect(node)}
+                            className={cn(
+                              "rounded-md p-0.5 transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                              node === selected &&
+                                "bg-accent ring-2 ring-(--primary)"
+                            )}
+                            data-testid={`incursion-map-node-${node.index}`}
+                          >
+                            <IncursionNodeMarker
+                              node={node}
+                              incursion={incursion}
+                              challenge={battle?.challenge ?? false}
+                              stars={starsOf(node)}
+                              size="sm"
+                            />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>{nodeLabel(node)}</TooltipContent>
+                      </Tooltip>
                     </Fragment>
                   )
                 })}

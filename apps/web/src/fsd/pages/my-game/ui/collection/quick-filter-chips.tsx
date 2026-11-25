@@ -1,13 +1,16 @@
 import { useId } from "react"
 import type { ReactNode } from "react"
+import { HelpCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
+import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 
-import { FILTER_CHIP_CLASS_NAME } from "@/shared/ui"
+import {
+  FILTER_CHIP_CLASS_NAME,
+  HintedToggleGroupItem,
+  HintLines,
+  HintTrigger,
+} from "@/shared/ui"
 
 import {
   collectionQuickFilters,
@@ -93,8 +96,28 @@ export function QuickFilterChips({
       data-testid="collection-quick-filters"
     >
       {/* A visible caption, so the chip row reads as filters rather than loose buttons. */}
-      <span id={`${noteId}-label`} className="text-xs text-muted-foreground">
-        {t("myGame.collection.toolbar.quickFilters")}
+      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+        <span id={`${noteId}-label`}>
+          {t("myGame.collection.toolbar.quickFilters")}
+        </span>
+        {/* Hover or focus explains one chip; touch has no hover, so one (?) explains them all. */}
+        <HintTrigger
+          data-testid="collection-quick-filters-help"
+          hint={
+            <HintLines
+              lines={[
+                t("myGame.collection.toolbar.quickFilters"),
+                ...collectionQuickFilters.map(
+                  (quick) =>
+                    `${label(quick)}: ${t(`myGame.collection.toolbar.quickHelp.${quick}`)}`
+                ),
+              ]}
+            />
+          }
+          label={t("myGame.collection.toolbar.quickHelpLabel")}
+        >
+          <HelpCircle aria-hidden className="size-icon-sm" />
+        </HintTrigger>
       </span>
       {/* One row that scrolls sideways; the edges hiding chips fade out to show there is more. */}
       <div
@@ -120,12 +143,12 @@ export function QuickFilterChips({
               const status = availability[quick]
               const showCount = status === "available" && counts !== undefined
               return (
-                <ToggleGroupItem
+                <HintedToggleGroupItem
                   key={quick}
                   value={quick}
                   className={`${FILTER_CHIP_CLASS_NAME} shrink-0`}
                   disabled={status !== "available"}
-                  title={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
+                  hint={t(`myGame.collection.toolbar.quickHelp.${quick}`)}
                   aria-describedby={
                     isUnavailable(status)
                       ? `${noteId}-${status}`
@@ -144,7 +167,7 @@ export function QuickFilterChips({
                       {counts[quick].toLocaleString(i18n.language)}
                     </span>
                   ) : null}
-                </ToggleGroupItem>
+                </HintedToggleGroupItem>
               )
             })}
           </ToggleGroup>

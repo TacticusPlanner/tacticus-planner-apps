@@ -1,3 +1,8 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { TeamStatusItem } from "./use-team-status"
@@ -13,7 +18,7 @@ const KIND_CLASS: Record<TeamStatusItem["kind"], string> = {
 
 /** One status fact as a small chip (handoff 5.7): text only, no role. */
 function StatusChip({ item }: { item: TeamStatusItem }) {
-  return (
+  const chip = (
     <span
       className={cn(
         "inline-flex max-w-full items-center rounded-md border px-1.5 py-0.5 text-xs font-medium",
@@ -21,10 +26,16 @@ function StatusChip({ item }: { item: TeamStatusItem }) {
       )}
       data-kind={item.kind}
       data-testid="team-status-chip"
-      title={item.title}
     >
       <span className="truncate">{item.text}</span>
     </span>
+  )
+  if (!item.title) return chip
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{chip}</TooltipTrigger>
+      <TooltipContent>{item.title}</TooltipContent>
+    </Tooltip>
   )
 }
 
