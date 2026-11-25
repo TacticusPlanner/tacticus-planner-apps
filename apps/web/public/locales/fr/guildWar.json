@@ -30,7 +30,8 @@
     "tokens": "Jetons utilisés",
     "tokensValue": "{{used}} / {{max}}",
     "results": "Gagnées · perdues",
-    "resultsValue": "{{won}} · {{lost}}"
+    "resultsValue": "{{won}} · {{lost}}",
+    "unitsLeft": "Personnages restants"
   },
   "history": {
     "empty": "Aucune guerre passée pour l'instant.",
@@ -69,5 +70,99 @@
       "title": "Guerres passées",
       "content": "Vos guerres terminées, les plus récentes d'abord. Ouvrez-en une pour voir ses attaques."
     }
+  },
+  "attack": {
+    "lineup": "Composition",
+    "won": "Gagnée",
+    "wonLost_one": "Gagnée · {{count}} perdue",
+    "wonLost_other": "Gagnée · {{count}} perdues",
+    "lost": "Perdue",
+    "noResult": "Pas de résultat",
+    "target": "{{zone}} · Emplacement {{slot}}",
+    "enemy": "Ennemi : {{details}}"
+  },
+  "teams": {
+    "heading": "Équipes d'attaque",
+    "select": "Sélectionner",
+    "selectTeam": "Sélectionner {{name}}",
+    "core": "Unités principales",
+    "blocked": "{{name}} a déjà attaqué dans cette guerre."
+  },
+  "units": {
+    "heading": "Unités disponibles",
+    "noRoster": "Synchronisez avec Tacticus pour voir les unités avec lesquelles vous pouvez attaquer."
+  },
+  "select": {
+    "count_one": "{{count}} sélectionnée",
+    "count_other": "{{count}} sélectionnées",
+    "clear": "Effacer",
+    "log": "Noter l'attaque",
+    "blocked": {
+      "noCharacter": "Choisissez au moins 1 personnage",
+      "tooManyCharacters": "Choisissez au plus 5 personnages",
+      "tooManyMows": "Choisissez au plus 1 Machine de guerre",
+      "deployed": "{{name}} a déjà attaqué dans cette guerre",
+      "notOwned": "{{name}} n'est pas dans votre effectif synchronisé",
+      "noTarget": "Choisissez d'abord une zone et un emplacement",
+      "noTokens": "Plus aucun jeton dans cette guerre"
+    }
+  },
+  "log": {
+    "title": "Noter l'attaque",
+    "result": "Résultat",
+    "resultNone": "Non noté",
+    "resultWon": "Gagnée",
+    "resultLost": "Perdue",
+    "unitsLost": "Unités perdues",
+    "twoOrMore": "2 ou plus",
+    "enemyDetails": "Détails de l'ennemi (facultatif)",
+    "cancel": "Annuler",
+    "save": "Noter l'attaque",
+    "logged": "Attaque notée.",
+    "errors": {
+      "guildWarUnknownZone": "Cette zone n'existe pas sur le champ de bataille de cette saison. Choisissez une autre zone.",
+      "guildWarUnknownUnit": "Une unité de cette attaque est inconnue. Vérifiez la composition et les détails de l'ennemi.",
+      "guildWarUnitDeployed": "Une unité de cette composition a déjà attaqué dans cette guerre.",
+      "guildWarTokensSpent": "Cette guerre n'a plus de jetons.",
+      "failed": "Impossible de noter l'attaque. Réessayez."
+    }
+  },
+  "enemy": {
+    "characters": "Personnages ennemis",
+    "addCharacter": "Ajouter un personnage ennemi",
+    "mow": "Machine de guerre ennemie",
+    "addMow": "Ajouter une Machine de guerre ennemie",
+    "noUnit": "Aucune unité trouvée.",
+    "remove": "Retirer {{name}}",
+    "rarity": "Rareté de {{name}}",
+    "rarityAny": "Rareté non notée",
+    "rank": "Rang de {{name}}",
+    "rankAny": "Rang non noté",
+    "state": "Issue pour {{name}}",
+    "stateAny": "Non noté",
+    "states": {
+      "killed": "Tuée",
+      "damaged": "Endommagée"
+    },
+    "buffs": "Bonus de zone actifs",
+    "map": "Carte",
+    "mapAny": "Carte non notée",
+    "mapOption": "Carte {{number}}"
+  },
+  "attackLog": {
+    "heading": "Journal des attaques",
+    "undo": "Annuler",
+    "undone": "Attaque annulée.",
+    "undoFailed": "Impossible d'annuler l'attaque. Réessayez."
+  },
+  "startWar": {
+    "action": "Commencer une nouvelle guerre",
+    "title": "Commencer une nouvelle guerre ?",
+    "description_one": "Votre guerre en cours se termine avec {{count}} attaque et passe dans l'Historique.",
+    "description_other": "Votre guerre en cours se termine avec {{count}} attaques et passe dans l'Historique.",
+    "confirm": "Commencer une nouvelle guerre",
+    "cancel": "Annuler",
+    "started": "Nouvelle guerre commencée.",
+    "failed": "Impossible de commencer une nouvelle guerre. Réessayez."
   }
 }

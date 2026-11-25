@@ -30,7 +30,8 @@
     "tokens": "Tokens used",
     "tokensValue": "{{used}} / {{max}}",
     "results": "Won · lost",
-    "resultsValue": "{{won}} · {{lost}}"
+    "resultsValue": "{{won}} · {{lost}}",
+    "unitsLeft": "Characters left"
   },
   "history": {
     "empty": "No past wars yet.",
@@ -69,5 +70,99 @@
       "title": "Past wars",
       "content": "Your ended wars, newest first. Open one to see its attacks."
     }
+  },
+  "attack": {
+    "lineup": "Lineup",
+    "won": "Won",
+    "wonLost_one": "Won · {{count}} lost",
+    "wonLost_other": "Won · {{count}} lost",
+    "lost": "Lost",
+    "noResult": "No result",
+    "target": "{{zone}} · Slot {{slot}}",
+    "enemy": "Enemy: {{details}}"
+  },
+  "teams": {
+    "heading": "Offense teams",
+    "select": "Select",
+    "selectTeam": "Select {{name}}",
+    "core": "Core units",
+    "blocked": "{{name}} already attacked in this war."
+  },
+  "units": {
+    "heading": "Available units",
+    "noRoster": "Sync with Tacticus to see the units you can attack with."
+  },
+  "select": {
+    "count_one": "{{count}} selected",
+    "count_other": "{{count}} selected",
+    "clear": "Clear",
+    "log": "Log attack",
+    "blocked": {
+      "noCharacter": "Pick at least 1 character",
+      "tooManyCharacters": "Pick at most 5 characters",
+      "tooManyMows": "Pick at most 1 Machine of War",
+      "deployed": "{{name}} already attacked in this war",
+      "notOwned": "{{name}} isn't in your synced roster",
+      "noTarget": "Pick a zone and slot first",
+      "noTokens": "No tokens left in this war"
+    }
+  },
+  "log": {
+    "title": "Log attack",
+    "result": "Result",
+    "resultNone": "Not recorded",
+    "resultWon": "Won",
+    "resultLost": "Lost",
+    "unitsLost": "Units lost",
+    "twoOrMore": "2 or more",
+    "enemyDetails": "Enemy details (optional)",
+    "cancel": "Cancel",
+    "save": "Log attack",
+    "logged": "Attack logged.",
+    "errors": {
+      "guildWarUnknownZone": "That zone isn't on this season's battlefield. Pick another zone.",
+      "guildWarUnknownUnit": "A unit in this attack isn't known. Check the lineup and enemy details.",
+      "guildWarUnitDeployed": "A unit in this lineup already attacked in this war.",
+      "guildWarTokensSpent": "This war has no tokens left.",
+      "failed": "Couldn't log the attack. Try again."
+    }
+  },
+  "enemy": {
+    "characters": "Enemy characters",
+    "addCharacter": "Add an enemy character",
+    "mow": "Enemy Machine of War",
+    "addMow": "Add an enemy Machine of War",
+    "noUnit": "No unit found.",
+    "remove": "Remove {{name}}",
+    "rarity": "Rarity of {{name}}",
+    "rarityAny": "Rarity not noted",
+    "rank": "Rank of {{name}}",
+    "rankAny": "Rank not noted",
+    "state": "Outcome for {{name}}",
+    "stateAny": "Not noted",
+    "states": {
+      "killed": "Killed",
+      "damaged": "Damaged"
+    },
+    "buffs": "Active zone buffs",
+    "map": "Map",
+    "mapAny": "Map not noted",
+    "mapOption": "Map {{number}}"
+  },
+  "attackLog": {
+    "heading": "Attack log",
+    "undo": "Undo",
+    "undone": "Attack undone.",
+    "undoFailed": "Couldn't undo the attack. Try again."
+  },
+  "startWar": {
+    "action": "Start new war",
+    "title": "Start a new war?",
+    "description_one": "Your current war ends with {{count}} attack and moves to History.",
+    "description_other": "Your current war ends with {{count}} attacks and moves to History.",
+    "confirm": "Start new war",
+    "cancel": "Cancel",
+    "started": "New war started.",
+    "failed": "Couldn't start a new war. Try again."
   }
 }

@@ -28,9 +28,8 @@ vi.mock("@/shared/api", async (importOriginal) => {
   }
 })
 
-import { HistoryPage } from "./history/history-page"
 import { GuildWarLayout } from "./guild-war-layout"
-import { OffensePage } from "./offense/offense-page"
+import { WarSummary } from "./offense/war-summary"
 
 const war = (overrides: Partial<GuildWar> = {}): GuildWar => ({
   id: "war-1",
@@ -50,8 +49,8 @@ function renderAt(path: string) {
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route element={<GuildWarLayout />} path="/guild/war">
-          <Route element={<OffensePage />} path="offense" />
-          <Route element={<HistoryPage />} path="history" />
+          <Route element={<WarSummary />} path="offense" />
+          <Route element={<WarSummary />} path="history" />
         </Route>
       </Routes>
     </MemoryRouter>

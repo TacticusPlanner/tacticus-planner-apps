@@ -30,7 +30,8 @@
     "tokens": "Fichas usadas",
     "tokensValue": "{{used}} / {{max}}",
     "results": "Ganados · perdidos",
-    "resultsValue": "{{won}} · {{lost}}"
+    "resultsValue": "{{won}} · {{lost}}",
+    "unitsLeft": "Personajes restantes"
   },
   "history": {
     "empty": "Aún no hay guerras pasadas.",
@@ -69,5 +70,99 @@
       "title": "Guerras pasadas",
       "content": "Tus guerras terminadas, las más recientes primero. Abre una para ver sus ataques."
     }
+  },
+  "attack": {
+    "lineup": "Alineación",
+    "won": "Ganado",
+    "wonLost_one": "Ganado · {{count}} perdida",
+    "wonLost_other": "Ganado · {{count}} perdidas",
+    "lost": "Perdido",
+    "noResult": "Sin resultado",
+    "target": "{{zone}} · Puesto {{slot}}",
+    "enemy": "Enemigo: {{details}}"
+  },
+  "teams": {
+    "heading": "Equipos de ataque",
+    "select": "Seleccionar",
+    "selectTeam": "Seleccionar {{name}}",
+    "core": "Unidades principales",
+    "blocked": "{{name}} ya atacó en esta guerra."
+  },
+  "units": {
+    "heading": "Unidades disponibles",
+    "noRoster": "Sincroniza con Tacticus para ver las unidades con las que puedes atacar."
+  },
+  "select": {
+    "count_one": "{{count}} seleccionada",
+    "count_other": "{{count}} seleccionadas",
+    "clear": "Borrar",
+    "log": "Registrar ataque",
+    "blocked": {
+      "noCharacter": "Elige al menos 1 personaje",
+      "tooManyCharacters": "Elige como máximo 5 personajes",
+      "tooManyMows": "Elige como máximo 1 Máquina de guerra",
+      "deployed": "{{name}} ya atacó en esta guerra",
+      "notOwned": "{{name}} no está en tu plantel sincronizado",
+      "noTarget": "Elige primero una zona y un puesto",
+      "noTokens": "No quedan fichas en esta guerra"
+    }
+  },
+  "log": {
+    "title": "Registrar ataque",
+    "result": "Resultado",
+    "resultNone": "Sin registrar",
+    "resultWon": "Ganado",
+    "resultLost": "Perdido",
+    "unitsLost": "Unidades perdidas",
+    "twoOrMore": "2 o más",
+    "enemyDetails": "Detalles del enemigo (opcional)",
+    "cancel": "Cancelar",
+    "save": "Registrar ataque",
+    "logged": "Ataque registrado.",
+    "errors": {
+      "guildWarUnknownZone": "Esa zona no está en el campo de batalla de esta temporada. Elige otra zona.",
+      "guildWarUnknownUnit": "Una unidad de este ataque es desconocida. Revisa la alineación y los detalles del enemigo.",
+      "guildWarUnitDeployed": "Una unidad de esta alineación ya atacó en esta guerra.",
+      "guildWarTokensSpent": "No quedan fichas en esta guerra.",
+      "failed": "No se pudo registrar el ataque. Inténtalo de nuevo."
+    }
+  },
+  "enemy": {
+    "characters": "Personajes enemigos",
+    "addCharacter": "Añadir un personaje enemigo",
+    "mow": "Máquina de guerra enemiga",
+    "addMow": "Añadir una Máquina de guerra enemiga",
+    "noUnit": "No se encontró ninguna unidad.",
+    "remove": "Quitar {{name}}",
+    "rarity": "Rareza de {{name}}",
+    "rarityAny": "Rareza sin registrar",
+    "rank": "Rango de {{name}}",
+    "rankAny": "Rango sin registrar",
+    "state": "Resultado para {{name}}",
+    "stateAny": "Sin registrar",
+    "states": {
+      "killed": "Eliminado",
+      "damaged": "Dañado"
+    },
+    "buffs": "Mejoras de zona activas",
+    "map": "Mapa",
+    "mapAny": "Mapa sin registrar",
+    "mapOption": "Mapa {{number}}"
+  },
+  "attackLog": {
+    "heading": "Registro de ataques",
+    "undo": "Deshacer",
+    "undone": "Ataque deshecho.",
+    "undoFailed": "No se pudo deshacer el ataque. Inténtalo de nuevo."
+  },
+  "startWar": {
+    "action": "Empezar nueva guerra",
+    "title": "¿Empezar una nueva guerra?",
+    "description_one": "Tu guerra actual termina con {{count}} ataque y pasa al Historial.",
+    "description_other": "Tu guerra actual termina con {{count}} ataques y pasa al Historial.",
+    "confirm": "Empezar nueva guerra",
+    "cancel": "Cancelar",
+    "started": "Nueva guerra empezada.",
+    "failed": "No se pudo empezar una nueva guerra. Inténtalo de nuevo."
   }
 }

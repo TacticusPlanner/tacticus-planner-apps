@@ -30,7 +30,8 @@
     "tokens": "Verbrauchte Marken",
     "tokensValue": "{{used}} / {{max}}",
     "results": "Gewonnen · verloren",
-    "resultsValue": "{{won}} · {{lost}}"
+    "resultsValue": "{{won}} · {{lost}}",
+    "unitsLeft": "Verbleibende Charaktere"
   },
   "history": {
     "empty": "Noch keine vergangenen Kriege.",
@@ -69,5 +70,99 @@
       "title": "Vergangene Kriege",
       "content": "Deine beendeten Kriege, die neuesten zuerst. Öffne einen, um seine Angriffe zu sehen."
     }
+  },
+  "attack": {
+    "lineup": "Aufstellung",
+    "won": "Gewonnen",
+    "wonLost_one": "Gewonnen · {{count}} verloren",
+    "wonLost_other": "Gewonnen · {{count}} verloren",
+    "lost": "Verloren",
+    "noResult": "Kein Ergebnis",
+    "target": "{{zone}} · Platz {{slot}}",
+    "enemy": "Gegner: {{details}}"
+  },
+  "teams": {
+    "heading": "Angriffsteams",
+    "select": "Auswählen",
+    "selectTeam": "{{name}} auswählen",
+    "core": "Stammeinheiten",
+    "blocked": "{{name}} hat in diesem Krieg schon angegriffen."
+  },
+  "units": {
+    "heading": "Verfügbare Einheiten",
+    "noRoster": "Synchronisiere mit Tacticus, um die Einheiten zu sehen, mit denen du angreifen kannst."
+  },
+  "select": {
+    "count_one": "{{count}} ausgewählt",
+    "count_other": "{{count}} ausgewählt",
+    "clear": "Leeren",
+    "log": "Angriff erfassen",
+    "blocked": {
+      "noCharacter": "Wähle mindestens 1 Charakter",
+      "tooManyCharacters": "Wähle höchstens 5 Charaktere",
+      "tooManyMows": "Wähle höchstens 1 Kriegsmaschine",
+      "deployed": "{{name}} hat in diesem Krieg schon angegriffen",
+      "notOwned": "{{name}} ist nicht in deinem synchronisierten Kader",
+      "noTarget": "Wähle zuerst Zone und Platz",
+      "noTokens": "In diesem Krieg sind keine Marken mehr übrig"
+    }
+  },
+  "log": {
+    "title": "Angriff erfassen",
+    "result": "Ergebnis",
+    "resultNone": "Nicht erfasst",
+    "resultWon": "Gewonnen",
+    "resultLost": "Verloren",
+    "unitsLost": "Verlorene Einheiten",
+    "twoOrMore": "2 oder mehr",
+    "enemyDetails": "Gegnerdetails (optional)",
+    "cancel": "Abbrechen",
+    "save": "Angriff erfassen",
+    "logged": "Angriff erfasst.",
+    "errors": {
+      "guildWarUnknownZone": "Diese Zone gibt es auf dem Schlachtfeld dieser Saison nicht. Wähle eine andere Zone.",
+      "guildWarUnknownUnit": "Eine Einheit in diesem Angriff ist unbekannt. Prüfe Aufstellung und Gegnerdetails.",
+      "guildWarUnitDeployed": "Eine Einheit dieser Aufstellung hat in diesem Krieg schon angegriffen.",
+      "guildWarTokensSpent": "In diesem Krieg sind keine Marken mehr übrig.",
+      "failed": "Der Angriff konnte nicht erfasst werden. Versuch es erneut."
+    }
+  },
+  "enemy": {
+    "characters": "Gegnerische Charaktere",
+    "addCharacter": "Gegnerischen Charakter hinzufügen",
+    "mow": "Gegnerische Kriegsmaschine",
+    "addMow": "Gegnerische Kriegsmaschine hinzufügen",
+    "noUnit": "Keine Einheit gefunden.",
+    "remove": "{{name}} entfernen",
+    "rarity": "Seltenheit von {{name}}",
+    "rarityAny": "Seltenheit nicht erfasst",
+    "rank": "Rang von {{name}}",
+    "rankAny": "Rang nicht erfasst",
+    "state": "Ausgang für {{name}}",
+    "stateAny": "Nicht erfasst",
+    "states": {
+      "killed": "Getötet",
+      "damaged": "Beschädigt"
+    },
+    "buffs": "Aktive Zonenboni",
+    "map": "Karte",
+    "mapAny": "Karte nicht erfasst",
+    "mapOption": "Karte {{number}}"
+  },
+  "attackLog": {
+    "heading": "Angriffsprotokoll",
+    "undo": "Rückgängig",
+    "undone": "Angriff rückgängig gemacht.",
+    "undoFailed": "Der Angriff konnte nicht rückgängig gemacht werden. Versuch es erneut."
+  },
+  "startWar": {
+    "action": "Neuen Krieg starten",
+    "title": "Neuen Krieg starten?",
+    "description_one": "Dein aktueller Krieg endet mit {{count}} Angriff und wandert in den Verlauf.",
+    "description_other": "Dein aktueller Krieg endet mit {{count}} Angriffen und wandert in den Verlauf.",
+    "confirm": "Neuen Krieg starten",
+    "cancel": "Abbrechen",
+    "started": "Neuer Krieg gestartet.",
+    "failed": "Es konnte kein neuer Krieg gestartet werden. Versuch es erneut."
   }
 }

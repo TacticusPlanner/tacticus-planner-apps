@@ -7,8 +7,8 @@
 
 ## 2. Offense page
 
-- [ ] 2.1 Summary strip, offense teams ready and blocked with reasons, available units with search and Filters, all capped at the slot's rarity.
-- [ ] 2.2 Selection bar, Log attack dialog with result and Enemy details, attack log with Undo, Start new war.
+- [x] 2.1 Summary strip, offense teams ready and blocked with reasons, available units with search and Filters, all capped at the slot's rarity.
+- [x] 2.2 Selection bar, Log attack dialog with result and Enemy details, attack log with Undo, Start new war.
 
 ## 3. History tab
 
