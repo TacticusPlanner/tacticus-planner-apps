@@ -16,6 +16,7 @@ import type enQuest from "../../../../../public/locales/en/quest.json"
 import type enIncursions from "../../../../../public/locales/en/incursions.json"
 import type enEventShops from "../../../../../public/locales/en/eventShops.json"
 import type enTeams from "../../../../../public/locales/en/teams.json"
+import type enGuildWar from "../../../../../public/locales/en/guildWar.json"
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -40,6 +41,7 @@ declare module "i18next" {
       incursions: typeof enIncursions
       eventShops: typeof enEventShops
       teams: typeof enTeams
+      guildWar: typeof enGuildWar
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       mows: Record<string, string>
@@ -52,6 +54,11 @@ declare module "i18next" {
       factions: Record<string, string>
       traits: Record<string, string>
       damageTypes: Record<string, string>
+      // Guild War game names, generated from the datamine: zone kind (`visualId`), zone tier and buff
+      // ids as keys.
+      guildWarZones: Record<string, string>
+      guildWarTiers: Record<string, string>
+      guildWarBuffs: Record<string, string>
       // NPC variation ids -> localized unit name (ported from V1 npc_names; see the npc-library change).
       npcs: Record<string, string>
       abilities: Record<string, string>

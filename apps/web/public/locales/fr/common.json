@@ -977,7 +977,15 @@
       "members": "Membres",
       "membersDescription": "La liste des membres de votre guilde.",
       "settings": "Paramètres",
-      "settingsDescription": "Les paramètres du planificateur pour votre guilde."
+      "settingsDescription": "Les paramètres du planificateur pour votre guilde.",
+      "warOffense": "Attaque",
+      "warOffenseDescription": "Notez vos attaques de Guerre de guilde et voyez quelles unités et équipes sont encore libres.",
+      "warHistory": "Historique",
+      "warHistoryDescription": "Vos Guerres de guilde passées, leurs attaques et taux de victoire."
+    },
+    "groups": {
+      "guild": "Guilde",
+      "guildWar": "Guerre de guilde"
     },
     "members": {
       "empty": "Aucun membre trouvé.",

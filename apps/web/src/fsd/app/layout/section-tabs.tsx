@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
 
 import { findActiveChild } from "./find-active-child"
 import { NavChildIcon } from "./nav-child-icon"
+import { childrenOfActiveGroup } from "./nav-groups"
 import { NavLiveDot } from "./nav-live-dot"
 import { subItemLabel } from "./nav-items"
 import type { NavItem } from "./nav-items"
@@ -31,7 +32,10 @@ export function SectionTabs({ item }: { item: NavItem }) {
   useEffect(() => {
     navigatingTo.current = null
   }, [pathname])
+  // A grouped section (Guild: Guild and Guild War) tabs only the active page's group.
   const children = item.children
+    ? childrenOfActiveGroup(item.children, pathname)
+    : undefined
 
   const firstChild = children?.[0]
   if (!children || !firstChild) return null

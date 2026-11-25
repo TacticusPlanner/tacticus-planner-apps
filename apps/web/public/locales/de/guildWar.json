@@ -1,0 +1,73 @@
+{
+  "season": "Saison {{letter}}",
+  "level": "Stufe {{level}}",
+  "settingsSummary": "{{season}} · Schlachtfeldstufe {{level}}",
+  "page": {
+    "loading": "Dein Krieg wird geladen",
+    "loadError": "Dein Krieg konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "noSeasons": "Gildenkriegsdaten sind noch nicht verfügbar."
+  },
+  "target": {
+    "label": "Angriffsziel",
+    "zone": "Zone",
+    "zonePlaceholder": "Zone wählen",
+    "slot": "Platz",
+    "slotPlaceholder": "Platz wählen",
+    "slotOption": "Platz {{slot}}"
+  },
+  "settings": {
+    "title": "Gildenkrieg-Einstellungen",
+    "description": "Saison und Schlachtfeldstufe deines aktuellen Kriegs.",
+    "season": "Saison",
+    "battlefieldLevel": "Schlachtfeldstufe",
+    "capsKept": "Bereits erfasste Angriffe behalten die Seltenheitsgrenze, mit der sie erfasst wurden.",
+    "stale": "Dein Krieg wurde auf einem anderen Gerät geändert. Er wird jetzt so angezeigt, wie er ist.",
+    "failed": "Die Einstellungen konnten nicht gespeichert werden. Versuch es erneut.",
+    "done": "Fertig"
+  },
+  "summary": {
+    "tokens": "Verbrauchte Marken",
+    "tokensValue": "{{used}} / {{max}}",
+    "results": "Gewonnen · verloren",
+    "resultsValue": "{{won}} · {{lost}}"
+  },
+  "history": {
+    "empty": "Noch keine vergangenen Kriege.",
+    "emptyDescription": "Ein Krieg landet hier, wenn du unter Angriff einen neuen startest."
+  },
+  "tour": {
+    "target": {
+      "title": "Zone und Platz",
+      "content": "Wähle die Zone und den Platz, den du angreifst. Jede Einheit auf der Seite wird mit der Seltenheitsgrenze dieses Platzes angezeigt, und die Auswahl wird auf diesem Gerät gespeichert."
+    },
+    "settings": {
+      "title": "Saison und Stufe",
+      "content": "Saison und Schlachtfeldstufe deines Kriegs. Ändere sie oben rechts unter Einstellungen."
+    },
+    "summary": {
+      "title": "Dein Krieg",
+      "content": "Verbrauchte Marken dieses Kriegs, deine verbleibenden Einheiten je Seltenheit sowie gewonnene und verlorene Angriffe."
+    },
+    "teams": {
+      "title": "Angriffsteams",
+      "content": "Deine Kriegsangriff-Teams: zuerst die bereiten, dann die, bei denen eine Einheit schon angegriffen hat."
+    },
+    "units": {
+      "title": "Verfügbare Einheiten",
+      "content": "Deine Einheiten, die in diesem Krieg noch nicht angegriffen haben. Tippe Einheiten oder Auswählen bei einem Team an, dann Angriff erfassen."
+    },
+    "log": {
+      "title": "Angriffsprotokoll",
+      "content": "Alle Angriffe dieses Kriegs, die neuesten zuerst. Rückgängig entfernt einen Fehlgriff und gibt seine Einheiten wieder frei."
+    },
+    "totals": {
+      "title": "Gesamtwerte",
+      "content": "Siegquoten nach Zonenrang und Platzseltenheit sowie deine meistgenutzten Aufstellungen über die unten geladenen Kriege."
+    },
+    "wars": {
+      "title": "Vergangene Kriege",
+      "content": "Deine beendeten Kriege, die neuesten zuerst. Öffne einen, um seine Angriffe zu sehen."
+    }
+  }
+}

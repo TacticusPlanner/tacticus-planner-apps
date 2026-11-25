@@ -59,7 +59,7 @@ export interface paths {
     put?: never
     /**
      * Replaces this staging account's planner data with a copy from production.
-     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, event shop plans, personal roster snapshots, teams, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
+     * @description Staging only (404 elsewhere). Redeems a code from production's POST account/staging-transfer-code and, in one transaction, replaces goals, projects, Legendary Event plans and run records, event shop plans, personal roster snapshots, teams, Guild Wars, settings and progress overrides. The Tacticus API key, player data and guild are not copied. 400 when the code is invalid or expired; 502 when production cannot be reached.
      */
     post: operations["TacticusPlannerApiFeaturesStagingTransferImportFromProductionEndpoint"]
     delete?: never
@@ -630,6 +630,40 @@ export interface paths {
     }
     /** Gets curated Guild Raid Meta recommendations. */
     get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGuildRaidMetaEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/guild-war": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Guild War config per season. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGuildWarEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/guild-war/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Guild War config per season. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGuildWarEndpoint2"]
     put?: never
     post?: never
     delete?: never
@@ -1443,6 +1477,92 @@ export interface paths {
      * @description Requires a configured Tacticus User ID and the caller to be a linked Leader or Co-Leader of a registered guild, re-verified against a fresh Tacticus guild response fetched with the stored Guild API token. Nothing is deleted when that fetch fails. Deletes the guild and all of its member rows from Planner. This does not affect the guild in Tacticus itself, only Planner's registration of it, and cannot be undone — any current member can re-register it afterward.
      */
     delete: operations["TacticusPlannerApiFeaturesGuildsPurgeGuildEndpoint"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/guild-wars": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Reads a page of the caller's ended wars, newest first, each with its attacks.
+     * @description Ordered by startedAt then id, both descending; the current war is not listed. limit is 1–50 (default 20); after is the opaque nextAfter of the previous page, null on the last one.
+     */
+    get: operations["TacticusPlannerApiFeaturesGuildWarsListGuildWarsEndpoint"]
+    put?: never
+    /** Ends the current war, keeping it and its attacks, and starts a new one. */
+    post: operations["TacticusPlannerApiFeaturesGuildWarsStartGuildWarEndpoint"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/guild-wars/current": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Reads the caller's current Guild War with its attacks.
+     * @description war is null when the caller has never started a war.
+     */
+    get: operations["TacticusPlannerApiFeaturesGuildWarsGetCurrentGuildWarEndpoint"]
+    /**
+     * Sets the current war's season and battlefield level, creating the war when there is none.
+     * @description revision is ignored when the war is created. Changing the level keeps the rarityCap of attacks already logged.
+     */
+    put: operations["TacticusPlannerApiFeaturesGuildWarsSetCurrentGuildWarEndpoint"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/guild-wars/current/attacks": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Logs an attack in the current war.
+     * @description The server derives rarityCap from the zone, the slot and the war's battlefield level. attackedAt defaults to now.
+     */
+    post: operations["TacticusPlannerApiFeaturesGuildWarsCreateGuildWarAttackEndpoint"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/guild-wars/{warId}/attacks/{attackId}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /**
+     * Replaces an attack's fields when the revision matches.
+     * @description An attack of an ended war may be edited. rarityCap is derived again only when the zone or slot changes; attackedAt is kept.
+     */
+    put: operations["TacticusPlannerApiFeaturesGuildWarsUpdateGuildWarAttackEndpoint"]
+    post?: never
+    /** Removes an attack (Undo), freeing its token and units. */
+    delete: operations["TacticusPlannerApiFeaturesGuildWarsDeleteGuildWarAttackEndpoint"]
     options?: never
     head?: never
     patch?: never
@@ -2263,6 +2383,33 @@ export interface components {
         null | components["schemas"]["GoalSnapshotResourceRequest"][]
     }
     /** @constant */
+    CreateGuildWarAttackRequest: {
+      /** @constant */
+      zoneId: string
+      /**
+       * Format: int32
+       * @constant
+       */
+      slot: number
+      characters: components["schemas"]["IReadOnlyListOfGuildWarLineupUnitDto"]
+      /** @constant */
+      mow: null | components["schemas"]["GuildWarLineupUnitDto"]
+      /** @constant */
+      result: null | components["schemas"]["GuildWarAttackResult"]
+      /**
+       * Format: int32
+       * @constant
+       */
+      unitsLost: null | number
+      /** @constant */
+      enemy: null | components["schemas"]["GuildWarEnemyDto"]
+      /**
+       * Format: date-time
+       * @constant
+       */
+      attackedAt: null | string
+    }
+    /** @constant */
     CreateLegendaryEventTeamRequest: {
       /**
        * Format: int64
@@ -2335,6 +2482,9 @@ export interface components {
       notes: null | string
       /** @constant */
       rarityCap: null | components["schemas"]["TeamRarityCap"]
+    }
+    CurrentGuildWarResponse: {
+      war: null | components["schemas"]["GuildWarResponse"]
     }
     CurrentUserResponse: {
       /** Format: uuid */
@@ -2742,6 +2892,16 @@ export interface components {
       /** @constant */
       data: null | components["schemas"]["GameCatalogGlobalValues"][]
     }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGuildWarSeason: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogGuildWarSeason"][]
+    }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogHordeModeTiers: {
       version: string
       schemaHash: string
@@ -3131,6 +3291,81 @@ export interface components {
       comps: components["schemas"]["IReadOnlyListOfGameCatalogGuildRaidMetaCompView"]
       bosses: components["schemas"]["IReadOnlyListOfGameCatalogGuildRaidMetaBossView"]
       primes: components["schemas"]["IReadOnlyListOfGameCatalogGuildRaidMetaPrimeView"]
+    }
+    GameCatalogGuildWarBuff: {
+      id: string
+      scope: string
+      abilities: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarBuffAbility"]
+    }
+    GameCatalogGuildWarBuffAbility: {
+      abilityId: string
+      rarity: null | string
+      variables: components["schemas"]["IReadOnlyDictionaryOfStringAndIReadOnlyListOfInt32"]
+    }
+    GameCatalogGuildWarLevel: {
+      /** Format: int32 */
+      battlefieldLevel: number
+      /** Format: int32 */
+      attemptDebuffPercent: number
+      /** Format: int32 */
+      scoreFactorPercent: null | number
+      zones: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarLevelZone"]
+    }
+    GameCatalogGuildWarLevelZone: {
+      zoneId: string
+      tierId: string
+    }
+    GameCatalogGuildWarLineupScore: {
+      /** Format: int32 */
+      maxAttempts: number
+      /** Format: int32 */
+      maxUnitsLost: number
+      /** Format: int32 */
+      score: number
+    }
+    GameCatalogGuildWarMap: {
+      boardId: string
+      /** Format: int32 */
+      spawnPointsSet: number
+    }
+    GameCatalogGuildWarPowerCap: {
+      rarity: string
+      /** Format: int32 */
+      maxPower: number
+    }
+    GameCatalogGuildWarScoring: {
+      /** Format: int32 */
+      unitKilled: number
+      lineupEliminated: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarLineupScore"]
+    }
+    GameCatalogGuildWarSeason: {
+      id: string
+      nextSeasonId: string
+      /** Format: int32 */
+      maxAttempts: number
+      zones: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarZone"]
+      tiers: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarTier"]
+      levels: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarLevel"]
+      buffs: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarBuff"]
+      maps: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarMap"]
+      scoring: components["schemas"]["GameCatalogGuildWarScoring"]
+      powerCaps: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarPowerCap"]
+    }
+    GameCatalogGuildWarTier: {
+      id: string
+      rarityCaps: components["schemas"]["IReadOnlyListOfString"]
+    }
+    GameCatalogGuildWarZone: {
+      id: string
+      visualId: string
+      buffId: null | string
+      canBeMoved: boolean
+      /** Format: int32 */
+      score: number
+      /** Format: int32 */
+      row: number
+      /** Format: int32 */
+      column: number
     }
     GameCatalogHeroPowerStep: {
       /** Format: int32 */
@@ -3575,6 +3810,7 @@ export interface components {
       factionId: string
       alliance: string
       kind: string
+      characterId: null | string
       meleeDamage: string
       /** Format: int32 */
       meleeHits: number
@@ -4143,6 +4379,68 @@ export interface components {
     }
     /** @enum {string} */
     GuildRole: "Member" | "Officer" | "CoLeader" | "Leader"
+    GuildWarAttackResponse: {
+      /** Format: uuid */
+      id: string
+      /** Format: int64 */
+      revision: number
+      /** Format: date-time */
+      attackedAt: string
+      zoneId: string
+      /** Format: int32 */
+      slot: number
+      rarityCap: components["schemas"]["GuildWarRarity"]
+      characters: components["schemas"]["IReadOnlyListOfGuildWarLineupUnitDto"]
+      mow: null | components["schemas"]["GuildWarLineupUnitDto"]
+      result: null | components["schemas"]["GuildWarAttackResult"]
+      /** Format: int32 */
+      unitsLost: null | number
+      enemy: null | components["schemas"]["GuildWarEnemyDto"]
+    }
+    /** @enum {string} */
+    GuildWarAttackResult: "won" | "lost"
+    GuildWarEnemyDto: {
+      characters: components["schemas"]["IReadOnlyListOfGuildWarEnemyUnitDto"]
+      mow: null | components["schemas"]["GuildWarEnemyUnitDto"]
+      buffIds: components["schemas"]["IReadOnlyListOfString"]
+      boardId: null | string
+    }
+    GuildWarEnemyUnitDto: {
+      unitId: string
+      rarity: null | components["schemas"]["GuildWarRarity"]
+      rank: null | components["schemas"]["UnitRank"]
+      state: null | components["schemas"]["GuildWarEnemyUnitState"]
+    }
+    /** @enum {string} */
+    GuildWarEnemyUnitState: "killed" | "damaged"
+    GuildWarLineupUnitDto: {
+      unitId: string
+      progression: components["schemas"]["UnitProgression"]
+      rank: null | components["schemas"]["UnitRank"]
+      /** Format: int32 */
+      xpLevel: number
+      abilityLevels: components["schemas"]["IReadOnlyListOfInt32"]
+    }
+    /** @enum {string} */
+    GuildWarRarity:
+      "Common" | "Uncommon" | "Rare" | "Epic" | "Legendary" | "Mythic"
+    GuildWarResponse: {
+      /** Format: uuid */
+      id: string
+      /** Format: int64 */
+      revision: number
+      seasonId: string
+      /** Format: int32 */
+      battlefieldLevel: number
+      /** Format: date-time */
+      startedAt: string
+      /** Format: date-time */
+      endedAt: null | string
+      /** Format: int32 */
+      tokensUsed: number
+      deployedUnitIds: components["schemas"]["IReadOnlyListOfString"]
+      attacks: components["schemas"]["IReadOnlyListOfGuildWarAttackResponse"]
+    }
     /** @constant */
     ImportFromProductionRequest: {
       /** @constant */
@@ -4163,6 +4461,8 @@ export interface components {
       eventShopPlans: number
       /** Format: int32 */
       teams: number
+      /** Format: int32 */
+      guildWars: number
       settings: boolean
       overrides: boolean
     }
@@ -4294,6 +4594,15 @@ export interface components {
     IReadOnlyListOfGameCatalogGuildRaidMetaHeroSlotView: components["schemas"]["GameCatalogGuildRaidMetaHeroSlotView"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaPrimeView: components["schemas"]["GameCatalogGuildRaidMetaPrimeView"][]
     IReadOnlyListOfGameCatalogGuildRaidMetaRecommendationView: components["schemas"]["GameCatalogGuildRaidMetaRecommendationView"][]
+    IReadOnlyListOfGameCatalogGuildWarBuff: components["schemas"]["GameCatalogGuildWarBuff"][]
+    IReadOnlyListOfGameCatalogGuildWarBuffAbility: components["schemas"]["GameCatalogGuildWarBuffAbility"][]
+    IReadOnlyListOfGameCatalogGuildWarLevel: components["schemas"]["GameCatalogGuildWarLevel"][]
+    IReadOnlyListOfGameCatalogGuildWarLevelZone: components["schemas"]["GameCatalogGuildWarLevelZone"][]
+    IReadOnlyListOfGameCatalogGuildWarLineupScore: components["schemas"]["GameCatalogGuildWarLineupScore"][]
+    IReadOnlyListOfGameCatalogGuildWarMap: components["schemas"]["GameCatalogGuildWarMap"][]
+    IReadOnlyListOfGameCatalogGuildWarPowerCap: components["schemas"]["GameCatalogGuildWarPowerCap"][]
+    IReadOnlyListOfGameCatalogGuildWarTier: components["schemas"]["GameCatalogGuildWarTier"][]
+    IReadOnlyListOfGameCatalogGuildWarZone: components["schemas"]["GameCatalogGuildWarZone"][]
     IReadOnlyListOfGameCatalogHeroPowerStep: components["schemas"]["GameCatalogHeroPowerStep"][]
     IReadOnlyListOfGameCatalogHeroProgressionRule: components["schemas"]["GameCatalogHeroProgressionRule"][]
     IReadOnlyListOfGameCatalogHordeModeCharacter: components["schemas"]["GameCatalogHordeModeCharacter"][]
@@ -4352,6 +4661,10 @@ export interface components {
     IReadOnlyListOfGuildMemberSummary: components["schemas"]["GuildMemberSummary"][]
     IReadOnlyListOfGuildRaidModifierStatusResponse: components["schemas"]["GuildRaidModifierStatusResponse"][]
     IReadOnlyListOfGuildRaidPrimeStatusResponse: components["schemas"]["GuildRaidPrimeStatusResponse"][]
+    IReadOnlyListOfGuildWarAttackResponse: components["schemas"]["GuildWarAttackResponse"][]
+    IReadOnlyListOfGuildWarEnemyUnitDto: components["schemas"]["GuildWarEnemyUnitDto"][]
+    IReadOnlyListOfGuildWarLineupUnitDto: components["schemas"]["GuildWarLineupUnitDto"][]
+    IReadOnlyListOfGuildWarResponse: components["schemas"]["GuildWarResponse"][]
     IReadOnlyListOfIncursionBattleProgressOverrideRequest: components["schemas"]["IncursionBattleProgressOverrideRequest"][]
     IReadOnlyListOfIncursionBattleProgressOverrideResponse: components["schemas"]["IncursionBattleProgressOverrideResponse"][]
     IReadOnlyListOfInt32: number[]
@@ -4577,6 +4890,10 @@ export interface components {
     /** @enum {string} */
     OnslaughtSector:
       "Stone" | "Iron" | "Bronze" | "Silver" | "Gold" | "Diamond" | "Adamantine"
+    PastGuildWarsResponse: {
+      items: components["schemas"]["IReadOnlyListOfGuildWarResponse"]
+      nextAfter: null | string
+    }
     PersonalRosterSnapshotListResponse: {
       /** Format: int32 */
       limit: number
@@ -4784,6 +5101,26 @@ export interface components {
     }
     /** @enum {string} */
     RosterSnapshotSource: "manual" | "auto" | "v1Import"
+    /** @constant */
+    SetCurrentGuildWarRequest: {
+      /** @constant */
+      seasonId: string
+      /**
+       * Format: int32
+       * @constant
+       */
+      battlefieldLevel: number
+      /**
+       * Format: int64
+       * @constant
+       */
+      revision: number
+    }
+    StartGuildWarRequest: {
+      seasonId: string
+      /** Format: int32 */
+      battlefieldLevel: number
+    }
     /** @enum {string} */
     TeamMode:
       | "warOffense"
@@ -4948,6 +5285,33 @@ export interface components {
        */
       expectedRevision: number
       target: components["schemas"]["GoalTargetEditRequest"]
+    }
+    /** @constant */
+    UpdateGuildWarAttackRequest: {
+      /** @constant */
+      zoneId: string
+      /**
+       * Format: int32
+       * @constant
+       */
+      slot: number
+      characters: components["schemas"]["IReadOnlyListOfGuildWarLineupUnitDto"]
+      /** @constant */
+      mow: null | components["schemas"]["GuildWarLineupUnitDto"]
+      /** @constant */
+      result: null | components["schemas"]["GuildWarAttackResult"]
+      /**
+       * Format: int32
+       * @constant
+       */
+      unitsLost: null | number
+      /** @constant */
+      enemy: null | components["schemas"]["GuildWarEnemyDto"]
+      /**
+       * Format: int64
+       * @constant
+       */
+      revision: number
     }
     /** @constant */
     UpdateIncursionProgressRequest: {
@@ -7131,6 +7495,98 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfGameCatalogGuildRaidMetaView"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGuildWarEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per live Guild War season, ordered by id: zones in layout order with their buff and score, zone tiers with the rarity cap of each of their five slots, battlefield levels with each zone's tier and the per-attempt debuff, buffs with their ability variables, the map pool, scoring and the per-rarity power caps. The game does not say which season is live. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGuildWarSeason"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogGuildWarEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per live Guild War season, ordered by id: zones in layout order with their buff and score, zone tiers with the rarity cap of each of their five slots, battlefield levels with each zone's tier and the per-attempt debuff, buffs with their ability variables, the map pool, scoring and the per-rarity power caps. The game does not say which season is live. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogGuildWarSeason"]
         }
       }
       /** @description The dataset has not changed. */
@@ -9578,6 +10034,432 @@ export interface operations {
       }
       /** @description The Tacticus API is currently unavailable. */
       503: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGuildWarsListGuildWarsEndpoint: {
+    parameters: {
+      query?: {
+        limit?: null | number
+        after?: null | string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["PastGuildWarsResponse"]
+        }
+      }
+      /** @description limit is out of range or after is not a valid cursor. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGuildWarsStartGuildWarEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StartGuildWarRequest"]
+      }
+    }
+    responses: {
+      /** @description The new current war, with no attacks. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GuildWarResponse"]
+        }
+      }
+      /** @description guildWarUnknownSeason, guildWarUnknownLevel, or an invalid shape. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGuildWarsGetCurrentGuildWarEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["CurrentGuildWarResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGuildWarsSetCurrentGuildWarEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SetCurrentGuildWarRequest"]
+      }
+    }
+    responses: {
+      /** @description The current war, as GET returns it. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GuildWarResponse"]
+        }
+      }
+      /** @description guildWarUnknownSeason, guildWarUnknownLevel, or an invalid shape. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description guildWarRevisionStale; current is the war as it stands. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGuildWarsCreateGuildWarAttackEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateGuildWarAttackRequest"]
+      }
+    }
+    responses: {
+      /** @description The current war, as GET returns it. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GuildWarResponse"]
+        }
+      }
+      /** @description The first broken rule (guildWarUnknownZone, guildWarUnknownUnit, guildWarUnitDeployed, guildWarTokensSpent), or an invalid shape. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description guildWarNotStarted: the caller has no current war. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGuildWarsUpdateGuildWarAttackEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        warId: string
+        attackId: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateGuildWarAttackRequest"]
+      }
+    }
+    responses: {
+      /** @description The attack's war, as GET returns it. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GuildWarResponse"]
+        }
+      }
+      /** @description The first broken rule (guildWarUnknownZone, guildWarUnknownUnit, guildWarUnitDeployed), or an invalid shape. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The war or attack does not exist or belongs to another profile. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description guildWarAttackRevisionStale; current is the attack's war as it stands. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGuildWarsDeleteGuildWarAttackEndpoint: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        warId: string
+        attackId: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description The attack's war, as GET returns it. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GuildWarResponse"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The war or attack does not exist or belongs to another profile. */
+      404: {
         headers: {
           [name: string]: unknown
         }

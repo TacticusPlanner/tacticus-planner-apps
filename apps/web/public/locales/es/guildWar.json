@@ -1,0 +1,73 @@
+{
+  "season": "Temporada {{letter}}",
+  "level": "Nivel {{level}}",
+  "settingsSummary": "{{season}} · Nivel de campo de batalla {{level}}",
+  "page": {
+    "loading": "Cargando tu guerra",
+    "loadError": "No se pudo cargar tu guerra.",
+    "retry": "Reintentar",
+    "noSeasons": "Los datos de la Guerra de gremios aún no están disponibles."
+  },
+  "target": {
+    "label": "Objetivo del ataque",
+    "zone": "Zona",
+    "zonePlaceholder": "Elige una zona",
+    "slot": "Puesto",
+    "slotPlaceholder": "Elige un puesto",
+    "slotOption": "Puesto {{slot}}"
+  },
+  "settings": {
+    "title": "Ajustes de la Guerra de gremios",
+    "description": "La temporada y el nivel de campo de batalla de tu guerra actual.",
+    "season": "Temporada",
+    "battlefieldLevel": "Nivel de campo de batalla",
+    "capsKept": "Los ataques ya registrados conservan el límite de rareza con el que se registraron.",
+    "stale": "Tu guerra cambió en otro dispositivo. Se muestra tal como está ahora.",
+    "failed": "No se pudieron guardar los ajustes. Inténtalo de nuevo.",
+    "done": "Listo"
+  },
+  "summary": {
+    "tokens": "Fichas usadas",
+    "tokensValue": "{{used}} / {{max}}",
+    "results": "Ganados · perdidos",
+    "resultsValue": "{{won}} · {{lost}}"
+  },
+  "history": {
+    "empty": "Aún no hay guerras pasadas.",
+    "emptyDescription": "Una guerra pasa aquí cuando empiezas una nueva desde Ataque."
+  },
+  "tour": {
+    "target": {
+      "title": "Zona y puesto",
+      "content": "Elige la zona y el puesto que atacas. Cada unidad de la página se muestra con el límite de rareza de ese puesto, y la elección se recuerda en este dispositivo."
+    },
+    "settings": {
+      "title": "Temporada y nivel",
+      "content": "La temporada y el nivel de campo de batalla de tu guerra. Cámbialos con Ajustes arriba a la derecha."
+    },
+    "summary": {
+      "title": "Tu guerra",
+      "content": "Fichas usadas de los intentos de esta guerra, las unidades que te quedan por rareza y los ataques ganados y perdidos."
+    },
+    "teams": {
+      "title": "Equipos de ataque",
+      "content": "Tus equipos de Ataque de guerra: primero los listos y luego los bloqueados por una unidad que ya atacó."
+    },
+    "units": {
+      "title": "Unidades disponibles",
+      "content": "Tus unidades que no han atacado en esta guerra. Toca unidades o Seleccionar en un equipo y luego Registrar ataque."
+    },
+    "log": {
+      "title": "Registro de ataques",
+      "content": "Todos los ataques de esta guerra, los más recientes primero. Deshacer quita un error y libera sus unidades."
+    },
+    "totals": {
+      "title": "Totales",
+      "content": "Porcentajes de victoria por rango de zona y rareza del puesto, y tus alineaciones más usadas, en las guerras cargadas abajo."
+    },
+    "wars": {
+      "title": "Guerras pasadas",
+      "content": "Tus guerras terminadas, las más recientes primero. Abre una para ver sus ataques."
+    }
+  }
+}

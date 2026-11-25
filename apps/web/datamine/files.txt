@@ -11,6 +11,7 @@ raw/gameconfig/units/lineup.json
 raw/gameconfig/units/npc.json
 raw/gameconfig/upgrades.json
 raw/globalconfig/guildBoss/unitSets.json
+raw/globalconfig/guildWar.json
 raw/languages/
 sprites-webp/abilities/
 sprites-webp/abilties/

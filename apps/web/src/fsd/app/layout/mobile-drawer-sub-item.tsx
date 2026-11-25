@@ -1,13 +1,16 @@
+import { Fragment } from "react"
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { NavChildIcon } from "./nav-child-icon"
+import { NavGroupLabel } from "./nav-group-label"
+import { groupNavChildren } from "./nav-groups"
 import { NavLiveDot } from "./nav-live-dot"
 import { subItemDescription, subItemLabel } from "./nav-items"
 import type { NavSubItem } from "./nav-items"
 
-export function MobileDrawerSubItem({
+function MobileDrawerSubItem({
   hideLive = false,
   item,
   onSelect,
@@ -48,4 +51,32 @@ export function MobileDrawerSubItem({
       </span>
     </Link>
   )
+}
+
+/** A section's children in the drawer, each group under its label (Guild: Guild, Guild War). */
+export function MobileDrawerSubItems({
+  hideLive = false,
+  items,
+  onSelect,
+  pathname,
+}: {
+  hideLive?: boolean
+  items: readonly NavSubItem[]
+  onSelect: () => void
+  pathname: string
+}) {
+  return groupNavChildren(items).map((group) => (
+    <Fragment key={group.labelKey ?? "children"}>
+      {group.labelKey ? <NavGroupLabel labelKey={group.labelKey} /> : null}
+      {group.children.map((child) => (
+        <MobileDrawerSubItem
+          hideLive={hideLive}
+          item={child}
+          key={child.path}
+          onSelect={onSelect}
+          pathname={pathname}
+        />
+      ))}
+    </Fragment>
+  ))
 }

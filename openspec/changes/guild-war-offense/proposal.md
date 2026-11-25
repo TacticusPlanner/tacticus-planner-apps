@@ -11,7 +11,7 @@ Companion change: `guild-war-offense` in `tacticus-planner-api`, which applies f
 - The zone and slot being attacked are a toolbar pair above the tabs. The last picked values are kept on the device (local storage), not in the URL. Together with the war's battlefield level they set the rarity cap that every portrait on the page is shown at.
 - **Offense**: a summary strip (tokens used of the season's attempts, units left per rarity, attacks logged), offense teams ready first then blocked with the reason, available units with search and filters, a contextual selection bar with Log attack, a Log attack dialog with an optional result and optional Enemy details, the attack log with Undo, Start new war behind a confirmation, and a Settings dialog for the season and battlefield level.
 - **History**: past wars newest first, each expanding in place to its attacks, plus totals (win rate by zone tier and slot rarity, most used lineups).
-- A `guild-war` i18n namespace in every locale, a tour, and the `guild-war` catalog dataset in the game-catalog package.
+- A `guildWar` i18n namespace in every locale (plus the game's zone, tier and buff names), a tour, and the `guild-war` catalog dataset in the game-catalog package.
 
 ## Capabilities
 
@@ -26,7 +26,7 @@ Companion change: `guild-war-offense` in `tacticus-planner-api`, which applies f
 ## Impact
 
 - `packages/game-catalog`: the `guild-war` dataset, its storage model and hook.
-- New `entities/guild-war` (API, queries, rarity cap, derived state) and `pages/guild-war`.
+- New `pages/guild-war`, holding its war API, queries, rarity cap and derived state (no other slice reads them).
 - `pages/guild` (boundary moves to its own routes), `app/routes`, `app/layout/nav-items.ts` and the section menu, drawer and tabs.
 - `shared/api/schema.d.ts`, regenerated from the API contract.
-- A new `guild-war` i18n namespace and nav keys in `common.json`.
+- A new `guildWar` i18n namespace and nav keys in `common.json`.

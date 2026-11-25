@@ -132,6 +132,7 @@ export const datasetToStorageModels: Record<
   hre: asArray,
   incursions: byMowId,
   "npc-encounters": byNpcEncounterKey,
+  "guild-war": asArray,
 }
 
 export function mapDatasetRowToStorageModel<T extends Record<string, unknown>>(

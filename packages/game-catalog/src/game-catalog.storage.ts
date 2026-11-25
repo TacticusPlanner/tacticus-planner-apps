@@ -47,3 +47,4 @@ export type ProgressionRulesStorageModel = StorageModel<"progression-rules">
 export type HreStorageModel = StorageModel<"hre">
 export type IncursionStorageModel = StorageModel<"incursions">
 export type NpcEncounterStorageModel = StorageModel<"npc-encounters">
+export type GuildWarSeasonStorageModel = StorageModel<"guild-war">

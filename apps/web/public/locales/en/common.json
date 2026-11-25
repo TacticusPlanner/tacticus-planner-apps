@@ -977,7 +977,15 @@
       "members": "Members",
       "membersDescription": "Your guild's member roster.",
       "settings": "Settings",
-      "settingsDescription": "Your guild's planner settings."
+      "settingsDescription": "Your guild's planner settings.",
+      "warOffense": "Offense",
+      "warOffenseDescription": "Log your Guild War attacks and see which units and teams are still free.",
+      "warHistory": "History",
+      "warHistoryDescription": "Your past Guild Wars, their attacks and win rates."
+    },
+    "groups": {
+      "guild": "Guild",
+      "guildWar": "Guild War"
     },
     "members": {
       "empty": "No members found.",

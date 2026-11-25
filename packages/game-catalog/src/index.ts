@@ -195,6 +195,7 @@ export {
   type ProgressionRulesStorageModel,
   type HreStorageModel,
   type IncursionStorageModel,
+  type GuildWarSeasonStorageModel,
   type NpcEncounterStorageModel,
 } from "./game-catalog.storage"
 

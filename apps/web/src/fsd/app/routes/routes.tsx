@@ -4,6 +4,7 @@
 import { lazy } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
+import { Outlet } from "react-router"
 import type { RouteObject } from "react-router"
 
 import { useIsAuthenticated } from "@azure/msal-react"
@@ -24,6 +25,11 @@ import {
   GuildPage,
   preloadGuildPage,
 } from "@/pages/guild"
+import {
+  routes as guildWarRoutes,
+  GuildWarLayout,
+  preloadGuildWarLayout,
+} from "@/pages/guild-war"
 import {
   routes as legendaryEventsRoutes,
   LegendaryEventsLayout,
@@ -281,14 +287,27 @@ const appRoutes: RouteObject[] = [
         loader: preloadLegendaryEventsLayout,
       },
       {
+        // Two groups (see nav-items.ts): Guild needs a registered guild, so only its routes sit
+        // inside the guild access boundary (`GuildPage`); Guild War needs only sign-in.
         path: "/guild",
         element: (
           <ProtectedRoute>
-            <GuildPage />
+            <Outlet />
           </ProtectedRoute>
         ),
-        children: guildRoutes,
-        loader: preloadGuildPage,
+        children: [
+          {
+            element: <GuildPage />,
+            children: guildRoutes,
+            loader: preloadGuildPage,
+          },
+          {
+            path: "war",
+            element: <GuildWarLayout />,
+            children: guildWarRoutes,
+            loader: preloadGuildWarLayout,
+          },
+        ],
       },
       // Public component showcase for local/QA use вЂ” never registered in production (see
       // shared/config's isUiKitEnabled), so it 404s (falls through to the "*" not-found page below)

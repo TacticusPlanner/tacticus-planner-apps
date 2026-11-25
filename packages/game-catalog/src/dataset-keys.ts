@@ -34,6 +34,7 @@ export const servedDatasetKeys = [
   "hre",
   "incursions",
   "npc-encounters",
+  "guild-war",
 ] as const
 
 export type GameCatalogDatasetKey = (typeof servedDatasetKeys)[number]
@@ -53,6 +54,8 @@ export const optionalDatasetKeys: readonly GameCatalogDatasetKey[] = [
   "npc-encounters",
   // Served once the API ships seasonal event shops; without it the Event shop page shows its empty state.
   "event-shops",
+  // Served once the API ships it; without it the Guild War pages show no zones and log no attacks.
+  "guild-war",
 ]
 
 // Metadata-store key for the manifest sync metadata (etag/version) used for delta sync.

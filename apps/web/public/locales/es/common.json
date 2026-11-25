@@ -977,7 +977,15 @@
       "members": "Miembros",
       "membersDescription": "El plantel de miembros de tu gremio.",
       "settings": "Ajustes",
-      "settingsDescription": "Los ajustes del planificador de tu gremio."
+      "settingsDescription": "Los ajustes del planificador de tu gremio.",
+      "warOffense": "Ataque",
+      "warOffenseDescription": "Registra tus ataques de la Guerra de gremios y mira qué unidades y equipos siguen libres.",
+      "warHistory": "Historial",
+      "warHistoryDescription": "Tus Guerras de gremios pasadas, sus ataques y porcentajes de victoria."
+    },
+    "groups": {
+      "guild": "Gremio",
+      "guildWar": "Guerra de gremios"
     },
     "members": {
       "empty": "No se encontraron miembros.",

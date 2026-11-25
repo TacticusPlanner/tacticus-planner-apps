@@ -1,0 +1,73 @@
+{
+  "season": "Saison {{letter}}",
+  "level": "Niveau {{level}}",
+  "settingsSummary": "{{season}} · Niveau du champ de bataille {{level}}",
+  "page": {
+    "loading": "Chargement de votre guerre",
+    "loadError": "Impossible de charger votre guerre.",
+    "retry": "Réessayer",
+    "noSeasons": "Les données de Guerre de guilde ne sont pas encore disponibles."
+  },
+  "target": {
+    "label": "Cible de l'attaque",
+    "zone": "Zone",
+    "zonePlaceholder": "Choisir une zone",
+    "slot": "Emplacement",
+    "slotPlaceholder": "Choisir un emplacement",
+    "slotOption": "Emplacement {{slot}}"
+  },
+  "settings": {
+    "title": "Paramètres de Guerre de guilde",
+    "description": "La saison et le niveau du champ de bataille de votre guerre en cours.",
+    "season": "Saison",
+    "battlefieldLevel": "Niveau du champ de bataille",
+    "capsKept": "Les attaques déjà notées gardent la limite de rareté avec laquelle elles ont été notées.",
+    "stale": "Votre guerre a changé sur un autre appareil. Elle s'affiche telle qu'elle est maintenant.",
+    "failed": "Impossible d'enregistrer les paramètres. Réessayez.",
+    "done": "Terminé"
+  },
+  "summary": {
+    "tokens": "Jetons utilisés",
+    "tokensValue": "{{used}} / {{max}}",
+    "results": "Gagnées · perdues",
+    "resultsValue": "{{won}} · {{lost}}"
+  },
+  "history": {
+    "empty": "Aucune guerre passée pour l'instant.",
+    "emptyDescription": "Une guerre arrive ici quand vous en commencez une nouvelle depuis Attaque."
+  },
+  "tour": {
+    "target": {
+      "title": "Zone et emplacement",
+      "content": "Choisissez la zone et l'emplacement que vous attaquez. Chaque unité de la page s'affiche à la limite de rareté de cet emplacement, et le choix est mémorisé sur cet appareil."
+    },
+    "settings": {
+      "title": "Saison et niveau",
+      "content": "La saison et le niveau du champ de bataille de votre guerre. Modifiez-les avec Paramètres en haut à droite."
+    },
+    "summary": {
+      "title": "Votre guerre",
+      "content": "Jetons utilisés sur les tentatives de cette guerre, unités restantes par rareté, et attaques gagnées et perdues."
+    },
+    "teams": {
+      "title": "Équipes d'attaque",
+      "content": "Vos équipes d'Attaque de guerre : d'abord celles qui sont prêtes, puis celles bloquées par une unité qui a déjà attaqué."
+    },
+    "units": {
+      "title": "Unités disponibles",
+      "content": "Vos unités qui n'ont pas encore attaqué dans cette guerre. Touchez des unités ou Sélectionner sur une équipe, puis Noter l'attaque."
+    },
+    "log": {
+      "title": "Journal des attaques",
+      "content": "Toutes les attaques de cette guerre, les plus récentes d'abord. Annuler retire une erreur et libère ses unités."
+    },
+    "totals": {
+      "title": "Totaux",
+      "content": "Taux de victoire par rang de zone et rareté d'emplacement, et vos compositions les plus utilisées, sur les guerres chargées ci-dessous."
+    },
+    "wars": {
+      "title": "Guerres passées",
+      "content": "Vos guerres terminées, les plus récentes d'abord. Ouvrez-en une pour voir ses attaques."
+    }
+  }
+}

@@ -7,6 +7,9 @@
 //   public/locales/{en,de,es,fr}/traits.json            trait id            -> name
 //   public/locales/{en,de,es,fr}/factions.json          faction id          -> name
 //   public/locales/{en,de,es,fr}/npcs.json              NPC variation id    -> name
+//   public/locales/{en,de,es,fr}/guildWarZones.json     Guild War zone visual id -> name
+//   public/locales/{en,de,es,fr}/guildWarTiers.json     Guild War zone tier id   -> name
+//   public/locales/{en,de,es,fr}/guildWarBuffs.json     Guild War buff id        -> name
 //   public/locales/{en,de,es,fr}/mythicQuestTasks.json  task loca key       -> template
 //   public/locales/{en,de,es,fr}/eventMissions.json     seasonal event mission task templates, chain names,
 //                                                        game modes and event names ({ tasks, chains, gameModes,
@@ -53,6 +56,12 @@ const lineup = Object.entries(config("units/lineup.json"))
 const isMow = ([, unit]) => unit.traits?.includes("MachineOfWar")
 const items = config("items.json")
 const npcs = config("units/npc.json")
+const guildWarSeasons = Object.values(
+  readJson(`${datamine}/raw/globalconfig/guildWar.json`).guildWarSeasonConfigs
+)
+const guildWarBuffs = Object.fromEntries(
+  guildWarSeasons.flatMap((season) => Object.entries(season.buffs ?? {}))
+)
 
 /** The `mythic_*` quests' task loca keys, wherever they sit in the quest groups. */
 function mythicTaskKeys(node, keys = new Set()) {
@@ -157,6 +166,32 @@ const NAMESPACES = {
       ]
     },
     fallback: (id) => npcs[id].name,
+  },
+  // Every season's zone kinds (`visualId`: trenches, armory…), by the game's long zone name.
+  guildWarZones: {
+    ids: [
+      ...new Set(
+        guildWarSeasons.flatMap((season) =>
+          Object.values(season.zoneTypeConfigs ?? {}).map((zone) => zone.visualId)
+        )
+      ),
+    ],
+    key: (id) => `UI/GuildWars_WarZone_${id}`,
+  },
+  guildWarTiers: {
+    ids: [
+      ...new Set(
+        guildWarSeasons.flatMap((season) =>
+          (season.zoneTiers ?? []).map((tier) => tier.zoneTierId)
+        )
+      ),
+    ],
+    key: (id) => `UI/GuildWars_WarZoneTierType_${id}`,
+  },
+  // A buff (EnvArmourSupplies_Regional) is named by the ability it applies (EnvArmourSupplies).
+  guildWarBuffs: {
+    ids: Object.keys(guildWarBuffs),
+    key: (id) => `Abilities/${guildWarBuffs[id].abilityId}_Name`,
   },
   mythicQuestTasks: {
     ids: [...mythicTaskKeys(config("quests/groups.json"))],

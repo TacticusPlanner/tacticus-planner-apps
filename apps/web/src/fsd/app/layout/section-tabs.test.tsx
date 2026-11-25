@@ -115,13 +115,26 @@ describe("SectionTabs", () => {
     expectPath("/library/npcs")
   })
 
-  it("still renders a single-tab row for a single-child section", () => {
-    renderTabs(section("/guild"), "/guild/members")
+  it("lists only the active page's group in a grouped section", () => {
+    const tabIds = () =>
+      screen.getAllByRole("tab").map((tab) => tab.dataset.testid)
 
-    expect(screen.getByTestId("section-tab-guild-members")).toHaveAttribute(
+    const { unmount } = renderTabs(section("/guild"), "/guild/war/offense")
+    expect(tabIds()).toEqual([
+      "section-tab-guild-war-offense",
+      "section-tab-guild-war-history",
+    ])
+    expect(screen.getByTestId("section-tab-guild-war-offense")).toHaveAttribute(
       "data-state",
       "active"
     )
+    unmount()
+
+    renderTabs(section("/guild"), "/guild/members")
+    expect(tabIds()).toEqual([
+      "section-tab-guild-members",
+      "section-tab-guild-settings",
+    ])
   })
 
   it("shows the five Dailies tabs in order: Raids, HSE, HRE, Quest, Guild Raids", () => {
