@@ -2043,7 +2043,28 @@
       "lockRequiredCampaign_one": "Terminez d'abord {{campaign}} (encore {{count}} combat)",
       "lockRequiredCampaign_other": "Terminez d'abord {{campaign}} (encore {{count}} combats)",
       "lockPowerLevel": "Atteignez le niveau de puissance {{required}} (actuellement {{current}})",
-      "createUnlockGoal": "Ajouter un objectif de déblocage pour {{unit}}"
+      "createUnlockGoal": "Ajouter un objectif de déblocage pour {{unit}}",
+      "materials": {
+        "show": "Afficher",
+        "missing": "Manquant",
+        "required": "Requis",
+        "spare": "En trop",
+        "missingHint": "Ce qui reste une fois ton stock dépensé par priorité",
+        "requiredHint": "Tout ce dont les objectifs ont besoin, avant de dépenser le stock",
+        "spareHint": "Ce que tu possèdes et dont aucun objectif actif n'a besoin",
+        "requiredTitle": "Total requis",
+        "spareTitle": "En trop",
+        "requiredDescription": "Tous les matériaux d'amélioration nécessaires à ces objectifs avant de dépenser ton inventaire. Les matériaux de compétence, orbes, XP et or figurent sous Manquant.",
+        "spareDescription": "Les matériaux d'amélioration que tu possèdes et dont aucun objectif actif n'a besoin, tous projets confondus : libres pour d'autres unités.",
+        "requiredNone": "Ces objectifs ne demandent aucun matériau d'amélioration.",
+        "spareNone": "Chaque matériau d'amélioration que tu possèdes sert à un objectif actif.",
+        "stillMissing": "{{count}} manquants",
+        "cost": "{{days}} j · {{energy}} énergie",
+        "moreUnits": "+{{count}}",
+        "showMore_one": "Afficher {{count}} de plus",
+        "showMore_other": "Afficher {{count}} de plus",
+        "showFewer": "Afficher moins"
+      }
     },
     "target": {
       "title": "Objectif",

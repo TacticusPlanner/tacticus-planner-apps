@@ -62,6 +62,8 @@ export {
   type PlanInsightsGoalOutlook,
   type PlanInsightsTotals,
   type PlanMissingResources,
+  type PlanSpareUpgrade,
+  type PlanUpgradeMaterial,
 } from "./model/insights/use-plan-insights.domain"
 export {
   useFarmUnlockPaths,

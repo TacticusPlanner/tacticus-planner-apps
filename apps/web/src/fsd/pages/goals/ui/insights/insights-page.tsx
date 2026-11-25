@@ -188,7 +188,14 @@ export function InsightsPage() {
               />
             </div>
           </div>
-          <InsightsMissing missing={result.missing} totals={result.totals} />
+          <InsightsMissing
+            goalInfoById={goalInfoById}
+            missing={result.missing}
+            projectId={projectId}
+            spareUpgrades={result.spareUpgrades}
+            totals={result.totals}
+            upgrades={result.upgradeMaterials}
+          />
         </>
       )}
     </div>

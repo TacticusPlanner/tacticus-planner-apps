@@ -2043,7 +2043,28 @@
       "lockRequiredCampaign_one": "Schließe zuerst {{campaign}} ab (noch {{count}} Kampf)",
       "lockRequiredCampaign_other": "Schließe zuerst {{campaign}} ab (noch {{count}} Kämpfe)",
       "lockPowerLevel": "Erreiche Machtstufe {{required}} (aktuell {{current}})",
-      "createUnlockGoal": "Freischalten-Ziel für {{unit}} anlegen"
+      "createUnlockGoal": "Freischalten-Ziel für {{unit}} anlegen",
+      "materials": {
+        "show": "Anzeigen",
+        "missing": "Fehlend",
+        "required": "Benötigt",
+        "spare": "Übrig",
+        "missingHint": "Was nach Verbrauch deines Bestands in Prioritätsreihenfolge fehlt",
+        "requiredHint": "Alles, was die Ziele brauchen, bevor Bestand verbraucht wird",
+        "spareHint": "Was du besitzt und kein aktives Ziel braucht",
+        "requiredTitle": "Insgesamt benötigt",
+        "spareTitle": "Übrig",
+        "requiredDescription": "Alle Upgrade-Materialien, die diese Ziele brauchen, bevor dein Inventar verbraucht wird. Fähigkeitsmaterialien, Kugeln, EP und Gold stehen unter Fehlend.",
+        "spareDescription": "Upgrade-Materialien, die du besitzt und die kein aktives Ziel braucht, in keinem Projekt: frei für andere Einheiten.",
+        "requiredNone": "Diese Ziele brauchen keine Upgrade-Materialien.",
+        "spareNone": "Jedes Upgrade-Material, das du besitzt, braucht ein aktives Ziel.",
+        "stillMissing": "{{count}} fehlen",
+        "cost": "{{days}} T · {{energy}} Energie",
+        "moreUnits": "+{{count}}",
+        "showMore_one": "{{count}} weiteres anzeigen",
+        "showMore_other": "{{count}} weitere anzeigen",
+        "showFewer": "Weniger anzeigen"
+      }
     },
     "target": {
       "title": "Ziel",

@@ -59,6 +59,7 @@ import { computeCampaignProgression } from "./plan-campaign-progression"
 import { buildFarmingInsights } from "./plan-farming-insights"
 import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
+import { computePlanUpgradeMaterials } from "./plan-upgrade-materials"
 import { createStandaloneEstimates } from "./plan-standalone-estimates"
 import type {
   PlanInsightsExcludedGoal,
@@ -377,6 +378,7 @@ export function computePlanInsights(params: {
   // What each scoped goal still farms once owned stock is spent in priority order: the upgrade totals
   // and the campaign insights (with the goals each one helps) read this, never the gross need.
   const campaignNeeds: { id: EstimateResourceId; count: number }[] = []
+  const missingById = new Map<EstimateResourceId, number>()
   for (const goal of goalNeeds) {
     if (!inScope(goal.goalId)) continue
     const net = netGoalNeeds(
@@ -393,6 +395,7 @@ export function computePlanInsights(params: {
       }
       addProvenance(id, goal.goalId)
       campaignNeeds.push({ id, count })
+      missingById.set(id, (missingById.get(id) ?? 0) + count)
     }
   }
   const orbAllocations = allocateOrbInventory(
@@ -483,7 +486,7 @@ export function computePlanInsights(params: {
     })
   const unestimatedGoalCount = excludedGoals.length
 
-  const { bottlenecks, blockers } = computeBottlenecks({
+  const { bottlenecks, blockers, costsById } = computeBottlenecks({
     goalNeeds: goalNeeds.filter((goal) => inScope(goal.goalId)),
     allocations,
     estimates: estimateResults,
@@ -493,6 +496,16 @@ export function computePlanInsights(params: {
     charactersById: params.charactersById,
     dailyEnergy: params.dailyEnergy ?? 288,
   })
+
+  const { upgrades: upgradeMaterials, spareUpgrades } =
+    computePlanUpgradeMaterials({
+      goalNeeds,
+      inScope,
+      missingById,
+      costsById,
+      upgradesById: params.upgradesById,
+      inventoryUpgrades: params.inventoryUpgrades,
+    })
 
   const farmingInsightsOver = (
     battlesById: Parameters<typeof estimatePlan>[0]["battlesById"]
@@ -574,6 +587,8 @@ export function computePlanInsights(params: {
     excludedGoals,
     bottlenecks,
     blockers,
+    upgradeMaterials,
+    spareUpgrades,
     ...reachedFarming,
     allLocations,
     campaignProgression,

@@ -2043,7 +2043,28 @@
       "lockRequiredCampaign_one": "Clear {{campaign}} first ({{count}} battle left)",
       "lockRequiredCampaign_other": "Clear {{campaign}} first ({{count}} battles left)",
       "lockPowerLevel": "Reach Power Level {{required}} (you're at {{current}})",
-      "createUnlockGoal": "Add Unlock goal for {{unit}}"
+      "createUnlockGoal": "Add Unlock goal for {{unit}}",
+      "materials": {
+        "show": "Show",
+        "missing": "Missing",
+        "required": "Required",
+        "spare": "Spare",
+        "missingHint": "What is left once your stock is spent in priority order",
+        "requiredHint": "Everything the goals need, before any stock is spent",
+        "spareHint": "What you own that no active goal needs",
+        "requiredTitle": "Total required",
+        "spareTitle": "Spare",
+        "requiredDescription": "Every upgrade material these goals need before your inventory is spent. Ability materials, orbs, XP and gold show under Missing.",
+        "spareDescription": "Upgrade materials you own that no active goal needs, in any project: free to spend on other units.",
+        "requiredNone": "These goals need no upgrade materials.",
+        "spareNone": "Every upgrade material you own is needed by an active goal.",
+        "stillMissing": "{{count}} missing",
+        "cost": "{{days}} d · {{energy}} energy",
+        "moreUnits": "+{{count}}",
+        "showMore_one": "Show {{count}} more",
+        "showMore_other": "Show {{count}} more",
+        "showFewer": "Show fewer"
+      }
     },
     "target": {
       "title": "Target",

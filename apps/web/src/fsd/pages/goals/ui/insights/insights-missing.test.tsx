@@ -1,5 +1,8 @@
-import { render, screen, within } from "@/test/render"
+import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
+
+import type { PlanUpgradeMaterial } from "@/features/goal-planning"
+import { render, screen, within } from "@/test/render"
 
 import { InsightsMissing } from "./insights-missing"
 
@@ -12,6 +15,25 @@ const empty = {
   xpBooks: null,
   gold: 0,
 }
+
+const upgrade = (
+  id: string,
+  rarity: string,
+  required: number,
+  missing: number,
+  days = 0,
+  energyToClear = 0
+) =>
+  ({
+    id,
+    label: id,
+    rarity,
+    required,
+    missing,
+    days,
+    energyToClear,
+    goalIds: ["g1"],
+  }) as PlanUpgradeMaterial
 
 describe("InsightsMissing", () => {
   it("groups the missing resources by kind, then by alliance", () => {
@@ -78,27 +100,106 @@ describe("InsightsMissing", () => {
     ).toEqual(["Gold"])
   })
 
-  it("leads with the farmed upgrades and shards still to get", () => {
+  it("leads with the farmed upgrades one by one, then the shards still to get", () => {
     render(
       <InsightsMissing
+        goalInfoById={
+          new Map([
+            [
+              "g1",
+              { entityType: "Character", entityId: "calgar", goalType: "Rank" },
+            ],
+          ])
+        }
         missing={empty}
-        totals={{
-          upgradesByRarity: { Common: 4, Rare: 1_200 },
-          shards: 30,
-          mythicShards: 0,
-        }}
+        totals={{ upgradesByRarity: {}, shards: 30, mythicShards: 0 }}
+        upgrades={[
+          upgrade("plasma", "Epic", 6, 6, 4.2, 900),
+          upgrade("purity", "Common", 40, 12, 2, 420),
+          upgrade("seal", "Common", 10, 0),
+        ]}
       />
     )
 
-    const [farmed] = screen.getAllByTestId("insights-missing-group")
-    expect(farmed?.querySelector("h3")?.textContent).toBe("Farmed resources")
+    const upgrades = screen.getByTestId("insights-upgrades")
     expect(
-      within(farmed!).getByLabelText("Rare upgrades: 1,200")
-    ).toBeInTheDocument()
-    expect(within(farmed!).getByLabelText("Shards: 30")).toBeInTheDocument()
+      within(upgrades)
+        .getAllByRole("region")
+        .map((group) => group.getAttribute("aria-label"))
+    ).toEqual(["Epic upgrades", "Common upgrades"])
+    expect(screen.getByTestId("insights-upgrade-plasma")).toHaveTextContent(
+      "plasma65 d · 900 energy"
+    )
+    expect(screen.getByTestId("insights-upgrade-purity")).toHaveTextContent(
+      "purity122 d · 420 energy"
+    )
     expect(
-      within(farmed!).queryByLabelText(/Mythic shards/)
+      screen.queryByTestId("insights-upgrade-seal")
     ).not.toBeInTheDocument()
+
+    const farmed = screen.getByTestId("insights-missing-group")
+    expect(
+      within(farmed).getByRole("heading", { name: /Farmed resources/ })
+    ).toBeInTheDocument()
+    expect(within(farmed).getByLabelText("Shards: 30")).toBeInTheDocument()
+    expect(
+      within(farmed).queryByLabelText(/Mythic shards/)
+    ).not.toBeInTheDocument()
+  })
+
+  it("shows what the goals require, with what is still missing, and remembers the choice", async () => {
+    const user = userEvent.setup()
+    const props = {
+      missing: { ...empty, gold: 500 },
+      upgrades: [
+        upgrade("purity", "Common", 40, 12, 2, 420),
+        upgrade("seal", "Common", 10, 0),
+      ],
+    }
+    const { unmount } = render(<InsightsMissing {...props} />)
+
+    await user.click(screen.getByRole("radio", { name: "Required" }))
+    expect(screen.getByTestId("insights-missing")).toHaveTextContent(
+      "Total required"
+    )
+    expect(screen.getByTestId("insights-upgrade-purity")).toHaveTextContent(
+      "purity4012 missing2 d · 420 energy"
+    )
+    expect(screen.getByTestId("insights-upgrade-seal")).toHaveTextContent(
+      "seal10"
+    )
+    // Gold and the other kinds show under Missing only.
+    expect(
+      screen.queryByTestId("insights-missing-group")
+    ).not.toBeInTheDocument()
+
+    unmount()
+    render(<InsightsMissing {...props} />)
+    expect(screen.getByRole("radio", { name: "Required" })).toBeChecked()
+  })
+
+  it("shows the spare upgrades, ten per rarity before Show more", async () => {
+    const user = userEvent.setup()
+    render(
+      <InsightsMissing
+        missing={empty}
+        spareUpgrades={Array.from({ length: 12 }, (_, index) => ({
+          id: `spare${index}` as never,
+          label: `spare${index}`,
+          rarity: "Rare" as never,
+          spare: 20 - index,
+        }))}
+      />
+    )
+
+    await user.click(screen.getByRole("radio", { name: "Spare" }))
+    const rare = screen.getByTestId("insights-upgrades-Rare")
+    expect(within(rare).getAllByRole("listitem")).toHaveLength(10)
+    await user.click(within(rare).getByRole("button", { name: "Show 2 more" }))
+    expect(within(rare).getAllByRole("listitem")).toHaveLength(12)
+    expect(screen.getByTestId("insights-upgrade-spare0")).toHaveTextContent(
+      "spare020"
+    )
   })
 
   it("leaves out groups with nothing missing", () => {

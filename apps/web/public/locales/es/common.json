@@ -2043,7 +2043,28 @@
       "lockRequiredCampaign_one": "Completa antes {{campaign}} (falta {{count}} batalla)",
       "lockRequiredCampaign_other": "Completa antes {{campaign}} (faltan {{count}} batallas)",
       "lockPowerLevel": "Alcanza el nivel de poder {{required}} (tienes {{current}})",
-      "createUnlockGoal": "Añadir objetivo de desbloqueo para {{unit}}"
+      "createUnlockGoal": "Añadir objetivo de desbloqueo para {{unit}}",
+      "materials": {
+        "show": "Mostrar",
+        "missing": "Faltante",
+        "required": "Necesario",
+        "spare": "Sobrante",
+        "missingHint": "Lo que queda tras gastar tu inventario por prioridad",
+        "requiredHint": "Todo lo que necesitan los objetivos, antes de gastar inventario",
+        "spareHint": "Lo que tienes y ningún objetivo activo necesita",
+        "requiredTitle": "Total necesario",
+        "spareTitle": "Sobrante",
+        "requiredDescription": "Todos los materiales de mejora que necesitan estos objetivos antes de gastar tu inventario. Los materiales de habilidad, orbes, XP y oro aparecen en Faltante.",
+        "spareDescription": "Materiales de mejora que tienes y que ningún objetivo activo necesita, en ningún proyecto: libres para otras unidades.",
+        "requiredNone": "Estos objetivos no necesitan materiales de mejora.",
+        "spareNone": "Cada material de mejora que tienes lo necesita un objetivo activo.",
+        "stillMissing": "faltan {{count}}",
+        "cost": "{{days}} d · {{energy}} de energía",
+        "moreUnits": "+{{count}}",
+        "showMore_one": "Mostrar {{count}} más",
+        "showMore_other": "Mostrar {{count}} más",
+        "showFewer": "Mostrar menos"
+      }
     },
     "target": {
       "title": "Objetivo",
