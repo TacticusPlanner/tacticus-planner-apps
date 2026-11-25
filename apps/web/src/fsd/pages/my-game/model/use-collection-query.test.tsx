@@ -1,14 +1,14 @@
 import { useLocation, useNavigationType } from "react-router"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import type { UnitFilterOptions } from "@/features/unit-filters"
 import { act, renderHook } from "@/test/render"
 
 import { defaultCollectionQuery } from "./collection-query"
-import type { CollectionOptions } from "./use-collection-options"
 import { useCollectionQuery } from "./use-collection-query"
 
 const named = (...ids: string[]) => ids.map((id) => ({ id, name: id }))
-const options: CollectionOptions = {
+const options: UnitFilterOptions = {
   factions: ["Ultramarines", "BlackLegion", "Aeldari"].map((id) => ({
     id,
     name: id,

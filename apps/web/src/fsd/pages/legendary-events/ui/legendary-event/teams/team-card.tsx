@@ -29,7 +29,6 @@ import {
 
 import {
   MIN_TEAM_MEMBERS,
-  ObjectiveIcon,
   useObjectiveLabel,
   EventUnitChip,
 } from "@/entities/legendary-event"
@@ -44,7 +43,12 @@ import {
 } from "@/features/legendary-event-plan"
 import type { DepthEstimateContext } from "@/features/legendary-event-plan"
 import { useDebouncedCommit } from "@/shared/lib"
-import { DragGrip, SORTABLE_ITEM_GROUP, TruncatedText } from "@/shared/ui"
+import {
+  DragGrip,
+  SORTABLE_ITEM_GROUP,
+  TruncatedText,
+  ObjectiveIcon,
+} from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"

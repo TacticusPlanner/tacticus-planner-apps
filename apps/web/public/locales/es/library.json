@@ -86,6 +86,8 @@
     "seasonLabel": "Temporada {{season}}",
     "tier": "Nivel {{tier}}",
     "set": "Conjunto {{set}}",
+    "bossBadge": "Jefe",
+    "primeBadge": "Prime",
     "seasonReference": "Referencia de temporada",
     "noSeasonReference": "No hay datos de temporada de jefes de incursión disponibles.",
     "primarch": "Primarca",
@@ -419,7 +421,9 @@
     "title": "Personajes",
     "search": "Buscar personajes",
     "noMatching": "Ningún personaje coincide con tu búsqueda.",
+    "noMatchingFilters": "Ningún personaje coincide con tu búsqueda y tus filtros.",
     "clearSearch": "Borrar búsqueda",
+    "clearFilters": "Borrar búsqueda y filtros",
     "tour": {
       "steps": {
         "search": {
@@ -437,6 +441,7 @@
     "title": "Máquinas de Guerra",
     "search": "Buscar Máquinas de Guerra",
     "noMatching": "Ninguna Máquina de Guerra coincide con tu búsqueda.",
+    "noMatchingFilters": "Ninguna Máquina de Guerra coincide con tu búsqueda y tus filtros.",
     "tour": {
       "steps": {
         "search": {

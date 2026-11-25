@@ -9,8 +9,11 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
-import { ObjectiveIcon } from "@/entities/legendary-event"
-import { FILTER_CHIP_CLASS_NAME, FiltersControl } from "@/shared/ui"
+import {
+  FILTER_CHIP_CLASS_NAME,
+  FiltersControl,
+  ObjectiveIcon,
+} from "@/shared/ui"
 
 import type {
   LeaderboardControlsState,

@@ -1515,6 +1515,8 @@
     },
     "create": {
       "title": "Créer un objectif",
+      "manyUnits": "Des objectifs pour plusieurs unités ?",
+      "manyUnitsLink": "Sélectionnez-les dans la Collection",
       "entityType": {
         "unit": "Unité"
       },

@@ -26,9 +26,13 @@ import {
 } from "@/shared/ui"
 
 import {
+  UnitFilterFields,
+  activeUnitFilterCount,
+  defaultUnitFilters,
+} from "@/features/unit-filters"
+import type { UnitFilterOptions } from "@/features/unit-filters"
+import {
   activeFilterCount,
-  activeStandaloneFilterCount,
-  clearedStandaloneFilters,
   collectionLayouts,
   collectionSorts,
   isCollectionSort,
@@ -39,9 +43,7 @@ import type {
   CollectionQuery,
   CollectionQuickFilter,
 } from "../../model/collection-query"
-import type { CollectionOptions } from "../../model/use-collection-options"
 import type { QuickFilterAvailability } from "../../model/use-collection-view"
-import { CollectionFilterFields } from "./collection-filter-fields"
 
 /** The search writes the URL, so it waits for a pause in typing. */
 const SEARCH_DELAY_MS = 200
@@ -51,7 +53,7 @@ export interface CollectionToolbarProps {
   query: CollectionQuery
   update: (patch: Partial<CollectionQuery>) => void
   clear: () => void
-  options: CollectionOptions
+  options: UnitFilterOptions
   rosterAvailable: boolean
   quickFilters: Record<CollectionQuickFilter, QuickFilterAvailability>
   /** How many units each quick filter would list, shown on its chip. */
@@ -119,13 +121,13 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
             value={query.search}
           />
           <FiltersControl
-            count={activeStandaloneFilterCount(query)}
-            onClear={() => update(clearedStandaloneFilters)}
+            count={activeUnitFilterCount(query)}
+            onClear={() => update(defaultUnitFilters)}
             size="form"
             testId="collection-filters"
           >
-            <CollectionFilterFields
-              query={query}
+            <UnitFilterFields
+              filters={query}
               update={update}
               options={options}
               rosterAvailable={rosterAvailable}

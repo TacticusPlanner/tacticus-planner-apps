@@ -1,11 +1,8 @@
 import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
 
-import {
-  MIN_TEAM_MEMBERS,
-  ObjectiveIcon,
-  useObjectiveLabel,
-} from "@/entities/legendary-event"
+import { MIN_TEAM_MEMBERS, useObjectiveLabel } from "@/entities/legendary-event"
+import { ObjectiveIcon } from "@/shared/ui"
 import type { LegendaryEventLane } from "@/entities/legendary-event"
 
 import type { ClearDepthSummary } from "../model/clear-depth-display"

@@ -20,9 +20,15 @@ import type {
   HubViewModel,
 } from "./legendary-events-hub.view-model"
 
-const GROUPS = ["active", "upcoming", "archived"] as const
+const GROUPS = ["active", "upNext", "notAnnounced", "archived"] as const
+/** The groups of events that have not started yet; the tour points at their first card. */
+const UPCOMING_GROUPS = new Set<(typeof GROUPS)[number]>([
+  "upNext",
+  "notAnnounced",
+])
 
-/** `/legendary-events`: every catalog Legendary Event under Active, Upcoming and Archived.
+/** `/legendary-events`: every catalog Legendary Event under Active, Up next, Not announced yet and
+ *  Archived.
  *  Desktop lays the cards out as a grid, mobile as a full-width stack. */
 export function LegendaryEventsHubPage() {
   const { t, i18n } = useTranslation("legendaryEvents")
@@ -47,7 +53,8 @@ export function LegendaryEventsHubPage() {
   useTourPageSteps(
     useLegendaryEventsHubTutorial({
       hasActive: (view?.active.length ?? 0) > 0,
-      hasUpcoming: (view?.upcoming.length ?? 0) > 0,
+      hasUpcoming:
+        (view?.upNext.length ?? 0) + (view?.notAnnounced.length ?? 0) > 0,
     })
   )
 
@@ -135,6 +142,7 @@ function HubGroup({
       aria-label={title}
       className="flex min-w-0 flex-col gap-3"
       data-testid={`legendary-events-group-${group}`}
+      data-upcoming={UPCOMING_GROUPS.has(group) ? "true" : undefined}
     >
       <h2 className="text-sm font-medium">{title}</h2>
       <ul

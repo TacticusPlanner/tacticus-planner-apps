@@ -1,6 +1,7 @@
 import { useState } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -99,6 +100,20 @@ export function CreateGoalSheet({
       <ResponsiveDialogHeader className="flex-row flex-wrap items-center gap-2">
         <ResponsiveDialogTitle>{t("goals.create.title")}</ResponsiveDialogTitle>
         {headerAction}
+        <p
+          className="basis-full text-sm text-muted-foreground"
+          data-testid="create-goal-many-units"
+        >
+          {t("goals.create.manyUnits")}{" "}
+          <Link
+            className="text-primary underline-offset-4 hover:underline"
+            onClick={() => onOpenChange(false)}
+            state={{ selectUnits: true }}
+            to="/my-game/collection"
+          >
+            {t("goals.create.manyUnitsLink")}
+          </Link>
+        </p>
         {isMobile ? (
           <div className="basis-full">
             <MobileStepIndicator step={mobileStep} />

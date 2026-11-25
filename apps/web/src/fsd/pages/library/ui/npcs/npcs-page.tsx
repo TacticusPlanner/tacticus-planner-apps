@@ -16,6 +16,7 @@ import {
   filterNpcGroups,
   matchingVariations,
   orderLevels,
+  portraitVariationOf,
   sortEncountersBySource,
   useNpcLabels,
   variationDamageTypes,
@@ -161,7 +162,7 @@ export function NpcsPage() {
         name: groupName(group),
         factionId: group.factionId,
         factionName: factionName(group.factionId),
-        portraitVariationId: group.defaultVariationId,
+        portraitVariationId: portraitVariationOf(group),
       })),
     [listedGroups, groupName, factionName]
   )

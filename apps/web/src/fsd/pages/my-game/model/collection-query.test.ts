@@ -1,21 +1,16 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  activeUnitFilterCount,
+  defaultUnitFilters,
+} from "@/features/unit-filters"
+
+import {
   activeFilterCount,
-  activeStandaloneFilterCount,
-  clearedStandaloneFilters,
   defaultCollectionQuery,
-  sectionFilterCounts,
-  isCollectionAlliance,
-  isCollectionAttackType,
   isCollectionGrouping,
-  isCollectionKind,
   isCollectionLayout,
-  isCollectionProgression,
   isCollectionQuickFilter,
-  isCollectionRank,
-  isCollectionRarity,
-  isCollectionShardSource,
   isCollectionSort,
 } from "./collection-query"
 import type { CollectionQuery } from "./collection-query"
@@ -27,22 +22,8 @@ describe("collection query validators", () => {
     expect(isCollectionSort("level")).toBe(false)
     expect(isCollectionQuickFilter("canAscend")).toBe(true)
     expect(isCollectionQuickFilter("readyToAscend")).toBe(false)
-    expect(isCollectionAlliance("Xenos")).toBe(true)
-    expect(isCollectionAlliance("Neutral")).toBe(false)
-    expect(isCollectionKind("mow")).toBe(true)
-    expect(isCollectionKind("npc")).toBe(false)
-    expect(isCollectionRarity("Mythic")).toBe(true)
-    expect(isCollectionRarity("mythic")).toBe(false)
-    expect(isCollectionRank("Adamantine2")).toBe(true)
-    expect(isCollectionRank("Adamantine3")).toBe(false)
     expect(isCollectionSort(undefined)).toBe(false)
     expect(isCollectionQuickFilter("missingEquipment")).toBe(true)
-    expect(isCollectionAttackType("ranged")).toBe(true)
-    expect(isCollectionAttackType("range")).toBe(false)
-    expect(isCollectionShardSource("EliteMirror")).toBe(true)
-    expect(isCollectionShardSource("Onslaught")).toBe(false)
-    expect(isCollectionProgression("Legendary:RedThreeStars")).toBe(true)
-    expect(isCollectionProgression("Legendary")).toBe(false)
     expect(isCollectionLayout("roster")).toBe(true)
     expect(isCollectionLayout("gallery")).toBe(false)
     expect(isCollectionGrouping("none")).toBe(true)
@@ -74,7 +55,7 @@ describe("activeFilterCount", () => {
       quick: "needToLevel" as const,
     }
     expect(activeFilterCount(query)).toBe(4)
-    expect(activeStandaloneFilterCount(query)).toBe(2)
+    expect(activeUnitFilterCount(query)).toBe(2)
   })
 
   it("counts each combat filter, each min/max pair once", () => {
@@ -91,7 +72,7 @@ describe("activeFilterCount", () => {
       shardSources: ["Extremis" as const],
     }
     expect(activeFilterCount(query)).toBe(8)
-    expect(activeStandaloneFilterCount(query)).toBe(8)
+    expect(activeUnitFilterCount(query)).toBe(8)
   })
 
   it("clears every panel filter but keeps the search, quick filter, Owned only and view", () => {
@@ -124,7 +105,7 @@ describe("activeFilterCount", () => {
       view: "roster",
       group: "none",
     }
-    const cleared = { ...query, ...clearedStandaloneFilters }
+    const cleared = { ...query, ...defaultUnitFilters }
     expect(cleared).toEqual({
       ...defaultCollectionQuery,
       search: "ti",
@@ -134,9 +115,9 @@ describe("activeFilterCount", () => {
       view: "roster",
       group: "none",
     })
-    expect(activeStandaloneFilterCount(cleared)).toBe(0)
+    expect(activeUnitFilterCount(cleared)).toBe(0)
     // Clearing again changes nothing.
-    expect({ ...cleared, ...clearedStandaloneFilters }).toEqual(cleared)
+    expect({ ...cleared, ...defaultUnitFilters }).toEqual(cleared)
   })
 
   it("does not count Hide unowned as a filter", () => {
@@ -149,32 +130,5 @@ describe("activeFilterCount", () => {
     expect(
       activeFilterCount({ ...defaultCollectionQuery, search: "   " })
     ).toBe(0)
-  })
-})
-
-describe("sectionFilterCounts", () => {
-  it("counts each section's set filters, a range once", () => {
-    expect(
-      sectionFilterCounts({
-        ...defaultCollectionQuery,
-        alliance: "Chaos",
-        kind: "mow",
-        rankMin: "Gold1",
-        rankMax: "Diamond3",
-        hitsMin: 2,
-        rangeMax: 3,
-        damageTypes: ["Bolter"],
-        summons: "forced",
-        movement: 3,
-        search: "ti",
-        quick: "canPromote",
-      })
-    ).toEqual({ unit: 2, progression: 1, attack: 3, abilities: 1, more: 1 })
-  })
-
-  it("is zero everywhere by default", () => {
-    expect(Object.values(sectionFilterCounts(defaultCollectionQuery))).toEqual([
-      0, 0, 0, 0, 0,
-    ])
   })
 })

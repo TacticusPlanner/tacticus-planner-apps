@@ -8,7 +8,7 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
-import { EntityIcon, NumberStepper } from "@/shared/ui"
+import { EntityIcon, NumberStepper, ObjectiveIcon } from "@/shared/ui"
 
 import type { QuestBattle } from "../model/quest-battles"
 import type { QuestProgressActions } from "../model/use-quest-progress"
@@ -133,7 +133,7 @@ export function ScoreEntry({
                     }
                   />
                   <Label className="text-sm font-normal" htmlFor={id}>
-                    <ObjectiveIcon objective={objective} />
+                    <ObjectiveMark objective={objective} />
                     {word(objective)}
                     <span className="text-muted-foreground tabular-nums">
                       {" · "}
@@ -153,16 +153,12 @@ export function ScoreEntry({
   )
 }
 
-/** The objective's subject icon (trait, damage type, hits…), when it has one. */
-function ObjectiveIcon({ objective }: { objective: Objective }) {
-  const icon = objectiveIcon(objective)
-  if (icon === undefined) return null
+/** The objective's icon (trait, damage type, hits…, badged as on the chips), when it has one. */
+function ObjectiveMark({ objective }: { objective: Objective }) {
   return (
-    <EntityIcon
-      size="inline"
-      alt=""
-      className="mr-1 inline-block align-text-bottom"
-      src={icon}
+    <ObjectiveIcon
+      icon={objectiveIcon(objective)}
+      className="mr-1 align-text-bottom"
     />
   )
 }

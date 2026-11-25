@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import { ObjectiveIcon } from "@/entities/legendary-event"
+import { ObjectiveIcon } from "@/shared/ui"
 import type {
   LeaderboardFigure,
   LeaderboardRow,

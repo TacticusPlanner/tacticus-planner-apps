@@ -23,15 +23,20 @@ import {
 } from "@/shared/lib"
 
 import {
+  combatProfile,
+  range,
+  unitFilterMatcher,
+} from "@/features/unit-filters"
+import type { CombatProfile } from "@/features/unit-filters"
+
+import {
   collectionQuickFilters,
-  collectionShardSources,
   defaultCollectionQuery,
   activeFilterCount,
 } from "./collection-query"
 import type {
   CollectionQuery,
   CollectionQuickFilter,
-  CollectionShardSource,
   CollectionSort,
 } from "./collection-query"
 import {
@@ -204,73 +209,6 @@ interface CollectionRow {
   quick?: QuickFilterUnit
   /** Characters only (owned or not): what the combat filters read. */
   combat?: CombatProfile
-}
-
-/** A character's catalog properties the combat filters match on. */
-interface CombatProfile {
-  meleeHits: number
-  rangedHits: number | null
-  rangeDistance: number | null
-  movement: number
-  /** Melee, ranged, active and passive ability damage types. */
-  damageTypes: ReadonlySet<string>
-  traits: ReadonlySet<string>
-  /** The campaign types its shards drop in, or only `none`. */
-  shardSources: ReadonlySet<CollectionShardSource>
-}
-
-type CombatCharacter = Pick<
-  CatalogCharacter,
-  | "meleeHits"
-  | "meleeDamage"
-  | "rangedHits"
-  | "rangedDamage"
-  | "rangeDistance"
-  | "movement"
-  | "traits"
-  | "activeAbilityDamage"
-  | "passiveAbilityDamage"
-  | "shardLocations"
->
-
-/** Every damage type a character deals: melee, ranged and both abilities. */
-export function damageTypesOf(character: CombatCharacter): string[] {
-  return [
-    character.meleeDamage,
-    character.rangedDamage,
-    ...character.activeAbilityDamage,
-    ...character.passiveAbilityDamage,
-  ].filter((type): type is string => !!type)
-}
-
-const campaignTypes = new Set<string>(
-  collectionShardSources.filter((source) => source !== "none")
-)
-
-/** The campaign types a character's shards drop in (mythic shard drops aside), or only `none`. */
-export function shardSourcesOf(
-  character: Pick<CombatCharacter, "shardLocations">
-): Set<CollectionShardSource> {
-  const sources = new Set<CollectionShardSource>()
-  for (const location of character.shardLocations) {
-    if (!location.isMythic && campaignTypes.has(location.type)) {
-      sources.add(location.type as CollectionShardSource)
-    }
-  }
-  if (sources.size === 0) sources.add("none")
-  return sources
-}
-
-function combatProfile(character: CombatCharacter): CombatProfile {
-  return {
-    meleeHits: character.meleeHits,
-    rangedHits: character.rangedHits,
-    rangeDistance: character.rangeDistance,
-    movement: character.movement,
-    damageTypes: new Set(damageTypesOf(character)),
-    traits: new Set(character.traits),
-    shardSources: shardSourcesOf(character),
-  }
 }
 
 const blueStarIndex = progressionIndex("Legendary:OneBlueStar")
@@ -449,8 +387,6 @@ function rowMatcher(
   { locale, searchNames = () => [] }: CollectionLabels
 ): (row: CollectionRow) => boolean {
   const needle = normalizeSearchText(query.search, locale)
-  const factions = new Set(query.factions)
-  const rarities = new Set(query.rarities)
   const low = query.rankMin === null ? -1 : rankIndex(query.rankMin)
   const high =
     query.rankMax === null ? Number.POSITIVE_INFINITY : rankIndex(query.rankMax)
@@ -462,8 +398,7 @@ function rowMatcher(
     query.starsMin === null ? null : progressionIndex(query.starsMin),
     query.starsMax === null ? null : progressionIndex(query.starsMax)
   )
-  const matchesCombat = combatMatcher(query)
-  const matchesAbility = abilityMatcher(query)
+  const matchesUnit = unitFilterMatcher(query)
 
   return (row) => {
     const isOwned = row.unit.data.state === "owned"
@@ -477,10 +412,7 @@ function rowMatcher(
     ) {
       return false
     }
-    if (query.alliance !== null && row.alliance !== query.alliance) return false
-    if (factions.size > 0 && !factions.has(row.factionId)) return false
-    if (rarities.size > 0 && (!row.rarity || !rarities.has(row.rarity)))
-      return false
+    if (!matchesUnit({ ...row, kind: row.unit.kind })) return false
     if (
       rankRange &&
       (!isOwned ||
@@ -491,102 +423,9 @@ function rowMatcher(
       return false
     }
     if (stars && (!isOwned || !stars(row.progression))) return false
-    if (matchesCombat && (!row.combat || !matchesCombat(row.combat)))
-      return false
-    if (query.kind !== null && row.unit.kind !== query.kind) return false
-    if (query.summons !== null && row.summons !== query.summons) return false
-    if (matchesAbility && !row.abilityTags.some(matchesAbility)) return false
     if (query.quick !== null && !matchesQuick(row, query.quick, extras))
       return false
     return true
-  }
-}
-
-/** An inclusive range test, either end optional and a backwards range read swapped; `undefined`
- *  when neither end is set. */
-function range(
-  low: number | null,
-  high: number | null
-): ((value: number) => boolean) | undefined {
-  if (low === null && high === null) return undefined
-  const ends = [low, high].filter((end): end is number => end !== null)
-  const min = ends.length === 2 ? Math.min(...ends) : (low ?? -Infinity)
-  const max = ends.length === 2 ? Math.max(...ends) : (high ?? Infinity)
-  return (value) => value >= min && value <= max
-}
-
-/** One ability carrying every Ability filter tag set; `undefined` when none is set. */
-function abilityMatcher(
-  query: CollectionQuery
-): ((ability: UnitAbility) => boolean) | undefined {
-  const {
-    abilityRole: role,
-    abilityTarget: target,
-    abilityAttack: attack,
-  } = query
-  if (role === null && target === null && attack === null) return undefined
-  return (ability) =>
-    (role === null || ability.roles.includes(role)) &&
-    (target === null || ability.target === target) &&
-    (attack === null || ability.attack === attack)
-}
-
-/**
- * V1's roster filter (`CharactersService.passesRosterFilter`) over the combat profile, plus the
- * shard source; `undefined` when no combat filter is set. Hits read the melee or ranged count per
- * the attack type, either one without it; a melee-only character never matches a range; damage
- * types and traits need every picked value, Mechanical also met by Living Metal; a shard source
- * matches any picked one.
- */
-function combatMatcher(
-  query: CollectionQuery
-): ((combat: CombatProfile) => boolean) | undefined {
-  const hits = range(query.hitsMin, query.hitsMax)
-  const reach = range(query.rangeMin, query.rangeMax)
-  if (
-    query.attack === null &&
-    !hits &&
-    query.movement === null &&
-    !reach &&
-    query.damageTypes.length === 0 &&
-    query.traits.length === 0 &&
-    query.shardSources.length === 0
-  ) {
-    return undefined
-  }
-  return (combat) => {
-    const rangedHits = combat.rangedHits ?? 0
-    const isRanged = rangedHits > 0
-    if (query.attack === "melee" && isRanged) return false
-    if (query.attack === "ranged" && !isRanged) return false
-    if (hits) {
-      const meleeIn = hits(combat.meleeHits)
-      const rangedIn = isRanged && hits(rangedHits)
-      const hitsMatch =
-        query.attack === "melee"
-          ? meleeIn
-          : query.attack === "ranged"
-            ? rangedIn
-            : meleeIn || rangedIn
-      if (!hitsMatch) return false
-    }
-    if (query.movement !== null && combat.movement !== query.movement)
-      return false
-    if (
-      reach &&
-      (combat.rangeDistance === null || !reach(combat.rangeDistance))
-    )
-      return false
-    if (query.damageTypes.some((type) => !combat.damageTypes.has(type)))
-      return false
-    const hasTrait = (trait: string) =>
-      combat.traits.has(trait) ||
-      (trait === "Mechanical" && combat.traits.has("LivingMetal"))
-    if (!query.traits.every(hasTrait)) return false
-    return (
-      query.shardSources.length === 0 ||
-      query.shardSources.some((source) => combat.shardSources.has(source))
-    )
   }
 }
 

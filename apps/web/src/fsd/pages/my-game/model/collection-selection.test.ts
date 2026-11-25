@@ -3,7 +3,7 @@ import type { UnitId } from "@workspace/game-domain"
 
 import type { UnitTileUnit } from "@/entities/unit"
 
-import { toBulkGoalUnit } from "./collection-selection"
+import { opensInSelectMode, toBulkGoalUnit } from "./collection-selection"
 
 describe("toBulkGoalUnit", () => {
   it("keeps an owned unit's current values", () => {
@@ -52,5 +52,15 @@ describe("toBulkGoalUnit", () => {
       owned: false,
       startProgression: "Common:None",
     })
+  })
+})
+
+describe("opensInSelectMode", () => {
+  it("reads the navigation state Create goal's link sends", () => {
+    expect(opensInSelectMode({ selectUnits: true }, true)).toBe(true)
+    expect(opensInSelectMode({ selectUnits: true }, false)).toBe(false)
+    expect(opensInSelectMode({ selectUnits: "yes" }, true)).toBe(false)
+    expect(opensInSelectMode(null, true)).toBe(false)
+    expect(opensInSelectMode(undefined, true)).toBe(false)
   })
 })

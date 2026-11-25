@@ -15,7 +15,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import { ObjectiveIcon, rankTone } from "@/entities/legendary-event"
+import { rankTone } from "@/entities/legendary-event"
 import type {
   LeaderboardUnitRow,
   LegendaryEventLaneId,
@@ -28,6 +28,7 @@ import {
   EntityIcon,
   RankBadge,
   RarityIcon,
+  ObjectiveIcon,
 } from "@/shared/ui"
 
 import type { LeaderboardBody } from "./leaderboard.view-model"

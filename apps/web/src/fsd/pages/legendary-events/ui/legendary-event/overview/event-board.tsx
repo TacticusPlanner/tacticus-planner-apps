@@ -21,12 +21,12 @@ import {
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
-  ObjectiveIcon,
   useLaneAllowedRule,
   useObjectiveLabel,
   useRankShading,
   EventUnitChip,
 } from "@/entities/legendary-event"
+import { ObjectiveIcon } from "@/shared/ui"
 import type {
   LegendaryEvent,
   LegendaryEventLaneId,

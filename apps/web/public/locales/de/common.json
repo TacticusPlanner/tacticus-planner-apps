@@ -1515,6 +1515,8 @@
     },
     "create": {
       "title": "Ziel erstellen",
+      "manyUnits": "Ziele für viele Einheiten?",
+      "manyUnitsLink": "Wähle sie in der Sammlung aus",
       "entityType": {
         "unit": "Einheit"
       },

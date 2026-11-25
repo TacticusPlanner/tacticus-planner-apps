@@ -535,6 +535,19 @@ describe("CreateGoalSheet", () => {
     ).toContainElement(screen.getByTestId("create-goal-submit"))
   })
 
+  it("points to Collection's select mode for goals on many units, closing itself", () => {
+    const onOpenChange = vi.fn()
+    render(<CreateGoalSheet open onOpenChange={onOpenChange} />)
+
+    const link = screen.getByRole("link", { name: "Select them in Collection" })
+    expect(link).toHaveAttribute("href", "/my-game/collection")
+    expect(screen.getByTestId("create-goal-many-units")).toHaveTextContent(
+      "Goals for many units?"
+    )
+    fireEvent.click(link)
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
   it("carries its own tour button, since the page header's sits behind the modal", () => {
     render(
       <CreateGoalSheet

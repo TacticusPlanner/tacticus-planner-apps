@@ -39,28 +39,33 @@ import {
 } from "@/shared/ui"
 import type { FilterLabelIconKind, SelectOption } from "@/shared/ui"
 
+import type { UnitKind } from "@/entities/unit"
+
 import {
-  collectionAlliances,
-  collectionAttackTypes,
-  collectionSummons,
-  collectionAbilityAttacks,
-  collectionAbilityRoles,
-  collectionAbilityTargets,
-  collectionKinds,
-  isCollectionAlliance,
-  isCollectionAttackType,
-  isCollectionSummons,
-  isCollectionAbilityAttack,
-  isCollectionAbilityRole,
-  isCollectionAbilityTarget,
-  isCollectionKind,
+  isUnitFilterAbilityAttack,
+  isUnitFilterAbilityRole,
+  isUnitFilterAbilityTarget,
+  isUnitFilterAlliance,
+  isUnitFilterAttackType,
+  isUnitFilterKind,
+  isUnitFilterSummons,
+  offersUnitFilterField,
   sectionFilterCounts,
-} from "../../model/collection-query"
+  unitFilterAbilityAttacks,
+  unitFilterAbilityRoles,
+  unitFilterAbilityTargets,
+  unitFilterAlliances,
+  unitFilterAttackTypes,
+  unitFilterKinds,
+  unitFilterSummons,
+} from "../model/unit-filters"
 import type {
-  CollectionQuery,
-  CollectionShardSource,
-} from "../../model/collection-query"
-import type { CollectionOptions } from "../../model/use-collection-options"
+  UnitFilterField,
+  UnitFilterScope,
+  UnitFilterShardSource,
+  UnitFilters,
+} from "../model/unit-filters"
+import type { UnitFilterOptions } from "../model/use-unit-filter-options"
 
 const ANY = "__any__"
 
@@ -76,7 +81,7 @@ const attackTypeIcons = {
 
 // Each campaign tier by the first storyline's icon for it; Extremis (event campaigns only) by the
 // first event's. "Not in a campaign" has none.
-const shardSourceIcons: Record<CollectionShardSource, string | undefined> = {
+const shardSourceIcons: Record<UnitFilterShardSource, string | undefined> = {
   Standard: campaignIcon(campaignIdSchema.parse("campaign1"), "Standard"),
   Elite: campaignIcon(campaignIdSchema.parse("elite1"), "Elite"),
   Mirror: campaignIcon(campaignIdSchema.parse("mirror1"), "Mirror"),
@@ -95,11 +100,17 @@ function optionIcon(src: string | undefined) {
   ) : undefined
 }
 
+const numbers = (values: readonly number[]) =>
+  values.map((value) => ({ value: String(value), label: String(value) }))
+const toNumber = (value: string | null) =>
+  value === null ? null : Number(value)
+const asText = (value: number | null) => (value === null ? null : String(value))
+
 // "None" (no stars yet) is never an owned unit's progression, so it is not offered.
 const starSteps = progressionOrder.filter((step) => !step.endsWith(":None"))
 
 /**
- * The standalone filter controls, shared by the desktop dialog and the mobile sheet, in five
+ * The standalone unit filter controls, shared by the desktop dialog and the mobile sheet, in five
  * sections: Unit, Progression, Attack, Abilities, and Traits and more. Each section title shows how
  * many of its filters are set. Rank range and stars range read the synced roster, so without one
  * they are disabled and explained. Each range (rank, stars, hits, attack range) is one cell with
@@ -107,17 +118,24 @@ const starSteps = progressionOrder.filter((step) => !step.endsWith(":None"))
  * `layout="panel"` (desktop) is a fixed three-column grid: a range takes two columns and ends its
  * row, so every row starts at the left edge. `layout="sheet"` (mobile) stacks one cell per row.
  */
-export function CollectionFilterFields({
-  query,
+export function UnitFilterFields({
+  filters,
   update,
   options,
-  rosterAvailable,
+  scope = "roster",
+  kind = null,
+  rosterAvailable = true,
   layout,
 }: {
-  query: CollectionQuery
-  update: (patch: Partial<CollectionQuery>) => void
-  options: CollectionOptions
-  rosterAvailable: boolean
+  filters: UnitFilters
+  update: (patch: Partial<UnitFilters>) => void
+  options: UnitFilterOptions
+  /** `catalog` leaves out the filters that read the player's roster (rank and stars ranges). */
+  scope?: UnitFilterScope
+  /** A list of one kind: Unit type is left out, and for Machines of War the character-only fields. */
+  kind?: UnitKind | null
+  /** Roster scope: without a synced roster the roster filters are disabled and explained. */
+  rosterAvailable?: boolean
   layout: "panel" | "sheet"
 }) {
   const { t } = useTranslation(["common", "progression"])
@@ -125,7 +143,10 @@ export function CollectionFilterFields({
     keyPrefix: "myGame.collection.toolbar",
   })
   const noteId = useId()
-  const rosterNote = rosterAvailable ? undefined : noteId
+  const offers = (field: UnitFilterField) =>
+    offersUnitFilterField(field, { scope, kind })
+  const offersAny = (...fields: UnitFilterField[]) => fields.some(offers)
+  const rosterNote = rosterAvailable || !offers("rank") ? undefined : noteId
 
   const rankOptions: SelectOption<Rank>[] = rankOrder.map((rank) => ({
     value: rank,
@@ -137,14 +158,8 @@ export function CollectionFilterFields({
     label: progressionText(t, step),
     icon: <ProgressionBadge value={step} />,
   }))
-  const numbers = (values: readonly number[]) =>
-    values.map((value) => ({ value: String(value), label: String(value) }))
-  const toNumber = (value: string | null) =>
-    value === null ? null : Number(value)
-  const asText = (value: number | null) =>
-    value === null ? null : String(value)
   const wide = layout === "panel" ? "col-span-2" : undefined
-  const counts = sectionFilterCounts(query)
+  const counts = sectionFilterCounts(filters)
 
   return (
     <div
@@ -152,33 +167,43 @@ export function CollectionFilterFields({
       className="grid gap-6 [&>section+section]:border-t [&>section+section]:pt-6"
       role="group"
       aria-label={label("filters")}
-      data-testid="collection-filter-fields"
+      data-testid="unit-filter-fields"
     >
       <FieldGroup
+        shown={offersAny("alliance", "factions", "kind")}
         title={label("groupUnit")}
         count={counts.unit}
         layout={layout}
       >
-        <Field label={label("alliance")} icon="alliance">
+        <Field
+          offered={offers("alliance")}
+          label={label("alliance")}
+          icon="alliance"
+        >
           {(id) => (
             <PlainSelect
               id={id}
-              value={query.alliance}
+              value={filters.alliance}
               anyLabel={label("allAlliances")}
-              options={collectionAlliances.map((alliance) => ({
+              options={unitFilterAlliances.map((alliance) => ({
                 value: alliance,
                 label: t(`alliances.${alliance}`),
                 icon: optionIcon(onslaughtAllianceIcon(alliance)),
               }))}
               onChange={(value) =>
                 update({
-                  alliance: isCollectionAlliance(value) ? value : null,
+                  alliance: isUnitFilterAlliance(value) ? value : null,
                 })
               }
             />
           )}
         </Field>
-        <Field label={label("faction")} icon="faction" labelsControl={false}>
+        <Field
+          offered={offers("factions")}
+          label={label("faction")}
+          icon="faction"
+          labelsControl={false}
+        >
           {() => (
             <MultiSelect
               label={label("faction")}
@@ -197,36 +222,42 @@ export function CollectionFilterFields({
                   />
                 ),
               }))}
-              value={query.factions}
+              value={filters.factions}
               onChange={(next) => update({ factions: next })}
-              data-testid="collection-faction-filter"
+              data-testid="unit-faction-filter"
             />
           )}
         </Field>
-        <Field label={label("kind")} icon="unitType">
+        <Field offered={offers("kind")} label={label("kind")} icon="unitType">
           {(id) => (
             <PlainSelect
               id={id}
-              value={query.kind}
+              value={filters.kind}
               anyLabel={label("kindAll")}
-              options={collectionKinds.map((kind) => ({
+              options={unitFilterKinds.map((kind) => ({
                 value: kind,
                 label: label(kind),
                 icon: optionIcon(kindIcons[kind]),
               }))}
               onChange={(value) =>
-                update({ kind: isCollectionKind(value) ? value : null })
+                update({ kind: isUnitFilterKind(value) ? value : null })
               }
             />
           )}
         </Field>
       </FieldGroup>
       <FieldGroup
+        shown={offersAny("rarities", "rank", "stars")}
         title={label("groupProgression")}
         count={counts.progression}
         layout={layout}
       >
-        <Field label={label("rarity")} icon="rarity" labelsControl={false}>
+        <Field
+          offered={offers("rarities")}
+          label={label("rarity")}
+          icon="rarity"
+          labelsControl={false}
+        >
           {() => (
             <MultiSelect
               label={label("rarity")}
@@ -242,13 +273,14 @@ export function CollectionFilterFields({
                   icon: optionIcon(rarityIcon(rarity)),
                 }
               })}
-              value={query.rarities}
+              value={filters.rarities}
               onChange={(next) => update({ rarities: next })}
-              data-testid="collection-rarity-filter"
+              data-testid="unit-rarity-filter"
             />
           )}
         </Field>
         <RangeField
+          offered={offers("rank")}
           label={label("rankRange")}
           icon="rank"
           describedBy={rosterNote}
@@ -261,10 +293,10 @@ export function CollectionFilterFields({
             searchPlaceholder={label("searchRanks")}
             emptyText={label("noRanks")}
             options={rankOptions}
-            value={query.rankMin ?? undefined}
+            value={filters.rankMin ?? undefined}
             onChange={(rank) => update({ rankMin: rank ?? null })}
             disabled={!rosterAvailable}
-            data-testid="collection-rank-min-filter"
+            data-testid="unit-rank-min-filter"
           />
           <SearchableSelect
             label={label("rankTo")}
@@ -273,13 +305,14 @@ export function CollectionFilterFields({
             searchPlaceholder={label("searchRanks")}
             emptyText={label("noRanks")}
             options={rankOptions}
-            value={query.rankMax ?? undefined}
+            value={filters.rankMax ?? undefined}
             onChange={(rank) => update({ rankMax: rank ?? null })}
             disabled={!rosterAvailable}
-            data-testid="collection-rank-max-filter"
+            data-testid="unit-rank-max-filter"
           />
         </RangeField>
         <RangeField
+          offered={offers("stars")}
           label={label("starsRange")}
           icon="stars"
           describedBy={rosterNote}
@@ -292,10 +325,10 @@ export function CollectionFilterFields({
             searchPlaceholder={label("searchStars")}
             emptyText={label("noStars")}
             options={starOptions}
-            value={query.starsMin ?? undefined}
+            value={filters.starsMin ?? undefined}
             onChange={(step) => update({ starsMin: step ?? null })}
             disabled={!rosterAvailable}
-            data-testid="collection-stars-min-filter"
+            data-testid="unit-stars-min-filter"
           />
           <SearchableSelect
             label={label("starsTo")}
@@ -304,82 +337,94 @@ export function CollectionFilterFields({
             searchPlaceholder={label("searchStars")}
             emptyText={label("noStars")}
             options={starOptions}
-            value={query.starsMax ?? undefined}
+            value={filters.starsMax ?? undefined}
             onChange={(step) => update({ starsMax: step ?? null })}
             disabled={!rosterAvailable}
-            data-testid="collection-stars-max-filter"
+            data-testid="unit-stars-max-filter"
           />
         </RangeField>
-        {rosterAvailable ? null : (
+        {rosterNote ? (
           <p
             id={noteId}
             className="col-span-full text-xs text-muted-foreground"
           >
             {label("needsRoster")}
           </p>
-        )}
+        ) : null}
       </FieldGroup>
       <FieldGroup
+        shown={offersAny("attack", "hits", "range", "damageTypes")}
         title={label("groupAttack")}
         count={counts.attack}
         layout={layout}
       >
-        <Field label={label("attackType")} icon="attackType">
+        <Field
+          offered={offers("attack")}
+          label={label("attackType")}
+          icon="attackType"
+        >
           {(id) => (
             <PlainSelect
               id={id}
-              value={query.attack}
+              value={filters.attack}
               anyLabel={label("attackAny")}
-              options={collectionAttackTypes.map((attack) => ({
+              options={unitFilterAttackTypes.map((attack) => ({
                 value: attack,
                 label: label(`attackTypes.${attack}`),
                 icon: optionIcon(attackTypeIcons[attack]),
               }))}
               onChange={(value) =>
                 update({
-                  attack: isCollectionAttackType(value) ? value : null,
+                  attack: isUnitFilterAttackType(value) ? value : null,
                 })
               }
             />
           )}
         </Field>
-        <RangeField label={label("hitsRange")} icon="hits" className={wide}>
+        <RangeField
+          offered={offers("hits")}
+          label={label("hitsRange")}
+          icon="hits"
+          className={wide}
+        >
           <PlainSelect
             ariaLabel={label("hitsFrom")}
-            value={asText(query.hitsMin)}
+            value={asText(filters.hitsMin)}
             anyLabel={label("anyValue")}
             options={numbers(options.hits)}
             onChange={(value) => update({ hitsMin: toNumber(value) })}
           />
           <PlainSelect
             ariaLabel={label("hitsTo")}
-            value={asText(query.hitsMax)}
+            value={asText(filters.hitsMax)}
             anyLabel={label("anyValue")}
             options={numbers(options.hits)}
             onChange={(value) => update({ hitsMax: toNumber(value) })}
           />
         </RangeField>
         <RangeField
+          offered={offers("range")}
           label={label("attackRange")}
           icon="attackRange"
           className={wide}
         >
           <PlainSelect
             ariaLabel={label("rangeFrom")}
-            value={asText(query.rangeMin)}
+            value={asText(filters.rangeMin)}
             anyLabel={label("anyValue")}
             options={numbers(options.ranges)}
             onChange={(value) => update({ rangeMin: toNumber(value) })}
           />
           <PlainSelect
             ariaLabel={label("rangeTo")}
-            value={asText(query.rangeMax)}
+            value={asText(filters.rangeMax)}
             anyLabel={label("anyValue")}
             options={numbers(options.ranges)}
             onChange={(value) => update({ rangeMax: toNumber(value) })}
           />
         </RangeField>
         <Field
+          offered={offers("damageTypes")}
           label={label("damageTypes")}
           icon="damageType"
           labelsControl={false}
@@ -402,49 +447,63 @@ export function CollectionFilterFields({
                   />
                 ),
               }))}
-              value={query.damageTypes}
+              value={filters.damageTypes}
               onChange={(next) => update({ damageTypes: next })}
-              data-testid="collection-damage-type-filter"
+              data-testid="unit-damage-type-filter"
             />
           )}
         </Field>
       </FieldGroup>
       <FieldGroup
+        shown={offersAny(
+          "abilityRole",
+          "abilityTarget",
+          "abilityAttack",
+          "summons"
+        )}
         title={label("groupAbilities")}
         count={counts.abilities}
         layout={layout}
       >
-        <Field label={label("abilityRole")} icon="abilityRole">
+        <Field
+          offered={offers("abilityRole")}
+          label={label("abilityRole")}
+          icon="abilityRole"
+        >
           {(id) => (
             <PlainSelect
               id={id}
-              value={query.abilityRole}
+              value={filters.abilityRole}
               anyLabel={label("abilityAny")}
-              options={collectionAbilityRoles.map((role) => ({
+              options={unitFilterAbilityRoles.map((role) => ({
                 value: role,
                 label: label(`abilityRoles.${role}`),
               }))}
               onChange={(value) =>
                 update({
-                  abilityRole: isCollectionAbilityRole(value) ? value : null,
+                  abilityRole: isUnitFilterAbilityRole(value) ? value : null,
                 })
               }
             />
           )}
         </Field>
-        <Field label={label("abilityTarget")} icon="abilityTarget">
+        <Field
+          offered={offers("abilityTarget")}
+          label={label("abilityTarget")}
+          icon="abilityTarget"
+        >
           {(id) => (
             <PlainSelect
               id={id}
-              value={query.abilityTarget}
+              value={filters.abilityTarget}
               anyLabel={label("abilityAny")}
-              options={collectionAbilityTargets.map((target) => ({
+              options={unitFilterAbilityTargets.map((target) => ({
                 value: target,
                 label: label(`abilityTargets.${target}`),
               }))}
               onChange={(value) =>
                 update({
-                  abilityTarget: isCollectionAbilityTarget(value)
+                  abilityTarget: isUnitFilterAbilityTarget(value)
                     ? value
                     : null,
                 })
@@ -452,20 +511,24 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <Field label={label("abilityAttack")} icon="abilityAttack">
+        <Field
+          offered={offers("abilityAttack")}
+          label={label("abilityAttack")}
+          icon="abilityAttack"
+        >
           {(id) => (
             <PlainSelect
               id={id}
-              value={query.abilityAttack}
+              value={filters.abilityAttack}
               anyLabel={label("abilityAny")}
-              options={collectionAbilityAttacks.map((attack) => ({
+              options={unitFilterAbilityAttacks.map((attack) => ({
                 value: attack,
                 label: label(`abilityAttacks.${attack}`),
                 icon: optionIcon(attackTypeIcons[attack]),
               }))}
               onChange={(value) =>
                 update({
-                  abilityAttack: isCollectionAbilityAttack(value)
+                  abilityAttack: isUnitFilterAbilityAttack(value)
                     ? value
                     : null,
                 })
@@ -473,19 +536,23 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <Field label={label("summons")} icon="summons">
+        <Field
+          offered={offers("summons")}
+          label={label("summons")}
+          icon="summons"
+        >
           {(id) => (
             <PlainSelect
               id={id}
-              value={query.summons}
+              value={filters.summons}
               anyLabel={label("summonsAny")}
-              options={collectionSummons.map((summons) => ({
+              options={unitFilterSummons.map((summons) => ({
                 value: summons,
                 label: label(`summonsTypes.${summons}`),
               }))}
               onChange={(value) =>
                 update({
-                  summons: isCollectionSummons(value) ? value : null,
+                  summons: isUnitFilterSummons(value) ? value : null,
                 })
               }
             />
@@ -493,11 +560,17 @@ export function CollectionFilterFields({
         </Field>
       </FieldGroup>
       <FieldGroup
+        shown={offersAny("traits", "movement", "shardSources")}
         title={label("groupMore")}
         count={counts.more}
         layout={layout}
       >
-        <Field label={label("traits")} icon="trait" labelsControl={false}>
+        <Field
+          offered={offers("traits")}
+          label={label("traits")}
+          icon="trait"
+          labelsControl={false}
+        >
           {() => (
             <MultiSelect
               label={label("traits")}
@@ -516,17 +589,21 @@ export function CollectionFilterFields({
                   />
                 ),
               }))}
-              value={query.traits}
+              value={filters.traits}
               onChange={(next) => update({ traits: next })}
-              data-testid="collection-trait-filter"
+              data-testid="unit-trait-filter"
             />
           )}
         </Field>
-        <Field label={label("movement")} icon="movement">
+        <Field
+          offered={offers("movement")}
+          label={label("movement")}
+          icon="movement"
+        >
           {(id) => (
             <PlainSelect
               id={id}
-              value={asText(query.movement)}
+              value={asText(filters.movement)}
               anyLabel={label("anyValue")}
               options={numbers(options.movements)}
               onChange={(value) => update({ movement: toNumber(value) })}
@@ -534,6 +611,7 @@ export function CollectionFilterFields({
           )}
         </Field>
         <Field
+          offered={offers("shardSources")}
           label={label("shardSource")}
           icon="shardSource"
           labelsControl={false}
@@ -548,9 +626,9 @@ export function CollectionFilterFields({
                 label: label(`shardSources.${source}`),
                 icon: optionIcon(shardSourceIcons[source]),
               }))}
-              value={query.shardSources}
+              value={filters.shardSources}
               onChange={(next) => update({ shardSources: next })}
-              data-testid="collection-shard-source-filter"
+              data-testid="unit-shard-source-filter"
             />
           )}
         </Field>
@@ -564,11 +642,14 @@ export function CollectionFilterFields({
  * desktop panel a fixed three-column grid where whatever follows a range starts a new row.
  */
 function FieldGroup({
+  shown,
   title,
   count,
   layout,
   children,
 }: {
+  /** `false` hides the section: none of its fields is offered in this scope. */
+  shown: boolean
   title: string
   count: number
   layout: "panel" | "sheet"
@@ -576,6 +657,7 @@ function FieldGroup({
 }) {
   const { t } = useTranslation("common")
   const id = useId()
+  if (!shown) return null
   return (
     <section className="grid gap-3" aria-labelledby={id}>
       <h3 id={id} className="text-sm font-medium">
@@ -605,12 +687,15 @@ function FieldGroup({
  * (each control's own label); the cell is a group named by the caption.
  */
 function RangeField({
+  offered = true,
   label,
   icon,
   describedBy,
   className,
   children,
 }: {
+  /** `false` renders nothing: the field is not offered in this scope. */
+  offered?: boolean
   label: string
   icon: FilterLabelIconKind
   describedBy?: string
@@ -618,6 +703,7 @@ function RangeField({
   children: [React.ReactNode, React.ReactNode]
 }) {
   const { t } = useTranslation("common")
+  if (!offered) return null
   return (
     <div
       className={cn("grid min-w-0 gap-1.5", className)}
@@ -644,17 +730,21 @@ function RangeField({
 /** A labelled control. A control that names itself (`labelsControl={false}`: the comboboxes carry
  *  their own accessible name) gets the same visible caption without a `for` pointing nowhere. */
 function Field({
+  offered = true,
   label,
   icon,
   labelsControl = true,
   children,
 }: {
+  /** `false` renders nothing: the field is not offered in this scope. */
+  offered?: boolean
   label: string
   icon: FilterLabelIconKind
   labelsControl?: boolean
   children: (id: string) => React.ReactNode
 }) {
   const id = useId()
+  if (!offered) return null
   return (
     <div className="grid min-w-0 gap-1.5">
       {labelsControl ? (

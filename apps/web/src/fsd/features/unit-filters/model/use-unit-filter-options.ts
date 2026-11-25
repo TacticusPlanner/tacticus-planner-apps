@@ -4,41 +4,41 @@ import type { CharacterStorageModel } from "@workspace/game-catalog"
 import { allianceRank } from "@workspace/game-domain"
 import type { Alliance } from "@workspace/game-domain"
 
+import { firstDifference } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
 
-import { collectionShardSources } from "./collection-query"
-import { damageTypesOf, shardSourcesOf } from "./collection-view"
-import { firstDifference } from "@/shared/lib"
+import { damageTypesOf, shardSourcesOf } from "./unit-filter-match"
+import { unitFilterShardSources } from "./unit-filters"
 
-interface CollectionFactionOption {
+interface UnitFilterFactionOption {
   id: string
   name: string
   alliance: Alliance
 }
 
 /** A trait or damage type with its localized name. */
-interface CollectionNamedOption {
+interface UnitFilterNamedOption {
   id: string
   name: string
 }
 
 /**
- * What the toolbar's filters can offer, all from the catalog: its options and the values their URL
+ * What the unit filters can offer, all from the catalog: its options and the values their URL
  * parameters are validated against.
  */
-export interface CollectionOptions {
-  /** In Collection's group order: alliance, then localized name. */
-  factions: CollectionFactionOption[]
+export interface UnitFilterOptions {
+  /** In Collection's faction group order: alliance, then localized name. */
+  factions: UnitFilterFactionOption[]
   /** Hits per melee or ranged attack, ascending. */
   hits: number[]
   movements: number[]
   /** Ranged attack distances, ascending. */
   ranges: number[]
   /** By localized name. */
-  damageTypes: CollectionNamedOption[]
-  traits: CollectionNamedOption[]
+  damageTypes: UnitFilterNamedOption[]
+  traits: UnitFilterNamedOption[]
   /** In the game's campaign order, "none" last; only those some character has. */
-  shardSources: (typeof collectionShardSources)[number][]
+  shardSources: (typeof unitFilterShardSources)[number][]
 }
 
 type OptionCharacter = Pick<
@@ -56,10 +56,10 @@ type OptionCharacter = Pick<
 >
 
 /**
- * The Collection toolbar's filter options, `undefined` until both unit datasets are read. The reads
- * share the Collection view's cached queries.
+ * The unit filters' options, `undefined` until both unit datasets are read. The reads share the
+ * unit lists' cached queries.
  */
-export function useCollectionOptions(): CollectionOptions | undefined {
+export function useUnitFilterOptions(): UnitFilterOptions | undefined {
   const { t, i18n } = useTranslation(["factions", "traits", "damageTypes"])
   const charactersRead = useCatalogDataset("characters")
   const mowsRead = useCatalogDataset("mows")
@@ -111,7 +111,7 @@ function combatOptions(characters: readonly OptionCharacter[]) {
         c.rangeDistance !== null && c.rangeDistance > 0 ? [c.rangeDistance] : []
       )
     ),
-    shardSources: collectionShardSources.filter((source) =>
+    shardSources: unitFilterShardSources.filter((source) =>
       sources.has(source)
     ),
   }
@@ -120,8 +120,8 @@ function combatOptions(characters: readonly OptionCharacter[]) {
 function factionOptions(
   units: readonly { faction: string; alliance: Alliance }[],
   factionName: (id: string) => string
-): CollectionFactionOption[] {
-  const byId = new Map<string, CollectionFactionOption>()
+): UnitFilterFactionOption[] {
+  const byId = new Map<string, UnitFilterFactionOption>()
   for (const unit of units) {
     if (!byId.has(unit.faction)) {
       byId.set(unit.faction, {

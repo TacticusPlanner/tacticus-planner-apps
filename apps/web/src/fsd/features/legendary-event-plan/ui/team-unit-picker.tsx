@@ -15,7 +15,6 @@ import {
 import { UnitGoalBadge } from "@/entities/goal"
 import {
   EventUnitChip,
-  ObjectiveIcon,
   ownedUnitChipData,
   unitEffectivePower,
   useObjectiveLabel,
@@ -46,7 +45,7 @@ import { SelectedChip } from "./team-picker-selected-chip"
 import { TeamPickerSort } from "./team-picker-sort"
 import { TeamPickerTileMarkers } from "./team-picker-tile-markers"
 import { TeamPickerUnitState } from "./team-picker-unit-state"
-import { ListDivider } from "@/shared/ui"
+import { ListDivider, ObjectiveIcon } from "@/shared/ui"
 
 /**
  * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, an owned

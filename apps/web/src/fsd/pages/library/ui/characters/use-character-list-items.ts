@@ -1,7 +1,10 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import type { UnitId } from "@workspace/game-domain"
 import type { CharacterStorageModel } from "@workspace/game-catalog"
 
+import { filterableCharacter } from "@/features/unit-filters"
+import type { FilterableUnit } from "@/features/unit-filters"
 import { useUnitSearchNames } from "@/shared/unit-name"
 
 import { orderUnits } from "../unit/unit-list.model"
@@ -32,4 +35,19 @@ export function useCharacterListItems(
       ),
     [characters, t, searchNamesOf, i18n.language]
   )
+}
+
+/** What the unit filters read of each catalog character, by id. */
+export function useFilterableCharacters(
+  characters: readonly CharacterStorageModel[]
+): (id: UnitId) => FilterableUnit | undefined {
+  return useMemo(() => {
+    const byId = new Map(
+      characters.map((character) => [
+        character.id,
+        filterableCharacter(character),
+      ])
+    )
+    return (id) => byId.get(id)
+  }, [characters])
 }

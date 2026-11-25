@@ -86,6 +86,8 @@
     "seasonLabel": "Saison {{season}}",
     "tier": "Stufe {{tier}}",
     "set": "Satz {{set}}",
+    "bossBadge": "Boss",
+    "primeBadge": "Prime",
     "seasonReference": "Saisonübersicht",
     "noSeasonReference": "Keine Raid-Boss-Saisondaten verfügbar.",
     "primarch": "Primarch",
@@ -419,7 +421,9 @@
     "title": "Charaktere",
     "search": "Charaktere suchen",
     "noMatching": "Keine Charaktere passen zu deiner Suche.",
+    "noMatchingFilters": "Keine Charaktere passen zu deiner Suche und deinen Filtern.",
     "clearSearch": "Suche zurücksetzen",
+    "clearFilters": "Suche und Filter zurücksetzen",
     "tour": {
       "steps": {
         "search": {
@@ -437,6 +441,7 @@
     "title": "Kriegsmaschinen",
     "search": "Kriegsmaschinen suchen",
     "noMatching": "Keine Kriegsmaschinen passen zu deiner Suche.",
+    "noMatchingFilters": "Keine Kriegsmaschinen passen zu deiner Suche und deinen Filtern.",
     "tour": {
       "steps": {
         "search": {

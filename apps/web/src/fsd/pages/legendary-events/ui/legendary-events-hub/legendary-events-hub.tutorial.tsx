@@ -7,8 +7,8 @@ import type { TourPageSteps } from "@/shared/tour"
 const HUB_TOUR_TARGETS = {
   active: '[data-testid="legendary-events-group-active"]',
   noActive: '[data-testid="legendary-events-no-active"]',
-  upcoming:
-    '[data-testid="legendary-events-group-upcoming"] [data-testid="legendary-event-card"]',
+  // The first card of Up next, else of Not announced yet.
+  upcoming: '[data-upcoming] [data-testid="legendary-event-card"]',
 } as const
 
 /** The hub's page tour: the Active group (or the "nothing running" line), then the first upcoming

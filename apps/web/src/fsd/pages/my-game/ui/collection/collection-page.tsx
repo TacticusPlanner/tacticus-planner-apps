@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { useIsAuthenticated } from "@azure/msal-react"
+import { useLocation } from "react-router"
 import {
   AlertTriangle,
   Eye,
@@ -28,6 +29,8 @@ import {
 } from "@/entities/roster-snapshot"
 import { BulkGoalDialog } from "@/features/goal-planning"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import { useUnitFilterOptions } from "@/features/unit-filters"
+import type { UnitFilterOptions } from "@/features/unit-filters"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
 import { EmptyState } from "@/shared/ui"
@@ -37,11 +40,10 @@ import type {
   CollectionListedUnit,
   CollectionRosterState,
 } from "../../model/collection-view"
-import { useCollectionOptions } from "../../model/use-collection-options"
-import type { CollectionOptions } from "../../model/use-collection-options"
 import {
   toBulkGoalUnit,
   useCollectionSelection,
+  opensInSelectMode,
 } from "../../model/collection-selection"
 import type { CollectionSelection } from "../../model/collection-selection"
 import { useCollectionQuery } from "../../model/use-collection-query"
@@ -61,7 +63,7 @@ import { FactionHeader } from "./faction-header"
 import { SelectableUnit } from "./selectable-unit"
 
 // Before the catalog is read the toolbar is hidden anyway; this only keeps its props total.
-const EMPTY_OPTIONS: CollectionOptions = {
+const EMPTY_OPTIONS: UnitFilterOptions = {
   factions: [],
   hits: [],
   movements: [],
@@ -91,7 +93,7 @@ const ungroupedSlots =
  */
 export function CollectionPage() {
   const { t } = useTranslation("common")
-  const options = useCollectionOptions()
+  const options = useUnitFilterOptions()
   const { query, update, clear } = useCollectionQuery(options)
   const isAuthenticated = useIsAuthenticated()
   const isMobile = useIsMobile()
@@ -101,7 +103,10 @@ export function CollectionPage() {
   const [takeOpen, setTakeOpen] = useState(false)
   const [manageOpen, setManageOpen] = useState(false)
   const [bulkOpen, setBulkOpen] = useState(false)
-  const selection = useCollectionSelection()
+  const location = useLocation()
+  const selection = useCollectionSelection(
+    opensInSelectMode(location.state, isAuthenticated)
+  )
   const comparing = compare.mode !== "off" && compare.mode !== "guest"
   // Turning Compare on ends select mode and discards the selection.
   if (comparing && (selection.active || selection.selected.size > 0))

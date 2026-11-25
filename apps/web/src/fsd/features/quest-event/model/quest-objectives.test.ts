@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { objectiveIcon } from "./quest-objectives"
+import { objectiveIcon as objectiveIconSpec } from "./quest-objectives"
+
+const objectiveIcon = (objective: { type: string; target?: string | null }) =>
+  objectiveIconSpec(objective)?.src
+const badgeOf = (objective: { type: string; target?: string | null }) =>
+  objectiveIconSpec(objective)?.badge
 
 describe("objectiveIcon", () => {
   it("names the trait, faction or damage type an objective targets", () => {
@@ -40,5 +45,17 @@ describe("objectiveIcon", () => {
     expect(objectiveIcon({ type: "NoDamageTakenByAnyHero" })).toBeUndefined()
     expect(objectiveIcon({ type: "NotTrait", target: null })).toBeUndefined()
     expect(objectiveIcon({ type: "Acing" })).toBeUndefined()
+  })
+
+  it("badges a negated subject with a red X and a hits bound with ≤ or ≥, as Legendary Events do", () => {
+    for (const type of ["NotTrait", "NotFaction", "NotDamageType"]) {
+      expect(badgeOf({ type, target: "Ultramarines" })).toBe("not")
+    }
+    expect(badgeOf({ type: "UseNoSummons" })).toBe("not")
+    expect(badgeOf({ type: "DoNoHealOrRepair" })).toBe("not")
+    expect(badgeOf({ type: "MaxHits", target: "3" })).toBe("max")
+    expect(badgeOf({ type: "MinHits", target: "4" })).toBe("min")
+    expect(badgeOf({ type: "DamageType", target: "Psychic" })).toBeUndefined()
+    expect(badgeOf({ type: "HasRangedAttack" })).toBeUndefined()
   })
 })

@@ -6,7 +6,11 @@ import { useTourPageSteps } from "@/shared/tour"
 
 import { UnitList } from "../unit/unit-list"
 import { useMowsListTutorial } from "./mows-list.tutorial"
-import { useMowListItems, useMowsCatalog } from "./use-mows-catalog"
+import {
+  useFilterableMows,
+  useMowListItems,
+  useMowsCatalog,
+} from "./use-mows-catalog"
 
 export const MOWS_PATH = "/library/machines-of-war"
 
@@ -18,6 +22,7 @@ export function MowsListPage() {
   const { t } = useTranslation("library")
   const catalog = useMowsCatalog()
   const items = useMowListItems(catalog.records)
+  const filterable = useFilterableMows(catalog.records)
 
   useTourPageSteps(useMowsListTutorial())
 
@@ -42,6 +47,8 @@ export function MowsListPage() {
   return (
     <div className="flex flex-col gap-4" data-testid="mows-list-page">
       <UnitList
+        kind="mow"
+        filterable={filterable}
         items={items}
         iconFor={mowIcon}
         basePath={MOWS_PATH}
@@ -51,7 +58,9 @@ export function MowsListPage() {
           title: t("mowsList.title"),
           search: t("mowsList.search"),
           noMatching: t("mowsList.noMatching"),
+          noMatchingFilters: t("mowsList.noMatchingFilters"),
           clearSearch: t("charactersList.clearSearch"),
+          clearFilters: t("charactersList.clearFilters"),
         }}
       />
     </div>
