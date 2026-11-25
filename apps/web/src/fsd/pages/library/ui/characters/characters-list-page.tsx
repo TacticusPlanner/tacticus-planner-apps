@@ -8,8 +8,12 @@ import { useTourPageSteps } from "@/shared/tour"
 
 import { UnitList } from "../unit/unit-list"
 import { useCharactersListTutorial } from "./characters-list.tutorial"
-import { useCharacterListItems } from "./use-character-list-items"
+import {
+  useCharacterListItems,
+  useFilterableCharacters,
+} from "./use-character-list-items"
 import { useCharactersCatalog } from "./use-characters-catalog"
+import { withoutForeignParams } from "./characters-list-params"
 
 const COLLECTION_PATH = "/library/characters"
 
@@ -23,15 +27,17 @@ export function CharactersListPage() {
   const navigate = useNavigate()
   const catalog = useCharactersCatalog()
   const items = useCharacterListItems(catalog.characters)
+  const filterable = useFilterableCharacters(catalog.characters)
 
   useTourPageSteps(useCharactersListTutorial())
 
   // The former calculator lived here and kept its range in the query; a link without a character
-  // has no use for it.
+  // has no use for it. The unit filters' parameters stay.
   useEffect(() => {
-    if (location.search) {
+    const kept = withoutForeignParams(location.search)
+    if (kept !== null) {
       void navigate(
-        { pathname: COLLECTION_PATH, search: "" },
+        { pathname: COLLECTION_PATH, search: kept },
         { replace: true }
       )
     }
@@ -58,6 +64,8 @@ export function CharactersListPage() {
   return (
     <div className="flex flex-col gap-4" data-testid="characters-list-page">
       <UnitList
+        kind="character"
+        filterable={filterable}
         items={items}
         iconFor={characterIcon}
         basePath={COLLECTION_PATH}
@@ -67,7 +75,9 @@ export function CharactersListPage() {
           title: t("charactersList.title"),
           search: t("charactersList.search"),
           noMatching: t("charactersList.noMatching"),
+          noMatchingFilters: t("charactersList.noMatchingFilters"),
           clearSearch: t("charactersList.clearSearch"),
+          clearFilters: t("charactersList.clearFilters"),
         }}
       />
     </div>

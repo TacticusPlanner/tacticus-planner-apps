@@ -419,7 +419,9 @@
     "title": "Characters",
     "search": "Search characters",
     "noMatching": "No characters match your search.",
+    "noMatchingFilters": "No characters match your search and filters.",
     "clearSearch": "Clear search",
+    "clearFilters": "Clear search and filters",
     "tour": {
       "steps": {
         "search": {
@@ -437,6 +439,7 @@
     "title": "Machines of War",
     "search": "Search Machines of War",
     "noMatching": "No Machines of War match your search.",
+    "noMatchingFilters": "No Machines of War match your search and filters.",
     "tour": {
       "steps": {
         "search": {

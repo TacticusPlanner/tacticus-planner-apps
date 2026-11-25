@@ -212,3 +212,37 @@ export function unitFilterMatcher(
     return !matchesAbility || unit.abilityTags.some(matchesAbility)
   }
 }
+
+/** A catalog character as the unit filters read it. The catalog has no current rarity, so the
+ *  Rarity filter reads the starting one. */
+export function filterableCharacter(
+  character: CombatCharacter &
+    Pick<
+      CharacterStorageModel,
+      "alliance" | "faction" | "initialRarity" | "summons" | "abilities"
+    >
+): FilterableUnit {
+  return {
+    kind: "character",
+    alliance: character.alliance,
+    factionId: character.faction,
+    rarity: character.initialRarity,
+    summons: character.summons,
+    abilityTags: character.abilities,
+    combat: combatProfile(character),
+  }
+}
+
+/** A catalog Machine of War as the unit filters read it: no starting rarity and no combat profile. */
+export function filterableMow(
+  mow: Pick<MowStorageModel, "alliance" | "faction" | "summons" | "abilities">
+): FilterableUnit {
+  return {
+    kind: "mow",
+    alliance: mow.alliance,
+    factionId: mow.faction,
+    rarity: undefined,
+    summons: mow.summons,
+    abilityTags: mow.abilities,
+  }
+}

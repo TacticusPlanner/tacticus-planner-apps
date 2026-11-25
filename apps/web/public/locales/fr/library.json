@@ -419,7 +419,9 @@
     "title": "Personnages",
     "search": "Rechercher des personnages",
     "noMatching": "Aucun personnage ne correspond à votre recherche.",
+    "noMatchingFilters": "Aucun personnage ne correspond à votre recherche et à vos filtres.",
     "clearSearch": "Effacer la recherche",
+    "clearFilters": "Effacer la recherche et les filtres",
     "tour": {
       "steps": {
         "search": {
@@ -437,6 +439,7 @@
     "title": "Machines de guerre",
     "search": "Rechercher des Machines de guerre",
     "noMatching": "Aucune Machine de guerre ne correspond à votre recherche.",
+    "noMatchingFilters": "Aucune Machine de guerre ne correspond à votre recherche et à vos filtres.",
     "tour": {
       "steps": {
         "search": {

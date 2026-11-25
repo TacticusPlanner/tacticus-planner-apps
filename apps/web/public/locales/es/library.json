@@ -419,7 +419,9 @@
     "title": "Personajes",
     "search": "Buscar personajes",
     "noMatching": "Ningún personaje coincide con tu búsqueda.",
+    "noMatchingFilters": "Ningún personaje coincide con tu búsqueda y tus filtros.",
     "clearSearch": "Borrar búsqueda",
+    "clearFilters": "Borrar búsqueda y filtros",
     "tour": {
       "steps": {
         "search": {
@@ -437,6 +439,7 @@
     "title": "Máquinas de Guerra",
     "search": "Buscar Máquinas de Guerra",
     "noMatching": "Ninguna Máquina de Guerra coincide con tu búsqueda.",
+    "noMatchingFilters": "Ninguna Máquina de Guerra coincide con tu búsqueda y tus filtros.",
     "tour": {
       "steps": {
         "search": {

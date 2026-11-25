@@ -1,6 +1,8 @@
 import { allianceRank, factionRank } from "@workspace/game-domain"
 import type { Alliance, FactionId, UnitId } from "@workspace/game-domain"
 
+import { unitFilterMatcher } from "@/features/unit-filters"
+import type { FilterableUnit, UnitFilters } from "@/features/unit-filters"
 import {
   anyNameIncludes,
   normalizeSearchText,
@@ -43,4 +45,17 @@ export function searchUnits<Item extends UnitListItem>(
   return items.filter((item) =>
     anyNameIncludes([item.name, ...(item.searchNames ?? [])], needle, locale)
   )
+}
+
+/** The items the unit filters keep; an item `filterable` knows nothing of is kept. */
+export function filterUnits<Item extends UnitListItem>(
+  items: readonly Item[],
+  filters: UnitFilters,
+  filterable: (id: UnitId) => FilterableUnit | undefined
+): Item[] {
+  const matches = unitFilterMatcher(filters)
+  return items.filter((item) => {
+    const unit = filterable(item.id)
+    return !unit || matches(unit)
+  })
 }

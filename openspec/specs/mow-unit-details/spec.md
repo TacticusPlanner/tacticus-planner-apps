@@ -15,6 +15,19 @@ name), ordered by alliance, then faction, then name, with a name search. Each ti
 MoW's unit page at `/library/machines-of-war/{id}`. The page SHALL work signed out and SHALL NOT show the
 "not available yet" placeholder.
 
+After the search, the toolbar's Find slot SHALL offer a Filters button with its active count. It SHALL open
+Collection's standalone filters (`player-collection`, same matching rules and query parameter names) limited
+to those a Machine of War's catalog data can answer: Alliance and Faction (Unit), and Ability role, Ability
+target, Ability attack and Summons (Abilities). Rarity, the combat filters, Traits, Movement and Shard
+source are not offered, since the catalog gives Machines of War no starting rarity, attack profile, traits
+or shard drops.
+
+#### Scenario: Filtering Machines of War by summons
+
+- **WHEN** a visitor sets Summons to forced summons
+- **THEN** only Machines of War whose catalog `summons` is forced remain listed, and the Filters panel shows
+  only the Unit and Abilities sections
+
 #### Scenario: Opening a MoW from the list
 
 - **WHEN** a visitor opens `/library/machines-of-war` and activates the tile for Galatian

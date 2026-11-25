@@ -25,12 +25,22 @@ export function toBulkGoalUnit(unit: UnitTileUnit): BulkGoalUnit {
   }
 }
 
+/** Whether Collection opens in select mode: a link (Create goal's "Select them in Collection")
+ *  asks for it through its navigation state `{ selectUnits: true }`. */
+export function opensInSelectMode(state: unknown): boolean {
+  return (
+    typeof state === "object" &&
+    state !== null &&
+    (state as { selectUnits?: unknown }).selectUnits === true
+  )
+}
+
 /**
  * Collection's select mode: whether it is on and the selected units by key, in the order they were
  * picked. The selection outlives the listed units (filters may hide a selected one).
  */
-export function useCollectionSelection() {
-  const [active, setActive] = useState(false)
+export function useCollectionSelection(initiallyActive = false) {
+  const [active, setActive] = useState(initiallyActive)
   const [selected, setSelected] = useState<ReadonlyMap<string, UnitTileUnit>>(
     () => new Map()
   )

@@ -21,13 +21,34 @@ const character = (
   id: string,
   name: string,
   faction: string,
-  alliance: string
-) => ({ id, name, faction, alliance })
+  alliance: string,
+  traits: string[] = []
+) => ({
+  id,
+  name,
+  faction,
+  alliance,
+  initialRarity: "Common",
+  meleeHits: 1,
+  meleeDamage: "Physical",
+  rangedHits: null,
+  rangedDamage: null,
+  rangeDistance: null,
+  movement: 3,
+  traits,
+  activeAbilityDamage: [],
+  passiveAbilityDamage: [],
+  shardLocations: [],
+  summons: "none",
+  abilities: [],
+})
 
 const characters = [
   character("blackAbaddon", "Abaddon", "BlackLegion", "Chaos"),
   character("ultraCalgar", "Calgar", "Ultramarines", "Imperial"),
-  character("ultraTigurius", "Tigurius", "Ultramarines", "Imperial"),
+  character("ultraTigurius", "Tigurius", "Ultramarines", "Imperial", [
+    "Psyker",
+  ]),
   character("necroSpyder", "Spyder", "Necrons", "Xenos"),
   character("sistersCelestine", "Celestine", "Sisterhood", "Imperial"),
 ]
@@ -143,6 +164,27 @@ describe("CharactersListPage", () => {
         expect(document.querySelector(step.target as string)).not.toBeNull()
       }
     }
+  })
+
+  it("applies the unit filters from the URL, under Collection's parameter names", async () => {
+    await renderList("/library/characters?trait=Psyker")
+    await screen.findByTestId("characters-list")
+    expect(
+      await screen.findByRole("button", { name: "Filters, 1 active" })
+    ).toBeInTheDocument()
+    expect(listNames()).toEqual(["Tigurius"])
+    expect(screen.getByTestId("search")).toHaveTextContent("?trait=Psyker")
+  })
+
+  it("leaves the roster filters and Unit type out of the Filters panel", async () => {
+    await renderList()
+    fireEvent.click(await screen.findByRole("button", { name: "Filters" }))
+    expect(screen.getByRole("region", { name: "Unit" })).toBeInTheDocument()
+    expect(screen.queryByLabelText("Unit type")).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("group", { name: "Rank range" })
+    ).not.toBeInTheDocument()
+    expect(screen.getByLabelText("Attack type")).toBeInTheDocument()
   })
 
   it("drops the former calculator's parameters from the URL", async () => {

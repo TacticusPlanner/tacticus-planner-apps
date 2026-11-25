@@ -1514,6 +1514,8 @@
     },
     "create": {
       "title": "Create a goal",
+      "manyUnits": "Goals for many units?",
+      "manyUnitsLink": "Select them in Collection",
       "entityType": {
         "unit": "Unit"
       },

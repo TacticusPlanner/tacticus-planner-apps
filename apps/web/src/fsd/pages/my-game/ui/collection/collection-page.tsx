@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { useIsAuthenticated } from "@azure/msal-react"
+import { useLocation } from "react-router"
 import {
   AlertTriangle,
   Eye,
@@ -42,6 +43,7 @@ import type {
 import {
   toBulkGoalUnit,
   useCollectionSelection,
+  opensInSelectMode,
 } from "../../model/collection-selection"
 import type { CollectionSelection } from "../../model/collection-selection"
 import { useCollectionQuery } from "../../model/use-collection-query"
@@ -101,7 +103,10 @@ export function CollectionPage() {
   const [takeOpen, setTakeOpen] = useState(false)
   const [manageOpen, setManageOpen] = useState(false)
   const [bulkOpen, setBulkOpen] = useState(false)
-  const selection = useCollectionSelection()
+  const location = useLocation()
+  const selection = useCollectionSelection(
+    isAuthenticated && opensInSelectMode(location.state)
+  )
   const comparing = compare.mode !== "off" && compare.mode !== "guest"
   // Turning Compare on ends select mode and discards the selection.
   if (comparing && (selection.active || selection.selected.size > 0))

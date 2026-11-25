@@ -419,7 +419,9 @@
     "title": "Charaktere",
     "search": "Charaktere suchen",
     "noMatching": "Keine Charaktere passen zu deiner Suche.",
+    "noMatchingFilters": "Keine Charaktere passen zu deiner Suche und deinen Filtern.",
     "clearSearch": "Suche zurücksetzen",
+    "clearFilters": "Suche und Filter zurücksetzen",
     "tour": {
       "steps": {
         "search": {
@@ -437,6 +439,7 @@
     "title": "Kriegsmaschinen",
     "search": "Kriegsmaschinen suchen",
     "noMatching": "Keine Kriegsmaschinen passen zu deiner Suche.",
+    "noMatchingFilters": "Keine Kriegsmaschinen passen zu deiner Suche und deinen Filtern.",
     "tour": {
       "steps": {
         "search": {

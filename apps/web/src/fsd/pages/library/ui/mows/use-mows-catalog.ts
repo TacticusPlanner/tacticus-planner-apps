@@ -1,7 +1,10 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
+import type { UnitId } from "@workspace/game-domain"
 import type { MowStorageModel } from "@workspace/game-catalog"
 
+import { filterableMow } from "@/features/unit-filters"
+import type { FilterableUnit } from "@/features/unit-filters"
 import { useUnitSearchNames } from "@/shared/unit-name"
 
 import { orderUnits } from "../unit/unit-list.model"
@@ -37,4 +40,14 @@ export function useMowListItems(
       ),
     [mows, t, searchNamesOf, i18n.language]
   )
+}
+
+/** What the unit filters read of each catalog Machine of War, by id. */
+export function useFilterableMows(
+  mows: readonly MowStorageModel[]
+): (id: UnitId) => FilterableUnit | undefined {
+  return useMemo(() => {
+    const byId = new Map(mows.map((mow) => [mow.id, filterableMow(mow)]))
+    return (id) => byId.get(id)
+  }, [mows])
 }

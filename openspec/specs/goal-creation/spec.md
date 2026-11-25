@@ -743,3 +743,13 @@ The creation form SHALL offer the Ability goal type for an owned unit unless bot
 
 - **GIVEN** a unit with both abilities at 60
 - **THEN** the Ability goal type is unavailable and the form says its abilities have reached the maximum level
+
+### Requirement: Create goal points to Collection for goals on many units
+
+The Create goal dialog SHALL show, under its title, "Goals for many units? Select them in Collection", where "Select them in Collection" links to My Game > Collection opened in select mode. Following the link SHALL close the dialog. Collection SHALL open in select mode only for a signed-in user and only when reached through that link, not from its URL.
+
+#### Scenario: Picking units by trait for one goal
+
+- **GIVEN** a signed-in player in the Create goal dialog who wants the same goal for every Psyker
+- **WHEN** they follow "Select them in Collection"
+- **THEN** the dialog closes and Collection opens with select mode on, where they can filter by Psyker, select all shown and create the goals in one step

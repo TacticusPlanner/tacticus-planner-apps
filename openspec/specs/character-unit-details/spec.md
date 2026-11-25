@@ -15,6 +15,25 @@ ordered by alliance, then faction, then name, with a name search. Each tile SHAL
 character's unit page at `/library/characters/{id}`. The page SHALL work signed out. Query
 parameters the former calculator used on this URL SHALL be dropped, not applied.
 
+After the search, the toolbar's Find slot SHALL offer a Filters button with its active count. It
+SHALL open Collection's standalone filters (`player-collection`, same sections, matching rules and
+query parameter names, so a filtered link works on both pages), without the filters that need a
+roster (rank range and stars range) and without Unit type. The Rarity filter matches a character's
+starting rarity. While a filter is set and nothing matches, the empty list SHALL say that the
+search and filters match nothing and offer to clear both.
+
+#### Scenario: A filtered link opens filtered
+
+- **WHEN** a visitor opens `/library/characters?trait=Psyker`
+- **THEN** only Psyker characters are listed, the Filters button reports 1 active filter, and the
+  parameter stays in the URL
+
+#### Scenario: No roster filters in the Library
+
+- **WHEN** the visitor opens Filters
+- **THEN** the Unit, Progression (Rarity only), Attack, Abilities, and Traits and more sections are
+  shown, with no Unit type, Rank range or Stars range
+
 #### Scenario: Opening a character from the list
 
 - **WHEN** a visitor opens `/library/characters` and activates the tile for Tigurius
