@@ -86,6 +86,8 @@
     "seasonLabel": "Saison {{season}}",
     "tier": "Palier {{tier}}",
     "set": "Ensemble {{set}}",
+    "bossBadge": "Boss",
+    "primeBadge": "Prime",
     "seasonReference": "Référence de saison",
     "noSeasonReference": "Aucune donnée de saison de boss de raid n'est disponible.",
     "primarch": "Primarque",

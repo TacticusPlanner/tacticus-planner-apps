@@ -91,4 +91,47 @@ describe("RaidBossSeasonReference", () => {
       })
     )
   })
+
+  it("names the tier by rarity and the set by its boss, and badges boss, primes and primarchs", () => {
+    const tier = viewModel.tiers[0]!
+    const set = tier.sets[0]!
+    render(
+      <RaidBossSeasonReference
+        viewModel={{
+          ...viewModel,
+          tiers: [
+            {
+              ...tier,
+              tier: 5,
+              rarity: "Mythic",
+              sets: [
+                {
+                  ...set,
+                  setNumber: 3,
+                  bossName: "Tervigon",
+                  encounters: set.encounters.toReversed(),
+                },
+              ],
+            },
+          ],
+        }}
+        seasonIds={["season-1"]}
+        onSeasonChange={vi.fn()}
+        onEncounterSelect={vi.fn()}
+      />
+    )
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Mythic Tier 5" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { level: 3, name: "Tervigon Set 3" })
+    ).toBeInTheDocument()
+    expect(screen.getByTestId("raid-boss-season-tile-1")).toHaveTextContent(
+      "Boss"
+    )
+    expect(screen.getByTestId("raid-boss-season-tile-0")).toHaveTextContent(
+      "PrimePrimarch"
+    )
+  })
 })

@@ -86,6 +86,8 @@
     "seasonLabel": "Season {{season}}",
     "tier": "Tier {{tier}}",
     "set": "Set {{set}}",
+    "bossBadge": "Boss",
+    "primeBadge": "Prime",
     "seasonReference": "Season reference",
     "noSeasonReference": "No raid-boss season data is available.",
     "primarch": "Primarch",

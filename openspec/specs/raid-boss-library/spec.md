@@ -234,6 +234,16 @@ The page's Joyride tour (desktop and mobile step sets) SHALL include a step anch
 - **WHEN** a user runs the page tour on desktop and again on mobile
 - **THEN** a step anchored to a present element in the adjusted-stats area runs on each platform with localized copy
 
+### Requirement: The season board names tiers by rarity and sets by their boss
+
+On the season reference, each tier heading SHALL show the tier's rarity icon and name (tiers 0 to 5 are Common to Mythic, as the season's chests are), with "Tier N" as muted secondary text; a tier past Mythic shows "Tier N" alone. Within a tier, sets SHALL be listed in play order, first encountered first. Each set heading SHALL show its boss's name, with "Set N" (1-based) as muted secondary text. In each set the boss tile SHALL come first with a "Boss" badge (and a "Primarch" badge when it is one), then its primes with a "Prime" badge, at the same tile size. On desktop a thin divider SHALL separate the boss from its primes; on mobile the primes wrap below the boss.
+
+#### Scenario: A Mythic tier's first set
+
+- **GIVEN** season 4, whose tier 5 starts with the Silent King's set
+- **WHEN** the visitor opens the season reference
+- **THEN** that tier reads "Mythic" with "Tier 5" beside it, and its first set reads "Silent King" with "Set 1", the Silent King tile first with a Boss badge and its two primes after it with Prime badges
+
 ### Requirement: Desktop and mobile present distinct layouts
 
 The page SHALL render its tab control and shared route state at all viewport

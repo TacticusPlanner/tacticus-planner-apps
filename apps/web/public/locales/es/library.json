@@ -86,6 +86,8 @@
     "seasonLabel": "Temporada {{season}}",
     "tier": "Nivel {{tier}}",
     "set": "Conjunto {{set}}",
+    "bossBadge": "Jefe",
+    "primeBadge": "Prime",
     "seasonReference": "Referencia de temporada",
     "noSeasonReference": "No hay datos de temporada de jefes de incursión disponibles.",
     "primarch": "Primarca",
