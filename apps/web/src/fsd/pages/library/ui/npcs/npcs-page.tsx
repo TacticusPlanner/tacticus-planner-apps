@@ -46,7 +46,7 @@ import { numberRepeatedLabels } from "../../model/npcs/number-repeated-labels"
 import { NpcDetailPage } from "./npc-detail-page"
 import { NpcsListPage } from "./npcs-list-page"
 import { useNpcsTutorial } from "./npcs.tutorial"
-import { npcPowerFigure } from "./npcs-page.view-model"
+import { npcListSections, npcPowerFigure } from "./npcs-page.view-model"
 import type {
   NpcFilterOptions,
   NpcListItem,
@@ -155,17 +155,20 @@ export function NpcsPage() {
     () => filterNpcGroups(catalog.groups, filters, groupName, encounterLookup),
     [catalog.groups, filters, groupName, encounterLookup]
   )
-  const items = useMemo<NpcListItem[]>(
-    () =>
+  // In section order (enemies, then playable characters), which Previous / Next also follow.
+  const items = useMemo<NpcListItem[]>(() => {
+    const { enemies, playable } = npcListSections(
       listedGroups.map((group) => ({
         id: group.id,
         name: groupName(group),
         factionId: group.factionId,
         factionName: factionName(group.factionId),
         portraitVariationId: portraitVariationOf(group),
-      })),
-    [listedGroups, groupName, factionName]
-  )
+        characterId: group.characterId,
+      }))
+    )
+    return [...enemies, ...playable]
+  }, [listedGroups, groupName, factionName])
 
   const filterOptions = useMemo<NpcFilterOptions>(() => {
     const factions = new Map<string, string>()

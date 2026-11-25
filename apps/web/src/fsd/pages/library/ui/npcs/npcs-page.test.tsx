@@ -332,6 +332,51 @@ describe("NpcsPage", () => {
     expect(names).toEqual(["Havoc", "Makhotep", "Imospekh", "Termagant"])
   })
 
+  it("lists enemies first and playable characters apart, each with a count", async () => {
+    // Makhotep is a version of the playable Makhotep; the others are enemies only.
+    seededNpcs = dataset.map((record) =>
+      record.name === "Makhotep"
+        ? { ...record, characterId: "necroWarden" }
+        : record
+    )
+    const user = userEvent.setup()
+    await renderPage("/library/npcs")
+
+    const enemies = await screen.findByTestId("npcs-section-enemies")
+    const playable = screen.getByTestId("npcs-section-playable")
+    expect(within(enemies).getByRole("heading")).toHaveTextContent("Enemies 3")
+    expect(within(playable).getByRole("heading")).toHaveTextContent(
+      "Playable characters 1"
+    )
+    expect(listedNpcs().map((tile) => tile.textContent)).toEqual([
+      "Havoc",
+      "Imospekh",
+      "Termagant",
+      "Makhotep",
+    ])
+
+    // Previous / Next follow the section order, and the NPC links its character.
+    await user.click(screen.getByTestId("npc-tile-makhotep"))
+    await waitFor(() => expect(location()).toBe("/library/npcs/makhotep"))
+    expect(screen.getByTestId("unit-nav-position")).toHaveTextContent("4 of 4")
+    expect(screen.getByTestId("npc-see-character")).toHaveAttribute(
+      "href",
+      "/library/characters/necroWarden"
+    )
+  })
+
+  it("hides an empty section and links no character for an enemy", async () => {
+    const user = userEvent.setup()
+    await renderPage("/library/npcs")
+
+    expect(await screen.findByTestId("npcs-section-enemies")).toBeVisible()
+    expect(screen.queryByTestId("npcs-section-playable")).toBeNull()
+
+    await user.click(screen.getByTestId("npc-tile-termagant"))
+    await waitFor(() => expect(location()).toBe("/library/npcs/termagant"))
+    expect(screen.queryByTestId("npc-see-character")).toBeNull()
+  })
+
   it("restores NPC, variation, and level from a direct link", async () => {
     await renderPage(
       "/library/npcs/makhotep?variation=necroBossWardenLHE&level=1"

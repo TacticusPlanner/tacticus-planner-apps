@@ -842,6 +842,13 @@ export const npcPortraitOverrides: Record<string, string> = {
     "datamines/atlases/ui_image_portrait_blood_intercessor_02.webp",
   bloodNpc1IntercessorSurv:
     "datamines/atlases/ui_image_portrait_blood_intercessor_02.webp",
+  // Not in V1's data; matched by hand to the game's portrait atlas.
+  bloodNpc2Terminator:
+    "datamines/atlases/ui_image_portrait_blood_terminator_01.webp",
+  custoNpc1Sentinel:
+    "datamines/atlases/ui_image_portrait_custo_sentinel_01.webp",
+  custoNpc2Dreadnought:
+    "datamines/atlases/ui_image_portrait_custo_dreadnought_01.webp",
   ultraNpcMoWDreadnought:
     "datamines/atlases/ui_image_portrait_ultra_dreadnought_01.webp",
   genesNpc1Aberrant:

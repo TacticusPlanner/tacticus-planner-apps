@@ -29,6 +29,22 @@ export interface NpcListItem {
   factionName: string
   /** The variation whose portrait represents the group (its default). */
   portraitVariationId: string
+  /** The playable character the NPC is a version of; null for an enemy only. */
+  characterId: string | null
+}
+
+/**
+ * The list's two sections, each in listed order: enemies (NPCs no player can own) first, then the
+ * playable characters' NPC versions.
+ */
+export function npcListSections(items: readonly NpcListItem[]): {
+  enemies: NpcListItem[]
+  playable: NpcListItem[]
+} {
+  return {
+    enemies: items.filter((item) => item.characterId === null),
+    playable: items.filter((item) => item.characterId !== null),
+  }
 }
 
 /** One Variation selector option for the selected NPC. */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { portraitVariationOf } from "./portrait-variation"
+import { npcPortraitSrc, portraitVariationOf } from "./portrait-variation"
 
 const group = (defaultVariationId: string, ...ids: string[]) => ({
   defaultVariationId,
@@ -24,5 +24,21 @@ describe("portraitVariationOf", () => {
     expect(portraitVariationOf(group("noSuchNpc", "noSuchNpc"))).toBe(
       "noSuchNpc"
     )
+  })
+})
+
+describe("npcPortraitSrc", () => {
+  it("prefers the variation's own portrait", () => {
+    expect(npcPortraitSrc("necroBossWarden", "necroWarden")).toBe(
+      "/game_catalog/datamines/atlases/ui_image_portrait_necro_warden_01.webp"
+    )
+  })
+
+  it("falls back to the playable character's portrait, then to none", () => {
+    expect(npcPortraitSrc("noSuchNpc", "bloodDante")).toBe(
+      "/game_catalog/datamines/atlases/ui_image_RoundPortrait_blood_dante_01.webp"
+    )
+    expect(npcPortraitSrc("noSuchNpc", null)).toBeUndefined()
+    expect(npcPortraitSrc("noSuchNpc")).toBeUndefined()
   })
 })
