@@ -1,4 +1,4 @@
-import { Children, useId, useRef, useState } from "react"
+import { useId, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   campaignIcon,
@@ -100,6 +100,12 @@ function optionIcon(src: string | undefined) {
   ) : undefined
 }
 
+const numbers = (values: readonly number[]) =>
+  values.map((value) => ({ value: String(value), label: String(value) }))
+const toNumber = (value: string | null) =>
+  value === null ? null : Number(value)
+const asText = (value: number | null) => (value === null ? null : String(value))
+
 // "None" (no stars yet) is never an owned unit's progression, so it is not offered.
 const starSteps = progressionOrder.filter((step) => !step.endsWith(":None"))
 
@@ -139,6 +145,7 @@ export function UnitFilterFields({
   const noteId = useId()
   const offers = (field: UnitFilterField) =>
     offersUnitFilterField(field, { scope, kind })
+  const offersAny = (...fields: UnitFilterField[]) => fields.some(offers)
   const rosterNote = rosterAvailable || !offers("rank") ? undefined : noteId
 
   const rankOptions: SelectOption<Rank>[] = rankOrder.map((rank) => ({
@@ -151,12 +158,6 @@ export function UnitFilterFields({
     label: progressionText(t, step),
     icon: <ProgressionBadge value={step} />,
   }))
-  const numbers = (values: readonly number[]) =>
-    values.map((value) => ({ value: String(value), label: String(value) }))
-  const toNumber = (value: string | null) =>
-    value === null ? null : Number(value)
-  const asText = (value: number | null) =>
-    value === null ? null : String(value)
   const wide = layout === "panel" ? "col-span-2" : undefined
   const counts = sectionFilterCounts(filters)
 
@@ -169,173 +170,179 @@ export function UnitFilterFields({
       data-testid="unit-filter-fields"
     >
       <FieldGroup
+        shown={offersAny("alliance", "factions", "kind")}
         title={label("groupUnit")}
         count={counts.unit}
         layout={layout}
       >
-        {offers("alliance") ? (
-          <Field label={label("alliance")} icon="alliance">
-            {(id) => (
-              <PlainSelect
-                id={id}
-                value={filters.alliance}
-                anyLabel={label("allAlliances")}
-                options={unitFilterAlliances.map((alliance) => ({
-                  value: alliance,
-                  label: t(`alliances.${alliance}`),
-                  icon: optionIcon(onslaughtAllianceIcon(alliance)),
-                }))}
-                onChange={(value) =>
-                  update({
-                    alliance: isUnitFilterAlliance(value) ? value : null,
-                  })
-                }
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("factions") ? (
-          <Field label={label("faction")} icon="faction" labelsControl={false}>
-            {() => (
-              <MultiSelect
-                label={label("faction")}
-                placeholder={label("allFactions")}
-                searchPlaceholder={label("searchFactions")}
-                emptyText={label("noFactions")}
-                clearLabel={label("clearFactions")}
-                options={options.factions.map((faction) => ({
-                  value: faction.id,
-                  label: faction.name,
-                  icon: (
-                    <EntityIcon
-                      size="inline"
-                      src={factionIcon(faction.id)}
-                      alt={faction.name}
-                    />
-                  ),
-                }))}
-                value={filters.factions}
-                onChange={(next) => update({ factions: next })}
-                data-testid="unit-faction-filter"
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("kind") ? (
-          <Field label={label("kind")} icon="unitType">
-            {(id) => (
-              <PlainSelect
-                id={id}
-                value={filters.kind}
-                anyLabel={label("kindAll")}
-                options={unitFilterKinds.map((kind) => ({
-                  value: kind,
-                  label: label(kind),
-                  icon: optionIcon(kindIcons[kind]),
-                }))}
-                onChange={(value) =>
-                  update({ kind: isUnitFilterKind(value) ? value : null })
-                }
-              />
-            )}
-          </Field>
-        ) : null}
+        <Field
+          offered={offers("alliance")}
+          label={label("alliance")}
+          icon="alliance"
+        >
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={filters.alliance}
+              anyLabel={label("allAlliances")}
+              options={unitFilterAlliances.map((alliance) => ({
+                value: alliance,
+                label: t(`alliances.${alliance}`),
+                icon: optionIcon(onslaughtAllianceIcon(alliance)),
+              }))}
+              onChange={(value) =>
+                update({
+                  alliance: isUnitFilterAlliance(value) ? value : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <Field
+          offered={offers("factions")}
+          label={label("faction")}
+          icon="faction"
+          labelsControl={false}
+        >
+          {() => (
+            <MultiSelect
+              label={label("faction")}
+              placeholder={label("allFactions")}
+              searchPlaceholder={label("searchFactions")}
+              emptyText={label("noFactions")}
+              clearLabel={label("clearFactions")}
+              options={options.factions.map((faction) => ({
+                value: faction.id,
+                label: faction.name,
+                icon: (
+                  <EntityIcon
+                    size="inline"
+                    src={factionIcon(faction.id)}
+                    alt={faction.name}
+                  />
+                ),
+              }))}
+              value={filters.factions}
+              onChange={(next) => update({ factions: next })}
+              data-testid="unit-faction-filter"
+            />
+          )}
+        </Field>
+        <Field offered={offers("kind")} label={label("kind")} icon="unitType">
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={filters.kind}
+              anyLabel={label("kindAll")}
+              options={unitFilterKinds.map((kind) => ({
+                value: kind,
+                label: label(kind),
+                icon: optionIcon(kindIcons[kind]),
+              }))}
+              onChange={(value) =>
+                update({ kind: isUnitFilterKind(value) ? value : null })
+              }
+            />
+          )}
+        </Field>
       </FieldGroup>
       <FieldGroup
+        shown={offersAny("rarities", "rank", "stars")}
         title={label("groupProgression")}
         count={counts.progression}
         layout={layout}
       >
-        {offers("rarities") ? (
-          <Field label={label("rarity")} icon="rarity" labelsControl={false}>
-            {() => (
-              <MultiSelect
-                label={label("rarity")}
-                placeholder={label("allRarities")}
-                clearLabel={label("clearRarities")}
-                options={rarityOrder.map((rarity) => {
-                  const name = t(`progression:rarities.${rarity}`, {
-                    defaultValue: rarity,
-                  })
-                  return {
-                    value: rarity,
-                    label: name,
-                    icon: optionIcon(rarityIcon(rarity)),
-                  }
-                })}
-                value={filters.rarities}
-                onChange={(next) => update({ rarities: next })}
-                data-testid="unit-rarity-filter"
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("rank") ? (
-          <RangeField
-            label={label("rankRange")}
-            icon="rank"
-            describedBy={rosterNote}
-            className={wide}
-          >
-            <SearchableSelect
-              label={label("rankFrom")}
-              placeholder={label("anyRank")}
-              clearLabel={label("clearRankFrom")}
-              searchPlaceholder={label("searchRanks")}
-              emptyText={label("noRanks")}
-              options={rankOptions}
-              value={filters.rankMin ?? undefined}
-              onChange={(rank) => update({ rankMin: rank ?? null })}
-              disabled={!rosterAvailable}
-              data-testid="unit-rank-min-filter"
+        <Field
+          offered={offers("rarities")}
+          label={label("rarity")}
+          icon="rarity"
+          labelsControl={false}
+        >
+          {() => (
+            <MultiSelect
+              label={label("rarity")}
+              placeholder={label("allRarities")}
+              clearLabel={label("clearRarities")}
+              options={rarityOrder.map((rarity) => {
+                const name = t(`progression:rarities.${rarity}`, {
+                  defaultValue: rarity,
+                })
+                return {
+                  value: rarity,
+                  label: name,
+                  icon: optionIcon(rarityIcon(rarity)),
+                }
+              })}
+              value={filters.rarities}
+              onChange={(next) => update({ rarities: next })}
+              data-testid="unit-rarity-filter"
             />
-            <SearchableSelect
-              label={label("rankTo")}
-              placeholder={label("anyRank")}
-              clearLabel={label("clearRankTo")}
-              searchPlaceholder={label("searchRanks")}
-              emptyText={label("noRanks")}
-              options={rankOptions}
-              value={filters.rankMax ?? undefined}
-              onChange={(rank) => update({ rankMax: rank ?? null })}
-              disabled={!rosterAvailable}
-              data-testid="unit-rank-max-filter"
-            />
-          </RangeField>
-        ) : null}
-        {offers("stars") ? (
-          <RangeField
-            label={label("starsRange")}
-            icon="stars"
-            describedBy={rosterNote}
-            className={wide}
-          >
-            <SearchableSelect
-              label={label("starsFrom")}
-              placeholder={label("anyStars")}
-              clearLabel={label("clearStarsFrom")}
-              searchPlaceholder={label("searchStars")}
-              emptyText={label("noStars")}
-              options={starOptions}
-              value={filters.starsMin ?? undefined}
-              onChange={(step) => update({ starsMin: step ?? null })}
-              disabled={!rosterAvailable}
-              data-testid="unit-stars-min-filter"
-            />
-            <SearchableSelect
-              label={label("starsTo")}
-              placeholder={label("anyStars")}
-              clearLabel={label("clearStarsTo")}
-              searchPlaceholder={label("searchStars")}
-              emptyText={label("noStars")}
-              options={starOptions}
-              value={filters.starsMax ?? undefined}
-              onChange={(step) => update({ starsMax: step ?? null })}
-              disabled={!rosterAvailable}
-              data-testid="unit-stars-max-filter"
-            />
-          </RangeField>
-        ) : null}
+          )}
+        </Field>
+        <RangeField
+          offered={offers("rank")}
+          label={label("rankRange")}
+          icon="rank"
+          describedBy={rosterNote}
+          className={wide}
+        >
+          <SearchableSelect
+            label={label("rankFrom")}
+            placeholder={label("anyRank")}
+            clearLabel={label("clearRankFrom")}
+            searchPlaceholder={label("searchRanks")}
+            emptyText={label("noRanks")}
+            options={rankOptions}
+            value={filters.rankMin ?? undefined}
+            onChange={(rank) => update({ rankMin: rank ?? null })}
+            disabled={!rosterAvailable}
+            data-testid="unit-rank-min-filter"
+          />
+          <SearchableSelect
+            label={label("rankTo")}
+            placeholder={label("anyRank")}
+            clearLabel={label("clearRankTo")}
+            searchPlaceholder={label("searchRanks")}
+            emptyText={label("noRanks")}
+            options={rankOptions}
+            value={filters.rankMax ?? undefined}
+            onChange={(rank) => update({ rankMax: rank ?? null })}
+            disabled={!rosterAvailable}
+            data-testid="unit-rank-max-filter"
+          />
+        </RangeField>
+        <RangeField
+          offered={offers("stars")}
+          label={label("starsRange")}
+          icon="stars"
+          describedBy={rosterNote}
+          className={wide}
+        >
+          <SearchableSelect
+            label={label("starsFrom")}
+            placeholder={label("anyStars")}
+            clearLabel={label("clearStarsFrom")}
+            searchPlaceholder={label("searchStars")}
+            emptyText={label("noStars")}
+            options={starOptions}
+            value={filters.starsMin ?? undefined}
+            onChange={(step) => update({ starsMin: step ?? null })}
+            disabled={!rosterAvailable}
+            data-testid="unit-stars-min-filter"
+          />
+          <SearchableSelect
+            label={label("starsTo")}
+            placeholder={label("anyStars")}
+            clearLabel={label("clearStarsTo")}
+            searchPlaceholder={label("searchStars")}
+            emptyText={label("noStars")}
+            options={starOptions}
+            value={filters.starsMax ?? undefined}
+            onChange={(step) => update({ starsMax: step ?? null })}
+            disabled={!rosterAvailable}
+            data-testid="unit-stars-max-filter"
+          />
+        </RangeField>
         {rosterNote ? (
           <p
             id={noteId}
@@ -346,262 +353,285 @@ export function UnitFilterFields({
         ) : null}
       </FieldGroup>
       <FieldGroup
+        shown={offersAny("attack", "hits", "range", "damageTypes")}
         title={label("groupAttack")}
         count={counts.attack}
         layout={layout}
       >
-        {offers("attack") ? (
-          <Field label={label("attackType")} icon="attackType">
-            {(id) => (
-              <PlainSelect
-                id={id}
-                value={filters.attack}
-                anyLabel={label("attackAny")}
-                options={unitFilterAttackTypes.map((attack) => ({
-                  value: attack,
-                  label: label(`attackTypes.${attack}`),
-                  icon: optionIcon(attackTypeIcons[attack]),
-                }))}
-                onChange={(value) =>
-                  update({
-                    attack: isUnitFilterAttackType(value) ? value : null,
-                  })
-                }
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("hits") ? (
-          <RangeField label={label("hitsRange")} icon="hits" className={wide}>
+        <Field
+          offered={offers("attack")}
+          label={label("attackType")}
+          icon="attackType"
+        >
+          {(id) => (
             <PlainSelect
-              ariaLabel={label("hitsFrom")}
-              value={asText(filters.hitsMin)}
-              anyLabel={label("anyValue")}
-              options={numbers(options.hits)}
-              onChange={(value) => update({ hitsMin: toNumber(value) })}
+              id={id}
+              value={filters.attack}
+              anyLabel={label("attackAny")}
+              options={unitFilterAttackTypes.map((attack) => ({
+                value: attack,
+                label: label(`attackTypes.${attack}`),
+                icon: optionIcon(attackTypeIcons[attack]),
+              }))}
+              onChange={(value) =>
+                update({
+                  attack: isUnitFilterAttackType(value) ? value : null,
+                })
+              }
             />
-            <PlainSelect
-              ariaLabel={label("hitsTo")}
-              value={asText(filters.hitsMax)}
-              anyLabel={label("anyValue")}
-              options={numbers(options.hits)}
-              onChange={(value) => update({ hitsMax: toNumber(value) })}
+          )}
+        </Field>
+        <RangeField
+          offered={offers("hits")}
+          label={label("hitsRange")}
+          icon="hits"
+          className={wide}
+        >
+          <PlainSelect
+            ariaLabel={label("hitsFrom")}
+            value={asText(filters.hitsMin)}
+            anyLabel={label("anyValue")}
+            options={numbers(options.hits)}
+            onChange={(value) => update({ hitsMin: toNumber(value) })}
+          />
+          <PlainSelect
+            ariaLabel={label("hitsTo")}
+            value={asText(filters.hitsMax)}
+            anyLabel={label("anyValue")}
+            options={numbers(options.hits)}
+            onChange={(value) => update({ hitsMax: toNumber(value) })}
+          />
+        </RangeField>
+        <RangeField
+          offered={offers("range")}
+          label={label("attackRange")}
+          icon="attackRange"
+          className={wide}
+        >
+          <PlainSelect
+            ariaLabel={label("rangeFrom")}
+            value={asText(filters.rangeMin)}
+            anyLabel={label("anyValue")}
+            options={numbers(options.ranges)}
+            onChange={(value) => update({ rangeMin: toNumber(value) })}
+          />
+          <PlainSelect
+            ariaLabel={label("rangeTo")}
+            value={asText(filters.rangeMax)}
+            anyLabel={label("anyValue")}
+            options={numbers(options.ranges)}
+            onChange={(value) => update({ rangeMax: toNumber(value) })}
+          />
+        </RangeField>
+        <Field
+          offered={offers("damageTypes")}
+          label={label("damageTypes")}
+          icon="damageType"
+          labelsControl={false}
+        >
+          {() => (
+            <MultiSelect
+              label={label("damageTypes")}
+              placeholder={label("allDamageTypes")}
+              searchPlaceholder={label("searchDamageTypes")}
+              clearLabel={label("clearDamageTypes")}
+              emptyText={label("noMatch")}
+              options={options.damageTypes.map((type) => ({
+                value: type.id,
+                label: type.name,
+                icon: (
+                  <EntityIcon
+                    size="inline"
+                    src={damageTypeIcon(type.id)}
+                    alt={type.name}
+                  />
+                ),
+              }))}
+              value={filters.damageTypes}
+              onChange={(next) => update({ damageTypes: next })}
+              data-testid="unit-damage-type-filter"
             />
-          </RangeField>
-        ) : null}
-        {offers("range") ? (
-          <RangeField
-            label={label("attackRange")}
-            icon="attackRange"
-            className={wide}
-          >
-            <PlainSelect
-              ariaLabel={label("rangeFrom")}
-              value={asText(filters.rangeMin)}
-              anyLabel={label("anyValue")}
-              options={numbers(options.ranges)}
-              onChange={(value) => update({ rangeMin: toNumber(value) })}
-            />
-            <PlainSelect
-              ariaLabel={label("rangeTo")}
-              value={asText(filters.rangeMax)}
-              anyLabel={label("anyValue")}
-              options={numbers(options.ranges)}
-              onChange={(value) => update({ rangeMax: toNumber(value) })}
-            />
-          </RangeField>
-        ) : null}
-        {offers("damageTypes") ? (
-          <Field
-            label={label("damageTypes")}
-            icon="damageType"
-            labelsControl={false}
-          >
-            {() => (
-              <MultiSelect
-                label={label("damageTypes")}
-                placeholder={label("allDamageTypes")}
-                searchPlaceholder={label("searchDamageTypes")}
-                clearLabel={label("clearDamageTypes")}
-                emptyText={label("noMatch")}
-                options={options.damageTypes.map((type) => ({
-                  value: type.id,
-                  label: type.name,
-                  icon: (
-                    <EntityIcon
-                      size="inline"
-                      src={damageTypeIcon(type.id)}
-                      alt={type.name}
-                    />
-                  ),
-                }))}
-                value={filters.damageTypes}
-                onChange={(next) => update({ damageTypes: next })}
-                data-testid="unit-damage-type-filter"
-              />
-            )}
-          </Field>
-        ) : null}
+          )}
+        </Field>
       </FieldGroup>
       <FieldGroup
+        shown={offersAny(
+          "abilityRole",
+          "abilityTarget",
+          "abilityAttack",
+          "summons"
+        )}
         title={label("groupAbilities")}
         count={counts.abilities}
         layout={layout}
       >
-        {offers("abilityRole") ? (
-          <Field label={label("abilityRole")} icon="abilityRole">
-            {(id) => (
-              <PlainSelect
-                id={id}
-                value={filters.abilityRole}
-                anyLabel={label("abilityAny")}
-                options={unitFilterAbilityRoles.map((role) => ({
-                  value: role,
-                  label: label(`abilityRoles.${role}`),
-                }))}
-                onChange={(value) =>
-                  update({
-                    abilityRole: isUnitFilterAbilityRole(value) ? value : null,
-                  })
-                }
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("abilityTarget") ? (
-          <Field label={label("abilityTarget")} icon="abilityTarget">
-            {(id) => (
-              <PlainSelect
-                id={id}
-                value={filters.abilityTarget}
-                anyLabel={label("abilityAny")}
-                options={unitFilterAbilityTargets.map((target) => ({
-                  value: target,
-                  label: label(`abilityTargets.${target}`),
-                }))}
-                onChange={(value) =>
-                  update({
-                    abilityTarget: isUnitFilterAbilityTarget(value)
-                      ? value
-                      : null,
-                  })
-                }
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("abilityAttack") ? (
-          <Field label={label("abilityAttack")} icon="abilityAttack">
-            {(id) => (
-              <PlainSelect
-                id={id}
-                value={filters.abilityAttack}
-                anyLabel={label("abilityAny")}
-                options={unitFilterAbilityAttacks.map((attack) => ({
-                  value: attack,
-                  label: label(`abilityAttacks.${attack}`),
-                  icon: optionIcon(attackTypeIcons[attack]),
-                }))}
-                onChange={(value) =>
-                  update({
-                    abilityAttack: isUnitFilterAbilityAttack(value)
-                      ? value
-                      : null,
-                  })
-                }
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("summons") ? (
-          <Field label={label("summons")} icon="summons">
-            {(id) => (
-              <PlainSelect
-                id={id}
-                value={filters.summons}
-                anyLabel={label("summonsAny")}
-                options={unitFilterSummons.map((summons) => ({
-                  value: summons,
-                  label: label(`summonsTypes.${summons}`),
-                }))}
-                onChange={(value) =>
-                  update({
-                    summons: isUnitFilterSummons(value) ? value : null,
-                  })
-                }
-              />
-            )}
-          </Field>
-        ) : null}
+        <Field
+          offered={offers("abilityRole")}
+          label={label("abilityRole")}
+          icon="abilityRole"
+        >
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={filters.abilityRole}
+              anyLabel={label("abilityAny")}
+              options={unitFilterAbilityRoles.map((role) => ({
+                value: role,
+                label: label(`abilityRoles.${role}`),
+              }))}
+              onChange={(value) =>
+                update({
+                  abilityRole: isUnitFilterAbilityRole(value) ? value : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <Field
+          offered={offers("abilityTarget")}
+          label={label("abilityTarget")}
+          icon="abilityTarget"
+        >
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={filters.abilityTarget}
+              anyLabel={label("abilityAny")}
+              options={unitFilterAbilityTargets.map((target) => ({
+                value: target,
+                label: label(`abilityTargets.${target}`),
+              }))}
+              onChange={(value) =>
+                update({
+                  abilityTarget: isUnitFilterAbilityTarget(value)
+                    ? value
+                    : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <Field
+          offered={offers("abilityAttack")}
+          label={label("abilityAttack")}
+          icon="abilityAttack"
+        >
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={filters.abilityAttack}
+              anyLabel={label("abilityAny")}
+              options={unitFilterAbilityAttacks.map((attack) => ({
+                value: attack,
+                label: label(`abilityAttacks.${attack}`),
+                icon: optionIcon(attackTypeIcons[attack]),
+              }))}
+              onChange={(value) =>
+                update({
+                  abilityAttack: isUnitFilterAbilityAttack(value)
+                    ? value
+                    : null,
+                })
+              }
+            />
+          )}
+        </Field>
+        <Field
+          offered={offers("summons")}
+          label={label("summons")}
+          icon="summons"
+        >
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={filters.summons}
+              anyLabel={label("summonsAny")}
+              options={unitFilterSummons.map((summons) => ({
+                value: summons,
+                label: label(`summonsTypes.${summons}`),
+              }))}
+              onChange={(value) =>
+                update({
+                  summons: isUnitFilterSummons(value) ? value : null,
+                })
+              }
+            />
+          )}
+        </Field>
       </FieldGroup>
       <FieldGroup
+        shown={offersAny("traits", "movement", "shardSources")}
         title={label("groupMore")}
         count={counts.more}
         layout={layout}
       >
-        {offers("traits") ? (
-          <Field label={label("traits")} icon="trait" labelsControl={false}>
-            {() => (
-              <MultiSelect
-                label={label("traits")}
-                placeholder={label("allTraits")}
-                searchPlaceholder={label("searchTraits")}
-                clearLabel={label("clearTraits")}
-                emptyText={label("noMatch")}
-                options={options.traits.map((trait) => ({
-                  value: trait.id,
-                  label: trait.name,
-                  icon: (
-                    <EntityIcon
-                      size="inline"
-                      src={traitIcon(trait.id)}
-                      alt={trait.name}
-                    />
-                  ),
-                }))}
-                value={filters.traits}
-                onChange={(next) => update({ traits: next })}
-                data-testid="unit-trait-filter"
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("movement") ? (
-          <Field label={label("movement")} icon="movement">
-            {(id) => (
-              <PlainSelect
-                id={id}
-                value={asText(filters.movement)}
-                anyLabel={label("anyValue")}
-                options={numbers(options.movements)}
-                onChange={(value) => update({ movement: toNumber(value) })}
-              />
-            )}
-          </Field>
-        ) : null}
-        {offers("shardSources") ? (
-          <Field
-            label={label("shardSource")}
-            icon="shardSource"
-            labelsControl={false}
-          >
-            {() => (
-              <MultiSelect
-                label={label("shardSource")}
-                placeholder={label("allShardSources")}
-                clearLabel={label("clearShardSources")}
-                options={options.shardSources.map((source) => ({
-                  value: source,
-                  label: label(`shardSources.${source}`),
-                  icon: optionIcon(shardSourceIcons[source]),
-                }))}
-                value={filters.shardSources}
-                onChange={(next) => update({ shardSources: next })}
-                data-testid="unit-shard-source-filter"
-              />
-            )}
-          </Field>
-        ) : null}
+        <Field
+          offered={offers("traits")}
+          label={label("traits")}
+          icon="trait"
+          labelsControl={false}
+        >
+          {() => (
+            <MultiSelect
+              label={label("traits")}
+              placeholder={label("allTraits")}
+              searchPlaceholder={label("searchTraits")}
+              clearLabel={label("clearTraits")}
+              emptyText={label("noMatch")}
+              options={options.traits.map((trait) => ({
+                value: trait.id,
+                label: trait.name,
+                icon: (
+                  <EntityIcon
+                    size="inline"
+                    src={traitIcon(trait.id)}
+                    alt={trait.name}
+                  />
+                ),
+              }))}
+              value={filters.traits}
+              onChange={(next) => update({ traits: next })}
+              data-testid="unit-trait-filter"
+            />
+          )}
+        </Field>
+        <Field
+          offered={offers("movement")}
+          label={label("movement")}
+          icon="movement"
+        >
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={asText(filters.movement)}
+              anyLabel={label("anyValue")}
+              options={numbers(options.movements)}
+              onChange={(value) => update({ movement: toNumber(value) })}
+            />
+          )}
+        </Field>
+        <Field
+          offered={offers("shardSources")}
+          label={label("shardSource")}
+          icon="shardSource"
+          labelsControl={false}
+        >
+          {() => (
+            <MultiSelect
+              label={label("shardSource")}
+              placeholder={label("allShardSources")}
+              clearLabel={label("clearShardSources")}
+              options={options.shardSources.map((source) => ({
+                value: source,
+                label: label(`shardSources.${source}`),
+                icon: optionIcon(shardSourceIcons[source]),
+              }))}
+              value={filters.shardSources}
+              onChange={(next) => update({ shardSources: next })}
+              data-testid="unit-shard-source-filter"
+            />
+          )}
+        </Field>
       </FieldGroup>
     </div>
   )
@@ -612,11 +642,14 @@ export function UnitFilterFields({
  * desktop panel a fixed three-column grid where whatever follows a range starts a new row.
  */
 function FieldGroup({
+  shown,
   title,
   count,
   layout,
   children,
 }: {
+  /** `false` hides the section: none of its fields is offered in this scope. */
+  shown: boolean
   title: string
   count: number
   layout: "panel" | "sheet"
@@ -624,7 +657,7 @@ function FieldGroup({
 }) {
   const { t } = useTranslation("common")
   const id = useId()
-  if (Children.toArray(children).length === 0) return null
+  if (!shown) return null
   return (
     <section className="grid gap-3" aria-labelledby={id}>
       <h3 id={id} className="text-sm font-medium">
@@ -654,12 +687,15 @@ function FieldGroup({
  * (each control's own label); the cell is a group named by the caption.
  */
 function RangeField({
+  offered = true,
   label,
   icon,
   describedBy,
   className,
   children,
 }: {
+  /** `false` renders nothing: the field is not offered in this scope. */
+  offered?: boolean
   label: string
   icon: FilterLabelIconKind
   describedBy?: string
@@ -667,6 +703,7 @@ function RangeField({
   children: [React.ReactNode, React.ReactNode]
 }) {
   const { t } = useTranslation("common")
+  if (!offered) return null
   return (
     <div
       className={cn("grid min-w-0 gap-1.5", className)}
@@ -693,17 +730,21 @@ function RangeField({
 /** A labelled control. A control that names itself (`labelsControl={false}`: the comboboxes carry
  *  their own accessible name) gets the same visible caption without a `for` pointing nowhere. */
 function Field({
+  offered = true,
   label,
   icon,
   labelsControl = true,
   children,
 }: {
+  /** `false` renders nothing: the field is not offered in this scope. */
+  offered?: boolean
   label: string
   icon: FilterLabelIconKind
   labelsControl?: boolean
   children: (id: string) => React.ReactNode
 }) {
   const id = useId()
+  if (!offered) return null
   return (
     <div className="grid min-w-0 gap-1.5">
       {labelsControl ? (

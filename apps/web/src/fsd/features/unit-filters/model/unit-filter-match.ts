@@ -123,6 +123,20 @@ function abilityMatcher(
     (attack === null || ability.attack === attack)
 }
 
+/** Whether the hit count the attack type names (either one without it) is in range. */
+function hitsMatch(
+  combat: CombatProfile,
+  attack: UnitFilters["attack"],
+  hits: (value: number) => boolean
+): boolean {
+  const rangedHits = combat.rangedHits ?? 0
+  const meleeIn = hits(combat.meleeHits)
+  const rangedIn = rangedHits > 0 && hits(rangedHits)
+  if (attack === "melee") return meleeIn
+  if (attack === "ranged") return rangedIn
+  return meleeIn || rangedIn
+}
+
 /**
  * V1's roster filter (`CharactersService.passesRosterFilter`) over the combat profile, plus the
  * shard source; `undefined` when no combat filter is set. Hits read the melee or ranged count per
@@ -151,17 +165,7 @@ function combatMatcher(
     const isRanged = rangedHits > 0
     if (filters.attack === "melee" && isRanged) return false
     if (filters.attack === "ranged" && !isRanged) return false
-    if (hits) {
-      const meleeIn = hits(combat.meleeHits)
-      const rangedIn = isRanged && hits(rangedHits)
-      const hitsMatch =
-        filters.attack === "melee"
-          ? meleeIn
-          : filters.attack === "ranged"
-            ? rangedIn
-            : meleeIn || rangedIn
-      if (!hitsMatch) return false
-    }
+    if (hits && !hitsMatch(combat, filters.attack, hits)) return false
     if (filters.movement !== null && combat.movement !== filters.movement)
       return false
     if (

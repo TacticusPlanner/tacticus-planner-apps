@@ -62,26 +62,26 @@ describe("sectionFilterCounts", () => {
   })
 })
 
-describe("offersUnitFilterField", () => {
-  const offered = (
-    scope: "roster" | "catalog",
-    kind: "character" | "mow" | null
-  ) =>
-    (
-      [
-        "alliance",
-        "factions",
-        "kind",
-        "rarities",
-        "rank",
-        "stars",
-        "attack",
-        "traits",
-        "summons",
-        "abilityRole",
-      ] as UnitFilterField[]
-    ).filter((field) => offersUnitFilterField(field, { scope, kind }))
+const offered = (
+  scope: "roster" | "catalog",
+  kind: "character" | "mow" | null
+) =>
+  (
+    [
+      "alliance",
+      "factions",
+      "kind",
+      "rarities",
+      "rank",
+      "stars",
+      "attack",
+      "traits",
+      "summons",
+      "abilityRole",
+    ] as UnitFilterField[]
+  ).filter((field) => offersUnitFilterField(field, { scope, kind }))
 
+describe("offersUnitFilterField", () => {
   it("offers every field to Collection", () => {
     expect(offered("roster", null)).toHaveLength(10)
   })
