@@ -62,14 +62,14 @@ export function HreEventSwitcher({
           <>
             {hero ? (
               <EntityIcon
-                size="inline"
+                size="icon"
                 alt=""
                 className="shrink-0 rounded-full"
                 src={characterIcon(hero.id as UnitId)}
               />
             ) : (
               <EventIcon
-                size="inline"
+                size="icon"
                 className="shrink-0"
                 definitionId={instance.entry.definitionId}
                 definitionType="NewCharacterEvent"

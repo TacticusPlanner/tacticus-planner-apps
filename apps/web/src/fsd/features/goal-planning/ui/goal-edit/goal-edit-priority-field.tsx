@@ -150,13 +150,13 @@ function PriorityOption({
               data-testid={`priority-option-occupant-${value}`}
             >
               <GoalUnitIcon
-                size="inline"
+                size="icon"
                 entityId={occupant.entityId}
                 entityType={occupant.entityType}
                 name={name}
               />
               <EntityIcon
-                size="inline"
+                size="icon"
                 alt={t(`goals.create.goalTypes.${occupant.goalType}`)}
                 src={goalTypeIcon(occupant.goalType, occupant.entityType)}
               />

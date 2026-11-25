@@ -80,7 +80,7 @@ export function CampaignInsightList<TId extends string>({
                   {index + 1}
                 </span>
                 <EntityIcon
-                  size="inline"
+                  size="icon"
                   src={insight.icon}
                   alt=""
                   className="shrink-0"

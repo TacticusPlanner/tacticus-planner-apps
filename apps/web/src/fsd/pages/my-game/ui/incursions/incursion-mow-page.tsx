@@ -153,7 +153,7 @@ function TierCard({
               })}
               data-testid={`${testId}-mark-cleared`}
             >
-              <EntityIcon size="inline" src={heroStarIcon()} alt="" />
+              <EntityIcon size="icon" src={heroStarIcon()} alt="" />
               {t("tier.markCleared")}
             </Button>
           )
@@ -260,7 +260,7 @@ export function IncursionMowPage() {
                 <TooltipTrigger asChild>
                   <li>
                     <EntityIcon
-                      size="row"
+                      size="icon-lg"
                       src={factionIcon(faction)}
                       alt={label}
                     />
@@ -287,7 +287,7 @@ export function IncursionMowPage() {
           <div key={group.rarity} className="space-y-2">
             <h3 className="flex items-center gap-2 text-sm font-medium">
               <EntityIcon
-                size="inline"
+                size="icon"
                 src={rarityIcon(group.rarity as Rarity)}
                 alt=""
               />

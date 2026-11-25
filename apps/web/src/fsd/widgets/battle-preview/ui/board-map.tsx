@@ -23,7 +23,7 @@ function MapImage({
         data-map={mapId}
         data-testid="battle-map-unavailable"
       >
-        <ImageOffIcon aria-hidden className="size-6" />
+        <ImageOffIcon aria-hidden className="size-icon-md" />
         {t("battles.map.unavailable")}
       </div>
     )

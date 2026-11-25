@@ -126,7 +126,7 @@ export function CurrentMissionCard({
                   <div className="flex items-center gap-1">
                     <p className="flex items-center gap-2 text-sm font-medium">
                       <EntityIcon
-                        size="inline"
+                        size="icon"
                         alt=""
                         className="shrink-0"
                         src={objectiveIcon?.(objective)}

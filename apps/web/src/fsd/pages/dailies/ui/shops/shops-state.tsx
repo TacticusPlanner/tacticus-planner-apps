@@ -31,7 +31,7 @@ export function ShopsState({
         className="flex min-h-48 items-center justify-center"
         data-testid="shops-loading"
       >
-        <Spinner className="size-8" />
+        <Spinner className="size-icon-lg" />
       </div>
     )
   }

@@ -485,7 +485,7 @@ describe("GoalTargetDisplay for Ability goals", () => {
     expect(pill("secondary")).toBeInTheDocument()
   })
 
-  it("draws each ability's icon at row size in the table, named by track and ability", () => {
+  it("draws each ability's icon at list-row size in the table, named by track and ability", () => {
     render(
       <GoalTargetDisplay
         abilityIds={["AmmoBandolier", "Dakka"]}
@@ -500,7 +500,7 @@ describe("GoalTargetDisplay for Ability goals", () => {
     expect(
       screen.getByRole("button", { name: "Secondary · Dakka" })
     ).toBeInTheDocument()
-    expect(within(icon).getByRole("presentation")).toHaveClass("size-8")
+    expect(within(icon).getByRole("presentation")).toHaveClass("size-icon-lg")
     // The icon stands in for the track label in the table.
     expect(pill("primary")).toHaveTextContent(/^4750$/)
   })
@@ -538,7 +538,7 @@ describe("Goal kind without a type label", () => {
     expect(screen.queryByText("Ascension")).not.toBeInTheDocument()
   })
 
-  it("shows Ascension in its compact form, the rarity icon at emblem size in the table", () => {
+  it("shows Ascension in its compact form, the rarity icon at emblem size (icon-md) in the table", () => {
     render(
       <GoalTargetDisplay
         progress={
@@ -558,7 +558,7 @@ describe("Goal kind without a type label", () => {
         .map((mark) => mark.dataset.progression)
         .filter(Boolean)
     ).toEqual(["Epic:OneStar", "Legendary:OneStar"])
-    expect(screen.getByAltText("Epic")).toHaveClass("size-6")
+    expect(screen.getByAltText("Epic")).toHaveClass("size-icon-md")
   })
 
   it("shows the word Unlock in the Goal cell and the shard count beside the bar", () => {

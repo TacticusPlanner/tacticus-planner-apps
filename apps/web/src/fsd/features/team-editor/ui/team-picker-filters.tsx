@@ -92,7 +92,7 @@ function FilterSelect<T extends string | number>({
                 value={String(option.value)}
               >
                 {option.icon ? (
-                  <EntityIcon alt="" size="inline" src={option.icon} />
+                  <EntityIcon alt="" size="icon" src={option.icon} />
                 ) : null}
                 {option.label}
               </SelectItem>

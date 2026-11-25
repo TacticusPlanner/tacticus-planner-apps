@@ -74,7 +74,7 @@ export function LegendaryEventCard({
       ) : (
         <span
           aria-hidden="true"
-          className="size-12 shrink-0 rounded-full bg-muted"
+          className="size-portrait-sm shrink-0 rounded-full bg-muted"
         />
       )}
       <div className="min-w-0 flex-1 space-y-1">

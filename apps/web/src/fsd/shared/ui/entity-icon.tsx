@@ -11,8 +11,8 @@ import type { EntityIconSize } from "./game-icon-size"
 
 /** An <img> that swaps to a fallback image, or else to a placeholder glyph sized like the icon, when
  *  the source asset is missing (a new unit the datamine ships no art for yet). No `src` at all still
- *  renders nothing: that means the entity has no icon by design. `size` picks the icon's role on the
- *  style guide's scale (`inline`, `row`, `tile`, or a badge over a portrait of that size); keep size
+ *  renders nothing: that means the entity has no icon by design. `size` picks a step on the style
+ *  guide's icon scale (`icon-sm` … `icon-2xl`) or portrait scale (`portrait-sm` … `portrait-xl`); keep size
  *  classes out of `className` when it is set. Pass the intrinsic `width`/`height` when the CSS does
  *  not fix both dimensions (e.g. `h-4 w-auto`), so the box is reserved before the image loads. A
  *  layered icon renders its sprites stacked in a square box. */

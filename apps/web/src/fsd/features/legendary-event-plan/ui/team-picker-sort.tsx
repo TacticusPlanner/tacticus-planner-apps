@@ -45,7 +45,7 @@ export function TeamPickerSort({
           value="pointsLeft"
         >
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
             src={legendaryEventResourceIcon("points")}
           />
@@ -61,7 +61,7 @@ export function TeamPickerSort({
           size="sm"
           value="power"
         >
-          <EntityIcon size="inline" alt="" src={powerIcon()} />
+          <EntityIcon size="icon" alt="" src={powerIcon()} />
         </HintedToggleGroupItem>
       </ToggleGroup>
       {powerAvailable ? null : (

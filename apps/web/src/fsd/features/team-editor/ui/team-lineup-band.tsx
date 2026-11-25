@@ -97,7 +97,7 @@ function BandSlot({
         type="button"
       >
         <TeamUnitPortrait
-          size="sm"
+          size="portrait-sm"
           unit={cappedView(kind, unitId, roster, rarityCap)}
         />
         <GripVertical

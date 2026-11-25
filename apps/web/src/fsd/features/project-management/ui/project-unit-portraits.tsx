@@ -51,7 +51,7 @@ export function ProjectUnitPortraits({
       {units.map((unit, index) => (
         <EntityIcon
           alt=""
-          size="inline"
+          size="icon"
           className={cn(
             "rounded-full bg-muted ring-2 ring-background",
             index > 0 && "-ml-1.5"

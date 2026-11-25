@@ -102,11 +102,11 @@ export function CharacterLookupControls({
         ) : (
           <div className="flex flex-col gap-3 pt-1">
             <div className="flex items-center justify-between gap-2">
-              <RankBadge rank={rankStart} size="row" />
+              <RankBadge rank={rankStart} size="icon-lg" />
               <span aria-hidden className="text-muted-foreground">
                 →
               </span>
-              <RankBadge rank={rankEnd} size="row" />
+              <RankBadge rank={rankEnd} size="icon-lg" />
             </div>
             <Slider
               value={[rankIndex(rankStart), rankIndex(rankEnd)]}

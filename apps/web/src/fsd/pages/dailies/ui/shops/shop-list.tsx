@@ -29,7 +29,7 @@ export function ShopList({
         >
           <h3 className="flex items-center gap-2 text-base font-semibold">
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="shrink-0"
               src={shopIcon(section.shopId)}

@@ -216,7 +216,7 @@ function EventHeader({
     eventId,
     <span className="inline-flex items-center gap-2 text-foreground">
       <EntityIcon
-        size="inline"
+        size="icon"
         alt=""
         className="shrink-0 rounded-full"
         src={characterIcon(eventId as UnitId)}

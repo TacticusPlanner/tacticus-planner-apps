@@ -8,8 +8,8 @@ import { rarityColor } from "./unit-styles"
 import { portraitRingClassName } from "./unit-portrait.model"
 
 /**
- * A unit's round portrait at one of the style guide's portrait sizes (`sm` 40px, `md` 64px, `lg`
- * 96px, `hero` 128px for a unit page's header), ringed in its rarity colour. `greyed` is the
+ * A unit's round portrait at one of the style guide's portrait sizes (`portrait-sm` 40px,
+ * `portrait-md` 64px, `portrait-lg` 96px, `portrait-xl` 128px for a unit page's header), ringed in its rarity colour. `greyed` is the
  * not-unlocked look: a thin dashed ring, still in the rarity colour, and a greyscale portrait.
  * Without a rarity the ring is neutral. Size classes stay out of `className`; it is for placement only.
  */

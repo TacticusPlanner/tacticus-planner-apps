@@ -28,7 +28,7 @@ function StatCard({
     <div className={cardClass} data-testid={`npc-stat-${kind}`}>
       <span className={labelClass}>{label}</span>
       <span className="flex items-center gap-2">
-        <EntityIcon size="inline" src={statIcon(kind)} alt="" />
+        <EntityIcon size="icon" src={statIcon(kind)} alt="" />
         <span className={valueClass}>{value.toLocaleString()}</span>
       </span>
     </div>
@@ -60,7 +60,7 @@ function PowerCard({
         />
       ) : (
         <span className="flex items-center gap-2">
-          <EntityIcon size="inline" src={powerIcon()} alt="" />
+          <EntityIcon size="icon" src={powerIcon()} alt="" />
           <span className={valueClass} data-testid="npc-stat-power-value">
             {format.format(power.value)}
           </span>

@@ -395,7 +395,7 @@ function UnitRow({
     >
       {Icon ? <Icon aria-hidden="true" className="size-icon shrink-0" /> : null}
       <UnitPortrait
-        size="sm"
+        size="portrait-sm"
         src={
           (plan.unit.kind === "mow"
             ? mowIcon(plan.unit.unitId)

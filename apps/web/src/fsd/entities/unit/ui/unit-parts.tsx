@@ -78,7 +78,7 @@ export function UnownedDetails({ data }: { data: UnownedUnitTileData }) {
             className="inline-flex items-center gap-0.5"
             data-testid="unit-tile-mythic-shards"
           >
-            <EntityIcon size="badge-sm" src={shardIcon("Mythic")} alt="" />
+            <EntityIcon size="icon-sm" src={shardIcon("Mythic")} alt="" />
             {mythicShards}
           </span>
         ) : null}

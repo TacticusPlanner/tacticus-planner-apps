@@ -96,7 +96,7 @@ const shardSourceIcons: Record<UnitFilterShardSource, string | undefined> = {
 /** An option's leading game icon, decorative (the option's text names it). */
 function optionIcon(src: string | undefined) {
   return src ? (
-    <EntityIcon size="inline" src={src} alt="" className="shrink-0" />
+    <EntityIcon size="icon" src={src} alt="" className="shrink-0" />
   ) : undefined
 }
 
@@ -216,7 +216,7 @@ export function UnitFilterFields({
                 label: faction.name,
                 icon: (
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     src={factionIcon(faction.id)}
                     alt={faction.name}
                   />
@@ -441,7 +441,7 @@ export function UnitFilterFields({
                 label: type.name,
                 icon: (
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     src={damageTypeIcon(type.id)}
                     alt={type.name}
                   />
@@ -583,7 +583,7 @@ export function UnitFilterFields({
                 label: trait.name,
                 icon: (
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     src={traitIcon(trait.id)}
                     alt={trait.name}
                   />

@@ -72,12 +72,7 @@ export function ProgressionMark({
 
 export function RankMark({ rank }: { rank: Rank }) {
   return (
-    <EntityIcon
-      size="inline"
-      alt=""
-      src={rankIcon(rank)}
-      className="shrink-0"
-    />
+    <EntityIcon size="icon" alt="" src={rankIcon(rank)} className="shrink-0" />
   )
 }
 
@@ -86,7 +81,7 @@ export function AbilityMark({ abilityId }: { abilityId: string }) {
   const name = useAbilityName()(abilityId)
   return (
     <EntityIcon
-      size="inline"
+      size="icon"
       alt={name}
       src={abilityIcon(abilityId)}
       className="shrink-0 rounded-sm"

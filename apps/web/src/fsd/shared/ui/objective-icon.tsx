@@ -11,7 +11,8 @@ export interface ObjectiveIconSpec {
 const BADGES = {
   not: {
     className: "bg-destructive text-white",
-    glyph: <X className="size-2" />,
+    // An 8px cross inside the 12px badge: the badge is the icon, the glyph fills it less its inset.
+    glyph: <X className="size-full p-0.5" />,
   },
   min: {
     className: "bg-background text-foreground ring-1 ring-border",
@@ -55,7 +56,7 @@ export function ObjectiveIcon({
       {badge ? (
         <span
           className={cn(
-            "absolute -right-1 -bottom-1 flex size-3 items-center justify-center rounded-full text-2xs leading-none font-bold",
+            "absolute -right-1 -bottom-1 flex size-icon-xs items-center justify-center rounded-full text-2xs leading-none font-bold",
             badge.className
           )}
           data-testid={`objective-icon-badge-${icon.badge}`}

@@ -37,11 +37,11 @@ export function TopRarityChip({
             id={upgrade.id}
             rarity={upgrade.rarity}
             crafted={upgrade.crafted}
-            size="tile"
+            size="icon-2xl"
           />
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium">{upgrade.label}</p>
-            <RarityIcon rarity={upgrade.rarity} size="row" />
+            <RarityIcon rarity={upgrade.rarity} size="icon-lg" />
           </div>
           <span className="text-lg font-semibold tabular-nums">
             ×{upgrade.count}
@@ -61,7 +61,7 @@ export function TopRarityChip({
         id={upgrade.id}
         rarity={upgrade.rarity}
         crafted={upgrade.crafted}
-        size="tile"
+        size="icon-2xl"
         className="shrink-0"
       />
       <div className="flex min-w-0 flex-col">

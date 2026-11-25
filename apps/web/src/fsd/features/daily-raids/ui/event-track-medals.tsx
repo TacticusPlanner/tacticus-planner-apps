@@ -95,7 +95,7 @@ export function EventTrackMedals({
           </>
         ) : (
           <>
-            <EntityIcon size="inline" alt="" src={medalIcon} />
+            <EntityIcon size="icon" alt="" src={medalIcon} />
             {t("battleProgress.open")}
           </>
         )}

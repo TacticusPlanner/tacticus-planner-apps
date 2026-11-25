@@ -138,7 +138,7 @@ export function IncursionEligibleDialog({
                     unit.traits.includes(trait)
                   ).map((trait) => (
                     <EntityIcon
-                      size="inline"
+                      size="icon"
                       key={trait}
                       src={traitIcon(trait)}
                       alt={trait}
@@ -146,7 +146,7 @@ export function IncursionEligibleDialog({
                     />
                   ))}
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     src={factionIcon(unit.faction)}
                     alt={t(`factions:${unit.faction}`, {
                       defaultValue: unit.faction,
@@ -154,7 +154,7 @@ export function IncursionEligibleDialog({
                     className="shrink-0"
                   />
                   <span className="flex w-24 shrink-0 items-center justify-end gap-1 tabular-nums">
-                    <EntityIcon size="inline" src={powerIcon()} alt="" />
+                    <EntityIcon size="icon" src={powerIcon()} alt="" />
                     {number.format(Math.round(unit.power))}
                   </span>
                 </button>
@@ -168,7 +168,7 @@ export function IncursionEligibleDialog({
           className="inline-flex flex-wrap items-center gap-1 text-sm tabular-nums max-md:basis-full md:mr-auto"
           data-testid="incursion-eligible-power"
         >
-          <EntityIcon size="inline" alt="" src={powerIcon()} />
+          <EntityIcon size="icon" alt="" src={powerIcon()} />
           {t("eligible.selected", {
             count: team.length,
             power: number.format(Math.round(teamPowerOf(team))),
@@ -176,7 +176,7 @@ export function IncursionEligibleDialog({
           {hasSustain(team) ? (
             <>
               {" · "}
-              <EntityIcon size="inline" alt="" src={battleGlyphIcon("heal")} />
+              <EntityIcon size="icon" alt="" src={battleGlyphIcon("heal")} />
               {t("team.sustain")}
             </>
           ) : null}

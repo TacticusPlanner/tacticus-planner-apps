@@ -40,7 +40,7 @@ export function BetaPromoTile() {
     >
       <Gift
         aria-hidden="true"
-        className="hidden size-8 shrink-0 text-primary sm:block"
+        className="hidden size-icon-lg shrink-0 text-primary sm:block"
       />
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <h3 className="text-sm font-medium">{t("home.betaPromo.title")}</h3>

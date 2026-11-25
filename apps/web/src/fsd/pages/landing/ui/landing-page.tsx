@@ -195,7 +195,7 @@ function ExamplePlanCard() {
           <li className="flex items-center gap-3 py-2.5" key={row.key}>
             <img
               alt=""
-              className="size-10 shrink-0 rounded-full bg-muted"
+              className="size-portrait-sm shrink-0 rounded-full bg-muted"
               height={40}
               src={row.portrait}
               width={40}
@@ -249,11 +249,11 @@ function FeaturesSection() {
           >
             <img
               alt=""
-              className="size-11 object-contain"
-              height={44}
+              className="size-icon-xl object-contain"
+              height={40}
               loading="lazy"
               src={feature.icon}
-              width={44}
+              width={40}
             />
             <h3 className="font-medium">
               {t(`features.items.${feature.key}.title`)}
@@ -292,7 +292,7 @@ function LibrarySection() {
             <Link className={cardLinkClass} to={card.to}>
               <img
                 alt=""
-                className="size-12 object-contain"
+                className="size-icon-2xl object-contain"
                 height={48}
                 loading="lazy"
                 src={card.icon}
@@ -313,12 +313,12 @@ function LibrarySection() {
                   {card.previews.map((src) => (
                     <img
                       alt=""
-                      className="size-9 rounded-full border-2 border-card bg-muted"
-                      height={36}
+                      className="size-icon-lg rounded-full border-2 border-card bg-muted"
+                      height={32}
                       key={src}
                       loading="lazy"
                       src={src}
-                      width={36}
+                      width={32}
                     />
                   ))}
                 </span>

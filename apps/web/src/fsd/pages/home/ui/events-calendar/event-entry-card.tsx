@@ -62,7 +62,7 @@ function SubjectIcons({ entry }: { entry: EventEntryViewModel }) {
   return (
     <span className="flex shrink-0 items-center gap-0.5">
       {icons.map((icon) => (
-        <EntityIcon key={icon} size="inline" alt="" src={icon} />
+        <EntityIcon key={icon} size="icon" alt="" src={icon} />
       ))}
     </span>
   )
@@ -166,7 +166,7 @@ function EventDetailsPopover({
         <PopoverHeader>
           <div className="flex items-center gap-3">
             <EventIcon
-              size="tile"
+              size="icon-2xl"
               className="shrink-0"
               definitionId={entry.definitionId}
               definitionType={entry.definitionType}
@@ -311,7 +311,7 @@ export function EventBar({
           >
             {entry.phases.length > 0 ? <PhaseOverlay entry={entry} /> : null}
             <EventIcon
-              size={isBreak || compact ? "inline" : "row"}
+              size={isBreak || compact ? "icon" : "icon-lg"}
               className="shrink-0"
               definitionId={entry.definitionId}
               definitionType={entry.definitionType}
@@ -367,7 +367,7 @@ export function EventAgendaRow({
         type="button"
       >
         <EventIcon
-          size="row"
+          size="icon-lg"
           className="shrink-0"
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
@@ -422,7 +422,7 @@ export function OngoingEventTile({
         type="button"
       >
         <EventIcon
-          size="tile"
+          size="icon-2xl"
           definitionId={entry.definitionId}
           definitionType={entry.definitionType}
           parameters={entry.parameters}

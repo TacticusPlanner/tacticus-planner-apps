@@ -66,7 +66,10 @@ export function PublicLayout({
               className="flex flex-1 items-center justify-center py-16"
               role="status"
             >
-              <Spinner aria-hidden="true" className="size-8 text-primary" />
+              <Spinner
+                aria-hidden="true"
+                className="size-icon-lg text-primary"
+              />
             </div>
           }
         >

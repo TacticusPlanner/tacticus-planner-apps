@@ -71,7 +71,7 @@ export function LevelRequirementLine({
       data-testid="level-requirement-books"
       label={bookLabel ?? ""}
     >
-      <EntityIcon size="inline" alt="" src={xpBookIcon(book.rarity)} />
+      <EntityIcon size="icon" alt="" src={xpBookIcon(book.rarity)} />
       <span aria-hidden>{bookText}</span>
     </HintTrigger>
   ) : null

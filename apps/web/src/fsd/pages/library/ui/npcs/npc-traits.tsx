@@ -38,7 +38,7 @@ function TraitChip({
     "flex items-center gap-1.5 rounded-lg border bg-card px-2 py-1.5 text-sm"
   const chip = (
     <>
-      <EntityIcon size="inline" src={traitIcon(trait)} alt="" />
+      <EntityIcon size="icon" src={traitIcon(trait)} alt="" />
       <span>{label}</span>
     </>
   )

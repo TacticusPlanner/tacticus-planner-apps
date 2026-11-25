@@ -680,10 +680,12 @@ describe("TeamEditorDialog", () => {
       const user = await openEditor()
       await user.click(pickButton("ultraCalgar"))
       expect(
-        required(tile("ultraCalgar")).querySelector(".size-16")
+        required(tile("ultraCalgar")).querySelector(".size-portrait-md")
       ).not.toBeNull()
       expect(
-        editor().querySelector('[data-testid="team-lineup-unit"] .size-10')
+        editor().querySelector(
+          '[data-testid="team-lineup-unit"] .size-portrait-sm'
+        )
       ).not.toBeNull()
     })
   })

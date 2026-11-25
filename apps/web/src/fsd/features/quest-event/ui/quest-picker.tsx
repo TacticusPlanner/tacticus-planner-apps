@@ -46,7 +46,7 @@ export function QuestPicker({
         {heroes.map((hero) => (
           <SelectItem data-hero={hero.id} key={hero.id} value={hero.id}>
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="rounded-full"
               src={characterIcon(hero.id as UnitId)}

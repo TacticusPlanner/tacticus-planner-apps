@@ -116,7 +116,7 @@ export function OverlaysShowcase() {
               <Archive />
             </IconButton>
             <HintTrigger label="Energy">
-              <EntityIcon alt="" size="inline" src={energyIconUrl} />
+              <EntityIcon alt="" size="icon" src={energyIconUrl} />
               <span className="text-sm tabular-nums">120</span>
             </HintTrigger>
             <HintTrigger label="Counts only goals in active projects.">
@@ -194,7 +194,7 @@ export function OverlaysShowcase() {
               <div className="flex flex-col gap-3 px-4 pb-2 text-sm text-muted-foreground">
                 <p className="flex items-center gap-1.5">
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     alt=""
                     className="shrink-0"
                     src={energyIconUrl}
@@ -203,7 +203,7 @@ export function OverlaysShowcase() {
                 </p>
                 <p className="flex items-center gap-1.5">
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     alt=""
                     className="shrink-0"
                     src={energyIconUrl}
@@ -212,7 +212,7 @@ export function OverlaysShowcase() {
                 </p>
                 <p className="flex items-center gap-1.5">
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     alt=""
                     className="shrink-0"
                     src={energyIconUrl}

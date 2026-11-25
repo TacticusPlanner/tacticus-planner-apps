@@ -90,11 +90,7 @@ export function UnitProfile({ profile }: { profile: UnitProfileViewModel }) {
                 variant="outline"
                 className="gap-1 font-normal"
               >
-                <EntityIcon
-                  size="inline"
-                  src={equipmentSlotIcon(slot)}
-                  alt=""
-                />
+                <EntityIcon size="icon" src={equipmentSlotIcon(slot)} alt="" />
                 {t(`equipment:slots.${slot}`, { defaultValue: slot })}
               </Badge>
             ))}
@@ -109,7 +105,7 @@ export function UnitProfile({ profile }: { profile: UnitProfileViewModel }) {
                 variant="outline"
                 className="gap-1 font-normal"
               >
-                <EntityIcon size="inline" src={traitIcon(trait)} alt="" />
+                <EntityIcon size="icon" src={traitIcon(trait)} alt="" />
                 {t(`traits:${trait}`, { defaultValue: trait })}
               </Badge>
             ))}
@@ -151,7 +147,7 @@ function StatRow({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <EntityIcon size="inline" src={icon} alt={label} className="opacity-80" />
+      <EntityIcon size="icon" src={icon} alt={label} className="opacity-80" />
       <span className="text-sm text-muted-foreground">{label}</span>
       <span className="font-medium tabular-nums">{value}</span>
       {children}
@@ -163,7 +159,7 @@ function DamageTypeChip({ type }: { type: string }) {
   const { t } = useTranslation(["damageTypes"])
   return (
     <Badge variant="outline" className="gap-1 font-normal">
-      <EntityIcon size="inline" src={damageTypeIcon(type)} alt="" />
+      <EntityIcon size="icon" src={damageTypeIcon(type)} alt="" />
       {t(`damageTypes:${type}`, { defaultValue: type })}
     </Badge>
   )
@@ -197,7 +193,7 @@ function HdaCell({
   return (
     <div className="flex flex-col gap-1 rounded-md border p-2">
       <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <EntityIcon size="inline" src={icon} alt="" />
+        <EntityIcon size="icon" src={icon} alt="" />
         {label}
       </span>
       <span className="flex items-baseline gap-1 text-sm tabular-nums">

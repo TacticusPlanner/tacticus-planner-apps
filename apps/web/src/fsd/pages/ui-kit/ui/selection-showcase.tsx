@@ -119,7 +119,7 @@ export function SelectionShowcase() {
             <FieldLabel className="flex items-center gap-1.5">
               Daily energy:
               <EntityIcon
-                size="inline"
+                size="icon"
                 alt=""
                 className="shrink-0"
                 src={energyIconUrl}

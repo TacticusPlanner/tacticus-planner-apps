@@ -259,7 +259,7 @@ function TokenCount({ count }: { count: number }) {
           data-testid="token-plan-token-count"
         >
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
             className="shrink-0"
             src={legendaryEventResourceIcon("tokens")}

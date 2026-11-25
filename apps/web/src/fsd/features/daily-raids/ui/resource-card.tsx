@@ -38,7 +38,7 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
     return (
       <span className="inline-flex items-center gap-1">
         <EntityIcon
-          size="inline"
+          size="icon"
           alt=""
           className="shrink-0"
           src={goalTypeIcon(goal.goalKind, goal.unitType)}
@@ -51,7 +51,7 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
     return (
       <span className="inline-flex items-center gap-1">
         <EntityIcon
-          size="inline"
+          size="icon"
           alt=""
           className="shrink-0"
           src={goalTypeIcon(goal.goalKind, goal.unitType)}
@@ -63,7 +63,7 @@ export function GoalTargetBadge({ goal }: { goal: DailyRaidGoalViewModel }) {
   return (
     <span className="inline-flex items-center gap-1">
       <EntityIcon
-        size="inline"
+        size="icon"
         alt=""
         className="shrink-0"
         src={goalTypeIcon(goal.goalKind, goal.unitType)}
@@ -162,7 +162,7 @@ export function ResourceCard({
                   >
                     {location?.icon ? (
                       <EntityIcon
-                        size="inline"
+                        size="icon"
                         alt=""
                         className="shrink-0"
                         src={location.icon}

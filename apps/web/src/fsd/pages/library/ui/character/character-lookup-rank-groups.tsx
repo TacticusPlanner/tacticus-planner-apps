@@ -29,7 +29,7 @@ export function RankGroupHeader({
   const { t } = useTranslation()
   return (
     <div className="flex items-center gap-2">
-      <RankBadge rank={group.fromRank} size="row" showLabel={!compact} />
+      <RankBadge rank={group.fromRank} size="icon-lg" showLabel={!compact} />
       {group.pointFive ? (
         <Badge variant="secondary">{t("unitLookup.pointFiveShort")}</Badge>
       ) : (
@@ -37,7 +37,7 @@ export function RankGroupHeader({
           <span aria-hidden className="text-muted-foreground">
             →
           </span>
-          <RankBadge rank={group.toRank} size="row" showLabel={!compact} />
+          <RankBadge rank={group.toRank} size="icon-lg" showLabel={!compact} />
         </>
       )}
     </div>
@@ -65,7 +65,7 @@ function StatColumn({
   return (
     <div className="flex flex-col items-center gap-1.5">
       <EntityIcon
-        size="row"
+        size="icon-lg"
         src={statIcon(stat)}
         alt={stat}
         className="opacity-80"
@@ -97,7 +97,7 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
             id={upgrade.id}
             rarity={upgrade.rarity}
             crafted={upgrade.crafted}
-            size="tile"
+            size="icon-2xl"
             className={cn(upgrade.owned && "opacity-50")}
           />
           {upgrade.owned ? (

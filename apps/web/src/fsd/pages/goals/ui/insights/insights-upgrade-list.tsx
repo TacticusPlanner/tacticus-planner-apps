@@ -166,7 +166,7 @@ function UpgradeRowItem({
           <EntityIcon
             alt=""
             key={unit.entityId}
-            size="inline"
+            size="icon"
             src={
               unit.entityType === "Mow"
                 ? mowIcon(unit.entityId as never)

@@ -95,7 +95,7 @@ function AttackRow({
       data-testid={`unit-attack-${kind}`}
     >
       <dt className="flex w-24 items-center gap-1.5 text-sm text-muted-foreground">
-        <EntityIcon size="inline" src={statIcon(kind)} alt="" />
+        <EntityIcon size="icon" src={statIcon(kind)} alt="" />
         {t(`characterUnit.glance.${kind}`)}
       </dt>
       <dd className="flex flex-wrap items-center gap-1.5">
@@ -103,7 +103,7 @@ function AttackRow({
           {t("characterUnit.glance.hits", { count: hits })}
         </span>
         <span className={chip}>
-          <EntityIcon size="inline" src={damageTypeIcon(damageType)} alt="" />
+          <EntityIcon size="icon" src={damageTypeIcon(damageType)} alt="" />
           {t(`damageTypes:${damageType}`, { defaultValue: damageType })}
           {pierce !== undefined ? (
             <Tooltip>
@@ -181,7 +181,7 @@ export function AtAGlance({
           >
             <dt className="flex items-center gap-1 text-xs text-muted-foreground">
               <EntityIcon
-                size="inline"
+                size="icon"
                 src={statIcon(box.key)}
                 alt=""
                 className="shrink-0"
@@ -268,7 +268,7 @@ export function TraitsList({ traits }: { traits: readonly string[] }) {
             data-testid={`unit-trait-${trait}`}
           >
             <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
-              <EntityIcon size="row" src={traitIcon(trait)} alt="" />
+              <EntityIcon size="icon-lg" src={traitIcon(trait)} alt="" />
             </span>
             <div className="min-w-0">
               <p className="text-base font-semibold">
@@ -350,7 +350,7 @@ export function StatsByRank({
             {statKeys.map((key) => (
               <th key={key} scope="col" className="py-1 text-right font-normal">
                 <span className="inline-flex items-center gap-1">
-                  <EntityIcon size="inline" src={statIcon(key)} alt="" />
+                  <EntityIcon size="icon" src={statIcon(key)} alt="" />
                   {t(`characterUnit.glance.${key}`, { defaultValue: key })}
                 </span>
               </th>
@@ -371,7 +371,7 @@ export function StatsByRank({
             >
               <th scope="row" className="py-1 text-left font-normal">
                 <span className="inline-flex items-center gap-1.5 align-middle">
-                  <EntityIcon size="inline" src={rankIcon(rank)} alt="" />
+                  <EntityIcon size="icon" src={rankIcon(rank)} alt="" />
                   {rankLabel(rank)}
                 </span>
                 {aboveCap(index) ? (
@@ -403,7 +403,7 @@ export function StatsByRank({
             key={key}
             title={
               <span className="inline-flex items-center gap-1">
-                <EntityIcon size="inline" src={statIcon(key)} alt="" />
+                <EntityIcon size="icon" src={statIcon(key)} alt="" />
                 {stat}
               </span>
             }

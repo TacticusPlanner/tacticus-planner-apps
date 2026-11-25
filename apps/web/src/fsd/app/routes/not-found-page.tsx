@@ -21,7 +21,10 @@ export function NotFoundPage({
       data-testid="not-found-page"
     >
       <div className="flex max-w-md flex-col items-center gap-4 text-center">
-        <SearchX aria-hidden="true" className="size-10 text-muted-foreground" />
+        <SearchX
+          aria-hidden="true"
+          className="size-icon-xl text-muted-foreground"
+        />
         <h2 className="text-lg font-semibold">{t("notFound.title")}</h2>
         <p className="text-sm text-muted-foreground">
           {t("notFound.description")}

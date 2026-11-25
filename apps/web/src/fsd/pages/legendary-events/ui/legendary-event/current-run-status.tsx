@@ -198,7 +198,7 @@ function RowIcon({ resource }: { resource: LegendaryEventResource | null }) {
   }
   return (
     <EntityIcon
-      size="inline"
+      size="icon"
       alt=""
       className="shrink-0"
       src={legendaryEventResourceIcon(resource)}

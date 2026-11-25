@@ -72,7 +72,7 @@ export function HreEventHeader({ state }: { state: HreInstanceState }) {
         />
       ) : (
         <EventIcon
-          size="tile"
+          size="icon-2xl"
           className="shrink-0"
           definitionId={instance.entry.definitionId}
           definitionType="NewCharacterEvent"

@@ -6,11 +6,11 @@ import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import type { EntityIconSize } from "@/shared/ui"
 
 /** A plan resource's icon: an upgrade material's rarity-framed icon, or the unit's portrait for
- *  `shard:<unit>`. Decorative: the row it sits in names the resource. `size` is the style guide's
- *  icon role (`row` by default). */
+ *  `shard:<unit>`. Decorative: the row it sits in names the resource. `size` is a step on the style
+ *  guide's icon scale (`icon-lg` by default). */
 export function GoalResourceIcon({
   resourceId,
-  size = "row",
+  size = "icon-lg",
 }: {
   resourceId: string
   size?: EntityIconSize

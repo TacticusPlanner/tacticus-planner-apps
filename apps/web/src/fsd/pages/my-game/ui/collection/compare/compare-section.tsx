@@ -77,7 +77,7 @@ export function CompareSection({
         className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-4 py-10 text-center"
         data-testid="compare-empty"
       >
-        <History aria-hidden className="size-8 text-muted-foreground" />
+        <History aria-hidden className="size-icon-lg text-muted-foreground" />
         <div className="space-y-1">
           <p className="font-semibold">
             {t("myGame.collection.compare.emptyTitle")}

@@ -42,7 +42,7 @@ export function RecipeIcons({
                     id={id}
                     rarity={upgrade?.rarity}
                     crafted={upgrade?.crafted}
-                    size="inline"
+                    size="icon"
                   />
                 </span>
                 {count > 1 ? <span className="text-xs">×{count}</span> : null}

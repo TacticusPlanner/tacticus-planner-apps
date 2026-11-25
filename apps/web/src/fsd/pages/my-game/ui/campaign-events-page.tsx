@@ -309,6 +309,6 @@ function LoadError() {
 
 const Loading = () => (
   <div className="flex min-h-64 items-center justify-center">
-    <Spinner className="size-8" />
+    <Spinner className="size-icon-lg" />
   </div>
 )

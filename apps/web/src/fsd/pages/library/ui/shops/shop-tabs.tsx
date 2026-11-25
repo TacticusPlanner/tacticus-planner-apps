@@ -35,7 +35,7 @@ export function ShopTabs({
         {LIBRARY_SHOP_IDS.map((value) => (
           <PageTabsTrigger key={value} value={value}>
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="shrink-0"
               src={shopIcon(value)}

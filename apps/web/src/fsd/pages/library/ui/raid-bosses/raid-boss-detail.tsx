@@ -77,7 +77,7 @@ function RarityTier({
   return (
     <span className="inline-flex items-center gap-1">
       <EntityIcon
-        size="inline"
+        size="icon"
         src={rarityIcon(rarity)}
         alt={t(`rarities.${rarity}`, { defaultValue: rarity })}
       />

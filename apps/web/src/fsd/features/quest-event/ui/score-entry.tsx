@@ -55,7 +55,7 @@ export function ScoreEntry({
           className="inline-flex items-center gap-1 text-sm font-medium"
           id={`${idBase}-medals`}
         >
-          <EntityIcon size="inline" alt="" src={medalIcon()} />
+          <EntityIcon size="icon" alt="" src={medalIcon()} />
           {t("entry.medals")}
         </span>
         <ToggleGroup

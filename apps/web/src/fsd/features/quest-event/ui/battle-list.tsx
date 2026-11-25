@@ -65,7 +65,7 @@ export function BattleList({
           <span className="flex min-w-0 flex-1 items-baseline justify-between gap-2">
             <span className="flex items-center gap-1.5 font-semibold">
               <EntityIcon
-                size="inline"
+                size="icon"
                 alt=""
                 className="shrink-0"
                 src={rarityIcon(group.tier)}
@@ -194,7 +194,7 @@ export function BattleList({
                                 {perfect ? (
                                   <>
                                     <EntityIcon
-                                      size="inline"
+                                      size="icon"
                                       alt=""
 
                                       src={heroStarIcon()}

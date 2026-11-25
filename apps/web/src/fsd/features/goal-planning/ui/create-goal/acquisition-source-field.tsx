@@ -101,7 +101,7 @@ export function AcquisitionSourceField({
 
   const shardsPerDayNote = (shards: number, mythic: boolean) => (
     <span className="flex items-center gap-1.5">
-      <EntityIcon size="inline" alt="" className="shrink-0" src={SHARD_ICON} />
+      <EntityIcon size="icon" alt="" className="shrink-0" src={SHARD_ICON} />
       {t(
         mythic
           ? "goals.create.acquisitionSources.shardsPerDayMythic"
@@ -336,14 +336,14 @@ export function ShopOfferRow({
         <span className="flex items-center gap-1.5">
           {isShardOffer(offer) ? (
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="shrink-0"
               src={SHARD_ICON}
             />
           ) : (
             <UpgradeIcon
-              size="inline"
+              size="icon"
               className="shrink-0"
               id={offer.rewardType as UpgradeId}
               rarity="Mythic"
@@ -354,7 +354,7 @@ export function ShopOfferRow({
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           {currencyIcon ? (
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="shrink-0"
               src={currencyIcon}

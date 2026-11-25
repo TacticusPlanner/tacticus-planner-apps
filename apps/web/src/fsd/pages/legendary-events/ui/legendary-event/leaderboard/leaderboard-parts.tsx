@@ -82,7 +82,7 @@ export function LeaderboardUnit({
                 data-testid="leaderboard-trait"
                 data-trait={trait}
               >
-                <EntityIcon size="inline" alt="" src={traitIcon(trait)} />
+                <EntityIcon size="icon" alt="" src={traitIcon(trait)} />
                 <span className="sr-only">{label}</span>
               </span>
             </TooltipTrigger>
@@ -221,7 +221,7 @@ export function LeaderboardRankTile({ row }: { row: LeaderboardUnitRow }) {
           data-testid="leaderboard-rank"
           style={rankTone(row.rank)}
         >
-          <EntityIcon size="inline" alt="" src={rankIcon(row.rank)} />
+          <EntityIcon size="icon" alt="" src={rankIcon(row.rank)} />
           <span className="sr-only">{label}</span>
         </span>
       </TooltipTrigger>

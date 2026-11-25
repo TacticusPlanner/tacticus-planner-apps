@@ -90,7 +90,7 @@ function CrateRewards({
             <TooltipTrigger asChild>
               <li className="inline-flex items-center gap-0.5 text-sm">
                 <EntityIcon
-                  size="inline"
+                  size="icon"
                   alt=""
                   className="object-contain"
                   src={rewardIcon(reward, alliance)}
@@ -140,7 +140,7 @@ function RewardsLeftStrip({
         <Tooltip>
           <TooltipTrigger asChild>
             <li className="inline-flex items-center gap-1">
-              <EntityIcon size="inline" alt="" src={heroStarIcon()} />
+              <EntityIcon size="icon" alt="" src={heroStarIcon()} />
               <span className="sr-only">{t("rewards.left.medals")}</span>
               <span data-testid="quest-left-medals">
                 {number.format(left.medals)}
@@ -152,7 +152,7 @@ function RewardsLeftStrip({
         <Tooltip>
           <TooltipTrigger asChild>
             <li className="inline-flex items-center gap-1">
-              <EntityIcon size="inline" alt="" src={shardIcon("Regular")} />
+              <EntityIcon size="icon" alt="" src={shardIcon("Regular")} />
               <span className="sr-only">
                 {t("rewards.left.shards", { hero })}
               </span>
@@ -164,7 +164,7 @@ function RewardsLeftStrip({
           <TooltipContent>{t("rewards.left.shards", { hero })}</TooltipContent>
         </Tooltip>
         <li className="inline-flex items-center gap-1">
-          <EntityIcon size="inline" alt="" src={chestIcon("wood")} />
+          <EntityIcon size="icon" alt="" src={chestIcon("wood")} />
           <span data-testid="quest-left-crates">
             {t("rewards.left.crates", { count: left.crates })}
           </span>

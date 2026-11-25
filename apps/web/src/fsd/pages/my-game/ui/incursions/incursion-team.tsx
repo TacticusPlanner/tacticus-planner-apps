@@ -98,7 +98,7 @@ export function IncursionTeam({
           className="inline-flex items-center gap-1 text-xs text-muted-foreground tabular-nums"
           data-testid={`${testId}-power`}
         >
-          <EntityIcon size="inline" alt="" src={powerIcon()} />
+          <EntityIcon size="icon" alt="" src={powerIcon()} />
           {t("team.power", {
             power: number.format(Math.round(plan.teamPower)),
           })}
@@ -107,11 +107,7 @@ export function IncursionTeam({
           <Tooltip>
             <TooltipTrigger asChild>
               <Badge variant="secondary">
-                <EntityIcon
-                  size="inline"
-                  alt=""
-                  src={battleGlyphIcon("heal")}
-                />
+                <EntityIcon size="icon" alt="" src={battleGlyphIcon("heal")} />
                 {t("team.sustain")}
               </Badge>
             </TooltipTrigger>

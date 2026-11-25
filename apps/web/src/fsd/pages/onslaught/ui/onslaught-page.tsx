@@ -106,7 +106,7 @@ export function OnslaughtPage() {
   if (progressQuery.isPending || rewardsRead.status === "loading") {
     return (
       <div className="flex min-h-64 items-center justify-center">
-        <Spinner className="size-8" />
+        <Spinner className="size-icon-lg" />
       </div>
     )
   }
@@ -200,7 +200,7 @@ export function OnslaughtPage() {
                         <div className="flex gap-1">
                           {active.map((alliance) => (
                             <EntityIcon
-                              size="row"
+                              size="icon-lg"
                               key={alliance}
                               src={onslaughtAllianceIcon(alliance)}
                               alt={

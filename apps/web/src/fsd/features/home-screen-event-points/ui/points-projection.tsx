@@ -60,7 +60,7 @@ export function PointsProjection({
       <h2 className="flex items-center gap-2 font-semibold">
         {pointsIcon ? (
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
             className="shrink-0"
             src={pointsIcon}
@@ -340,7 +340,7 @@ function ReadyProjectionBody({
               <div className="flex items-baseline justify-between gap-2">
                 <span className="flex items-center gap-2 font-medium">
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     alt=""
                     className="shrink-0"
                     src={hseModeIcon(mode.mode)}
@@ -393,7 +393,7 @@ function ReadyProjectionBody({
                 <TableCell className="font-medium">
                   <span className="flex items-center gap-2">
                     <EntityIcon
-                      size="inline"
+                      size="icon"
                       alt=""
                       className="shrink-0"
                       src={hseModeIcon(mode.mode)}

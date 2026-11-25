@@ -48,7 +48,7 @@ export function FarmUnlockPaths({
             <span className="flex items-center gap-1.5">
               {path.icon ? (
                 <EntityIcon
-                  size="inline"
+                  size="icon"
                   alt=""
                   className="shrink-0"
                   src={path.icon}

@@ -88,7 +88,7 @@ export const UnitTile = memo(function UnitTile({
           </span>
         ) : null}
         <TeamUnitPortrait
-          size="md"
+          size="portrait-md"
           unit={cappedView(unit.kind, unit.id, roster, rarityCap)}
         />
         <span className="w-full truncate text-xs font-medium">{unit.name}</span>

@@ -60,7 +60,7 @@ export function ScrollToTopButton() {
     <Button
       aria-label={t("scrollToTop")}
       data-testid="scroll-to-top-button"
-      className="fixed right-4 bottom-[calc(var(--mobile-nav-height)+1rem)] z-40 size-12 rounded-full shadow-lg [&_svg]:size-6"
+      className="fixed right-4 bottom-[calc(var(--mobile-nav-height)+1rem)] z-40 size-12 rounded-full shadow-lg [&_svg]:size-icon-md"
       size="icon"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
     >

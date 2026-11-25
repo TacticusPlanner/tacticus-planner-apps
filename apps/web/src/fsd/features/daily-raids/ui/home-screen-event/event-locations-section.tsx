@@ -64,7 +64,7 @@ export function EventLocationsSection({
           className="flex min-h-24 items-center justify-center"
           data-testid="hse-raids-loading"
         >
-          <Spinner className="size-6" />
+          <Spinner className="size-icon-md" />
         </div>
       ) : state.locations.length > 0 ? (
         <>
@@ -87,7 +87,7 @@ export function EventLocationsSection({
                   {resource ? (
                     <span className="flex items-center gap-1">
                       <ResourceIconWithTooltip
-                        size="row"
+                        size="icon-lg"
                         label={resource.label}
                         visual={resource.visual}
                       />
@@ -106,7 +106,7 @@ export function EventLocationsSection({
                     <Badge className="tabular-nums" variant="secondary">
                       {pointsIcon ? (
                         <EntityIcon
-                          size="inline"
+                          size="icon"
                           alt=""
 
                           src={pointsIcon}
@@ -133,7 +133,7 @@ export function EventLocationsSection({
                   </Badge>
                   <Badge className="tabular-nums" variant="outline">
                     <EntityIcon
-                      size="inline"
+                      size="icon"
                       alt=""
 
                       src={energyIcon()}

@@ -90,12 +90,7 @@ export function MythicMaterialSourceField({
             key={currency}
           >
             {icon ? (
-              <EntityIcon
-                size="inline"
-                alt=""
-                className="shrink-0"
-                src={icon}
-              />
+              <EntityIcon size="icon" alt="" className="shrink-0" src={icon} />
             ) : null}
             {t("goals.create.acquisitionSources.shopCurrencySpend", {
               amount,
@@ -136,7 +131,7 @@ function MaterialSection({
         type="button"
       >
         <UpgradeIcon
-          size="inline"
+          size="icon"
           className="shrink-0"
           id={materialId as UpgradeId}
           rarity="Mythic"

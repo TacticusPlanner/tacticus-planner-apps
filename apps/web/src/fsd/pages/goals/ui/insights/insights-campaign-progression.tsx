@@ -56,7 +56,7 @@ export function InsightsCampaignProgression({
                 <span className="flex items-center gap-2.5">
                   {icon ? (
                     <EntityIcon
-                      size="row"
+                      size="icon-lg"
                       alt=""
                       className="shrink-0"
                       src={icon}
@@ -82,7 +82,7 @@ export function InsightsCampaignProgression({
                       variant="secondary"
                     >
                       <EntityIcon
-                        size="inline"
+                        size="icon"
                         alt=""
                         className="shrink-0"
                         src={energyIconUrl}

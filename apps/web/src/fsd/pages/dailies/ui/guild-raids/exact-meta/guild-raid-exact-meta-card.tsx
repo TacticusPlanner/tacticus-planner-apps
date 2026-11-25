@@ -382,7 +382,7 @@ export function GuildRaidExactMetaCard({
       </Badge>
       {comps.map((comp) => (
         <Badge key={comp.id} variant="outline" className="gap-1">
-          <EntityIcon size="inline" src={comp.signature.portraitUrl} alt="" />
+          <EntityIcon size="icon" src={comp.signature.portraitUrl} alt="" />
           {t("guildRaids.exactMeta.comp", { name: comp.id })}
         </Badge>
       ))}

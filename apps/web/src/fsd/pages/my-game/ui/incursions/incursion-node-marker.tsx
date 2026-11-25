@@ -45,7 +45,7 @@ export function IncursionNodeMarker({
           <span className="flex h-4 items-end">
             {STARS.map((count) => (
               <EntityIcon
-                size="badge-sm"
+                size="icon-sm"
                 key={count}
                 src={medalIcon()}
                 alt=""
@@ -72,5 +72,5 @@ export function IncursionNodeMarker({
       : incursionEnhancementIcon(
           incursion.enhancements[node.enhancementId ?? ""]?.type ?? ""
         )
-  return <EntityIcon src={src} alt="" size="row" className="shrink-0" />
+  return <EntityIcon src={src} alt="" size="icon-lg" className="shrink-0" />
 }

@@ -67,7 +67,7 @@ export function FilterLabelIcon({ kind }: { kind: FilterLabelIconKind }) {
   return (
     <span aria-hidden="true" className="flex shrink-0 items-center -space-x-1">
       {icons.map((icon, index) => (
-        <EntityIcon alt="" key={index} size="inline" src={icon} />
+        <EntityIcon alt="" key={index} size="icon" src={icon} />
       ))}
     </span>
   )

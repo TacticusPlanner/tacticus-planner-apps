@@ -86,7 +86,7 @@ export function UnitHeader({
           src={portraitSrc}
           rarity={portraitRarity}
           greyed={ownership === "notOwned"}
-          size={isMobile ? "lg" : "hero"}
+          size={isMobile ? "portrait-lg" : "portrait-xl"}
         />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h2
@@ -99,7 +99,7 @@ export function UnitHeader({
           </h2>
           <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-1 rounded-sm bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
-              <EntityIcon size="inline" src={factionIcon(factionId)} alt="" />
+              <EntityIcon size="icon" src={factionIcon(factionId)} alt="" />
               {t(`factions:${factionId}`, { defaultValue: factionId })}
             </span>
             <KindLine allianceId={allianceId} text={kindLine} />
@@ -223,7 +223,7 @@ function KindLine({ allianceId, text }: { allianceId: string; text: string }) {
   const emblem = allianceIcon(allianceId)
   return (
     <span className="inline-flex items-center gap-1">
-      {emblem ? <EntityIcon size="inline" src={emblem} alt="" /> : null}
+      {emblem ? <EntityIcon size="icon" src={emblem} alt="" /> : null}
       {text}
     </span>
   )

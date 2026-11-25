@@ -90,12 +90,12 @@ export const EventFarmSection = memo(function EventFarmSection({
           <div className="flex flex-wrap gap-2">
             <Badge data-testid="hse-raids-total" variant="secondary">
               {pointsIcon ? (
-                <EntityIcon size="inline" alt="" src={pointsIcon} />
+                <EntityIcon size="icon" alt="" src={pointsIcon} />
               ) : null}
               {t("hse.raids.total", { points: farm.totalPoints })}
             </Badge>
             <Badge data-testid="hse-raids-energy" variant="outline">
-              <EntityIcon size="inline" alt="" src={energyIcon()} />
+              <EntityIcon size="icon" alt="" src={energyIcon()} />
               {t("hse.raids.energy", { energy: farm.totalEnergy })}
             </Badge>
           </div>
@@ -133,7 +133,7 @@ export const EventFarmSection = memo(function EventFarmSection({
                   <Badge className="tabular-nums" variant="secondary">
                     {pointsIcon ? (
                       <EntityIcon
-                        size="inline"
+                        size="icon"
                         alt=""
 
                         src={pointsIcon}
@@ -154,7 +154,7 @@ export const EventFarmSection = memo(function EventFarmSection({
                   ) : null}
                   <span className="flex items-center gap-1">
                     <ResourceIconWithTooltip
-                      size="row"
+                      size="icon-lg"
                       label={
                         view.resourceLabels.get(row.resourceId) ??
                         row.resourceId

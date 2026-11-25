@@ -36,7 +36,7 @@ export function useHseRichText(): (text: HseText) => ReactNode {
         return (
           <span key={index} className="whitespace-nowrap">
             <EntityIcon
-              size="inline"
+              size="icon"
               src={entry.icon}
               alt=""
               className="mr-0.5 inline-block align-text-bottom"

@@ -51,7 +51,7 @@ export function IncursionPower({
           data-standing={standing}
         >
           <EntityIcon
-            size="inline"
+            size="icon"
             src={powerIcon()}
             alt=""
             className="shrink-0"

@@ -20,8 +20,8 @@ function initials(name: string): string {
  * An NPC variation's portrait, resolved from its id through the ported override map, else the portrait
  * of the playable character it is a version of (`characterId`). When neither exists, or the file fails
  * to load, a readable initials badge is rendered instead so list rows
- * and the detail header keep a consistent, fixed-size slot. `size` is the style guide's icon role
- * (`portrait-sm` … for a portrait, `inline` next to text).
+ * and the detail header keep a consistent, fixed-size slot. `size` is a step on the style guide's
+ * scale (`portrait-sm` … for a portrait, `icon` next to text).
  */
 export function NpcPortrait({
   variationId,

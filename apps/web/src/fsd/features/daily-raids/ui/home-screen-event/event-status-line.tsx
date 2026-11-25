@@ -140,7 +140,7 @@ function StatusFrame({
     <div className="flex items-start gap-3" data-testid={testId}>
       {entry ? (
         <EventIcon
-          size="tile"
+          size="icon-2xl"
           className="shrink-0"
           definitionId={entry.definitionId}
           definitionType="HomeScreenEvent"
@@ -148,7 +148,7 @@ function StatusFrame({
         />
       ) : (
         <EntityIcon
-          size="row"
+          size="icon-lg"
           alt=""
           className="shrink-0"
           src={gameMenuIcon("homeScreenEvent")}

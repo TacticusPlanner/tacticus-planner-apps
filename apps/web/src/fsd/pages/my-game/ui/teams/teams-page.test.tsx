@@ -348,9 +348,9 @@ describe("TeamsPage", () => {
       ).toHaveLength(5)
       const portraits = within(flex).getAllByTestId("unit-portrait")
       expect(portraits.map((portrait) => portrait.dataset.size)).toEqual([
-        "sm",
-        "sm",
-        "sm",
+        "portrait-sm",
+        "portrait-sm",
+        "portrait-sm",
       ])
     })
 

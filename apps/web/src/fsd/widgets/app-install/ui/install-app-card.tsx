@@ -36,12 +36,12 @@ export function InstallAppCard() {
         {install.justInstalled ? (
           <CircleCheck
             aria-hidden="true"
-            className="hidden size-8 shrink-0 text-primary sm:block"
+            className="hidden size-icon-lg shrink-0 text-primary sm:block"
           />
         ) : (
           <img
             alt=""
-            className="hidden size-10 shrink-0 sm:block"
+            className="hidden size-icon-xl shrink-0 sm:block"
             src="/web-app-manifest-192x192.png"
           />
         )}

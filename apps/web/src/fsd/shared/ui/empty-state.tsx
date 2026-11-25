@@ -45,7 +45,7 @@ export function EmptyState({
       data-variant={variant}
       role="status"
     >
-      <Icon aria-hidden className="size-8 text-muted-foreground" />
+      <Icon aria-hidden className="size-icon-lg text-muted-foreground" />
       {hasNode(title) || hasNode(description) ? (
         <div className="flex max-w-prose flex-col gap-1">
           {hasNode(title) ? <p className="font-semibold">{title}</p> : null}

@@ -80,7 +80,7 @@ export function OnslaughtRunList({
             <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground tabular-nums">
               {t("plan.onslaughtRun.expected", values)}
             </span>
-            <EntityIcon size="inline" alt="" src={onslaughtTokenIcon()} />
+            <EntityIcon size="icon" alt="" src={onslaughtTokenIcon()} />
           </li>
         )
       })}

@@ -78,7 +78,7 @@ export function PlanMaterialCell({
           </Badge>
           <span className="flex items-center gap-0.5">
             {cell.units.slice(0, PORTRAIT_LIMIT).map((unit) => (
-              <UnitIcon key={unit.unitId} size="inline" goal={unit} />
+              <UnitIcon key={unit.unitId} size="icon" goal={unit} />
             ))}
             {extraUnits > 0 ? (
               <span className="text-xs text-muted-foreground tabular-nums">

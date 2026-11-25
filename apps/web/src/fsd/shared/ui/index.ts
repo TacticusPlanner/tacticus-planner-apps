@@ -5,6 +5,7 @@ export { progressionText } from "./progression-text"
 export { EntityIcon } from "./entity-icon"
 export {
   entityIconClassName,
+  portraitBadgeSize,
   portraitClassName,
   type EntityIconSize,
   type PortraitSize,

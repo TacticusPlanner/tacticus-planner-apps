@@ -32,7 +32,7 @@ function toSelectOptions(options: Option[]): SelectOption<string>[] {
     value: option.id,
     label: option.name,
     icon: option.icon ? (
-      <EntityIcon size="inline" src={option.icon} alt="" className="shrink-0" />
+      <EntityIcon size="icon" src={option.icon} alt="" className="shrink-0" />
     ) : undefined,
   }))
 }
@@ -69,7 +69,7 @@ function IconSelect({
               <span className="flex items-center gap-2">
                 {option.icon ? (
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     src={option.icon}
                     alt=""
                     className="shrink-0"

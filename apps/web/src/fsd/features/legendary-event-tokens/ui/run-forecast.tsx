@@ -226,7 +226,7 @@ function RunSummary({ run }: { run: RunForecast }) {
               data-stat={item.key}
             >
               <EntityIcon
-                size="inline"
+                size="icon"
                 alt={item.label}
                 className="shrink-0"
                 src={item.icon}

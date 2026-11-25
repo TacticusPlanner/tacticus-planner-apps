@@ -196,7 +196,7 @@ export function MowUpgradesTab({
               data-testid={`mow-total-${box.key}`}
             >
               <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <EntityIcon size="inline" src={box.icon} alt="" />
+                <EntityIcon size="icon" src={box.icon} alt="" />
                 {box.label}
               </dt>
               <dd className="text-xl font-bold tabular-nums">

@@ -9,7 +9,7 @@ import type { Progression, Rank, UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { UnitPortrait } from "@/entities/unit/@x/team"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, portraitBadgeSize } from "@/shared/ui"
 
 /** What a team's unit shows: ownership, and for an owned unit its progression and rank. */
 export interface TeamUnitView {
@@ -23,17 +23,17 @@ export interface TeamUnitView {
 }
 
 /**
- * A team unit on the shared `UnitPortrait` (`sm` in rows and chips, `md` in a grid; ui-style-guide
+ * A team unit on the shared `UnitPortrait` (`portrait-sm` in rows and chips, `portrait-md` in a grid; ui-style-guide
  * rule 6): ringed in its rarity colour when owned, greyed with a padlock badge when the synced roster
  * shows it locked, else with its rank as the badge. Decorative: the caller names the unit.
  */
 export function TeamUnitPortrait({
   unit,
-  size = "sm",
+  size = "portrait-sm",
   className,
 }: {
   unit: TeamUnitView
-  size?: "sm" | "md"
+  size?: "portrait-sm" | "portrait-md"
   className?: string
 }) {
   const unitId = unit.unitId as UnitId
@@ -42,7 +42,7 @@ export function TeamUnitPortrait({
   const rarity = unit.progression
     ? progressionRarity(unit.progression)
     : undefined
-  const badge = size === "md" ? "badge-md" : "badge-sm"
+  const badge = portraitBadgeSize(size)
   return (
     <span
       aria-hidden="true"

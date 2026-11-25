@@ -75,7 +75,7 @@ function FactionNote({
       <ul aria-labelledby={labelId} className="contents">
         {named.map(({ faction, name }) => (
           <li className="flex items-center gap-1" key={faction}>
-            <EntityIcon alt="" size="inline" src={factionIcon(faction)} />
+            <EntityIcon alt="" size="icon" src={factionIcon(faction)} />
             {name}
           </li>
         ))}
@@ -286,7 +286,7 @@ export function TeamModesField({
               key={mode}
               value={mode}
             >
-              <EntityIcon alt="" size="inline" src={teamModeIcon(mode)} />
+              <EntityIcon alt="" size="icon" src={teamModeIcon(mode)} />
               {modeLabel(mode)}
             </ToggleGroupItem>
           )
@@ -361,7 +361,7 @@ export function TeamRarityCapField({
           <SelectItem value={NO_CAP}>{t("rarityCap.none")}</SelectItem>
           {rarityOrder.map((rarity) => (
             <SelectItem key={rarity} value={rarity}>
-              <EntityIcon alt="" size="inline" src={rarityIcon(rarity)} />
+              <EntityIcon alt="" size="icon" src={rarityIcon(rarity)} />
               {t(`progression:rarities.${rarity}`)}
             </SelectItem>
           ))}
@@ -443,7 +443,7 @@ export function TeamContextFields({
             <SelectContent container={campaignContainer} position="popper">
               {campaigns.map((campaign) => (
                 <SelectItem key={campaign.groupId} value={campaign.groupId}>
-                  <EntityIcon alt="" size="inline" src={campaign.icon} />
+                  <EntityIcon alt="" size="icon" src={campaign.icon} />
                   {campaign.label}
                 </SelectItem>
               ))}
@@ -513,7 +513,7 @@ export function TeamContextFields({
                 <SelectItem key={mowId} value={mowId}>
                   <EntityIcon
                     alt=""
-                    size="row"
+                    size="icon-lg"
                     src={mowIcon(mowId as UnitId)}
                   />
                   {mowName(mowId)}

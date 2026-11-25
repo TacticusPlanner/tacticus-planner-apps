@@ -70,7 +70,7 @@ function renderStyled(
   const icon = styleIcon(styleName)
   const iconNode = icon ? (
     <EntityIcon
-      size="inline"
+      size="icon"
       src={icon}
       alt=""
       className="mr-0.5 inline-block align-text-bottom"

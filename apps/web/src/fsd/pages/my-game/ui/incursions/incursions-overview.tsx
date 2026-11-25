@@ -40,7 +40,7 @@ export function IncursionsOverview() {
           data-testid="incursions-countdown"
           data-status={run.status}
         >
-          <EntityIcon size="inline" alt="" src={countdownIcon()} />
+          <EntityIcon size="icon" alt="" src={countdownIcon()} />
           {t(run.status === "live" ? "event.endsIn" : "event.startsIn", {
             when: formatEventCountdown(
               run.status === "live" ? run.endMs : run.startMs,

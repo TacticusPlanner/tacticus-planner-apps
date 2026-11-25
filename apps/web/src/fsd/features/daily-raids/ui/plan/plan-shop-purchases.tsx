@@ -94,7 +94,7 @@ export function PlanShopPurchases({
               <div className="min-w-0 flex-1 text-xs">
                 <div className="flex items-center gap-1 font-medium">
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     alt=""
                     className="shrink-0"
                     src={shopIcon(purchase.shopId)}
@@ -104,7 +104,7 @@ export function PlanShopPurchases({
                 <div className="flex items-center gap-1 truncate text-muted-foreground tabular-nums">
                   {material ? (
                     <UpgradeIcon
-                      size="inline"
+                      size="icon"
                       className="shrink-0"
                       id={purchase.rewardType as UpgradeId}
                       rarity="Mythic"
@@ -124,7 +124,7 @@ export function PlanShopPurchases({
                 <TooltipTrigger asChild>
                   <span className="flex shrink-0 items-center gap-1 text-xs tabular-nums">
                     <EntityIcon
-                      size="inline"
+                      size="icon"
                       alt=""
 
                       src={shopCurrencyIcon(purchase.currency)}

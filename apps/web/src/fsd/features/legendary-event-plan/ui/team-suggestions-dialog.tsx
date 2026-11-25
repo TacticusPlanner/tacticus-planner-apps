@@ -275,7 +275,7 @@ export function TeamSuggestionsDialog({
                           ) : null}
                           {locked ? (
                             <EntityIcon
-                              size="inline"
+                              size="icon"
                               src={lockIcon()}
                               alt={t("teams.picker.locked")}
                             />

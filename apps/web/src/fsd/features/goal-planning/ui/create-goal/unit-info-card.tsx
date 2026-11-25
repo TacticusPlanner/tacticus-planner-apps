@@ -61,7 +61,7 @@ export function UnitInfoCard({
       <div className="grid grid-cols-2 gap-2 @lg:grid-cols-3">
         <ReadOnlyField label={shardLabel}>
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
 
             src={shardIcon(shardIsMythic ? "Mythic" : "Regular")}
