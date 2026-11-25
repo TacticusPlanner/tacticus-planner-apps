@@ -28,6 +28,8 @@ import {
 } from "@/entities/roster-snapshot"
 import { BulkGoalDialog } from "@/features/goal-planning"
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import { useUnitFilterOptions } from "@/features/unit-filters"
+import type { UnitFilterOptions } from "@/features/unit-filters"
 import { useSignInRedirect } from "@/shared/auth"
 import { useTourPageSteps } from "@/shared/tour"
 import { EmptyState } from "@/shared/ui"
@@ -37,8 +39,6 @@ import type {
   CollectionListedUnit,
   CollectionRosterState,
 } from "../../model/collection-view"
-import { useCollectionOptions } from "../../model/use-collection-options"
-import type { CollectionOptions } from "../../model/use-collection-options"
 import {
   toBulkGoalUnit,
   useCollectionSelection,
@@ -61,7 +61,7 @@ import { FactionHeader } from "./faction-header"
 import { SelectableUnit } from "./selectable-unit"
 
 // Before the catalog is read the toolbar is hidden anyway; this only keeps its props total.
-const EMPTY_OPTIONS: CollectionOptions = {
+const EMPTY_OPTIONS: UnitFilterOptions = {
   factions: [],
   hits: [],
   movements: [],
@@ -91,7 +91,7 @@ const ungroupedSlots =
  */
 export function CollectionPage() {
   const { t } = useTranslation("common")
-  const options = useCollectionOptions()
+  const options = useUnitFilterOptions()
   const { query, update, clear } = useCollectionQuery(options)
   const isAuthenticated = useIsAuthenticated()
   const isMobile = useIsMobile()

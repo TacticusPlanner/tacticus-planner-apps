@@ -5,16 +5,16 @@ import { I18nextProvider } from "react-i18next"
 import { createTestI18n } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 
-import { defaultCollectionQuery } from "../../model/collection-query"
-import type { CollectionOptions } from "../../model/use-collection-options"
-import { CollectionFilterFields } from "./collection-filter-fields"
+import { defaultUnitFilters } from "../model/unit-filters"
+import type { UnitFilterOptions } from "../model/use-unit-filter-options"
+import { UnitFilterFields } from "./unit-filter-fields"
 
 let i18n: I18n
 beforeAll(async () => {
   i18n = await createTestI18n("en")
 })
 
-const options: CollectionOptions = {
+const options: UnitFilterOptions = {
   factions: [
     { id: "Ultramarines", name: "Ultramarines", alliance: "Imperial" },
     { id: "BlackLegion", name: "Black Legion", alliance: "Chaos" },
@@ -34,8 +34,8 @@ function renderFields(rosterAvailable = true) {
   const update = vi.fn()
   render(
     <I18nextProvider i18n={i18n}>
-      <CollectionFilterFields
-        query={defaultCollectionQuery}
+      <UnitFilterFields
+        filters={defaultUnitFilters}
         update={update}
         options={options}
         rosterAvailable={rosterAvailable}
@@ -53,7 +53,7 @@ function choose(trigger: HTMLElement, name: string) {
   fireEvent.click(screen.getByRole("option", { name }))
 }
 
-describe("CollectionFilterFields", () => {
+describe("UnitFilterFields", () => {
   it("changes the query from each select", () => {
     const update = renderFields()
 
@@ -157,9 +157,9 @@ describe("CollectionFilterFields", () => {
     const update = vi.fn()
     render(
       <I18nextProvider i18n={i18n}>
-        <CollectionFilterFields
-          query={{
-            ...defaultCollectionQuery,
+        <UnitFilterFields
+          filters={{
+            ...defaultUnitFilters,
             factions: ["BlackLegion"],
             rarities: ["Epic"],
             damageTypes: ["Bolter"],
@@ -210,9 +210,9 @@ describe("CollectionFilterFields", () => {
   it("shows each section's active filter count beside its title", () => {
     render(
       <I18nextProvider i18n={i18n}>
-        <CollectionFilterFields
-          query={{
-            ...defaultCollectionQuery,
+        <UnitFilterFields
+          filters={{
+            ...defaultUnitFilters,
             attack: "ranged",
             hitsMin: 2,
             hitsMax: 3,

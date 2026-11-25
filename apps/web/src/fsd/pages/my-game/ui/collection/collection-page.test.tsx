@@ -49,8 +49,9 @@ vi.mock("../../model/use-collection-view", () => ({
     viewState.build?.(query) ?? viewState.current,
 }))
 
-vi.mock("../../model/use-collection-options", () => ({
-  useCollectionOptions: () => ({
+vi.mock("@/features/unit-filters", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/unit-filters")>()),
+  useUnitFilterOptions: () => ({
     factions: [
       { id: "Ultramarines", name: "Ultramarines", alliance: "Imperial" },
       { id: "BlackLegion", name: "Black Legion", alliance: "Chaos" },

@@ -1,8 +1,14 @@
 import { useCallback, useEffect, useMemo } from "react"
 import { useSearchParams } from "react-router"
-import { progressionIndex, rankIndex } from "@workspace/game-domain"
-import type { Rarity } from "@workspace/game-domain"
 
+import {
+  UNIT_FILTER_PARAMS,
+  applyParamFixes,
+  paramReader,
+  readUnitFilters,
+  serializeUnitFilter,
+} from "@/features/unit-filters"
+import type { ParamFixes, UnitFilterOptions } from "@/features/unit-filters"
 import { usePersistedSelection } from "@/shared/lib"
 
 import {
@@ -10,19 +16,9 @@ import {
   defaultCollectionLayout,
   defaultCollectionQuery,
   defaultCollectionSort,
-  isCollectionAlliance,
-  isCollectionAttackType,
   isCollectionGrouping,
-  isCollectionKind,
-  isCollectionSummons,
-  isCollectionAbilityAttack,
-  isCollectionAbilityRole,
-  isCollectionAbilityTarget,
   isCollectionLayout,
-  isCollectionProgression,
   isCollectionQuickFilter,
-  isCollectionRank,
-  isCollectionRarity,
   isCollectionSort,
 } from "./collection-query"
 import type {
@@ -30,39 +26,17 @@ import type {
   CollectionLayout,
   CollectionQuery,
   CollectionQuickFilter,
-  CollectionShardSource,
   CollectionSort,
 } from "./collection-query"
-import type { CollectionOptions } from "./use-collection-options"
 
 /** The parts of the query the URL carries; the quick filter is remembered in the browser instead. */
 type UrlQueryKey = Exclude<keyof CollectionQuery, "quick">
 
 /** The query parameter each part of the query lives in. */
 const PARAM = {
+  ...UNIT_FILTER_PARAMS,
   search: "q",
-  alliance: "alliance",
-  factions: "faction",
-  rarities: "rarity",
-  rankMin: "rankMin",
-  rankMax: "rankMax",
-  starsMin: "starsMin",
-  starsMax: "starsMax",
   hideUnowned: "owned",
-  kind: "kind",
-  summons: "summons",
-  abilityRole: "abilityRole",
-  abilityTarget: "abilityTarget",
-  abilityAttack: "abilityAttack",
-  attack: "attack",
-  hitsMin: "hitsMin",
-  hitsMax: "hitsMax",
-  movement: "move",
-  rangeMin: "rangeMin",
-  rangeMax: "rangeMax",
-  damageTypes: "damage",
-  traits: "trait",
-  shardSources: "source",
   sort: "sort",
   view: "view",
   group: "group",
@@ -107,11 +81,6 @@ interface RememberedSettings {
   quick: CollectionQuickFilter | null
 }
 
-const list = (raw: string) => raw.split(",")
-
-/** Each parameter to rewrite (`null` removes it) to bring the URL in line with the query read. */
-type ParamFixes = Partial<Record<string, string | null>>
-
 /**
  * The query the URL holds, read in one pass, and the fixes that make the URL say the same: an
  * invalid value is removed, a list keeps only its valid items, and a range set backwards is swapped.
@@ -120,129 +89,15 @@ type ParamFixes = Partial<Record<string, string | null>>
  */
 function readCollectionQuery(
   params: URLSearchParams,
-  options: CollectionOptions | undefined,
+  options: UnitFilterOptions | undefined,
   remembered: RememberedSettings
 ): { query: CollectionQuery; fixes: ParamFixes } {
   const fixes: ParamFixes = {}
-  const one = <T extends string>(
-    param: string,
-    isValid: (value: string) => value is T
-  ): T | null => {
-    const raw = params.get(param)
-    if (raw === null) return null
-    if (isValid(raw)) return raw
-    fixes[param] = null
-    return null
-  }
-  const many = <T extends string>(
-    param: string,
-    isItem: ((value: string) => value is T) | undefined
-  ): T[] => {
-    const raw = params.get(param)
-    if (raw === null || !isItem) return []
-    const items = list(raw)
-    const valid = items.filter(isItem)
-    if (valid.length !== items.length) {
-      fixes[param] = valid.length > 0 ? valid.join(",") : null
-    }
-    return valid
-  }
-  /** A number the catalog offers (`values`); `undefined` while it cannot be checked yet. */
-  const amount = (
-    param: string,
-    values: readonly number[] | undefined
-  ): number | null => {
-    const raw = params.get(param)
-    if (raw === null || !values) return null
-    const value = Number(raw)
-    if (values.includes(value)) return value
-    fixes[param] = null
-    return null
-  }
-  /** Swaps a pair read backwards, here and in the URL. */
-  const ordered = <T>(
-    [minParam, maxParam]: [string, string],
-    [min, max]: [T | null, T | null],
-    position: (value: T) => number
-  ): [T | null, T | null] => {
-    if (min === null || max === null || position(min) <= position(max))
-      return [min, max]
-    fixes[minParam] = String(max)
-    fixes[maxParam] = String(min)
-    return [max, min]
-  }
-  const among =
-    (ids: readonly { id: string }[] | readonly string[] | undefined) =>
-    (value: string): value is string =>
-      ids !== undefined &&
-      ids.some((item) => (typeof item === "string" ? item : item.id) === value)
-
-  const identity = (value: number) => value
-  const [rankMin, rankMax] = ordered(
-    [PARAM.rankMin, PARAM.rankMax],
-    [
-      one(PARAM.rankMin, isCollectionRank),
-      one(PARAM.rankMax, isCollectionRank),
-    ],
-    rankIndex
-  )
-  const [starsMin, starsMax] = ordered(
-    [PARAM.starsMin, PARAM.starsMax],
-    [
-      one(PARAM.starsMin, isCollectionProgression),
-      one(PARAM.starsMax, isCollectionProgression),
-    ],
-    progressionIndex
-  )
-  const [hitsMin, hitsMax] = ordered(
-    [PARAM.hitsMin, PARAM.hitsMax],
-    [
-      amount(PARAM.hitsMin, options?.hits),
-      amount(PARAM.hitsMax, options?.hits),
-    ],
-    identity
-  )
-  const [rangeMin, rangeMax] = ordered(
-    [PARAM.rangeMin, PARAM.rangeMax],
-    [
-      amount(PARAM.rangeMin, options?.ranges),
-      amount(PARAM.rangeMax, options?.ranges),
-    ],
-    identity
-  )
-  const ready = <T>(check: T) => (options ? check : undefined)
+  const { one } = paramReader(params, fixes)
   const query: CollectionQuery = {
+    ...readUnitFilters(params, options, fixes),
     search: params.get(PARAM.search) ?? "",
-    alliance: one(PARAM.alliance, isCollectionAlliance),
-    factions: many(PARAM.factions, ready(among(options?.factions))),
-    rarities: many<Rarity>(PARAM.rarities, isCollectionRarity),
-    rankMin,
-    rankMax,
-    starsMin,
-    starsMax,
     hideUnowned: one(PARAM.hideUnowned, isHideUnownedValue) !== null,
-    kind: one(PARAM.kind, isCollectionKind),
-    summons: one(PARAM.summons, isCollectionSummons),
-    abilityRole: one(PARAM.abilityRole, isCollectionAbilityRole),
-    abilityTarget: one(PARAM.abilityTarget, isCollectionAbilityTarget),
-    abilityAttack: one(PARAM.abilityAttack, isCollectionAbilityAttack),
-    attack: one(PARAM.attack, isCollectionAttackType),
-    hitsMin,
-    hitsMax,
-    movement: amount(PARAM.movement, options?.movements),
-    rangeMin,
-    rangeMax,
-    damageTypes: many(PARAM.damageTypes, ready(among(options?.damageTypes))),
-    traits: many(PARAM.traits, ready(among(options?.traits))),
-    shardSources: many<CollectionShardSource>(
-      PARAM.shardSources,
-      ready(
-        (value: string): value is CollectionShardSource =>
-          (options?.shardSources as readonly string[] | undefined)?.includes(
-            value
-          ) ?? false
-      )
-    ),
     quick: remembered.quick,
     sort: one(PARAM.sort, isCollectionSort) ?? remembered.sort,
     view: one(PARAM.view, isCollectionLayout) ?? remembered.view,
@@ -263,10 +118,8 @@ function serialize<K extends keyof CollectionQuery>(
     return value === defaultCollectionLayout ? null : (value as string)
   if (key === "group")
     return value === defaultCollectionGrouping ? null : (value as string)
-  if (Array.isArray(value)) return value.length > 0 ? value.join(",") : null
   if (key === "search") return value === "" ? null : (value as string)
-  if (typeof value === "number") return String(value)
-  return (value as string | null) ?? null
+  return serializeUnitFilter(value as never)
 }
 
 export interface CollectionQueryState {
@@ -291,7 +144,7 @@ export interface CollectionQueryState {
  * URL.
  */
 export function useCollectionQuery(
-  options: CollectionOptions | undefined
+  options: UnitFilterOptions | undefined
 ): CollectionQueryState {
   const [params, setParams] = useSearchParams()
   const [rememberedSort, rememberSort] = usePersistedSelection<CollectionSort>(
@@ -340,16 +193,9 @@ export function useCollectionQuery(
   useEffect(() => {
     if (!fixesKey) return
     const pending = JSON.parse(fixesKey) as ParamFixes
-    setParams(
-      (previous) => {
-        for (const [param, value] of Object.entries(pending)) {
-          if (value == null) previous.delete(param)
-          else previous.set(param, value)
-        }
-        return previous
-      },
-      { replace: true }
-    )
+    setParams((previous) => applyParamFixes(previous, pending), {
+      replace: true,
+    })
   }, [fixesKey, setParams])
 
   const update = useCallback(
