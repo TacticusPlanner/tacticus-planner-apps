@@ -89,7 +89,7 @@ describe("buildStatRadar", () => {
     expect(value("rangedVsInfiniteArmour")).toBe(4006)
   })
 
-  it("gives a melee-only unit 0 and 0% on both ranged axes", () => {
+  it("leaves a melee-only unit out of both ranged axes", () => {
     const meleeOnly = {
       ...tigurius,
       id: "meleeOnly",
@@ -101,11 +101,91 @@ describe("buildStatRadar", () => {
       buildRadarPopulation([meleeOnly, tigurius], v1PierceRatios),
       v1PierceRatios
     )
+    const shooter = buildStatRadar(
+      tigurius,
+      buildRadarPopulation([meleeOnly, tigurius], v1PierceRatios),
+      v1PierceRatios
+    )
     for (const axis of ["rangedVsZeroArmour", "rangedVsInfiniteArmour"]) {
       const entry = radar.find((candidate) => candidate.axis === axis)
-      expect(entry?.value).toBe(0)
+      expect(entry?.value).toBeNull()
+      expect(entry?.percentile).toBeNull()
+      // The only shooter is also the weakest: the melee-only unit isn't below it.
+      expect(
+        shooter.find((candidate) => candidate.axis === axis)?.percentile
+      ).toBe(0)
+    }
+  })
+
+  it("compares a shooter of an unknown damage type on both ranged axes", () => {
+    const odd = { ...tigurius, id: "odd", rangedDamage: "NotARealType" }
+    const population = buildRadarPopulation([odd, tigurius], v1PierceRatios)
+    expect(population.rangedVsInfiniteArmour).toEqual([0, 4006])
+    expect(population.rangedVsZeroArmour).toEqual([4006, 4006])
+  })
+
+  it("computes the spec's worked example: Daras's ranged percentiles", () => {
+    const daras: RadarCharacter = {
+      ...tigurius,
+      id: "lostaFearmonger",
+      damage: 31,
+      meleeHits: 3,
+      rangedDamage: "Bolter",
+      rangedHits: 1,
+    }
+    const shooters = (count: number, rest: Partial<RadarCharacter>) =>
+      Array.from({ length: count }, () => ({ ...daras, ...rest }))
+    // 59 shooters: 2 lower on both axes, 12 lower only vs 0 armour, 44 higher on both; 61 melee-only.
+    const catalog = [
+      daras,
+      ...shooters(2, { damage: 20 }),
+      ...shooters(12, { damage: 20, rangedDamage: "Psychic" }),
+      ...shooters(44, { damage: 40 }),
+      ...shooters(61, { rangedDamage: null, rangedHits: null }),
+    ]
+    const radar = buildStatRadar(
+      daras,
+      buildRadarPopulation(catalog, v1PierceRatios),
+      v1PierceRatios
+    )
+    const entry = (axis: string) =>
+      radar.find((candidate) => candidate.axis === axis)
+
+    expect(entry("rangedVsInfiniteArmour")?.value).toBe(827.8)
+    expect(entry("rangedVsInfiniteArmour")?.percentile).toBeCloseTo(
+      (2 / 59) * 100
+    )
+    expect(entry("rangedVsZeroArmour")?.value).toBe(4139)
+    expect(entry("rangedVsZeroArmour")?.percentile).toBeCloseTo((14 / 59) * 100)
+  })
+
+  it("ties equal damage values despite floating-point error, and no others", () => {
+    const melee = (
+      id: string,
+      damage: number,
+      meleeHits: number,
+      meleeDamage: string
+    ): RadarCharacter => ({ ...tigurius, id, damage, meleeHits, meleeDamage })
+    const infinite = (character: RadarCharacter, catalog: RadarCharacter[]) =>
+      buildStatRadar(
+        character,
+        buildRadarPopulation(catalog, v1PierceRatios),
+        v1PierceRatios
+      ).find((entry) => entry.axis === "meleeVsInfiniteArmour")
+
+    const celestine = melee("celestine", 25, 3, "Power")
+    const anuphet = melee("anuphet", 25, 4, "Energy")
+    for (const character of [celestine, anuphet]) {
+      const entry = infinite(character, [celestine, anuphet])
+      expect(entry?.value).toBe(4005.6)
       expect(entry?.percentile).toBe(0)
     }
+
+    // 5,341 × 3 × 0.25 = 4,005.75, a real difference from 4,006 × 1 × 1.
+    const lower = melee("lower", 40, 3, "Flame")
+    const higher = melee("higher", 30, 1, "Psychic")
+    expect(infinite(lower, [lower, higher])?.value).toBe(4005.75)
+    expect(infinite(higher, [lower, higher])?.percentile).toBe(50)
   })
 
   it("doesn't count ties as lower", () => {
@@ -129,7 +209,8 @@ describe("buildStatRadar", () => {
     ).toBe(0)
   })
 
-  it("matches V1's percentiles for the same character data", () => {
+  // V1 counts characters without a ranged attack as 0, so its ranged percentiles differ on purpose.
+  it("matches V1's Health, Armour and melee percentiles for the same character data", () => {
     const characters = v1Fixture.characters as RadarCharacter[]
     const population = buildRadarPopulation(characters, v1PierceRatios)
     const expected = v1Fixture.expected as Record<string, number[]>
@@ -140,9 +221,11 @@ describe("buildStatRadar", () => {
       if (!character) throw new Error(`${id} missing from the fixture`)
       const radar = buildStatRadar(character, population, v1PierceRatios)
       expect(
-        radar.map((entry) => entry.percentile),
+        radar.slice(0, 4).map((entry) => entry.percentile),
         id
-      ).toEqual(percentiles.map((value) => expect.closeTo(value, 6)))
+      ).toEqual(
+        percentiles.slice(0, 4).map((value) => expect.closeTo(value, 6))
+      )
     }
   })
 })

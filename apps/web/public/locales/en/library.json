@@ -536,6 +536,9 @@
         "rangedVsZeroArmour": "Ranged 0"
       },
       "percent": "{{value}}%",
+      "noRangedAttack": "No ranged attack",
+      "rangedOnly": "Compared only with characters that have a ranged attack.",
+      "rangedOnlyLabel": "About this comparison",
       "caption": "Percentiles: {{values}}.",
       "howToRead": "How to read this",
       "footnote": "Dashed = median character. {{value}}% armour means {{name}} has more armour than {{value}}% of characters at Mythic Wings, Adamantine II.",
@@ -575,7 +578,7 @@
         },
         "compare": {
           "title": "Compared with other characters",
-          "content": "How this character's stats rank among all characters, at Mythic Wings, Adamantine II."
+          "content": "How this character's stats rank among all characters, at Mythic Wings, Adamantine II. Ranged damage is ranked only among characters with a ranged attack."
         },
         "rankup": {
           "title": "Rank-up materials",

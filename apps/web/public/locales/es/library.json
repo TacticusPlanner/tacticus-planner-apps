@@ -536,6 +536,9 @@
         "rangedVsZeroArmour": "Distancia 0"
       },
       "percent": "{{value}} %",
+      "noRangedAttack": "Sin ataque a distancia",
+      "rangedOnly": "Solo se compara con personajes que tienen un ataque a distancia.",
+      "rangedOnlyLabel": "Acerca de esta comparación",
       "caption": "Percentiles: {{values}}.",
       "footnote": "Discontinua = personaje mediano. Un {{value}} % de armadura significa que {{name}} tiene más armadura que el {{value}} % de los personajes en Mythic Wings, Adamantino II.",
       "damageLink": "Cómo funciona el daño (wiki de Tacticus)",
@@ -575,7 +578,7 @@
         },
         "compare": {
           "title": "Comparado con otros personajes",
-          "content": "Cómo se sitúan las estadísticas de este personaje entre todos los personajes, en Mythic Wings, Adamantino II."
+          "content": "Cómo se sitúan las estadísticas de este personaje entre todos los personajes, en Mythic Wings, Adamantino II. El daño a distancia solo se compara con personajes que tienen un ataque a distancia."
         },
         "rankup": {
           "title": "Materiales de rango",

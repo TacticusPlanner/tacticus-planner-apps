@@ -1,9 +1,10 @@
 import type { PierceRatios } from "./pierce-ratios"
 
 /**
- * V1's "Stat percentiles" radar (`3-features/character-details/unit-stat-radar.utils.ts`), unchanged:
- * six axes, every character evaluated at one fixed reference (Mythic Wings, Adamantine II), and the
- * share of characters strictly below.
+ * V1's "Stat percentiles" radar (`3-features/character-details/unit-stat-radar.utils.ts`): six axes,
+ * every character evaluated at one fixed reference (Mythic Wings, Adamantine II), and the share of
+ * characters strictly below. Unlike V1, the ranged axes compare only characters with a ranged attack
+ * (V1 counts the others as 0, which lifts every shooter above 50%), and equal damage values tie.
  *
  * The reference stats use V1's own formula and rounding (`calculateStat`), not V2's `statAtRank`.
  * Both scale every character by the same factor, but V1 rounds the reference damage before
@@ -31,10 +32,10 @@ export function radarAxisIcon(
 
 export type RadarAxisResult = {
   axis: RadarAxis
-  /** The raw value at the reference (Mythic Wings, Adamantine II). */
-  value: number
-  /** 0–100: the share of all characters whose value is strictly lower. */
-  percentile: number
+  /** The value at the reference (Mythic Wings, Adamantine II); null without a ranged attack. */
+  value: number | null
+  /** 0–100: the share of the compared characters whose value is strictly lower; null as `value`. */
+  percentile: number | null
 }
 
 /** The catalog fields the radar reads. */
@@ -55,30 +56,39 @@ const referenceFactor = (1.252 ** 17 + 5 * 2) * (1 + 0.1 * 14)
 
 const atReference = (base: number) => Math.round(base * referenceFactor)
 
+/**
+ * Damage × hits × pierce has at most two decimals (pierce ratios are whole percentages), so this only
+ * removes floating-point error, which would split equal values.
+ */
+const exactDamage = (value: number) => Math.round(value * 100) / 100
+
 function axisValues(
   character: RadarCharacter,
   pierceRatios: PierceRatios
-): Record<RadarAxis, number> {
+): Record<RadarAxis, number | null> {
   const damage = atReference(character.damage)
   const meleeHits = character.meleeHits
-  const rangedHits = character.rangedDamage ? (character.rangedHits ?? 0) : 0
+  const rangedHits = character.rangedHits ?? 0
   // An unknown damage type pierces nothing, as in V1.
   const meleePierce = pierceRatios.get(character.meleeDamage) ?? 0
   const rangedPierce = character.rangedDamage
     ? (pierceRatios.get(character.rangedDamage) ?? 0)
-    : 0
+    : null
 
   return {
     health: atReference(character.health),
     armour: atReference(character.armour),
-    meleeVsInfiniteArmour: damage * meleeHits * meleePierce,
+    meleeVsInfiniteArmour: exactDamage(damage * meleeHits * meleePierce),
     meleeVsZeroArmour: damage * meleeHits,
-    rangedVsInfiniteArmour: damage * rangedHits * rangedPierce,
-    rangedVsZeroArmour: damage * rangedHits,
+    rangedVsInfiniteArmour:
+      rangedPierce === null
+        ? null
+        : exactDamage(damage * rangedHits * rangedPierce),
+    rangedVsZeroArmour: rangedPierce === null ? null : damage * rangedHits,
   }
 }
 
-/** Ties don't count as lower, so a value every melee-only unit shares (0 ranged) reads 0%. */
+/** Ties don't count as lower. */
 function percentileOf(value: number, population: readonly number[]): number {
   if (population.length === 0) return 0
   return (
@@ -88,7 +98,7 @@ function percentileOf(value: number, population: readonly number[]): number {
   )
 }
 
-/** Each axis's population, computed once per catalog. */
+/** Each axis's compared values (only shooters' on the ranged axes), computed once per catalog. */
 export function buildRadarPopulation(
   characters: readonly RadarCharacter[],
   pierceRatios: PierceRatios
@@ -97,7 +107,10 @@ export function buildRadarPopulation(
     axisValues(character, pierceRatios)
   )
   return Object.fromEntries(
-    radarAxes.map((axis) => [axis, values.map((entry) => entry[axis])])
+    radarAxes.map((axis) => [
+      axis,
+      values.map((entry) => entry[axis]).filter((value) => value !== null),
+    ])
   ) as Record<RadarAxis, number[]>
 }
 
@@ -107,9 +120,12 @@ export function buildStatRadar(
   pierceRatios: PierceRatios
 ): RadarAxisResult[] {
   const values = axisValues(character, pierceRatios)
-  return radarAxes.map((axis) => ({
-    axis,
-    value: values[axis],
-    percentile: percentileOf(values[axis], population[axis]),
-  }))
+  return radarAxes.map((axis) => {
+    const value = values[axis]
+    return {
+      axis,
+      value,
+      percentile: value === null ? null : percentileOf(value, population[axis]),
+    }
+  })
 }

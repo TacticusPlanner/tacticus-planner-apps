@@ -1,6 +1,11 @@
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, Info } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { statIcon } from "@workspace/game-catalog"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { radarAxisIcon } from "../../model/stat-radar"
 import type { RadarAxisResult } from "../../model/stat-radar"
@@ -52,9 +57,15 @@ export function StatRadarCard({
   const center = size / 2
   // Room outside the rim for the labels.
   const radius = size * 0.32
-  const rounded = radar.map((entry) => Math.round(entry.percentile))
-  // A 0% vertex is drawn just off the centre so it stays visible.
-  const shape = rounded.map((value) => Math.max(value / 100, 0.03))
+  const rounded = radar.map((entry) =>
+    entry.percentile === null ? null : Math.round(entry.percentile)
+  )
+  const valueText = (value: number | null | undefined) =>
+    value == null
+      ? t("characterUnit.compare.noRangedAttack")
+      : t("characterUnit.compare.percent", { value })
+  // A 0% (or missing) vertex is drawn just off the centre so it stays visible.
+  const shape = rounded.map((value) => Math.max((value ?? 0) / 100, 0.03))
   const armour = rounded[radar.findIndex((entry) => entry.axis === "armour")]
 
   return (
@@ -152,7 +163,7 @@ export function StatRadarCard({
             values: radar
               .map(
                 (entry, index) =>
-                  `${t(`characterUnit.compare.axes.${entry.axis}`)} ${t("characterUnit.compare.percent", { value: rounded[index] })}`
+                  `${t(`characterUnit.compare.axes.${entry.axis}`)} ${valueText(rounded[index])}`
               )
               .join(", "),
           })}
@@ -174,20 +185,45 @@ export function StatRadarCard({
                   alt=""
                 />
                 {t(`characterUnit.compare.axes.${entry.axis}`)}
+                {radarAxisIcon(entry.axis) === "ranged" ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        className="-m-1 shrink-0 rounded-sm p-1"
+                        aria-label={t("characterUnit.compare.rangedOnlyLabel")}
+                        data-testid={`unit-radar-${entry.axis}-info`}
+                      >
+                        <Info className="size-4" aria-hidden="true" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {t("characterUnit.compare.rangedOnly")}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : null}
               </span>
-              <span
-                className="relative h-2 rounded-full bg-muted"
-                aria-hidden="true"
-              >
-                <span
-                  className="absolute inset-y-0 left-0 rounded-full bg-(--chart-1)"
-                  style={{ width: `${rounded[index]}%` }}
-                />
-                <span className="absolute -inset-y-0.75 left-1/2 border-l border-dashed border-muted-foreground" />
-              </span>
-              <span className="font-bold tabular-nums">
-                {t("characterUnit.compare.percent", { value: rounded[index] })}
-              </span>
+              {rounded[index] === null ? (
+                <span className="col-span-2 text-right text-muted-foreground">
+                  {valueText(null)}
+                </span>
+              ) : (
+                <>
+                  <span
+                    className="relative h-2 rounded-full bg-muted"
+                    aria-hidden="true"
+                  >
+                    <span
+                      className="absolute inset-y-0 left-0 rounded-full bg-(--chart-1)"
+                      style={{ width: `${rounded[index]}%` }}
+                    />
+                    <span className="absolute -inset-y-0.75 left-1/2 border-l border-dashed border-muted-foreground" />
+                  </span>
+                  <span className="font-bold tabular-nums">
+                    {valueText(rounded[index])}
+                  </span>
+                </>
+              )}
             </li>
           ))}
         </ul>
