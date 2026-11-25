@@ -1,7 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
-import { useNpcLabels, useRarityFromStars } from "@/entities/npc"
+import {
+  portraitVariationOf,
+  useNpcLabels,
+  useRarityFromStars,
+} from "@/entities/npc"
 
 import { EmptyState } from "@/shared/ui"
 
@@ -86,6 +90,10 @@ export function NpcDetail({
         factionName={factionName(selectedVariation.factionId)}
         variationOptions={variationOptions}
         selectedVariationId={selectedVariation.id}
+        portraitVariationId={portraitVariationOf(
+          selectedGroup,
+          selectedVariation.id
+        )}
         onVariationChange={onVariationChange}
         levels={levels}
         selectedLevel={selectedLevel}

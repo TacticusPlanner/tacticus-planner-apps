@@ -27,6 +27,7 @@ export function NpcDetailHeader({
   factionName,
   variationOptions,
   selectedVariationId,
+  portraitVariationId,
   onVariationChange,
   levels,
   selectedLevel,
@@ -38,6 +39,9 @@ export function NpcDetailHeader({
   factionName: string
   variationOptions: NpcVariationOption[]
   selectedVariationId: string
+  /** The variation whose portrait to show: the selected one, or another of the NPC's when the
+   *  selected one has none. */
+  portraitVariationId: string
   onVariationChange: (variationId: string) => void
   levels: NpcLevelOption[]
   selectedLevel: NpcLevelOption | undefined
@@ -52,7 +56,7 @@ export function NpcDetailHeader({
     <div className="flex flex-col gap-4" data-testid="npc-detail-header">
       <div className="flex items-center gap-3">
         <NpcPortrait
-          variationId={selectedVariationId}
+          variationId={portraitVariationId}
           name={name}
           size="portrait-md"
         />

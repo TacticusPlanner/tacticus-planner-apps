@@ -249,7 +249,7 @@ and show the no-matching-variation state instead of navigating away. Filter stat
 
 ### Requirement: The detail view shows identity, stats, attacks, and traits for the selected level
 
-For the selected NPC, variation, and level the page SHALL show: the NPC portrait (initials badge when no portrait asset resolves), the localized NPC name, the variation label, the localized faction name with its icon, and the selected level's rank and stars icons; stat cards for Health, Armour, and Damage from the selected level row and Movement from the variation; one attack chip per melee weapon and per ranged weapon, each with the attack-type icon, the damage-type icon and localized name, and the hit count, with a ranged attack's range shown as a number on its attack icon (and repeated as screen-reader text); and the variation’s traits as chips showing the trait icon and its localized name, The trait name SHALL remain visible at every viewport width, since an icon-only chip is unreadable on touch. A trait whose rules text resolves SHALL open that text in a popover anchored to its chip, leaving the wrapping row unreflowed; a trait with no rules text SHALL render as a plain, non-interactive chip. When the variation has no traits the traits section SHALL show the Library empty-state treatment rather than an empty container. Changing the level SHALL update the stat cards and level icons without changing attacks or traits.
+For the selected NPC, variation, and level the page SHALL show: the NPC portrait (see "An NPC borrows a portrait from another of its variations"), the localized NPC name, the variation label, the localized faction name with its icon, and the selected level's rank and stars icons; stat cards for Health, Armour, and Damage from the selected level row and Movement from the variation; one attack chip per melee weapon and per ranged weapon, each with the attack-type icon, the damage-type icon and localized name, and the hit count, with a ranged attack's range shown as a number on its attack icon (and repeated as screen-reader text); and the variation’s traits as chips showing the trait icon and its localized name, The trait name SHALL remain visible at every viewport width, since an icon-only chip is unreadable on touch. A trait whose rules text resolves SHALL open that text in a popover anchored to its chip, leaving the wrapping row unreflowed; a trait with no rules text SHALL render as a plain, non-interactive chip. When the variation has no traits the traits section SHALL show the Library empty-state treatment rather than an empty container. Changing the level SHALL update the stat cards and level icons without changing attacks or traits.
 
 #### Scenario: Stats follow the selected level
 
@@ -630,3 +630,13 @@ Assumptions:
 
 - **WHEN** the section renders below 768px
 - **THEN** each row stacks its name, location and timing vertically without horizontal scrolling
+
+### Requirement: An NPC borrows a portrait from another of its variations
+
+The NPC list tile SHALL show the portrait of the NPC's default variation, and the NPC page the portrait of the selected variation. When no portrait asset is mapped for that variation, it SHALL show the portrait of the first variation of the same NPC that has one, and only when none has one an initials badge.
+
+#### Scenario: Only the Survival variation has a portrait
+
+- **GIVEN** Dante, whose default variation has no mapped portrait and whose Survival variation has one
+- **WHEN** the visitor opens the NPC list
+- **THEN** Dante's tile shows the Survival variation's portrait instead of initials
