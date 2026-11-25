@@ -1,4 +1,6 @@
 import { render, screen, within } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { MemoryRouter } from "react-router"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
@@ -30,13 +32,15 @@ const legendaryEvents = navItems.find(
 
 const renderAt = (pathname: string) =>
   render(
-    <MemoryRouter initialEntries={[pathname]}>
-      <DesktopSectionNavigation
-        expanded
-        item={legendaryEvents}
-        onExpandedChange={vi.fn()}
-      />
-    </MemoryRouter>
+    <TooltipProvider>
+      <MemoryRouter initialEntries={[pathname]}>
+        <DesktopSectionNavigation
+          expanded
+          item={legendaryEvents}
+          onExpandedChange={vi.fn()}
+        />
+      </MemoryRouter>
+    </TooltipProvider>
   )
 
 const currentLinks = () =>
@@ -56,6 +60,20 @@ describe("DesktopSectionNavigation", () => {
     expect(currentLinks()).toEqual(["legendaryEvents.tabs.allEvents"])
   })
 
+  it("shows a child's description, not its visible label, in a design-system tooltip", async () => {
+    renderAt("/legendary-events")
+    const link = screen.getByRole("link", {
+      name: "legendaryEvents.tabs.masterTable",
+    })
+    expect(link).not.toHaveAttribute("title")
+
+    await userEvent.hover(link)
+
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      "legendaryEvents.tabs.masterTableDescription"
+    )
+  })
+
   describe("with localized Dailies labels", () => {
     afterEach(() => localizedLabels.clear())
 
@@ -72,13 +90,15 @@ describe("DesktopSectionNavigation", () => {
           (item) => item.path === "/dailies"
         ) as NavItem
         render(
-          <MemoryRouter initialEntries={["/dailies/raids"]}>
-            <DesktopSectionNavigation
-              expanded
-              item={dailies}
-              onExpandedChange={vi.fn()}
-            />
-          </MemoryRouter>
+          <TooltipProvider>
+            <MemoryRouter initialEntries={["/dailies/raids"]}>
+              <DesktopSectionNavigation
+                expanded
+                item={dailies}
+                onExpandedChange={vi.fn()}
+              />
+            </MemoryRouter>
+          </TooltipProvider>
         )
 
         const menu = within(screen.getByTestId("desktop-section-navigation"))

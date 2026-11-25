@@ -501,7 +501,7 @@ The quick filters SHALL be Ready to rank up, Need to ascend, Can promote, Can as
 - **Need to ascend** (V1 rule extended to Mythic): an owned character whose rank equals the maximum rank for its rarity and that still has an ascension step ahead (every unit except one at Mythic wings). A Mythic character at Adamantine 2 below Mythic wings matches. Machines of War never match.
 - **Need to level** (V1 rule, with V2's caps): an owned character that does not need to ascend and whose XP level is below the level cap for its rarity. Machines of War never match.
 - **Can promote** (new in V2; V1 has no such filter): an owned character or Machine of War whose next step on the ascension ladder stays within its current rarity (one more star, or the next Mythic step) and whose held shards, mythic shards and ascension orbs cover that one step's cost. A unit on its rarity's last step (Common two stars, Uncommon four stars, Rare red one star, Epic red three stars, Legendary one blue star) never matches, since its next step is an ascension (see Can ascend); a unit at Mythic wings never matches.
-- **Can ascend** (V1 rule extended to Mythic, with orbs): an owned character or Machine of War with an ascension step ahead whose held shards, mythic shards and ascension orbs all cover the ascension cost from its current step up to and including the target step. Below Mythic the target is the first step of the next rarity; for a Mythic unit it is the next Mythic step (two blue stars, three blue stars, then Mythic wings). A unit at Mythic wings never matches.
+- **Can ascend** (V1 rule, with orbs): an owned character or Machine of War below Mythic whose held shards, mythic shards and ascension orbs all cover the ascension cost from its current step up to and including the first step of the next rarity. A Mythic unit never matches: Mythic has no higher rarity, so each Mythic star is a promotion (see Can promote), and no unit matches both Can promote and Can ascend.
 - **Blue star ready** (V1 rule, with orbs): an owned character or Machine of War below Legendary one blue star (and not Mythic) whose held shards and ascension orbs cover the ascension cost from its current step up to and including Legendary one blue star.
 - **Missing equipment** (new in V2): an owned character with fewer equipped items than the equipment slots the catalog gives it. Machines of War never match.
 - **Abilities behind level** (new in V2): an owned character with an active or passive ability level below its XP level, which is the cap on ability levels. Machines of War never match.
@@ -533,11 +533,11 @@ Assumptions:
 - **WHEN** the Can ascend quick filter is selected
 - **THEN** the path to Mythic one blue star costs 250 + 500 = 750 shards, 20 mythic shards, 15 + 20 = 35 Legendary orbs and 10 Mythic orbs; shards (800 ≥ 750) and orbs (40 ≥ 35, 10 ≥ 10) are covered but 15 < 20 mythic shards, so the unit is not listed
 
-#### Scenario: Can ascend within Mythic
+#### Scenario: A Mythic unit is in Can promote only
 
 - **GIVEN** a Xenos unit is owned at Mythic one blue star with 35 mythic shards, and the player holds 10 Xenos Mythic orbs
-- **WHEN** the Can ascend quick filter is selected
-- **THEN** the next step, Mythic two blue stars, costs 30 mythic shards and 10 Mythic orbs; 35 ≥ 30 and 10 ≥ 10, so the unit is listed; a unit at Mythic wings is never listed
+- **WHEN** the Can promote or the Can ascend quick filter is selected
+- **THEN** the next step, Mythic two blue stars, costs 30 mythic shards and 10 Mythic orbs; 35 ≥ 30 and 10 ≥ 10, so the unit is listed under Can promote and never under Can ascend; a unit at Legendary one blue star that covers Mythic one blue star is listed under Can ascend only
 
 #### Scenario: Orbs of another alliance do not count
 

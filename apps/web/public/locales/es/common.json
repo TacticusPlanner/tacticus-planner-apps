@@ -451,7 +451,7 @@
           "readyToRankUp": "Tu inventario de mejoras cubre todos los materiales que aún faltan en el rango actual.",
           "needToAscend": "En el rango más alto de su rareza, con una Ascensión aún pendiente.",
           "canPromote": "Tus fragmentos y orbes alcanzan para la siguiente estrella dentro de la rareza actual.",
-          "canAscend": "Tus fragmentos y orbes alcanzan para la siguiente rareza (la siguiente estrella en Mítico).",
+          "canAscend": "Tus fragmentos y orbes alcanzan para la siguiente rareza.",
           "needToLevel": "Por debajo del nivel máximo de su rareza.",
           "blueStarReady": "Tus fragmentos y orbes alcanzan para todos los pasos hasta la primera estrella azul.",
           "missingEquipment": "Al menos un hueco de equipo está vacío.",
