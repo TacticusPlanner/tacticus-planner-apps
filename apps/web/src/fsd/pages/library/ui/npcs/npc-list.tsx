@@ -4,7 +4,7 @@ import { factionIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 
 import { NpcPortrait } from "@/entities/npc"
-import { EmptyState, EntityIcon } from "@/shared/ui"
+import { EmptyState, EntityIcon, TruncatedText } from "@/shared/ui"
 
 import type { NpcListItem } from "./npcs-page.view-model"
 
@@ -45,7 +45,6 @@ export function NpcList({
           <Link
             key={item.id}
             to={`/library/npcs/${item.id}`}
-            title={`${item.name} · ${item.factionName}`}
             className="flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary"
             data-testid={`npc-tile-${item.id}`}
           >
@@ -64,9 +63,9 @@ export function NpcList({
                 />
               ) : null}
             </span>
-            <span className="line-clamp-2 text-xs font-medium">
+            <TruncatedText className="text-xs font-medium" lines={2}>
               {item.name}
-            </span>
+            </TruncatedText>
           </Link>
         )
       })}

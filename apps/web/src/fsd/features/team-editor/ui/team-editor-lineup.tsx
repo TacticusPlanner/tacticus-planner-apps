@@ -2,12 +2,17 @@ import { useTranslation } from "react-i18next"
 import { Lock, X } from "lucide-react"
 import type { Rarity } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { TeamUnitPortrait } from "@/entities/team"
 import type { TeamRoster, TeamUnitView } from "@/entities/team"
-import { DragGrip, ListDivider, SortableList } from "@/shared/ui"
+import { DragGrip, ListDivider, SortableList, TruncatedText } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -112,9 +117,7 @@ export function TeamEditorLineup({
         />
         <TeamUnitPortrait unit={cappedView(kind, unitId, roster, rarityCap)} />
         <span className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-sm font-medium" title={name}>
-            {name}
-          </span>
+          <TruncatedText className="text-sm font-medium">{name}</TruncatedText>
           {/* Under the name, so the name keeps the row's width on a phone. */}
           {capped && under ? (
             <UnitAbilities
@@ -154,27 +157,28 @@ export function TeamEditorLineup({
     const name = unitName(kind === "mow" ? "Mow" : "Character", unitId)
     if (lockedIds.has(unitId)) {
       return (
-        <span
-          aria-label={t("lineup.campaignCore", { name })}
-          className="grid size-8 place-items-center text-muted-foreground"
-          role="img"
-          title={t("lineup.campaignCore", { name })}
-        >
-          <Lock className="size-icon" />
-        </span>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              aria-label={t("lineup.campaignCore", { name })}
+              className="grid size-8 place-items-center text-muted-foreground"
+              role="img"
+            >
+              <Lock className="size-icon" />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{t("lineup.campaignCore", { name })}</TooltipContent>
+        </Tooltip>
       )
     }
     return (
-      <Button
-        aria-label={t("lineup.remove", { name })}
+      <IconButton
+        label={t("lineup.remove", { name })}
         onClick={() => onRemove(unitId)}
-        size="icon"
-        title={t("lineup.remove", { name })}
         type="button"
-        variant="ghost"
       >
         <X />
-      </Button>
+      </IconButton>
     )
   }
 

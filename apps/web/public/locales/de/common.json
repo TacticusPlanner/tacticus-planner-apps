@@ -446,6 +446,7 @@
           "missingEquipment": "Ausrüstung fehlt",
           "abilitiesBehindLevel": "Fähigkeiten unter Stufe"
         },
+        "quickHelpLabel": "Was die Schnellfilter tun",
         "quickHelp": {
           "readyToRankUp": "Dein Verbesserungsinventar deckt alle Materialien, die im aktuellen Rang noch fehlen.",
           "needToAscend": "Auf dem höchsten Rang seiner Seltenheit, mit einem noch ausstehenden Aufstieg.",

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { LayoutGrid, Plus, Rows3 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 import {
   Select,
   SelectContent,
@@ -218,18 +219,28 @@ export function TeamsToolbar({
                   max: TEAM_LIMITS.maxTeams,
                 })}
           </span>
-          <Button
-            aria-describedby={countId}
-            aria-label={isPhone ? t("page.create") : undefined}
-            data-testid="teams-create"
-            disabled={createDisabled}
-            onClick={onCreate}
-            size={isPhone ? "icon" : "default"}
-            title={isPhone ? t("page.create") : undefined}
-          >
-            <Plus data-icon={isPhone ? undefined : "inline-start"} />
-            {isPhone ? null : t("page.create")}
-          </Button>
+          {isPhone ? (
+            <IconButton
+              aria-describedby={countId}
+              data-testid="teams-create"
+              disabled={createDisabled}
+              label={t("page.create")}
+              onClick={onCreate}
+              variant="default"
+            >
+              <Plus />
+            </IconButton>
+          ) : (
+            <Button
+              aria-describedby={countId}
+              data-testid="teams-create"
+              disabled={createDisabled}
+              onClick={onCreate}
+            >
+              <Plus data-icon="inline-start" />
+              {t("page.create")}
+            </Button>
+          )}
         </>
       }
       chips={chips}

@@ -3,7 +3,7 @@ import { createMemoryRouter, RouterProvider } from "react-router"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ApiError } from "@/shared/api"
-import { render, screen, waitFor, within } from "@/test/render"
+import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 const getOverrides = vi.fn()
@@ -275,12 +275,13 @@ describe("CampaignEventsPage", () => {
       expect(
         within(core).getByRole("list", { name: "Core characters" })
       ).toBeInTheDocument()
-      // Fixture unit ids have no icon asset, so assert on the labelled list items.
-      const [owned, unowned] = within(core).getAllByRole("listitem")
-      expect(owned).toHaveAttribute("title", "unitA")
-      expect(owned).toHaveAttribute("data-owned", "true")
-      expect(unowned).toHaveAttribute("title", "unitB (not owned)")
-      expect(unowned).toHaveAttribute("data-owned", "false")
+      // Fixture unit ids have no icon asset, so assert on the list items' tooltips.
+      const items = within(core).getAllByRole("listitem")
+      expect(items.map((item) => item.dataset.owned)).toEqual(["true", "false"])
+      fireEvent.pointerMove(items[1] as HTMLElement, { pointerType: "mouse" })
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(
+        "unitB (not owned)"
+      )
     })
   })
 

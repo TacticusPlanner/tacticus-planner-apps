@@ -6,7 +6,13 @@ import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 
 import { unitOriginState } from "@/entities/unit"
-import { EmptyState, EntityIcon, PageToolbar, SearchField } from "@/shared/ui"
+import {
+  EmptyState,
+  EntityIcon,
+  PageToolbar,
+  SearchField,
+  TruncatedText,
+} from "@/shared/ui"
 
 import { searchUnits } from "./unit-list.model"
 import type { UnitListItem } from "./unit-list.model"
@@ -92,7 +98,6 @@ export function UnitList({
                 <Link
                   to={`${basePath}/${item.id}`}
                   state={origin}
-                  title={`${item.name} · ${item.factionName}`}
                   className="flex w-24 flex-col items-center gap-1.5 rounded-lg border p-2 text-center transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary"
                   data-testid={`${tileTestIdPrefix}-${item.id}`}
                 >
@@ -112,9 +117,9 @@ export function UnitList({
                       />
                     ) : null}
                   </span>
-                  <span className="line-clamp-2 text-xs font-medium">
+                  <TruncatedText className="text-xs font-medium" lines={2}>
                     {item.name}
-                  </span>
+                  </TruncatedText>
                 </Link>
               </li>
             )

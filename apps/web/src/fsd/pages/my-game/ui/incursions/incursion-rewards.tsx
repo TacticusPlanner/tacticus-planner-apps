@@ -2,6 +2,11 @@ import { useTranslation } from "react-i18next"
 import { shardIcon } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { shopRewardDisplay } from "@/entities/shops/reward"
 import type { ShopRewardKind } from "@/entities/shops/reward"
@@ -107,29 +112,32 @@ export function IncursionRewards({
             : `${number.format(reward.min)}–${number.format(reward.max)}`
         const label = `${display.label} ×${amount}`
         return (
-          <li
-            key={reward.id}
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground tabular-nums"
-            title={label}
-            aria-label={label}
-            data-reward={reward.id}
-          >
-            {display.iconUrl !== undefined ? (
-              <RewardIcon
-                id={reward.id}
-                kind={display.kind}
-                iconUrl={display.iconUrl}
-                upgrade={
-                  upgrades.status === "ready"
-                    ? upgrades.data.get(reward.id)
-                    : undefined
-                }
-              />
-            ) : (
-              <span aria-hidden>{display.label}</span>
-            )}
-            <span aria-hidden>{amount}</span>
-          </li>
+          <Tooltip key={reward.id}>
+            <TooltipTrigger asChild>
+              <li
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground tabular-nums"
+                aria-label={label}
+                data-reward={reward.id}
+              >
+                {display.iconUrl !== undefined ? (
+                  <RewardIcon
+                    id={reward.id}
+                    kind={display.kind}
+                    iconUrl={display.iconUrl}
+                    upgrade={
+                      upgrades.status === "ready"
+                        ? upgrades.data.get(reward.id)
+                        : undefined
+                    }
+                  />
+                ) : (
+                  <span aria-hidden>{display.label}</span>
+                )}
+                <span aria-hidden>{amount}</span>
+              </li>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+          </Tooltip>
         )
       })}
     </ul>

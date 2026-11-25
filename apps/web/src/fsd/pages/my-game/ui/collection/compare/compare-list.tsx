@@ -18,6 +18,11 @@ import {
 } from "@workspace/ui/components/popover"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { unitLibraryPath, UnitTile } from "@/entities/unit"
 import { DetailsSheet, EntityIcon } from "@/shared/ui"
@@ -240,13 +245,18 @@ function IconCount({
   label: string
 }) {
   return (
-    <span className="inline-flex items-center gap-0.5" title={label}>
-      <span aria-hidden className="inline-flex items-center gap-0.5">
-        {icon}
-        {value}
-      </span>
-      <span className="sr-only">{label}</span>
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild disableTouchToggle>
+        <span className="inline-flex items-center gap-0.5">
+          <span aria-hidden className="inline-flex items-center gap-0.5">
+            {icon}
+            {value}
+          </span>
+          <span className="sr-only">{label}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
   )
 }
 

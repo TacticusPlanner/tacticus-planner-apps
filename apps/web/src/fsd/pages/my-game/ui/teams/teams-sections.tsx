@@ -1,6 +1,11 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { AlertTriangle } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { useTeamModeLabel } from "@/entities/team"
 import type { Team, TeamMode } from "@/entities/team"
@@ -68,22 +73,40 @@ export function TeamsModeSection({
           {t("page.sectionCount", { count: teams.length })}
         </span>
         {first ? (
-          <span
-            className="flex items-center gap-1 text-xs text-amber-800 dark:text-amber-400"
-            data-testid="teams-section-shared"
-            title={shared.length > 1 ? names : undefined}
-          >
-            <AlertTriangle aria-hidden="true" className="size-icon-sm" />
-            {shared.length > 1
-              ? t("page.sectionSharedMany", { count: shared.length, names })
-              : t("page.sectionShared", {
-                  unit: unitName(first.kind, first.id),
-                  count: first.teams,
-                })}
-          </span>
+          <SharedHint names={shared.length > 1 ? names : undefined}>
+            <span
+              className="flex items-center gap-1 text-xs text-amber-800 dark:text-amber-400"
+              data-testid="teams-section-shared"
+            >
+              <AlertTriangle aria-hidden="true" className="size-icon-sm" />
+              {shared.length > 1
+                ? t("page.sectionSharedMany", { count: shared.length, names })
+                : t("page.sectionShared", {
+                    unit: unitName(first.kind, first.id),
+                    count: first.teams,
+                  })}
+            </span>
+          </SharedHint>
         ) : null}
       </div>
       {children}
     </section>
+  )
+}
+
+/** The shared-units note, with every shared unit's name in a tooltip when there are several. */
+function SharedHint({
+  names,
+  children,
+}: {
+  names: string | undefined
+  children: ReactNode
+}) {
+  if (!names) return children
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent>{names}</TooltipContent>
+    </Tooltip>
   )
 }

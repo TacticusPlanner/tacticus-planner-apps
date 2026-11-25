@@ -12,7 +12,7 @@ import {
 import { progressionRarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon, entityIconClassName } from "@/shared/ui"
+import { EntityIcon, TruncatedText, entityIconClassName } from "@/shared/ui"
 
 import type {
   OwnedUnitTileData,
@@ -104,14 +104,15 @@ export function UnitTile({
           </span>
         )}
       </div>
-      <span
+      <TruncatedText
         className={cn(
-          "mt-1.5 w-full truncate text-center text-xs/4 font-semibold",
+          "mt-1.5 w-full text-center text-xs/4 font-semibold",
           !owned && "text-muted-foreground"
         )}
+        data-testid="unit-tile-name"
       >
         {unit.name}
-      </span>
+      </TruncatedText>
       <div className="mt-1 h-11 w-full">
         {owned ? (
           <OwnedDetails kind={unit.kind} data={owned} />
@@ -123,7 +124,6 @@ export function UnitTile({
   )
   const rootProps = {
     "aria-label": label,
-    title: unit.name,
     "data-testid": testId,
     "data-state": data.state,
   }

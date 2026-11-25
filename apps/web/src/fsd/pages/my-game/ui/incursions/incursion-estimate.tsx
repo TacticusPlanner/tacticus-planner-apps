@@ -1,6 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type { CappedTierTeam } from "../../model/use-incursion-plans"
 
@@ -25,24 +30,28 @@ export function IncursionEstimate({
   )
   const hint = t("estimate.hint", { power })
   const badge = (
-    <Badge
-      variant="outline"
-      className={cn(
-        "tabular-nums",
-        estimate.status === "stuck"
-          ? "border-red-600/50 text-red-700 dark:text-red-400"
-          : estimate.runs === 1
-            ? "border-emerald-600/50 text-emerald-700 dark:text-emerald-400"
-            : "border-amber-600/50 text-amber-700 dark:text-amber-400"
-      )}
-      title={hint}
-      data-testid={testId}
-      data-status={estimate.status}
-    >
-      {estimate.status === "clears"
-        ? t("estimate.clears", { count: estimate.runs })
-        : t("estimate.stuck", { battle: estimate.battle })}
-    </Badge>
+    <Tooltip>
+      <TooltipTrigger asChild disableTouchToggle>
+        <Badge
+          variant="outline"
+          className={cn(
+            "tabular-nums",
+            estimate.status === "stuck"
+              ? "border-red-600/50 text-red-700 dark:text-red-400"
+              : estimate.runs === 1
+                ? "border-emerald-600/50 text-emerald-700 dark:text-emerald-400"
+                : "border-amber-600/50 text-amber-700 dark:text-amber-400"
+          )}
+          data-testid={testId}
+          data-status={estimate.status}
+        >
+          {estimate.status === "clears"
+            ? t("estimate.clears", { count: estimate.runs })
+            : t("estimate.stuck", { battle: estimate.battle })}
+        </Badge>
+      </TooltipTrigger>
+      <TooltipContent>{hint}</TooltipContent>
+    </Tooltip>
   )
   if (!detailed) return badge
   return (

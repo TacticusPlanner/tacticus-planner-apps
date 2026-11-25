@@ -373,8 +373,8 @@ describe("TeamsPage", () => {
         "2 core Machines of War (max 1)",
       ])
       expect(chips[1]).toHaveAttribute("data-kind", "error")
-      expect(chips[1]).toHaveAttribute(
-        "title",
+      fireEvent.pointerMove(chips[1] as HTMLElement, { pointerType: "mouse" })
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(
         "A war or Tournament Arena team can have at most one core Machine of War. Make 1 Machine of War flex."
       )
     })

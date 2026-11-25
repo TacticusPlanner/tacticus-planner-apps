@@ -8,6 +8,11 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { NpcLevelBadge, NpcPortrait, useNpcLabels } from "@/entities/npc"
 import { EntityIcon } from "@/shared/ui"
@@ -140,19 +145,20 @@ function BattleBody({
           const name = variationName(enemy.npcId, npc?.name ?? enemy.npcId)
           const row = npc ? enemyStatRow(npc, enemy.level) : undefined
           return (
-            <li
-              key={`${enemy.npcId}:${enemy.level}`}
-              className="flex items-center gap-1.5 rounded-md border px-1.5 py-1 text-xs"
-              title={name}
-            >
-              <NpcPortrait
-                variationId={enemy.npcId}
-                name={name}
-                size="portrait-sm"
-              />
-              <span className="tabular-nums">×{enemy.count}</span>
-              {row ? <NpcLevelBadge row={row} /> : null}
-            </li>
+            <Tooltip key={`${enemy.npcId}:${enemy.level}`}>
+              <TooltipTrigger asChild>
+                <li className="flex items-center gap-1.5 rounded-md border px-1.5 py-1 text-xs">
+                  <NpcPortrait
+                    variationId={enemy.npcId}
+                    name={name}
+                    size="portrait-sm"
+                  />
+                  <span className="tabular-nums">×{enemy.count}</span>
+                  {row ? <NpcLevelBadge row={row} /> : null}
+                </li>
+              </TooltipTrigger>
+              <TooltipContent>{name}</TooltipContent>
+            </Tooltip>
           )
         })}
       </ul>
@@ -293,13 +299,17 @@ export function IncursionNodeCard({
         ) : null}
         {battle?.challenge ? <Badge>{t("battle.challenge")}</Badge> : null}
         {battle && progress && progress.stars >= MAX_STARS ? (
-          <Badge
-            variant="secondary"
-            title={t("progress.raidableHint")}
-            data-testid={`incursion-node-${node.index}-raidable`}
-          >
-            {t("progress.raidable")}
-          </Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                variant="secondary"
+                data-testid={`incursion-node-${node.index}-raidable`}
+              >
+                {t("progress.raidable")}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>{t("progress.raidableHint")}</TooltipContent>
+          </Tooltip>
         ) : null}
         {after ? (
           <span className="text-xs text-muted-foreground">

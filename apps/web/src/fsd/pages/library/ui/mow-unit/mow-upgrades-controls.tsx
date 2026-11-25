@@ -8,6 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 import { UpgradeIcon } from "@/shared/ui"
@@ -29,21 +34,22 @@ export function RecipeIcons({
       {[...counts].map(([id, count]) => {
         const upgrade = upgradesById.get(id)
         return (
-          <li
-            key={id}
-            className="inline-flex items-center gap-0.5"
-            title={nameOf(id)}
-          >
-            <span role="img" aria-label={nameOf(id)}>
-              <UpgradeIcon
-                id={id}
-                rarity={upgrade?.rarity}
-                crafted={upgrade?.crafted}
-                size="inline"
-              />
-            </span>
-            {count > 1 ? <span className="text-xs">×{count}</span> : null}
-          </li>
+          <Tooltip key={id}>
+            <TooltipTrigger asChild>
+              <li className="inline-flex items-center gap-0.5">
+                <span role="img" aria-label={nameOf(id)}>
+                  <UpgradeIcon
+                    id={id}
+                    rarity={upgrade?.rarity}
+                    crafted={upgrade?.crafted}
+                    size="inline"
+                  />
+                </span>
+                {count > 1 ? <span className="text-xs">×{count}</span> : null}
+              </li>
+            </TooltipTrigger>
+            <TooltipContent>{nameOf(id)}</TooltipContent>
+          </Tooltip>
         )
       })}
     </ul>

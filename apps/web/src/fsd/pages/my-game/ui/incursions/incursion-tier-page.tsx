@@ -188,11 +188,7 @@ export function IncursionTierPage() {
           </p>
         </div>
       ) : (
-        <p
-          className="text-sm font-medium"
-          title={t("summary.bestPathHint")}
-          data-testid="incursion-best-path"
-        >
+        <p className="text-sm font-medium" data-testid="incursion-best-path">
           {summary.bestPath.mythicShards > 0
             ? t("summary.bestPathMythic", summary.bestPath)
             : t("summary.bestPath", { shards: summary.bestPath.shards })}

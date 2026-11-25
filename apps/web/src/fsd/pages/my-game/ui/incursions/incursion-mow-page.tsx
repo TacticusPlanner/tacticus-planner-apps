@@ -11,6 +11,11 @@ import type { Rarity, UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { RARITY_BORDER } from "@/entities/incursion"
 import { formatShortDate, useDateLocale } from "@/shared/lib"
@@ -251,9 +256,18 @@ export function IncursionMowPage() {
           {incursion.allowedFactions.map((faction) => {
             const label = t(`factions:${faction}`, { defaultValue: faction })
             return (
-              <li key={faction} title={label}>
-                <EntityIcon size="row" src={factionIcon(faction)} alt={label} />
-              </li>
+              <Tooltip key={faction}>
+                <TooltipTrigger asChild>
+                  <li>
+                    <EntityIcon
+                      size="row"
+                      src={factionIcon(faction)}
+                      alt={label}
+                    />
+                  </li>
+                </TooltipTrigger>
+                <TooltipContent>{label}</TooltipContent>
+              </Tooltip>
             )
           })}
         </ul>
