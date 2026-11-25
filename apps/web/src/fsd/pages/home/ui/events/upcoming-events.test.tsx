@@ -176,6 +176,25 @@ function renderWidget() {
 const currentPath = () => screen.getByTestId("current-path").textContent
 
 const liveTiles = () => screen.queryAllByTestId("home-live-event")
+const campaignTile = () => {
+  const tile = liveTiles().find((item) => item.dataset.type === "campaignEvent")
+  if (!tile) throw new Error("no live Campaign Event tile")
+  return tile
+}
+// A live Campaign Event calendar window, confirmed or projected.
+const campaignWindow = (confirmed: boolean) => ({
+  status: "ready",
+  data: [
+    {
+      ...entry(
+        "campaign-event",
+        "2026-10-02T00:00:00Z",
+        "2026-10-05T00:00:00Z"
+      ),
+      confirmed,
+    },
+  ],
+})
 const upcomingItems = () =>
   within(screen.getByTestId("home-events-widget")).queryAllByRole("listitem")
 
@@ -278,6 +297,27 @@ describe("Home events (Right now + Upcoming events)", () => {
     expect(screen.getByTestId("home-incursion")).toBeInTheDocument()
     expect(screen.queryByTestId("home-live-none")).toBeNull()
     incursionWindowMock.mockReturnValue(null)
+  })
+
+  it("shows a live Campaign Event's countdown only when its end is confirmed", () => {
+    hseMock.mockReturnValue(hseReady(null, [rush]))
+    legendaryMock.mockReturnValue(legendaryReady([uthar]))
+
+    calendarMock.mockReturnValue(campaignWindow(false))
+    const { unmount } = renderWidget()
+    expect(
+      within(campaignTile()).getByTestId("home-events-end-unconfirmed")
+    ).toHaveTextContent("home.events.endUnconfirmed")
+    expect(campaignTile()).not.toHaveTextContent("home.events.endsIn")
+    unmount()
+
+    calendarMock.mockReturnValue(campaignWindow(true))
+    renderWidget()
+    expect(campaignTile()).toHaveTextContent("home.events.endsIn")
+    expect(
+      within(campaignTile()).queryByTestId("home-events-end-unconfirmed")
+    ).toBeNull()
+    calendarMock.mockReturnValue({ status: "loading" })
   })
 
   it("lists a live Quest Event in Right now as Quest: <hero>, opening the Quest tab", async () => {

@@ -7,7 +7,7 @@ import { useIncursionWindow } from "@/entities/incursion"
 import { useHomeScreenEventCalendar } from "@/features/daily-raids"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
-import { calendarLiveAndNext, calendarWindow } from "./calendar-window"
+import { calendarLiveAndNext, calendarWindowEntry } from "./calendar-window"
 import type { CalendarOccurrence } from "./calendar-window"
 import { selectHomeEvents } from "./select-home-events"
 import type {
@@ -132,7 +132,7 @@ export function useHomeEvents(): HomeEventsState {
   const nowMs = homeScreen.status === "ready" ? homeScreen.nowMs : minuteNowMs
   const campaignEventWindow =
     calendar.status === "ready"
-      ? calendarWindow(calendar.data, CAMPAIGN_EVENT_DEFINITION_ID, nowMs)
+      ? calendarWindowEntry(calendar.data, CAMPAIGN_EVENT_DEFINITION_ID, nowMs)
       : null
   const quest =
     calendar.status === "ready"
@@ -155,7 +155,8 @@ export function useHomeEvents(): HomeEventsState {
           }
         : null,
     campaignEvent: campaignEventWindow && {
-      ...campaignEventWindow,
+      ...campaignEventWindow.window,
+      confirmed: campaignEventWindow.entry.confirmed,
       campaignId:
         activeCampaignEvent.status === "ready"
           ? activeCampaignEvent.data

@@ -25,13 +25,20 @@ The authenticated home page SHALL render, as its first card, a "Right now" card 
 
 ### Requirement: Right now shows the live events
 
-Right now SHALL show each live event as a tile with a visible "Live" label (the shared green Live badge, text and not colour alone, the same badge the navigation shows, without its pulse) and an "ends in …" countdown, ordered by soonest end, then earliest start, then kind (Legendary Event, Campaign Event, Incursion, Home Screen Event, Quest, Hero Release Event, event shop), then key, so events that start and end together sit side by side and the one about to expire leads. A live Legendary Event tile SHALL show the featured hero's portrait and, when the synced entry exists, its run ("Event N of 3") and points. A live Home Screen Event tile SHALL show the theme's game banner as a darkened backdrop when the datamine has one, and its medallion otherwise. An event shop is live from its `startUtc` for `dayCount` days; a shop with no start date is never live. When nothing is live, Right now SHALL say so in place of the tiles. Activity is decided by UTC instants (start inclusive, end exclusive).
+Right now SHALL show each live event as a tile with a visible "Live" label (the shared green Live badge, text and not colour alone, the same badge the navigation shows, without its pulse) and an "ends in …" countdown (except a Campaign Event whose calendar window is projected rather than confirmed: its end is the catalog's best guess, so the tile reads "End time not confirmed" instead, as Today's campaign event line does), ordered by soonest end, then earliest start, then kind (Legendary Event, Campaign Event, Incursion, Home Screen Event, Quest, Hero Release Event, event shop), then key, so events that start and end together sit side by side and the one about to expire leads. A live Legendary Event tile SHALL show the featured hero's portrait and, when the synced entry exists, its run ("Event N of 3") and points. A live Home Screen Event tile SHALL show the theme's game banner as a darkened backdrop when the datamine has one, and its medallion otherwise. An event shop is live from its `startUtc` for `dayCount` days; a shop with no start date is never live. When nothing is live, Right now SHALL say so in place of the tiles. Activity is decided by UTC instants (start inclusive, end exclusive).
 
 #### Scenario: Two live events
 
 - **GIVEN** Machine Hunt is live (ends 2026-10-05T08:00Z) and Lysander's run is live with run 2 and 3,410 synced points
 - **WHEN** Home renders at 2026-10-03T12:00Z
 - **THEN** Right now shows a Machine Hunt tile and a Lysander tile, both marked Live with "ends in …", the Lysander tile with his portrait, "Event 2 of 3" and "3,410 points"
+
+#### Scenario: Projected Campaign Event end
+
+- **GIVEN** the calendar's live Campaign Event window is projected (not confirmed)
+- **WHEN** Home renders
+- **THEN** its Right now tile reads "End time not confirmed" with no "ends in …" countdown
+- **AND** once the window is confirmed the tile shows its "ends in …" countdown
 
 #### Scenario: Soonest end leads
 

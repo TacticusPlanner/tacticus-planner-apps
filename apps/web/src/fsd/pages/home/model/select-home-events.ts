@@ -72,6 +72,9 @@ export type HomeEventRow =
       type: "campaignEvent"
       /** The running campaign from the sync, for a live Campaign Event; the calendar names none. */
       campaignId: string | null
+      /** False for a projected calendar window: its end is the catalog's best guess, not the game's,
+       *  so Right now shows no countdown for it (as Today's campaign event line). */
+      endConfirmed: boolean
     })
   | (HomeEventRowBase & { type: "incursion" })
   | (HomeEventRowBase & {
@@ -131,7 +134,8 @@ export function selectHomeEvents({
     events: readonly LegendaryEventEntry[]
     progress: readonly LegendaryEventProgress[]
   } | null
-  campaignEvent?: (CalendarWindow & { campaignId: string | null }) | null
+  campaignEvent?:
+    (CalendarWindow & { campaignId: string | null; confirmed: boolean }) | null
   incursion?: CalendarWindow | null
   quest?: LiveAndNext<FeaturedOccurrence> | null
   hre?: LiveAndNext<FeaturedOccurrence> | null
@@ -199,6 +203,7 @@ export function selectHomeEvents({
       type: "campaignEvent",
       key: `campaign-event:${campaignEvent.startMs}`,
       campaignId: isLive ? campaignEvent.campaignId : null,
+      endConfirmed: campaignEvent.confirmed,
       live: isLive,
       startMs: campaignEvent.startMs,
       endMs: campaignEvent.endMs,

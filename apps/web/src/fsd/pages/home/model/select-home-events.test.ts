@@ -200,6 +200,7 @@ describe("selectHomeEvents", () => {
         startMs: Date.parse("2026-10-02T08:00:00Z"),
         endMs: Date.parse(endsAt),
         campaignId: null,
+        confirmed: true,
       },
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
     })
@@ -242,7 +243,11 @@ describe("selectHomeEvents", () => {
     const events = selectHomeEvents({
       homeScreen: null,
       legendary: null,
-      campaignEvent: { ...window, campaignId: "eventCampaign1" },
+      campaignEvent: {
+        ...window,
+        campaignId: "eventCampaign1",
+        confirmed: true,
+      },
       incursion: window,
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
     })
@@ -254,6 +259,27 @@ describe("selectHomeEvents", () => {
     expect(events.live[0]).toMatchObject({
       campaignId: "eventCampaign1",
       destination: "/my-game/campaign-events",
+      endConfirmed: true,
+    })
+  })
+
+  it("marks a projected Campaign Event window's end as unconfirmed", () => {
+    const events = selectHomeEvents({
+      homeScreen: null,
+      legendary: null,
+      campaignEvent: {
+        status: "live",
+        startMs: Date.parse("2026-10-02T00:00:00Z"),
+        endMs: Date.parse("2026-10-05T00:00:00Z"),
+        campaignId: "eventCampaign1",
+        confirmed: false,
+      },
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(events.live[0]).toMatchObject({
+      type: "campaignEvent",
+      endConfirmed: false,
     })
   })
 
@@ -267,6 +293,7 @@ describe("selectHomeEvents", () => {
         endMs: Date.parse("2026-10-09T00:00:00Z"),
         // A stale sync names the previous event; it is not this one.
         campaignId: "eventCampaign1",
+        confirmed: true,
       },
       nowMs: Date.parse("2026-10-03T12:00:00Z"),
     })
@@ -564,6 +591,7 @@ describe("collapseUpcoming", () => {
         startMs: Date.parse("2026-10-05T00:00:00Z"),
         endMs: Date.parse("2026-10-08T00:00:00Z"),
         campaignId: null,
+        confirmed: true,
       },
       incursion: {
         status: "upcoming",
@@ -591,6 +619,7 @@ describe("collapseUpcoming", () => {
         startMs: Date.parse("2026-10-05T00:00:00Z"),
         endMs: Date.parse("2026-10-08T00:00:00Z"),
         campaignId: null,
+        confirmed: true,
       },
       incursion: {
         status: "upcoming",
