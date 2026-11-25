@@ -35,7 +35,23 @@
   },
   "history": {
     "empty": "Noch keine vergangenen Kriege.",
-    "emptyDescription": "Ein Krieg landet hier, wenn du unter Angriff einen neuen startest."
+    "emptyDescription": "Ein Krieg landet hier, wenn du unter Angriff einen neuen startest.",
+    "totals": "Gesamtwerte",
+    "byTier": "Siegquote nach Zonenstufe",
+    "byRarity": "Siegquote nach Platzseltenheit",
+    "lineups": "Meistgenutzte Aufstellungen",
+    "noResults": "Noch keine Ergebnisse erfasst.",
+    "noLineups": "Noch keine Aufstellung mehr als einmal genutzt.",
+    "winRate_one": "{{rate}} % · {{count}} Angriff",
+    "winRate_other": "{{rate}} % · {{count}} Angriffe",
+    "lineupCount_one": "{{count}} Angriff",
+    "lineupCount_other": "{{count}} Angriffe",
+    "warSummary": "{{season}} · Stufe {{level}} · {{tokens}} Marken · {{won}} gewonnen · {{lost}} verloren",
+    "noAttacks": "In diesem Krieg wurden keine Angriffe erfasst.",
+    "loading": "Vergangene Kriege werden geladen",
+    "loadError": "Deine vergangenen Kriege konnten nicht geladen werden.",
+    "heading": "Vergangene Kriege",
+    "loadMore": "Weitere Kriege laden"
   },
   "tour": {
     "target": {

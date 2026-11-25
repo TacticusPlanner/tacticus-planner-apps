@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Outlet } from "react-router"
+import { Outlet, useMatch } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
@@ -34,6 +34,8 @@ export function GuildWarLayout() {
   const current = useCurrentGuildWar()
   const seasons = useCatalogDataset("guild-war")
   const [settingsOpen, setSettingsOpen] = useState(false)
+  // The zone and slot pick what to attack, so History, which only reads past wars, leaves them out.
+  const onHistory = useMatch("/guild/war/history") !== null
 
   const war = current.data ?? null
   const seasonList = seasons.status === "ready" ? seasons.data : undefined
@@ -97,13 +99,15 @@ export function GuildWarLayout() {
     content = (
       <>
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <AttackTargetBar
-            battlefieldLevel={settings.battlefieldLevel}
-            onSlotChange={setSlot}
-            onZoneChange={setZoneId}
-            season={season}
-            target={target}
-          />
+          {onHistory ? null : (
+            <AttackTargetBar
+              battlefieldLevel={settings.battlefieldLevel}
+              onSlotChange={setSlot}
+              onZoneChange={setZoneId}
+              season={season}
+              target={target}
+            />
+          )}
           <p
             className="text-sm text-muted-foreground"
             data-testid="guild-war-settings-summary"

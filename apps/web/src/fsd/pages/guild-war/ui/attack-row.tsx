@@ -51,7 +51,7 @@ function LineupPortrait({
 }
 
 /** An attack's lineup as logged, shown at the cap it was logged at. */
-export function AttackLineup({ attack }: { attack: GuildWarAttack }) {
+function AttackLineup({ attack }: { attack: GuildWarAttack }) {
   const { t } = useTranslation("guildWar")
   return (
     <ul aria-label={t("attack.lineup")} className="flex flex-wrap gap-1">
@@ -71,7 +71,7 @@ export function AttackLineup({ attack }: { attack: GuildWarAttack }) {
 }
 
 /** "Won · 1 lost", "Lost" or "No result". */
-export function AttackResultBadge({ attack }: { attack: GuildWarAttack }) {
+function AttackResultBadge({ attack }: { attack: GuildWarAttack }) {
   const { t } = useTranslation("guildWar")
   if (attack.result === "won") {
     return (
@@ -89,7 +89,7 @@ export function AttackResultBadge({ attack }: { attack: GuildWarAttack }) {
 }
 
 /** Zone, slot and the slot's rarity cap of an attack: "Armoury · Slot 3" with the Epic icon. */
-export function AttackTargetText({
+function AttackTargetText({
   attack,
   season,
 }: {
@@ -114,7 +114,7 @@ export function AttackTargetText({
 }
 
 /** The enemy details of an attack in one line, when any were entered. */
-export function AttackEnemySummary({ attack }: { attack: GuildWarAttack }) {
+function AttackEnemySummary({ attack }: { attack: GuildWarAttack }) {
   const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
   const { buffName } = useGuildWarNames()

@@ -12,8 +12,6 @@ export type GuildWarLineupUnit = S["GuildWarLineupUnitDto"]
 /** The optional enemy details of an attack. */
 export type GuildWarEnemy = S["GuildWarEnemyDto"]
 export type GuildWarEnemyUnit = S["GuildWarEnemyUnitDto"]
-export type GuildWarEnemyUnitState = S["GuildWarEnemyUnitState"]
-export type GuildWarAttackResult = S["GuildWarAttackResult"]
 
 /** A page of ended wars, newest first, and the cursor of the next (older) page. */
 export type PastGuildWars = S["PastGuildWarsResponse"]

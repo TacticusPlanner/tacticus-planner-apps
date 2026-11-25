@@ -35,7 +35,23 @@
   },
   "history": {
     "empty": "Aucune guerre passée pour l'instant.",
-    "emptyDescription": "Une guerre arrive ici quand vous en commencez une nouvelle depuis Attaque."
+    "emptyDescription": "Une guerre arrive ici quand vous en commencez une nouvelle depuis Attaque.",
+    "totals": "Totaux",
+    "byTier": "Taux de victoire par palier de zone",
+    "byRarity": "Taux de victoire par rareté d'emplacement",
+    "lineups": "Compositions les plus utilisées",
+    "noResults": "Aucun résultat enregistré pour l'instant.",
+    "noLineups": "Aucune composition utilisée plus d'une fois pour l'instant.",
+    "winRate_one": "{{rate}} % · {{count}} attaque",
+    "winRate_other": "{{rate}} % · {{count}} attaques",
+    "lineupCount_one": "{{count}} attaque",
+    "lineupCount_other": "{{count}} attaques",
+    "warSummary": "{{season}} · Niveau {{level}} · {{tokens}} jetons · {{won}} gagnées · {{lost}} perdues",
+    "noAttacks": "Aucune attaque n'a été enregistrée dans cette guerre.",
+    "loading": "Chargement des guerres passées",
+    "loadError": "Impossible de charger vos guerres passées.",
+    "heading": "Guerres passées",
+    "loadMore": "Charger plus de guerres"
   },
   "tour": {
     "target": {

@@ -12,4 +12,4 @@
 
 ## 3. History tab
 
-- [ ] 3.1 Past wars newest first, expanding to their attacks, with totals and load more.
+- [x] 3.1 Past wars newest first, expanding to their attacks, with totals and load more.

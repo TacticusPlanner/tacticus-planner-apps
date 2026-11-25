@@ -85,7 +85,7 @@ describe("GuildWarLayout", () => {
     api.current.mockResolvedValue({ war: war() })
     window.localStorage.setItem("guildWar.zone", "Armoury")
     window.localStorage.setItem("guildWar.slot", "2")
-    const { unmount } = renderAt("/guild/war/history")
+    const { unmount } = renderAt("/guild/war/offense")
 
     expect(await screen.findByTestId("guild-war-zone")).toHaveTextContent(
       "Armoury"
@@ -95,6 +95,14 @@ describe("GuildWarLayout", () => {
       "Season D · Battlefield level 2"
     )
     unmount()
+
+    // History shows the war's settings but not the attack target.
+    const history = renderAt("/guild/war/history")
+    expect(
+      await screen.findByTestId("guild-war-settings-summary")
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId("guild-war-zone")).toBeNull()
+    history.unmount()
 
     // Season D has no Landing Pad.
     window.localStorage.setItem("guildWar.zone", "LandingPad1")

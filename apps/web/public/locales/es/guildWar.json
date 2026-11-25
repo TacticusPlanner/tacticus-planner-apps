@@ -35,7 +35,23 @@
   },
   "history": {
     "empty": "Aún no hay guerras pasadas.",
-    "emptyDescription": "Una guerra pasa aquí cuando empiezas una nueva desde Ataque."
+    "emptyDescription": "Una guerra pasa aquí cuando empiezas una nueva desde Ataque.",
+    "totals": "Totales",
+    "byTier": "Victorias por nivel de zona",
+    "byRarity": "Victorias por rareza de casilla",
+    "lineups": "Alineaciones más usadas",
+    "noResults": "Aún no hay resultados registrados.",
+    "noLineups": "Aún no has usado ninguna alineación más de una vez.",
+    "winRate_one": "{{rate}} % · {{count}} ataque",
+    "winRate_other": "{{rate}} % · {{count}} ataques",
+    "lineupCount_one": "{{count}} ataque",
+    "lineupCount_other": "{{count}} ataques",
+    "warSummary": "{{season}} · Nivel {{level}} · {{tokens}} fichas · {{won}} ganados · {{lost}} perdidos",
+    "noAttacks": "No se registraron ataques en esta guerra.",
+    "loading": "Cargando guerras anteriores",
+    "loadError": "No se pudieron cargar tus guerras anteriores.",
+    "heading": "Guerras anteriores",
+    "loadMore": "Cargar más guerras"
   },
   "tour": {
     "target": {

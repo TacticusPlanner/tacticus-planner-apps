@@ -35,7 +35,23 @@
   },
   "history": {
     "empty": "No past wars yet.",
-    "emptyDescription": "A war moves here when you start a new one from Offense."
+    "emptyDescription": "A war moves here when you start a new one from Offense.",
+    "totals": "Totals",
+    "byTier": "Win rate by zone tier",
+    "byRarity": "Win rate by slot rarity",
+    "lineups": "Most used lineups",
+    "noResults": "No results recorded yet.",
+    "noLineups": "No lineup used more than once yet.",
+    "winRate_one": "{{rate}}% · {{count}} attack",
+    "winRate_other": "{{rate}}% · {{count}} attacks",
+    "lineupCount_one": "{{count}} attack",
+    "lineupCount_other": "{{count}} attacks",
+    "warSummary": "{{season}} · Level {{level}} · {{tokens}} tokens · {{won}} won · {{lost}} lost",
+    "noAttacks": "No attacks were logged in this war.",
+    "loading": "Loading past wars",
+    "loadError": "Couldn't load your past wars.",
+    "heading": "Past wars",
+    "loadMore": "Load more wars"
   },
   "tour": {
     "target": {
