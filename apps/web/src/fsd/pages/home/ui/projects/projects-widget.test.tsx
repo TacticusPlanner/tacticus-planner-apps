@@ -144,6 +144,13 @@ describe("ProjectsWidget", () => {
 
     render(<ProjectsWidget />, { route: "/" })
 
+    // One line of facts under the name; the units show as portraits, so only goals are counted.
+    expect(screen.getByTestId("project-status-p1")).toHaveTextContent(
+      'goals.project.goalCount:{"count":3}'
+    )
+    expect(screen.getByTestId("project-status-p1")).not.toHaveTextContent(
+      "goals.project.unitCount"
+    )
     screen.getByTestId("home-project-row-p1").click()
     expect(navigateMock).toHaveBeenCalledWith("/plan/goals?project=p1")
     expect(screen.queryByTestId("home-projects-more")).not.toBeInTheDocument()
@@ -303,7 +310,7 @@ describe("ProjectsWidget", () => {
         expect(planInsightsMock).toHaveBeenLastCalledWith([])
       })
 
-      it("shows the deadline chip with its countdown", async () => {
+      it("shows the deadline chip with its countdown alone, naming the event to screen readers", async () => {
         useHomeProjectsMock.mockReturnValue(targeted("votanUthar"))
         render(<ProjectsWidget />, { route: "/" })
         await waitFor(() =>
@@ -311,6 +318,13 @@ describe("ProjectsWidget", () => {
             "data-state-timing",
             "upcoming"
           )
+        )
+        const chip = screen.getByTestId("home-project-target")
+        expect(chip).toHaveTextContent(
+          "goals.project.deadlineChip.short.startsIn"
+        )
+        expect(chip.querySelector(".sr-only")).toHaveTextContent(
+          "goals.project.deadlineChip.startsIn"
         )
       })
     })

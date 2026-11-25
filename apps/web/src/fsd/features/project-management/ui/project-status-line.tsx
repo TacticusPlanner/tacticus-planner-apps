@@ -3,8 +3,9 @@ import { useTranslation } from "react-i18next"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { ProjectSummary } from "@/entities/project"
-import { formatEstimateDate, useDateLocale } from "@/shared/lib"
+import { useDateLocale } from "@/shared/lib"
 
+import { completionText } from "../model/project-status-text"
 import { ProjectDeadlineChip } from "./project-deadline-chip"
 import { ProjectFitCount } from "./project-fit-count"
 import type { ProjectCardFitCount } from "./project-fit-count"
@@ -14,45 +15,22 @@ import type { ProjectCardStatus } from "./project-row"
  * A live project card's status line (project-management: "Every live project card shows the same
  * facts"), each fact only when it applies: the deadline chip, the fit count, "Done by" (or "No
  * date") with the unestimated count, "2 of 5 reached", and "1 blocked" linking to those goals.
- * `compact` (Home) keeps the chip, the fit count and "Done by", without links.
+ * Home's condensed row has its own one-line version (`ProjectSummaryRow`).
  */
 export function ProjectStatusLine({
   project,
   progress,
   fitCount,
   totalGoals,
-  compact = false,
 }: {
   project: Pick<ProjectSummary, "projectId" | "name" | "target">
   progress: ProjectCardStatus | undefined
   fitCount: ProjectCardFitCount | undefined
   totalGoals: number
-  compact?: boolean
 }) {
   const { t } = useTranslation()
   const dateLocale = useDateLocale()
   if (!project.target && !progress) return null
-  const completionText = ({
-    completionDate,
-    unestimatedGoalCount,
-  }: {
-    completionDate: string | null
-    unestimatedGoalCount: number
-  }) =>
-    [
-      completionDate
-        ? t("goals.project.completionSummary", {
-            date: formatEstimateDate(completionDate, dateLocale),
-          })
-        : t("goals.project.noDate"),
-      unestimatedGoalCount > 0
-        ? t("goals.deadlineFit.header.notEstimated", {
-            count: unestimatedGoalCount,
-          })
-        : null,
-    ]
-      .filter(Boolean)
-      .join(t("goals.deadlineFit.header.separator"))
   const ready = progress?.status === "ready" ? progress : null
   const completion = ready?.completion
 
@@ -63,9 +41,9 @@ export function ProjectStatusLine({
     >
       {project.target ? (
         <ProjectDeadlineChip
-          link={!compact}
+          link
           project={project}
-          testId={compact ? "home-project-target" : "project-deadline-chip"}
+          testId="project-deadline-chip"
         />
       ) : null}
       {project.target && fitCount ? <ProjectFitCount count={fitCount} /> : null}
@@ -74,10 +52,10 @@ export function ProjectStatusLine({
       ) : null}
       {completion && totalGoals > 0 ? (
         <span data-testid="project-status-completion">
-          {completionText(completion)}
+          {completionText(t, completion, dateLocale)}
         </span>
       ) : null}
-      {ready && !compact && totalGoals > 0 ? (
+      {ready && totalGoals > 0 ? (
         <span data-testid="project-status-reached">
           {t("goals.project.reachedOf", {
             count: ready.reached,
@@ -85,7 +63,7 @@ export function ProjectStatusLine({
           })}
         </span>
       ) : null}
-      {ready && !compact && ready.blocked > 0 ? (
+      {ready && ready.blocked > 0 ? (
         <Link
           aria-label={t("goals.project.blockedLinkLabel", {
             count: ready.blocked,

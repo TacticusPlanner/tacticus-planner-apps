@@ -113,7 +113,9 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
 
   return (
     <Card data-testid="home-events-widget" id="home-upcoming">
-      <CardHeader>
+      {/* As tall as Daily raids' and Your projects' headers, whose action button makes them 30px,
+          so the three cards line up row for row. */}
+      <CardHeader className="min-h-7.5">
         <CardTitle>{t("home.events.title")}</CardTitle>
       </CardHeader>
       <CardContent>{body}</CardContent>
@@ -170,7 +172,9 @@ function UpcomingEventRow({
   })
 
   return (
-    <div className="flex items-center gap-2 rounded-lg border p-2">
+    // At least as tall as a Daily raids or Your projects row, so the three cards are the same
+    // height when each shows Home's card count.
+    <div className="flex min-h-18.5 items-center gap-2 rounded-lg border p-2">
       <Link
         className="flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
         data-live={row.live}
