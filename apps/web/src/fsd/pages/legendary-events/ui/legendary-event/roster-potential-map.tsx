@@ -12,7 +12,8 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { ObjectiveIcon, useObjectiveLabel } from "@/entities/legendary-event"
+import { useObjectiveLabel } from "@/entities/legendary-event"
+import { ObjectiveIcon } from "@/shared/ui"
 import type {
   LegendaryEventLane,
   PotentialCellState,

@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { ObjectiveIcon, useObjectiveLabel } from "@/entities/legendary-event"
+import { useObjectiveLabel } from "@/entities/legendary-event"
+import { ObjectiveIcon } from "@/shared/ui"
 import type { LegendaryEventLane } from "@/entities/legendary-event"
 
 /**

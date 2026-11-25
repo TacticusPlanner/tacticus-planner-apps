@@ -12,10 +12,10 @@ import {
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
-  ObjectiveIcon,
   objectiveClearedCounts,
   useObjectiveLabel,
 } from "@/entities/legendary-event"
+import { ObjectiveIcon } from "@/shared/ui"
 import type {
   LaneProgressView,
   LegendaryEvent,

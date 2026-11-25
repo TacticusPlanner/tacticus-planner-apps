@@ -6,11 +6,8 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import {
-  defeatAllIcon,
-  ObjectiveIcon,
-  useObjectiveLabel,
-} from "@/entities/legendary-event"
+import { defeatAllIcon, useObjectiveLabel } from "@/entities/legendary-event"
+import { ObjectiveIcon } from "@/shared/ui"
 import type { LegendaryEventLane } from "@/entities/legendary-event"
 
 /** The cells a token clears: defeat-all as text, each objective with its icon (and name unless

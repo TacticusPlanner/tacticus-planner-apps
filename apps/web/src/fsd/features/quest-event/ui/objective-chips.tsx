@@ -1,8 +1,7 @@
 import { useTranslation } from "react-i18next"
-import { BanIcon, CircleCheckIcon } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon } from "@/shared/ui"
+import { ObjectiveIcon } from "@/shared/ui"
 
 import {
   isRestrictingObjective,
@@ -13,8 +12,9 @@ import { useObjectiveWording } from "./use-objective-wording"
 import type { Objective } from "./use-objective-wording"
 
 /**
- * A battle's bonus objectives as chips with their score. Lineup restrictions carry a marker icon and
- * accessible text, so the distinction never rests on colour. `compact` is the battle-row form.
+ * A battle's bonus objectives as chips with their score, each with the objective's icon as Legendary
+ * Events draw it (a red X badge for "not", "≤" / "≥" for a hits bound). Lineup restrictions also
+ * carry accessible text, so the distinction never rests on colour. `compact` is the battle-row form.
  */
 export function ObjectiveChips({
   objectives,
@@ -39,8 +39,7 @@ export function ObjectiveChips({
     >
       {objectives.map((objective, index) => {
         const restriction = isRestrictingObjective(objective.type)
-        const Icon = restriction ? BanIcon : CircleCheckIcon
-        const subjectIcon = objectiveIcon(objective)
+        const icon = objectiveIcon(objective)
         const badge = badges?.[index]
         const score = number.format(objective.score)
         const badgeText = (() => {
@@ -71,16 +70,10 @@ export function ObjectiveChips({
             data-testid="quest-objective-chip"
             key={`${objective.type}-${index}`}
           >
-            <Icon
-              aria-hidden
-              className={cn("shrink-0", compact ? "size-icon-sm" : "size-icon")}
-            />
             {restriction ? (
               <span className="sr-only">{t("objectives.restriction")}: </span>
             ) : null}
-            {subjectIcon ? (
-              <EntityIcon size="inline" src={subjectIcon} alt="" />
-            ) : null}
+            <ObjectiveIcon icon={icon} />
             <span className="truncate">
               {t("objectives.chip", { text: word(objective), score })}
             </span>

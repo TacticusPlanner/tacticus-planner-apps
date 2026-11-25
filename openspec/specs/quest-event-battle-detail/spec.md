@@ -58,11 +58,16 @@ Each served objective SHALL show as a chip with an icon, localized wording and i
 | `UseNoSummons`           | No summons                      |
 | `DoNoHealOrRepair`       | No healing or repair            |
 
-Traits, factions and damage types SHALL be localized by id. The lineup-restricting types (`NotTrait`, `NotFaction`, `NotDamageType`, `HasRangedAttack`, `MaxHits`, `MinHits`, `UseNoSummons`, `DoNoHealOrRepair`) SHALL carry a restriction marker with accessible text, not colour alone. An unknown type SHALL show its raw type with its score. The same chips SHALL show, compact, on the battle row.
+Traits, factions and damage types SHALL be localized by id. The chip's icon SHALL be the shared objective icon Legendary Events use: the trait, faction or damage-type art with a red X badge for `NotTrait`, `NotFaction` and `NotDamageType`; the summon and heal glyphs with a red X badge for `UseNoSummons` and `DoNoHealOrRepair`; the hits icon with a "≤" badge for `MaxHits` and "≥" for `MinHits`; the plain damage-type art for `DamageType` and the ranged icon for `HasRangedAttack`; no icon for `NoDamageTakenByAnyHero`. No separate "not" or check marker SHALL lead the chip. The red X badge SHALL use the destructive colour token, so it follows the theme. The lineup-restricting types (`NotTrait`, `NotFaction`, `NotDamageType`, `HasRangedAttack`, `MaxHits`, `MinHits`, `UseNoSummons`, `DoNoHealOrRepair`) SHALL carry accessible restriction text, not colour alone. The score entry SHALL show the same icon beside each objective. An unknown type SHALL show its raw type with its score. The same chips SHALL show, compact, on the battle row.
 
 #### Scenario: Nubari battle 4 objectives
 
-- **THEN** the chips read "No Rapid Assault units · 100" and "No Blast damage · 100", both marked as restrictions
+- **THEN** the chips read "No Rapid Assault units · 100" and "No Blast damage · 100", both marked as restrictions, each led by its trait or damage-type icon with a red X badge
+
+#### Scenario: A hits bound reads as a bound
+
+- **GIVEN** a battle with "Units with at most 3 hits"
+- **THEN** its chip shows the hits icon with a "≤" badge, not a "no" marker
 
 ### Requirement: The drop shows its odds and the player's goal need
 

@@ -1,10 +1,18 @@
 import { X } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { ObjectiveIcon as Icon } from "../lib/objective-label"
+/** An objective's icon: a game asset plus an optional badge (red X for a negated filter, "≥" / "≤"
+ *  for a bound). */
+export interface ObjectiveIconSpec {
+  src: string
+  badge?: "not" | "min" | "max"
+}
 
 const BADGES = {
-  not: { className: "bg-red-600 text-white", glyph: <X className="size-2" /> },
+  not: {
+    className: "bg-destructive text-white",
+    glyph: <X className="size-2" />,
+  },
   min: {
     className: "bg-background text-foreground ring-1 ring-border",
     glyph: "≥",
@@ -16,7 +24,7 @@ const BADGES = {
 } as const
 
 /**
- * An objective's icon (design D6): the game asset with a red-X badge for a negated filter or a
+ * An objective's icon (Legendary Events, quests): the game asset with a red-X badge for a negated filter or a
  * "≥" / "≤" badge for a hits bound. `muted` fades it for a not-satisfied state. Decorative: the
  * label or accessible text beside it carries the meaning. Inline size unless `className` says otherwise.
  */
@@ -25,7 +33,7 @@ export function ObjectiveIcon({
   className,
   muted = false,
 }: {
-  icon: Icon | undefined
+  icon: ObjectiveIconSpec | undefined
   className?: string
   muted?: boolean
 }) {

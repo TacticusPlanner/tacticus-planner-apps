@@ -23,7 +23,6 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { UnitGoalBadge } from "@/entities/goal"
 import {
-  ObjectiveIcon,
   objectiveClearedThrough,
   useObjectiveLabel,
 } from "@/entities/legendary-event"
@@ -36,6 +35,7 @@ import {
   ResponsiveDialogDescription,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
+  ObjectiveIcon,
 } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 

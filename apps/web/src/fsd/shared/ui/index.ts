@@ -89,3 +89,5 @@ export {
   ToolbarField,
 } from "./page-toolbar"
 export { useViewPlacement } from "./view-placement"
+export { ObjectiveIcon } from "./objective-icon"
+export type { ObjectiveIconSpec } from "./objective-icon"

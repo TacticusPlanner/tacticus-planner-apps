@@ -1,3 +1,4 @@
+import type { ObjectiveIconSpec } from "@/shared/ui"
 import {
   damageTypeIcon,
   factionIcon,
@@ -13,10 +14,7 @@ export const defeatAllIcon = defeatAllSrc
 
 /** An objective's icon: a game asset plus an optional badge (red X for a negated filter, "≥" / "≤"
  *  for a hits bound). */
-export interface ObjectiveIcon {
-  src: string
-  badge?: "not" | "min" | "max"
-}
+export type ObjectiveIcon = ObjectiveIconSpec
 
 /**
  * How to label a unit filter, before translation: a game-data entry (`traits:Flying`), a

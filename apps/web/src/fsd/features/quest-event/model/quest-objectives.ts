@@ -6,6 +6,8 @@ import {
   traitIcon,
 } from "@workspace/game-catalog"
 
+import type { ObjectiveIconSpec } from "@/shared/ui"
+
 /** The served bonus objective types the tab words; any other type shows raw with its score. */
 export const QUEST_OBJECTIVE_TYPES = [
   "NoDamageTakenByAnyHero",
@@ -52,33 +54,40 @@ export function objectiveTraitId(target: string): string {
   return TRAIT_ALIASES[target] ?? target
 }
 
+const not = (src: string): ObjectiveIconSpec => ({ src, badge: "not" })
+
 /**
- * The game icon that names what an objective is about: the trait, faction or damage type it
- * targets, hits, a ranged attack, summons or healing. Undefined when the objective has no such
- * subject (no damage taken) or the type is unknown.
+ * The game icon that names what an objective is about, drawn as Legendary Events draw it: the trait,
+ * faction or damage type it targets, hits, a ranged attack, summons or healing, with a red X badge
+ * for "not" and a "≤" / "≥" badge for a hits bound. Undefined when the objective has no such subject
+ * (no damage taken) or the type is unknown.
  */
 export function objectiveIcon(objective: {
   type: string
   target?: string | null
-}): string | undefined {
+}): ObjectiveIconSpec | undefined {
   const target = objective.target ?? ""
   switch (objective.type) {
     case "NotTrait":
-      return target ? traitIcon(objectiveTraitId(target)) : undefined
-    case "NotFaction":
-      return target ? factionIcon(target) : undefined
+      return target ? not(traitIcon(objectiveTraitId(target))) : undefined
+    case "NotFaction": {
+      const src = target ? factionIcon(target) : undefined
+      return src ? not(src) : undefined
+    }
     case "NotDamageType":
+      return target ? not(damageTypeIcon(target)) : undefined
     case "DamageType":
-      return target ? damageTypeIcon(target) : undefined
+      return target ? { src: damageTypeIcon(target) } : undefined
     case "MaxHits":
+      return { src: statIcon("hits"), badge: "max" }
     case "MinHits":
-      return statIcon("hits")
+      return { src: statIcon("hits"), badge: "min" }
     case "HasRangedAttack":
-      return statIcon("ranged")
+      return { src: statIcon("ranged") }
     case "UseNoSummons":
-      return battleGlyphIcon("summon")
+      return not(battleGlyphIcon("summon"))
     case "DoNoHealOrRepair":
-      return battleGlyphIcon("heal")
+      return not(battleGlyphIcon("heal"))
     default:
       return undefined
   }

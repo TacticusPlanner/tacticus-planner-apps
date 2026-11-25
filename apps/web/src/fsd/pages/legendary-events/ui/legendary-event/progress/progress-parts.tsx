@@ -9,7 +9,8 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import { ObjectiveIcon, AnnotationMarkIcon } from "@/entities/legendary-event"
+import { AnnotationMarkIcon } from "@/entities/legendary-event"
+import { ObjectiveIcon } from "@/shared/ui"
 import type {
   LaneProgressView,
   LegendaryEventAnnotationStatus,
