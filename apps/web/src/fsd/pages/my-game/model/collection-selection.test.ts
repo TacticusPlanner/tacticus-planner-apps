@@ -57,9 +57,10 @@ describe("toBulkGoalUnit", () => {
 
 describe("opensInSelectMode", () => {
   it("reads the navigation state Create goal's link sends", () => {
-    expect(opensInSelectMode({ selectUnits: true })).toBe(true)
-    expect(opensInSelectMode({ selectUnits: "yes" })).toBe(false)
-    expect(opensInSelectMode(null)).toBe(false)
-    expect(opensInSelectMode(undefined)).toBe(false)
+    expect(opensInSelectMode({ selectUnits: true }, true)).toBe(true)
+    expect(opensInSelectMode({ selectUnits: true }, false)).toBe(false)
+    expect(opensInSelectMode({ selectUnits: "yes" }, true)).toBe(false)
+    expect(opensInSelectMode(null, true)).toBe(false)
+    expect(opensInSelectMode(undefined, true)).toBe(false)
   })
 })

@@ -25,10 +25,11 @@ export function toBulkGoalUnit(unit: UnitTileUnit): BulkGoalUnit {
   }
 }
 
-/** Whether Collection opens in select mode: a link (Create goal's "Select them in Collection")
- *  asks for it through its navigation state `{ selectUnits: true }`. */
-export function opensInSelectMode(state: unknown): boolean {
+/** Whether Collection opens in select mode: for a signed-in user, when a link (Create goal's
+ *  "Select them in Collection") asks for it through its navigation state `{ selectUnits: true }`. */
+export function opensInSelectMode(state: unknown, signedIn: boolean): boolean {
   return (
+    signedIn &&
     typeof state === "object" &&
     state !== null &&
     (state as { selectUnits?: unknown }).selectUnits === true

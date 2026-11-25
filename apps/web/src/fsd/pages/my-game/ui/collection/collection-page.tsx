@@ -105,7 +105,7 @@ export function CollectionPage() {
   const [bulkOpen, setBulkOpen] = useState(false)
   const location = useLocation()
   const selection = useCollectionSelection(
-    isAuthenticated && opensInSelectMode(location.state)
+    opensInSelectMode(location.state, isAuthenticated)
   )
   const comparing = compare.mode !== "off" && compare.mode !== "guest"
   // Turning Compare on ends select mode and discards the selection.
