@@ -19,16 +19,15 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { formatEstimateDate, useDateLocale } from "@/shared/lib"
 import { ProjectColorDot } from "@/entities/project"
 import type { ProjectSummary } from "@/entities/project"
 import type { PortraitUnit } from "../model/project-unit-portraits"
 import type { useProjectActions } from "../model/use-project-actions"
 import { DeleteProjectDialog } from "./delete-project-dialog"
 import { ProjectUnitPortraits } from "./project-unit-portraits"
-import { ProjectTargetChip } from "./project-target-chip"
-import { ProjectFitCount } from "./project-fit-count"
+import { unitGoalSummaryText } from "../model/unit-goal-summary"
 import type { ProjectCardFitCount } from "./project-fit-count"
+import { ProjectStatusLine } from "./project-status-line"
 
 type Props = {
   project: ProjectSummary
@@ -56,14 +55,25 @@ export type ProjectCardSummary =
       status: "success"
       units: number
       goals: number
-      reached?: number
-      blocked?: number
-      completionDate?: string | null
-      /** How many of the project's goals are not behind `completionDate` (plan-completion-outlook).
-       *  Shown whether or not a date is, so an omitted date never reads as "no information". */
-      unestimatedGoalCount?: number
+      /** The card's status line (project-management: "Every live project card shows the same
+       *  facts"); absent on archived cards, `loading` while the global run computes. */
+      progress?: ProjectCardStatus
       /** The first in-flight units, in priority order, for the card's portraits (add-project-unit-portraits). */
       portraitUnits?: readonly PortraitUnit[]
+    }
+
+/** A live card's status line facts, from the one global plan run. */
+export type ProjectCardStatus =
+  | { status: "loading" }
+  | {
+      status: "ready"
+      reached: number
+      blocked: number
+      /** Null when the run failed; `completionDate` null when none of the goals can be estimated. */
+      completion: {
+        completionDate: string | null
+        unestimatedGoalCount: number
+      } | null
     }
 
 /** A project's row: color dot, name, progress summary, and lifecycle actions. */
@@ -80,7 +90,6 @@ export function ProjectRow({
   fitCount,
 }: Props) {
   const { t } = useTranslation()
-  const dateLocale = useDateLocale()
   const archived = project.status === "Archived"
   const archiveDisabled = actions.pending || project.isDefault
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -111,35 +120,7 @@ export function ProjectRow({
                 units={summary.portraitUnits}
               />
             ) : null}
-            <span>{t("goals.project.unitGoalSummary", summary)}</span>
-            {summary.reached !== undefined ? (
-              <span>
-                {t("goals.project.reachedSummary", {
-                  count: summary.reached,
-                })}
-              </span>
-            ) : null}
-            {summary.blocked !== undefined ? (
-              <span>
-                {t("goals.project.blockedSummary", {
-                  count: summary.blocked,
-                })}
-              </span>
-            ) : null}
-            {summary.completionDate ? (
-              <span>
-                {t("goals.project.completionSummary", {
-                  date: formatEstimateDate(summary.completionDate, dateLocale),
-                })}
-              </span>
-            ) : null}
-            {(summary.unestimatedGoalCount ?? 0) > 0 ? (
-              <span data-testid="project-row-completion-excluded">
-                {t("goals.insights.completionExcluded", {
-                  count: summary.unestimatedGoalCount,
-                })}
-              </span>
-            ) : null}
+            <span>{unitGoalSummaryText(t, summary)}</span>
           </div>
         ) : null}
       </div>
@@ -164,10 +145,16 @@ export function ProjectRow({
           <div className="flex min-w-0 items-start gap-3">{projectContent}</div>
         )}
         {/* Outside the select button: a link cannot sit inside a button. */}
-        {project.target ? (
-          <div className="mt-2 ml-7 flex flex-wrap items-center gap-2">
-            <ProjectTargetChip target={project.target} />
-            {fitCount ? <ProjectFitCount count={fitCount} /> : null}
+        {!archived ? (
+          <div className="ml-7">
+            <ProjectStatusLine
+              fitCount={fitCount}
+              project={project}
+              progress={
+                summary?.status === "success" ? summary.progress : undefined
+              }
+              totalGoals={summary?.status === "success" ? summary.goals : 0}
+            />
           </div>
         ) : null}
         {summary?.status === "error" ? (

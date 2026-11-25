@@ -447,10 +447,12 @@ export function computePlanInsights(params: {
   let energyTotal = 0
   let completionDate: string | null = null
   const goalOutlook: PlanInsightsGoalOutlook[] = []
+  const goalDates = new Map<string, string>()
   for (const goal of goalNeeds) {
-    if (!inScope(goal.goalId)) continue
     const result = estimateResults.get(goal.goalId)
     if (!result || result.status === "Blocked") continue
+    goalDates.set(goal.goalId, result.date)
+    if (!inScope(goal.goalId)) continue
     goalOutlook.push({
       goalId: goal.goalId,
       date: result.date,
@@ -555,12 +557,14 @@ export function computePlanInsights(params: {
   // A scoped view reports the wait only when its own goals need tokens, but the date below always
   // extends by the plan's wait: the project's goals queue behind everything ranked above them.
   const onslaughtDays = onslaughtTokens > 0 ? planOnslaughtDays : 0
+  let onslaughtWaitDate: string | null = null
   if (planOnslaughtDays > 0) {
     const onslaughtDate = new Date()
     onslaughtDate.setUTCDate(
       onslaughtDate.getUTCDate() + Math.ceil(planOnslaughtDays)
     )
     const value = onslaughtDate.toISOString().slice(0, 10)
+    onslaughtWaitDate = value
     // Extends an existing date, never creates one: with nothing estimable there is no plan date to
     // push out, and a bare token-accumulation day is a completion date anchored to no goal at all
     // (plan-completion-outlook).
@@ -583,6 +587,9 @@ export function computePlanInsights(params: {
     planNetByGoalId,
     completionDate,
     unestimatedGoalCount,
+    goalDates,
+    plannedGoalIds: [...new Set(params.details.map((d) => d.goalId))],
+    onslaughtWaitDate,
     goalOutlook,
     excludedGoals,
     bottlenecks,

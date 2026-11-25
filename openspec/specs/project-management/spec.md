@@ -8,7 +8,7 @@ Makes Projects a list/detail pair of routes: `/goals/projects` for browsing, cre
 
 ### Requirement: Creating and editing a project uses a form dialog
 
-The list route SHALL provide a "Create project" affordance and, on each project row, an "Edit" action. Both SHALL open the same form (name, description, color and, for a non-Default project, Related to — see `project-event-target`) in a form-width dialog (centered at or above 768px, a bottom sheet below) — "Create project" with empty fields, "Edit" pre-filled with that row's project. The dialog SHALL end with Cancel and the primary action (Create project or Save project). Submitting the form SHALL save the change and close the dialog without navigating away from the current route; Cancel SHALL close it without saving. The Projects page SHALL be the only surface offering a Create project action; the Legendary Event plan wizard MAY create a project with an event target as part of the plan it creates.
+The list route SHALL provide a "Create project" affordance and, on each project row, an "Edit" action. Both SHALL open the same form (name, description, color and, for a non-Default project, Related to — see `project-event-target`) in a form-width dialog (centered at or above 768px, a bottom sheet below) — "Create project" with empty fields except the color, "Edit" pre-filled with that row's project. The dialog SHALL end with Cancel and the primary action (Create project or Save project). Submitting the form SHALL save the change and close the dialog without navigating away from the current route; Cancel SHALL close it without saving. The Projects page SHALL be the only surface offering a Create project action; the Legendary Event plan wizard MAY create a project with an event target as part of the plan it creates.
 
 #### Scenario: Creating a project
 
@@ -19,6 +19,12 @@ The list route SHALL provide a "Create project" affordance and, on each project 
 
 - **WHEN** the user activates "Edit" on a project row, changes its name in the opened dialog, and submits
 - **THEN** the project row reflects the new name and the dialog closes
+
+#### Scenario: A new project starts with an unused color
+
+- **GIVEN** projects already using the red and blue presets
+- **WHEN** the user opens "Create project"
+- **THEN** the color field holds one of the other presets, never gray, picked once so it does not change while the form is open; the user can change or clear it
 
 #### Scenario: Goals offers no project creation
 
@@ -65,7 +71,15 @@ The list route SHALL NOT render its own "Projects" (or equivalent) page title �
 
 ### Requirement: Project cards communicate planning value
 
-Every project card SHALL show color, name, description when present, and a goal/unit summary derived from the project's `goalIds` joined with the loaded goals list — no per-project read. Where summary data is available, the Default project card only SHALL also show reached, blocked, and estimate/progress information (completion date and unestimated goals), computed from the one global run. A non-archived project with a resolvable, not-ended target SHALL also show its deadline fit count (`project-deadline-fit`), from the same run. Other project cards show the goal/unit summary only. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails.
+Every project card SHALL show color, name, description when present, and a goal/unit summary ("3 units · 5 goals", each count pluralized) derived from the project's `goalIds` joined with the loaded goals list — no per-project read. Every live (non-archived) card SHALL also show the same status line, whatever the project's kind, each fact only when it applies, in this order:
+
+1. the deadline chip (`project-deadline`'s "Deadline chip");
+2. the deadline fit count for a resolvable, not-ended deadline (`project-deadline-fit`);
+3. "Done by <date>", or "No date" when none of its goals can be estimated, with "N not estimated" when any are (`plan-completion-outlook`);
+4. "N of M reached" (M is the project's goal count);
+5. "N blocked" when above zero, in the warning tone, linking to Goals scoped to that project and filtered to Blocked (`/plan/goals?project=<id>&status=blocked`).
+
+Every fact comes from the one global run (goal priority across every project), computed once for the page whenever a live project holds a goal. A fact is hidden only when it is zero or doesn't apply, never because of the project's kind. Archived cards show the goal/unit summary only. The status line sits outside the card's select button, since it holds links. Per-project energy or raids per day SHALL NOT be shown: they are shared across projects by goal priority. Identity and actions SHALL remain usable while the goals list or a summary calculation loads or fails; the status line shows a placeholder while the run computes.
 
 #### Scenario: Summary loads progressively
 
@@ -82,7 +96,19 @@ Every project card SHALL show color, name, description when present, and a goal/
 
 - **GIVEN** a project targets the Legendary Event Uthar and 2 of its 4 counted goals fit
 - **WHEN** its card renders with summary data available
-- **THEN** it shows "2 of 4 fit" beside the "LE · Uthar" chip
+- **THEN** it shows "2 of 4 fit" beside the "LE · Uthar · starts in 18 days" chip
+
+#### Scenario: Every live card shows the same facts
+
+- **GIVEN** a custom project with 5 goals, 2 reached, 1 blocked and a latest estimated finish of Dec 26
+- **WHEN** its card renders
+- **THEN** it shows "Done by Dec 26", "2 of 5 reached" and "1 blocked", the last linking to that project's blocked goals on Goals
+
+#### Scenario: Zero blocked is hidden
+
+- **GIVEN** a live project with no blocked goal
+- **WHEN** its card renders
+- **THEN** no blocked count is shown
 
 ### Requirement: Historical goals stay outside the in-flight ordering
 

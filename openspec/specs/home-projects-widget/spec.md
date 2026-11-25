@@ -57,9 +57,9 @@ The widget SHALL show the first 5 project cards at or above the 768px breakpoint
 
 ### Requirement: Project cards are condensed and identity-only
 
-Each card SHALL show that project's color, name, and a units/goals summary (the count of the project's in-flight goals and of the distinct units among them, derived from the project's `goalIds` joined with the loaded goals list — no per-project read), condensed for the smaller widget footprint. A card for a project with a resolvable, not-ended target SHALL also show its target chip and deadline fit count (`project-deadline-fit`). The home page computes it from one global-plan run, only when at least one listed project has such a target. Cards in this widget SHALL NOT render lifecycle actions (Make current, Edit, Archive/Restore) — the widget is for navigation and at-a-glance status only.
+Each card SHALL show that project's color, name, and a units/goals summary (the count of the project's in-flight goals and of the distinct units among them, derived from the project's `goalIds` joined with the loaded goals list — no per-project read), condensed for the smaller widget footprint. Each card SHALL also show a compact status line: the deadline chip for a targeted project (`project-deadline`, without its link, since the whole card is a button), the deadline fit count for a resolvable, not-ended target (`project-deadline-fit`), and "Done by" or "No date" with the not-estimated count (`plan-completion-outlook`). Reached and blocked counts are left out to keep the rows short. The home page computes these from one global-plan run, only when at least one listed project holds a goal. Cards in this widget SHALL NOT render lifecycle actions (Make current, Edit, Archive/Restore) — the widget is for navigation and at-a-glance status only.
 
-Implementation note: the estimate subsystem now lives in `features/goal-planning`, so `pages/home` can compose the fit count without relocating it. Projects without targets keep the units/goals count as their only summary.
+Implementation note: the estimate subsystem now lives in `features/goal-planning`, so `pages/home` can compose the status line without relocating it.
 
 #### Scenario: Card shows identity and summary
 
@@ -71,13 +71,19 @@ Implementation note: the estimate subsystem now lives in `features/goal-planning
 
 - **GIVEN** a project targeting the Legendary Event Uthar with 2 of 4 counted goals fitting
 - **WHEN** its card renders in the widget
-- **THEN** the card also shows "LE · Uthar" and "2 of 4 fit"
+- **THEN** the card also shows "LE · Uthar · starts in 18 days" and "2 of 4 fit"
 
-#### Scenario: No target, no plan run
+#### Scenario: No goals, no plan run
 
-- **GIVEN** no listed project has a target
+- **GIVEN** no listed project holds a goal
 - **WHEN** the widget renders
 - **THEN** no plan run is computed for the widget
+
+#### Scenario: Done by on any card
+
+- **GIVEN** an untargeted project whose goals finish by Dec 26
+- **WHEN** its card renders in the widget
+- **THEN** it shows "Done by Dec 26"
 
 #### Scenario: Summary still loading
 

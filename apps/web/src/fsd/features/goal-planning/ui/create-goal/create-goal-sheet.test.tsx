@@ -2570,7 +2570,7 @@ describe("CreateGoalSheet", () => {
       expect(createProject).toHaveBeenCalledExactlyOnceWith({
         name: "Brand new",
         description: null,
-        color: null,
+        color: expect.stringMatching(/^#[\da-f]{6}$/),
       })
       // The goal draft is intact and nothing was submitted.
       expect(createCombinedGoals).not.toHaveBeenCalled()

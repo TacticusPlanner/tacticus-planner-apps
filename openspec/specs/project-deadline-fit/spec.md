@@ -63,12 +63,18 @@ When the target is ended, the header SHALL read "<chip> · Ended <date>" with Mo
 
 ### Requirement: Targeted project cards show the fit count
 
-On the Projects page and in the home widget, the card of a non-archived project with a resolvable, not-ended target SHALL show "<fit> of <total> fit" (or "All N done") beside its chip, computed by the same rule as the header from the one global-plan run. Untargeted and ended projects show no count. While the run loads the count is a skeleton; when it fails the count is hidden.
+On the Projects page and in the home widget, the card of a non-archived project with a resolvable, not-ended target SHALL show "<fit> of <total> fit" (or "All N done") beside its chip, computed by the same rule as the header from the one global-plan run, followed by "· N not estimated" when any goal is not estimated, so "0 of 0 fit" never hides an unestimated goal. Untargeted and ended projects show no count. While the run loads the count is a skeleton; when it fails the count is hidden.
 
 #### Scenario: Card count
 
 - **WHEN** the Projects page renders the Uthar project
-- **THEN** its card shows "LE · Uthar" and "2 of 4 fit"
+- **THEN** its card shows the "LE · Uthar" deadline chip and "2 of 4 fit"
+
+#### Scenario: Unestimated goals stay visible
+
+- **GIVEN** a targeted project whose only goal can't be estimated (an unlock that comes from shops)
+- **WHEN** its card renders
+- **THEN** it shows "0 of 0 fit · 1 not estimated"
 
 ### Requirement: The unscoped Goals page shows no project fits
 

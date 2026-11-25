@@ -105,7 +105,8 @@ export {
 } from "./model/deadline-fit/deadline-fit"
 export {
   useProjectDeadlineFit,
-  useProjectFitCounts,
+  useProjectCardOutlooks,
+  type ProjectCardProgress,
   type ProjectDeadlineFit,
   type ProjectFitCount,
 } from "./model/deadline-fit/use-project-deadline-fit"

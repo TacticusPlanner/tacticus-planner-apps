@@ -2,20 +2,7 @@ import { useTranslation } from "react-i18next"
 import { ColorPicker } from "@workspace/ui/components/color-picker"
 import { cn } from "@workspace/ui/lib/utils"
 
-// Predefined swatch options (plan §6) — a small, deliberately generic accent palette; any project
-// can still pick an arbitrary color via the custom picker below.
-const PRESET_COLORS = [
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#22c55e",
-  "#14b8a6",
-  "#3b82f6",
-  "#6366f1",
-  "#a855f7",
-  "#ec4899",
-  "#6b7280",
-] as const
+import { PROJECT_PRESET_COLORS as PRESET_COLORS } from "@/entities/project"
 
 /**
  * A project's color selector — predefined swatches plus a native `<input type="color">` for any

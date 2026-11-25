@@ -1371,9 +1371,7 @@
       "membershipConflict": "{{unit}} a déjà un objectif {{type}} actif ou en pause.",
       "filterAll": "Tous les projets",
       "archivedProjects": "Projets archivés ({{count}})",
-      "unitGoalSummary": "{{units}} unités · {{goals}} objectifs",
-      "reachedSummary": "{{count}} atteints",
-      "blockedSummary": "{{count}} bloqués",
+      "unitGoalSummary": "{{units}} · {{goals}}",
       "completionSummary": "Terminé le {{date}}",
       "summaryUnavailable": "Résumé indisponible — réessayer",
       "moreActions": "Autres actions du projet",
@@ -1454,7 +1452,23 @@
       "addToProjectsDescription": "Choisissez un ou plusieurs projets auxquels ajouter les objectifs sélectionnés, ou créez-en un nouveau.",
       "addToProjectsConfirm": "Ajouter aux projets",
       "addToProjectsConfirmCount": "Ajouter à {{count}} projets",
-      "saveProjects": "Enregistrer les projets"
+      "saveProjects": "Enregistrer les projets",
+      "unitCount_one": "{{count}} unité",
+      "unitCount_other": "{{count}} unités",
+      "goalCount_one": "{{count}} objectif",
+      "goalCount_other": "{{count}} objectifs",
+      "reachedOf_one": "{{count}} sur {{total}} atteint",
+      "reachedOf_other": "{{count}} sur {{total}} atteints",
+      "noDate": "Pas de date",
+      "blockedLink_one": "{{count}} bloqué",
+      "blockedLink_other": "{{count}} bloqués",
+      "blockedLinkLabel_one": "Voir {{count}} objectif bloqué dans {{name}}",
+      "blockedLinkLabel_other": "Voir {{count}} objectifs bloqués dans {{name}}",
+      "deadlineChip": {
+        "startsIn": "{{name}} · commence dans {{when}}",
+        "endsIn": "{{name}} · se termine dans {{when}}",
+        "ended": "{{name}} · terminé"
+      }
     },
     "toasts": {
       "statusConflict": "{{goal}} n'a pas pu être modifié : {{reason}}",

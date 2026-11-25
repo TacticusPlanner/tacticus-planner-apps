@@ -18,18 +18,16 @@ import {
   projectPortraitUnits,
   useProjectActions,
   useProjectsWithGoals,
+  withCardProgress,
 } from "@/features/project-management"
 import type { ProjectCardSummary } from "@/features/project-management"
 import type { ProjectSummary } from "@/entities/project"
 
 import {
   useCreateGoalLauncher,
-  useGoalAttainment,
-  useGoalsOverviewMetrics,
   MoveProjectGoalsDialog,
   moveGoalsChoices,
-  usePlanInsights,
-  useProjectFitCounts,
+  useProjectCardOutlooks,
 } from "@/features/goal-planning"
 import { PageToolbar } from "@/shared/ui"
 import { useProjectsListTutorial } from "./projects-list-page.tutorial"
@@ -66,7 +64,6 @@ export function ProjectsListPage() {
   const launchCreateGoal = useCreateGoalLauncher()
   const createGoalIn = (project: ProjectSummary) =>
     launchCreateGoal({ projectIds: [project.projectId] })
-  const defaultProject = projects.projects.find((project) => project.isDefault)
   const available = orderDefaultFirst(projects.projects)
   const archived = projects.projects.filter(
     (project) => project.status === "Archived"
@@ -76,21 +73,8 @@ export function ProjectsListPage() {
   const summaryProjects = projectsWithGoals.projects.filter(
     (project) => project.status !== "Archived" || archivedOpen
   )
-  const defaultGoalIds = (
-    projectsWithGoals.projects.find((project) => project.isDefault)?.goals ?? []
-  ).map((goal) => goal.goalId)
-  const defaultAttainment = useGoalAttainment(defaultGoalIds)
-  // The Default project's numbers are its goals' outcomes from the one global run, not a project-only plan.
-  // An empty scope (no Default project, or its goals not loaded yet) skips the run's fan-out.
-  const { result: defaultInsights } = usePlanInsights(
-    defaultProject ? defaultGoalIds : []
-  )
-  const defaultMetrics = useGoalsOverviewMetrics(
-    defaultGoalIds,
-    defaultInsights.estimates
-  )
-  // Targeted cards' deadline fit counts (project-deadline-fit), from the one global-plan run.
-  const fitCounts = useProjectFitCounts(projects.projects)
+  // Every live card's status line and targeted cards' fit counts, from the one global-plan run.
+  const { fitCounts, progress } = useProjectCardOutlooks(projects.projects)
   const summaries = new Map<string, ProjectCardSummary>()
   for (const project of summaryProjects) {
     if (goalsRead.loading) {
@@ -115,20 +99,9 @@ export function ProjectsListPage() {
       units,
       goals: members.length,
       portraitUnits: projectPortraitUnits(members),
-      ...(project.isDefault
-        ? {
-            reached: members.filter(
-              (goal) => defaultAttainment.get(goal.goalId)?.reached
-            ).length,
-            blocked: members.filter(
-              (goal) => defaultMetrics.get(goal.goalId)?.blockers.isBlocked
-            ).length,
-            completionDate: defaultInsights.completionDate,
-            unestimatedGoalCount: defaultInsights.unestimatedGoalCount,
-          }
-        : {}),
     })
   }
+  const cardSummaries = withCardProgress(summaries, progress)
 
   // Move goals… (project-goal-moves): offered on live projects holding in-flight goals, disabled when
   // no placement would change the order. The dialog is one for the whole page and stays open while
@@ -208,7 +181,7 @@ export function ProjectsListPage() {
               onMoveGoals={setMoveGoalsProject}
               onSelect={openProjectOnGoals}
               projects={available}
-              summaries={summaries}
+              summaries={cardSummaries}
               fitCounts={fitCounts}
             />
           )}

@@ -69,10 +69,15 @@ describe("Project Related to", () => {
     await user.click(screen.getByRole("option", { name: "Uthar" }))
     await user.click(screen.getByText("goals.project.create"))
 
-    expect(actions.create).toHaveBeenCalledWith("Uthar run 3", null, null, {
-      kind: "legendaryEvent",
-      eventId: "votanUthar",
-    })
+    expect(actions.create).toHaveBeenCalledWith(
+      "Uthar run 3",
+      null,
+      expect.stringMatching(/^#[\da-f]{6}$/),
+      {
+        kind: "legendaryEvent",
+        eventId: "votanUthar",
+      }
+    )
   })
 
   it("clears the target when None is picked", async () => {

@@ -30,7 +30,13 @@ describe("QuickCreateProjectSheet", () => {
     })
     fireEvent.submit(document.querySelector("#manage-project-form")!)
 
-    expect(actions.create).toHaveBeenCalledWith("Plan", null, null, null)
+    // A new project starts with an unused preset color.
+    expect(actions.create).toHaveBeenCalledWith(
+      "Plan",
+      null,
+      expect.stringMatching(/^#[\da-f]{6}$/),
+      null
+    )
     await vi.waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   })
 
