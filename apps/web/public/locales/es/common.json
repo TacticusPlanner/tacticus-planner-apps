@@ -841,6 +841,7 @@
       "title": "Próximos eventos",
       "live": "En vivo",
       "endsIn": "Termina en {{when}}",
+      "endUnconfirmed": "Hora de fin no confirmada",
       "startsIn": "Empieza en {{when}}",
       "startDateTba": "Fecha de inicio por anunciar",
       "empty": "No hay eventos programados.",

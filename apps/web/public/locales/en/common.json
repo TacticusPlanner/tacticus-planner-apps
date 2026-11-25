@@ -841,6 +841,7 @@
       "title": "Upcoming events",
       "live": "Live",
       "endsIn": "Ends in {{when}}",
+      "endUnconfirmed": "End time not confirmed",
       "startsIn": "Starts in {{when}}",
       "startDateTba": "Start date TBA",
       "empty": "No events scheduled.",

@@ -124,6 +124,8 @@ function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
       withHours: true,
     }),
   })
+  // A projected Campaign Event end is the catalog's guess, not the game's: no countdown, as on Today.
+  const endUnconfirmed = row.type === "campaignEvent" && !row.endConfirmed
 
   return (
     <div
@@ -185,7 +187,16 @@ function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
         </span>
       </Link>
       <div className="relative flex shrink-0 flex-col items-end gap-2">
-        <CountdownChip text={endsIn} />
+        {endUnconfirmed ? (
+          <span
+            className="text-xs whitespace-nowrap text-muted-foreground"
+            data-testid="home-events-end-unconfirmed"
+          >
+            {t("home.events.endUnconfirmed")}
+          </span>
+        ) : (
+          <CountdownChip text={endsIn} />
+        )}
         {row.type === "legendaryEvent" ? (
           <LegendaryEventPlanButton eventId={row.unitId} />
         ) : null}

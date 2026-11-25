@@ -841,6 +841,7 @@
       "title": "Événements à venir",
       "live": "En cours",
       "endsIn": "Se termine dans {{when}}",
+      "endUnconfirmed": "Heure de fin non confirmée",
       "startsIn": "Commence dans {{when}}",
       "startDateTba": "Date de début à venir",
       "empty": "Aucun événement programmé.",
