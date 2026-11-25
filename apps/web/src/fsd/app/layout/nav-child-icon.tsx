@@ -23,12 +23,15 @@ export function NavChildIcon({
       />
     )
   }
+  // The game's nav art has padding around it, so it is drawn at 24px to read as large as the
+  // 20px lucide glyphs beside it (the same as `NavItemIcon` below). `-my-0.5` keeps the row as tall
+  // as a 20px icon's row.
   if ("artSrc" in child && child.artSrc) {
     return (
       <img
         alt=""
         aria-hidden="true"
-        className={cn("size-icon shrink-0 object-contain", className)}
+        className={cn("-my-0.5 size-6 shrink-0 object-contain", className)}
         src={child.artSrc}
       />
     )

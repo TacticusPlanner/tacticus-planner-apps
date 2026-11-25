@@ -73,7 +73,9 @@ icons with no label beside them are 24px (`size-6`); the empty state's icon is
 dot, colour swatches and legend squares.
 
 Game icons (portraits, upgrades, equipment, factions, traits…) use the role
-sizes in the `ui-style-guide` skill (rule 6). Layout, controls and copy are
+sizes in the `ui-style-guide` skill (rule 6). The game's nav art (section and
+child icons in the sidebar, section menu and tabs) is 24px (`size-6`): it is
+drawn with padding, so 24px reads as large as the 20px lucide icons beside it. Layout, controls and copy are
 there too; this skill is its sizing chapter.
 
 Today's app is still denser than this table in places (see the UI sizing
