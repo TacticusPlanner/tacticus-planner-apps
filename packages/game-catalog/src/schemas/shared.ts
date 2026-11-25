@@ -35,19 +35,6 @@ import {
   unitSummons,
 } from "./unit-values"
 
-export {
-  abilityAttacks,
-  abilityKinds,
-  abilityRoles,
-  abilityTargets,
-  unitSummons,
-  type AbilityAttack,
-  type AbilityKind,
-  type AbilityRole,
-  type AbilityTarget,
-  type UnitSummons,
-} from "./unit-values"
-
 // Defaults to `none` for a server that predates the field.
 export const unitSummonsSchema = z.enum(unitSummons).default("none")
 
