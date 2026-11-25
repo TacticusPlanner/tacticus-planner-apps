@@ -34,6 +34,24 @@ vi.mock("@/entities/roster-snapshot", async (importOriginal) => ({
   useDeleteRosterSnapshot: () => ({ mutate: vi.fn(), isPending: false }),
 }))
 
+const runRecords = vi.hoisted(() => ({
+  get: vi.fn(),
+}))
+vi.mock("@/entities/legendary-event", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/entities/legendary-event")>()
+  return {
+    ...actual,
+    legendaryEventPlanQueries: {
+      ...actual.legendaryEventPlanQueries,
+      latestRunRecordsAcrossEvents: () => ({
+        queryKey: ["legendary-event-run-records", { scope: "allEvents" }],
+        queryFn: () => runRecords.get(),
+      }),
+    },
+  }
+})
+
 const snapshot = (
   id: string,
   source: PersonalRosterSnapshot["source"],
@@ -61,6 +79,8 @@ const list = (count: number): PersonalRosterSnapshotList => ({
 
 describe("ManageSnapshotsSheet", () => {
   beforeEach(() => {
+    runRecords.get.mockReset()
+    runRecords.get.mockResolvedValue({ records: [], nextAfter: null })
     keep.mutate.mockReset()
     vi.mocked(toast.error).mockReset()
   })
@@ -106,5 +126,67 @@ describe("ManageSnapshotsSheet", () => {
     expect(screen.getByTestId("manage-snapshots-auto")).not.toHaveTextContent(
       "myGame.collection.snapshots.usage"
     )
+  })
+
+  it("lists every Legendary Event roster read-only and says when the next automatic snapshot comes", async () => {
+    vi.useFakeTimers({
+      toFake: ["Date"],
+      now: new Date("2026-11-25T12:00:00Z"),
+    })
+    runRecords.get.mockResolvedValue({
+      records: [
+        {
+          id: "r1",
+          eventId: "unplannedEvent",
+          run: 2,
+          startedAt: "2026-11-20T00:00:00Z",
+          progressAt: "2026-11-22T00:00:00Z",
+          catalogVersion: "1",
+          points: 100,
+        },
+      ],
+      nextAfter: null,
+    })
+    render(<ManageSnapshotsSheet open onOpenChange={vi.fn()} list={list(2)} />)
+
+    const section = screen.getByTestId("manage-snapshots-run-records")
+    const row = await within(section).findByTestId("manage-run-record-row")
+    expect(row).toHaveTextContent(
+      "myGame.collection.snapshots.leRow event=unplannedEvent run=2"
+    )
+    expect(within(row).queryByRole("button")).toBeNull()
+    // The newest roster is the LE one (Nov 22), so the next automatic snapshot waits 30 days.
+    expect(screen.getByTestId("manage-snapshots-next-auto")).toHaveTextContent(
+      "myGame.collection.snapshots.nextAutoAfter date=Dec 22, 2026"
+    )
+    vi.useRealTimers()
+  })
+
+  it("says the next sync takes one when no roster is recent", async () => {
+    render(
+      <ManageSnapshotsSheet
+        open
+        onOpenChange={vi.fn()}
+        list={{ ...list(0), items: [] }}
+      />
+    )
+
+    expect(
+      await screen.findByTestId("manage-snapshots-next-auto")
+    ).toHaveTextContent("myGame.collection.snapshots.nextAutoSync")
+    expect(
+      screen.getByText("myGame.collection.snapshots.leNone")
+    ).toBeInTheDocument()
+  })
+
+  it("reads no Legendary Event rosters while closed", () => {
+    render(
+      <ManageSnapshotsSheet
+        open={false}
+        onOpenChange={vi.fn()}
+        list={list(2)}
+      />
+    )
+    expect(runRecords.get).not.toHaveBeenCalled()
   })
 })

@@ -5,6 +5,7 @@ import { BookmarkPlus, Pencil, Trash2 } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Sheet,
   SheetBody,
@@ -36,12 +37,15 @@ import { ConfirmationDialog } from "@/shared/ui"
 
 import { canKeep, manageSections } from "../../../model/manage-snapshots"
 import { isValidSnapshotRename } from "../../../model/take-snapshot"
+import { useManageRunRecords } from "../../../model/use-manage-run-records"
 import { useSourceLabels } from "../../../model/use-source-labels"
 
 /**
- * The personal snapshots newest first (never Legendary Event rosters) in two sections (design D3):
- * manual ones with V1 imports, then automatic ones with their quota and Keep. Each row
- * has an inline rename (Enter or blur saves, Escape cancels) and a confirmed permanent delete.
+ * The personal snapshots newest first in two sections (design D3): manual ones with V1 imports,
+ * then automatic ones with their quota, Keep and when the next one can be taken. Each row has an
+ * inline rename (Enter or blur saves, Escape cancels) and a confirmed permanent delete. A third,
+ * read-only section lists every Legendary Event roster, planned or not, since those count as
+ * recent snapshots and can hold back the automatic one.
  */
 export function ManageSnapshotsSheet({
   open,
@@ -52,8 +56,9 @@ export function ManageSnapshotsSheet({
   onOpenChange: (open: boolean) => void
   list: PersonalRosterSnapshotList | undefined
 }) {
-  const { t } = useTranslation("common")
+  const { t, i18n } = useTranslation("common")
   const [deleting, setDeleting] = useState<PersonalRosterSnapshot | null>(null)
+  const runRecords = useManageRunRecords(open, list)
   const sections = manageSections(list)
   const keepable = canKeep(list)
 
@@ -126,6 +131,18 @@ export function ManageSnapshotsSheet({
                   })}
                 </p>
               ) : null}
+              {runRecords.status === "ready" ? (
+                <p className="text-sm" data-testid="manage-snapshots-next-auto">
+                  {runRecords.data.nextAuto.kind === "after"
+                    ? t("myGame.collection.snapshots.nextAutoAfter", {
+                        date: formatSnapshotDate(
+                          new Date(runRecords.data.nextAuto.atMs).toISOString(),
+                          i18n.language
+                        ),
+                      })
+                    : t("myGame.collection.snapshots.nextAutoSync")}
+                </p>
+              ) : null}
               <ul className="flex flex-col divide-y">
                 {sections.auto.map((snapshot) => (
                   <SnapshotRow
@@ -137,6 +154,7 @@ export function ManageSnapshotsSheet({
                 ))}
               </ul>
             </section>
+            <RunRecordsSection read={runRecords} />
           </SheetBody>
         </SheetContent>
       </Sheet>
@@ -145,6 +163,64 @@ export function ManageSnapshotsSheet({
         onClose={() => setDeleting(null)}
       />
     </>
+  )
+}
+
+function RunRecordsSection({
+  read,
+}: {
+  read: ReturnType<typeof useManageRunRecords>
+}) {
+  const { t, i18n } = useTranslation("common")
+  return (
+    <section
+      className="flex flex-col gap-2"
+      data-testid="manage-snapshots-run-records"
+    >
+      <h3 className="text-sm font-semibold">
+        {t("myGame.collection.snapshots.leTitle")}
+      </h3>
+      <p className="text-sm text-muted-foreground">
+        {t("myGame.collection.snapshots.leHint")}
+      </p>
+      {read.status === "loading" ? (
+        <Skeleton className="h-10 w-full" />
+      ) : read.status === "error" ? (
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-destructive">
+            {t("myGame.collection.snapshots.leError")}
+          </p>
+          <Button onClick={read.retry} size="sm" variant="outline">
+            {t("myGame.collection.snapshots.retry")}
+          </Button>
+        </div>
+      ) : read.data.rows.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {t("myGame.collection.snapshots.leNone")}
+        </p>
+      ) : (
+        <ul className="flex flex-col divide-y">
+          {read.data.rows.map((row) => (
+            <li
+              className="flex min-w-0 flex-col py-2"
+              data-testid="manage-run-record-row"
+              key={row.id}
+            >
+              <span className="truncate text-sm font-medium">
+                {t("myGame.collection.snapshots.leRow", {
+                  event: row.eventName,
+                  run: row.run,
+                })}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {formatSnapshotDate(row.takenAt, i18n.language)} ·{" "}
+                {formatRelativeTime(Date.parse(row.takenAt), i18n.language)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   )
 }
 

@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useQueries, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import type { Progression, Rarity } from "@workspace/game-domain"
 
 import {
@@ -20,7 +20,7 @@ import type {
   RosterDiffContext,
   RosterSnapshotSource,
 } from "@/entities/roster-snapshot"
-import { useQueryReadState, useStableByKey } from "@/shared/lib"
+import { useQueryReadState } from "@/shared/lib"
 import type { ReadState } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
@@ -65,8 +65,8 @@ const loading = (retry: () => void): ReadState<never> => ({
 })
 
 /**
- * Every source compare mode can use: the personal snapshots and the newest page of run records of
- * each Legendary Event the user has a plan for. `enabled` false (a guest, or compare mode off for
+ * Every source compare mode can use: the personal snapshots and the newest page of run records
+ * across every Legendary Event, planned or not (the plans still feed the event team filter). `enabled` false (a guest, or compare mode off for
  * the run records) requests nothing.
  */
 export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
@@ -75,12 +75,14 @@ export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
     useQuery({ ...legendaryEventPlanQueries.list(), enabled })
   )
   const plans = plansQuery.status === "ready" ? plansQuery.data : undefined
-  const records = useQueries({
-    queries: (plans ?? []).map((plan) => ({
-      ...legendaryEventPlanQueries.latestRunRecords(plan.eventId),
+  // Every event's records in one read, planned or not: an unplanned event's roster still counts as a
+  // recent snapshot for the automatic-snapshot rule, so it must be listed too.
+  const records = useQueryReadState(
+    useQuery({
+      ...legendaryEventPlanQueries.latestRunRecordsAcrossEvents(),
       enabled,
-    })),
-  })
+    })
+  )
   const events = useLegendaryEvents()
   const eventNames = useMemo(
     () =>
@@ -93,28 +95,17 @@ export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
     [events]
   )
 
-  const recordsError = records.some(
-    (query) => query.isError && !query.isFetching
-  )
-  const recordsReady = records.every((query) => query.data !== undefined)
-  // Stable until a page is fetched again (a sync can replace records at the same count), so the
-  // memo below does not rebuild every render.
-  const recordPages = useStableByKey(
-    records
-      .map((query) => (query.data ? String(query.dataUpdatedAt) : "-"))
-      .join("|"),
-    records.map((query) => query.data)
-  )
+  const recordList = records.status === "ready" ? records.data : undefined
 
   const retry = () => {
     personal.retry()
     plansQuery.retry()
-    for (const query of records) if (query.isError) void query.refetch()
+    records.retry()
   }
 
   const personalData = personal.status === "ready" ? personal.data : undefined
   const sources = useMemo(() => {
-    if (!personalData || !plans || !recordsReady) return undefined
+    if (!personalData || !plans || !recordList) return undefined
     const list: CompareSource[] = [
       ...personalData.items.map((snapshot): CompareSource => ({
         kind: "snapshot",
@@ -123,33 +114,29 @@ export function useCompareSources(enabled: boolean): ReadState<CompareSources> {
         source: snapshot.source,
         takenAt: snapshot.takenAt,
       })),
-      ...recordPages.flatMap((page) =>
-        page
-          ? page.records.map((record): CompareSource => ({
-              kind: "runRecord",
-              id: formatRosterSourceId({
-                kind: "runRecord",
-                eventId: page.eventId,
-                recordId: record.id,
-              }),
-              eventId: page.eventId,
-              eventName: eventNames.get(page.eventId) ?? page.eventId,
-              run: record.run,
-              takenAt: record.progressAt,
-            }))
-          : []
-      ),
+      ...recordList.records.map((record): CompareSource => ({
+        kind: "runRecord",
+        id: formatRosterSourceId({
+          kind: "runRecord",
+          eventId: record.eventId,
+          recordId: record.id,
+        }),
+        eventId: record.eventId,
+        eventName: eventNames.get(record.eventId) ?? record.eventId,
+        run: record.run,
+        takenAt: record.progressAt,
+      })),
     ]
     return list.toSorted(
       (a, b) => Date.parse(b.takenAt) - Date.parse(a.takenAt)
     )
-  }, [personalData, plans, recordsReady, recordPages, eventNames])
+  }, [personalData, plans, recordList, eventNames])
 
   if (!enabled) return loading(retry)
   if (
     personal.status === "error" ||
     plansQuery.status === "error" ||
-    recordsError
+    records.status === "error"
   ) {
     return { status: "error", retry }
   }

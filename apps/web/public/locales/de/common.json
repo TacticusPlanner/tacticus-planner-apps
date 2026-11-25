@@ -673,11 +673,18 @@
         "autoBadge": "Auto",
         "v1ImportBadge": "V1",
         "autoTitle": "Automatisch",
-        "autoHint": "Wird nach einer Synchronisierung erstellt, wenn es aus den letzten 30 Tagen keinen Snapshot deines Kaders gibt. Bis zu {{limit}} werden behalten; der älteste wird ersetzt.",
+        "autoHint": "Wird nach einer Synchronisierung erstellt, wenn es aus den letzten 30 Tagen keinen Snapshot und keinen Legendary-Event-Kader gibt. Bis zu {{limit}} werden behalten; der älteste wird ersetzt.",
         "keep": "Behalten",
         "keepLimitTooltip": "Lösche einen Snapshot, um diesen zu behalten",
         "keepFailed": "Der Snapshot konnte nicht behalten werden.",
-        "manageAll": "Snapshots verwalten"
+        "manageAll": "Snapshots verwalten",
+        "nextAutoAfter": "Nächster automatischer Snapshot nach dem {{date}}",
+        "nextAutoSync": "Nächster automatischer Snapshot bei der nächsten Synchronisierung",
+        "leTitle": "Legendary-Event-Kader",
+        "leHint": "Bei jeder Synchronisierung gespeichert, während ein Legendary Event läuft, geplant oder nicht. Du kannst sie vergleichen; sie zählen als aktuelle Snapshots.",
+        "leRow": "{{event}} · Durchlauf {{run}}",
+        "leNone": "Noch keine Legendary-Event-Kader.",
+        "leError": "Legendary-Event-Kader konnten nicht geladen werden."
       },
       "select": {
         "start": "Einheiten auswählen",

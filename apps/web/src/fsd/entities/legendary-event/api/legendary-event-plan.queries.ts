@@ -4,8 +4,12 @@ import type { QueryClient } from "@tanstack/react-query"
 import { ApiError } from "@/shared/api"
 
 import type { LegendaryEventPlan } from "../model/plan.types"
-import type { LegendaryEventRunRecords } from "../model/run-record.types"
+import type {
+  LegendaryEventRunRecordSummaries,
+  LegendaryEventRunRecords,
+} from "../model/run-record.types"
 import {
+  getAllLegendaryEventRunRecords,
   getLegendaryEventPlan,
   getLegendaryEventRunRecordRoster,
   getLegendaryEventRunRecords,
@@ -92,29 +96,20 @@ export const legendaryEventPlanQueries = {
       getNextPageParam: (page: LegendaryEventRunRecords) =>
         page.nextAfter ?? undefined,
     }),
-  // The newest page alone (the Collection compare picker), at the API's largest page size so it
-  // reaches back about 33 occurrences of three runs; its own key below the event's records, so a
-  // sync's refresh covers it and it never shares a cache entry with the paged query.
-  latestRunRecords: (eventId: string) =>
+  // The newest page of records across every event, planned or not (the Collection compare picker
+  // and Manage snapshots), at the API's largest page size; under `runRecordsAll()`, so a sync's
+  // refresh covers it.
+  latestRunRecordsAcrossEvents: () =>
     queryOptions({
       queryKey: [
         ...legendaryEventPlanQueries.runRecordsAll(),
-        eventId,
-        "latest",
+        { scope: "allEvents" },
       ] as const,
-      queryFn: async ({ signal }): Promise<LegendaryEventRunRecords> => {
-        try {
-          return await getLegendaryEventRunRecords(eventId, {
-            limit: COMPARE_RUN_RECORD_LIMIT,
-            signal,
-          })
-        } catch (error) {
-          if (error instanceof ApiError && error.status === 404) {
-            return { eventId, records: [], nextAfter: null }
-          }
-          throw error
-        }
-      },
+      queryFn: ({ signal }): Promise<LegendaryEventRunRecordSummaries> =>
+        getAllLegendaryEventRunRecords({
+          limit: COMPARE_RUN_RECORD_LIMIT,
+          signal,
+        }),
     }),
   // Under the event's records key, so refreshing the records (a sync) refreshes the rosters too.
   runRecordRoster: (eventId: string, recordId: string) =>
