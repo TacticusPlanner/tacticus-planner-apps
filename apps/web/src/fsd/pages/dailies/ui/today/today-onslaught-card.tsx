@@ -8,6 +8,9 @@ import { EntityIcon } from "@/shared/ui"
 import { TodayCard } from "./today-card"
 import type { TodayView } from "./today-view-model"
 
+/** In-page anchor of the Onslaught card, the Onslaught glance tile's target. */
+export const TODAY_ONSLAUGHT_ID = "today-onslaught"
+
 /** Today's Onslaught runs per unit, in goal priority, with the whole tokens to spend. */
 export function TodayOnslaughtCard({ view }: { view: TodayView }) {
   const { t } = useTranslation("dailies")
@@ -20,6 +23,8 @@ export function TodayOnslaughtCard({ view }: { view: TodayView }) {
           <span className="tabular-nums">{view.onslaughtTokens}</span>
         </Badge>
       }
+      className="scroll-mt-[calc(var(--mobile-header-height)+1rem)] md:scroll-mt-4"
+      id={TODAY_ONSLAUGHT_ID}
       testId="today-onslaught"
       title={t("plan.onslaught")}
     >

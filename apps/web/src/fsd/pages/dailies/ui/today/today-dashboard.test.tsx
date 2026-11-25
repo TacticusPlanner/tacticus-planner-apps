@@ -9,6 +9,10 @@ import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 import { TodayDashboard } from "./today-dashboard"
 
 // The shop card and the campaign event tile read their own data; their behaviour has its own tests.
+vi.mock("../today-shop-recommendations", () => ({
+  TODAY_SHOPS_ID: "today-shops",
+  useTodayShopRecommendations: () => ({ status: "no-goals" }),
+}))
 vi.mock("../today-shops", () => ({
   TodayShops: () => (
     <section aria-label="Shop recommendations" data-testid="today-shops" />
@@ -250,12 +254,60 @@ describe("TodayDashboard", () => {
 
     const card = within(screen.getByTestId("todays-attempts"))
     // 6 + 6 + 10 + 5 + 2 = 29 attempts over 5 nodes.
-    expect(card.getByText("5 nodes · 29")).toBeInTheDocument()
+    expect(card.getByText("5 nodes · 29 attempts")).toBeInTheDocument()
     const row = card.getByTestId(`todays-attempt-${offPlanBattle}`)
     expect(row).toHaveAccessibleName(
       "Adamantium, Death Guard Extremis 3, 6 attempts"
     )
     expect(within(row).getByText("6 attempts")).toBeInTheDocument()
+  })
+
+  it("groups Today's attempts by upgrade, showing a material's have / need once", () => {
+    window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+    const mirror = battleIdSchema.parse("B2M")
+    const base = ready()
+    const offPlanResource = base.resourceByBattleId.get(offPlanBattle)
+    if (!offPlanResource) throw new Error("fixture lacks the off-plan drop")
+    renderDashboard(
+      ready({
+        resourceTotals: new Map([
+          ...base.resourceTotals,
+          ["adamantium", { owned: 39, target: 136 }],
+        ]),
+        resourceByBattleId: new Map([
+          ...base.resourceByBattleId,
+          [mirror, offPlanResource],
+        ]),
+        locationsByBattleId: new Map([
+          ...base.locationsByBattleId,
+          [
+            mirror,
+            {
+              id: mirror,
+              campaignName: "Death Guard Mirror",
+              nodeLabel: "Extremis 6",
+              shortLabel: "Death Guard Mirror EX 6",
+              challenge: false,
+              icon: "/campaign.png",
+            },
+          ],
+        ]),
+        todaysAttempts: [
+          { battleId: offPlanBattle, attemptsUsed: 3, attemptsLeft: 0 },
+          { battleId: mirror, attemptsUsed: 5, attemptsLeft: 0 },
+        ],
+      })
+    )
+
+    const group = within(screen.getByTestId("todays-attempts-group-adamantium"))
+    expect(group.getAllByText("39 / 136")).toHaveLength(1)
+    // Most attempts first, each row still named in full for assistive technology.
+    expect(
+      group.getAllByRole("listitem").map((row) => row.dataset.testid)
+    ).toEqual([`todays-attempt-${mirror}`, `todays-attempt-${offPlanBattle}`])
+    expect(group.getByTestId(`todays-attempt-${mirror}`)).toHaveAccessibleName(
+      "Adamantium, Death Guard Mirror Extremis 6, 5 attempts, 39 of 136 owned"
+    )
   })
 
   it("keeps each raided node's have/need on Today's attempts, marking a covered resource done", () => {

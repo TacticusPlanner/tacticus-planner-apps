@@ -1,21 +1,27 @@
-import { useOutletContext } from "react-router"
+import { Link, useOutletContext } from "react-router"
 import { useTranslation } from "react-i18next"
+import { Button } from "@workspace/ui/components/button"
 
-import { useShopRecommendations } from "@/features/shops/recommendations"
+import type { ShopRecommendationsViewModel } from "@/features/shops/recommendations"
 import type { DailiesOutletContext } from "./dailies-layout"
 import { ShopList } from "./shops/shop-list"
 import { ShopsState } from "./shops/shops-state"
+import { TODAY_SHOPS_ID } from "./today-shop-recommendations"
 import { TodayCard } from "./today/today-card"
 
 /**
  * Today's shop buys, a card in the Raids dashboard (the separate Shops tab was folded in here). It
  * reads the same Dailies-wide project as the raids, so the Raids project selector narrows both. The
- * card sits in a ~400-575px column, so it uses the compact shop layout at every width.
+ * card sits in a ~400-575px column, so it uses the compact shop layout at every width. Its header
+ * links to Library > Shops, where every shop's schedule is.
  */
-export function TodayShops() {
+export function TodayShops({
+  recommendations,
+}: {
+  recommendations: ShopRecommendationsViewModel
+}) {
   const context = useOutletContext<DailiesOutletContext>()
   const { t } = useTranslation("shops")
-  const recommendations = useShopRecommendations(context.projectId)
 
   const project = context.projects.find(
     (candidate) => candidate.projectId === context.projectId
@@ -46,7 +52,17 @@ export function TodayShops() {
   }
 
   return (
-    <TodayCard testId="today-shops" title={t("title")}>
+    <TodayCard
+      action={
+        <Button asChild size="sm" variant="ghost">
+          <Link to="/library/shops">{t("schedulesLink")}</Link>
+        </Button>
+      }
+      className="scroll-mt-[calc(var(--mobile-header-height)+1rem)] md:scroll-mt-4"
+      id={TODAY_SHOPS_ID}
+      testId="today-shops"
+      title={t("title")}
+    >
       <p className="-mt-2 text-sm text-muted-foreground">
         {project ? t("subtitle", { project: project.name }) : t("subtitleAll")}
       </p>

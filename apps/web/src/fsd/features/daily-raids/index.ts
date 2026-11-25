@@ -16,6 +16,7 @@ export { todayQuickFilterOptions } from "./model/today-quick-filters/today-quick
 // Raid list grouping (by upgrade or by campaign): picked on Today, remembered per browser, followed
 // by every raid list inside this slice.
 export { RaidGroupingSwitch } from "./ui/raid-grouping-switch"
+export { useRaidGrouping } from "./model/raid-grouping/use-raid-grouping"
 // Dailies > HSE: the active event, the instance switcher, its raid-point rules and the tab's sections.
 export { useActiveHomeScreenEvent } from "./model/use-active-home-screen-event"
 export {
@@ -58,6 +59,7 @@ export { orderCombinedEntries } from "./model/combined-raids-order"
 export { isLocationVisible } from "./model/location-visibility"
 export type {
   DailyRaidBattleResource,
+  DailyRaidLocationViewModel,
   DailyRaidResourceProgress,
   DailyRaidsReadyViewModel,
   DailyRaidsViewModel,

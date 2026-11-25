@@ -12,6 +12,7 @@ export function TodayCard({
   action,
   children,
   className,
+  id,
   meta,
   testId,
   title,
@@ -21,6 +22,8 @@ export function TodayCard({
   action?: ReactNode
   children: ReactNode
   className?: string
+  /** In-page anchor, for a glance tile that jumps to the card. */
+  id?: string
   meta?: ReactNode
   /** Only for a tour target: tests reach the card by its region role and name. */
   testId?: string
@@ -34,6 +37,7 @@ export function TodayCard({
       aria-labelledby={headingId}
       className={cn("min-w-0 gap-3 px-4", className)}
       data-testid={testId}
+      id={id}
       role="region"
       size="sm"
       {...props}

@@ -89,21 +89,13 @@ describe("ProjectsWidget", () => {
     isMobileRef.current = false
   })
 
-  it("requests an uncapped project list on desktop", () => {
-    useHomeProjectsMock.mockReturnValue({ status: "loading" })
-
-    render(<ProjectsWidget />, { route: "/" })
-
-    expect(useHomeProjectsMock).toHaveBeenCalledWith(null)
-  })
-
-  it("requests a capped (3) project list on mobile", () => {
+  it("reads every project, so Show more needs no other read", () => {
     isMobileRef.current = true
     useHomeProjectsMock.mockReturnValue({ status: "loading" })
 
     render(<ProjectsWidget />, { route: "/" })
 
-    expect(useHomeProjectsMock).toHaveBeenCalledWith(3)
+    expect(useHomeProjectsMock).toHaveBeenCalledWith(null)
   })
 
   it("shows a loading state", () => {
@@ -176,19 +168,38 @@ describe("ProjectsWidget", () => {
     expect(portraits).toHaveTextContent("+2")
   })
 
-  it("shows a +N more control that navigates to the projects dashboard", () => {
-    useHomeProjectsMock.mockReturnValue({
-      status: "ready",
-      projects: [project({ projectId: "p1" })],
-      summaries: new Map(),
-      remainingCount: 2,
-    })
+  it.each([
+    [false, 5],
+    [true, 3],
+  ])(
+    "shows Home's card count (mobile %s: %i) of projects, then Show N more expands them in place",
+    async (isMobile, limit) => {
+      isMobileRef.current = isMobile
+      const projects = Array.from({ length: 7 }, (_, index) =>
+        project({ projectId: `p${index}`, name: `Project ${index}` })
+      )
+      useHomeProjectsMock.mockReturnValue({
+        status: "ready",
+        projects,
+        summaries: new Map(),
+        remainingCount: 0,
+      })
 
-    render(<ProjectsWidget />, { route: "/" })
+      render(<ProjectsWidget />, { route: "/" })
+      const rows = () => screen.getAllByTestId(/^home-project-row-/)
+      await waitFor(() => expect(rows()).toHaveLength(limit))
 
-    screen.getByTestId("home-projects-more").click()
-    expect(navigateMock).toHaveBeenCalledWith("/plan/projects")
-  })
+      const more = screen.getByTestId("home-projects-more")
+      expect(more).toHaveTextContent(
+        `home.projects.showMore:{"count":${7 - limit}}`
+      )
+      more.click()
+
+      await waitFor(() => expect(rows()).toHaveLength(7))
+      expect(more).toHaveTextContent("home.projects.showLess")
+      expect(navigateMock).not.toHaveBeenCalled()
+    }
+  )
 
   it("links to all projects from the header", () => {
     useHomeProjectsMock.mockReturnValue({ status: "loading" })

@@ -72,6 +72,10 @@ One row directly under the header, three fixed slots, left to right:
   View sheet, not on extra toolbar rows.
 - The filter entry point is always called "Filters" — not "Raids Filters",
   "Controls" or an unlabelled funnel.
+- The chips may also hold on/off plan options that change how a result is
+  computed, not only what is shown (Today's Fewer raids, Combine goals). Label
+  the row for what its chips do: "Plan options" there, not "Quick filters"
+  (and not "Quick actions": an action is a one-shot command).
 - A page scoped to a project puts the shared `ProjectSelect`
   (`@/entities/project`) first in the Find slot, showing the chosen project's
   name on every viewport. A page about one event at a time (Event shop, HSE,

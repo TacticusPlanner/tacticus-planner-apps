@@ -807,7 +807,9 @@
     },
     "projects": {
       "title": "Your projects",
-      "moreCount": "+{{count}} more",
+      "showMore_one": "Show {{count}} more",
+      "showMore_other": "Show {{count}} more",
+      "showLess": "Show less",
       "summaryUnavailable": "Summary unavailable",
       "emptyTitle": "No projects yet",
       "emptyDescription": "Projects group your goals so you can browse them separately.",

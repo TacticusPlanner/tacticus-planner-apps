@@ -25,29 +25,29 @@ The authenticated home page SHALL render Your Projects after Upcoming events and
 - **WHEN** the user activates "All projects"
 - **THEN** `/plan/projects` opens
 
-### Requirement: The widget lists projects, Default first; mobile caps the list, desktop does not
+### Requirement: The widget lists projects, Default first, five on desktop and three on a phone
 
 The widget SHALL show the Default project first, followed by other non-archived projects, each ordered by the same ordering the Projects dashboard uses. Archived projects SHALL NOT appear in the widget.
 
-Below the 768px breakpoint, the widget SHALL cap the list to 3 project cards total and show a "+N more" control that navigates to `/plan/projects` when more than 3 non-archived projects exist. At or above 768px, the widget SHALL show every non-archived project uncapped, with no "+N more" control.
+The widget SHALL show the first 5 project cards at or above the 768px breakpoint and the first 3 below it (the Home card limit shared with Daily Raids and Upcoming events). When more non-archived projects exist it SHALL show a "Show N more" control (N the hidden count) that reveals the rest in place and becomes "Show less", exposing its state with `aria-expanded`. The expanded state is not persisted.
 
-#### Scenario: Desktop shows every project uncapped
+#### Scenario: Desktop shows five
 
-- **GIVEN** the player has 5 non-archived projects, one of which is the Default project
+- **GIVEN** the player has 7 non-archived projects, one of which is the Default project
 - **WHEN** the widget renders at or above the 768px breakpoint
-- **THEN** all 5 are shown, the Default project first, with no "+N more" control
+- **THEN** the Default project and the next 4 are shown with "Show 2 more"; activating it shows all 7 and the control reads "Show less"
 
-#### Scenario: Mobile truncates to 3 with a link to see more
+#### Scenario: Mobile shows three
 
 - **GIVEN** the player has 5 non-archived projects, one of which is the Default project
 - **WHEN** the widget renders below the 768px breakpoint
-- **THEN** the Default project appears first, 2 more projects follow it, and a "+2 more" control links to `/plan/projects`
+- **THEN** the Default project appears first, 2 more projects follow it, and "Show 2 more" reveals the other 2 in place
 
-#### Scenario: Mobile with three or fewer projects needs no truncation
+#### Scenario: Within the limit needs no toggle
 
 - **GIVEN** the player has 3 or fewer non-archived projects
-- **WHEN** the widget renders below the 768px breakpoint
-- **THEN** all of them are shown and no "+N more" control is displayed
+- **WHEN** the widget renders at any width
+- **THEN** all of them are shown and no "Show N more" control is displayed
 
 #### Scenario: Archived projects are excluded
 
@@ -98,7 +98,7 @@ When the player has no projects, the widget SHALL explain that projects group un
 #### Scenario: Empty widget teaches projects
 
 - **WHEN** a user with no projects opens `/home`
-- **THEN** the widget shows explanatory copy and a labeled action to `/plan/projects`, with no project cards or "+N more" control
+- **THEN** the widget shows explanatory copy and a labeled action to `/plan/projects`, with no project cards or "Show N more" control
 
 ### Requirement: Distinct loading and failure states
 

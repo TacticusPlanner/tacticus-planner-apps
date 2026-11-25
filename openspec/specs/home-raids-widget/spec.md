@@ -118,20 +118,26 @@ When the account's Active goals have no farmable need for today, the widget SHAL
 - **WHEN** the widget would otherwise render
 - **THEN** it defers rendering until that data is available
 
-### Requirement: The widget shows five locations, the rest on demand
+### Requirement: The widget shows five locations on desktop and three on a phone, the rest on demand
 
-The widget SHALL show the first 5 locations, on mobile and desktop alike, of its list. When more exist it SHALL show a "Show N more" control (N the hidden count) that reveals all of them and becomes "Show less", and exposes its state with `aria-expanded`. The expanded state is not persisted.
+The widget SHALL show the first 5 locations of its list at or above the 768px breakpoint and the first 3 below it (the Home card limit shared with Your Projects and Upcoming events). When more exist it SHALL show a "Show N more" control (N the hidden count) that reveals all of them and becomes "Show less", and exposes its state with `aria-expanded`. The expanded state is not persisted.
 
 #### Scenario: Twelve locations
 
 - **GIVEN** today's schedule has 12 locations
-- **WHEN** the widget renders
+- **WHEN** the widget renders on desktop
 - **THEN** 5 rows show with "Show 7 more"; activating it shows all 12 and the control reads "Show less"
 
-#### Scenario: Five or fewer
+#### Scenario: Twelve locations on a phone
+
+- **GIVEN** today's schedule has 12 locations
+- **WHEN** the widget renders below the 768px breakpoint
+- **THEN** 3 rows show with "Show 9 more"
+
+#### Scenario: Within the limit
 
 - **GIVEN** today's schedule has 5 locations
-- **WHEN** the widget renders
+- **WHEN** the widget renders on desktop
 - **THEN** all 5 show and no toggle is rendered
 
 ### Requirement: The widget links to Today from its header

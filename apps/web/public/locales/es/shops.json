@@ -2,6 +2,7 @@
   "title": "Recomendaciones de tienda",
   "subtitle": "Ofertas de las tiendas diarias que vale la pena comprar hoy para los objetivos activos de {{project}}",
   "subtitleAll": "Ofertas de las tiendas diarias que vale la pena comprar hoy para tus objetivos activos",
+  "schedulesLink": "Calendarios de tiendas",
   "shopName": {
     "guild": "Tienda de gremio",
     "war": "Tienda de guerra de gremio",

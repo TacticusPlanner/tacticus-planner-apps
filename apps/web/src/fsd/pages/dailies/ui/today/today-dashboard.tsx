@@ -9,7 +9,9 @@ import {
   useCampaignBattleDialog,
 } from "@/widgets/battle-preview"
 
+import { useTodayShopRecommendations } from "../today-shop-recommendations"
 import { TodayShops } from "../today-shops"
+import { shopsGlanceOf } from "./shops-glance"
 import { TodayBonusCard } from "./today-bonus-card"
 import { TodayGlance } from "./today-glance"
 import { TodayOnslaughtCard } from "./today-onslaught-card"
@@ -38,6 +40,8 @@ export function TodayDashboard({
   // The battle dialog's open state lives outside this page, so a location's info button
   // re-renders only the dialog.
   const battleDialog = useCampaignBattleDialog()
+  // One read for the Shops card and its glance tile.
+  const shopRecommendations = useTodayShopRecommendations()
   const view =
     raids.status === "ready"
       ? buildTodayView(raids, { bonusShownCount })
@@ -72,7 +76,7 @@ export function TodayDashboard({
 
   return (
     <div className="@container min-w-0 space-y-3.5" data-testid="today-page">
-      <TodayGlance view={view} />
+      <TodayGlance shops={shopsGlanceOf(shopRecommendations)} view={view} />
       <div
         className={cn(
           "grid items-start gap-3.5",
@@ -102,7 +106,7 @@ export function TodayDashboard({
             className={cn(raids.status === "loading" && "hidden @2xl:block")}
             data-testid="today-shops-slot"
           >
-            <TodayShops />
+            <TodayShops recommendations={shopRecommendations} />
           </div>
         </div>
         {raids.status === "ready" && view ? (

@@ -559,7 +559,7 @@ On initial document load or refresh, the main rail SHALL start compact and the s
 
 ### Requirement: Navigation shows a live indicator for an active Home Screen Event
 
-While any Home Screen Event is active (any HSE, not only those with raid-point rules), the HSE navigation entry SHALL show a live indicator in every navigation renderer: the desktop side menu, the section tabs (mobile tabs), the mobile menu drawer and the desktop navigation dialog. The parent Dailies entry SHALL also show it, so it is visible with the menu collapsed and in the mobile bottom bar. With no active HSE no indicator is shown. The indicator SHALL read as "live now", not as an alert: it uses the green success colour tokens, never red. Beside an entry's label it is a small badge with a green dot and the localized word "Live"; on an icon (the mobile bottom bar and the compact desktop rail), where a label does not fit, it is a green dot alone. Both show a localized "Event live" tooltip on hover. The indicator SHALL NOT rely on colour alone: it carries a localized "event live" accessible name that assistive technology announces with the entry, and its pulse animation SHALL be disabled under `prefers-reduced-motion`. Activity is decided in UTC and updates without a reload when an event starts or ends. Search results do not show the indicator.
+While any Home Screen Event is active (any HSE, not only those with raid-point rules), the HSE navigation entry SHALL show a live indicator in every navigation renderer: the desktop side menu, the section tabs (mobile tabs), the mobile menu drawer and the desktop navigation dialog. The parent Dailies entry SHALL also show it, so it is visible with the menu collapsed and in the mobile bottom bar. With no active HSE no indicator is shown. The indicator SHALL read as "live now", not as an alert: it uses the green success colour tokens, never red. Beside an entry's label it is a small badge with a green dot and the localized word "Live"; on an icon (the mobile bottom bar and the compact desktop rail), where a label does not fit, it is a green dot alone. The badge is the shared Live badge that Home's Right now card also uses for live events. The indicator SHALL NOT rely on colour alone: it carries a localized "event live" accessible name that assistive technology announces with the entry, and its pulse animation SHALL be disabled under `prefers-reduced-motion`. Activity is decided in UTC and updates without a reload when an event starts or ends. Search results do not show the indicator.
 
 Assumptions:
 
@@ -596,7 +596,7 @@ Assumptions:
 
 - **GIVEN** an HSE is active
 - **WHEN** the HSE tab and the Dailies bottom-bar entry render
-- **THEN** the HSE tab shows a green "Live" badge, the Dailies icon shows a green dot, neither uses red, and hovering either shows the tooltip "Event live"
+- **THEN** the HSE tab shows a green "Live" badge, the Dailies icon shows a green dot, and neither uses red
 
 ### Requirement: Events is a top-level authenticated section with Legendary Events as its child
 

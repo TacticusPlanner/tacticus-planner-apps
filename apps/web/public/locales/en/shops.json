@@ -2,6 +2,7 @@
   "title": "Shop recommendations",
   "subtitle": "Today's daily-shop offers worth buying for {{project}}'s active goals",
   "subtitleAll": "Today's daily-shop offers worth buying for your active goals",
+  "schedulesLink": "Shop schedules",
   "shopName": {
     "guild": "Guild Shop",
     "war": "Guild War Shop",

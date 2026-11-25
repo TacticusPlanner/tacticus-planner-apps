@@ -183,11 +183,10 @@
     },
     "campaignEvent": {
       "title": "Campaign event",
+      "endsIn": "Ends in {{when}}",
       "named": "{{name}}",
-      "namedWithTime": "{{name}} · ends {{time}}",
       "namedUnconfirmed": "{{name}} · end time not confirmed",
       "unnamed": "Active · name unavailable",
-      "unnamedWithTime": "Active · name unavailable · ends {{time}}",
       "unnamedUnconfirmed": "Active · name unavailable · end time not confirmed",
       "inactive": "Not active"
     },
@@ -197,7 +196,14 @@
       "energyOver": "Energy limit reached",
       "energyValue": "{{used}} / {{daily}}",
       "tokens_one": "{{count}} token",
-      "tokens_other": "{{count}} tokens"
+      "tokens_other": "{{count}} tokens",
+      "shops": "Shops",
+      "toBuy_one": "{{count}} to buy",
+      "toBuy_other": "{{count}} to buy",
+      "possible_one": "+{{count}} possible",
+      "possible_other": "+{{count}} possible",
+      "nothingToBuy": "Nothing today",
+      "tileLink": "{{label}}: {{value}}"
     }
   },
   "schedule": {
@@ -344,7 +350,7 @@
           "content": "Limit Today and Bonus Raids to the campaign locations you want, for example only 5-slot Elite nodes or a specific enemy faction. The badge shows how many filters are active."
         },
         "quickFilters": {
-          "title": "Quick filters",
+          "title": "Plan options",
           "content": "Switch today's plan for a day. Fewer raids uses the locations that need fewer raid tickets for the same materials. Combine goals combines all goals' materials and farms them as if they were one goal. Plan and Goals dates are not affected."
         },
         "onslaught": {
@@ -614,8 +620,8 @@
     }
   },
   "quickFilters": {
-    "label": "Quick filters",
-    "helpLabel": "What the quick filters do",
+    "label": "Plan options",
+    "helpLabel": "What the plan options do",
     "chip": {
       "fewerRaids": "Fewer raids",
       "combineGoals": "Combine goals",

@@ -2,6 +2,7 @@
   "title": "Recommandations de boutique",
   "subtitle": "Offres des boutiques quotidiennes qui valent la peine d'être achetées aujourd'hui pour les objectifs actifs de {{project}}",
   "subtitleAll": "Offres des boutiques quotidiennes qui valent la peine d'être achetées aujourd'hui pour vos objectifs actifs",
+  "schedulesLink": "Calendriers des boutiques",
   "shopName": {
     "guild": "Boutique de guilde",
     "war": "Boutique de guerre de guilde",

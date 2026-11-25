@@ -158,7 +158,7 @@ describe("selectHomeEvents", () => {
     ])
   })
 
-  it("lists every running Home Screen Event", () => {
+  it("lists every running Home Screen Event, soonest end first", () => {
     const bloodTithe = hse(
       "hse-global-blood-tithe",
       "2026-10-02T08:00:00Z",
@@ -171,12 +171,49 @@ describe("selectHomeEvents", () => {
     })
 
     expect(summary(events.live)).toEqual([
-      ["hse-global-blood-tithe", true],
       ["hse-machine-hunt", true],
+      ["hse-global-blood-tithe", true],
     ])
   })
 
-  it("lists a live Incursion as live, after the other live events", () => {
+  it("orders live events by end, then start, then type, so events with one window sit together", () => {
+    // Three events end together (a Campaign Event, two HSEs); the Legendary Event ends later.
+    const endsAt = "2026-10-07T08:00:00Z"
+    const bloodTithe = hse(
+      "hse-global-blood-tithe",
+      "2026-10-02T08:00:00Z",
+      endsAt
+    )
+    const skullHarvest = hse(
+      "hse-skull-harvest",
+      "2026-10-02T08:00:00Z",
+      endsAt
+    )
+    const events = selectHomeEvents({
+      homeScreen: {
+        live: [skullHarvest, machineHunt, bloodTithe],
+        upcoming: [],
+      },
+      legendary: { events: [lysander], progress: [] },
+      campaignEvent: {
+        status: "live",
+        startMs: Date.parse("2026-10-02T08:00:00Z"),
+        endMs: Date.parse(endsAt),
+        campaignId: null,
+      },
+      nowMs: Date.parse("2026-10-03T12:00:00Z"),
+    })
+
+    expect(summary(events.live)).toEqual([
+      ["hse-machine-hunt", true],
+      ["astarLysander", true],
+      ["campaignEvent", true],
+      ["hse-global-blood-tithe", true],
+      ["hse-skull-harvest", true],
+    ])
+  })
+
+  it("lists a live Incursion as live, by its end among the other live events", () => {
     const events = selectHomeEvents({
       homeScreen: { live: [machineHunt], upcoming: [] },
       legendary: null,
@@ -189,10 +226,10 @@ describe("selectHomeEvents", () => {
     })
 
     expect(summary(events.live)).toEqual([
-      ["hse-machine-hunt", true],
       ["incursion", true],
+      ["hse-machine-hunt", true],
     ])
-    expect(events.live[1]).toMatchObject({ destination: "/my-game/incursions" })
+    expect(events.live[0]).toMatchObject({ destination: "/my-game/incursions" })
     expect(events.upcoming).toEqual([])
   })
 
@@ -241,7 +278,7 @@ describe("selectHomeEvents", () => {
     expect(events.upcoming[0]).toMatchObject({ campaignId: null })
   })
 
-  it("lists a live Quest Event after the other live events, linking to the Quest tab", () => {
+  it("lists a live Quest Event by its end, linking to the Quest tab", () => {
     const events = selectHomeEvents({
       homeScreen: { live: [machineHunt], upcoming: [] },
       legendary: null,
@@ -270,8 +307,8 @@ describe("selectHomeEvents", () => {
     })
 
     expect(summary(events.live)).toEqual([
-      ["hse-machine-hunt", true],
       ["incursion", true],
+      ["hse-machine-hunt", true],
       ["quest", true],
     ])
     expect(events.live[2]).toMatchObject({
@@ -538,7 +575,7 @@ describe("collapseUpcoming", () => {
     })
 
     expect(events.upcoming).toHaveLength(4)
-    expect(summary(collapseUpcoming(events))).toEqual([
+    expect(summary(collapseUpcoming(events, 3))).toEqual([
       ["hse-a", false],
       ["campaignEvent", false],
       ["incursion", false],
@@ -563,7 +600,7 @@ describe("collapseUpcoming", () => {
       nowMs,
     })
 
-    expect(summary(collapseUpcoming(events))).toEqual([
+    expect(summary(collapseUpcoming(events, 3))).toEqual([
       ["hse-a", false],
       ["campaignEvent", false],
       ["votanUthar", false],

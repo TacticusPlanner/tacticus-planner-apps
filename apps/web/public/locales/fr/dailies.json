@@ -183,11 +183,10 @@
     },
     "campaignEvent": {
       "title": "Événement de campagne",
+      "endsIn": "Se termine dans {{when}}",
       "named": "{{name}}",
-      "namedWithTime": "{{name}} · se termine {{time}}",
       "namedUnconfirmed": "{{name}} · heure de fin non confirmée",
       "unnamed": "Actif · nom indisponible",
-      "unnamedWithTime": "Actif · nom indisponible · se termine {{time}}",
       "unnamedUnconfirmed": "Actif · nom indisponible · heure de fin non confirmée",
       "inactive": "Inactif"
     },
@@ -197,7 +196,14 @@
       "energyOver": "Limite d'énergie atteinte",
       "energyValue": "{{used}} / {{daily}}",
       "tokens_one": "{{count}} jeton",
-      "tokens_other": "{{count}} jetons"
+      "tokens_other": "{{count}} jetons",
+      "shops": "Boutiques",
+      "toBuy_one": "{{count}} à acheter",
+      "toBuy_other": "{{count}} à acheter",
+      "possible_one": "+{{count}} possible",
+      "possible_other": "+{{count}} possibles",
+      "nothingToBuy": "Rien aujourd'hui",
+      "tileLink": "{{label}} : {{value}}"
     }
   },
   "schedule": {
@@ -344,7 +350,7 @@
           "content": "Limitez Aujourd'hui et les raids bonus aux lieux de campagne souhaités, par exemple uniquement les nœuds Élite à 5 emplacements ou une faction ennemie précise. Le badge indique le nombre de filtres actifs."
         },
         "quickFilters": {
-          "title": "Filtres rapides",
+          "title": "Options du plan",
           "content": "Modifiez le plan du jour pour une journée. Moins de raids utilise les lieux qui demandent moins de tickets de raid pour les mêmes matériaux. Combiner les objectifs combine les matériaux de tous les objectifs et les farme comme un seul objectif. Les dates de Plan et Objectifs ne changent pas."
         },
         "onslaught": {
@@ -614,8 +620,8 @@
     }
   },
   "quickFilters": {
-    "label": "Filtres rapides",
-    "helpLabel": "Ce que font les filtres rapides",
+    "label": "Options du plan",
+    "helpLabel": "Ce que font les options du plan",
     "chip": {
       "fewerRaids": "Moins de raids",
       "combineGoals": "Combiner les objectifs",
