@@ -10,7 +10,7 @@ import { unitOriginState } from "@/entities/unit"
 import type { UnitKind } from "@/entities/unit"
 import type { FilterableUnit } from "@/features/unit-filters"
 import {
-  UnitFilterFields,
+  LazyUnitFilterFields,
   activeUnitFilterCount,
   useUnitFilterOptions,
   useUnitFilters,
@@ -108,7 +108,7 @@ export function UnitList({
                 size="form"
                 testId={`${testIdPrefix}-filters`}
               >
-                <UnitFilterFields
+                <LazyUnitFilterFields
                   filters={filters}
                   update={update}
                   options={options}

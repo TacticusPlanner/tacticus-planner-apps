@@ -179,7 +179,10 @@ describe("CharactersListPage", () => {
   it("leaves the roster filters and Unit type out of the Filters panel", async () => {
     await renderList()
     fireEvent.click(await screen.findByRole("button", { name: "Filters" }))
-    expect(screen.getByRole("region", { name: "Unit" })).toBeInTheDocument()
+    // The fields load with the panel's first opening.
+    expect(
+      await screen.findByRole("region", { name: "Unit" })
+    ).toBeInTheDocument()
     expect(screen.queryByLabelText("Unit type")).not.toBeInTheDocument()
     expect(
       screen.queryByRole("group", { name: "Rank range" })

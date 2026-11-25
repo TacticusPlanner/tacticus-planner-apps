@@ -1,6 +1,7 @@
 // Public API of the unit filters: the Filters panel's fields, their query and URL parameters, and
 // the catalog-level matching, shared by My Game > Collection and the Library unit lists.
 export { UnitFilterFields } from "./ui/unit-filter-fields"
+export { LazyUnitFilterFields } from "./ui/lazy-unit-filter-fields"
 export { activeUnitFilterCount, defaultUnitFilters } from "./model/unit-filters"
 export type { UnitFilters } from "./model/unit-filters"
 export {

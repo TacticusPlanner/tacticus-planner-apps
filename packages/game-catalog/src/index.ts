@@ -90,7 +90,7 @@ export {
   type AbilityRole,
   type AbilityTarget,
   type UnitSummons,
-} from "./schemas/shared"
+} from "./schemas/unit-values"
 export {
   npcEncounterSources,
   type NpcEncounterBattle,
