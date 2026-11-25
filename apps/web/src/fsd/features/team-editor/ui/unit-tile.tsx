@@ -8,6 +8,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { TeamUnitPortrait, capRosterUnit } from "@/entities/team"
 import type { TeamRoster } from "@/entities/team"
+import { TruncatedText } from "@/shared/ui"
 
 import { cappedView } from "../model/capped-view"
 import type { PickerUnit } from "../model/unit-picker"
@@ -93,14 +94,14 @@ export const UnitTile = memo(function UnitTile({
         <span className="w-full truncate text-xs font-medium">{unit.name}</span>
         {capped ? <UnitAbilities levels={capped.abilityLevels} /> : null}
         {usedIn ? (
-          <span
-            className="line-clamp-2 w-full text-xs wrap-break-word text-amber-800 dark:text-amber-400"
+          <TruncatedText
+            className="w-full text-xs wrap-break-word text-amber-800 dark:text-amber-400"
             data-testid="team-picker-used"
             id={usedId}
-            title={t("picker.usedIn", { teams: usedIn.join(", ") })}
+            lines={2}
           >
             {t("picker.usedIn", { teams: usedIn.join(", ") })}
-          </span>
+          </TruncatedText>
         ) : null}
       </button>
     </li>

@@ -11,16 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
+import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   FILTER_CHIP_CLASS_NAME,
   FiltersControl,
   GroupByControl,
+  HintedToggleGroupItem,
   PageToolbar,
   SearchField,
   SegmentedControl,
@@ -275,17 +273,16 @@ function OwnedOnlyChip({
         onValueChange={(values) =>
           update({ hideUnowned: values.includes("owned") })
         }
-        disabled={!rosterAvailable}
       >
-        <ToggleGroupItem
+        <HintedToggleGroupItem
           value="owned"
           className={FILTER_CHIP_CLASS_NAME}
           aria-describedby={hint ? hintId : undefined}
           data-testid="owned-only-chip"
-          title={hint}
+          disabledReason={hint}
         >
           {t("myGame.collection.toolbar.ownedOnly")}
-        </ToggleGroupItem>
+        </HintedToggleGroupItem>
       </ToggleGroup>
       {hint ? (
         <span id={hintId} className="sr-only">

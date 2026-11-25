@@ -16,7 +16,7 @@ import { progressionRarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { CompactStars, EntityIcon } from "@/shared/ui"
+import { CompactStars, EntityIcon, TruncatedText } from "@/shared/ui"
 
 import type {
   OwnedUnitTileData,
@@ -89,7 +89,6 @@ export function UnitRosterRow({
           aria-label={label}
           aria-expanded={expanded}
           aria-controls={panelId}
-          title={unit.name}
           onClick={onToggle}
           className={cn(
             "grid h-12 w-full items-center gap-x-1.5 rounded-md px-2 text-left transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-primary",
@@ -167,7 +166,6 @@ export function UnitRosterRow({
       to={link.to}
       state={link.state}
       aria-label={label}
-      title={unit.name}
       {...rootData}
       className={cn(
         layout,
@@ -177,13 +175,7 @@ export function UnitRosterRow({
       {content}
     </Link>
   ) : (
-    <div
-      role="group"
-      aria-label={label}
-      title={unit.name}
-      {...rootData}
-      className={layout}
-    >
+    <div role="group" aria-label={label} {...rootData} className={layout}>
       {content}
     </div>
   )
@@ -234,14 +226,15 @@ function Portrait({ unit }: { unit: UnitTileUnit }) {
 
 function Name({ unit }: { unit: UnitTileUnit }) {
   return (
-    <span
+    <TruncatedText
       className={cn(
-        "min-w-0 truncate text-sm font-semibold",
+        "min-w-0 text-sm font-semibold",
         unit.data.state !== "owned" && "text-muted-foreground"
       )}
+      data-testid="unit-row-name"
     >
       {unit.name}
-    </span>
+    </TruncatedText>
   )
 }
 

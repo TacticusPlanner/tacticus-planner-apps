@@ -2,6 +2,11 @@ import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
 import { heroStarIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -21,41 +26,45 @@ export function IncursionStarsBar({
   const full = max > 0 && earned >= max
   const percent = max > 0 ? Math.round((earned / max) * 100) : 0
   return (
-    <div
-      className={cn("flex min-w-0 items-center gap-1.5", className)}
-      title={t("tier.starsLabel", { earned, max })}
-      data-testid={testId}
-      data-full={full || undefined}
-    >
-      <EntityIcon
-        size="inline"
-        src={heroStarIcon()}
-        alt=""
-        className="shrink-0"
-      />
-      <div
-        className="h-2.5 min-w-16 flex-1 overflow-hidden rounded-full bg-muted"
-        role="progressbar"
-        aria-label={t("tier.starsLabel", { earned, max })}
-        aria-valuemin={0}
-        aria-valuemax={max}
-        aria-valuenow={earned}
-      >
+    <Tooltip>
+      <TooltipTrigger asChild disableTouchToggle>
         <div
-          className="h-full rounded-full bg-linear-to-r from-amber-300 to-yellow-500"
-          style={{ width: `${percent}%` }}
-        />
-      </div>
-      <span className="shrink-0 text-xs font-semibold tabular-nums">
-        {earned}/{max}
-      </span>
-      {full ? (
-        <Check
-          className="size-icon shrink-0 text-sky-500"
-          aria-hidden="true"
-          data-testid={testId ? `${testId}-full` : undefined}
-        />
-      ) : null}
-    </div>
+          className={cn("flex min-w-0 items-center gap-1.5", className)}
+          data-testid={testId}
+          data-full={full || undefined}
+        >
+          <EntityIcon
+            size="inline"
+            src={heroStarIcon()}
+            alt=""
+            className="shrink-0"
+          />
+          <div
+            className="h-2.5 min-w-16 flex-1 overflow-hidden rounded-full bg-muted"
+            role="progressbar"
+            aria-label={t("tier.starsLabel", { earned, max })}
+            aria-valuemin={0}
+            aria-valuemax={max}
+            aria-valuenow={earned}
+          >
+            <div
+              className="h-full rounded-full bg-linear-to-r from-amber-300 to-yellow-500"
+              style={{ width: `${percent}%` }}
+            />
+          </div>
+          <span className="shrink-0 text-xs font-semibold tabular-nums">
+            {earned}/{max}
+          </span>
+          {full ? (
+            <Check
+              className="size-icon shrink-0 text-sky-500"
+              aria-hidden="true"
+              data-testid={testId ? `${testId}-full` : undefined}
+            />
+          ) : null}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>{t("tier.starsLabel", { earned, max })}</TooltipContent>
+    </Tooltip>
   )
 }

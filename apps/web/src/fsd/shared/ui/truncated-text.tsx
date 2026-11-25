@@ -25,12 +25,15 @@ export function TruncatedText({
   lines = 1,
   className,
   side,
+  id,
   "data-testid": testId,
 }: {
   children: string
   lines?: keyof typeof CLAMP_CLASS
   className?: string
   side?: ComponentProps<typeof TooltipContent>["side"]
+  /** For `aria-describedby` on a control the text describes. */
+  id?: string
   "data-testid"?: string
 }) {
   const ref = useRef<HTMLSpanElement>(null)
@@ -65,6 +68,7 @@ export function TruncatedText({
         <span
           className={cn(CLAMP_CLASS[lines], className)}
           data-testid={testId}
+          id={id}
           ref={ref}
         >
           {children}

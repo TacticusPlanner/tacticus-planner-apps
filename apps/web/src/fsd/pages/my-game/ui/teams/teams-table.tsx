@@ -3,7 +3,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { TEAM_LIMITS, useTeamModeLabel } from "@/entities/team"
 import type { Team, TeamMode, TeamRoster } from "@/entities/team"
-import { SORTABLE_ITEM_GROUP, SortableList } from "@/shared/ui"
+import { SORTABLE_ITEM_GROUP, SortableList, TruncatedText } from "@/shared/ui"
 
 import { teamLineup } from "../../model/teams-view"
 import { TeamActionButtons } from "./team-actions"
@@ -137,27 +137,22 @@ export function TeamsTable({
                     />
                   </td>
                   <td className="p-2">
-                    <span
-                      className="block truncate font-heading font-semibold"
+                    <TruncatedText
+                      className="font-heading font-semibold"
                       data-testid="team-row-name"
-                      title={team.name}
                     >
                       {team.name}
-                    </span>
-                    <span
-                      className="block truncate text-xs text-muted-foreground"
-                      title={second}
-                    >
+                    </TruncatedText>
+                    <TruncatedText className="text-xs text-muted-foreground">
                       {second}
-                    </span>
+                    </TruncatedText>
                     {team.notes ? (
-                      <span
-                        className="block truncate text-xs text-muted-foreground"
+                      <TruncatedText
+                        className="text-xs text-muted-foreground"
                         data-testid="team-row-notes"
-                        title={team.notes}
                       >
                         {team.notes}
-                      </span>
+                      </TruncatedText>
                     ) : null}
                   </td>
                   <td className="p-2">

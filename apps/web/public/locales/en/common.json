@@ -446,6 +446,7 @@
           "missingEquipment": "Missing equipment",
           "abilitiesBehindLevel": "Abilities behind level"
         },
+        "quickHelpLabel": "What the quick filters do",
         "quickHelp": {
           "readyToRankUp": "Your upgrade inventory covers every material still needed at the current rank.",
           "needToAscend": "At the highest rank for its rarity, with an ascension still ahead.",

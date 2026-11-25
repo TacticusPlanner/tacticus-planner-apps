@@ -4,6 +4,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { useTeamModeLabel } from "@/entities/team"
 import type { Team, TeamMode, TeamRoster } from "@/entities/team"
+import { TruncatedText } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 
 import { teamLineup } from "../../model/teams-view"
@@ -62,13 +63,13 @@ export const TeamListRow = memo(function TeamListRow({
           dragHandle={dragHandle}
           team={team}
         />
-        <span
-          className="line-clamp-2 min-w-0 flex-1 font-heading font-semibold wrap-break-word"
+        <TruncatedText
+          className="min-w-0 flex-1 font-heading font-semibold wrap-break-word"
           data-testid="team-card-name"
-          title={team.name}
+          lines={2}
         >
           {team.name}
-        </span>
+        </TruncatedText>
         <TeamActionButtons actions={actions} team={team} />
       </div>
       {context || modes ? (

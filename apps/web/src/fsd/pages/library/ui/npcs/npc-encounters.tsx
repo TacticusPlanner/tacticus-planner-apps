@@ -30,7 +30,7 @@ import type {
 } from "@/entities/npc"
 import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEstimateDate, localIsoDate, useDateLocale } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, TruncatedText } from "@/shared/ui"
 
 import { useEncounterGroupName } from "../../model/npcs/use-encounter-group-name"
 import { encounterGroupIcon } from "../../model/npcs/encounter-group-icon"
@@ -415,7 +415,7 @@ function PlaceNpcs({
             const content: ReactNode = (
               <>
                 <NpcPortrait variationId={id} name={name} size="inline" />
-                <span className="min-w-0 truncate">{name}</span>
+                <TruncatedText className="min-w-0">{name}</TruncatedText>
                 {row ? (
                   <NpcLevelBadge row={row} className="shrink-0 gap-1" />
                 ) : null}
@@ -430,7 +430,7 @@ function PlaceNpcs({
               </>
             )
             return (
-              <li key={`${id}:${servedIndex}`} className="min-w-0" title={id}>
+              <li key={`${id}:${servedIndex}`} className="min-w-0">
                 {href ? (
                   <Link
                     to={href}

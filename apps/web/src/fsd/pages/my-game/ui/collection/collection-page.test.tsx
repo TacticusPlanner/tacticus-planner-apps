@@ -144,6 +144,11 @@ vi.mock("@/shared/tour", () => ({
 import { CollectionPage } from "./collection-page"
 
 /** Opens a Radix dropdown menu (it opens on pointer down, which jsdom's click does not send). */
+/** The name a tile or Roster row shows. */
+function shownName(unit: HTMLElement) {
+  return within(unit).getByTestId(/^unit-(tile|row)-name$/).textContent
+}
+
 function openMenu(trigger: HTMLElement) {
   fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
 }
@@ -389,7 +394,7 @@ describe.each([
     expect(
       ultramarines
         .getAllByRole("link")
-        .map((tile) => [tile.getAttribute("title"), tile.dataset.state])
+        .map((tile) => [shownName(tile), tile.dataset.state])
     ).toEqual([
       ["Titus", "owned"],
       // Nearest to unlock first: Calgar has a target, the Machine of War has none.
@@ -1181,7 +1186,7 @@ const listedNames = () =>
     ...document.querySelectorAll<HTMLElement>(
       '[data-testid^="collection-owned-"],[data-testid^="collection-unowned-"]'
     ),
-  ].map((unit) => unit.getAttribute("title"))
+  ].map((unit) => shownName(unit))
 
 describe("CollectionPage when Owned only hides every match", () => {
   it("keeps the summary and offers to show unowned units, not to clear filters", () => {
@@ -1386,7 +1391,7 @@ describe("CollectionPage Owned only chip", () => {
     renderPage(1280)
 
     const toggle = screen.getByRole("button", { name: "Owned only" })
-    expect(toggle).toBeDisabled()
+    expect(toggle).toHaveAttribute("aria-disabled", "true")
     expect(toggle).toHaveAttribute("aria-pressed", "false")
     expect(toggle).toHaveAccessibleDescription(
       "Hiding unowned units needs a synced roster."
