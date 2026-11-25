@@ -1710,6 +1710,26 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/legendary-event-run-records": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Reads a page of the caller's run records across every Legendary Event, newest first.
+     * @description Lists every record of the caller's profile, whether or not a plan exists for its event, ordered by startedAt then id, both descending. Each item is a summary (no lanes, teams or roster): read the roster from /legendary-event-plans/{eventId}/run-records/{recordId}/roster. limit is 1–100 (default 20); after is the opaque nextAfter of the previous page, null on the last one. A profile with no records reads as an empty page.
+     */
+    get: operations["TacticusPlannerApiFeaturesLegendaryEventPlansListLegendaryEventRunRecordsEndpoint"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/me/roster-snapshots": {
     parameters: {
       query?: never
@@ -4342,6 +4362,7 @@ export interface components {
     IReadOnlyListOfLegendaryEventPlanResponse: components["schemas"]["LegendaryEventPlanResponse"][]
     IReadOnlyListOfLegendaryEventRunProgressResponse: components["schemas"]["LegendaryEventRunProgressResponse"][]
     IReadOnlyListOfLegendaryEventRunRecordResponse: components["schemas"]["LegendaryEventRunRecordResponse"][]
+    IReadOnlyListOfLegendaryEventRunRecordSummaryResponse: components["schemas"]["LegendaryEventRunRecordSummaryResponse"][]
     IReadOnlyListOfLegendaryEventRunRecordTeamResponse: components["schemas"]["LegendaryEventRunRecordTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamResponse: components["schemas"]["LegendaryEventTeamResponse"][]
     IReadOnlyListOfLegendaryEventTeamRunDepthResponse: components["schemas"]["LegendaryEventTeamRunDepthResponse"][]
@@ -4444,6 +4465,24 @@ export interface components {
       eventId: string
       records: components["schemas"]["IReadOnlyListOfLegendaryEventRunRecordResponse"]
       nextAfter: null | string
+    }
+    LegendaryEventRunRecordSummariesResponse: {
+      records: components["schemas"]["IReadOnlyListOfLegendaryEventRunRecordSummaryResponse"]
+      nextAfter: null | string
+    }
+    LegendaryEventRunRecordSummaryResponse: {
+      /** Format: uuid */
+      id: string
+      eventId: string
+      /** Format: int32 */
+      run: number
+      /** Format: date-time */
+      startedAt: string
+      /** Format: date-time */
+      progressAt: string
+      catalogVersion: string
+      /** Format: int32 */
+      points: number
     }
     LegendaryEventRunRecordTeamResponse: {
       /** Format: uuid */
@@ -10560,6 +10599,65 @@ export interface operations {
       }
       /** @description expectedRevision is stale or another write won (issueCode legendaryEventPlanStale), or a reorder's ids are not the lane's team set (legendaryEventOrderSetMismatch). current is the plan as it stands. */
       409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesLegendaryEventPlansListLegendaryEventRunRecordsEndpoint: {
+    parameters: {
+      query?: {
+        limit?: null | number
+        after?: null | string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Success */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["LegendaryEventRunRecordSummariesResponse"]
+        }
+      }
+      /** @description limit is out of range or after is not a valid cursor. */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The request is missing required identity claims. */
+      401: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The caller has no profile. */
+      404: {
         headers: {
           [name: string]: unknown
         }

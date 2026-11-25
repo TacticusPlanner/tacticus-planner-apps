@@ -673,11 +673,18 @@
         "autoBadge": "Auto",
         "v1ImportBadge": "V1",
         "autoTitle": "Automáticas",
-        "autoHint": "Se toman tras una sincronización si tu plantilla no tiene ninguna instantánea de los últimos 30 días. Se guardan hasta {{limit}}; la más antigua se reemplaza.",
+        "autoHint": "Se toman tras una sincronización si tu plantilla no tiene ninguna instantánea ni plantilla de Evento Legendario de los últimos 30 días. Se guardan hasta {{limit}}; la más antigua se reemplaza.",
         "keep": "Conservar",
         "keepLimitTooltip": "Elimina una instantánea para conservar esta",
         "keepFailed": "No se pudo conservar la instantánea.",
-        "manageAll": "Gestionar instantáneas"
+        "manageAll": "Gestionar instantáneas",
+        "nextAutoAfter": "Próxima instantánea automática después del {{date}}",
+        "nextAutoSync": "Próxima instantánea automática con tu próxima sincronización",
+        "leTitle": "Plantillas de Eventos Legendarios",
+        "leHint": "Se guardan en cada sincronización mientras dura un Evento Legendario, planificado o no. Puedes compararlas; cuentan como instantáneas recientes.",
+        "leRow": "{{event}} · ronda {{run}}",
+        "leNone": "Aún no hay plantillas de Eventos Legendarios.",
+        "leError": "No se pudieron cargar las plantillas de Eventos Legendarios."
       },
       "select": {
         "start": "Seleccionar unidades",

@@ -673,11 +673,18 @@
         "autoBadge": "Auto",
         "v1ImportBadge": "V1",
         "autoTitle": "Automatiques",
-        "autoHint": "Pris après une synchronisation quand votre roster n'a aucun instantané des 30 derniers jours. Jusqu'à {{limit}} sont conservés ; le plus ancien est remplacé.",
+        "autoHint": "Pris après une synchronisation quand votre roster n'a aucun instantané ni roster d'Événement légendaire des 30 derniers jours. Jusqu'à {{limit}} sont conservés ; le plus ancien est remplacé.",
         "keep": "Conserver",
         "keepLimitTooltip": "Supprimez un instantané pour conserver celui-ci",
         "keepFailed": "L'instantané n'a pas pu être conservé.",
-        "manageAll": "Gérer les instantanés"
+        "manageAll": "Gérer les instantanés",
+        "nextAutoAfter": "Prochain instantané automatique après le {{date}}",
+        "nextAutoSync": "Prochain instantané automatique à votre prochaine synchronisation",
+        "leTitle": "Rosters d'Événements légendaires",
+        "leHint": "Enregistrés à chaque synchronisation pendant un Événement légendaire, planifié ou non. Vous pouvez les comparer ; ils comptent comme des instantanés récents.",
+        "leRow": "{{event}} · manche {{run}}",
+        "leNone": "Pas encore de roster d'Événement légendaire.",
+        "leError": "Impossible de charger les rosters d'Événements légendaires."
       },
       "select": {
         "start": "Sélectionner des unités",

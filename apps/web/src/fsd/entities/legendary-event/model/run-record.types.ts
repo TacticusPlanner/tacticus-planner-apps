@@ -38,3 +38,16 @@ export type LegendaryEventRunRecords = Omit<
   S["LegendaryEventRunRecordsResponse"],
   "records"
 > & { records: LegendaryEventRunRecord[] }
+
+/** One run record as the cross-event read lists it: no lanes, teams or roster (read the roster from
+ *  the event's `run-records/{recordId}/roster`). */
+type LegendaryEventRunRecordSummary = WithRun<
+  S["LegendaryEventRunRecordSummaryResponse"]
+>
+
+/** `GET /legendary-event-run-records`: one page of the caller's records across every event, planned
+ *  or not, newest `startedAt` first. */
+export type LegendaryEventRunRecordSummaries = Omit<
+  S["LegendaryEventRunRecordSummariesResponse"],
+  "records"
+> & { records: LegendaryEventRunRecordSummary[] }

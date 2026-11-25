@@ -8,7 +8,13 @@ TBD - created by archiving change add-automatic-roster-snapshots. Update Purpose
 
 ### Requirement: Automatic snapshots are labeled and kept separately
 
-Snapshots with source `Auto` SHALL be labeled "Auto · <date>", with the date localized and including the year (for example "Auto · Nov 3, 2026"), unless renamed. A renamed one SHALL show its name with an Auto badge. The manage sheet SHALL list them in an Automatic section after the manual snapshots, with usage "<autoCount>/<autoLimit>" and a note that the oldest is replaced when a new one is taken. Automatic snapshots SHALL NOT count toward the manual usage shown in the take dialog.
+Snapshots with source `Auto` SHALL be labeled "Auto · <date>", with the date localized and including the year (for example "Auto · Nov 3, 2026"), unless renamed. A renamed one SHALL show its name with an Auto badge. The manage sheet SHALL list them in an Automatic section after the manual snapshots, with usage "<autoCount>/<autoLimit>" and the note "Taken after a sync when your roster has no snapshot or Legendary Event roster from the last 30 days. Up to <autoLimit> are kept; the oldest is replaced." Under it, the section SHALL say when the next one can be taken: "Next automatic snapshot after <date>", where the date is the newest personal snapshot or Legendary Event roster plus 30 days, or "Next automatic snapshot with your next sync" once that date has passed or no roster exists. Automatic snapshots SHALL NOT count toward the manual usage shown in the take dialog.
+
+#### Scenario: A recent Legendary Event roster holds back the automatic snapshot
+
+- **GIVEN** a user whose newest roster is an unplanned Legendary Event's roster from Nov 22, 2026
+- **WHEN** they open Manage snapshots
+- **THEN** the Automatic section reads "Next automatic snapshot after Dec 22, 2026"
 
 #### Scenario: Label with year
 
@@ -72,7 +78,13 @@ The Collection toolbar SHALL hold a **Snapshots** menu button for a signed-in us
 
 ### Requirement: The user renames and deletes snapshots
 
-A Manage snapshots sheet, opened from the Snapshots menu, SHALL list personal snapshots newest first, each with its name, date and relative age, plus usage "<count>/<limit>". A name SHALL be editable inline, saved on Enter or blur, and cancelled on Escape, under the same name rules. Delete SHALL ask for confirmation, naming the snapshot, and then delete it permanently. Legendary Event run-record rosters SHALL NOT be listed in this sheet. When the deleted snapshot is the one being compared, the comparison SHALL fall back to `latest`.
+A Manage snapshots sheet, opened from the Snapshots menu, SHALL list personal snapshots newest first, each with its name, date and relative age, plus usage "<count>/<limit>". A name SHALL be editable inline, saved on Enter or blur, and cancelled on Escape, under the same name rules. Delete SHALL ask for confirmation, naming the snapshot, and then delete it permanently. After the Automatic section, a read-only "Legendary Event rosters" section SHALL list every run-record roster of the user, for every Legendary Event whether or not it has a plan, newest first, each with its event, run, date and relative age, and a note that they count as recent snapshots. They have no rename, delete or Keep. The sheet SHALL read them in one call (`GET /legendary-event-run-records`) only while it is open. When the deleted snapshot is the one being compared, the comparison SHALL fall back to `latest`.
+
+#### Scenario: An unplanned event's roster is listed
+
+- **GIVEN** a run-record roster for an event the user never planned
+- **WHEN** they open Manage snapshots
+- **THEN** the Legendary Event rosters section lists it, with no rename or delete
 
 #### Scenario: Delete the compared snapshot
 
@@ -87,13 +99,19 @@ A Manage snapshots sheet, opened from the Snapshots menu, SHALL list personal sn
 
 ### Requirement: The picker offers personal snapshots and Legendary Event rosters
 
-The from and to pickers SHALL list personal snapshots (newest first) and, under a "Legendary Events" group, every run-record roster of the user's Legendary Event plans, labeled with event, run and date. Run-record rosters SHALL be read-only: they can be compared, but not renamed or deleted, and they do not count toward usage. The to picker SHALL also offer Current, first, and SHALL list only sources newer than the from source.
+The from and to pickers SHALL list personal snapshots (newest first) and, under a "Legendary Events" group, every run-record roster of the user, for every Legendary Event whether or not it has a plan (the newest 100, from one `GET /legendary-event-run-records` call), labeled with event, run and date. Run-record rosters SHALL be read-only: they can be compared, but not renamed or deleted, and they do not count toward usage. The to picker SHALL also offer Current, first, and SHALL list only sources newer than the from source.
 
 #### Scenario: Compare with a run record
 
 - **GIVEN** an Uthar run 2 record
 - **WHEN** the user picks "Uthar · run 2 · Oct 12, 2026" as the from source
 - **THEN** its roster is compared with Current
+
+#### Scenario: An unplanned event's roster can be compared
+
+- **GIVEN** a run record for an event the user has no plan for
+- **WHEN** the user opens the from picker
+- **THEN** that roster is listed under Legendary Events
 
 ### Requirement: Snapshot actions are reported as analytics events
 

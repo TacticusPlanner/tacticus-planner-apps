@@ -5,7 +5,12 @@ import type {
   PersonalRosterSnapshotList,
 } from "@/entities/roster-snapshot"
 
-import { canKeep, manageSections } from "./manage-snapshots"
+import {
+  canKeep,
+  manageRunRecordRows,
+  manageSections,
+  nextAutoSnapshot,
+} from "./manage-snapshots"
 
 const snapshot = (
   id: string,
@@ -55,5 +60,56 @@ describe("canKeep", () => {
     expect(canKeep(list([], 19))).toBe(true)
     expect(canKeep(list([], 20))).toBe(false)
     expect(canKeep(undefined)).toBe(false)
+  })
+})
+
+describe("nextAutoSnapshot", () => {
+  const now = Date.parse("2026-11-25T12:00:00Z")
+
+  it("is the next sync with no roster at all", () => {
+    expect(nextAutoSnapshot([], [], now)).toEqual({ kind: "nextSync" })
+  })
+
+  it("waits 30 days from the newest snapshot or Legendary Event roster", () => {
+    expect(
+      nextAutoSnapshot(
+        [{ takenAt: "2026-11-01T00:00:00Z" }],
+        [{ progressAt: "2026-11-20T00:00:00Z" }],
+        now
+      )
+    ).toEqual({ kind: "after", atMs: Date.parse("2026-12-20T00:00:00Z") })
+  })
+
+  it("is the next sync once the window has passed", () => {
+    expect(
+      nextAutoSnapshot([{ takenAt: "2026-10-01T00:00:00Z" }], [], now)
+    ).toEqual({ kind: "nextSync" })
+  })
+})
+
+describe("manageRunRecordRows", () => {
+  it("names each roster from the catalog, newest first", () => {
+    expect(
+      manageRunRecordRows(
+        [
+          {
+            id: "r1",
+            eventId: "votanUthar",
+            run: 1,
+            progressAt: "2026-10-01T00:00:00Z",
+          },
+          {
+            id: "r2",
+            eventId: "gone",
+            run: 2,
+            progressAt: "2026-11-01T00:00:00Z",
+          },
+        ],
+        new Map([["votanUthar", "Uthar"]])
+      )
+    ).toEqual([
+      { id: "r2", eventName: "gone", run: 2, takenAt: "2026-11-01T00:00:00Z" },
+      { id: "r1", eventName: "Uthar", run: 1, takenAt: "2026-10-01T00:00:00Z" },
+    ])
   })
 })

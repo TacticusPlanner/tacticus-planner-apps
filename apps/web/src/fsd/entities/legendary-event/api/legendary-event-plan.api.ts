@@ -12,6 +12,7 @@ import type {
 } from "../model/plan.types"
 import type {
   LegendaryEventPlanList,
+  LegendaryEventRunRecordSummaries,
   LegendaryEventRunRecords,
 } from "../model/run-record.types"
 
@@ -56,6 +57,25 @@ export async function getLegendaryEventRunRecords(
           after: options.after || undefined,
         },
       },
+      signal: options.signal,
+    })
+  )
+  return {
+    ...page,
+    records: page.records.map((record) => ({
+      ...record,
+      run: toLegendaryEventRun(record.run),
+    })),
+  }
+}
+
+/** One page of the caller's run records across every event, planned or not, newest first. */
+export async function getAllLegendaryEventRunRecords(
+  options: { limit?: number; signal?: AbortSignal } = {}
+): Promise<LegendaryEventRunRecordSummaries> {
+  const page = await unwrap(
+    apiClient().GET("/api/v1/legendary-event-run-records", {
+      params: { query: { limit: options.limit } },
       signal: options.signal,
     })
   )
