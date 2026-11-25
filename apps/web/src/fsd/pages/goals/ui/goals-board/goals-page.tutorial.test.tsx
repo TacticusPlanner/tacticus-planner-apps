@@ -34,8 +34,8 @@ describe("useGoalsOverviewTutorial", () => {
       '[data-testid="goals-season-fit"]',
       '[data-testid="goals-view-toggle"]',
       '[data-testid="goal-row-drag-handle"]',
-      // Cards' Select goals, or the desktop table's always-shown select bar.
-      '[data-testid="goals-select-toggle"], [data-testid="goals-select-bar"]',
+      // Cards' Select goals, or the desktop table's header select-all.
+      '[data-testid="goals-select-toggle"], [data-testid="goals-select-all"]',
       '[data-testid="goals-create-goal"]',
       '[data-testid="goals-planning-settings"]',
       '[data-testid="goals-page"]',

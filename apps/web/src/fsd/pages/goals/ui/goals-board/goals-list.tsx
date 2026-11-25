@@ -126,8 +126,7 @@ function GoalsTable({
               table layout"). */}
           <TableHead className={FIT_COLUMN}>
             <div className="flex items-center gap-2">
-              {/* Desktop's select-all lives in the bar above the list. */}
-              {showCheckboxes && isMobile ? (
+              {showCheckboxes ? (
                 <Checkbox
                   aria-label={t("goals.bulk.selectAll")}
                   checked={
