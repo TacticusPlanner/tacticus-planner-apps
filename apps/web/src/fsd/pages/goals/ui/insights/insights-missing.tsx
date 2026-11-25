@@ -67,6 +67,9 @@ type Row = {
   items: Item[]
 }
 
+/** No goal details: one shared empty map, as the React Compiler can't reorder a `new` default. */
+const NO_GOAL_INFO: ReadonlyMap<string, InsightsGoalInfo> = new Map()
+
 /** The plan's shopping list (V1's "Total Resources Missing"), with a "Show" switch remembered per
  *  device. Missing: everything the goals need beyond the current inventory, spent in priority order —
  *  farmed upgrades one by one (with the days and energy left), shards, ability badges and orbs (each
@@ -77,7 +80,7 @@ export function InsightsMissing({
   totals,
   upgrades = [],
   spareUpgrades = [],
-  goalInfoById = new Map(),
+  goalInfoById = NO_GOAL_INFO,
   projectId = null,
 }: {
   missing: PlanMissingResources
