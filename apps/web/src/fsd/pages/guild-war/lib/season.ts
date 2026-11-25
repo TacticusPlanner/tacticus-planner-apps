@@ -11,11 +11,8 @@ export const GUILD_WAR_SLOTS = [0, 1, 2, 3, 4] as const
 /** The level a war starts at before the player picks one: the highest, as most guilds play. */
 export const DEFAULT_BATTLEFIELD_LEVEL = 5
 
-/** The tokens a war allows when its season is no longer served (the API's fallback). */
+/** The tokens shown for a war whose season is no longer served (it can log no more attacks). */
 const FALLBACK_MAX_ATTEMPTS = 10
-
-export const isGuildWarSlot = (slot: number) =>
-  Number.isInteger(slot) && slot >= 0 && slot < GUILD_WAR_SLOTS.length
 
 const asRarity = (value: string | undefined): Rarity | undefined =>
   rarityOrder.find((rarity) => rarity === value)

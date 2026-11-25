@@ -45,7 +45,8 @@ const attack = (
   })),
   mow: null,
   result: "won",
-  unitsLost: 0,
+  lostUnitIds: [],
+  notes: null,
   enemy: null,
   ...overrides,
 })
@@ -96,7 +97,24 @@ describe("HistoryPage", () => {
       items: [
         war("war-2", [
           attack("a1", ["ultraCalgar", "ultraTitus"]),
-          attack("a2", ["ultraTigurius"], { result: "lost", unitsLost: 5 }),
+          attack("a2", ["ultraTigurius"], {
+            result: "lost",
+            lostUnitIds: ["ultraTigurius"],
+            notes: "Ran out of time.",
+            enemy: {
+              characters: [
+                {
+                  unitId: "ultraTitus",
+                  rarity: "Epic",
+                  rank: null,
+                  state: "killed",
+                },
+              ],
+              mow: null,
+              buffIds: ["EnvFortified_Local"],
+              boardId: null,
+            },
+          }),
         ]),
         war("war-1", [attack("a3", ["ultraCalgar", "ultraTitus"])]),
       ],
@@ -109,16 +127,36 @@ describe("HistoryPage", () => {
     expect(within(totals).getByTestId("guild-war-by-rarity")).toHaveTextContent(
       "67% · 3 attacks"
     )
-    // The Calgar and Titus lineup is the only one used twice.
+    // The Calgar and Titus lineup is the only one used twice, and won both times.
     expect(within(totals).getByTestId("guild-war-lineups")).toHaveTextContent(
-      "2 attacks"
+      "100% · 2 attacks"
+    )
+    expect(within(totals).getByTestId("guild-war-overall")).toHaveTextContent(
+      /Attacks3Won2Lost1Units lost1/
+    )
+    expect(within(totals).getByTestId("guild-war-by-zone")).toHaveTextContent(
+      "67% · 3 attacks"
+    )
+    expect(
+      within(totals).getAllByTestId("guild-war-characters")[0]
+    ).toHaveTextContent("100% · 2 attacks")
+    expect(within(totals).getByTestId("guild-war-enemies")).toHaveTextContent(
+      "1 loss"
     )
 
     const [newest] = screen.getAllByTestId("guild-war-past-war")
-    expect(newest).toHaveTextContent("2 tokens · 1 won · 1 lost")
+    expect(newest).toHaveTextContent("2 · 1 won · 1 lost")
     expect(screen.queryByTestId("guild-war-attack")).toBeNull()
     await user.click(within(newest as HTMLElement).getByRole("button"))
-    expect(screen.getAllByTestId("guild-war-attack")).toHaveLength(2)
+    const rows = screen.getAllByTestId("guild-war-attack")
+    expect(rows).toHaveLength(2)
+    expect(rows[1]).toHaveTextContent("Armoury · Epic")
+    expect(
+      within(rows[1] as HTMLElement).getByTestId("attack-notes")
+    ).toHaveTextContent("Ran out of time.")
+    expect(
+      within(rows[1] as HTMLElement).getByTestId("attack-enemy")
+    ).toBeInTheDocument()
     expect(screen.queryByTestId("guild-war-load-more")).toBeNull()
   })
 

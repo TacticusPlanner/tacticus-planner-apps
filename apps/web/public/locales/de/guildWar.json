@@ -2,6 +2,7 @@
   "season": "Saison {{letter}}",
   "level": "Stufe {{level}}",
   "settingsSummary": "{{season}} · Schlachtfeldstufe {{level}}",
+  "settingsOpen": "{{summary}}. Einstellungen öffnen",
   "page": {
     "loading": "Dein Krieg wird geladen",
     "loadError": "Dein Krieg konnte nicht geladen werden.",
@@ -9,12 +10,8 @@
     "noSeasons": "Gildenkriegsdaten sind noch nicht verfügbar."
   },
   "target": {
-    "label": "Angriffsziel",
     "zone": "Zone",
-    "zonePlaceholder": "Zone wählen",
-    "slot": "Platz",
-    "slotPlaceholder": "Platz wählen",
-    "slotOption": "Platz {{slot}}"
+    "zonePlaceholder": "Zone wählen"
   },
   "settings": {
     "title": "Gildenkrieg-Einstellungen",
@@ -24,7 +21,8 @@
     "capsKept": "Bereits erfasste Angriffe behalten die Seltenheitsgrenze, mit der sie erfasst wurden.",
     "stale": "Dein Krieg wurde auf einem anderen Gerät geändert. Er wird jetzt so angezeigt, wie er ist.",
     "failed": "Die Einstellungen konnten nicht gespeichert werden. Versuch es erneut.",
-    "done": "Fertig"
+    "done": "Fertig",
+    "seasonLocked": "Dieser Krieg hat Angriffe, daher bleibt seine Saison. Starte einen neuen Krieg, um eine andere Saison zu spielen."
   },
   "summary": {
     "tokens": "Verbrauchte Marken",
@@ -38,26 +36,36 @@
     "emptyDescription": "Ein Krieg landet hier, wenn du unter Angriff einen neuen startest.",
     "totals": "Gesamtwerte",
     "byTier": "Siegquote nach Zonenstufe",
-    "byRarity": "Siegquote nach Platzseltenheit",
-    "lineups": "Meistgenutzte Aufstellungen",
+    "byZone": "Siegquote nach Zone",
+    "byRarity": "Siegquote nach Verteidigerseltenheit",
+    "characters": "Meistgenutzte Charaktere",
+    "noCharacters": "Noch keine Angriffe erfasst.",
+    "lineups": "Mehrfach genutzte Aufstellungen",
     "noResults": "Noch keine Ergebnisse erfasst.",
     "noLineups": "Noch keine Aufstellung mehr als einmal genutzt.",
+    "enemies": "Gegner, gegen die du am häufigsten verloren hast",
+    "noEnemies": "Noch keine Gegner in verlorenen Angriffen erfasst.",
     "winRate_one": "{{rate}} % · {{count}} Angriff",
     "winRate_other": "{{rate}} % · {{count}} Angriffe",
-    "lineupCount_one": "{{count}} Angriff",
-    "lineupCount_other": "{{count}} Angriffe",
-    "warSummary": "{{season}} · Stufe {{level}} · {{tokens}} Marken · {{won}} gewonnen · {{lost}} verloren",
+    "attackCount_one": "{{count}} Angriff",
+    "attackCount_other": "{{count}} Angriffe",
+    "lossCount_one": "{{count}} Niederlage",
+    "lossCount_other": "{{count}} Niederlagen",
+    "warSummary": "{{season}} · Stufe {{level}} ·",
+    "warResults": "{{tokens}} · {{won}} gewonnen · {{lost}} verloren",
     "noAttacks": "In diesem Krieg wurden keine Angriffe erfasst.",
     "loading": "Vergangene Kriege werden geladen",
     "loadError": "Deine vergangenen Kriege konnten nicht geladen werden.",
     "heading": "Vergangene Kriege",
-    "loadMore": "Weitere Kriege laden"
+    "loadMore": "Weitere Kriege laden",
+    "overall": {
+      "attacks": "Angriffe",
+      "won": "Gewonnen",
+      "lost": "Verloren",
+      "unitsLost": "Verlorene Einheiten"
+    }
   },
   "tour": {
-    "target": {
-      "title": "Zone und Platz",
-      "content": "Wähle die Zone und den Platz, den du angreifst. Jede Einheit auf der Seite wird mit der Seltenheitsgrenze dieses Platzes angezeigt, und die Auswahl wird auf diesem Gerät gespeichert."
-    },
     "settings": {
       "title": "Saison und Stufe",
       "content": "Saison und Schlachtfeldstufe deines Kriegs. Ändere sie oben rechts unter Einstellungen."
@@ -72,7 +80,7 @@
     },
     "units": {
       "title": "Verfügbare Einheiten",
-      "content": "Deine Einheiten, die in diesem Krieg noch nicht angegriffen haben. Tippe Einheiten oder Auswählen bei einem Team an, dann Angriff erfassen."
+      "content": "Deine Einheiten, die in diesem Krieg noch nicht angegriffen haben. Tippe Einheiten oder bei einem Team auf Auswählen, dann auf Angriff erfassen, um Zone und Verteidigerseltenheit zu wählen."
     },
     "log": {
       "title": "Angriffsprotokoll",
@@ -80,7 +88,7 @@
     },
     "totals": {
       "title": "Gesamtwerte",
-      "content": "Siegquoten nach Zonenrang und Platzseltenheit sowie deine meistgenutzten Aufstellungen über die unten geladenen Kriege."
+      "content": "Deine Angriffe, Siege und Niederlagen; Siegquoten nach Zonenstufe, Zone und Verteidigerseltenheit; deine meistgenutzten Charaktere und Aufstellungen; und die Gegner, gegen die du am häufigsten verloren hast, über die unten geladenen Kriege."
     },
     "wars": {
       "title": "Vergangene Kriege",
@@ -94,8 +102,9 @@
     "wonLost_other": "Gewonnen · {{count}} verloren",
     "lost": "Verloren",
     "noResult": "Kein Ergebnis",
-    "target": "{{zone}} · Platz {{slot}}",
-    "enemy": "Gegner: {{details}}"
+    "target": "{{zone}} · {{rarity}}",
+    "enemy": "Gegner",
+    "unitLost": "{{name}} (verloren)"
   },
   "teams": {
     "heading": "Angriffsteams",
@@ -119,18 +128,21 @@
       "tooManyMows": "Wähle höchstens 1 Kriegsmaschine",
       "deployed": "{{name}} hat in diesem Krieg schon angegriffen",
       "notOwned": "{{name}} ist nicht in deinem synchronisierten Kader",
-      "noTarget": "Wähle zuerst Zone und Platz",
       "noTokens": "In diesem Krieg sind keine Marken mehr übrig"
     }
   },
   "log": {
     "title": "Angriff erfassen",
+    "rarity": "Seltenheit der Verteidiger",
     "result": "Ergebnis",
     "resultNone": "Nicht erfasst",
     "resultWon": "Gewonnen",
     "resultLost": "Verloren",
-    "unitsLost": "Verlorene Einheiten",
-    "twoOrMore": "2 oder mehr",
+    "tapLost": "Tippe auf die Einheiten, die du verloren hast",
+    "markLost": "{{name}} verloren",
+    "notes": "Notizen",
+    "notesPlaceholder": "Optional: was passiert ist, was du nächstes Mal versuchst",
+    "notesCount": "{{count}} / {{max}}",
     "enemyDetails": "Gegnerdetails (optional)",
     "cancel": "Abbrechen",
     "save": "Angriff erfassen",

@@ -8,9 +8,9 @@ Companion change: `guild-war-offense` in `tacticus-planner-api`, which applies f
 
 - A **Guild War** group in the Guild section with two sign-in-only tabs that do not need a registered guild: **Offense** at `/guild/war/offense` and **History** at `/guild/war/history`. `/guild/war` redirects to Offense. The guild access boundary moves from the whole section onto the Guild group's routes (Members, Settings).
 - The Guild submenu splits into two labelled groups, Guild and Guild War, on the desktop section menu and the phone drawer. Page tabs under the header show only the current group.
-- The zone and slot being attacked are a toolbar pair above the tabs. The last picked values are kept on the device (local storage), not in the URL. Together with the war's battlefield level they set the rarity cap that every portrait on the page is shown at.
+- The zone and the defenders' rarity are picked in Log attack. The last zone is kept on the device (local storage), not in the URL. Together with the war's battlefield level the rarity sets the cap the attack's lineup is shown and stored at; the page shows units at their own progression.
 - **Offense**: a summary strip (tokens used of the season's attempts, units left per rarity, attacks logged), offense teams ready first then blocked with the reason, available units with search and filters, a contextual selection bar with Log attack, a Log attack dialog with an optional result and optional Enemy details, the attack log with Undo, Start new war behind a confirmation, and a Settings dialog for the season and battlefield level.
-- **History**: past wars newest first, each expanding in place to its attacks, plus totals (win rate by zone tier and slot rarity, most used lineups).
+- **History**: past wars newest first, each expanding in place to its attacks, plus totals (overall results; win rate by zone tier, zone and defender rarity; most used characters and lineups with win rates; enemies lost to most).
 - A `guildWar` i18n namespace in every locale (plus the game's zone, tier and buff names), a tour, and the `guild-war` catalog dataset in the game-catalog package.
 
 ## Capabilities

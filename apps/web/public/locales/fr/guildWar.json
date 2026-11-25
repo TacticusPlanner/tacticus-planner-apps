@@ -2,6 +2,7 @@
   "season": "Saison {{letter}}",
   "level": "Niveau {{level}}",
   "settingsSummary": "{{season}} · Niveau du champ de bataille {{level}}",
+  "settingsOpen": "{{summary}}. Ouvrir les paramètres",
   "page": {
     "loading": "Chargement de votre guerre",
     "loadError": "Impossible de charger votre guerre.",
@@ -9,12 +10,8 @@
     "noSeasons": "Les données de Guerre de guilde ne sont pas encore disponibles."
   },
   "target": {
-    "label": "Cible de l'attaque",
     "zone": "Zone",
-    "zonePlaceholder": "Choisir une zone",
-    "slot": "Emplacement",
-    "slotPlaceholder": "Choisir un emplacement",
-    "slotOption": "Emplacement {{slot}}"
+    "zonePlaceholder": "Choisir une zone"
   },
   "settings": {
     "title": "Paramètres de Guerre de guilde",
@@ -24,7 +21,8 @@
     "capsKept": "Les attaques déjà notées gardent la limite de rareté avec laquelle elles ont été notées.",
     "stale": "Votre guerre a changé sur un autre appareil. Elle s'affiche telle qu'elle est maintenant.",
     "failed": "Impossible d'enregistrer les paramètres. Réessayez.",
-    "done": "Terminé"
+    "done": "Terminé",
+    "seasonLocked": "Cette guerre a des attaques, sa saison reste donc la même. Commencez une nouvelle guerre pour jouer une autre saison."
   },
   "summary": {
     "tokens": "Jetons utilisés",
@@ -38,26 +36,36 @@
     "emptyDescription": "Une guerre arrive ici quand vous en commencez une nouvelle depuis Attaque.",
     "totals": "Totaux",
     "byTier": "Taux de victoire par palier de zone",
-    "byRarity": "Taux de victoire par rareté d'emplacement",
-    "lineups": "Compositions les plus utilisées",
+    "byZone": "Taux de victoire par zone",
+    "byRarity": "Taux de victoire par rareté des défenseurs",
+    "characters": "Personnages les plus utilisés",
+    "noCharacters": "Aucune attaque notée pour l'instant.",
+    "lineups": "Compositions utilisées plus d'une fois",
     "noResults": "Aucun résultat enregistré pour l'instant.",
     "noLineups": "Aucune composition utilisée plus d'une fois pour l'instant.",
+    "enemies": "Ennemis contre lesquels vous avez le plus perdu",
+    "noEnemies": "Aucun ennemi noté dans les attaques perdues pour l'instant.",
     "winRate_one": "{{rate}} % · {{count}} attaque",
     "winRate_other": "{{rate}} % · {{count}} attaques",
-    "lineupCount_one": "{{count}} attaque",
-    "lineupCount_other": "{{count}} attaques",
-    "warSummary": "{{season}} · Niveau {{level}} · {{tokens}} jetons · {{won}} gagnées · {{lost}} perdues",
+    "attackCount_one": "{{count}} attaque",
+    "attackCount_other": "{{count}} attaques",
+    "lossCount_one": "{{count}} défaite",
+    "lossCount_other": "{{count}} défaites",
+    "warSummary": "{{season}} · Niveau {{level}} ·",
+    "warResults": "{{tokens}} · {{won}} gagnées · {{lost}} perdues",
     "noAttacks": "Aucune attaque n'a été enregistrée dans cette guerre.",
     "loading": "Chargement des guerres passées",
     "loadError": "Impossible de charger vos guerres passées.",
     "heading": "Guerres passées",
-    "loadMore": "Charger plus de guerres"
+    "loadMore": "Charger plus de guerres",
+    "overall": {
+      "attacks": "Attaques",
+      "won": "Gagnées",
+      "lost": "Perdues",
+      "unitsLost": "Unités perdues"
+    }
   },
   "tour": {
-    "target": {
-      "title": "Zone et emplacement",
-      "content": "Choisissez la zone et l'emplacement que vous attaquez. Chaque unité de la page s'affiche à la limite de rareté de cet emplacement, et le choix est mémorisé sur cet appareil."
-    },
     "settings": {
       "title": "Saison et niveau",
       "content": "La saison et le niveau du champ de bataille de votre guerre. Modifiez-les avec Paramètres en haut à droite."
@@ -72,7 +80,7 @@
     },
     "units": {
       "title": "Unités disponibles",
-      "content": "Vos unités qui n'ont pas encore attaqué dans cette guerre. Touchez des unités ou Sélectionner sur une équipe, puis Noter l'attaque."
+      "content": "Vos unités qui n'ont pas attaqué dans cette guerre. Touchez des unités ou Sélectionner sur une équipe, puis Noter l'attaque pour choisir la zone et la rareté des défenseurs."
     },
     "log": {
       "title": "Journal des attaques",
@@ -80,7 +88,7 @@
     },
     "totals": {
       "title": "Totaux",
-      "content": "Taux de victoire par rang de zone et rareté d'emplacement, et vos compositions les plus utilisées, sur les guerres chargées ci-dessous."
+      "content": "Vos attaques, gagnées et perdues ; les taux de victoire par palier de zone, zone et rareté des défenseurs ; vos personnages et compositions les plus utilisés ; et les ennemis contre lesquels vous avez le plus perdu, sur les guerres chargées ci-dessous."
     },
     "wars": {
       "title": "Guerres passées",
@@ -94,8 +102,9 @@
     "wonLost_other": "Gagnée · {{count}} perdues",
     "lost": "Perdue",
     "noResult": "Pas de résultat",
-    "target": "{{zone}} · Emplacement {{slot}}",
-    "enemy": "Ennemi : {{details}}"
+    "target": "{{zone}} · {{rarity}}",
+    "enemy": "Ennemi",
+    "unitLost": "{{name}} (perdue)"
   },
   "teams": {
     "heading": "Équipes d'attaque",
@@ -119,18 +128,21 @@
       "tooManyMows": "Choisissez au plus 1 Machine de guerre",
       "deployed": "{{name}} a déjà attaqué dans cette guerre",
       "notOwned": "{{name}} n'est pas dans votre effectif synchronisé",
-      "noTarget": "Choisissez d'abord une zone et un emplacement",
       "noTokens": "Plus aucun jeton dans cette guerre"
     }
   },
   "log": {
     "title": "Noter l'attaque",
+    "rarity": "Rareté des défenseurs",
     "result": "Résultat",
     "resultNone": "Non noté",
     "resultWon": "Gagnée",
     "resultLost": "Perdue",
-    "unitsLost": "Unités perdues",
-    "twoOrMore": "2 ou plus",
+    "tapLost": "Touchez les unités que vous avez perdues",
+    "markLost": "{{name}} perdue",
+    "notes": "Notes",
+    "notesPlaceholder": "Facultatif : ce qui s'est passé, quoi essayer la prochaine fois",
+    "notesCount": "{{count}} / {{max}}",
     "enemyDetails": "Détails de l'ennemi (facultatif)",
     "cancel": "Annuler",
     "save": "Noter l'attaque",

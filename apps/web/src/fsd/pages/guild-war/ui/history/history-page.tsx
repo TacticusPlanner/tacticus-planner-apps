@@ -8,10 +8,11 @@ import {
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { guildWarTokenIcon } from "@workspace/game-catalog"
 
 import { formatDateRange } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
-import { EmptyState } from "@/shared/ui"
+import { EmptyState, EntityIcon } from "@/shared/ui"
 
 import type { GuildWarSeason } from "../../lib/season"
 import { historyTotals } from "../../model/history-totals"
@@ -47,10 +48,13 @@ function PastWar({
               i18n.language
             )}
           </span>
-          <span className="text-xs font-normal text-muted-foreground">
+          <span className="flex flex-wrap items-center gap-1 text-xs font-normal text-muted-foreground">
             {t("history.warSummary", {
               season: seasonName(war.seasonId),
               level: war.battlefieldLevel,
+            })}
+            <EntityIcon alt="" size="icon-sm" src={guildWarTokenIcon()} />
+            {t("history.warResults", {
               tokens: war.tokensUsed,
               won,
               lost,
@@ -132,7 +136,10 @@ export function HistoryPage() {
   } else {
     content = (
       <>
-        <HistoryTotals totals={historyTotals(wars, seasonList)} />
+        <HistoryTotals
+          seasons={seasonList}
+          totals={historyTotals(wars, seasonList)}
+        />
         <section
           aria-labelledby="guild-war-past-heading"
           className="flex flex-col gap-2"

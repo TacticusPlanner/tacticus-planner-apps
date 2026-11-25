@@ -53,8 +53,6 @@ const roster: TeamRoster = {
 const pick = (...ids: string[]): Selection =>
   new Map(ids.map((id) => [id, roster.mows.has(id) ? "mow" : "character"]))
 
-const target = { zoneId: "Armoury", slot: 2 }
-
 describe("offenseTeams", () => {
   it("lists War Offense teams, ready first, blocked by a deployed core unit", () => {
     const teams = [
@@ -79,7 +77,6 @@ const check = (selection: Selection, overrides = {}) =>
     selection,
     deployed: new Set(["d"]),
     roster,
-    target,
     tokensLeft: 3,
     ...overrides,
   })
@@ -107,10 +104,7 @@ describe("logBlock", () => {
     })
   })
 
-  it("needs a zone and slot, then a token", () => {
-    expect(check(pick("a"), { target: { zoneId: null, slot: 2 } })).toEqual({
-      reason: "noTarget",
-    })
+  it("needs a token", () => {
     expect(check(pick("a"), { tokensLeft: 0 })).toEqual({ reason: "noTokens" })
   })
 })

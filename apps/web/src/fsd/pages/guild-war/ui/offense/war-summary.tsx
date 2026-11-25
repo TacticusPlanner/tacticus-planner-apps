@@ -1,4 +1,7 @@
 import { useTranslation } from "react-i18next"
+import { guildWarTokenIcon } from "@workspace/game-catalog"
+
+import { EntityIcon } from "@/shared/ui"
 
 import { maxAttempts } from "../../lib/season"
 
@@ -17,7 +20,8 @@ export function WarSummary({ children }: { children?: React.ReactNode }) {
     >
       <div className="flex flex-col gap-0.5">
         <dt className="text-xs text-muted-foreground">{t("summary.tokens")}</dt>
-        <dd className="text-xl font-semibold tabular-nums">
+        <dd className="flex items-center gap-1.5 text-xl font-semibold tabular-nums">
+          <EntityIcon alt="" size="icon-md" src={guildWarTokenIcon()} />
           {t("summary.tokensValue", {
             used: war?.tokensUsed ?? 0,
             max: maxAttempts(season),

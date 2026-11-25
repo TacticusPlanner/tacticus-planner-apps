@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react"
-import { Outlet, useMatch } from "react-router"
+import { Outlet } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Settings } from "lucide-react"
 
-import { slotRarityCap } from "../lib/season"
-import { useAttackTarget } from "../model/attack-target"
+import { calendarSeasonId } from "../model/calendar-season"
 import { useCurrentGuildWar } from "../model/use-guild-war"
 import { useCatalogDataset } from "@/shared/local-data"
 import {
@@ -20,41 +20,40 @@ import { PageContainer } from "@/widgets/page-container"
 import { warSettings } from "../model/default-settings"
 import type { GuildWarContext } from "../model/guild-war-context"
 import { useGuildWarNames } from "../model/use-guild-war-names"
-import { AttackTargetBar } from "./attack-target-bar"
 import { GuildWarSettingsDialog } from "./guild-war-settings-dialog"
 
 /**
- * The Guild War group's layout (Offense, History): the Settings button in the header, the zone and
- * slot being attacked above the tabs (they scope both), and the war the tabs read. Sign-in only: no
- * registered guild needed.
+ * The Guild War group's layout (Offense, History): the Settings button in the header, the war's
+ * season and level above the tabs (tapping it opens Settings), and the war the tabs read. With no
+ * war the season is the one the calendar says is running. Sign-in only: no registered guild needed.
  */
 export function GuildWarLayout() {
   const { t } = useTranslation("guildWar")
   const { seasonName } = useGuildWarNames()
   const current = useCurrentGuildWar()
   const seasons = useCatalogDataset("guild-war")
+  const calendar = useCatalogDataset("events-calendar")
+  const [nowMs] = useState(() => Date.now())
   const [settingsOpen, setSettingsOpen] = useState(false)
-  // The zone and slot pick what to attack, so History, which only reads past wars, leaves them out.
-  const onHistory = useMatch("/guild/war/history") !== null
 
   const war = current.data ?? null
   const seasonList = seasons.status === "ready" ? seasons.data : undefined
-  const settings = seasonList ? warSettings(war, seasonList) : undefined
-  const season = seasonList?.find((entry) => entry.id === settings?.seasonId)
-  const { target, setZoneId, setSlot } = useAttackTarget(season)
-  const rarityCap =
-    season && settings && target.zoneId !== null && target.slot !== null
-      ? slotRarityCap(
-          season,
-          settings.battlefieldLevel,
-          target.zoneId,
-          target.slot
+  const running =
+    seasonList && calendar.status === "ready"
+      ? calendarSeasonId(
+          calendar.data,
+          new Set(seasonList.map((entry) => entry.id)),
+          nowMs
         )
       : undefined
+  const settings = seasonList
+    ? warSettings(war, seasonList, running)
+    : undefined
+  const season = seasonList?.find((entry) => entry.id === settings?.seasonId)
   const context = useMemo(
     (): GuildWarContext | undefined =>
-      settings ? { war, season, settings, target, rarityCap } : undefined,
-    [war, season, settings, target, rarityCap]
+      settings ? { war, season, settings } : undefined,
+    [war, season, settings]
   )
 
   let content
@@ -98,26 +97,25 @@ export function GuildWarLayout() {
   } else {
     content = (
       <>
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          {onHistory ? null : (
-            <AttackTargetBar
-              battlefieldLevel={settings.battlefieldLevel}
-              onSlotChange={setSlot}
-              onZoneChange={setZoneId}
-              season={season}
-              target={target}
-            />
-          )}
-          <p
-            className="text-sm text-muted-foreground"
-            data-testid="guild-war-settings-summary"
-          >
-            {t("settingsSummary", {
+        <Button
+          aria-label={t("settingsOpen", {
+            summary: t("settingsSummary", {
               season: seasonName(settings.seasonId),
               level: settings.battlefieldLevel,
-            })}
-          </p>
-        </div>
+            }),
+          })}
+          className="self-start text-muted-foreground"
+          data-testid="guild-war-settings-summary"
+          onClick={() => setSettingsOpen(true)}
+          size="sm"
+          variant="ghost"
+        >
+          <Settings data-icon="inline-start" />
+          {t("settingsSummary", {
+            season: seasonName(settings.seasonId),
+            level: settings.battlefieldLevel,
+          })}
+        </Button>
         <Outlet context={context} />
         <GuildWarSettingsDialog
           onOpenChange={setSettingsOpen}

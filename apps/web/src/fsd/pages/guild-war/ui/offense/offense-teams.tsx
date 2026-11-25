@@ -8,8 +8,6 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { coreUnits } from "../../model/offense"
 import type { OffenseTeam, UnitKind } from "../../model/offense"
-import { cappedView } from "../../model/capped-view"
-import type { Rarity } from "@workspace/game-domain"
 
 /**
  * The player's War Offense teams: the ready ones first, then the blocked ones, each saying which of
@@ -18,12 +16,10 @@ import type { Rarity } from "@workspace/game-domain"
 export function OffenseTeams({
   teams,
   roster,
-  rarityCap,
   onSelect,
 }: {
   teams: readonly OffenseTeam[]
   roster: TeamRoster | null
-  rarityCap: Rarity | undefined
   onSelect: (units: { id: string; kind: UnitKind }[]) => void
 }) {
   const { t } = useTranslation("guildWar")
@@ -71,11 +67,7 @@ export function OffenseTeams({
                 {core.map((unit) => (
                   <li aria-label={nameOf(unit.kind, unit.id)} key={unit.id}>
                     <TeamUnitPortrait
-                      unit={
-                        rarityCap
-                          ? cappedView(unit.kind, unit.id, roster, rarityCap)
-                          : teamUnitView(unit.kind, unit.id, roster)
-                      }
+                      unit={teamUnitView(unit.kind, unit.id, roster)}
                     />
                   </li>
                 ))}

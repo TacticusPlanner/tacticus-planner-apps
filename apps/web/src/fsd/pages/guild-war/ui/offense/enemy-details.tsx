@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next"
 import { X } from "lucide-react"
-import { characterIcon, mowIcon } from "@workspace/game-catalog"
+import {
+  characterIcon,
+  guildWarBuffIcon,
+  mowIcon,
+} from "@workspace/game-catalog"
 import { groupByFaction, rankOrder, rarityOrder } from "@workspace/game-domain"
 import type { FactionId, UnitId } from "@workspace/game-domain"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -278,6 +282,11 @@ export function EnemyDetails({
                             : value.buffIds.filter((id) => id !== buff.id),
                       })
                     }
+                  />
+                  <EntityIcon
+                    alt=""
+                    size="icon"
+                    src={guildWarBuffIcon(buff.id)}
                   />
                   {buffName(buff.id)}
                 </Label>

@@ -8,7 +8,10 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
-import { staleGuildWar } from "../model/guild-war-errors"
+import {
+  isGuildWarSeasonLocked,
+  staleGuildWar,
+} from "../model/guild-war-errors"
 import { useSetGuildWarSettings } from "../model/use-guild-war"
 import type { GuildWar, GuildWarSettings } from "../model/types"
 import type { GuildWarSeason } from "../lib/season"
@@ -26,7 +29,8 @@ import { useGuildWarNames } from "../model/use-guild-war-names"
 
 /**
  * The page's Settings: the war's season and battlefield level. A change saves at once (creating
- * the current war when there is none), so the dialog ends with Done only.
+ * the current war when there is none), so the dialog ends with Done only. Once the war has attacks
+ * its season is kept (they belong to its zones); a different season means a new war.
  */
 export function GuildWarSettingsDialog({
   open,
@@ -46,6 +50,7 @@ export function GuildWarSettingsDialog({
   const save = useSetGuildWarSettings()
   const season = seasons.find((entry) => entry.id === settings.seasonId)
   const levels = (season?.levels ?? []).map((level) => level.battlefieldLevel)
+  const seasonLocked = (war?.attacks.length ?? 0) > 0
 
   const change = (next: GuildWarSettings) => {
     save.mutate({ settings: next, revision: war?.revision ?? 0 })
@@ -65,9 +70,10 @@ export function GuildWarSettingsDialog({
 
   let error: string | null = null
   if (save.isError) {
-    error = staleGuildWar(save.error)
-      ? t("settings.stale")
-      : t("settings.failed")
+    if (staleGuildWar(save.error)) error = t("settings.stale")
+    else if (isGuildWarSeasonLocked(save.error))
+      error = t("settings.seasonLocked")
+    else error = t("settings.failed")
   }
 
   return (
@@ -87,7 +93,7 @@ export function GuildWarSettingsDialog({
         <FilterField label={t("settings.season")}>
           {({ id, labelId }) => (
             <Select
-              disabled={save.isPending}
+              disabled={save.isPending || seasonLocked}
               onValueChange={changeSeason}
               value={settings.seasonId}
             >
@@ -141,6 +147,14 @@ export function GuildWarSettingsDialog({
             </Select>
           )}
         </FilterField>
+        {seasonLocked ? (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="guild-war-season-locked"
+          >
+            {t("settings.seasonLocked")}
+          </p>
+        ) : null}
         <p className="text-sm text-muted-foreground">
           {t("settings.capsKept")}
         </p>

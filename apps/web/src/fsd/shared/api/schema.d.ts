@@ -1495,7 +1495,10 @@ export interface paths {
      */
     get: operations["TacticusPlannerApiFeaturesGuildWarsListGuildWarsEndpoint"]
     put?: never
-    /** Ends the current war, keeping it and its attacks, and starts a new one. */
+    /**
+     * Ends the current war, keeping it and its attacks, and starts a new one.
+     * @description currentWarId is the war the caller means to end, or null when it sees none. When another war is current (a retried request already started one), nothing changes.
+     */
     post: operations["TacticusPlannerApiFeaturesGuildWarsStartGuildWarEndpoint"]
     delete?: never
     options?: never
@@ -1517,7 +1520,7 @@ export interface paths {
     get: operations["TacticusPlannerApiFeaturesGuildWarsGetCurrentGuildWarEndpoint"]
     /**
      * Sets the current war's season and battlefield level, creating the war when there is none.
-     * @description revision is ignored when the war is created. Changing the level keeps the rarityCap of attacks already logged.
+     * @description revision is ignored when the war is created. Changing the level keeps the rarityCap of attacks already logged. The season can change only while the war has no attacks, since logged attacks name the season's zones, buffs and maps.
      */
     put: operations["TacticusPlannerApiFeaturesGuildWarsSetCurrentGuildWarEndpoint"]
     post?: never
@@ -2396,13 +2399,12 @@ export interface components {
       mow: null | components["schemas"]["GuildWarLineupUnitDto"]
       /** @constant */
       result: null | components["schemas"]["GuildWarAttackResult"]
-      /**
-       * Format: int32
-       * @constant
-       */
-      unitsLost: null | number
+      /** @constant */
+      lostUnitIds: null | string[]
       /** @constant */
       enemy: null | components["schemas"]["GuildWarEnemyDto"]
+      /** @constant */
+      notes: null | string
       /**
        * Format: date-time
        * @constant
@@ -4393,9 +4395,10 @@ export interface components {
       characters: components["schemas"]["IReadOnlyListOfGuildWarLineupUnitDto"]
       mow: null | components["schemas"]["GuildWarLineupUnitDto"]
       result: null | components["schemas"]["GuildWarAttackResult"]
-      /** Format: int32 */
-      unitsLost: null | number
+      /** @constant */
+      lostUnitIds: null | string[]
       enemy: null | components["schemas"]["GuildWarEnemyDto"]
+      notes: null | string
     }
     /** @enum {string} */
     GuildWarAttackResult: "won" | "lost"
@@ -5120,6 +5123,8 @@ export interface components {
       seasonId: string
       /** Format: int32 */
       battlefieldLevel: number
+      /** Format: uuid */
+      currentWarId: null | string
     }
     /** @enum {string} */
     TeamMode:
@@ -5300,13 +5305,12 @@ export interface components {
       mow: null | components["schemas"]["GuildWarLineupUnitDto"]
       /** @constant */
       result: null | components["schemas"]["GuildWarAttackResult"]
-      /**
-       * Format: int32
-       * @constant
-       */
-      unitsLost: null | number
+      /** @constant */
+      lostUnitIds: null | string[]
       /** @constant */
       enemy: null | components["schemas"]["GuildWarEnemyDto"]
+      /** @constant */
+      notes: null | string
       /**
        * Format: int64
        * @constant
@@ -10160,6 +10164,15 @@ export interface operations {
           "application/problem+json": components["schemas"]["ApiProblem"]
         }
       }
+      /** @description guildWarRevisionStale: currentWarId is not the current war; current is the war as it stands. */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
     }
   }
   TacticusPlannerApiFeaturesGuildWarsGetCurrentGuildWarEndpoint: {
@@ -10267,7 +10280,7 @@ export interface operations {
           "application/problem+json": components["schemas"]["ApiProblem"]
         }
       }
-      /** @description guildWarRevisionStale; current is the war as it stands. */
+      /** @description guildWarRevisionStale, or guildWarHasAttacks for a season change once attacks are logged; current is the war as it stands. */
       409: {
         headers: {
           [name: string]: unknown

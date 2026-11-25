@@ -1,33 +1,58 @@
 import { describe, expect, it } from "vitest"
 import { guildWarFixture } from "@workspace/game-catalog/testing"
 
-import { resolveAttackTarget } from "./attack-target"
+import type { TeamRoster } from "@/entities/team"
+
+import { likelyRarity, resolveZone, zoneRarities } from "./attack-target"
 
 const [seasonA, seasonD] = guildWarFixture
 
-describe("resolveAttackTarget", () => {
-  it("restores a stored zone and slot", () => {
+describe("resolveZone", () => {
+  it("restores a stored zone the season has", () => {
+    expect(resolveZone("Armoury", seasonA)).toBe("Armoury")
+  })
+
+  it("clears a zone the season does not have, or before the catalog loads", () => {
+    expect(resolveZone("LandingPad1", seasonD)).toBeNull()
+    expect(resolveZone("HQ", undefined)).toBeNull()
+    expect(resolveZone("", seasonA)).toBeNull()
+  })
+})
+
+describe("zoneRarities", () => {
+  it("lists a zone's caps once each, highest first, with their first slot", () => {
+    expect(zoneRarities(seasonA, 5, "Armoury")).toEqual([
+      { rarity: "Legendary", slot: 0 },
+      { rarity: "Epic", slot: 2 },
+    ])
+    expect(zoneRarities(seasonA, 5, null)).toEqual([])
+  })
+})
+
+const roster = (progression: string): TeamRoster =>
+  ({
+    characters: new Map([["a", { progression }]]),
+    mows: new Map(),
+  }) as unknown as TeamRoster
+
+describe("likelyRarity", () => {
+  const rarities = zoneRarities(seasonA, 5, "Armoury")
+
+  it("takes the lowest cap the lineup fits under", () => {
+    const selection = new Map([["a", "character" as const]])
+    expect(likelyRarity(rarities, selection, roster("Epic:RedTwoStars"))).toBe(
+      "Epic"
+    )
     expect(
-      resolveAttackTarget({ zone: "Armoury", slot: "2" }, seasonA)
-    ).toEqual({ zoneId: "Armoury", slot: 2 })
+      likelyRarity(rarities, selection, roster("Legendary:RedFiveStars"))
+    ).toBe("Legendary")
   })
 
-  it("clears a zone the season does not have", () => {
+  it("takes the highest cap when the lineup is above them all", () => {
+    const selection = new Map([["a", "character" as const]])
     expect(
-      resolveAttackTarget({ zone: "LandingPad1", slot: "0" }, seasonD)
-    ).toEqual({ zoneId: null, slot: 0 })
-  })
-
-  it("clears a slot outside 1 to 5", () => {
-    for (const slot of ["5", "-1", "1.5", "x", ""]) {
-      expect(resolveAttackTarget({ zone: "HQ", slot }, seasonA).slot).toBeNull()
-    }
-  })
-
-  it("has no zone before the catalog loads", () => {
-    expect(resolveAttackTarget({ zone: "HQ", slot: "1" }, undefined)).toEqual({
-      zoneId: null,
-      slot: 1,
-    })
+      likelyRarity(rarities, selection, roster("Mythic:OneBlueStar"))
+    ).toBe("Legendary")
+    expect(likelyRarity([], selection, null)).toBeUndefined()
   })
 })

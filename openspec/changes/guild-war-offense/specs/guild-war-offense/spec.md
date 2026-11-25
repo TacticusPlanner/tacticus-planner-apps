@@ -1,6 +1,6 @@
 ## Purpose
 
-Defines the Guild War pages in the Guild section: the attack target, the Offense tracker with its attack log, and the History tab.
+Defines the Guild War pages in the Guild section: the war's season and level, the Offense tracker with its attack log, and the History tab.
 
 ## ADDED Requirements
 
@@ -14,15 +14,21 @@ The app SHALL serve `/guild/war/offense` and `/guild/war/history` to any signed-
 - **WHEN** they open `/guild/war/offense`
 - **THEN** the Offense page renders, not the guild onboarding
 
-### Requirement: The attack target is remembered on the device
+### Requirement: The war's season and level are shown and set in Settings
 
-Above the tabs the page SHALL show a Zone select (zones of the war's season, grouped by their tier at the war's battlefield level, each with its buff) and a Slot select (slots 1 to 5, each showing its rarity cap). The last picked zone and slot SHALL be stored in local storage and restored on the next visit and when switching tabs; they SHALL NOT be query parameters. A stored zone the season does not have, or a slot outside 1 to 5, SHALL be cleared. The rarity cap of the picked zone and slot SHALL be the cap every unit portrait on the page is shown at; with no zone picked, units SHALL be shown uncapped.
+Above the tabs the page SHALL show the war's season and battlefield level; tapping it SHALL open Settings, as the header's Settings button does. With no current war the season SHALL be the one the events calendar names for the current (else the latest started, else the next) Guild War season through its `seasonConfigId`, else the first served season, at battlefield level 5. Once the war has attacks, Settings SHALL keep its season (the select is disabled with a note saying to start a new war); the level stays editable.
 
-#### Scenario: Remembered target
+#### Scenario: Calendar default
 
-- **GIVEN** the user picked Armoury, slot 3, and reloads the page
+- **GIVEN** no current war and a calendar Guild War season naming `guildWarSeasonC`
 - **WHEN** Offense renders
-- **THEN** Armoury and slot 3 are still picked and portraits are capped at that slot's rarity
+- **THEN** the summary reads "Season C · Battlefield level 5"
+
+#### Scenario: Season kept under attacks
+
+- **GIVEN** a current war with one attack
+- **WHEN** the user opens Settings
+- **THEN** the season select is disabled and the level select is not
 
 ### Requirement: Offense tracks the current war
 
@@ -36,7 +42,7 @@ Offense SHALL show, in order: a summary strip (tokens used of the season's `maxA
 
 ### Requirement: Attacks are logged from a selection
 
-Tapping units, or a team's Select, SHALL select them; while anything is selected a contextual bar SHALL show the count, Log attack and Clear. Log attack SHALL be disabled with a reason when the selection has no character, more than 5 characters, more than 1 MoW, a deployed unit, no zone picked, or no tokens left. The Log attack dialog (a bottom sheet on phones) SHALL show the lineup, zone and slot, an optional result (Won with 0, 1, 2 or more units lost, or Lost), and a collapsed optional Enemy details section with an enemy lineup builder over every catalog character and MoW (rarity and rank each, and whether it was killed or left damaged), the zone buffs active, and the map. Saving SHALL send the lineup with each unit's progression from the roster, clear the selection and show the attack in the log.
+Tapping units, or a team's Select, SHALL select them; while anything is selected a contextual bar SHALL show the count, Log attack and Clear. Log attack SHALL be disabled with a reason when the selection has no character, more than 5 characters, more than 1 MoW, a deployed unit, or no tokens left. Units on the page SHALL show at their own progression. The Log attack dialog (a bottom sheet on phones) SHALL show a Zone select (zones of the war's season grouped by their tier at the war's level, each with its game picture and buff badge), starting on the zone last logged on this device (local storage, cleared when the season lacks it); the defenders' rarity, one choice per distinct cap of the zone's slots, starting on the lowest cap the lineup's highest rarity fits under, else the highest; the lineup at that cap; an optional result (Won or Lost) after which tapping lineup units marks them lost; an optional note of at most 200 characters; and a collapsed optional Enemy details section with an enemy lineup builder over every catalog character and MoW (rarity and rank each, and whether it was killed or left damaged), the zone buffs active, and the map. Saving SHALL need a zone, SHALL send the first slot holding the chosen rarity, the lineup with each unit's progression from the roster, the lost units and the trimmed note, then clear the selection and show the attack in the log. Each logged attack SHALL show its zone picture, zone and defenders' rarity, result, lineup with lost units greyed out, the enemy units and buffs when entered, and the note. The Guild War token icon SHALL accompany every token count.
 
 #### Scenario: Too many characters
 
@@ -46,7 +52,7 @@ Tapping units, or a team's Select, SHALL select them; while anything is selected
 
 ### Requirement: History lists past wars
 
-History SHALL list ended wars newest first, each showing its start date, season, battlefield level, tokens used and attacks won and lost, and expanding in place to its attacks (lineup as logged, zone and slot, rarity cap, result, and enemy details when entered). Above the list it SHALL show totals across the loaded wars: win rate by zone tier and by slot rarity, and the most used lineups. More wars SHALL load on demand.
+History SHALL list ended wars newest first, each showing its start date, season, battlefield level, tokens used and attacks won and lost, and expanding in place to its attacks, shown as in the attack log. Above the list it SHALL show totals across the loaded wars: attacks, won, lost and units lost; win rate by zone tier, by zone and by defender rarity; the most used characters with their win rate; the lineups used more than once with their win rate; and the enemy characters met most in lost attacks. More wars SHALL load on demand.
 
 #### Scenario: Empty history
 

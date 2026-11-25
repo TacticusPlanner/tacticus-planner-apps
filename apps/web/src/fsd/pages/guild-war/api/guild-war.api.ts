@@ -19,7 +19,8 @@ export function getCurrentWar(signal?: AbortSignal): Promise<GuildWar | null> {
 
 /** Creates the current war when there is none (`revision` ignored), else changes its season and
  *  level. 400 `guildWarUnknownSeason` or `guildWarUnknownLevel`; 409 `guildWarRevisionStale` with
- *  the war as it stands. */
+ *  the war as it stands, or `guildWarHasAttacks` when the season would change under logged
+ *  attacks. */
 export function setCurrentWar(
   settings: GuildWarSettings,
   revision: number
@@ -31,9 +32,19 @@ export function setCurrentWar(
   )
 }
 
-/** Ends the current war (kept, with its attacks) and starts a new one with no attacks. */
-export function startWar(settings: GuildWarSettings): Promise<GuildWar> {
-  return unwrap(apiClient().POST("/api/v1/guild-wars", { body: settings }))
+/** Ends the current war (kept, with its attacks) and starts a new one with no attacks.
+ *  `currentWarId` is the war the page shows as current (null for none); 409
+ *  `guildWarRevisionStale` with the war as it stands when that is no longer the current one, so a
+ *  retried start never ends the war it just started. */
+export function startWar(
+  settings: GuildWarSettings,
+  currentWarId: string | null
+): Promise<GuildWar> {
+  return unwrap(
+    apiClient().POST("/api/v1/guild-wars", {
+      body: { ...settings, currentWarId },
+    })
+  )
 }
 
 /** One page of ended wars, newest first; `after` is the previous page's `nextAfter`. */

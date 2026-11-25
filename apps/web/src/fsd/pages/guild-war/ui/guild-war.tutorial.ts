@@ -5,19 +5,12 @@ import type { Step } from "react-joyride"
 import { useTourPageSteps } from "@/shared/tour"
 
 type StepKey =
-  | "target"
-  | "settings"
-  | "summary"
-  | "teams"
-  | "units"
-  | "log"
-  | "totals"
-  | "wars"
+  "settings" | "summary" | "teams" | "units" | "log" | "totals" | "wars"
 
 /**
- * Joyride tours for the Guild War tabs. Offense starts with the zone and slot being attacked and
- * the war's season and level, then covers the summary, the offense teams (optional: a player
- * may have none), the units and the attack log (optional: empty until the first attack).
+ * Joyride tours for the Guild War tabs. Offense starts with the war's season and level, then
+ * covers the summary, the offense teams (optional: a player may have none), the units (where Log
+ * attack picks the zone and rarity) and the attack log (optional: empty until the first attack).
  * History starts with the season and level, then covers the totals and the past wars (both
  * optional: empty until a war has ended).
  */
@@ -35,7 +28,6 @@ export function useGuildWarTutorial(tab: "offense" | "history") {
     const shared =
       tab === "offense"
         ? [
-            step("guild-war-target", "target"),
             settings,
             step("guild-war-summary", "summary"),
             step("guild-war-teams", "teams", true),

@@ -13,3 +13,10 @@
 ## 3. History tab
 
 - [x] 3.1 Past wars newest first, expanding to their attacks, with totals and load more.
+
+## 4. Feedback
+
+- [x] 4.1 Move the zone and rarity into Log attack (last zone remembered, rarity instead of slot, units at their own progression on the page), and open Settings from the season and level line.
+- [x] 4.2 Record lost units by tapping them and a 200-character note; show the zone picture, lost units, enemy units and buffs, and the note in each attack.
+- [x] 4.3 Default the season from the calendar's `seasonConfigId`, keep a war's season once it has attacks, and send `currentWarId` when starting a war.
+- [x] 4.4 Game pictures for zones, buff badges and the Guild War token; History totals by zone, characters, lineup win rates, enemies lost to and overall counts.

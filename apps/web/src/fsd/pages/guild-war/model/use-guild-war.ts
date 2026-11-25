@@ -77,16 +77,27 @@ export function useSetGuildWarSettings() {
   })
 }
 
-/** Ends the current war, keeping it in History, and starts a new one. */
+/** Ends the current war, keeping it in History, and starts a new one. A start the server finds
+ *  stale (the war it would end is no longer current, e.g. a retried start) adopts the current war. */
 export function useStartGuildWar() {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: (settings: GuildWarSettings) => startWar(settings),
+    mutationFn: ({
+      settings,
+      currentWarId,
+    }: {
+      settings: GuildWarSettings
+      currentWarId: string | null
+    }) => startWar(settings, currentWarId),
     onSuccess: (war) => {
       client.setQueryData(currentKey(), war)
       void client.invalidateQueries({
         queryKey: guildWarQueries.past().queryKey,
       })
+    },
+    onError: (error) => {
+      const current = staleGuildWar(error)
+      if (current) adoptWar(client, current)
     },
     onSettled: () => refresh(client),
   })

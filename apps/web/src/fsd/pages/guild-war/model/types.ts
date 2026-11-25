@@ -16,7 +16,8 @@ export type GuildWarEnemyUnit = S["GuildWarEnemyUnitDto"]
 /** A page of ended wars, newest first, and the cursor of the next (older) page. */
 export type PastGuildWars = S["PastGuildWarsResponse"]
 
-/** The fields an attack is logged with; `attackedAt` is left to the server (now). */
+/** The fields an attack is logged with (zone, slot, lineup, result, lost units, notes, enemy);
+ *  `attackedAt` is left to the server (now). */
 export type GuildWarAttackFields = Omit<
   S["CreateGuildWarAttackRequest"],
   "attackedAt"
@@ -39,6 +40,7 @@ export const guildWarIssues = {
   unknownUnit: "guildWarUnknownUnit",
   unitDeployed: "guildWarUnitDeployed",
   tokensSpent: "guildWarTokensSpent",
+  hasAttacks: "guildWarHasAttacks",
 } as const
 
 /** The rule codes a refused attack names, in the order the API checks them. */

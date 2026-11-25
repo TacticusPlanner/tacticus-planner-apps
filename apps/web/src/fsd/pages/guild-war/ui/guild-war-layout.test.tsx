@@ -76,40 +76,46 @@ describe("GuildWarLayout", () => {
       await screen.findByTestId("guild-war-settings-summary")
     ).toHaveTextContent("Season A · Battlefield level 5")
     expect(screen.getByTestId("guild-war-summary")).toHaveTextContent("0 / 10")
-    expect(screen.getByTestId("guild-war-zone")).toHaveTextContent(
-      "Pick a zone"
-    )
   })
 
-  it("restores the remembered zone and slot, and clears a zone the season lacks", async () => {
-    api.current.mockResolvedValue({ war: war() })
-    window.localStorage.setItem("guildWar.zone", "Armoury")
-    window.localStorage.setItem("guildWar.slot", "2")
-    const { unmount } = renderAt("/guild/war/offense")
+  it("defaults to the season the calendar says is running", async () => {
+    api.current.mockResolvedValue({ war: null })
+    await seedGameCatalog({
+      "events-calendar": {
+        "2020-01-03": [
+          {
+            occurrenceId: "occ-gw",
+            definitionId: "guild-war-season",
+            confirmed: true,
+            startUtc: "2020-01-03T09:00:00Z",
+            endUtc: "2020-01-18T09:00:00Z",
+            parameters: { season: 1, seasonConfigId: "guildWarSeasonD" },
+          },
+        ],
+      },
+    })
+    renderAt("/guild/war/offense")
 
-    expect(await screen.findByTestId("guild-war-zone")).toHaveTextContent(
-      "Armoury"
-    )
-    expect(screen.getByTestId("guild-war-slot")).toHaveTextContent("Slot 3")
-    expect(screen.getByTestId("guild-war-settings-summary")).toHaveTextContent(
-      "Season D · Battlefield level 2"
-    )
-    unmount()
-
-    // History shows the war's settings but not the attack target.
-    const history = renderAt("/guild/war/history")
     expect(
       await screen.findByTestId("guild-war-settings-summary")
-    ).toBeInTheDocument()
-    expect(screen.queryByTestId("guild-war-zone")).toBeNull()
-    history.unmount()
+    ).toHaveTextContent("Season D · Battlefield level 5")
+  })
 
-    // Season D has no Landing Pad.
-    window.localStorage.setItem("guildWar.zone", "LandingPad1")
-    renderAt("/guild/war/offense")
-    expect(await screen.findByTestId("guild-war-zone")).toHaveTextContent(
-      "Pick a zone"
-    )
+  it("keeps the season of a war with attacks", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({
+      war: war({ tokensUsed: 1, attacks: [{} as GuildWar["attacks"][number]] }),
+    })
+    renderAt("/guild/war/history")
+
+    // The summary line opens Settings too.
+    await user.click(await screen.findByTestId("guild-war-settings-summary"))
+    const dialog = await screen.findByTestId("guild-war-settings")
+    expect(within(dialog).getByTestId("guild-war-season")).toBeDisabled()
+    expect(
+      within(dialog).getByTestId("guild-war-season-locked")
+    ).toBeInTheDocument()
+    expect(within(dialog).getByTestId("guild-war-level")).toBeEnabled()
   })
 
   it("saves a new battlefield level from Settings over the war's revision", async () => {

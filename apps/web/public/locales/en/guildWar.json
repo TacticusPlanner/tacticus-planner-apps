@@ -2,6 +2,7 @@
   "season": "Season {{letter}}",
   "level": "Level {{level}}",
   "settingsSummary": "{{season}} · Battlefield level {{level}}",
+  "settingsOpen": "{{summary}}. Open settings",
   "page": {
     "loading": "Loading your war",
     "loadError": "Couldn't load your war.",
@@ -9,12 +10,8 @@
     "noSeasons": "Guild War data isn't available yet."
   },
   "target": {
-    "label": "Attack target",
     "zone": "Zone",
-    "zonePlaceholder": "Pick a zone",
-    "slot": "Slot",
-    "slotPlaceholder": "Pick a slot",
-    "slotOption": "Slot {{slot}}"
+    "zonePlaceholder": "Pick a zone"
   },
   "settings": {
     "title": "Guild War settings",
@@ -24,7 +21,8 @@
     "capsKept": "Attacks already logged keep the rarity cap they were logged at.",
     "stale": "Your war changed on another device. It shows as it is now.",
     "failed": "Couldn't save the settings. Try again.",
-    "done": "Done"
+    "done": "Done",
+    "seasonLocked": "This war has attacks, so its season stays. Start a new war to play another season."
   },
   "summary": {
     "tokens": "Tokens used",
@@ -38,26 +36,36 @@
     "emptyDescription": "A war moves here when you start a new one from Offense.",
     "totals": "Totals",
     "byTier": "Win rate by zone tier",
-    "byRarity": "Win rate by slot rarity",
-    "lineups": "Most used lineups",
+    "byZone": "Win rate by zone",
+    "byRarity": "Win rate by defender rarity",
+    "characters": "Most used characters",
+    "noCharacters": "No attacks logged yet.",
+    "lineups": "Lineups used more than once",
     "noResults": "No results recorded yet.",
     "noLineups": "No lineup used more than once yet.",
+    "enemies": "Enemies you lost to most",
+    "noEnemies": "No enemies noted in lost attacks yet.",
     "winRate_one": "{{rate}}% · {{count}} attack",
     "winRate_other": "{{rate}}% · {{count}} attacks",
-    "lineupCount_one": "{{count}} attack",
-    "lineupCount_other": "{{count}} attacks",
-    "warSummary": "{{season}} · Level {{level}} · {{tokens}} tokens · {{won}} won · {{lost}} lost",
+    "attackCount_one": "{{count}} attack",
+    "attackCount_other": "{{count}} attacks",
+    "lossCount_one": "{{count}} loss",
+    "lossCount_other": "{{count}} losses",
+    "warSummary": "{{season}} · Level {{level}} ·",
+    "warResults": "{{tokens}} · {{won}} won · {{lost}} lost",
     "noAttacks": "No attacks were logged in this war.",
     "loading": "Loading past wars",
     "loadError": "Couldn't load your past wars.",
     "heading": "Past wars",
-    "loadMore": "Load more wars"
+    "loadMore": "Load more wars",
+    "overall": {
+      "attacks": "Attacks",
+      "won": "Won",
+      "lost": "Lost",
+      "unitsLost": "Units lost"
+    }
   },
   "tour": {
-    "target": {
-      "title": "Zone and slot",
-      "content": "Pick the zone and slot you are attacking. Every unit on the page shows at that slot's rarity cap, and the pick is remembered on this device."
-    },
     "settings": {
       "title": "Season and level",
       "content": "Your war's season and battlefield level. Change them with Settings at the top right."
@@ -72,7 +80,7 @@
     },
     "units": {
       "title": "Available units",
-      "content": "Your units that have not attacked in this war. Tap units or a team's Select, then Log attack."
+      "content": "Your units that have not attacked in this war. Tap units or a team's Select, then Log attack to pick the zone and the defenders' rarity."
     },
     "log": {
       "title": "Attack log",
@@ -80,7 +88,7 @@
     },
     "totals": {
       "title": "Totals",
-      "content": "Win rates by zone tier and slot rarity, and your most used lineups, across the wars loaded below."
+      "content": "Your attacks, won and lost; win rates by zone tier, zone and defender rarity; your most used characters and lineups; and the enemies you lost to most, across the wars loaded below."
     },
     "wars": {
       "title": "Past wars",
@@ -94,8 +102,9 @@
     "wonLost_other": "Won · {{count}} lost",
     "lost": "Lost",
     "noResult": "No result",
-    "target": "{{zone}} · Slot {{slot}}",
-    "enemy": "Enemy: {{details}}"
+    "target": "{{zone}} · {{rarity}}",
+    "enemy": "Enemy",
+    "unitLost": "{{name}} (lost)"
   },
   "teams": {
     "heading": "Offense teams",
@@ -119,18 +128,21 @@
       "tooManyMows": "Pick at most 1 Machine of War",
       "deployed": "{{name}} already attacked in this war",
       "notOwned": "{{name}} isn't in your synced roster",
-      "noTarget": "Pick a zone and slot first",
       "noTokens": "No tokens left in this war"
     }
   },
   "log": {
     "title": "Log attack",
+    "rarity": "Defenders' rarity",
     "result": "Result",
     "resultNone": "Not recorded",
     "resultWon": "Won",
     "resultLost": "Lost",
-    "unitsLost": "Units lost",
-    "twoOrMore": "2 or more",
+    "tapLost": "Tap the units you lost",
+    "markLost": "{{name}} lost",
+    "notes": "Notes",
+    "notesPlaceholder": "Optional: what happened, what to try next time",
+    "notesCount": "{{count}} / {{max}}",
     "enemyDetails": "Enemy details (optional)",
     "cancel": "Cancel",
     "save": "Log attack",

@@ -130,7 +130,8 @@ const attack = (overrides: Partial<GuildWarAttack> = {}): GuildWarAttack => ({
   ],
   mow: null,
   result: "won",
-  unitsLost: 1,
+  lostUnitIds: ["ultraTitus"],
+  notes: null,
   enemy: null,
   ...overrides,
 })
@@ -233,8 +234,6 @@ describe("OffensePage", () => {
   it("turns Log attack off with a reason for more than 5 characters", async () => {
     const user = userEvent.setup()
     api.current.mockResolvedValue({ war: war() })
-    window.localStorage.setItem("guildWar.zone", "Armoury")
-    window.localStorage.setItem("guildWar.slot", "2")
     renderOffense()
 
     for (const id of CHARACTERS) await user.click(await tile(id))
@@ -258,15 +257,27 @@ describe("OffensePage", () => {
         war({ tokensUsed: 1, deployedUnitIds: ["ultraCalgar"] })
       )
     api.setCurrent.mockResolvedValue(war())
+    // The zone last attacked on this device starts the dialog.
     window.localStorage.setItem("guildWar.zone", "Armoury")
-    window.localStorage.setItem("guildWar.slot", "2")
     renderOffense()
 
     await user.click(await tile("ultraCalgar"))
     await user.click(screen.getByTestId("guild-war-log-attack"))
     const dialog = await screen.findByTestId("guild-war-log-dialog")
-    expect(dialog).toHaveTextContent("Armoury · Slot 3")
+    expect(within(dialog).getByTestId("guild-war-zone")).toHaveTextContent(
+      "Armoury"
+    )
+    // A Legendary lineup starts on the Legendary defenders; the player picks Epic.
+    expect(
+      within(dialog).getByRole("radio", { name: "Legendary" })
+    ).toBeChecked()
+    await user.click(within(dialog).getByRole("radio", { name: "Epic" }))
     await user.click(within(dialog).getByRole("radio", { name: "Won" }))
+    await user.click(within(dialog).getByTestId("guild-war-lost-ultraCalgar"))
+    await user.type(
+      within(dialog).getByTestId("guild-war-log-notes"),
+      " Close one. "
+    )
     await user.click(within(dialog).getByTestId("guild-war-log-save"))
 
     await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(2))
@@ -289,7 +300,8 @@ describe("OffensePage", () => {
       ],
       mow: null,
       result: "won",
-      unitsLost: 0,
+      lostUnitIds: ["ultraCalgar"],
+      notes: "Close one.",
       enemy: null,
       attackedAt: null,
     })
@@ -299,21 +311,43 @@ describe("OffensePage", () => {
     expect(screen.queryByTestId("guild-war-selection-bar")).toBeNull()
   })
 
+  it("needs a zone before an attack can be logged", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({ war: war() })
+    renderOffense()
+
+    await user.click(await tile("ultraCalgar"))
+    await user.click(screen.getByTestId("guild-war-log-attack"))
+    const dialog = await screen.findByTestId("guild-war-log-dialog")
+    expect(within(dialog).getByTestId("guild-war-log-save")).toBeDisabled()
+    expect(within(dialog).queryByTestId("guild-war-log-rarity")).toBeNull()
+
+    await user.click(within(dialog).getByTestId("guild-war-zone"))
+    await user.click(await screen.findByRole("option", { name: /Armoury/ }))
+    expect(within(dialog).getByTestId("guild-war-log-save")).toBeEnabled()
+    expect(
+      within(dialog).getByTestId("guild-war-log-rarity")
+    ).toBeInTheDocument()
+  })
+
   it("undoes an attack from the log", async () => {
     const user = userEvent.setup()
     api.current.mockResolvedValue({
       war: war({
         tokensUsed: 1,
         deployedUnitIds: ["ultraTitus"],
-        attacks: [attack()],
+        attacks: [attack({ notes: "Close one." })],
       }),
     })
     api.deleteAttack.mockResolvedValue(war())
     renderOffense()
 
     const log = await screen.findByTestId("guild-war-attack-log")
-    expect(log).toHaveTextContent("Armoury · Slot 3")
+    expect(log).toHaveTextContent("Armoury · Epic")
     expect(log).toHaveTextContent("Won · 1 lost")
+    expect(within(log).getByTestId("attack-notes")).toHaveTextContent(
+      "Close one."
+    )
     await user.click(within(log).getByTestId("guild-war-undo"))
 
     await waitFor(() =>

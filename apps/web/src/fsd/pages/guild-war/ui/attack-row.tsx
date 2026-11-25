@@ -1,8 +1,18 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { rarityIcon } from "@workspace/game-catalog"
-import { progressionRarity, rankOrder } from "@workspace/game-domain"
+import { Skull } from "lucide-react"
+import {
+  guildWarBuffIcon,
+  guildWarZoneIcon,
+  rarityIcon,
+} from "@workspace/game-catalog"
+import {
+  progressionRarity,
+  rankOrder,
+  startingProgression,
+} from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
+import { cn } from "@workspace/ui/lib/utils"
 
 import { TeamUnitPortrait, capRosterUnit } from "@/entities/team"
 import { formatShortDate } from "@/shared/lib"
@@ -17,11 +27,14 @@ function LineupPortrait({
   unit,
   kind,
   cap,
+  lost,
 }: {
   unit: GuildWarLineupUnit
   kind: "character" | "mow"
   cap: GuildWarAttack["rarityCap"]
+  lost: boolean
 }) {
+  const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
   const capped = capRosterUnit(
     {
@@ -36,8 +49,13 @@ function LineupPortrait({
   )
   const name = unitName(kind === "mow" ? "Mow" : "Character", unit.unitId)
   return (
-    <li aria-label={name} className="flex">
+    <li
+      aria-label={lost ? t("attack.unitLost", { name }) : name}
+      className="relative flex"
+      data-lost={lost ? "true" : undefined}
+    >
       <TeamUnitPortrait
+        className={cn(lost && "opacity-60 grayscale")}
         unit={{
           kind,
           unitId: unit.unitId,
@@ -46,13 +64,20 @@ function LineupPortrait({
           rank: capped.rank,
         }}
       />
+      {lost ? (
+        <Skull
+          aria-hidden="true"
+          className="absolute -top-1 -left-1 size-icon-sm rounded-full bg-background p-0.5 text-destructive"
+        />
+      ) : null}
     </li>
   )
 }
 
-/** An attack's lineup as logged, shown at the cap it was logged at. */
+/** An attack's lineup as logged, shown at the cap it was logged at, the units lost greyed out. */
 function AttackLineup({ attack }: { attack: GuildWarAttack }) {
   const { t } = useTranslation("guildWar")
+  const lost = new Set(attack.lostUnitIds ?? [])
   return (
     <ul aria-label={t("attack.lineup")} className="flex flex-wrap gap-1">
       {attack.characters.map((unit) => (
@@ -60,11 +85,17 @@ function AttackLineup({ attack }: { attack: GuildWarAttack }) {
           cap={attack.rarityCap}
           key={unit.unitId}
           kind="character"
+          lost={lost.has(unit.unitId)}
           unit={unit}
         />
       ))}
       {attack.mow ? (
-        <LineupPortrait cap={attack.rarityCap} kind="mow" unit={attack.mow} />
+        <LineupPortrait
+          cap={attack.rarityCap}
+          kind="mow"
+          lost={lost.has(attack.mow.unitId)}
+          unit={attack.mow}
+        />
       ) : null}
     </ul>
   )
@@ -73,12 +104,11 @@ function AttackLineup({ attack }: { attack: GuildWarAttack }) {
 /** "Won · 1 lost", "Lost" or "No result". */
 function AttackResultBadge({ attack }: { attack: GuildWarAttack }) {
   const { t } = useTranslation("guildWar")
+  const lost = attack.lostUnitIds?.length ?? 0
   if (attack.result === "won") {
     return (
       <Badge variant="secondary">
-        {attack.unitsLost === null
-          ? t("attack.won")
-          : t("attack.wonLost", { count: attack.unitsLost })}
+        {lost === 0 ? t("attack.won") : t("attack.wonLost", { count: lost })}
       </Badge>
     )
   }
@@ -88,7 +118,8 @@ function AttackResultBadge({ attack }: { attack: GuildWarAttack }) {
   return <Badge variant="outline">{t("attack.noResult")}</Badge>
 }
 
-/** Zone, slot and the slot's rarity cap of an attack: "Armoury · Slot 3" with the Epic icon. */
+/** Zone and the defenders' rarity of an attack: the zone's picture, "Armoury · Epic" and the Epic
+ *  icon. */
 function AttackTargetText({
   attack,
   season,
@@ -98,44 +129,112 @@ function AttackTargetText({
 }) {
   const { t } = useTranslation(["guildWar", "progression"])
   const { zoneName } = useGuildWarNames()
+  const visualId = season?.zones.find(
+    (zone) => zone.id === attack.zoneId
+  )?.visualId
   return (
     <span className="flex items-center gap-1.5 text-sm font-medium">
       <EntityIcon
-        alt={t(`progression:rarities.${attack.rarityCap}`)}
-        size="icon"
-        src={rarityIcon(attack.rarityCap)}
+        alt=""
+        className="object-contain"
+        size="icon-md"
+        src={visualId ? guildWarZoneIcon(visualId) : undefined}
       />
       {t("attack.target", {
         zone: zoneName(season, attack.zoneId),
-        slot: attack.slot + 1,
+        rarity: t(`progression:rarities.${attack.rarityCap}`),
       })}
+      <EntityIcon alt="" size="icon" src={rarityIcon(attack.rarityCap)} />
     </span>
   )
 }
 
-/** The enemy details of an attack in one line, when any were entered. */
-function AttackEnemySummary({ attack }: { attack: GuildWarAttack }) {
+/** The enemy an attack met, when any was entered: its units with their rarity, rank and outcome,
+ *  the zone buffs that were active, and the map. */
+function AttackEnemy({
+  attack,
+  season,
+}: {
+  attack: GuildWarAttack
+  season: GuildWarSeason | undefined
+}) {
   const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
   const { buffName } = useGuildWarNames()
   const enemy = attack.enemy
   if (!enemy) return null
   const units = [
-    ...enemy.characters.map((unit) => ({ unit, kind: "Character" as const })),
-    ...(enemy.mow ? [{ unit: enemy.mow, kind: "Mow" as const }] : []),
+    ...enemy.characters.map((unit) => ({ unit, kind: "character" as const })),
+    ...(enemy.mow ? [{ unit: enemy.mow, kind: "mow" as const }] : []),
   ]
-  const parts = [
-    ...units.map(({ unit, kind }) => {
-      const name = unitName(kind, unit.unitId)
-      return unit.state ? `${name} (${t(`enemy.states.${unit.state}`)})` : name
-    }),
-    ...enemy.buffIds.map((id) => buffName(id)),
-  ]
-  if (parts.length === 0) return null
+  const mapIndex = season?.maps.findIndex(
+    (map) => map.boardId === enemy.boardId
+  )
+  if (units.length === 0 && enemy.buffIds.length === 0 && !enemy.boardId) {
+    return null
+  }
   return (
-    <p className="text-xs text-muted-foreground" data-testid="attack-enemy">
-      {t("attack.enemy", { details: parts.join(", ") })}
-    </p>
+    <div
+      className="flex flex-wrap items-center gap-x-3 gap-y-1"
+      data-testid="attack-enemy"
+    >
+      <span className="text-xs text-muted-foreground">{t("attack.enemy")}</span>
+      {units.length > 0 ? (
+        <ul aria-label={t("attack.enemy")} className="flex flex-wrap gap-1">
+          {units.map(({ unit, kind }) => {
+            const name = unitName(
+              kind === "mow" ? "Mow" : "Character",
+              unit.unitId
+            )
+            const label = unit.state
+              ? `${name} (${t(`enemy.states.${unit.state}`)})`
+              : name
+            return (
+              <li
+                aria-label={label}
+                className="relative flex"
+                data-state={unit.state ?? undefined}
+                key={unit.unitId}
+              >
+                <TeamUnitPortrait
+                  className={cn(
+                    unit.state === "killed" && "opacity-60 grayscale"
+                  )}
+                  unit={{
+                    kind,
+                    unitId: unit.unitId,
+                    owned: true,
+                    progression: unit.rarity
+                      ? startingProgression(unit.rarity)
+                      : undefined,
+                    rank: rankOrder.find((rank) => rank === unit.rank),
+                  }}
+                />
+                {unit.state === "killed" ? (
+                  <Skull
+                    aria-hidden="true"
+                    className="absolute -top-1 -left-1 size-icon-sm rounded-full bg-background p-0.5 text-destructive"
+                  />
+                ) : null}
+              </li>
+            )
+          })}
+        </ul>
+      ) : null}
+      {enemy.buffIds.map((id) => (
+        <span className="flex items-center gap-1 text-xs" key={id}>
+          <EntityIcon alt="" size="icon-sm" src={guildWarBuffIcon(id)} />
+          {buffName(id)}
+        </span>
+      ))}
+      {enemy.boardId ? (
+        <span className="text-xs text-muted-foreground">
+          {mapIndex !== undefined && mapIndex >= 0
+            ? t("enemy.mapOption", { number: mapIndex + 1 })
+            : enemy.boardId}
+        </span>
+      ) : null}
+    </div>
   )
 }
 
@@ -168,7 +267,15 @@ export function AttackRow({
         )}
       </div>
       <AttackLineup attack={attack} />
-      <AttackEnemySummary attack={attack} />
+      <AttackEnemy attack={attack} season={season} />
+      {attack.notes ? (
+        <p
+          className="text-sm wrap-break-word text-muted-foreground italic"
+          data-testid="attack-notes"
+        >
+          {attack.notes}
+        </p>
+      ) : null}
     </li>
   )
 }

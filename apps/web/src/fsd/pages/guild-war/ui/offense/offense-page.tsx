@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import type { Rarity } from "@workspace/game-domain"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Flag, RefreshCw } from "lucide-react"
@@ -109,13 +108,13 @@ function UnitsLeft({
   )
 }
 
-/** The units that have not attacked, in the team editor's picker, capped at the slot's rarity. */
+/** The units that have not attacked, in the team editor's picker, at their own progression (the
+ *  defenders' cap is picked when the attack is logged). */
 function AvailableUnits({
   picker,
   units,
   filters,
   onFiltersChange,
-  rarityCap,
   selectedIds,
   onToggle,
 }: {
@@ -123,7 +122,6 @@ function AvailableUnits({
   units: readonly PickerUnit[]
   filters: PickerFilters
   onFiltersChange: (patch: Partial<PickerFilters>) => void
-  rarityCap: Rarity | undefined
   selectedIds: ReadonlySet<string>
   onToggle: (unit: PickerUnit) => void
 }) {
@@ -141,7 +139,7 @@ function AvailableUnits({
         mows
         onFiltersChange={onFiltersChange}
         onToggle={onToggle}
-        rarityCap={rarityCap ?? DEFAULT_RARITY_CAP}
+        rarityCap={DEFAULT_RARITY_CAP}
         roster={picker.data.roster}
         selectedIds={selectedIds}
         units={units}
@@ -153,12 +151,12 @@ function AvailableUnits({
 
 /**
  * Guild War Offense: the current war's summary, the offense teams ready then blocked, the units
- * that have not attacked (capped at the picked slot's rarity), the selection bar with Log attack,
+ * that have not attacked, the selection bar with Log attack (where the zone and rarity are picked),
  * and the attack log with Undo. With no current war the first logged attack starts one.
  */
 export function OffensePage() {
   const { t, i18n } = useTranslation("guildWar")
-  const { war, season, settings, target, rarityCap } = useGuildWarContext()
+  const { war, season, settings } = useGuildWarContext()
   const picker = usePickerUnits()
   const teamsQuery = useTeams()
   const logAttack = useLogGuildWarAttack()
@@ -185,7 +183,6 @@ export function OffensePage() {
     selection,
     deployed,
     roster,
-    target,
     tokensLeft: left,
   })
 
@@ -228,13 +225,16 @@ export function OffensePage() {
   }
   const start = () => {
     setConfirmStart(false)
-    startWar.mutate(settings, {
-      onSuccess: () => {
-        setSelection(new Map())
-        toast.success(t("startWar.started"))
-      },
-      onError: () => toast.error(t("startWar.failed")),
-    })
+    startWar.mutate(
+      { settings, currentWarId: war?.id ?? null },
+      {
+        onSuccess: () => {
+          setSelection(new Map())
+          toast.success(t("startWar.started"))
+        },
+        onError: () => toast.error(t("startWar.failed")),
+      }
+    )
   }
 
   return (
@@ -255,12 +255,7 @@ export function OffensePage() {
       </WarSummary>
       {picker.status === "ready" && roster === null ? <SyncPrompt /> : null}
       {teams.length > 0 ? (
-        <OffenseTeams
-          onSelect={selectTeam}
-          rarityCap={rarityCap}
-          roster={roster}
-          teams={teams}
-        />
+        <OffenseTeams onSelect={selectTeam} roster={roster} teams={teams} />
       ) : null}
       <section
         aria-labelledby="guild-war-units-heading"
@@ -277,7 +272,6 @@ export function OffensePage() {
           }
           onToggle={toggle}
           picker={picker}
-          rarityCap={rarityCap}
           selectedIds={new Set(selection.keys())}
           units={available}
         />
@@ -301,20 +295,18 @@ export function OffensePage() {
           }}
         />
       ) : null}
-      {logOpen && target.zoneId !== null && target.slot !== null ? (
+      {logOpen ? (
         <LogAttackDialog
+          battlefieldLevel={settings.battlefieldLevel}
           error={logError}
           onOpenChange={setLogOpen}
           onSave={save}
           open
           pending={logAttack.isPending}
-          rarityCap={rarityCap}
           roster={roster}
           season={season}
           selection={selection}
-          slot={target.slot}
           units={units}
-          zoneId={target.zoneId}
         />
       ) : null}
       <ConfirmationDialog

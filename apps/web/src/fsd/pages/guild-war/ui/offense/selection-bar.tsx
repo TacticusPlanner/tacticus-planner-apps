@@ -1,9 +1,10 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { Swords } from "lucide-react"
+import { guildWarTokenIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 
-import { FloatingBar } from "@/shared/ui"
+import { EntityIcon, FloatingBar } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { LogBlock } from "../../model/offense"
@@ -56,10 +57,13 @@ export function SelectionBar({
       </p>
       {block ? (
         <p
-          className="min-w-0 flex-1 text-sm text-muted-foreground"
+          className="flex min-w-0 flex-1 items-center gap-1.5 text-sm text-muted-foreground"
           data-testid="guild-war-log-blocked"
           id={reasonId}
         >
+          {block.reason === "noTokens" ? (
+            <EntityIcon alt="" size="icon" src={guildWarTokenIcon()} />
+          ) : null}
           {blockText(block)}
         </p>
       ) : (

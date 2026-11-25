@@ -2,6 +2,7 @@
   "season": "Temporada {{letter}}",
   "level": "Nivel {{level}}",
   "settingsSummary": "{{season}} · Nivel de campo de batalla {{level}}",
+  "settingsOpen": "{{summary}}. Abrir ajustes",
   "page": {
     "loading": "Cargando tu guerra",
     "loadError": "No se pudo cargar tu guerra.",
@@ -9,12 +10,8 @@
     "noSeasons": "Los datos de la Guerra de gremios aún no están disponibles."
   },
   "target": {
-    "label": "Objetivo del ataque",
     "zone": "Zona",
-    "zonePlaceholder": "Elige una zona",
-    "slot": "Puesto",
-    "slotPlaceholder": "Elige un puesto",
-    "slotOption": "Puesto {{slot}}"
+    "zonePlaceholder": "Elige una zona"
   },
   "settings": {
     "title": "Ajustes de la Guerra de gremios",
@@ -24,7 +21,8 @@
     "capsKept": "Los ataques ya registrados conservan el límite de rareza con el que se registraron.",
     "stale": "Tu guerra cambió en otro dispositivo. Se muestra tal como está ahora.",
     "failed": "No se pudieron guardar los ajustes. Inténtalo de nuevo.",
-    "done": "Listo"
+    "done": "Listo",
+    "seasonLocked": "Esta guerra tiene ataques, así que su temporada se mantiene. Empieza una guerra nueva para jugar otra temporada."
   },
   "summary": {
     "tokens": "Fichas usadas",
@@ -38,26 +36,36 @@
     "emptyDescription": "Una guerra pasa aquí cuando empiezas una nueva desde Ataque.",
     "totals": "Totales",
     "byTier": "Victorias por nivel de zona",
-    "byRarity": "Victorias por rareza de casilla",
-    "lineups": "Alineaciones más usadas",
+    "byZone": "Victorias por zona",
+    "byRarity": "Victorias por rareza de los defensores",
+    "characters": "Personajes más usados",
+    "noCharacters": "Aún no hay ataques registrados.",
+    "lineups": "Alineaciones usadas más de una vez",
     "noResults": "Aún no hay resultados registrados.",
     "noLineups": "Aún no has usado ninguna alineación más de una vez.",
+    "enemies": "Enemigos contra los que más perdiste",
+    "noEnemies": "Aún no hay enemigos anotados en ataques perdidos.",
     "winRate_one": "{{rate}} % · {{count}} ataque",
     "winRate_other": "{{rate}} % · {{count}} ataques",
-    "lineupCount_one": "{{count}} ataque",
-    "lineupCount_other": "{{count}} ataques",
-    "warSummary": "{{season}} · Nivel {{level}} · {{tokens}} fichas · {{won}} ganados · {{lost}} perdidos",
+    "attackCount_one": "{{count}} ataque",
+    "attackCount_other": "{{count}} ataques",
+    "lossCount_one": "{{count}} derrota",
+    "lossCount_other": "{{count}} derrotas",
+    "warSummary": "{{season}} · Nivel {{level}} ·",
+    "warResults": "{{tokens}} · {{won}} ganados · {{lost}} perdidos",
     "noAttacks": "No se registraron ataques en esta guerra.",
     "loading": "Cargando guerras anteriores",
     "loadError": "No se pudieron cargar tus guerras anteriores.",
     "heading": "Guerras anteriores",
-    "loadMore": "Cargar más guerras"
+    "loadMore": "Cargar más guerras",
+    "overall": {
+      "attacks": "Ataques",
+      "won": "Ganados",
+      "lost": "Perdidos",
+      "unitsLost": "Unidades perdidas"
+    }
   },
   "tour": {
-    "target": {
-      "title": "Zona y puesto",
-      "content": "Elige la zona y el puesto que atacas. Cada unidad de la página se muestra con el límite de rareza de ese puesto, y la elección se recuerda en este dispositivo."
-    },
     "settings": {
       "title": "Temporada y nivel",
       "content": "La temporada y el nivel de campo de batalla de tu guerra. Cámbialos con Ajustes arriba a la derecha."
@@ -72,7 +80,7 @@
     },
     "units": {
       "title": "Unidades disponibles",
-      "content": "Tus unidades que no han atacado en esta guerra. Toca unidades o Seleccionar en un equipo y luego Registrar ataque."
+      "content": "Tus unidades que no han atacado en esta guerra. Toca unidades o Seleccionar en un equipo y luego Registrar ataque para elegir la zona y la rareza de los defensores."
     },
     "log": {
       "title": "Registro de ataques",
@@ -80,7 +88,7 @@
     },
     "totals": {
       "title": "Totales",
-      "content": "Porcentajes de victoria por rango de zona y rareza del puesto, y tus alineaciones más usadas, en las guerras cargadas abajo."
+      "content": "Tus ataques, ganados y perdidos; victorias por nivel de zona, zona y rareza de los defensores; tus personajes y alineaciones más usados; y los enemigos contra los que más perdiste, en las guerras cargadas abajo."
     },
     "wars": {
       "title": "Guerras pasadas",
@@ -94,8 +102,9 @@
     "wonLost_other": "Ganado · {{count}} perdidas",
     "lost": "Perdido",
     "noResult": "Sin resultado",
-    "target": "{{zone}} · Puesto {{slot}}",
-    "enemy": "Enemigo: {{details}}"
+    "target": "{{zone}} · {{rarity}}",
+    "enemy": "Enemigo",
+    "unitLost": "{{name}} (perdida)"
   },
   "teams": {
     "heading": "Equipos de ataque",
@@ -119,18 +128,21 @@
       "tooManyMows": "Elige como máximo 1 Máquina de guerra",
       "deployed": "{{name}} ya atacó en esta guerra",
       "notOwned": "{{name}} no está en tu plantel sincronizado",
-      "noTarget": "Elige primero una zona y un puesto",
       "noTokens": "No quedan fichas en esta guerra"
     }
   },
   "log": {
     "title": "Registrar ataque",
+    "rarity": "Rareza de los defensores",
     "result": "Resultado",
     "resultNone": "Sin registrar",
     "resultWon": "Ganado",
     "resultLost": "Perdido",
-    "unitsLost": "Unidades perdidas",
-    "twoOrMore": "2 o más",
+    "tapLost": "Toca las unidades que perdiste",
+    "markLost": "{{name}} perdida",
+    "notes": "Notas",
+    "notesPlaceholder": "Opcional: qué pasó, qué probar la próxima vez",
+    "notesCount": "{{count}} / {{max}}",
     "enemyDetails": "Detalles del enemigo (opcional)",
     "cancel": "Cancelar",
     "save": "Registrar ataque",

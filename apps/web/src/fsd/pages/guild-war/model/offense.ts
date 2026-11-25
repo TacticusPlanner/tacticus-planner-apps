@@ -3,7 +3,6 @@ import type { Rarity } from "@workspace/game-domain"
 
 import type { Team, TeamRoster } from "@/entities/team"
 
-import type { AttackTarget } from "./attack-target"
 import type { GuildWarLineupUnit } from "./types"
 
 export type UnitKind = "character" | "mow"
@@ -61,20 +60,17 @@ export type LogBlock =
   | { reason: "tooManyMows" }
   | { reason: "deployed"; unitId: string; kind: UnitKind }
   | { reason: "notOwned"; unitId: string; kind: UnitKind }
-  | { reason: "noTarget" }
   | { reason: "noTokens" }
 
 export function logBlock({
   selection,
   deployed,
   roster,
-  target,
   tokensLeft,
 }: {
   selection: Selection
   deployed: ReadonlySet<string>
   roster: TeamRoster | null
-  target: AttackTarget
   tokensLeft: number
 }): LogBlock | null {
   const picked = [...selection]
@@ -89,9 +85,6 @@ export function logBlock({
   const missing = picked.find(([id, kind]) => !rosterUnit(roster, kind, id))
   if (missing) {
     return { reason: "notOwned", unitId: missing[0], kind: missing[1] }
-  }
-  if (target.zoneId === null || target.slot === null) {
-    return { reason: "noTarget" }
   }
   return tokensLeft > 0 ? null : { reason: "noTokens" }
 }
