@@ -18,9 +18,8 @@ import { homeCardLimit } from "../../model/home-card-limit"
 import { collapseUpcoming } from "../../model/select-home-events"
 import type { HomeEventRow } from "../../model/select-home-events"
 import type { HomeEventsState } from "../../model/use-home-events"
-import { HomeEventVisual } from "./home-event-visual"
+import { HomeEventTile } from "./home-event-tile"
 import { LegendaryEventPlanButton } from "./legendary-event-plan-button"
-import { useHomeEventName } from "./use-home-event-name"
 
 /** Home's "Upcoming events" card: the next occurrence of each kind (Home Screen Event, Legendary
  *  Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) by start, the next
@@ -154,6 +153,8 @@ function EmptyBody() {
   )
 }
 
+/** An upcoming event as a list row in Right now's tile style: its name, then when it starts and a
+ *  short countdown. A Legendary Event keeps its plan action at the end of the row. */
 function UpcomingEventRow({
   nowMs,
   row,
@@ -163,49 +164,41 @@ function UpcomingEventRow({
 }) {
   const { t, i18n } = useTranslation("common")
   const dateLocale = useDateLocale()
-  const eventName = useHomeEventName()
   const dateTba = row.type === "eventShop" && row.dateTba
-  const startsIn = t("home.events.startsIn", {
-    when: formatEventCountdown(row.startMs, nowMs, i18n.language, {
+  const countdown = (narrow: boolean) =>
+    formatEventCountdown(row.startMs, nowMs, i18n.language, {
       withHours: true,
-    }),
-  })
+      narrow,
+    })
 
   return (
-    // At least as tall as a Daily raids or Your projects row, so the three cards are the same
-    // height when each shows Home's card count.
-    <div className="flex min-h-18.5 items-center gap-2 rounded-lg border p-2">
-      <Link
-        className="flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-        data-live={row.live}
-        data-testid="home-events-row"
-        data-type={row.type}
-        to={row.destination}
-      >
-        <HomeEventVisual size="icon-2xl" row={row} />
-        <span className="min-w-0">
-          <span className="block truncate font-semibold">{eventName(row)}</span>
-          <span
-            className="block text-sm text-muted-foreground"
-            data-testid="home-events-start"
-          >
+    <HomeEventTile
+      action={
+        row.type === "legendaryEvent" ? (
+          <LegendaryEventPlanButton eventId={row.unitId} />
+        ) : undefined
+      }
+      details={
+        <>
+          <span className="whitespace-nowrap" data-testid="home-events-start">
             {dateTba
               ? t("home.events.startDateTba")
               : new Date(row.startMs).toLocaleString(dateLocale, {
-                  dateStyle: "medium",
-                  timeStyle: "short",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
                 })}
           </span>
-        </span>
-      </Link>
-      <div className="flex shrink-0 flex-col items-end gap-1.5">
-        {dateTba ? null : (
-          <CountdownChip className="text-muted-foreground" text={startsIn} />
-        )}
-        {row.type === "legendaryEvent" ? (
-          <LegendaryEventPlanButton eventId={row.unitId} />
-        ) : null}
-      </div>
-    </div>
+          {dateTba ? null : (
+            <CountdownChip
+              srText={t("home.events.startsIn", { when: countdown(false) })}
+              text={countdown(true)}
+            />
+          )}
+        </>
+      }
+      row={row}
+    />
   )
 }
