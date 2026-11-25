@@ -177,32 +177,74 @@ export const isCollectionProgression = (value: unknown): value is Progression =>
 export const isCollectionRank = (value: unknown): value is Rank =>
   typeof value === "string" && isRank(value)
 
+/** The Filters panel's sections, in display order. */
+const collectionFilterSections = [
+  "unit",
+  "progression",
+  "attack",
+  "abilities",
+  "more",
+] as const
+export type CollectionFilterSection = (typeof collectionFilterSections)[number]
+
+const countSet = (...set: boolean[]) => set.filter(Boolean).length
+
 /**
- * How many filters are active: the search, each standalone filter that is set (a range with a
- * lowest and a highest end counts once) and the quick filter. The sort, the view and the grouping are not filters.
+ * How many standalone filters are set in each Filters section (a range with a lowest and a highest
+ * end counts once): the count beside each section title.
+ */
+export function sectionFilterCounts(
+  query: CollectionQuery
+): Record<CollectionFilterSection, number> {
+  return {
+    unit: countSet(
+      query.alliance !== null,
+      query.factions.length > 0,
+      query.kind !== null
+    ),
+    progression: countSet(
+      query.rarities.length > 0,
+      query.rankMin !== null || query.rankMax !== null,
+      query.starsMin !== null || query.starsMax !== null
+    ),
+    attack: countSet(
+      query.attack !== null,
+      query.hitsMin !== null || query.hitsMax !== null,
+      query.rangeMin !== null || query.rangeMax !== null,
+      query.damageTypes.length > 0
+    ),
+    abilities: countSet(
+      query.abilityRole !== null,
+      query.abilityTarget !== null,
+      query.abilityAttack !== null,
+      query.summons !== null
+    ),
+    more: countSet(
+      query.traits.length > 0,
+      query.movement !== null,
+      query.shardSources.length > 0
+    ),
+  }
+}
+
+/** The standalone filters only (no search, no quick filter): the Filters button's badge. */
+export function activeStandaloneFilterCount(query: CollectionQuery): number {
+  const counts = sectionFilterCounts(query)
+  return collectionFilterSections.reduce(
+    (total, section) => total + counts[section],
+    0
+  )
+}
+
+/**
+ * How many filters are active: the search, each standalone filter that is set and the quick
+ * filter. The sort, the view and the grouping are not filters.
  */
 export function activeFilterCount(query: CollectionQuery): number {
-  return [
-    query.search.trim() !== "",
-    query.alliance !== null,
-    query.factions.length > 0,
-    query.rarities.length > 0,
-    query.rankMin !== null || query.rankMax !== null,
-    query.starsMin !== null || query.starsMax !== null,
-    query.kind !== null,
-    query.summons !== null,
-    query.abilityRole !== null,
-    query.abilityTarget !== null,
-    query.abilityAttack !== null,
-    query.attack !== null,
-    query.hitsMin !== null || query.hitsMax !== null,
-    query.movement !== null,
-    query.rangeMin !== null || query.rangeMax !== null,
-    query.damageTypes.length > 0,
-    query.traits.length > 0,
-    query.shardSources.length > 0,
-    query.quick !== null,
-  ].filter(Boolean).length
+  return (
+    activeStandaloneFilterCount(query) +
+    countSet(query.search.trim() !== "", query.quick !== null)
+  )
 }
 
 /**
@@ -231,13 +273,4 @@ export const clearedStandaloneFilters: Partial<CollectionQuery> = {
   damageTypes: [],
   traits: [],
   shardSources: [],
-}
-
-/** The standalone filters only (no search, no quick filter): the Filters button's badge. */
-export function activeStandaloneFilterCount(query: CollectionQuery): number {
-  return (
-    activeFilterCount(query) -
-    (query.search.trim() !== "" ? 1 : 0) -
-    (query.quick !== null ? 1 : 0)
-  )
 }

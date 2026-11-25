@@ -958,10 +958,8 @@
       "Gold": "Gold"
     },
     "unclaimedEvents": {
-      "title": "Unclaimed one-time rewards",
-      "battles_one": "{{count}} battle",
-      "battles_other": "{{count}} battles",
-      "allClaimed": "All one-time rewards claimed"
+      "toClaim_one": "{{count}} battle to claim",
+      "toClaim_other": "{{count}} battles to claim"
     },
     "lightningVictoryFor": "Lightning Victory on {{battle}}",
     "setBest": "Max",

@@ -463,7 +463,11 @@
         "quickFailed": "{{filters}} : ses données de jeu n'ont pas pu être chargées.",
         "rankRange": "Plage de rangs",
         "groupUnit": "Unité",
-        "groupCombat": "Combat",
+        "groupProgression": "Progression",
+        "groupAttack": "Attaque",
+        "groupAbilities": "Capacités",
+        "groupMore": "Traits et plus",
+        "sectionCount": "{{section}} · {{count}}",
         "starsRange": "Plage d'étoiles",
         "starsFrom": "Étoiles minimum",
         "starsTo": "Étoiles maximum",
@@ -726,7 +730,20 @@
     "loadError": "Les données de progression sont inexplicablement indisponibles. Actualisez et réessayez.",
     "campaigns": {
       "normal": "Campagnes normales",
-      "mirror": "Campagnes miroir"
+      "mirror": "Campagnes miroir",
+      "counters": {
+        "normal": "Normal",
+        "normalElite": "Normal Élite",
+        "mirror": "Miroir",
+        "mirrorElite": "Miroir Élite"
+      },
+      "unclaimedOnly": "Récompenses non réclamées",
+      "unclaimedSummary_one": "Récompenses non réclamées dans {{count}} parcours",
+      "unclaimedSummary_other": "Récompenses non réclamées dans {{count}} parcours",
+      "toClaim_one": "{{count}} à réclamer",
+      "toClaim_other": "{{count}} à réclamer",
+      "percentBasisMedals": "Médailles et Victoires éclair obtenues : {{done}} sur {{total}}",
+      "percentBasisBattles": "Combats terminés : {{done}} sur {{total}}"
     },
     "events": {
       "regular": "Combats réguliers",

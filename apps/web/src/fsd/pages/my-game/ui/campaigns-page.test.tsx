@@ -150,7 +150,14 @@ describe("CampaignsPage", () => {
 
     const unclaimed = await screen.findByTestId("campaign-unclaimed-campaign1")
     // Only I0 fell short of 3 medals; I1 and I2 are beaten at their best.
-    expect(unclaimed).toHaveTextContent("Unclaimed one-time rewards · 1 battle")
+    expect(unclaimed).toHaveTextContent("1 battle to claim")
     expect(screen.getByTestId("one-time-reward-gold")).toHaveTextContent("10")
+    // The campaign header and the page summary point at it too.
+    expect(screen.getByTestId("campaigns-unclaimed-summary")).toHaveTextContent(
+      "Unclaimed rewards in 1 track"
+    )
+    expect(screen.getByTestId(/^campaign-story-unclaimed-/)).toHaveTextContent(
+      "1 to claim"
+    )
   })
 })

@@ -463,7 +463,11 @@
         "quickFailed": "{{filters}}: Die Spieldaten dafür konnten nicht geladen werden.",
         "rankRange": "Rangbereich",
         "groupUnit": "Einheit",
-        "groupCombat": "Kampf",
+        "groupProgression": "Fortschritt",
+        "groupAttack": "Angriff",
+        "groupAbilities": "Fähigkeiten",
+        "groupMore": "Eigenschaften und mehr",
+        "sectionCount": "{{section}} · {{count}}",
         "starsRange": "Sternebereich",
         "starsFrom": "Wenigste Sterne",
         "starsTo": "Meiste Sterne",
@@ -726,7 +730,20 @@
     "loadError": "Fortschrittsdaten sind unerwartet nicht verfügbar. Aktualisiere und versuche es erneut.",
     "campaigns": {
       "normal": "Normale Kampagnen",
-      "mirror": "Spiegelkampagnen"
+      "mirror": "Spiegelkampagnen",
+      "counters": {
+        "normal": "Normal",
+        "normalElite": "Normal Elite",
+        "mirror": "Spiegel",
+        "mirrorElite": "Spiegel Elite"
+      },
+      "unclaimedOnly": "Nicht abgeholte Belohnungen",
+      "unclaimedSummary_one": "Nicht abgeholte Belohnungen in {{count}} Strecke",
+      "unclaimedSummary_other": "Nicht abgeholte Belohnungen in {{count}} Strecken",
+      "toClaim_one": "{{count}} abzuholen",
+      "toClaim_other": "{{count}} abzuholen",
+      "percentBasisMedals": "Verdiente Medaillen und Blitzsiege: {{done}} von {{total}}",
+      "percentBasisBattles": "Abgeschlossene Kämpfe: {{done}} von {{total}}"
     },
     "events": {
       "regular": "Reguläre Kämpfe",

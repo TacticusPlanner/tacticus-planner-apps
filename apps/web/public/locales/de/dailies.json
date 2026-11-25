@@ -958,10 +958,8 @@
       "Gold": "Gold"
     },
     "unclaimedEvents": {
-      "title": "Nicht abgeholte einmalige Belohnungen",
-      "battles_one": "{{count}} Kampf",
-      "battles_other": "{{count}} Kämpfe",
-      "allClaimed": "Alle einmaligen Belohnungen abgeholt"
+      "toClaim_one": "{{count}} Kampf abzuholen",
+      "toClaim_other": "{{count}} Kämpfe abzuholen"
     },
     "lightningVictoryFor": "Blitzsieg in {{battle}}",
     "setBest": "Max",

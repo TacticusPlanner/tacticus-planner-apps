@@ -54,6 +54,7 @@ import {
   isCollectionAbilityRole,
   isCollectionAbilityTarget,
   isCollectionKind,
+  sectionFilterCounts,
 } from "../../model/collection-query"
 import type {
   CollectionQuery,
@@ -98,14 +99,13 @@ function optionIcon(src: string | undefined) {
 const starSteps = progressionOrder.filter((step) => !step.endsWith(":None"))
 
 /**
- * The standalone filter controls, shared by the desktop inline panel and the mobile sheet, in two
- * labelled groups: Unit (who the unit is and how far the player has taken it) and Combat (V1's
- * character properties, what the unit can summon, and where the shards drop). Rank range and stars range read
- * the synced roster, so without one they are disabled and explained. Each range (rank, stars, hits,
- * attack range) is one cell with both ends side by side, so a pair never splits across rows.
- * `layout="panel"` (desktop) fits as many columns as the width allows and stretches them across
- * the panel (no empty columns on a wide screen), a range taking two;
- * `layout="sheet"` (mobile) stacks one cell per row.
+ * The standalone filter controls, shared by the desktop dialog and the mobile sheet, in five
+ * sections: Unit, Progression, Attack, Abilities, and Traits and more. Each section title shows how
+ * many of its filters are set. Rank range and stars range read the synced roster, so without one
+ * they are disabled and explained. Each range (rank, stars, hits, attack range) is one cell with
+ * both ends side by side, so a pair never splits across rows.
+ * `layout="panel"` (desktop) is a fixed three-column grid: a range takes two columns and ends its
+ * row, so every row starts at the left edge. `layout="sheet"` (mobile) stacks one cell per row.
  */
 export function CollectionFilterFields({
   query,
@@ -143,20 +143,22 @@ export function CollectionFilterFields({
     value === null ? null : Number(value)
   const asText = (value: number | null) =>
     value === null ? null : String(value)
-  const grid =
-    layout === "panel"
-      ? "grid-flow-row-dense [grid-template-columns:repeat(auto-fit,minmax(10rem,1fr))]"
-      : "grid-cols-1"
   const wide = layout === "panel" ? "col-span-2" : undefined
+  const counts = sectionFilterCounts(query)
 
   return (
     <div
-      className="grid gap-4"
+      // A divider between sections, so five of them still read as separate blocks.
+      className="grid gap-6 [&>section+section]:border-t [&>section+section]:pt-6"
       role="group"
       aria-label={label("filters")}
       data-testid="collection-filter-fields"
     >
-      <FieldGroup title={label("groupUnit")} className={grid}>
+      <FieldGroup
+        title={label("groupUnit")}
+        count={counts.unit}
+        layout={layout}
+      >
         <Field label={label("alliance")} icon="alliance">
           {(id) => (
             <PlainSelect
@@ -201,6 +203,29 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
+        <Field label={label("kind")} icon="unitType">
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={query.kind}
+              anyLabel={label("kindAll")}
+              options={collectionKinds.map((kind) => ({
+                value: kind,
+                label: label(kind),
+                icon: optionIcon(kindIcons[kind]),
+              }))}
+              onChange={(value) =>
+                update({ kind: isCollectionKind(value) ? value : null })
+              }
+            />
+          )}
+        </Field>
+      </FieldGroup>
+      <FieldGroup
+        title={label("groupProgression")}
+        count={counts.progression}
+        layout={layout}
+      >
         <Field label={label("rarity")} icon="rarity" labelsControl={false}>
           {() => (
             <MultiSelect
@@ -285,23 +310,6 @@ export function CollectionFilterFields({
             data-testid="collection-stars-max-filter"
           />
         </RangeField>
-        <Field label={label("kind")} icon="unitType">
-          {(id) => (
-            <PlainSelect
-              id={id}
-              value={query.kind}
-              anyLabel={label("kindAll")}
-              options={collectionKinds.map((kind) => ({
-                value: kind,
-                label: label(kind),
-                icon: optionIcon(kindIcons[kind]),
-              }))}
-              onChange={(value) =>
-                update({ kind: isCollectionKind(value) ? value : null })
-              }
-            />
-          )}
-        </Field>
         {rosterAvailable ? null : (
           <p
             id={noteId}
@@ -311,7 +319,11 @@ export function CollectionFilterFields({
           </p>
         )}
       </FieldGroup>
-      <FieldGroup title={label("groupCombat")} className={grid}>
+      <FieldGroup
+        title={label("groupAttack")}
+        count={counts.attack}
+        layout={layout}
+      >
         <Field label={label("attackType")} icon="attackType">
           {(id) => (
             <PlainSelect
@@ -331,24 +343,77 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <Field label={label("summons")} icon="summons">
-          {(id) => (
-            <PlainSelect
-              id={id}
-              value={query.summons}
-              anyLabel={label("summonsAny")}
-              options={collectionSummons.map((summons) => ({
-                value: summons,
-                label: label(`summonsTypes.${summons}`),
+        <RangeField label={label("hitsRange")} icon="hits" className={wide}>
+          <PlainSelect
+            ariaLabel={label("hitsFrom")}
+            value={asText(query.hitsMin)}
+            anyLabel={label("anyValue")}
+            options={numbers(options.hits)}
+            onChange={(value) => update({ hitsMin: toNumber(value) })}
+          />
+          <PlainSelect
+            ariaLabel={label("hitsTo")}
+            value={asText(query.hitsMax)}
+            anyLabel={label("anyValue")}
+            options={numbers(options.hits)}
+            onChange={(value) => update({ hitsMax: toNumber(value) })}
+          />
+        </RangeField>
+        <RangeField
+          label={label("attackRange")}
+          icon="attackRange"
+          className={wide}
+        >
+          <PlainSelect
+            ariaLabel={label("rangeFrom")}
+            value={asText(query.rangeMin)}
+            anyLabel={label("anyValue")}
+            options={numbers(options.ranges)}
+            onChange={(value) => update({ rangeMin: toNumber(value) })}
+          />
+          <PlainSelect
+            ariaLabel={label("rangeTo")}
+            value={asText(query.rangeMax)}
+            anyLabel={label("anyValue")}
+            options={numbers(options.ranges)}
+            onChange={(value) => update({ rangeMax: toNumber(value) })}
+          />
+        </RangeField>
+        <Field
+          label={label("damageTypes")}
+          icon="damageType"
+          labelsControl={false}
+        >
+          {() => (
+            <MultiSelect
+              label={label("damageTypes")}
+              placeholder={label("allDamageTypes")}
+              searchPlaceholder={label("searchDamageTypes")}
+              clearLabel={label("clearDamageTypes")}
+              emptyText={label("noMatch")}
+              options={options.damageTypes.map((type) => ({
+                value: type.id,
+                label: type.name,
+                icon: (
+                  <EntityIcon
+                    size="inline"
+                    src={damageTypeIcon(type.id)}
+                    alt={type.name}
+                  />
+                ),
               }))}
-              onChange={(value) =>
-                update({
-                  summons: isCollectionSummons(value) ? value : null,
-                })
-              }
+              value={query.damageTypes}
+              onChange={(next) => update({ damageTypes: next })}
+              data-testid="collection-damage-type-filter"
             />
           )}
         </Field>
+      </FieldGroup>
+      <FieldGroup
+        title={label("groupAbilities")}
+        count={counts.abilities}
+        layout={layout}
+      >
         <Field label={label("abilityRole")} icon="abilityRole">
           {(id) => (
             <PlainSelect
@@ -408,82 +473,30 @@ export function CollectionFilterFields({
             />
           )}
         </Field>
-        <RangeField label={label("hitsRange")} icon="hits" className={wide}>
-          <PlainSelect
-            ariaLabel={label("hitsFrom")}
-            value={asText(query.hitsMin)}
-            anyLabel={label("anyValue")}
-            options={numbers(options.hits)}
-            onChange={(value) => update({ hitsMin: toNumber(value) })}
-          />
-          <PlainSelect
-            ariaLabel={label("hitsTo")}
-            value={asText(query.hitsMax)}
-            anyLabel={label("anyValue")}
-            options={numbers(options.hits)}
-            onChange={(value) => update({ hitsMax: toNumber(value) })}
-          />
-        </RangeField>
-        <Field label={label("movement")} icon="movement">
+        <Field label={label("summons")} icon="summons">
           {(id) => (
             <PlainSelect
               id={id}
-              value={asText(query.movement)}
-              anyLabel={label("anyValue")}
-              options={numbers(options.movements)}
-              onChange={(value) => update({ movement: toNumber(value) })}
-            />
-          )}
-        </Field>
-        <RangeField
-          label={label("attackRange")}
-          icon="attackRange"
-          className={wide}
-        >
-          <PlainSelect
-            ariaLabel={label("rangeFrom")}
-            value={asText(query.rangeMin)}
-            anyLabel={label("anyValue")}
-            options={numbers(options.ranges)}
-            onChange={(value) => update({ rangeMin: toNumber(value) })}
-          />
-          <PlainSelect
-            ariaLabel={label("rangeTo")}
-            value={asText(query.rangeMax)}
-            anyLabel={label("anyValue")}
-            options={numbers(options.ranges)}
-            onChange={(value) => update({ rangeMax: toNumber(value) })}
-          />
-        </RangeField>
-        <Field
-          label={label("damageTypes")}
-          icon="damageType"
-          labelsControl={false}
-        >
-          {() => (
-            <MultiSelect
-              label={label("damageTypes")}
-              placeholder={label("allDamageTypes")}
-              searchPlaceholder={label("searchDamageTypes")}
-              clearLabel={label("clearDamageTypes")}
-              emptyText={label("noMatch")}
-              options={options.damageTypes.map((type) => ({
-                value: type.id,
-                label: type.name,
-                icon: (
-                  <EntityIcon
-                    size="inline"
-                    src={damageTypeIcon(type.id)}
-                    alt={type.name}
-                  />
-                ),
+              value={query.summons}
+              anyLabel={label("summonsAny")}
+              options={collectionSummons.map((summons) => ({
+                value: summons,
+                label: label(`summonsTypes.${summons}`),
               }))}
-              value={query.damageTypes}
-              onChange={(next) => update({ damageTypes: next })}
-              data-testid="collection-damage-type-filter"
+              onChange={(value) =>
+                update({
+                  summons: isCollectionSummons(value) ? value : null,
+                })
+              }
             />
           )}
         </Field>
+      </FieldGroup>
+      <FieldGroup
+        title={label("groupMore")}
+        count={counts.more}
+        layout={layout}
+      >
         <Field label={label("traits")} icon="trait" labelsControl={false}>
           {() => (
             <MultiSelect
@@ -506,6 +519,17 @@ export function CollectionFilterFields({
               value={query.traits}
               onChange={(next) => update({ traits: next })}
               data-testid="collection-trait-filter"
+            />
+          )}
+        </Field>
+        <Field label={label("movement")} icon="movement">
+          {(id) => (
+            <PlainSelect
+              id={id}
+              value={asText(query.movement)}
+              anyLabel={label("anyValue")}
+              options={numbers(options.movements)}
+              onChange={(value) => update({ movement: toNumber(value) })}
             />
           )}
         </Field>
@@ -535,23 +559,43 @@ export function CollectionFilterFields({
   )
 }
 
-/** A captioned group of filter controls; `className` lays out its grid. */
+/**
+ * A titled section of filter controls, its title followed by how many of them are set. On the
+ * desktop panel a fixed three-column grid where whatever follows a range starts a new row.
+ */
 function FieldGroup({
   title,
-  className,
+  count,
+  layout,
   children,
 }: {
   title: string
-  className?: string
+  count: number
+  layout: "panel" | "sheet"
   children: React.ReactNode
 }) {
+  const { t } = useTranslation("common")
   const id = useId()
   return (
-    <section className="grid gap-2" aria-labelledby={id}>
-      <h3 id={id} className="text-xs font-medium">
-        {title}
+    <section className="grid gap-3" aria-labelledby={id}>
+      <h3 id={id} className="text-sm font-medium">
+        {count > 0
+          ? t("myGame.collection.toolbar.sectionCount", {
+              section: title,
+              count,
+            })
+          : title}
       </h3>
-      <div className={cn("grid gap-3", className)}>{children}</div>
+      <div
+        className={cn(
+          "grid gap-x-3 gap-y-4",
+          layout === "panel"
+            ? "grid-cols-3 [&>[data-range]+*]:col-start-1"
+            : "grid-cols-1"
+        )}
+      >
+        {children}
+      </div>
     </section>
   )
 }
@@ -577,20 +621,18 @@ function RangeField({
   return (
     <div
       className={cn("grid min-w-0 gap-1.5", className)}
+      data-range
       role="group"
       aria-label={label}
       aria-describedby={describedBy}
     >
-      <span
-        aria-hidden="true"
-        className="flex items-center gap-1.5 text-xs text-muted-foreground"
-      >
+      <span aria-hidden="true" className="flex items-center gap-1.5 text-sm">
         <FilterLabelIcon kind={icon} />
         {label}
       </span>
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1.5">
         {children[0]}
-        <span aria-hidden="true" className="text-xs text-muted-foreground">
+        <span aria-hidden="true" className="text-sm text-muted-foreground">
           {t("myGame.collection.toolbar.rangeJoin")}
         </span>
         {children[1]}
@@ -616,18 +658,12 @@ function Field({
   return (
     <div className="grid min-w-0 gap-1.5">
       {labelsControl ? (
-        <Label
-          htmlFor={id}
-          className="gap-1.5 text-xs font-normal text-muted-foreground"
-        >
+        <Label htmlFor={id} className="gap-1.5 font-normal">
           <FilterLabelIcon kind={icon} />
           {label}
         </Label>
       ) : (
-        <span
-          aria-hidden="true"
-          className="flex items-center gap-1.5 text-xs text-muted-foreground"
-        >
+        <span aria-hidden="true" className="flex items-center gap-1.5 text-sm">
           <FilterLabelIcon kind={icon} />
           {label}
         </span>
