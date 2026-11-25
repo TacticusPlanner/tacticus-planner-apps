@@ -18,7 +18,7 @@ export function EventsCalendarState({
         className="flex min-h-48 items-center justify-center"
         data-testid="events-calendar-loading"
       >
-        <Spinner className="size-8" />
+        <Spinner className="size-icon-lg" />
       </div>
     )
   }

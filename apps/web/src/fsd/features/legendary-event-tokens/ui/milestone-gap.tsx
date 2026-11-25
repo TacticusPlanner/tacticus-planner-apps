@@ -141,7 +141,7 @@ export function MilestoneGapSection({ gap }: { gap: MilestoneGap }) {
             icon={
               <EntityIcon
                 alt={t("tokenPlan.forecast.summary.tokens")}
-                size="inline"
+                size="icon"
                 className="shrink-0"
                 src={tokensIcon}
               />
@@ -210,7 +210,7 @@ function PushRow({
         </span>
         <span className="inline-flex shrink-0 items-center gap-1 font-semibold tabular-nums">
           <EntityIcon
-            size="inline"
+            size="icon"
             alt={t("tokenPlan.forecast.summary.points")}
             className="shrink-0"
             src={pointsIcon}
@@ -244,7 +244,7 @@ function PushRow({
             icon={
               <EntityIcon
                 alt={t("tokenPlan.closeGap.retryLabel")}
-                size="inline"
+                size="icon"
                 className="shrink-0"
                 src={tokensIcon}
               />

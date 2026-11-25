@@ -48,7 +48,7 @@ function TopRowSummary({
     >
       {row ? (
         <span className="flex min-w-0 items-center gap-1.5">
-          <EntityIcon alt="" size="inline" src={location?.icon} />
+          <EntityIcon alt="" size="icon" src={location?.icon} />
           <span className="truncate">
             {location
               ? [location.campaignName, location.nodeLabel]
@@ -89,7 +89,7 @@ export function HreRaidsSummary({
         <Badge className="shrink-0 tabular-nums" variant="secondary">
           <EntityIcon
             alt=""
-            size="inline"
+            size="icon"
             src={counted ? raidTicketIcon() : battleGlyphIcon("campaignBattle")}
           />
           {counted
@@ -115,7 +115,7 @@ export function HreBattlesSummary({ raids }: { raids: HreRaids }) {
           <Badge className="shrink-0 tabular-nums" variant="secondary">
             <EntityIcon
               alt=""
-              size="inline"
+              size="icon"
               src={battleGlyphIcon("campaignBattle")}
             />
             {t("raids.battleCount", { count: battles.totalBattles })}
@@ -173,11 +173,11 @@ export function HreRaidsDetails({
             data-testid="hre-raids-totals"
           >
             <Badge variant="secondary">
-              <EntityIcon size="inline" alt="" src={raidTicketIcon()} />
+              <EntityIcon size="icon" alt="" src={raidTicketIcon()} />
               {t("raids.raidCount", { count: plan.totalRaids })}
             </Badge>
             <Badge variant="outline">
-              <EntityIcon size="inline" alt="" src={energyIcon()} />
+              <EntityIcon size="icon" alt="" src={energyIcon()} />
               {t("raids.energy", { energy: plan.totalEnergy })}
             </Badge>
             {plan.remainingAfter > 0 ? (

@@ -43,7 +43,7 @@ export function IncursionTierStrip({
           data-cleared-count={cleared}
         >
           <EntityIcon
-            size="inline"
+            size="icon"
             src={incursionTokenIcon()}
             alt=""
             className="shrink-0"

@@ -26,7 +26,7 @@ export function EventShopShoppingListTotalsBar({
   const review = controller.list.needsReview.length
   const icon = (
     <EntityIcon
-      size="inline"
+      size="icon"
       alt=""
 
       src={format.currencyIcon(controller.event.currency)}

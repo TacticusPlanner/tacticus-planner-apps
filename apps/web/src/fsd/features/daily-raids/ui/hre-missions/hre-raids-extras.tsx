@@ -59,7 +59,7 @@ export function RowDrop({
     return (
       <span className="flex shrink-0 items-center gap-1">
         <ResourceIconWithTooltip
-          size="row"
+          size="icon-lg"
           label={view.resourceLabels.get(resourceId) ?? resourceId}
           visual={view.resourceVisuals.get(resourceId)}
         />
@@ -75,7 +75,7 @@ export function RowDrop({
   return (
     <span className="flex shrink-0 items-center gap-1">
       <ResourceIconWithTooltip
-        size="row"
+        size="icon-lg"
         label={drop.label}
         visual={drop.visual}
       />
@@ -156,7 +156,7 @@ export function RaidRows({
               ) : null}
               {openEnded ? (
                 <Badge className="tabular-nums" variant="secondary">
-                  <EntityIcon size="inline" alt="" src={energyIcon()} />
+                  <EntityIcon size="icon" alt="" src={energyIcon()} />
                   {t("raids.energyPerBattle", { energy: row.energyCost })}
                 </Badge>
               ) : null}
@@ -194,7 +194,7 @@ function BattleDetails({
       )}
       <Badge className="tabular-nums" variant="outline">
         <EntityIcon
-          size="inline"
+          size="icon"
           alt=""
           src={battleGlyphIcon("campaignBattle")}
         />
@@ -228,11 +228,11 @@ export function HreNoDropRaids({
         data-testid="hre-raids-no-drop-totals"
       >
         <Badge variant="secondary">
-          <EntityIcon size="inline" alt="" src={raidTicketIcon()} />
+          <EntityIcon size="icon" alt="" src={raidTicketIcon()} />
           {t("raids.raidCount", { count: raids })}
         </Badge>
         <Badge variant="outline">
-          <EntityIcon size="inline" alt="" src={energyIcon()} />
+          <EntityIcon size="icon" alt="" src={energyIcon()} />
           {t("raids.energy", { energy })}
         </Badge>
       </div>
@@ -289,7 +289,7 @@ export function HreCampaignOutlook({
       <span className="text-muted-foreground">{t("raids.summary.label")}</span>
       <Badge variant="secondary">
         <EntityIcon
-          size="inline"
+          size="icon"
           alt=""
           src={battleGlyphIcon("campaignBattle")}
         />
@@ -303,7 +303,7 @@ export function HreCampaignOutlook({
       </Badge>
       {energy === null ? null : (
         <Badge variant="outline">
-          <EntityIcon size="inline" alt="" src={energyIcon()} />
+          <EntityIcon size="icon" alt="" src={energyIcon()} />
           {t("raids.summary.chipEnergy", { energy: n(energy) })}
         </Badge>
       )}

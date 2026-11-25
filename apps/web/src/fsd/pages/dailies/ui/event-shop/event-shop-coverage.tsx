@@ -149,7 +149,7 @@ export function EventShopCoverage({
                 data-testid={`event-shop-coverage-${row.resource}`}
               >
                 <EntityIcon
-                  size="row"
+                  size="icon-lg"
                   alt=""
                   className="shrink-0"
                   src={text.iconUrl}
@@ -185,7 +185,7 @@ export function EventShopCoverage({
                   {row.estimate ? (
                     <p className="inline-flex items-center gap-1 text-muted-foreground">
                       <EntityIcon
-                        size="inline"
+                        size="icon"
                         alt=""
 
                         src={format.currencyIcon(controller.event.currency)}

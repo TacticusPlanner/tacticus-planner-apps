@@ -195,7 +195,7 @@ function Portrait({ unit }: { unit: UnitTileUnit }) {
   return (
     <span
       className={cn(
-        "block size-7 overflow-hidden rounded-full bg-portrait",
+        "block size-icon-lg overflow-hidden rounded-full bg-portrait",
         owned
           ? "border-2"
           : "border-2 border-dashed border-border opacity-60 grayscale"
@@ -237,7 +237,7 @@ function Name({ unit }: { unit: UnitTileUnit }) {
 
 function RankCell({ kind, data }: { kind: UnitKind; data: OwnedUnitTileData }) {
   return kind === "character" && data.rank ? (
-    <span className="block size-6" data-testid="unit-row-rank">
+    <span className="block size-icon-md" data-testid="unit-row-rank">
       <EntityIcon src={rankIcon(data.rank)} alt="" className="size-full" />
     </span>
   ) : (
@@ -339,7 +339,7 @@ function ExpandedPanel({
               }
             >
               <EntityIcon
-                size="inline"
+                size="icon"
                 src={shardIcon(
                   usesMythicShards(owned.progression) ? "Mythic" : "Regular"
                 )}

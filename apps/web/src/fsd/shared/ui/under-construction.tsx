@@ -19,7 +19,7 @@ export function UnderConstruction({
       <Card className="w-full max-w-xl">
         <CardContent className="flex flex-col items-center gap-4 px-6 py-10 text-center">
           <span className="rounded-full bg-primary/10 p-4 text-primary">
-            <Construction className="size-10" aria-hidden="true" />
+            <Construction className="size-icon-xl" aria-hidden="true" />
           </span>
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold">{title}</h2>

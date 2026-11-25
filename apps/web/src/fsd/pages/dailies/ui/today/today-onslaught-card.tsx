@@ -19,7 +19,7 @@ export function TodayOnslaughtCard({ view }: { view: TodayView }) {
     <TodayCard
       action={
         <Badge aria-hidden="true" className="gap-1.5" variant="secondary">
-          <EntityIcon size="inline" alt="" src={onslaughtTokenIcon()} />
+          <EntityIcon size="icon" alt="" src={onslaughtTokenIcon()} />
           <span className="tabular-nums">{view.onslaughtTokens}</span>
         </Badge>
       }

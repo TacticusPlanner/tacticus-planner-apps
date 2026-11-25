@@ -174,7 +174,7 @@ function CampaignBattleContent({
             data-testid="campaign-battle-summary"
           >
             <li className="inline-flex items-center gap-1">
-              <EntityIcon size="inline" alt="" src={energyIcon()} />
+              <EntityIcon size="icon" alt="" src={energyIcon()} />
               {t("locationDetails.energy", {
                 count: battle.energyCost,
                 formatted: number.format(battle.energyCost),
@@ -189,7 +189,7 @@ function CampaignBattleContent({
             </li>
             {battle.enemyPower > 0 ? (
               <li className="inline-flex items-center gap-1">
-                <EntityIcon size="inline" alt="" src={powerIcon()} />
+                <EntityIcon size="icon" alt="" src={powerIcon()} />
                 {t("locationDetails.power", {
                   power: number.format(battle.enemyPower),
                 })}

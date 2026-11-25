@@ -19,7 +19,7 @@ export function CountdownChip({
         className
       )}
     >
-      <EntityIcon size="inline" alt="" src={countdownIcon()} />
+      <EntityIcon size="icon" alt="" src={countdownIcon()} />
       {text}
     </span>
   )

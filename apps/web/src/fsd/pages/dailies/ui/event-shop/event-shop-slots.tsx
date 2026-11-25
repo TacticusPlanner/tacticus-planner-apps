@@ -52,7 +52,7 @@ export function Cost({
       className={cn("inline-flex items-center gap-1 tabular-nums", className)}
     >
       <EntityIcon
-        size="inline"
+        size="icon"
         alt=""
         className="shrink-0"
         src={format.currencyIcon(currency)}
@@ -70,7 +70,7 @@ function SlotSubtitle({ view }: { view: SlotView }) {
     return (
       <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
         <EntityIcon
-          size="inline"
+          size="icon"
           alt=""
           className="shrink-0"
           src={shardIcon("Mythic")}
@@ -417,7 +417,12 @@ function OfferLine({
   const reward = format.reward(offer.rewardType, offer.unitId)
   return (
     <span className="flex min-w-0 items-center gap-2">
-      <EntityIcon size="row" alt="" className="shrink-0" src={reward.iconUrl} />
+      <EntityIcon
+        size="icon-lg"
+        alt=""
+        className="shrink-0"
+        src={reward.iconUrl}
+      />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm">{reward.label}</span>
         <span className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
@@ -463,7 +468,7 @@ function SlotCard({
     >
       <div className="flex flex-col items-center gap-2 text-center @[14rem]:flex-row @[14rem]:items-start @[14rem]:gap-3 @[14rem]:text-left">
         <EntityIcon
-          size="tile"
+          size="icon-2xl"
           alt=""
           className="shrink-0"
           src={reward.iconUrl}
@@ -520,7 +525,7 @@ function SlotCard({
               className="mt-1 h-auto max-w-full whitespace-normal"
               variant="secondary"
             >
-              <EntityIcon size="inline" alt="" src={free.iconUrl} />
+              <EntityIcon size="icon" alt="" src={free.iconUrl} />
               {t("slot.free", { reward: free.label, qty: view.freeQty })}
             </Badge>
           ) : null}
@@ -671,7 +676,7 @@ function SlotTile({
       >
         <span className="relative">
           <EntityIcon
-            size="tile"
+            size="icon-2xl"
             alt=""
             className={cn(allBought && "opacity-60")}
             src={reward.iconUrl}

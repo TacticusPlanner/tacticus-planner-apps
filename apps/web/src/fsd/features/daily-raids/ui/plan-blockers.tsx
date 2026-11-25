@@ -54,7 +54,7 @@ export function PlanBlockers({ raids }: { raids: DailyRaidsReadyViewModel }) {
                         key={blocker.resourceId}
                       >
                         <ResourceIcon
-                          size="row"
+                          size="icon-lg"
                           label={material}
                           visual={raids.resourceVisuals.get(blocker.resourceId)}
                         />

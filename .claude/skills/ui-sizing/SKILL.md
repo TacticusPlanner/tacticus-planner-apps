@@ -28,14 +28,14 @@ screen width.
 | Caption, metadata — the floor                | 12px                       | 12px                         | `text-xs`                        |
 | Numerals or glyphs on a solid badge over art | 10px                       | 10px                         | `text-2xs` (badges only)         |
 | Icon: the baseline (see Icons below)         | 20px                       | 20px                         | `size-icon`                      |
-| Standalone icon, or beside `text-2xl`        | 24px                       | 24px                         | `size-6`                         |
+| Standalone icon, or beside `text-2xl`        | 24px                       | 24px                         | `size-icon-md`                   |
 | Icon exception: 16px (see Icons below)       | 16px                       | 16px                         | `size-icon-sm`                   |
 | Icon exception: 12px (see Icons below)       | 12px                       | 12px                         | `size-icon-xs`                   |
 | Button / input height                        | 40px visual, 48px hit area | 32px (`sm` 28px in toolbars) | `h-10` / `h-8`                   |
 | Smallest tap target                          | 48px                       | 24px                         | —                                |
-| Portrait in a list, chip or lane             | 40px                       | 40px                         | `size-10`                        |
-| Portrait in a grid                           | 64px                       | 64px                         | `size-16`                        |
-| Portrait in a card                           | 96px                       | 96px                         | `size-24`                        |
+| Portrait in a list, chip or lane             | 40px                       | 40px                         | `size-portrait-sm`               |
+| Portrait in a grid                           | 64px                       | 64px                         | `size-portrait-md`               |
+| Portrait in a card                           | 96px                       | 96px                         | `size-portrait-lg`               |
 | Spacing                                      | 4px grid                   | 4px grid                     | `gap-2` / `gap-3` / `gap-4` …    |
 
 Text classes: `text-2xs` (only numerals or glyphs such as ≥ on a solid badge over art; labels and captions never), `text-xs`, `text-sm`,
@@ -62,21 +62,55 @@ An icon is smaller only when what is around it is smaller than 20px:
 | Inside a badge, count badge or status pill                                                                                                                        | 12px | `size-icon-xs` |
 | Corner mark on a portrait or tile (selected check, lock, plus), on a solid badge                                                                                  | 12px | `size-icon-xs` |
 
-No icon uses `size-3`, `size-3.5`, `size-4` or `size-5`: use the tokens, so a
-later retune is one line in `packages/ui/src/styles/globals.css`
-(`cn` knows the tokens, so they merge like any size). `icon-sizes.test.ts`
-fails on a raw `size-3` to `size-5` on a lucide icon, the spinner, or an
-`[&_svg]:size-*` selector. A size other
-than 20px needs one of the reasons above; when none fits, use 20px. Standalone
-icons with no label beside them are 24px (`size-6`); the empty state's icon is
-32px. Not icons, so not covered here: status dots, the checkbox check and radio
-dot, colour swatches and legend squares.
+### The two ramps
 
-Game icons (portraits, upgrades, equipment, factions, traits…) use the role
-sizes in the `ui-style-guide` skill (rule 6). The game's nav art (section and
-child icons in the sidebar, section menu and tabs) is 24px (`size-6`): it is
-drawn with padding, so 24px reads as large as the 20px lucide icons beside it. Layout, controls and copy are
-there too; this skill is its sizing chapter.
+Every icon, a lucide glyph or game art, takes a step on one of two token ramps
+in `packages/ui/src/styles/globals.css`, so a later retune is one line there
+(`cn` knows the tokens, so they merge like any size).
+
+Icon ramp, for lucide glyphs, spinners and game item icons:
+
+| Token           | px  | UI icons                                    | Game icons                                   |
+| --------------- | --- | ------------------------------------------- | -------------------------------------------- |
+| `size-icon-xs`  | 12  | in a badge, corner mark                     |                                              |
+| `size-icon-sm`  | 16  | `text-xs` line, small mark, compact control | badge on a 40px portrait                     |
+| `size-icon`     | 20  | the baseline                                | item next to text, badge on a 64px portrait  |
+| `size-icon-md`  | 24  | standalone icon, nav art                    | rank / rarity emblem in a large goal card    |
+| `size-icon-lg`  | 32  | empty state, page spinner                   | item in a list row, badge on a 96px portrait |
+| `size-icon-xl`  | 40  | not-found illustration                      | badge on a 128px portrait                    |
+| `size-icon-2xl` | 48  |                                             | item on a card or tile                       |
+
+Portrait ramp, for unit, NPC and raid boss portraits only:
+
+| Token              | px  | Used for                    |
+| ------------------ | --- | --------------------------- |
+| `size-portrait-sm` | 40  | lists, team slots, pickers  |
+| `size-portrait-md` | 64  | cards, roster tiles         |
+| `size-portrait-lg` | 96  | unit page header on phones  |
+| `size-portrait-xl` | 128 | unit page header on desktop |
+
+The ramps overlap at 40px on purpose: a 40px portrait and a 40px glyph are
+different things, so a retune of one never moves the other.
+
+No icon takes a raw size (`size-4`, `size-6`, `size-8`, `h-6`): use the
+tokens. `icon-sizes.test.ts` fails on a raw size class on a lucide icon, the
+spinner, a game icon component or an `[&_svg]:size-*` selector. Fills of a
+sized frame (`size-full`, fractions such as `size-1/2`, `size-[70%]`) and wide
+art sized by its height (`h-4 w-auto`) are fine. A size other than 20px needs
+one of the reasons above; when none fits, use 20px. An unsized lucide icon
+draws at 20px too: `globals.css` gives `svg.lucide` the `size-icon` default in
+the base layer, so any class still wins. Not icons, so not covered here:
+status dots, the checkbox check and radio dot, colour swatches, legend
+squares, the app logo, and controls and hit areas that happen to be square.
+
+Game icon components (`EntityIcon`, `UpgradeIcon`, `RarityIcon`,
+`UnitPortrait`, `NpcPortrait`…) take the step as their `size` prop
+(`size="icon-lg"`, `size="portrait-sm"`), never as a class; where each one goes
+is in the `ui-style-guide` skill (rule 6). The game's nav art (section and
+child icons in the sidebar, section menu and tabs) is `size-icon-md` (24px):
+the art is detailed and wider than tall, so at 20px it reads smaller than the
+lucide glyphs beside it. Layout, controls and copy are in `ui-style-guide`
+too; this skill is its sizing chapter.
 
 Today's app is still denser than this table in places (see the UI sizing
 plan); new code should follow the table, and existing code moves to it page by
@@ -92,7 +126,7 @@ Snap to the nearest allowed class within ±2px; on a tie pick the larger one.
 | `text-[10px]`, `text-[11px]` elsewhere             | `text-xs`                                                |
 | `text-[13px]`, `text-[15px]`                       | `text-sm`, `text-base`                                   |
 | `text-[22px]`, `text-[26px]`                       | `text-2xl`                                               |
-| `size-[13px]`, `size-[18px]`, `size-[22px]` (icon) | `size-icon-sm`, `size-icon`, `size-6`                    |
+| `size-[13px]`, `size-[18px]`, `size-[22px]` (icon) | `size-icon-sm`, `size-icon`, `size-icon-md`              |
 | Layout lengths (`w-[420px]`, `min-h-[52px]`)       | the exact spacing step: `w-105`, `min-h-13` (px ÷ 4)     |
 | `rounded-[10px]`, `rounded-[5px]`, `rounded-[2px]` | `rounded-lg`, `rounded-sm`, `rounded-xs`                 |
 | `ring-[3px]`, `border-b-[3px]`                     | `ring-3`, `border-b-3`                                   |

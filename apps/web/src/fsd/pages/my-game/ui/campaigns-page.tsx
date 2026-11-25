@@ -239,7 +239,7 @@ function StoryCard({
       {/* `flex` replaces the header's default grid, so icon, title and percent share one row. */}
       <CardHeader className="flex flex-row items-center gap-3">
         <EntityIcon
-          size="tile"
+          size="icon-2xl"
           src={first && campaignIcon(first.definition.groupId, first.type)}
           alt=""
         />
@@ -299,7 +299,7 @@ function StoryCard({
                 {track.medals ? (
                   <MedalStats stats={track.medals} />
                 ) : (
-                  <EntityIcon size="inline" alt="" src={medalIcon} />
+                  <EntityIcon size="icon" alt="" src={medalIcon} />
                 )}
                 <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap">
                   {t("dailies:battleProgress.edit")}
@@ -323,7 +323,7 @@ function StoryCard({
 function Loading() {
   return (
     <div className="flex min-h-64 items-center justify-center">
-      <Spinner className="size-8" />
+      <Spinner className="size-icon-lg" />
     </div>
   )
 }

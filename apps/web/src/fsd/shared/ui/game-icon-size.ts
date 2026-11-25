@@ -1,58 +1,54 @@
 /**
- * The game icon size scale from the UI style guide (rule 6). Every datamine or curated icon is drawn
- * at one of these sizes, picked by its role rather than by the page.
- *
- * Two ramps: item icons (`inline`, `emblem`, `row`, `tile`) and unit portraits (`sm`, `md`, `lg`, and `hero`
- * only for a unit page's header). A badge over a portrait is a third of that portrait, never below
- * 16px, so its size names the portrait it sits on.
+ * Game icon sizes are the app's icon and portrait tokens (ui-sizing skill, Icons). An item icon,
+ * emblem or badge takes an `icon-*` step; a portrait takes a `portrait-*` step. No game icon is
+ * below 16px, so `icon-xs` is not a game icon size.
  */
 
-export type PortraitSize = "sm" | "md" | "lg" | "hero"
+/** An `icon-*` step a game icon can take (16–48px). */
+export type GameIconSize =
+  "icon-sm" | "icon" | "icon-md" | "icon-lg" | "icon-xl" | "icon-2xl"
 
-/** An `EntityIcon` size: an item role, a badge on a portrait of that size, or a bare (ringless)
- *  portrait of that size. A ringed unit portrait is `UnitPortrait`. */
-export type EntityIconSize =
-  | "inline"
-  | "emblem"
-  | "row"
-  | "tile"
-  | `badge-${PortraitSize}`
-  | `portrait-${PortraitSize}`
+/** A `portrait-*` step (40, 64, 96, 128px). */
+export type PortraitSize =
+  "portrait-sm" | "portrait-md" | "portrait-lg" | "portrait-xl"
 
-const PORTRAIT_CLASS_NAMES: Record<PortraitSize, string> = {
-  sm: "size-10",
-  md: "size-16",
-  lg: "size-24",
-  hero: "size-32",
+/** An `EntityIcon` size: an icon step, or a portrait step for a bare (ringless) portrait. A ringed
+ *  unit portrait is `UnitPortrait`. */
+export type EntityIconSize = GameIconSize | PortraitSize
+
+// Literal class names, so Tailwind's scanner sees every one.
+const CLASS_NAMES: Record<EntityIconSize, string> = {
+  "icon-sm": "size-icon-sm",
+  icon: "size-icon",
+  "icon-md": "size-icon-md",
+  "icon-lg": "size-icon-lg",
+  "icon-xl": "size-icon-xl",
+  "icon-2xl": "size-icon-2xl",
+  "portrait-sm": "size-portrait-sm",
+  "portrait-md": "size-portrait-md",
+  "portrait-lg": "size-portrait-lg",
+  "portrait-xl": "size-portrait-xl",
 }
 
-const ENTITY_ICON_CLASS_NAMES: Record<EntityIconSize, string> = {
-  // Next to text or a number: the 20px icon baseline, on every pointer.
-  inline: "size-icon",
-  // A solid emblem (the rarity hexagon) in a list or table row beside rank emblems: their open art
-  // reads smaller than its box, so the solid one is drawn a step smaller to match.
-  emblem: "size-6",
-  // An item in a list or table row.
-  row: "size-8",
-  // An item in a card or grid.
-  tile: "size-12",
-  // A third of the portrait, at least 16px.
-  "badge-sm": "size-4",
-  "badge-md": "size-5",
-  "badge-lg": "size-8",
-  "badge-hero": "size-11",
-  "portrait-sm": PORTRAIT_CLASS_NAMES.sm,
-  "portrait-md": PORTRAIT_CLASS_NAMES.md,
-  "portrait-lg": PORTRAIT_CLASS_NAMES.lg,
-  "portrait-hero": PORTRAIT_CLASS_NAMES.hero,
+// A badge over a portrait is a third of it, never below 16px.
+const BADGE_SIZES: Record<PortraitSize, GameIconSize> = {
+  "portrait-sm": "icon-sm",
+  "portrait-md": "icon",
+  "portrait-lg": "icon-lg",
+  "portrait-xl": "icon-xl",
 }
 
-/** The Tailwind size classes for an `EntityIcon` size. */
+/** The Tailwind size class for an `EntityIcon` size. */
 export function entityIconClassName(size: EntityIconSize): string {
-  return ENTITY_ICON_CLASS_NAMES[size]
+  return CLASS_NAMES[size]
 }
 
-/** The Tailwind size classes for a unit portrait. */
+/** The Tailwind size class for a unit portrait. */
 export function portraitClassName(size: PortraitSize): string {
-  return PORTRAIT_CLASS_NAMES[size]
+  return CLASS_NAMES[size]
+}
+
+/** The size of a badge (rank, rarity, lock, faction) on a portrait of this size. */
+export function portraitBadgeSize(size: PortraitSize): GameIconSize {
+  return BADGE_SIZES[size]
 }

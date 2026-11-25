@@ -233,7 +233,7 @@ export function PaceCard({
                 data-testid="hre-pace-next-milestone"
               >
                 <EntityIcon
-                  size="inline"
+                  size="icon"
                   alt=""
                   className="shrink-0"
                   src={heroReleaseEventResourceIcon("points")}
@@ -251,7 +251,7 @@ export function PaceCard({
                   data-testid="hre-pace-next-chest"
                 >
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     alt=""
                     className="shrink-0"
                     src={chestIcon}
@@ -501,7 +501,7 @@ function NumberField({
   return (
     <div className="space-y-1">
       <Label className="flex items-center gap-1.5" htmlFor={id}>
-        <EntityIcon size="inline" alt="" className="shrink-0" src={icon} />
+        <EntityIcon size="icon" alt="" className="shrink-0" src={icon} />
         {label}
       </Label>
       <Input
@@ -535,7 +535,7 @@ function PaceRow({
     <div className="grid gap-0.5 sm:grid-cols-[8rem_1fr]" data-testid={testId}>
       <dt className="flex items-center gap-1.5 text-muted-foreground">
         {icon ? (
-          <EntityIcon size="inline" alt="" className="shrink-0" src={icon} />
+          <EntityIcon size="icon" alt="" className="shrink-0" src={icon} />
         ) : null}
         {label}
       </dt>

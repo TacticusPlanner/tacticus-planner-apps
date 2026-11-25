@@ -180,7 +180,7 @@ export function StatRadarCard({
             >
               <span className="flex items-center gap-1.5 text-muted-foreground">
                 <EntityIcon
-                  size="inline"
+                  size="icon"
                   src={statIcon(radarAxisIcon(entry.axis))}
                   alt=""
                 />

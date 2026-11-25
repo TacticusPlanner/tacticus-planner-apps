@@ -78,7 +78,7 @@ export function TeamList({
               preference.matched ? "bg-primary/15" : "opacity-40 grayscale"
             )}
           >
-            <EntityIcon size="inline" src={iconOf(preference.id)} alt="" />
+            <EntityIcon size="icon" src={iconOf(preference.id)} alt="" />
           </span>
         </TooltipTrigger>
         <TooltipContent>
@@ -234,7 +234,7 @@ function RationaleLine({
           data-testid="team-member-rationale"
         >
           <span className="sr-only">{text}</span>
-          <EntityIcon size="inline" src={icon} alt="" className="shrink-0" />
+          <EntityIcon size="icon" src={icon} alt="" className="shrink-0" />
           <span aria-hidden="true" className="truncate tabular-nums">
             {short}
           </span>

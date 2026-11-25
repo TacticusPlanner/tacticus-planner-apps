@@ -18,7 +18,7 @@ export function ShopsBrowseState({
         className="flex min-h-48 items-center justify-center"
         data-testid="shops-browse-loading"
       >
-        <Spinner className="size-8" />
+        <Spinner className="size-icon-lg" />
       </div>
     )
   }

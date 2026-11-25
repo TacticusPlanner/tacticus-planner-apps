@@ -7,12 +7,12 @@ import { entityIconClassName } from "./game-icon-size"
 import type { EntityIconSize } from "./game-icon-size"
 
 /** Underlay + material icon + rarity frame, layered the same way V1's upgrade-image.tsx does.
- *  `size` is the style guide's icon role (`row` by default); keep size classes out of `className`. */
+ *  `size` is a step on the style guide's icon scale (`icon-lg` by default); keep size classes out of `className`. */
 export function UpgradeIcon({
   id,
   rarity,
   crafted,
-  size = "row",
+  size = "icon-lg",
   className,
 }: {
   id: UpgradeId

@@ -8,12 +8,12 @@ import type { EntityIconSize } from "@/shared/ui"
 /**
  * A rarity as the game's lettered hexagon (`rarityIcon`, the art the shared `RarityIcon` draws
  * elsewhere), without that component's own tooltip and label: on a chip it is decorative, as the
- * chip's accessible name and details already carry the rarity. `size` is the style guide's icon
- * role: `badge-sm` on a chip's portrait, `inline` next to text.
+ * chip's accessible name and details already carry the rarity. `size` is a step on the style guide's
+ * icon scale: `icon-sm` on a chip's portrait, `icon` next to text.
  */
 export function RarityBadge({
   rarity,
-  size = "badge-sm",
+  size = "icon-sm",
   className,
 }: {
   rarity: Rarity

@@ -37,7 +37,7 @@ export function EventGoalIcons({
           {goals.slice(0, MAX_VISIBLE).map((goal) => (
             <UnitIcon
               key={goal.goalId}
-              size="inline"
+              size="icon"
               className="rounded-full ring-2 ring-background"
               goal={goal}
             />

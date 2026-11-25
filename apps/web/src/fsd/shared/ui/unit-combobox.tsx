@@ -172,7 +172,7 @@ export function UnitCombobox({
             {selected && (
               <ComboboxAvatar
                 src={icon(selected.id)}
-                className="size-9"
+                className="size-icon-lg"
                 locked={lockedIds?.has(selected.id)}
               />
             )}
@@ -214,7 +214,7 @@ export function UnitCombobox({
                   >
                     <ComboboxAvatar
                       src={icon(member.id)}
-                      className="size-9"
+                      className="size-icon-lg"
                       locked={lockedIds?.has(member.id)}
                     />
                     <span

@@ -81,7 +81,7 @@ export function EventShopHeader({
                 className="inline-flex items-center gap-1"
                 data-testid="event-shop-income"
               >
-                <EntityIcon size="inline" alt="" src={currency} />
+                <EntityIcon size="icon" alt="" src={currency} />
                 {t("header.income", {
                   free: format.number(income.free),
                   bonus: format.number(income.bonusShipment),

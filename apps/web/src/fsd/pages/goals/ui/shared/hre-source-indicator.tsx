@@ -67,7 +67,7 @@ export function HreSourceIndicator({
           >
             <EntityIcon
               alt=""
-              size="inline"
+              size="icon"
               src={gameMenuIcon("heroReleaseEvent")}
             />
             {label}

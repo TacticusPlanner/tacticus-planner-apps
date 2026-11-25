@@ -27,7 +27,7 @@ export function OnslaughtEmblem({
     <EntityIcon
       src={onslaughtTierIcon(sector, tier)}
       alt={positionLabel(sector, tier)}
-      size="row"
+      size="icon-lg"
     />
   )
 }

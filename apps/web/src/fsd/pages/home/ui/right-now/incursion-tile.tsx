@@ -33,7 +33,7 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
       to={INCURSIONS_PATH}
     >
       <EntityIcon
-        size="tile"
+        size="icon-2xl"
         alt=""
         className="shrink-0"
         src={eventIcon("incursion", "Incursion")}
@@ -72,7 +72,7 @@ export function IncursionTile({ nowMs }: { nowMs: number }) {
             data-testid="home-incursion-mow"
           >
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="rounded-sm"
               src={mowIcon(featured.mowId as UnitId)}

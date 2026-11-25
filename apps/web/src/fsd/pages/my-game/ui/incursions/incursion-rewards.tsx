@@ -41,7 +41,7 @@ function RewardIcon({
         id={id as UpgradeId}
         rarity={upgrade?.rarity}
         crafted={upgrade?.craftable}
-        size="inline"
+        size="icon"
       />
     )
   }
@@ -61,7 +61,7 @@ function RewardIcon({
           )}
         />
         <EntityIcon
-          size="badge-sm"
+          size="icon-sm"
           alt=""
           src={shardIcon(mythic ? "Mythic" : "Regular")}
           className="absolute -right-1 -bottom-1"
@@ -69,7 +69,7 @@ function RewardIcon({
       </span>
     )
   }
-  return <EntityIcon size="inline" alt="" src={iconUrl} />
+  return <EntityIcon size="icon" alt="" src={iconUrl} />
 }
 
 /** Game reward strings as compact icon + amount chips, summed by id, each named by its tooltip. */

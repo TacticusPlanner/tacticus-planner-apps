@@ -68,7 +68,7 @@ export function InsightsOutlook({
             </span>
             <span aria-hidden>·</span>
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="shrink-0"
               src={energyIconUrl}

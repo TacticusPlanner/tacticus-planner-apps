@@ -93,7 +93,7 @@ export function InsightsHoldingBack({
                 >
                   {blocker.resourceId !== null ? (
                     <GoalResourceIcon
-                      size="tile"
+                      size="icon-2xl"
                       resourceId={blocker.resourceId}
                     />
                   ) : null}
@@ -154,7 +154,10 @@ export function InsightsHoldingBack({
                   data-testid="insights-bottleneck"
                   key={bottleneck.id}
                 >
-                  <GoalResourceIcon size="tile" resourceId={bottleneck.id} />
+                  <GoalResourceIcon
+                    size="icon-2xl"
+                    resourceId={bottleneck.id}
+                  />
                   <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
                       <span className="min-w-0 font-medium">
@@ -166,7 +169,7 @@ export function InsightsHoldingBack({
                       </span>
                       <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground tabular-nums">
                         <EntityIcon
-                          size="inline"
+                          size="icon"
                           alt=""
                           className="shrink-0"
                           src={energyIconUrl}

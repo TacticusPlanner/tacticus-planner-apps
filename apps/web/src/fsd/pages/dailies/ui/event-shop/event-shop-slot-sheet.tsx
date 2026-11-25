@@ -135,7 +135,7 @@ export function SlotSheet({
           <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 pb-6">
             <DrawerHeader className="flex-row items-center gap-3 px-0 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
               <EntityIcon
-                size="tile"
+                size="icon-2xl"
                 alt=""
                 className="shrink-0"
                 src={reward.iconUrl}
@@ -173,7 +173,7 @@ export function SlotSheet({
                       className="flex items-center gap-2"
                     >
                       <EntityIcon
-                        size="row"
+                        size="icon-lg"
                         alt=""
 
                         src={optionReward.iconUrl}

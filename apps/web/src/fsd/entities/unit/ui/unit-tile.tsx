@@ -93,14 +93,14 @@ export function UnitTile({
             data-testid="unit-tile-faction"
             data-faction={faction.id}
           >
-            <EntityIcon size="badge-sm" src={factionIcon(faction.id)} alt="" />
+            <EntityIcon size="icon-sm" src={factionIcon(faction.id)} alt="" />
           </span>
         ) : null}
         {owned ? (
           <PortraitOverlays kind={unit.kind} data={owned} />
         ) : (
           <span className="absolute -top-1 -right-1 grid size-5.5 place-items-center rounded-full bg-overlay text-overlay-foreground">
-            <EntityIcon size="badge-sm" src={lockIcon()} alt="" />
+            <EntityIcon size="icon-sm" src={lockIcon()} alt="" />
           </span>
         )}
       </div>
@@ -164,12 +164,7 @@ function PortraitOverlays({
         >
           {visual.kind === "stars" ? (
             Array.from({ length: visual.count }, (_, index) => (
-              <EntityIcon
-                size="badge-sm"
-                key={index}
-                src={visual.icon}
-                alt=""
-              />
+              <EntityIcon size="icon-sm" key={index} src={visual.icon} alt="" />
             ))
           ) : (
             <EntityIcon
@@ -186,7 +181,7 @@ function PortraitOverlays({
         <span
           className={cn(
             "absolute -bottom-1.5 -left-1.5 drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]",
-            entityIconClassName("badge-md")
+            entityIconClassName("icon")
           )}
           data-testid="unit-tile-rank"
         >

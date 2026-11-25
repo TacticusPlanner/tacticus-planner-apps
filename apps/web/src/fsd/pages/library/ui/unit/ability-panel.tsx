@@ -124,7 +124,7 @@ export function AbilityPanel({
           <EntityIcon
             src={iconSrc}
             alt=""
-            size="tile"
+            size="icon-2xl"
             className={iconClassName ?? "shrink-0"}
           />
         ) : null}

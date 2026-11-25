@@ -160,7 +160,7 @@ export function IncursionTierPage() {
               }
               data-testid="incursion-tier-mark-cleared"
             >
-              <EntityIcon size="inline" src={heroStarIcon()} alt="" />
+              <EntityIcon size="icon" src={heroStarIcon()} alt="" />
               {t("tier.markCleared")}
             </Button>
             <Button

@@ -327,7 +327,7 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
               <EntityIcon
                 alt=""
                 src={shardIcon(chip.kind === "shards" ? "Regular" : "Mythic")}
-                size="inline"
+                size="icon"
                 className="shrink-0"
               />
             }
@@ -343,7 +343,7 @@ function useChipContent(unitKind: CompareItem["unit"]["kind"]) {
               <EntityIcon
                 alt=""
                 src={powerIcon()}
-                size="inline"
+                size="icon"
                 className="shrink-0"
               />
             }
@@ -443,7 +443,7 @@ function UnitDiffDetails({
           key: `${row.kind}-${row.slotId}`,
           icon: slotIcon ? (
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               src={slotIcon}
               className="shrink-0"
@@ -481,7 +481,7 @@ function UnitDiffDetails({
           key: row.kind,
           icon: (
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               src={shardIcon(row.kind === "shards" ? "Regular" : "Mythic")}
               className="shrink-0"
@@ -508,7 +508,7 @@ function UnitDiffDetails({
           icon:
             row.kind === "power" ? (
               <EntityIcon
-                size="inline"
+                size="icon"
                 alt=""
                 src={powerIcon()}
                 className="shrink-0"

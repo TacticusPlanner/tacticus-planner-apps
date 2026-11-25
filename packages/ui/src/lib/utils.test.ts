@@ -19,5 +19,9 @@ describe("cn", () => {
     )
     expect(cn("size-icon animate-spin", "size-8")).toBe("animate-spin size-8")
     expect(cn("size-4", "size-icon-xs")).toBe("size-icon-xs")
+    expect(cn("size-icon-lg", "size-icon-2xl")).toBe("size-icon-2xl")
+    expect(cn("size-portrait-sm rounded-full", "size-portrait-xl")).toBe(
+      "rounded-full size-portrait-xl"
+    )
   })
 })

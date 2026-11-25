@@ -73,7 +73,10 @@ export function AccountSetupLayout() {
                 className="flex justify-center py-12"
                 role="status"
               >
-                <Spinner aria-hidden="true" className="size-8 text-primary" />
+                <Spinner
+                  aria-hidden="true"
+                  className="size-icon-lg text-primary"
+                />
               </div>
             }
           >

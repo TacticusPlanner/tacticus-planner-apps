@@ -75,7 +75,7 @@ export function BaseUpgradesTable({
                   id={upgrade.id}
                   rarity={upgrade.rarity}
                   crafted={upgrade.crafted}
-                  size="tile"
+                  size="icon-2xl"
                 />
               </TableCell>
               <TableCell className="font-medium">{upgrade.label}</TableCell>
@@ -136,11 +136,11 @@ export function BaseUpgradesCards({
                 id={upgrade.id}
                 rarity={upgrade.rarity}
                 crafted={upgrade.crafted}
-                size="tile"
+                size="icon-2xl"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium">{upgrade.label}</p>
-                <RarityIcon rarity={upgrade.rarity} size="row" />
+                <RarityIcon rarity={upgrade.rarity} size="icon-lg" />
               </div>
               <span className="text-lg font-semibold tabular-nums">
                 ×{upgrade.count}

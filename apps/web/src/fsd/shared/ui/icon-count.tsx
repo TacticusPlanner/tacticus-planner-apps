@@ -41,7 +41,7 @@ export function IconCount({
             type="button"
             className="inline-flex h-full items-center gap-1 rounded-full px-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           >
-            <EntityIcon size="inline" src={icon} alt="" />
+            <EntityIcon size="icon" src={icon} alt="" />
             <span className="sr-only">{`${name} ×${count}`}</span>
             <span aria-hidden="true">×{count}</span>
           </button>

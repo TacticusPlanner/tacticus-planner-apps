@@ -33,7 +33,7 @@ function ChestLabel({ chestId }: { chestId: string }) {
   if (!tier) return <span>{t("raidBosses.chest", { chest: chestId })}</span>
   return (
     <span className="flex items-center gap-1">
-      <EntityIcon size="inline" src={chestIcon(tier)} alt="" />
+      <EntityIcon size="icon" src={chestIcon(tier)} alt="" />
       {t("raidBosses.chest", { chest: t(`raidBosses.chestTiers.${tier}`) })}
     </span>
   )
@@ -87,7 +87,7 @@ export function GuildRaidSeasonsView({
         <span>{t("raidBosses.set", { set: set.set + 1 })}</span>
         <ChestLabel chestId={set.chestId} />
         <span className="flex items-center gap-1">
-          <EntityIcon size="inline" src={guildXpIcon()} alt="" />
+          <EntityIcon size="icon" src={guildXpIcon()} alt="" />
           {t("raidBosses.guildXp", { xp: set.guildXp })}
         </span>
       </div>
@@ -260,7 +260,7 @@ export function GuildRaidMetaView({
               {meta.comps.map((comp) => (
                 <SelectItem key={comp.id} value={comp.id}>
                   <EntityIcon
-                    size="inline"
+                    size="icon"
                     src={
                       presentation.resolveSignature(comp.signatureUnitId)
                         .portraitUrl
@@ -321,7 +321,7 @@ export function GuildRaidMetaView({
                               className="flex items-center gap-1 rounded-full bg-background py-0.5 pr-2 pl-0.5 text-xs"
                             >
                               <EntityIcon
-                                size="inline"
+                                size="icon"
                                 src={comp.signature.portraitUrl}
                                 alt=""
                                 className="rounded-full"
@@ -360,7 +360,7 @@ export function GuildRaidMetaView({
               <AccordionTrigger>
                 <span className="flex items-center gap-2">
                   <EntityIcon
-                    size="row"
+                    size="icon-lg"
                     src={signature.portraitUrl}
                     alt=""
                     className="rounded-full"

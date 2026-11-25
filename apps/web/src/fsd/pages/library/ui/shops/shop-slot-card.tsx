@@ -30,7 +30,7 @@ function CurrencyAmount({
   return (
     <span className="inline-flex items-center gap-1 align-middle">
       <EntityIcon
-        size="inline"
+        size="icon"
         alt={label}
         className="inline shrink-0"
         src={shopCurrencyIcon(currencyId)}
@@ -61,7 +61,7 @@ export function ShopSlotCard({
       >
         <div className="flex items-start gap-2">
           <EntityIcon
-            size="tile"
+            size="icon-2xl"
             alt=""
             className="shrink-0"
             src={reward.iconUrl}
@@ -88,7 +88,7 @@ export function ShopSlotCard({
           {t("shops.randomSlot", { count: slot.rewards.length })}
         </span>
         <Badge className="shrink-0 gap-1" variant="outline">
-          <EntityIcon size="inline" src={chanceIcon()} alt="" />
+          <EntityIcon size="icon" src={chanceIcon()} alt="" />
           {t("shops.randomBadge")}
         </Badge>
       </div>
@@ -97,7 +97,7 @@ export function ShopSlotCard({
         {preview.map((reward) => (
           <li key={reward.rewardType} className="flex items-center gap-1.5">
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="shrink-0"
               src={reward.iconUrl}
@@ -140,7 +140,7 @@ export function ShopSlotCard({
         {slot.rewards.map((reward) => (
           <li key={reward.rewardType} className="flex items-start gap-2">
             <EntityIcon
-              size="row"
+              size="icon-lg"
               alt=""
               className="shrink-0"
               src={reward.iconUrl}

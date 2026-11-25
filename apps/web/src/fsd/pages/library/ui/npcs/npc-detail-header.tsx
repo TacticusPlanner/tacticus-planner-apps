@@ -71,7 +71,7 @@ export function NpcDetailHeader({
             {name}
           </h2>
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            {emblem ? <EntityIcon size="inline" src={emblem} alt="" /> : null}
+            {emblem ? <EntityIcon size="icon" src={emblem} alt="" /> : null}
             <span className="truncate">{factionName}</span>
           </p>
           {selectedLevel ? (

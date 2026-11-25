@@ -37,7 +37,7 @@ export function RouteLoadingFill() {
       className="flex flex-1 items-center justify-center"
       role="status"
     >
-      <Spinner aria-hidden="true" className="size-8 text-primary" />
+      <Spinner aria-hidden="true" className="size-icon-lg text-primary" />
     </div>
   )
 }

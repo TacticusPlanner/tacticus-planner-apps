@@ -75,7 +75,7 @@ function ModeSelect({
           <SelectItem value="all">{t("page.allModes")}</SelectItem>
           {TEAM_MODES.map((mode) => (
             <SelectItem key={mode} value={mode}>
-              <EntityIcon alt="" size="inline" src={teamModeIcon(mode)} />
+              <EntityIcon alt="" size="icon" src={teamModeIcon(mode)} />
               {modeLabel(mode)}
             </SelectItem>
           ))}

@@ -18,7 +18,7 @@ function CurrencyAmount({
   return (
     <span className="inline-flex items-center gap-1 align-middle">
       <EntityIcon
-        size="inline"
+        size="icon"
         alt={label}
         className="inline shrink-0"
         src={shopCurrencyIcon(currencyId)}
@@ -86,7 +86,7 @@ export function ShopRecommendationCard({
       data-testid={testId}
     >
       <EntityIcon
-        size="row"
+        size="icon-lg"
         alt=""
         className="shrink-0"
         src={card.rewardIconUrl}
@@ -98,7 +98,7 @@ export function ShopRecommendationCard({
           </span>
           {!card.isGuaranteed ? (
             <EntityIcon
-              size="inline"
+              size="icon"
               src={chanceIcon()}
               alt={text.randomHint}
               className="shrink-0"

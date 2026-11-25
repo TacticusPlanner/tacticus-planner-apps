@@ -120,11 +120,11 @@ ${chip.hint}`
 function ChipIcon({ chip }: { chip: GoalResourceChip }) {
   return (
     <span className="relative inline-flex shrink-0">
-      <EntityIcon size="inline" alt="" src={chip.icon} />
+      <EntityIcon size="icon" alt="" src={chip.icon} />
       {chip.overlay ? (
         <img
           alt=""
-          className="absolute top-1/2 left-1/2 size-3.5 -translate-1/2 object-contain"
+          className="absolute top-1/2 left-1/2 size-[70%] -translate-1/2 object-contain"
           src={chip.overlay}
         />
       ) : null}

@@ -42,7 +42,10 @@ export function MissionTracker({
     return (
       <Card data-testid="hre-all-done">
         <CardContent className="flex items-center gap-3 py-6">
-          <PartyPopper aria-hidden="true" className="size-6 text-primary" />
+          <PartyPopper
+            aria-hidden="true"
+            className="size-icon-md text-primary"
+          />
           <p className="font-medium">{t("tracker.allDone")}</p>
         </CardContent>
       </Card>

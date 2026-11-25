@@ -51,7 +51,7 @@ function EventSummary({ view }: { view: EventView }) {
   return (
     <div className="flex min-w-0 flex-1 items-center gap-3">
       <EntityIcon
-        size="tile"
+        size="icon-2xl"
         src={campaignIcon(event.definition.groupId, "Standard")}
         alt=""
         className="shrink-0"

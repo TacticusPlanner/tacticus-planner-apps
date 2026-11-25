@@ -91,7 +91,7 @@ export function MilestoneGrid({
                     ) : null}
                     <span className="flex items-center gap-1">
                       <EntityIcon
-                        size="row"
+                        size="icon-lg"
                         alt=""
 
                         src={cell.reward.iconUrl ?? genericRewardIcon}
@@ -108,7 +108,7 @@ export function MilestoneGrid({
                     >
                       {pointsIcon ? (
                         <EntityIcon
-                          size="inline"
+                          size="icon"
                           alt=""
                           className="shrink-0"
                           src={pointsIcon}

@@ -104,7 +104,7 @@ export function GoalTypeToggleGroup({
             htmlFor={`${idPrefix}-${kind}`}
           >
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               className="shrink-0"
               src={goalTypeIcon(kind, entityType)}
@@ -148,7 +148,7 @@ export function GoalTypeCard({
   const title = (
     <>
       <EntityIcon
-        size="inline"
+        size="icon"
         alt=""
         className="shrink-0"
         src={goalTypeIcon(kind, entityType)}

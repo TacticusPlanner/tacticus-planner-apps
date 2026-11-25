@@ -52,11 +52,11 @@ interface LayoutLooks {
   rank: string
 }
 
-// The parts, the same in every layout: a `portrait-sm` (40px) portrait with a `badge-sm` (16px)
-// rarity badge on its bottom-left corner, and an `inline` rank icon (UI style guide, rule 6).
+// The parts, the same in every layout: a `portrait-sm` (40px) portrait with an `icon-sm` (16px)
+// rarity badge on its bottom-left corner, and an `icon` (20px) rank icon (UI style guide, rule 6).
 const PARTS = {
   portraitBox: "mr-1",
-  portrait: portraitClassName("sm"),
+  portrait: portraitClassName("portrait-sm"),
   badge: "-bottom-1 -left-1",
   rank: "mr-1",
 }
@@ -251,7 +251,7 @@ export function EventUnitChip({
         {owned && unit.rank ? (
           <EntityIcon
             alt=""
-            size="inline"
+            size="icon"
             className={cn(
               "shrink-0 drop-shadow-[0_0_1px_rgb(0_0_0/0.6)] [grid-area:rank]",
               looks.rank
@@ -287,7 +287,7 @@ export function EventUnitChip({
             {unit.supportTraits.map((trait) => (
               <EntityIcon
                 alt=""
-                size="inline"
+                size="icon"
                 className="shrink-0"
                 data-testid="event-board-unit-trait"
                 data-trait={trait}

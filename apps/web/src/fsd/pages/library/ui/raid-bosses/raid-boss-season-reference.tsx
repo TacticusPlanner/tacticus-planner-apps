@@ -62,11 +62,7 @@ export function RaidBossSeasonReference({
           <h2 className="flex flex-wrap items-baseline gap-x-2 text-lg font-semibold">
             {tier.rarity ? (
               <span className="inline-flex items-center gap-2 self-center">
-                <EntityIcon
-                  size="inline"
-                  src={rarityIcon(tier.rarity)}
-                  alt=""
-                />
+                <EntityIcon size="icon" src={rarityIcon(tier.rarity)} alt="" />
                 {t(`progression:rarities.${tier.rarity}`, {
                   defaultValue: tier.rarity,
                 })}

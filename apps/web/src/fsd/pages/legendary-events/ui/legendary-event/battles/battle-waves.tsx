@@ -21,7 +21,7 @@ export function BattleHeader({ battle }: { battle: BattlePreviewViewModel }) {
         {t("battles.battleTitle", { number: battle.number })}
       </h3>
       <p className="inline-flex items-center gap-1 self-center text-sm text-muted-foreground">
-        <EntityIcon size="inline" alt="" src={powerIcon()} />
+        <EntityIcon size="icon" alt="" src={powerIcon()} />
         {t("battles.enemyPower")}{" "}
         <span
           className="font-medium text-foreground tabular-nums"
@@ -69,7 +69,7 @@ export function BattleWaves({
               {t("battles.round", { round: wave.round })}
             </span>
             <span className="inline-flex items-center gap-1 self-center text-muted-foreground">
-              <EntityIcon size="inline" alt="" src={powerIcon()} />
+              <EntityIcon size="icon" alt="" src={powerIcon()} />
               {t("battles.wavePower", { power: number.format(wave.power) })}
             </span>
           </p>

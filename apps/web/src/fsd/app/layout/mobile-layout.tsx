@@ -152,7 +152,7 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
         onClick={onCreateGoal}
       >
         <span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
-          <PlusCircle className="size-6" aria-hidden="true" />
+          <PlusCircle className="size-icon-md" aria-hidden="true" />
         </span>
         <span>{t("nav.createGoal")}</span>
       </button>
@@ -178,7 +178,7 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
           <SyncIcon
             aria-hidden="true"
             className={cn(
-              "relative size-6",
+              "relative size-icon-md",
               // A solid disc behind the icon keeps it legible over the dimmed, partly filled track.
               autoSyncProgress && "rounded-full bg-accent",
               isSyncing && "motion-safe:animate-spin"
@@ -216,7 +216,7 @@ function MobileGuestNavAction() {
       onClick={signUp}
     >
       <span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
-        <UserPlus aria-hidden="true" className="size-6" />
+        <UserPlus aria-hidden="true" className="size-icon-md" />
       </span>
       <span>{t("auth.signUp")}</span>
     </button>

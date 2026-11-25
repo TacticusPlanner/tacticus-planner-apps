@@ -140,7 +140,7 @@ function AllianceChips({
           value={item}
         >
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
             className="shrink-0"
             height={16}

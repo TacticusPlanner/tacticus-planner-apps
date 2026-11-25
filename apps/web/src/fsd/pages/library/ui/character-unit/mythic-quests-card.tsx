@@ -92,9 +92,7 @@ function RewardChip({
       className="inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold"
       data-testid="mythic-quest-reward"
     >
-      {icon === undefined ? null : (
-        <EntityIcon size="inline" src={icon} alt="" />
-      )}
+      {icon === undefined ? null : <EntityIcon size="icon" src={icon} alt="" />}
       {`${format.format(reward.quantity)} × ${label}`}
     </li>
   )

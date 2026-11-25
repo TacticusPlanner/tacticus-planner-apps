@@ -37,7 +37,7 @@ export function PlannedMaterialDetails({
           className="shrink-0 rounded-sm border-0 bg-transparent p-0 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
           type="button"
         >
-          <ResourceIcon label={label} size="row" visual={visual} />
+          <ResourceIcon label={label} size="icon-lg" visual={visual} />
         </button>
       }
     >

@@ -97,7 +97,7 @@ export function TierTileStrategy({ unitId }: { unitId: string }) {
                       to={`/library/characters/${teammate}`}
                     >
                       <EntityIcon
-                        size="inline"
+                        size="icon"
                         alt=""
                         className="shrink-0 rounded-full"
                         src={characterIcon(teammate as UnitId)}

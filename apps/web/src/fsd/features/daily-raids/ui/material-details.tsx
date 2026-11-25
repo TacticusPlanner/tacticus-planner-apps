@@ -238,7 +238,7 @@ function ShopGroup({
             className="flex items-center gap-1"
             key={`${shop.shopId}|${shop.currency}`}
           >
-            <EntityIcon size="inline" alt="" src={shopIcon(shop.shopId)} />
+            <EntityIcon size="icon" alt="" src={shopIcon(shop.shopId)} />
             <span>
               {t(`shops:shopName.${shop.shopId}`, {
                 defaultValue: shop.shopId,
@@ -255,7 +255,7 @@ function ShopGroup({
             >
               {t("dailies:plan.cell.shopQty", { qty: shop.rewardQty })}
               <EntityIcon
-                size="inline"
+                size="icon"
                 alt=""
                 src={shopCurrencyIcon(shop.currency)}
               />
@@ -280,7 +280,7 @@ function NodeLocation({
     <>
       {location?.icon ? (
         <EntityIcon
-          size="inline"
+          size="icon"
           alt=""
           className="shrink-0"
           src={location.icon}

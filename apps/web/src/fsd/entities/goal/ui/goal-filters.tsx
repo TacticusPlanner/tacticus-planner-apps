@@ -77,7 +77,7 @@ export function GoalFilters({
         <SelectItem value="all">{t("goals.filters.allTypes")}</SelectItem>
         {GOAL_TYPE_VALUES.map((type) => (
           <SelectItem key={type} value={type}>
-            <EntityIcon alt="" size="inline" src={goalTypeIcon(type)} />
+            <EntityIcon alt="" size="icon" src={goalTypeIcon(type)} />
             {t(`goals.create.goalTypes.${type}`)}
           </SelectItem>
         ))}

@@ -44,7 +44,7 @@ export function IncursionTierRewards({
             aria-label={t("rewards.all")}
             data-testid={testId ? `${testId}-all` : undefined}
           >
-            <EntityIcon size="inline" src={chestIcon("gold")} alt="" />
+            <EntityIcon size="icon" src={chestIcon("gold")} alt="" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-72 space-y-2">

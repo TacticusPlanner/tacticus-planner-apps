@@ -156,7 +156,7 @@ function AbilityTargetPills({
               {track.abilityId ? (
                 <AbilityIconTrigger
                   abilityId={track.abilityId}
-                  size="row"
+                  size="icon-lg"
                   trackLabel={label}
                 />
               ) : (
@@ -191,7 +191,7 @@ function AbilityTargetPills({
               {track.abilityId ? (
                 <AbilityIconTrigger
                   abilityId={track.abilityId}
-                  size="inline"
+                  size="icon"
                   trackLabel={label}
                 />
               ) : null}
@@ -239,7 +239,7 @@ function GoalTargetPreviewDisplay({
   rankIconSize: EntityIconSize
   arrowClass: string
 }) {
-  const progressionSize = large ? "emblem" : "inline"
+  const progressionSize = large ? "icon-md" : "icon"
   switch (preview.kind) {
     case "Rank":
       return (
@@ -398,17 +398,17 @@ export function GoalTargetDisplay({
   entityType?: string
   /** An Ability goal's unit abilities, for each track's icon (see `goalAbilityIds`). */
   abilityIds?: GoalAbilityIds
-  /** `lg` (desktop table) draws the emblems at table-row size (rank and ability icons `row`, the
-   *  rarity icon `emblem`) so the target reads at a glance. */
+  /** `lg` (desktop table) draws the emblems at table-row size (rank and ability icons `icon-lg`, the
+   *  rarity icon `icon-md`) so the target reads at a glance. */
   size?: "md" | "lg"
   /** Ability tracks as full-width blocks (the goal card) instead of compact pills (the table). */
   abilityBlocks?: boolean
 }) {
   const { t } = useTranslation()
   const large = size === "lg"
-  const rankIconSize: EntityIconSize = large ? "row" : "inline"
-  // Rarity hexagons are solid and fill their box, so they sit a step below the rank emblems (`emblem`).
-  const progressionSize = large ? "emblem" : "inline"
+  const rankIconSize: EntityIconSize = large ? "icon-lg" : "icon"
+  // Rarity hexagons are solid and fill their box, so they sit a step below the rank emblems (`icon-md`).
+  const progressionSize = large ? "icon-md" : "icon"
   // `w-max` on each target row: the Goal column shrinks to its content's minimum width, and Tailwind's
   // `max-width: 100%` on images gives a row of icons almost none, which squashed them into the next cell.
   const arrowClass = cn(

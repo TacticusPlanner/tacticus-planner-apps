@@ -99,7 +99,7 @@ export function QuestGoalDrops({
                         </span>
                         <span className="inline-flex items-center gap-0.5 text-muted-foreground tabular-nums">
                           <EntityIcon
-                            size="inline"
+                            size="icon"
                             alt=""
 
                             src={chanceIcon()}

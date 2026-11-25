@@ -20,7 +20,7 @@ export function ProgressionPreview({
     >
       <p className="font-medium">{t("goals.create.previewTitle")}</p>
       <p className="flex items-center gap-1.5">
-        <EntityIcon size="inline" alt="" src={shardIcon("Regular")} />
+        <EntityIcon size="icon" alt="" src={shardIcon("Regular")} />
         {t("goals.create.ascension.shards", {
           regular: preview.regularShards,
           mythic: preview.mythicShards,
@@ -29,7 +29,7 @@ export function ProgressionPreview({
       {Object.entries(preview.orbsByType).map(([rarity, count]) => (
         <p className="flex items-center gap-1.5" key={rarity}>
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
 
             src={datamineAssetUrl(
@@ -47,7 +47,7 @@ export function ProgressionPreview({
           className="flex items-center gap-1.5"
           data-testid="create-goal-preview-onslaught-tokens"
         >
-          <EntityIcon size="inline" alt="" src={shardIcon("Regular")} />
+          <EntityIcon size="icon" alt="" src={shardIcon("Regular")} />
           {t("goals.create.acquisitionSources.onslaughtTokens", {
             count: preview.onslaughtTokens,
           })}
@@ -62,12 +62,7 @@ export function ProgressionPreview({
             key={currency}
           >
             {icon ? (
-              <EntityIcon
-                size="inline"
-                alt=""
-                className="shrink-0"
-                src={icon}
-              />
+              <EntityIcon size="icon" alt="" className="shrink-0" src={icon} />
             ) : null}
             {t("goals.create.acquisitionSources.shopCurrencySpend", {
               amount,
@@ -87,7 +82,7 @@ export function ProgressionPreview({
           data-testid="create-goal-progression-resource-line"
         >
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
             className="shrink-0"
             src={energyIconUrl}
@@ -105,7 +100,7 @@ export function ProgressionPreview({
       ) : preview.ascensionShardEnergy ? (
         <p className="flex items-center gap-1.5 text-muted-foreground">
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
             className="shrink-0"
             src={energyIconUrl}

@@ -39,7 +39,7 @@ export function HreTeamSummary({
       data-testid={testId}
     >
       <span className="flex min-w-0 items-center gap-1.5">
-        <EntityIcon alt="" size="inline" src={gameModeTokenIcon(plan.mode)} />
+        <EntityIcon alt="" size="icon" src={gameModeTokenIcon(plan.mode)} />
         <span className="truncate">{t(`tokens.modes.${plan.mode}`)}</span>
       </span>
       <Badge className="shrink-0 tabular-nums" variant="secondary">
@@ -61,7 +61,7 @@ export function HreTeamSummary({
               <EntityIcon
                 alt=""
                 className="sm:hidden"
-                size="inline"
+                size="icon"
                 src={characterIcon(member.unitId)}
               />
               <EntityIcon

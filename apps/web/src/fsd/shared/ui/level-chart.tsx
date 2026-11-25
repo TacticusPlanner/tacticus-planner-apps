@@ -129,7 +129,7 @@ export function LevelChart({
         <span className="text-muted-foreground">{title}</span>
         <span className="inline-flex items-center gap-1">
           {readoutIcon ? (
-            <EntityIcon size="inline" alt="" src={readoutIcon} />
+            <EntityIcon size="icon" alt="" src={readoutIcon} />
           ) : null}
           <span
             className="font-semibold tabular-nums"
@@ -286,7 +286,7 @@ export function LevelChart({
                       <TooltipTrigger asChild>
                         <span className="inline-flex">
                           <EntityIcon
-                            size="inline"
+                            size="icon"
                             alt={label ?? ""}
                             src={icon}
                           />

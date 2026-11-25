@@ -135,7 +135,7 @@ export function InstallAppDialog({
               >
                 <img
                   alt=""
-                  className="size-7 rounded-full"
+                  className="size-icon-md rounded-full"
                   src={shortcut.iconSrc}
                 />
                 {t(shortcut.labelKey)}

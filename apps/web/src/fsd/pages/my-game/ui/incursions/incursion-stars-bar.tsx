@@ -34,7 +34,7 @@ export function IncursionStarsBar({
           data-full={full || undefined}
         >
           <EntityIcon
-            size="inline"
+            size="icon"
             src={heroStarIcon()}
             alt=""
             className="shrink-0"

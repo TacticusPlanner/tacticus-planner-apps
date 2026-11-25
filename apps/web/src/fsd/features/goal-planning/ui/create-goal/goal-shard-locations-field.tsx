@@ -135,7 +135,7 @@ export function GoalShardLocationsField({
                 onToggle(location.battleId, checked === true)
               }
             />
-            <EntityIcon size="inline" alt="" className="shrink-0" src={icon} />
+            <EntityIcon size="icon" alt="" className="shrink-0" src={icon} />
             <FieldLabel
               className="font-normal"
               htmlFor={`create-goal-shard-location-${shardType}-${location.battleId}`}

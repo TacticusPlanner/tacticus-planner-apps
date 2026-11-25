@@ -34,7 +34,7 @@ function FactionList({
       <span className="text-sm text-muted-foreground">{label}</span>
       {ids.map((id) => (
         <Badge className="gap-1" key={id} variant="secondary">
-          <EntityIcon size="inline" alt="" src={factionIcon(id)} />
+          <EntityIcon size="icon" alt="" src={factionIcon(id)} />
           {t(id as never, { defaultValue: id })}
         </Badge>
       ))}
@@ -117,7 +117,7 @@ export function QuestHeader({
           />
         ) : (
           <EventIcon
-            size="tile"
+            size="icon-2xl"
             className="shrink-0"
             definitionId={instance?.entry.definitionId ?? ""}
             definitionType="Quest"

@@ -47,7 +47,7 @@ export function EventShopUndated({
               </Badge>
               <span>{t("undated.weeks", { count: event.weeks.length })}</span>
               <span className="inline-flex items-center gap-1">
-                <EntityIcon size="inline" alt="" src={currency} />
+                <EntityIcon size="icon" alt="" src={currency} />
                 {format.reward(event.currency).label}
               </span>
             </p>

@@ -31,7 +31,7 @@ export function SelectedChip({
       data-unit={unitId}
     >
       <EntityIcon
-        size="inline"
+        size="icon"
         alt=""
         className="rounded-full"
         src={characterIcon(unitId as UnitId)}

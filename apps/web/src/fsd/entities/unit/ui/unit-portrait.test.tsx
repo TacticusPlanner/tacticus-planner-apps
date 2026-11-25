@@ -9,30 +9,30 @@ const src =
 
 describe("UnitPortrait", () => {
   it("draws the portrait at its scale size with a rarity ring", () => {
-    render(<UnitPortrait src={src} size="md" rarity="Epic" />)
+    render(<UnitPortrait src={src} size="portrait-md" rarity="Epic" />)
 
     const portrait = screen.getByTestId("unit-portrait")
-    expect(portrait).toHaveClass("size-16", "border-3")
+    expect(portrait).toHaveClass("size-portrait-md", "border-3")
     expect(portrait.getAttribute("style")).toContain("var(--rarity-epic)")
     expect(portrait).not.toHaveAttribute("data-greyed")
   })
 
-  it("uses a thin ring on the small size and a thick one on the hero size", () => {
-    const { rerender } = render(<UnitPortrait src={src} size="sm" />)
+  it("uses a thin ring on the small size and a thick one on the xl size", () => {
+    const { rerender } = render(<UnitPortrait src={src} size="portrait-sm" />)
     expect(screen.getByTestId("unit-portrait")).toHaveClass(
-      "size-10",
+      "size-portrait-sm",
       "border-2"
     )
 
-    rerender(<UnitPortrait src={src} size="hero" />)
+    rerender(<UnitPortrait src={src} size="portrait-xl" />)
     expect(screen.getByTestId("unit-portrait")).toHaveClass(
-      "size-32",
+      "size-portrait-xl",
       "border-4"
     )
   })
 
   it("greys out a unit the player has not unlocked", () => {
-    render(<UnitPortrait src={src} size="lg" rarity="Epic" greyed />)
+    render(<UnitPortrait src={src} size="portrait-lg" rarity="Epic" greyed />)
 
     const portrait = screen.getByTestId("unit-portrait")
     expect(portrait).toHaveAttribute("data-greyed", "true")
@@ -42,7 +42,7 @@ describe("UnitPortrait", () => {
   })
 
   it("names the unit when given alt text", () => {
-    render(<UnitPortrait src={src} size="sm" alt="Losta" />)
+    render(<UnitPortrait src={src} size="portrait-sm" alt="Losta" />)
     expect(screen.getByRole("img", { name: "Losta" })).toBeInTheDocument()
   })
 })

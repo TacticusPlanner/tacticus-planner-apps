@@ -414,7 +414,7 @@ function PlaceNpcs({
             )
             const content: ReactNode = (
               <>
-                <NpcPortrait variationId={id} name={name} size="inline" />
+                <NpcPortrait variationId={id} name={name} size="icon" />
                 <TruncatedText className="min-w-0">{name}</TruncatedText>
                 {row ? (
                   <NpcLevelBadge row={row} className="shrink-0 gap-1" />
@@ -495,7 +495,7 @@ function DisclosureRow({
       >
         <span className="flex min-w-0 items-baseline gap-2">
           <span className="flex min-w-0 items-center gap-1 self-center wrap-break-word">
-            {icon ? <EntityIcon size="inline" alt="" src={icon} /> : null}
+            {icon ? <EntityIcon size="icon" alt="" src={icon} /> : null}
             {label}
           </span>
           {detail ? (
@@ -619,7 +619,7 @@ function EncounterRow({
         <span className="flex min-w-0 items-center gap-1.5 md:self-center">
           {icon ? (
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
               src={icon}
               className="rounded-sm object-contain"

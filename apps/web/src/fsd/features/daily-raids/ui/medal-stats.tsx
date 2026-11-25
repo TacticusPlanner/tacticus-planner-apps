@@ -22,7 +22,7 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
     <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-xs tabular-nums">
       <MedalStat label={t("battleProgress.medalsEarned")}>
         <EntityIcon
-          size="inline"
+          size="icon"
           alt={t("battleProgress.medalsEarned")}
           src={medalIcon}
         />
@@ -31,7 +31,7 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
       {stats.maxLightningVictories > 0 ? (
         <MedalStat label={t("battleProgress.lightningVictory")}>
           <EntityIcon
-            size="inline"
+            size="icon"
             alt={t("battleProgress.lightningVictory")}
             src={lightningVictoryIcon}
           />
@@ -41,7 +41,7 @@ export function MedalStats({ stats }: { stats: TrackMedalStats }) {
       {(stats.maxGoldMilestones ?? 0) > 0 ? (
         <MedalStat label={t("battleProgress.goldMilestones")}>
           <EntityIcon
-            size="inline"
+            size="icon"
             alt={t("battleProgress.goldMilestones")}
             src={milestoneIcons.Gold}
           />

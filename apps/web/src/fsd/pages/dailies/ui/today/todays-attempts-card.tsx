@@ -142,7 +142,7 @@ function UpgradeHeader({
     <div className="flex min-h-9 items-center gap-2">
       {resource ? (
         <ResourceIconWithTooltip
-          size="row"
+          size="icon-lg"
           label={resource.label}
           visual={resource.visual}
         />
@@ -164,7 +164,7 @@ function CampaignHeader({
     <div className="flex min-h-9 items-center gap-2">
       {location?.icon ? (
         <EntityIcon
-          size="row"
+          size="icon-lg"
           alt=""
           className="shrink-0"
           src={location.icon}
@@ -233,7 +233,7 @@ function AttemptRow({
       {showMaterial ? (
         resource ? (
           <ResourceIconWithTooltip
-            size="row"
+            size="icon-lg"
             label={resource.label}
             visual={resource.visual}
           />
@@ -245,7 +245,7 @@ function AttemptRow({
       ) : null}
       {placement !== "underCampaign" && location?.icon ? (
         <EntityIcon
-          size="inline"
+          size="icon"
           alt=""
           className="shrink-0"
           src={location.icon}

@@ -38,7 +38,7 @@ export function NpcStatSummary({
           <p className="truncate font-semibold">{name}</p>
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <EntityIcon
-              size="inline"
+              size="icon"
               alt=""
 
               src={factionIcon(npc.factionId)}
@@ -65,7 +65,7 @@ export function NpcStatSummary({
               key={kind}
             >
               <dt className="flex items-center gap-1 text-xs text-muted-foreground">
-                <EntityIcon size="inline" alt="" src={statIcon(kind)} />
+                <EntityIcon size="icon" alt="" src={statIcon(kind)} />
                 {t(`library:npcs.stats.${kind}`)}
               </dt>
               <dd
@@ -89,7 +89,7 @@ export function NpcStatSummary({
               className="flex items-center gap-1 rounded-md border bg-card px-1.5 py-1 text-xs"
               key={trait}
             >
-              <EntityIcon size="inline" alt="" src={traitIcon(trait)} />
+              <EntityIcon size="icon" alt="" src={traitIcon(trait)} />
               {t(`traits:${trait}`, { defaultValue: trait })}
             </li>
           ))}
@@ -129,7 +129,7 @@ function Attacks({ npc }: { npc: NpcRecord }) {
           data-testid={`npc-stat-summary-${attack.kind}`}
           key={attack.kind}
         >
-          <EntityIcon size="inline" alt="" src={statIcon(attack.kind)} />
+          <EntityIcon size="icon" alt="" src={statIcon(attack.kind)} />
           <span className="font-medium">
             {t(`library:npcs.attacks.${attack.kind}`)}
           </span>
@@ -139,7 +139,7 @@ function Attacks({ npc }: { npc: NpcRecord }) {
             </span>
           ) : null}
           <EntityIcon
-            size="inline"
+            size="icon"
             alt=""
 
             src={damageTypeIcon(attack.damage)}

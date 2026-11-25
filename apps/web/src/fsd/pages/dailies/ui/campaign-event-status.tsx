@@ -60,7 +60,7 @@ export function CampaignEventTile() {
       <span className="flex flex-wrap items-center justify-end gap-x-2 gap-y-1 @2xl:justify-start">
         <span className="flex min-w-0 items-start gap-2">
           {active && icon ? (
-            <EntityIcon size="inline" alt="" className="shrink-0" src={icon} />
+            <EntityIcon size="icon" alt="" className="shrink-0" src={icon} />
           ) : null}
           <span className="min-w-0 wrap-break-word">{detail}</span>
         </span>

@@ -106,7 +106,7 @@ function NpcTile({ item }: { item: NpcListItem }) {
         />
         {emblem ? (
           <EntityIcon
-            size="badge-md"
+            size="icon"
             src={emblem}
             alt={item.factionName}
             className="absolute -right-1 -bottom-1 rounded-full bg-background p-0.5"

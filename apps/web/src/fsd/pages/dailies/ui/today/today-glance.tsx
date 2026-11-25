@@ -72,7 +72,7 @@ export function TodayGlance({
                 />
               ) : null}
               <span className="flex shrink-0 items-center gap-1">
-                <EntityIcon size="inline" alt="" src={energyIcon()} />
+                <EntityIcon size="icon" alt="" src={energyIcon()} />
                 {view.energy.daily > 0
                   ? t("today.glance.energyValue", {
                       used: Math.round(view.energy.used),
@@ -102,7 +102,7 @@ export function TodayGlance({
             })}
           >
             <span className="flex items-center justify-end gap-1 @2xl:justify-start">
-              <EntityIcon size="inline" alt="" src={onslaughtTokenIcon()} />
+              <EntityIcon size="icon" alt="" src={onslaughtTokenIcon()} />
               {t("today.glance.tokens", { count: view.onslaughtTokens })}
             </span>
           </GlanceTile>
@@ -146,7 +146,7 @@ function ShopsTile({ shops }: { shops: ShopsGlance }) {
       testId="today-glance-shops"
     >
       <span className="flex flex-wrap items-center justify-end gap-x-1.5 @2xl:justify-start">
-        <EntityIcon size="inline" alt="" src={gameMenuIcon("shop")} />
+        <EntityIcon size="icon" alt="" src={gameMenuIcon("shop")} />
         {value}
         {possible ? (
           <span className="text-sm font-normal text-muted-foreground">

@@ -91,14 +91,14 @@ export function HreHandBattles({
             >
               <Badge variant="secondary">
                 <EntityIcon
-                  size="inline"
+                  size="icon"
                   alt=""
                   src={battleGlyphIcon("campaignBattle")}
                 />
                 {t("raids.battleCount", { count: plan.totalBattles })}
               </Badge>
               <Badge variant="outline">
-                <EntityIcon size="inline" alt="" src={energyIcon()} />
+                <EntityIcon size="icon" alt="" src={energyIcon()} />
                 {t("raids.energy", { energy: plan.totalEnergy })}
               </Badge>
               {plan.moreNeeded ? (

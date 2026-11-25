@@ -85,11 +85,11 @@ export function PlanDayCard({
         </div>
         <div aria-hidden="true" className="flex gap-3">
           <span className="flex items-center gap-1 text-xs tabular-nums">
-            <EntityIcon size="inline" alt="" src={energyIconUrl} />
+            <EntityIcon size="icon" alt="" src={energyIconUrl} />
             {day.energyTotal}/{raids.dailyEnergy}
           </span>
           <span className="flex items-center gap-1 text-xs tabular-nums">
-            <EntityIcon size="inline" alt="" src={raidTicketIcon()} />
+            <EntityIcon size="icon" alt="" src={raidTicketIcon()} />
             {day.raidsTotal}
           </span>
         </div>
@@ -120,7 +120,7 @@ export function PlanDayCard({
           data-testid={`plan-day-${day.day}-units`}
         >
           {cells.units.map((unit) => (
-            <UnitIcon key={unit.unitId} size="inline" goal={unit} />
+            <UnitIcon key={unit.unitId} size="icon" goal={unit} />
           ))}
         </div>
       </header>

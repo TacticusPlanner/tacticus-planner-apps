@@ -18,7 +18,7 @@ export function GoalTypeBadge({
   return (
     <Badge className="gap-1.5" variant="outline">
       <EntityIcon
-        size="inline"
+        size="icon"
         alt=""
 
         src={goalTypeIcon(type, entityType)}

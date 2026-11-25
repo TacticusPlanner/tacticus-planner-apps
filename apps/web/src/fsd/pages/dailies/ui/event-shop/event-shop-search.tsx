@@ -148,7 +148,7 @@ function SearchResults({
         <li key={group.rewardType} className="flex flex-col gap-1.5 p-2">
           <span className="flex items-center gap-2">
             <EntityIcon
-              size="row"
+              size="icon-lg"
               alt=""
               className="shrink-0"
               src={format.reward(group.rewardType, group.unitId).iconUrl}

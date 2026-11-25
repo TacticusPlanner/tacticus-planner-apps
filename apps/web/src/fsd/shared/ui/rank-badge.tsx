@@ -16,7 +16,7 @@ import type { EntityIconSize } from "./game-icon-size"
 export function RankBadge({
   rank,
   className,
-  size = "inline",
+  size = "icon",
   iconClassName,
   showLabel = true,
   tooltip = false,

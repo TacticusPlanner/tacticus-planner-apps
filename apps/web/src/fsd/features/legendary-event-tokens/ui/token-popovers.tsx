@@ -142,7 +142,7 @@ export function TokenTeamPopover({
               <span aria-hidden="true" className="flex -space-x-2">
                 {members.map((unit) => (
                   <span
-                    className="size-7 shrink-0 overflow-hidden rounded-full bg-muted ring-2 ring-card"
+                    className="size-icon-md shrink-0 overflow-hidden rounded-full bg-muted ring-2 ring-card"
                     data-testid={`${testId}-portrait`}
                     data-unit={unit.unitId}
                     key={unit.unitId}

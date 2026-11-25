@@ -64,7 +64,7 @@ export function OneTimeRewards({
                 data-testid={`one-time-reward-${reward.id}`}
               >
                 {display.iconUrl !== undefined ? (
-                  <EntityIcon size="inline" alt="" src={display.iconUrl} />
+                  <EntityIcon size="icon" alt="" src={display.iconUrl} />
                 ) : (
                   <span aria-hidden>{display.label}</span>
                 )}

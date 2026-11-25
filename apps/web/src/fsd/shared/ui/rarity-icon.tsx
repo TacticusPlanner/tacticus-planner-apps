@@ -15,7 +15,7 @@ import type { EntityIconSize } from "./game-icon-size"
  *  icon scale (UI style guide, rule 6); `className` is for placement only. */
 export function RarityIcon({
   rarity,
-  size = "inline",
+  size = "icon",
   className,
 }: {
   rarity: Rarity

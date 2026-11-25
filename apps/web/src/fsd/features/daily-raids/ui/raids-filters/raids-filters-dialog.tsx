@@ -104,7 +104,7 @@ export function RaidsFiltersDialog({
         icon: (
           <EntityIcon
             alt=""
-            size="inline"
+            size="icon"
             src={onslaughtAllianceIcon(alliance)}
           />
         ),
@@ -130,7 +130,7 @@ export function RaidsFiltersDialog({
       .map((faction) => ({
         value: faction,
         label: t(`factions:${faction}`, { defaultValue: faction }),
-        icon: <EntityIcon size="inline" alt="" src={factionIcon(faction)} />,
+        icon: <EntityIcon size="icon" alt="" src={factionIcon(faction)} />,
       }))
   const alliesFactionOptions = factionOptions(draft.alliesAlliances)
   const enemiesFactionOptions = factionOptions(draft.enemiesAlliances)
@@ -150,7 +150,7 @@ export function RaidsFiltersDialog({
         .map((trait) => ({
           value: trait,
           label: t(`traits:${trait}`, { defaultValue: humanizeId(trait) }),
-          icon: <EntityIcon size="inline" alt="" src={traitIcon(trait)} />,
+          icon: <EntityIcon size="icon" alt="" src={traitIcon(trait)} />,
         }))
         .toSorted((a, b) => a.label.localeCompare(b.label)),
     [battles, npcs, t]
@@ -165,7 +165,7 @@ export function RaidsFiltersDialog({
   const campaignTypeOptions = RAIDS_CAMPAIGN_TYPES.map((type) => ({
     value: type,
     label: t(`dailies:raidsFilters.campaignTypes.${type}`),
-    icon: <EntityIcon size="inline" alt="" src={campaignTypeIcons[type]} />,
+    icon: <EntityIcon size="icon" alt="" src={campaignTypeIcons[type]} />,
   }))
   const slotOptions = RAIDS_SLOT_OPTIONS.map((slots) => ({
     value: slots,
@@ -174,7 +174,7 @@ export function RaidsFiltersDialog({
   const rarityOptions = RAIDS_UPGRADE_RARITIES.map((rarity) => ({
     value: rarity,
     label: t(`progression:rarities.${rarity}`, { defaultValue: rarity }),
-    icon: <EntityIcon size="inline" alt="" src={rarityIcon(rarity)} />,
+    icon: <EntityIcon size="icon" alt="" src={rarityIcon(rarity)} />,
   }))
 
   const loading = battles === undefined

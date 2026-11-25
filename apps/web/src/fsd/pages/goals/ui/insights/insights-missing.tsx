@@ -406,11 +406,11 @@ function MissingRow({
                     className="flex items-center gap-1 text-sm font-medium tabular-nums"
                   >
                     <span className="relative inline-flex">
-                      <EntityIcon size="row" alt="" src={item.icon} />
+                      <EntityIcon size="icon-lg" alt="" src={item.icon} />
                       {item.overlay ? (
                         <img
                           alt=""
-                          className="absolute top-1/2 left-1/2 size-4 -translate-1/2 object-contain"
+                          className="absolute top-1/2 left-1/2 size-1/2 -translate-1/2 object-contain"
                           src={item.overlay}
                         />
                       ) : null}

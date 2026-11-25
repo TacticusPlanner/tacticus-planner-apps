@@ -20,9 +20,9 @@ import { TodaysMaterialDetails } from "./material-details"
 
 /** A resource's icon: an upgrade material's rarity-framed icon, or a unit's shard icon. Shared
  * between `pages/dailies`'s resource cards and the home Daily Raids widget's compact rows. `size`
- * is the style guide's icon role: `tile` on a card, `row` in a list row. */
+ * is the style guide's icon role: `icon-2xl` on a card, `icon-lg` in a list row. */
 export function ResourceIcon({
-  size = "tile",
+  size = "icon-2xl",
   label,
   visual,
 }: {
@@ -57,7 +57,7 @@ export function ResourceIcon({
   )
 }
 
-type ResourceIconSize = Extract<EntityIconSize, "row" | "tile">
+type ResourceIconSize = Extract<EntityIconSize, "icon-lg" | "icon-2xl">
 
 /** `ResourceIcon` with its name available as a tooltip on hover/focus, since the icon alone
  * replaces the visible resource name in location-emphasis rendering. Given its `resourceId` inside a

@@ -15,10 +15,10 @@ buttons, chips, top app bar, 48dp touch target), our shadcn tokens for colour
 and shape (`.design-sync/conventions.md`).
 
 Status: `PageHeader` and `PageToolbar` (`@/shared/ui`) are on every page.
-The icon sizes in rule 6 are the `size` prop of `EntityIcon` and `RarityIcon`
-and the `UnitPortrait` component (`@/entities/unit`). Every call site uses
-them, and `entity-icon-sizes.test.ts` fails on a fixed size class in an
-`EntityIcon` or `RarityIcon` `className`. Every dialog, sheet and
+The icon sizes in rule 6 are the `size` prop of the game icon components
+(`EntityIcon`, `RarityIcon`, `UpgradeIcon`, `UnitPortrait`…), typed to the
+`icon-*` and `portrait-*` token steps. Every call site uses them, and
+`icon-sizes.test.ts` fails on a raw size class in a game icon's `className`. Every dialog, sheet and
 confirm follows rule 8 (overlays). Nothing adds a new page-specific variant of
 anything below.
 
@@ -176,37 +176,42 @@ One row directly under the header, three fixed slots, left to right:
 
 ## 6. Game icon sizes
 
-Every datamine/curated icon (`EntityIcon`, unit portraits) uses one of these
-sizes, chosen by its role, never by the page.
+Every datamine/curated icon (`EntityIcon`, unit portraits) takes a step on the
+icon or portrait ramp (the `ui-sizing` skill), chosen by where it sits, never
+by the page. The same on mouse and touch.
 
-| Role        | What                                                                                       | Mouse                       | Touch |
-| ----------- | ------------------------------------------------------------------------------------------ | --------------------------- | ----- |
-| Inline      | Next to text or a number: faction, trait, damage type, stat, currency, medal, rank in text | 20px `size-icon`            | 20px  |
-| Badge       | Overlay on a portrait: rarity stars, rank, shard, faction corner                           | ⅓ of the portrait, min 16px | same  |
-| Emblem      | Solid emblem in a list/table row beside rank emblems: rarity icon in the Goals table       | 24px `size-6`               | 24px  |
-| Row         | Item in a list/table row: upgrade material, equipment, ability, reward, event icon         | 32px `size-8`               | 32px  |
-| Tile        | Item in a card or grid: shop offer, reward tile, ability on a detail page                  | 48px `size-12`              | 48px  |
-| Portrait sm | Unit in a row, chip, LRE lane, table                                                       | 40px `size-10`              | 40px  |
-| Portrait md | Unit in a grid, LRE lane on touch                                                          | 64px `size-16`              | 64px  |
-| Portrait lg | Unit card, detail header (128px `size-32` only for the detail hero)                        | 96px `size-24`              | 96px  |
+| Where it sits                                                                              | Token                         |
+| ------------------------------------------------------------------------------------------ | ----------------------------- |
+| Next to text or a number: faction, trait, damage type, stat, currency, medal, rank in text | `icon` (20px)                 |
+| Badge on a portrait: rarity stars, rank, shard, faction corner                             | from the portrait (see below) |
+| Solid emblem in a list/table row beside rank emblems: rarity icon in the Goals table       | `icon-md` (24px)              |
+| Item in a list/table row: upgrade material, equipment, ability, reward, event icon         | `icon-lg` (32px)              |
+| Item in a card or grid: shop offer, reward tile, ability on a detail page                  | `icon-2xl` (48px)             |
+| Unit in a row, chip, LRE lane, table                                                       | `portrait-sm` (40px)          |
+| Unit in a grid, LRE lane on touch                                                          | `portrait-md` (64px)          |
+| Unit card, unit page header on phones                                                      | `portrait-lg` (96px)          |
+| Unit page header on desktop                                                                | `portrait-xl` (128px)         |
 
-- In code: `<EntityIcon size="inline" | "emblem" | "row" | "tile" | "badge-sm" … />`
-  (a badge names the portrait it sits on; `portrait-sm` … is a bare,
-  ringless portrait such as an NPC or a unit in a chip) and
-  `<UnitPortrait size="sm" | "md" | "lg" | "hero" />` for a unit with its
-  rarity ring. Keep size classes out of
-  their `className`; it is for placement only. Fills of a sized frame
-  (`size-full`) and wide art sized by height (`h-4 w-auto`) are the only
-  exceptions.
+- In code: `<EntityIcon size="icon-lg" />`, `<EntityIcon size="portrait-sm" />`
+  for a bare, ringless portrait (an NPC, a unit in a chip), and
+  `<UnitPortrait size="portrait-sm" />` for a unit with its rarity ring. Keep
+  size classes out of their `className`; it is for placement only. Fills of a
+  sized frame (`size-full`, fractions) and wide art sized by height
+  (`h-4 w-auto`) are the only exceptions.
+- A badge is about a third of its portrait, at least 16px: `icon-sm` on
+  `portrait-sm`, `icon` on `portrait-md`, `icon-lg` on `portrait-lg`, `icon-xl`
+  on `portrait-xl`. `portraitBadgeSize(size)` (`@/shared/ui`) gives it, so a
+  call site never picks a badge size by hand.
 - No game icon below 16px.
-- Migrating an off-scale size: round to the nearest step, ties go up (14 to 18 →
-  20 inline; 22/28 → 32 row; 36 → 40; 56/62 → 64). Emblem is chosen by role,
-  never by rounding: a solid icon (the rarity hexagon) fills its box, so beside
-  a row-size rank emblem, whose art leaves space around it, it reads the same
-  at 24px.
-- Item icons at row and tile size sit on their rarity frame
-  (`ui_frame_upgrades_*`); inline icons never have a frame.
-- Portrait badges: `sm` shows one (rank or stars), `md` two, `lg` all.
+- Migrating an off-scale size: snap to the nearest step on its ramp (28 → 32,
+  36 → 32, 44 → 40, 56/62 → 64). The `icon-md` emblem is chosen by where it
+  sits, never by rounding: a solid icon (the rarity hexagon) fills its box, so
+  beside an `icon-lg` rank emblem, whose art leaves space around it, it reads
+  the same at 24px.
+- Item icons at `icon-lg` and `icon-2xl` sit on their rarity frame
+  (`ui_frame_upgrades_*`); `icon` items next to text never have a frame.
+- Portrait badges: `portrait-sm` shows one (rank or stars), `portrait-md`
+  two, `portrait-lg` and up all.
 - When a game entity has an icon (unit, faction, alliance, rarity, rank,
   stat, ability, trait, damage type, resource, event, game mode), show it:
   the icon before the name, or the icon alone with the name as its tooltip

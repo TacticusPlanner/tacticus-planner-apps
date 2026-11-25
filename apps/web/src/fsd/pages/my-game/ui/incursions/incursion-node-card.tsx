@@ -75,7 +75,7 @@ function StarsPicker({
             className="gap-1 tabular-nums"
           >
             {count}
-            <EntityIcon size="inline" src={medalIcon()} alt="" />
+            <EntityIcon size="icon" src={medalIcon()} alt="" />
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
@@ -88,7 +88,7 @@ function Medals({ count }: { count: number }) {
   return (
     <span className="flex" aria-hidden="true">
       {Array.from({ length: count }, (_, at) => (
-        <EntityIcon size="inline" key={at} src={medalIcon()} alt="" />
+        <EntityIcon size="icon" key={at} src={medalIcon()} alt="" />
       ))}
     </span>
   )
