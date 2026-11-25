@@ -3,6 +3,7 @@ import { lazy } from "react"
 import { Navigate, useLocation, useParams } from "react-router"
 import type { RouteObject } from "react-router"
 
+import { redirectOnlyHandle } from "@/shared/analytics"
 import { preloadOnMatch } from "@/shared/lib"
 
 // The section layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
@@ -36,7 +37,11 @@ const loadEventShopPage = () =>
 const EventShopPage = lazy(loadEventShopPage)
 
 export const routes: RouteObject[] = [
-  { index: true, element: <Navigate replace to="/dailies/raids" /> },
+  {
+    index: true,
+    element: <Navigate replace to="/dailies/raids" />,
+    handle: redirectOnlyHandle,
+  },
   // Raids is the Today page itself: the multi-day plan lives at Plan > Schedule.
   {
     path: "raids",
@@ -51,10 +56,22 @@ export const routes: RouteObject[] = [
     loader: preloadOnMatch(loadQuestPage),
   },
   // Shop recommendations now sit on the Raids tab; old Shops links and bookmarks land there.
-  { path: "shops", element: <Navigate replace to="/dailies/raids" /> },
+  {
+    path: "shops",
+    element: <Navigate replace to="/dailies/raids" />,
+    handle: redirectOnlyHandle,
+  },
   // Event shop moved to Plan; old links and bookmarks land there with their event, day and tab.
-  { path: "event-shop", element: <EventShopRedirect /> },
-  { path: "event-shop/:eventId", element: <EventShopRedirect /> },
+  {
+    path: "event-shop",
+    element: <EventShopRedirect />,
+    handle: redirectOnlyHandle,
+  },
+  {
+    path: "event-shop/:eventId",
+    element: <EventShopRedirect />,
+    handle: redirectOnlyHandle,
+  },
   {
     path: "guild-raids",
     element: <GuildRaidsPage />,
@@ -74,12 +91,14 @@ function EventShopRedirect() {
 
 // Plan › Event shop, mounted by app/routes.tsx at `/plan/event-shop` under `DailiesLayout`, which
 // carries the project filter its Coverage panel reads. The bare path picks the default event
-// (EventShopPage redirects to it).
+// (EventShopPage redirects to it), so only that event's page reports a page_view. The bare path
+// shows content of its own only when there is no event shop or they fail to load, uncounted.
 export const eventShopRoutes: RouteObject[] = [
   {
     index: true,
     element: <EventShopPage />,
     loader: preloadOnMatch(loadEventShopPage),
+    handle: redirectOnlyHandle,
   },
   {
     path: ":eventId",

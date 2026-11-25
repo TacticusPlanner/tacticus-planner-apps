@@ -5,6 +5,7 @@ import { lazy } from "react"
 import { Navigate } from "react-router"
 import type { RouteObject } from "react-router"
 
+import { redirectOnlyHandle } from "@/shared/analytics"
 import { preloadOnMatch } from "@/shared/lib"
 
 // The section layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
@@ -39,7 +40,11 @@ const SchedulePage = lazy(loadSchedulePage)
 // and the ProtectedRoute wrapping, and just splices this array in as `children`. Plan has a fixed
 // landing (Goals), like every other section: the index replaces itself with `goals`.
 export const routes: RouteObject[] = [
-  { index: true, element: <Navigate replace to="goals" /> },
+  {
+    index: true,
+    element: <Navigate replace to="goals" />,
+    handle: redirectOnlyHandle,
+  },
   {
     path: "goals",
     element: <GoalsPage />,

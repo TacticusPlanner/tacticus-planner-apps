@@ -74,6 +74,11 @@ While a user is identified, the client SHALL report a page view (PostHog's `$pag
 - **WHEN** an identified user navigates from one route to another
 - **THEN** a single `$pageview` event is reported for the destination route, carrying its route group and the current view mode
 
+#### Scenario: A route that only redirects is not reported
+
+- **WHEN** an identified user opens a route whose only job is to send them on to another page (a section's bare path such as `/plan` or `/dailies`, or an old address that moved)
+- **THEN** a single `$pageview` event is reported for the page they land on and none for the route they were sent on from, and the redirect leaves no browser history entry of its own
+
 #### Scenario: View mode reflects the layout in use
 
 - **WHEN** an identified user is served the mobile layout rather than the desktop layout

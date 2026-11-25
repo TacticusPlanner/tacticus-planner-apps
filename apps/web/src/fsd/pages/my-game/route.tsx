@@ -5,6 +5,7 @@ import { lazy } from "react"
 import { Navigate } from "react-router"
 import type { RouteObject } from "react-router"
 
+import { redirectOnlyHandle } from "@/shared/analytics"
 import { preloadOnMatch } from "@/shared/lib"
 
 // The section layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
@@ -58,7 +59,11 @@ const TeamsPage = lazy(loadTeamsPage)
 // app/routes.tsx too: it's a *different* page slice (pages/onslaught), and FSD forbids one page
 // slice importing another's internals directly.
 export const publicRoutes: RouteObject[] = [
-  { index: true, element: <Navigate replace to="/my-game/collection" /> },
+  {
+    index: true,
+    element: <Navigate replace to="/my-game/collection" />,
+    handle: redirectOnlyHandle,
+  },
   {
     path: "collection",
     element: <CollectionPage />,

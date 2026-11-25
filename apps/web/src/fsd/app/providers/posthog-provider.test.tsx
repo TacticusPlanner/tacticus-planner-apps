@@ -21,7 +21,11 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
   useIsMobile: () => isMobile(),
 }))
 
-type Match = { pathname: string; params: Record<string, string | undefined> }
+type Match = {
+  pathname: string
+  params: Record<string, string | undefined>
+  handle?: unknown
+}
 const matches = vi.fn<() => Match[]>(() => [])
 vi.mock("react-router", () => ({
   useMatches: () => matches(),
@@ -31,7 +35,8 @@ const identifyUser = vi.fn()
 const clearIdentity = vi.fn()
 const captureEvent = vi.fn()
 const isReady = vi.fn(() => true)
-vi.mock("@/shared/analytics", () => ({
+vi.mock("@/shared/analytics", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/analytics")>()),
   AnalyticsProvider: ({ children }: { children: React.ReactNode }) => children,
   useAnalyticsActions: () => ({
     isReady: isReady(),
@@ -41,6 +46,7 @@ vi.mock("@/shared/analytics", () => ({
   }),
 }))
 
+import { redirectOnlyHandle } from "@/shared/analytics"
 import { reportError } from "@/shared/lib"
 
 import { PostHogProvider } from "./posthog-provider"
@@ -184,6 +190,35 @@ describe("PostHogProvider page-view capture", () => {
     )
     const [event] = captureEvent.mock.calls[0] as [AnalyticsEvent]
     expect(JSON.stringify(event)).not.toContain("abc-123")
+  })
+
+  it("reports no page_view for a redirect-only route, only for the page it sends the user on to", () => {
+    useCurrentUserMock.mockReturnValue({
+      state: successState("analytics-id-1"),
+    })
+    matches.mockReturnValue([
+      { pathname: "/plan", params: {} },
+      { pathname: "/plan/", params: {}, handle: redirectOnlyHandle },
+    ])
+    const { rerender } = renderProvider("/plan")
+    expect(captureEvent).not.toHaveBeenCalled()
+
+    matches.mockReturnValue([
+      { pathname: "/plan", params: {} },
+      { pathname: "/plan/goals", params: {} },
+    ])
+    rerender(
+      <PostHogProvider routeGroup="/plan">
+        <div>content</div>
+      </PostHogProvider>
+    )
+
+    expect(captureEvent).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        type: "page_view",
+        routePattern: "/plan/goals",
+      })
+    )
   })
 
   it("redacts a multi-segment catch-all match instead of leaking the raw unmatched path", () => {

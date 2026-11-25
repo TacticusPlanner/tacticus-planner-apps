@@ -7,7 +7,11 @@ import type { Params } from "react-router"
 import { useIsAuthenticated } from "@azure/msal-react"
 
 import { useCurrentUser } from "@/entities/account"
-import { AnalyticsProvider, useAnalyticsActions } from "@/shared/analytics"
+import {
+  AnalyticsProvider,
+  reportsPageView,
+  useAnalyticsActions,
+} from "@/shared/analytics"
 import { takeAuthJournal } from "@/shared/auth"
 import { setErrorReporter } from "@/shared/lib"
 
@@ -112,10 +116,13 @@ function PostHogIdentity({
     }
   }, [isIdentified, isReady, captureEvent])
 
+  // A redirect-only route (e.g. a section's bare `/plan/`) has no pattern, so it reports nothing and
+  // the page it sends the visitor on to is reported instead.
   const leafMatch = matches.at(-1)
-  const routePattern = leafMatch
-    ? toRoutePattern(leafMatch.pathname, leafMatch.params)
-    : undefined
+  const routePattern =
+    leafMatch && reportsPageView(leafMatch.handle)
+      ? toRoutePattern(leafMatch.pathname, leafMatch.params)
+      : undefined
 
   // Fires on an actual route-pattern change (specs/product-analytics/spec.md's "Navigation is
   // reported as declared page-view events") and once when the SDK becomes ready after
