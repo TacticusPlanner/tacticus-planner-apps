@@ -526,7 +526,7 @@ On desktop, a section with one or more child pages SHALL expose them in a persis
 
 ### Requirement: Desktop menu presentation is remembered per device
 
-Each desktop menu SHALL remember whether it is expanded or collapsed on the device, under its own `localStorage` key, and SHALL restore that choice on document load or refresh. Without a saved choice (a new device, a private window, blocked or unreadable storage) the main rail SHALL start compact and the section menu SHALL start expanded. The sidebar's own `sidebar_state` cookie SHALL NOT be a restoration source. Each menu SHALL be independently controllable. Manual choices SHALL persist across all client-side navigation, including sibling pages, different sections, search navigation, and Back/Forward, using one shared section-menu choice. Visiting a childless page or temporarily switching to the mobile layout SHALL NOT reset either choice. These menu choices SHALL NOT change the existing session memory for last-visited section children or persisted theme selection. Neither menu's width is adjustable.
+Each desktop menu SHALL remember whether it is expanded or collapsed on the device, under its own `localStorage` key, and SHALL restore that choice on document load or refresh. Without a saved choice (a new device, a private window, blocked or unreadable storage) the main rail SHALL start compact and the section menu SHALL start expanded. The sidebar SHALL NOT write a cookie, and an older `sidebar_state` cookie left on the device SHALL NOT be a restoration source. Each menu SHALL be independently controllable. Manual choices SHALL persist across all client-side navigation, including sibling pages, different sections, search navigation, and Back/Forward, using one shared section-menu choice. Visiting a childless page or temporarily switching to the mobile layout SHALL NOT reset either choice. These menu choices SHALL NOT change the existing session memory for last-visited section children or persisted theme selection. Neither menu's width is adjustable.
 
 #### Scenario: Refresh restores both choices
 
@@ -539,6 +539,12 @@ Each desktop menu SHALL remember whether it is expanded or collapsed on the devi
 - **GIVEN** no saved menu choice on the device, including when an older `sidebar_state` cookie says expanded
 - **WHEN** the app loads on desktop
 - **THEN** the main rail is compact and the section menu is expanded
+
+#### Scenario: Toggling a menu sets no cookie
+
+- **GIVEN** the desktop layout
+- **WHEN** the user expands or collapses either menu
+- **THEN** no `sidebar_state` cookie is written
 
 #### Scenario: Navigation preserves both choices
 

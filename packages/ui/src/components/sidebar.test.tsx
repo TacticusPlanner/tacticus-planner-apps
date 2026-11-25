@@ -27,3 +27,11 @@ describe("SidebarProvider keyboard shortcut", () => {
     expect(renderProvider(false)).not.toHaveBeenCalled()
   })
 })
+
+describe("SidebarProvider storage", () => {
+  it("sets no cookie when the sidebar toggles", () => {
+    document.cookie = "sidebar_state=; path=/; max-age=0"
+    renderProvider()
+    expect(document.cookie).not.toContain("sidebar_state")
+  })
+})
