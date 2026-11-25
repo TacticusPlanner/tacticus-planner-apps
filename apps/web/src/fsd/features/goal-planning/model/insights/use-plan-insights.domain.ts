@@ -1,4 +1,4 @@
-import type { CampaignId, Rarity } from "@workspace/game-domain"
+import type { CampaignId, Rarity, UpgradeId } from "@workspace/game-domain"
 
 import type { CampaignInsight } from "@/entities/campaign-insight"
 
@@ -49,6 +49,29 @@ export interface PlanInsightsBottleneck {
   /** `energyToClear` at the user's daily energy. */
   days: number
   goalIds: string[]
+}
+
+/** One base upgrade material the scoped goals farm (Insights "Show": Missing / Required). */
+export interface PlanUpgradeMaterial {
+  id: UpgradeId
+  label: string
+  rarity: Rarity
+  /** The scoped goals' need before base stock is spent (owned crafted upgrades already count). */
+  required: number
+  /** Still to farm once stock and shop/Onslaught supply are spent in priority order. */
+  missing: number
+  /** To farm `missing`, at each goal's own node choice; 0 when nothing is missing or no node drops it. */
+  energyToClear: number
+  days: number
+  goalIds: string[]
+}
+
+/** An owned base upgrade material beyond what every active goal requires (Insights "Show": Spare). */
+export interface PlanSpareUpgrade {
+  id: UpgradeId
+  label: string
+  rarity: Rarity
+  spare: number
 }
 
 /** Something no farming can clear: a resource with no usable node, or a goal-wide block. */
@@ -197,6 +220,10 @@ export interface PlanInsightsResult {
   excludedGoals: PlanInsightsExcludedGoal[]
   bottlenecks: PlanInsightsBottleneck[]
   blockers: PlanInsightsBlocker[]
+  /** The scoped goals' base upgrade materials one by one, highest rarity first, slowest first. */
+  upgradeMaterials: PlanUpgradeMaterial[]
+  /** Owned base upgrade materials no active goal needs, ignoring the project scope. */
+  spareUpgrades: PlanSpareUpgrade[]
   campaignInsights: CampaignInsight<EstimateResourceId>[]
   eventInsights: CampaignInsight<EstimateResourceId>[]
   /** Each campaign/event insight's farming summary, by the insight's `id`. */
@@ -240,6 +267,8 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   excludedGoals: [],
   bottlenecks: [],
   blockers: [],
+  upgradeMaterials: [],
+  spareUpgrades: [],
   campaignInsights: [],
   eventInsights: [],
   farmingSpotsByInsightId: new Map(),

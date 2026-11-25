@@ -980,6 +980,7 @@
     "raids": "Raids",
     "showMore_one": "{{count}} weiteren anzeigen",
     "showMore_other": "{{count}} weitere anzeigen",
-    "showFewer": "Weniger anzeigen"
+    "showFewer": "Weniger anzeigen",
+    "unavailable": "Die heutigen Raids sind für dieses Material nicht verfügbar."
   }
 }

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -20,7 +21,6 @@ import {
   onslaughtAllianceIcon,
   orbAllianceIcon,
   orbIcon,
-  rarityIcon,
   shardIcon,
   xpBookIcon,
 } from "@workspace/game-catalog"
@@ -28,12 +28,26 @@ import type { GameIcon } from "@workspace/game-catalog"
 import { rarityOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 
-import { EntityIcon } from "@/shared/ui"
+import { usePersistedSelection } from "@/shared/lib"
+import { EntityIcon, SegmentedControl } from "@/shared/ui"
 
 import type {
   PlanInsightsTotals,
   PlanMissingResources,
+  PlanSpareUpgrade,
+  PlanUpgradeMaterial,
 } from "@/features/goal-planning"
+
+import {
+  isMaterialsShow,
+  MATERIALS_SHOW,
+  upgradeRowsByRarity,
+} from "./insights-materials-view"
+import type { MaterialsShow } from "./insights-materials-view"
+import { InsightsUpgradeList } from "./insights-upgrade-list"
+import type { InsightsGoalInfo } from "./insights-view"
+
+const MATERIALS_SHOW_STORAGE_KEY = "goals.insights.materials-show.v1"
 
 const ALLIANCES = ["Imperial", "Xenos", "Chaos"] as const
 
@@ -53,17 +67,33 @@ type Row = {
   items: Item[]
 }
 
-/** The plan's shopping list (V1's "Total Resources Missing"): everything the goals need beyond the
- *  current inventory, spent in priority order — farmed upgrades and shards, ability badges and orbs
- *  (each by alliance), Machine of War materials (forge badges and components), XP books and gold. */
+/** The plan's shopping list (V1's "Total Resources Missing"), with a "Show" switch remembered per
+ *  device. Missing: everything the goals need beyond the current inventory, spent in priority order —
+ *  farmed upgrades one by one (with the days and energy left), shards, ability badges and orbs (each
+ *  by alliance), Machine of War materials, XP books and gold. Required: every upgrade material the
+ *  goals need before stock is spent. Spare: owned upgrade materials no active goal needs. */
 export function InsightsMissing({
   missing,
   totals,
+  upgrades = [],
+  spareUpgrades = [],
+  goalInfoById = new Map(),
+  projectId = null,
 }: {
   missing: PlanMissingResources
   totals?: PlanInsightsTotals
+  upgrades?: readonly PlanUpgradeMaterial[]
+  spareUpgrades?: readonly PlanSpareUpgrade[]
+  goalInfoById?: ReadonlyMap<string, InsightsGoalInfo>
+  projectId?: string | null
 }) {
   const { t, i18n } = useTranslation(["common", "progression"])
+  const [show, setShow] = usePersistedSelection<MaterialsShow>(
+    MATERIALS_SHOW_STORAGE_KEY,
+    isMaterialsShow,
+    "missing"
+  )
+  const upgradeGroups = upgradeRowsByRarity(show, upgrades, spareUpgrades)
   const fmt = (value: number) =>
     new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
   const rarityName = (rarity: Rarity) => t(`progression:rarities.${rarity}`)
@@ -105,16 +135,6 @@ export function InsightsMissing({
       title: t("goals.insights.missingFarmed"),
       showTotal: false,
       rows: [
-        {
-          key: "upgrades",
-          title: t("goals.insights.missingUpgrades"),
-          items: byRarity("upgrades", totals?.upgradesByRarity, (rarity) => ({
-            icon: rarityIcon(rarity),
-            name: t("goals.insights.upgradesOfRarity", {
-              rarity: rarityName(rarity),
-            }),
-          })),
-        },
         {
           key: "shards",
           title: t("goals.insights.missingShards"),
@@ -241,22 +261,73 @@ export function InsightsMissing({
     }))
     .filter((group) => group.rows.length > 0)
 
+  const title = {
+    missing: t("goals.insights.missingTitle"),
+    required: t("goals.insights.materials.requiredTitle"),
+    spare: t("goals.insights.materials.spareTitle"),
+  }[show]
+  const description = {
+    missing: t("goals.insights.missingDescription"),
+    required: t("goals.insights.materials.requiredDescription"),
+    spare: t("goals.insights.materials.spareDescription"),
+  }[show]
+  const none = {
+    missing: t("goals.insights.missingNone"),
+    required: t("goals.insights.materials.requiredNone"),
+    spare: t("goals.insights.materials.spareNone"),
+  }[show]
+  // Required and Spare count upgrade materials only; the other kinds show under Missing.
+  const tileGroups = show === "missing" ? groups : []
+  const upgradeList =
+    upgradeGroups.length > 0 ? (
+      <InsightsUpgradeList
+        goalInfoById={goalInfoById}
+        groups={upgradeGroups}
+        projectId={projectId}
+      />
+    ) : null
+
   return (
-    <Card data-testid="insights-missing">
+    <Card data-show={show} data-testid="insights-missing">
       <CardHeader>
-        <CardTitle>{t("goals.insights.missingTitle")}</CardTitle>
-        <CardDescription>
-          {t("goals.insights.missingDescription")}
-        </CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+        <CardAction className="col-span-full row-start-3 justify-self-start md:col-span-1 md:row-span-2 md:row-start-1 md:justify-self-end">
+          <SegmentedControl
+            label={t("goals.insights.materials.show")}
+            onValueChange={setShow}
+            options={MATERIALS_SHOW.map((option) => ({
+              value: option,
+              label: t(`goals.insights.materials.${option}`),
+              hint: t(`goals.insights.materials.${option}Hint`),
+              testId: `insights-materials-show-${option}`,
+            }))}
+            testId="insights-materials-show"
+            value={show}
+          />
+        </CardAction>
       </CardHeader>
-      <CardContent>
-        {groups.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {t("goals.insights.missingNone")}
-          </p>
-        ) : (
+      <CardContent className="flex flex-col gap-6">
+        {tileGroups.length === 0 && !upgradeList ? (
+          <p className="text-sm text-muted-foreground">{none}</p>
+        ) : null}
+        {upgradeList ? (
+          <section
+            aria-labelledby="insights-missing-upgrades"
+            className="flex flex-col gap-3"
+          >
+            <h3
+              className="border-b pb-1.5 text-sm font-semibold"
+              id="insights-missing-upgrades"
+            >
+              {t("goals.insights.missingUpgrades")}
+            </h3>
+            {upgradeList}
+          </section>
+        ) : null}
+        {tileGroups.length > 0 ? (
           <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
-            {groups.map((group) => {
+            {tileGroups.map((group) => {
               const total = group.rows
                 .flatMap((row) => row.items)
                 .reduce((sum, item) => sum + item.count, 0)
@@ -289,7 +360,7 @@ export function InsightsMissing({
               )
             })}
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   )

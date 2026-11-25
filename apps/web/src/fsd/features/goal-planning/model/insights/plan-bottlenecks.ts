@@ -95,7 +95,12 @@ export function computeBottlenecks(params: {
   upgradesById: ReadonlyMap<UpgradeId, UpgradeWithFarmLocations>
   charactersById: ReadonlyMap<string, CharacterStorageModel>
   dailyEnergy: number
-}): { bottlenecks: PlanInsightsBottleneck[]; blockers: PlanInsightsBlocker[] } {
+}): {
+  bottlenecks: PlanInsightsBottleneck[]
+  blockers: PlanInsightsBlocker[]
+  /** Every farmed resource's energy and days to clear, not only the top bottlenecks. */
+  costsById: Map<EstimateResourceId, { energyToClear: number; days: number }>
+} {
   const label = (id: EstimateResourceId) =>
     resourceLabel(id, params.upgradesById, params.charactersById)
 
@@ -181,22 +186,31 @@ export function computeBottlenecks(params: {
     }
   }
 
-  const bottlenecks = [...farmable]
-    .map(([id, entry]) => ({
-      id,
-      label: label(id),
-      count: entry.count,
-      energyToClear: entry.energyToClear,
-      days: farmingDays(
-        entry.energyToClear,
-        entry.runsByBattle,
-        params.dailyEnergy
-      ),
-      goalIds: [...entry.goalIds],
-    }))
+  const costed = [...farmable].map(([id, entry]) => ({
+    id,
+    label: label(id),
+    count: entry.count,
+    energyToClear: entry.energyToClear,
+    days: farmingDays(
+      entry.energyToClear,
+      entry.runsByBattle,
+      params.dailyEnergy
+    ),
+    goalIds: [...entry.goalIds],
+  }))
+  const bottlenecks = costed
     .filter((entry) => entry.energyToClear > 0)
     .toSorted((a, b) => b.energyToClear - a.energyToClear)
     .slice(0, TOP_BOTTLENECKS)
 
-  return { bottlenecks, blockers: [...blockers.values()] }
+  return {
+    bottlenecks,
+    blockers: [...blockers.values()],
+    costsById: new Map(
+      costed.map((entry) => [
+        entry.id,
+        { energyToClear: entry.energyToClear, days: entry.days },
+      ])
+    ),
+  }
 }

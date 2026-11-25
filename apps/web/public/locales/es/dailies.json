@@ -980,6 +980,7 @@
     "raids": "Incursiones",
     "showMore_one": "Mostrar {{count}} más",
     "showMore_other": "Mostrar {{count}} más",
-    "showFewer": "Mostrar menos"
+    "showFewer": "Mostrar menos",
+    "unavailable": "Las incursiones de hoy no están disponibles para este material."
   }
 }
