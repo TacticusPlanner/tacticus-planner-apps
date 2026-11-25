@@ -8,10 +8,9 @@ import { useIncursionWindow } from "@/entities/incursion"
 import { formatEventCountdown } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
 import { useUnitName } from "@/shared/unit-name"
-import { EntityIcon } from "@/shared/ui"
+import { CountdownChip, EntityIcon } from "@/shared/ui"
 
 import { homeIncursion } from "../../model/home-incursion"
-import { CountdownChip } from "../events/home-event-visual"
 
 const INCURSIONS_PATH = "/my-game/incursions"
 

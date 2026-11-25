@@ -30,7 +30,13 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
 vi.mock("./campaign-event-status", () => ({
   CampaignEventTile: () => null,
 }))
-vi.mock("./today-shops", () => ({ TodayShops: () => null }))
+vi.mock("./today-shop-recommendations", () => ({
+  TODAY_SHOPS_ID: "today-shops",
+  useTodayShopRecommendations: () => ({ status: "no-goals" }),
+}))
+vi.mock("./today-shops", () => ({
+  TodayShops: () => null,
+}))
 vi.mock("@/shared/tour", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/shared/tour")>()),
   useTourPageSteps: vi.fn(),

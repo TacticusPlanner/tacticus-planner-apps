@@ -153,4 +153,47 @@ describe("TodayGlance", () => {
 
     expect(screen.queryByText(/reset|refresh/i)).not.toBeInTheDocument()
   })
+
+  it("adds a Shops tile after Onslaught, linking both tiles to their cards", () => {
+    render(
+      <TodayGlance
+        shops={{ status: "ready", toBuy: 3, possible: 2 }}
+        view={withOnslaught()}
+      />
+    )
+
+    expect(tileLabels()).toEqual([
+      "Daily energy used",
+      "Onslaught",
+      "Shops",
+      "Campaign event",
+    ])
+    expect(tileValue("Shops")).toHaveTextContent("3 to buy+2 possible")
+    expect(
+      within(glance()).getByRole("link", {
+        name: "Shops: 3 to buy +2 possible",
+      })
+    ).toHaveAttribute("href", "#today-shops")
+    expect(
+      within(glance()).getByRole("link", { name: "Onslaught: 2 tokens" })
+    ).toHaveAttribute("href", "#today-onslaught")
+    // Energy and the campaign event have no card of their own to jump to.
+    expect(within(glance()).getAllByRole("link")).toHaveLength(2)
+  })
+
+  it("says Nothing today rather than hiding the Shops tile, and hides it without goals", () => {
+    const { rerender } = render(
+      <TodayGlance
+        shops={{ status: "ready", toBuy: 0, possible: 0 }}
+        view={viewOf()}
+      />
+    )
+    expect(tileValue("Shops")).toHaveTextContent("Nothing today")
+
+    rerender(<TodayGlance shops={{ status: "loading" }} view={viewOf()} />)
+    expect(screen.getByTestId("today-glance-shops-loading")).toBeInTheDocument()
+
+    rerender(<TodayGlance shops={null} view={viewOf()} />)
+    expect(tileLabels()).not.toContain("Shops")
+  })
 })

@@ -1,18 +1,18 @@
 import { useTranslation } from "react-i18next"
-import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
+
+import { LiveBadge, LiveDot } from "@/shared/ui"
 
 import { useEventLiveSignals } from "./hse-live-context"
 import type { NavItem, NavSubItem } from "./nav-items"
 
 /**
- * The shared "event live" marker. Renders nothing unless the item names a signal (`liveIndicator`)
- * that is currently on, so a renderer only passes its item. It uses the green `success` tokens so it
- * reads as "on now" rather than as an alert. Beside a label it is a small "Live" badge; `corner`
- * overlays a bare dot on an icon (the parent must be `relative`), where a label would not fit. Both
- * carry an "Event live" hover tooltip, and the `sr-only` text is what assistive technology reads
- * with the link name, so colour is never the only cue. The pulse is `motion-safe` only. `hidden`
- * lets search results opt out.
+ * The navigation's "event live" marker. Renders nothing unless the item names a signal
+ * (`liveIndicator`) that is currently on, so a renderer only passes its item. Beside a label it is
+ * the shared `LiveBadge` (green `success` tokens, read as "on now" rather than as an alert); `corner`
+ * overlays a bare dot on an icon (the parent must be `relative`), where a label would not fit. The
+ * `sr-only` text is what assistive technology reads with the link name, so colour is never the
+ * only cue. The pulse is `motion-safe` only. `hidden` lets search results opt out.
  */
 export function NavLiveDot({
   item,
@@ -36,31 +36,26 @@ export function NavLiveDot({
 
   if (!isLive || hidden) return null
 
-  const dot = (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "size-2 shrink-0 rounded-full bg-success-foreground motion-safe:animate-pulse",
-        corner && "absolute -top-0.5 -right-0.5 ring-2 ring-background",
-        corner && className
-      )}
-      data-testid="nav-live-dot"
-    />
-  )
-
   return (
     <>
       {corner ? (
-        dot
+        <LiveDot
+          className={cn(
+            "absolute -top-0.5 -right-0.5 ring-2 ring-background",
+            className
+          )}
+          data-testid="nav-live-dot"
+          pulse
+        />
       ) : (
-        <Badge
+        <LiveBadge
           aria-hidden="true"
-          className={cn("ml-1.5 bg-success text-success-foreground", className)}
+          className={cn("ml-1.5", className)}
           data-testid="nav-live-badge"
-        >
-          {dot}
-          {t("nav.live")}
-        </Badge>
+          dotTestId="nav-live-dot"
+          label={t("nav.live")}
+          pulse
+        />
       )}
       <span className="sr-only">{t("nav.eventLive")}</span>
     </>

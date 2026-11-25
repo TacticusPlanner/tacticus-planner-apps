@@ -1,7 +1,6 @@
 import { Link } from "react-router"
 import { useTranslation } from "react-i18next"
 import { homeScreenEventBanner } from "@workspace/game-catalog"
-import { Badge } from "@workspace/ui/components/badge"
 import {
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import { useEffect, useState } from "react"
 
 import { useMinuteNow } from "@/entities/legendary-event"
 import { formatEventCountdown } from "@/shared/lib"
+import { CountdownChip, LiveBadge } from "@/shared/ui"
 
 import {
   homeRememberedCounts,
@@ -23,7 +23,7 @@ import {
 } from "../../model/remembered-count"
 import type { HomeEventRow } from "../../model/select-home-events"
 import type { HomeEventsState } from "../../model/use-home-events"
-import { CountdownChip, HomeEventVisual } from "../events/home-event-visual"
+import { HomeEventVisual } from "../events/home-event-visual"
 import { LegendaryEventPlanButton } from "../events/legendary-event-plan-button"
 import { useHomeEventName } from "../events/use-home-event-name"
 import { TokenAvailability } from "../token-availability/token-availability"
@@ -157,9 +157,13 @@ function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
         <span className="min-w-0 space-y-1">
           <span className="flex flex-wrap items-center gap-2 font-semibold">
             {eventName(row)}
-            <Badge data-testid="home-events-live-badge">
-              {t("home.events.live")}
-            </Badge>
+            {/* The navigation's Live marker, without its pulse: several tiles pulsing at once
+                would be busy. */}
+            <LiveBadge
+              data-testid="home-events-live-badge"
+              dotTestId="home-events-live-dot"
+              label={t("home.events.live")}
+            />
           </span>
           {row.type === "legendaryEvent" && row.points !== undefined ? (
             <span

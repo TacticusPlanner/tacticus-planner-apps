@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen, within } from "@/test/render"
+import { setViewportWidth } from "@/test/viewport"
 
 import { useHomeEvents } from "../../model/use-home-events"
 import { RightNow } from "../right-now/right-now"
@@ -200,6 +201,7 @@ describe("Home events (Right now + Upcoming events)", () => {
   })
   afterEach(() => {
     vi.unstubAllEnvs()
+    vi.unstubAllGlobals()
     vi.useRealTimers()
   })
 
@@ -210,9 +212,12 @@ describe("Home events (Right now + Upcoming events)", () => {
     expect(tiles).toHaveLength(2)
     expect(tiles[0]).toHaveAttribute("data-type", "homeScreen")
     expect(tiles[0]).toHaveTextContent("definitions.hse-machine-hunt")
-    expect(
-      within(tiles[0]!).getByTestId("home-events-live-badge")
-    ).toBeInTheDocument()
+    // The navigation's green Live marker, with a still dot.
+    const badge = within(tiles[0]!).getByTestId("home-events-live-badge")
+    expect(badge).toHaveClass("bg-success", "text-success-foreground")
+    expect(within(badge).getByTestId("home-events-live-dot")).not.toHaveClass(
+      "motion-safe:animate-pulse"
+    )
     expect(tiles[1]).toHaveAttribute("data-type", "legendaryEvent")
     expect(tiles[1]).toHaveTextContent("Lysander")
     expect(
@@ -371,7 +376,8 @@ describe("Home events (Right now + Upcoming events)", () => {
     )
   })
 
-  it("shows three upcoming rows until Show more", async () => {
+  it("shows three upcoming rows on a phone until Show more", async () => {
+    setViewportWidth(390)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     calendarMock.mockReturnValue({
       status: "ready",

@@ -183,11 +183,10 @@
     },
     "campaignEvent": {
       "title": "Kampagnen-Event",
+      "endsIn": "Endet in {{when}}",
       "named": "{{name}}",
-      "namedWithTime": "{{name}} · endet {{time}}",
       "namedUnconfirmed": "{{name}} · Endzeit nicht bestätigt",
       "unnamed": "Aktiv · Name nicht verfügbar",
-      "unnamedWithTime": "Aktiv · Name nicht verfügbar · endet {{time}}",
       "unnamedUnconfirmed": "Aktiv · Name nicht verfügbar · Endzeit nicht bestätigt",
       "inactive": "Nicht aktiv"
     },
@@ -197,7 +196,14 @@
       "energyOver": "Energielimit erreicht",
       "energyValue": "{{used}} / {{daily}}",
       "tokens_one": "{{count}} Marke",
-      "tokens_other": "{{count}} Marken"
+      "tokens_other": "{{count}} Marken",
+      "shops": "Shops",
+      "toBuy_one": "{{count}} zu kaufen",
+      "toBuy_other": "{{count}} zu kaufen",
+      "possible_one": "+{{count}} möglich",
+      "possible_other": "+{{count}} möglich",
+      "nothingToBuy": "Heute nichts",
+      "tileLink": "{{label}}: {{value}}"
     }
   },
   "schedule": {
@@ -344,7 +350,7 @@
           "content": "Beschränke Heute und Bonus-Raids auf die gewünschten Kampagnenorte, z. B. nur Elite-Orte mit 5 Slots oder eine bestimmte Gegnerfraktion. Das Abzeichen zeigt, wie viele Filter aktiv sind."
         },
         "quickFilters": {
-          "title": "Schnellfilter",
+          "title": "Planoptionen",
           "content": "Ändere den heutigen Plan für einen Tag. Weniger Raids nutzt die Orte, die für dieselben Materialien weniger Raid-Tickets brauchen. Ziele kombinieren fasst die Materialien aller Ziele zusammen und farmt sie wie ein einziges Ziel. Daten in Plan und Ziele ändern sich nicht."
         },
         "onslaught": {
@@ -614,8 +620,8 @@
     }
   },
   "quickFilters": {
-    "label": "Schnellfilter",
-    "helpLabel": "Was die Schnellfilter tun",
+    "label": "Planoptionen",
+    "helpLabel": "Was die Planoptionen tun",
     "chip": {
       "fewerRaids": "Weniger Raids",
       "combineGoals": "Ziele kombinieren",

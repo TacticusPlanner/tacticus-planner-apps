@@ -97,8 +97,8 @@ export type HomeEventRow =
 const DAY_MS = 86_400_000
 
 export interface HomeEvents {
-  /** Running now: the live Home Screen Events, Legendary Event, Campaign Event, Incursion, Quest,
-   *  Hero Release Event, then event shop. */
+  /** Running now, soonest end first (see `compareLive`), so events that start and end together sit
+   *  side by side and the one about to expire leads. */
   live: HomeEventRow[]
   /** The next of each kind, by start (a shop with its start date TBA last). */
   upcoming: HomeEventRow[]
@@ -286,14 +286,35 @@ export function selectHomeEvents({
   if (!nextShop && undated) nextShop = shopRow(undated, false)
   if (nextShop) upcoming.push(nextShop)
 
+  live.sort(compareLive)
   // Infinity − Infinity is NaN, so two TBA starts compare equal explicitly.
   upcoming.sort((a, b) => (a.startMs === b.startMs ? 0 : a.startMs - b.startMs))
 
   return { live, upcoming }
 }
 
-/** Upcoming rows shown before "Show more". */
-const UPCOMING_COLLAPSED_LIMIT = 3
+/** Breaks ties between live events that end and start together, so the order is the same on every
+ *  visit. */
+const LIVE_TYPE_ORDER: readonly HomeEventRow["type"][] = [
+  "legendaryEvent",
+  "campaignEvent",
+  "incursion",
+  "homeScreen",
+  "quest",
+  "hre",
+  "eventShop",
+]
+
+/** Live order: by end, then start, then a fixed type order, then the row key (stable between
+ *  visits). */
+function compareLive(a: HomeEventRow, b: HomeEventRow): number {
+  if (a.endMs !== b.endMs) return a.endMs - b.endMs
+  if (a.startMs !== b.startMs) return a.startMs - b.startMs
+  const byType =
+    LIVE_TYPE_ORDER.indexOf(a.type) - LIVE_TYPE_ORDER.indexOf(b.type)
+  if (byType !== 0) return byType
+  return a.key.localeCompare(b.key)
+}
 
 /**
  * The upcoming rows Home shows collapsed: the first `limit` by start, with the next Legendary Event
@@ -302,7 +323,7 @@ const UPCOMING_COLLAPSED_LIMIT = 3
  */
 export function collapseUpcoming(
   { live, upcoming }: HomeEvents,
-  limit = UPCOMING_COLLAPSED_LIMIT
+  limit: number
 ): HomeEventRow[] {
   const shown = upcoming.slice(0, limit)
   const hasLiveLegendary = live.some((row) => row.type === "legendaryEvent")

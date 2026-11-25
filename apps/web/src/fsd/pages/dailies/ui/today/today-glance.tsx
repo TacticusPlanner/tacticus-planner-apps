@@ -2,21 +2,35 @@ import { useTranslation } from "react-i18next"
 import { Progress } from "@workspace/ui/components/progress"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
-import { energyIcon, onslaughtTokenIcon } from "@workspace/game-catalog"
+import {
+  energyIcon,
+  gameMenuIcon,
+  onslaughtTokenIcon,
+} from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
 
 import { CampaignEventTile } from "../campaign-event-status"
+import { TODAY_SHOPS_ID } from "../today-shop-recommendations"
 import { GlanceTile } from "./glance-tile"
+import type { ShopsGlance } from "./shops-glance"
+import { TODAY_ONSLAUGHT_ID } from "./today-onslaught-card"
 import type { TodayView } from "./today-view-model"
 
 /**
- * Today at a glance: daily energy used (used / daily energy), today's Onslaught tokens and the
- * campaign event. Every tile but the campaign event waits for the raids.
+ * Today at a glance: daily energy used (used / daily energy), today's Onslaught tokens, today's shop
+ * buys and the campaign event. Energy and Onslaught wait for the raids; Shops for the shop
+ * recommendations. Onslaught and Shops link to their cards below.
  * Below 42rem of page content (one dashboard track) the tiles fold into one dense card of rows, so
  * the plan starts higher on a phone.
  */
-export function TodayGlance({ view }: { view: TodayView | undefined }) {
+export function TodayGlance({
+  view,
+  shops = null,
+}: {
+  view: TodayView | undefined
+  shops?: ShopsGlance
+}) {
   const { t } = useTranslation("dailies")
   const overLimit = view?.energy.overLimit ?? false
   const hasOnslaught = (view?.onslaughtRuns.length ?? 0) > 0
@@ -79,15 +93,67 @@ export function TodayGlance({ view }: { view: TodayView | undefined }) {
           </GlanceTile>
         )}
         {view && hasOnslaught ? (
-          <GlanceTile label={t("plan.onslaught")}>
+          <GlanceTile
+            href={`#${TODAY_ONSLAUGHT_ID}`}
+            label={t("plan.onslaught")}
+            linkLabel={t("today.glance.tileLink", {
+              label: t("plan.onslaught"),
+              value: t("today.glance.tokens", { count: view.onslaughtTokens }),
+            })}
+          >
             <span className="flex items-center justify-end gap-1 @2xl:justify-start">
               <EntityIcon size="inline" alt="" src={onslaughtTokenIcon()} />
               {t("today.glance.tokens", { count: view.onslaughtTokens })}
             </span>
           </GlanceTile>
         ) : null}
+        <ShopsTile shops={shops} />
         <CampaignEventTile />
       </dl>
     </section>
+  )
+}
+
+/** Today's shop buys: guaranteed offers worth buying, with the offers a refresh may bring in muted
+ *  text, or "Nothing today", so the row doesn't come and go between days. Hidden without goals. */
+function ShopsTile({ shops }: { shops: ShopsGlance }) {
+  const { t } = useTranslation("dailies")
+  if (shops === null) return null
+  const label = t("today.glance.shops")
+  if (shops.status === "loading") {
+    return (
+      <GlanceTile label={label} testId="today-glance-shops-loading">
+        <Skeleton className="ms-auto h-lh w-20 @2xl:ms-0" />
+      </GlanceTile>
+    )
+  }
+  const value =
+    shops.toBuy > 0
+      ? t("today.glance.toBuy", { count: shops.toBuy })
+      : t("today.glance.nothingToBuy")
+  const possible =
+    shops.possible > 0
+      ? t("today.glance.possible", { count: shops.possible })
+      : null
+  return (
+    <GlanceTile
+      href={`#${TODAY_SHOPS_ID}`}
+      label={label}
+      linkLabel={t("today.glance.tileLink", {
+        label,
+        value: possible ? `${value} ${possible}` : value,
+      })}
+      testId="today-glance-shops"
+    >
+      <span className="flex flex-wrap items-center justify-end gap-x-1.5 @2xl:justify-start">
+        <EntityIcon size="inline" alt="" src={gameMenuIcon("shop")} />
+        {value}
+        {possible ? (
+          <span className="text-sm font-normal text-muted-foreground">
+            {possible}
+          </span>
+        ) : null}
+      </span>
+    </GlanceTile>
   )
 }

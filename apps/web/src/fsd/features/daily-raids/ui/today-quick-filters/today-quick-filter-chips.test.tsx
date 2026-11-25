@@ -42,7 +42,7 @@ describe("TodayQuickFilterChips", () => {
     )
 
     const row = screen.getByRole("toolbar", {
-      name: "Quick filters",
+      name: "Plan options",
     }).parentElement!
     expect(
       within(row).getByRole("button", { name: "Ignore goals" })

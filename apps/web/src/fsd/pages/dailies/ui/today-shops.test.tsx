@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@/test/render"
 
 import type { DailiesOutletContext } from "./dailies-layout"
+import { useTodayShopRecommendations } from "./today-shop-recommendations"
 import { TodayShops } from "./today-shops"
 import type {
   ShopRecommendationSectionView,
@@ -36,6 +37,11 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 const retryProjects = vi.fn()
 let contextOverrides: Partial<DailiesOutletContext> = {}
 
+/** Reads the recommendations as the Today dashboard does, then renders the card. */
+function TodayShopsHarness() {
+  return <TodayShops recommendations={useTodayShopRecommendations()} />
+}
+
 function renderPage() {
   const context: DailiesOutletContext = {
     projects: [
@@ -64,7 +70,7 @@ function renderPage() {
     <MemoryRouter initialEntries={["/"]}>
       <Routes>
         <Route path="/" element={<Outlet context={context} />}>
-          <Route index element={<TodayShops />} />
+          <Route index element={<TodayShopsHarness />} />
         </Route>
       </Routes>
     </MemoryRouter>
@@ -127,6 +133,19 @@ describe("TodayShops", () => {
     expect(
       screen.getByRole("heading", { level: 2, name: "title" })
     ).toBeInTheDocument()
+  })
+
+  it("links to Library > Shops for every shop's schedule, and is the Shops tile's anchor", () => {
+    useShopRecommendations.mockReturnValue({ status: "loading" })
+    renderPage()
+    expect(screen.getByRole("link", { name: "schedulesLink" })).toHaveAttribute(
+      "href",
+      "/library/shops"
+    )
+    expect(screen.getByRole("region", { name: "title" })).toHaveAttribute(
+      "id",
+      "today-shops"
+    )
   })
 
   it("shows the loading state", () => {

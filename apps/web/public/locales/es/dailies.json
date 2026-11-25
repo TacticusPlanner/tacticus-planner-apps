@@ -183,11 +183,10 @@
     },
     "campaignEvent": {
       "title": "Evento de campaña",
+      "endsIn": "Termina en {{when}}",
       "named": "{{name}}",
-      "namedWithTime": "{{name}} · termina {{time}}",
       "namedUnconfirmed": "{{name}} · hora de finalización no confirmada",
       "unnamed": "Activo · nombre no disponible",
-      "unnamedWithTime": "Activo · nombre no disponible · termina {{time}}",
       "unnamedUnconfirmed": "Activo · nombre no disponible · hora de finalización no confirmada",
       "inactive": "No activo"
     },
@@ -197,7 +196,14 @@
       "energyOver": "Límite de energía alcanzado",
       "energyValue": "{{used}} / {{daily}}",
       "tokens_one": "{{count}} ficha",
-      "tokens_other": "{{count}} fichas"
+      "tokens_other": "{{count}} fichas",
+      "shops": "Tiendas",
+      "toBuy_one": "{{count}} para comprar",
+      "toBuy_other": "{{count}} para comprar",
+      "possible_one": "+{{count}} posible",
+      "possible_other": "+{{count}} posibles",
+      "nothingToBuy": "Nada hoy",
+      "tileLink": "{{label}}: {{value}}"
     }
   },
   "schedule": {
@@ -344,7 +350,7 @@
           "content": "Limita Hoy y las incursiones extra a las ubicaciones de campaña que quieras, por ejemplo solo nodos Élite de 5 espacios o una facción enemiga concreta. La insignia muestra cuántos filtros están activos."
         },
         "quickFilters": {
-          "title": "Filtros rápidos",
+          "title": "Opciones del plan",
           "content": "Cambia el plan de hoy durante un día. Menos incursiones usa los lugares que necesitan menos tickets de incursión para los mismos materiales. Combinar objetivos combina los materiales de todos los objetivos y los farmea como si fueran un solo objetivo. Las fechas de Plan y Objetivos no cambian."
         },
         "onslaught": {
@@ -614,8 +620,8 @@
     }
   },
   "quickFilters": {
-    "label": "Filtros rápidos",
-    "helpLabel": "Qué hacen los filtros rápidos",
+    "label": "Opciones del plan",
+    "helpLabel": "Qué hacen las opciones del plan",
     "chip": {
       "fewerRaids": "Menos incursiones",
       "combineGoals": "Combinar objetivos",

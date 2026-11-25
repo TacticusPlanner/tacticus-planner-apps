@@ -538,7 +538,14 @@ Assumptions this requirement depends on:
 
 Today SHALL show a "Today's attempts" card (see "Today lays out its sections as a dashboard"), listing every campaign node — standing (standard/mirror/elite/eliteMirror) or event-campaign — the player has actually raided today — real synced attempts (`live-progress.battleAttempts[].attemptsUsed > 0`), account-wide, not scoped to the current project's schedule or Bonus Raids. Each listed location SHALL show its real numeric raid count today (`attemptsUsed`), including when its real synced attempts remaining are zero. An event-campaign attempt record is matched to its battle by campaign group, `type` (Standard/Extremis), and battle index, distinguishing the two tiers rather than excluding them.
 
-Each location SHALL be one compact row: the material icon, the campaign icon, the campaign name and node label on one line that wraps rather than truncates, and the attempts used ("6 attempts") at the end of the row. The material's name SHALL be part of the row's accessible name. The card's header SHALL show the number of rows and the total attempts used ("5 nodes · 29").
+Each location SHALL be one compact row: the material icon, the campaign icon, the campaign name and node label on one line that wraps rather than truncates, the material's have / need when a goal needs it, and the attempts used ("6 attempts") at the end of the row. The material's name SHALL be part of the row's accessible name. The card's header SHALL show the number of rows and the total attempts used ("5 nodes · 29 attempts").
+
+The rows SHALL follow the Raids tab's Group by choice (the same remembered setting as Today's plan):
+
+- **By upgrade**: rows farmed for the same material SHALL form a group headed once by the material's icon, name and have / need, with a nested row per node naming its campaign and node and its attempts. Groups SHALL be ordered by their total attempts, most first.
+- **By campaign**: rows in the same campaign SHALL form a group headed once by the campaign's icon and name, with a nested row per battle naming its node, its material and have / need, and its attempts. Groups SHALL follow the order the plan lists their campaigns, then the rest by total attempts, most first.
+
+Rows inside a group SHALL be ordered by attempts, most first. A group of one row SHALL show no header: the row names its material and location in full, as above. Every row's accessible name SHALL name its material, campaign, node and attempts in full, whatever its header already says. A node's material is the one the plan farms there, else the catalog's drop for that node.
 
 #### Scenario: An attempted location appears in Today's Attempts
 
@@ -568,7 +575,19 @@ Each location SHALL be one compact row: the material icon, the campaign icon, th
 
 - **GIVEN** the player has raided 5 nodes today, with 6, 6, 10, 5 and 2 attempts
 - **WHEN** Today loads
-- **THEN** the Today's attempts header shows 5 nodes and 6 + 6 + 10 + 5 + 2 = 29 attempts
+- **THEN** the Today's attempts header shows "5 nodes · 29 attempts" (6 + 6 + 10 + 5 + 2 = 29)
+
+#### Scenario: Grouped by upgrade
+
+- **GIVEN** Group by is By upgrade, and the player raided two nodes for the same material today (6 and 4 attempts) and one node for another material (12 attempts)
+- **WHEN** Today loads
+- **THEN** Today's attempts shows the 12-attempt node as a full row first, then a header with the first material's icon, name and have / need, and under it the 6-attempt node then the 4-attempt node
+
+#### Scenario: Grouped by campaign
+
+- **GIVEN** Group by is By campaign, and the player raided two battles in Indomitus and one in Fall of Cadia today
+- **WHEN** Today loads
+- **THEN** Today's attempts shows an Indomitus header with its two battles nested under it, and the Fall of Cadia battle as a full row
 
 #### Scenario: No attempts recorded yet today
 
@@ -628,7 +647,7 @@ When `live-progress.activeCampaignEventId` is present but does not resolve to a 
 
 When `live-progress.activeCampaignEventId` is absent or null, the status line SHALL state that no campaign event is active, regardless of what the events calendar shows for the current instant. Today's schedule excludes every event-campaign node in exactly that situation, so the status line SHALL NOT claim an event is active that Today will not schedule.
 
-The remaining time SHALL be taken from the `endUtc` of a `confirmed: true` events-calendar entry for the `campaign-event` definition whose window contains the current instant, rendered as localized relative time at the same coarseness the app's other remaining-time displays use. If that window is a `confirmed: false` projection, the status line SHALL keep the detected event identity and state that its end time is not confirmed, without a numeric remaining-time phrase. When no such calendar entry is active, the status line SHALL name the detected campaign event and omit the remaining time rather than showing an estimated, stale, or zero duration.
+The remaining time SHALL be taken from the `endUtc` of a `confirmed: true` events-calendar entry for the `campaign-event` definition whose window contains the current instant, rendered as an "Ends in …" countdown chip, the same chip and countdown format Home's event tiles use (whole days and hours from a day out, such as "Ends in 2 days 23 hr", hours and minutes under a day), updated every minute. If that window is a `confirmed: false` projection, the status line SHALL keep the detected event identity and state that its end time is not confirmed, without a numeric remaining-time phrase. When no such calendar entry is active, the status line SHALL name the detected campaign event and omit the remaining time rather than showing an estimated, stale, or zero duration.
 
 Assumptions this requirement depends on:
 
@@ -642,7 +661,7 @@ Assumptions this requirement depends on:
 - **GIVEN** `live-progress.activeCampaignEventId` names the Adepta Sororitas event campaign group
 - **AND** a confirmed `campaign-event` calendar entry's window contains the current instant and ends in three days
 - **WHEN** Today loads
-- **THEN** the status line names "Adepta Sororitas" and states that it ends in three days
+- **THEN** the status line names "Adepta Sororitas" and shows an "Ends in 3 days" countdown chip
 
 #### Scenario: The active window is only projected
 
@@ -910,7 +929,7 @@ Campaign names and node labels in Today's schedule rows, and in the shared locat
 
 ### Requirement: Today quick filters
 
-Today SHALL show a quick-filter chip row, captioned "Quick filters", on the page toolbar's chip row below the Find and View controls, with two chips: **Fewer raids** and **Combine goals**. Either, both or neither MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL be remembered per device (in this browser's storage, not the URL), so reload and opening Today again from the navigation restore the last chips chosen on this device; the HSE and HRE tabs show the same chips. It SHALL NOT be read from or written to the URL; unknown stored values are ignored.
+Today SHALL show a quick-filter chip row, captioned "Plan options" (they change how today's plan is built, not which rows are shown, so they are not called filters), on the page toolbar's chip row below the Find and View controls, with two chips: **Fewer raids** and **Combine goals**. Either, both or neither MAY be on. Each chip SHALL carry a tooltip explaining what it does, and while a chip is on Today SHALL show one line under the row stating what it changes. The state SHALL be remembered per device (in this browser's storage, not the URL), so reload and opening Today again from the navigation restore the last chips chosen on this device; the HSE and HRE tabs show the same chips. It SHALL NOT be read from or written to the URL; unknown stored values are ignored.
 
 The chips SHALL change only Today's plan and Bonus Raids (including the raids-left list after the daily energy limit). Plan > Schedule, Goals estimates and dates, Insights, the HSE and HRE tabs and the Home raids widget SHALL be computed as if both chips were off. The chips combine with the applied Raids Filters.
 
@@ -988,7 +1007,7 @@ Worked example: goal g1 (priority 1, Bellator) is planned 1.2 runs for 6 expecte
 
 On Dailies › Raids, Today SHALL show, from top to bottom: the page toolbar, a row of glance tiles (see "Today shows glance tiles"), and a grid of cards: Today's plan, Bonus raids, Shop recommendations, Onslaught and Today's attempts. Each card SHALL be a named region with its own level-2 heading.
 
-The page toolbar SHALL hold, in its first row, the project selector and the Raids Filters trigger (Find) and Group by (View); the "Quick filters" caption and its two chips SHALL take the row below. Planning settings is the page header's Settings button. When a row is too narrow it SHALL wrap without hiding or truncating any control. While a quick filter is on, its one-line note SHALL appear on its own line directly below the chips.
+The page toolbar SHALL hold, in its first row, the project selector and the Raids Filters trigger (Find) and Group by (View); the "Plan options" caption and its two chips SHALL take the row below. Planning settings is the page header's Settings button. When a row is too narrow it SHALL wrap without hiding or truncating any control. While a quick filter is on, its one-line note SHALL appear on its own line directly below the chips.
 
 The card grid SHALL size its tracks from the width of the page content, not the viewport, so an open or collapsed section menu is accounted for:
 
@@ -1059,11 +1078,12 @@ Assumptions:
 
 ### Requirement: Today shows glance tiles
 
-Today SHALL show its glance tiles above the card grid, as a labelled region ("Today at a glance"). Each tile SHALL show a short label and its value, and tiles SHALL be static text, not controls. In order:
+Today SHALL show its glance tiles above the card grid, as a labelled region ("Today at a glance"). Each tile SHALL show a short label and its value. The Onslaught and Shops tiles SHALL link to their cards (`#today-onslaught`, `#today-shops`), the whole tile being the link target, with an accessible name of "<label>: <value>"; in the one-card layout below 42rem a chevron marks those rows as links. The other tiles SHALL be static text, not controls. In order:
 
 1. **Daily energy used**: a progress bar and "used / daily" energy from "Today shows real daily energy usage". Once the daily energy limit is reached (the same test Bonus raids uses), the label SHALL read "Energy limit reached" and the bar and tile border SHALL switch to a distinct over-limit colour.
 2. **Onslaught**: today's whole tokens to spend, from "Today lists today's Onslaught runs". It SHALL be hidden when no goal needs an Onslaught run today.
-3. **Campaign event**: the status from "Today states the detected campaign event and its remaining time".
+3. **Shops**: the number of today's guaranteed offers the Shop recommendations card lists ("3 to buy", with the shop icon), followed in muted text by the offers a refresh may bring ("+2 possible") when there are any, or "Nothing today" when no guaranteed offer is worth buying. It SHALL show a loading value while the shop data loads, and SHALL be hidden when the player has no goals or the shop read failed. It counts from the same read as the card, so the two never disagree.
+4. **Campaign event**: the status from "Today states the detected campaign event and its remaining time".
 
 There SHALL be no tile for the plan's energy and raid totals: without the daily energy beside them they say nothing on their own.
 
@@ -1072,15 +1092,33 @@ The layout SHALL follow the width of Today's content (a container query), not th
 - From 42rem: each tile is a card of its own with its label above its value. Tiles SHALL take at least 12rem each and wrap onto further rows when there is not room for all of them on one.
 - Below 42rem (one dashboard track, as on a phone): the tiles SHALL fold into one card, one row per tile with its label at the start and its value at the end, rows split by dividers, so Today's plan starts as high as possible.
 
-Tile values SHALL wrap rather than truncate. Tiles 1–2 SHALL render only once Today's raid data is ready; while it loads, a placeholder SHALL hold the Daily energy used tile's place, with its label and a loading value, so the tile does not push the tiles and cards below it down when it arrives. The Campaign event tile SHALL render regardless.
+Tile values SHALL wrap rather than truncate. Tiles 1–2 SHALL render only once Today's raid data is ready, and the Shops tile once the shop data is ready; while it loads, a placeholder SHALL hold the Daily energy used tile's place, with its label and a loading value, so the tile does not push the tiles and cards below it down when it arrives. The Campaign event tile SHALL render regardless. A card a tile links to SHALL keep its heading clear of the mobile header when scrolled into view.
 
 Worked example: daily energy 638, real spend today 663 energy, and two Onslaught runs planned at 1.2 and 0.5 runs. Tile 1 reads "Energy limit reached" with "663 / 638" and a full bar in the over-limit colour (663 ÷ 638 = 103.9%, so the bar's value text says 104%). Tile 2 shows 1.2 + 0.5 = 1.7, rounded up to "2 tokens". Below the limit, at a real spend of 410 energy, tile 1 reads "Daily energy used" with "410 / 638" and a bar 64% full; tile 2 still shows "2 tokens".
 
 #### Scenario: Tiles in order
 
-- **GIVEN** a goal needs an Onslaught run
+- **GIVEN** a goal needs an Onslaught run and a goal needs a shop offer
 - **WHEN** Today renders
-- **THEN** the tiles read Daily energy used, Onslaught, Campaign event, in that order
+- **THEN** the tiles read Daily energy used, Onslaught, Shops, Campaign event, in that order
+
+#### Scenario: Shops tile counts today's buys
+
+- **GIVEN** the Shop recommendations card lists 3 guaranteed offers and 2 possible offers across the four shops
+- **WHEN** Today renders
+- **THEN** the Shops tile reads "3 to buy +2 possible", and activating it scrolls the Shop recommendations card into view
+
+#### Scenario: Nothing to buy today
+
+- **GIVEN** the player has goals but no shop offer is worth buying today
+- **WHEN** Today renders
+- **THEN** the Shops tile reads "Nothing today"
+
+#### Scenario: Onslaught tile jumps to its card
+
+- **GIVEN** the Onslaught tile shows "2 tokens"
+- **WHEN** the user activates it
+- **THEN** the Onslaught card scrolls into view
 
 #### Scenario: Over the limit
 

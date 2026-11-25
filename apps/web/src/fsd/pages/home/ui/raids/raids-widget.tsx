@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
   CampaignGroupedList,
@@ -24,15 +25,17 @@ import {
   useCampaignBattleDialog,
 } from "@/widgets/battle-preview"
 
+import { homeCardLimit } from "../../model/home-card-limit"
+
 /** Home dashboard's Daily Raids widget: today's real (energy-budget) schedule for the account's Active
  * goals in global order (the same run as Today) — or, once today's real energy spend reaches the daily
  * limit, the Bonus Raids that Today then lists alone (`selectTodayRaids`) — flattened to one row per battle location regardless
  * of which goal it's for, with already-raided/exhausted locations excluded (home-raids-widget spec).
- * The list shows the first five locations, one per row,, expandable in place; the header link opens the full Today page. */
-const VISIBLE_LOCATIONS = 5
-
+ * The list shows Home's card count of locations (`homeCardLimit`), one per row, expandable in place;
+ * the header link opens the full Today page. */
 export function RaidsWidget() {
   const { t } = useTranslation("common")
+  const visibleLocations = homeCardLimit(useIsMobile())
   const raids = useDailyRaids()
   const [expanded, setExpanded] = useState(false)
   // The location whose battle and enemies are open (tapping its name).
@@ -119,8 +122,8 @@ export function RaidsWidget() {
 
     const hiddenCount = expanded
       ? 0
-      : Math.max(0, locations.length - VISIBLE_LOCATIONS)
-    const shown = expanded ? locations : locations.slice(0, VISIBLE_LOCATIONS)
+      : Math.max(0, locations.length - visibleLocations)
+    const shown = expanded ? locations : locations.slice(0, visibleLocations)
     const list = (
       <div className="flex flex-col gap-2">
         <CampaignGroupedList
@@ -149,7 +152,7 @@ export function RaidsWidget() {
             />
           )}
         />
-        {locations.length > VISIBLE_LOCATIONS ? (
+        {locations.length > visibleLocations ? (
           <Button
             aria-expanded={expanded}
             className="self-start"

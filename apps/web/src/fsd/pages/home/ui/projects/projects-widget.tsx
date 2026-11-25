@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react"
+import { lazy, Suspense, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router"
 import { Button } from "@workspace/ui/components/button"
@@ -14,6 +14,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { useHomeProjects } from "@/features/project-management"
 
+import { homeCardLimit } from "../../model/home-card-limit"
 import { ProjectsWidgetList } from "./projects-widget-list"
 
 // The fit counts need the plan engine, which Home otherwise never loads, so they arrive in their
@@ -24,15 +25,16 @@ const ProjectsWidgetFitList = lazy(() =>
   }))
 )
 
-/** Home dashboard's Your Projects widget: Default project first. Mobile caps the list to 3 project
- * rows with a "+N more" link to the Projects dashboard (home-projects-widget spec); desktop has
- * room to show every non-archived project uncapped, in a grid across the full-width card. The
- * header links to the Projects dashboard. */
+/** Home dashboard's Your Projects widget: Default project first. Shows Home's card count of projects
+ * (`homeCardLimit`, as Daily raids and Upcoming events do), then "Show N more" expands the list in
+ * place (home-projects-widget spec). The header links to the Projects dashboard. */
 export function ProjectsWidget() {
   const { t } = useTranslation("common")
   const navigate = useNavigate()
-  const isMobile = useIsMobile()
-  const result = useHomeProjects(isMobile ? 3 : null)
+  const limit = homeCardLimit(useIsMobile())
+  const [expanded, setExpanded] = useState(false)
+  // Every project, so "Show N more" opens the rest in place without another read.
+  const result = useHomeProjects(null)
 
   const body = (() => {
     if (result.status === "loading") {
@@ -74,8 +76,9 @@ export function ProjectsWidget() {
       )
     }
 
+    const hiddenCount = Math.max(0, result.projects.length - limit)
     const listProps = {
-      projects: result.projects,
+      projects: expanded ? result.projects : result.projects.slice(0, limit),
       summaries: result.summaries,
       onSelect: (projectId: string) =>
         void navigate(`/plan/goals?project=${projectId}`),
@@ -85,15 +88,18 @@ export function ProjectsWidget() {
         <Suspense fallback={<ProjectsWidgetList {...listProps} />}>
           <ProjectsWidgetFitList {...listProps} />
         </Suspense>
-        {result.remainingCount > 0 ? (
+        {hiddenCount > 0 ? (
           <Button
+            aria-expanded={expanded}
             className="self-start"
             data-testid="home-projects-more"
-            onClick={() => void navigate("/plan/projects")}
+            onClick={() => setExpanded((value) => !value)}
             size="sm"
             variant="ghost"
           >
-            {t("home.projects.moreCount", { count: result.remainingCount })}
+            {expanded
+              ? t("home.projects.showLess")
+              : t("home.projects.showMore", { count: hiddenCount })}
           </Button>
         ) : null}
       </div>

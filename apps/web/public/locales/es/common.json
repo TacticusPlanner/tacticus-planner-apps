@@ -808,7 +808,9 @@
     },
     "projects": {
       "title": "Tus proyectos",
-      "moreCount": "+{{count}} más",
+      "showMore_one": "Mostrar {{count}} más",
+      "showMore_other": "Mostrar {{count}} más",
+      "showLess": "Mostrar menos",
       "summaryUnavailable": "Resumen no disponible",
       "emptyTitle": "Aún no hay proyectos",
       "emptyDescription": "Los proyectos agrupan tus objetivos para que puedas consultarlos por separado.",

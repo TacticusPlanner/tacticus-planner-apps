@@ -9,24 +9,28 @@ import {
 } from "@workspace/ui/components/card"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { formatEventCountdown, useDateLocale } from "@/shared/lib"
+import { CountdownChip } from "@/shared/ui"
 
+import { homeCardLimit } from "../../model/home-card-limit"
 import { collapseUpcoming } from "../../model/select-home-events"
 import type { HomeEventRow } from "../../model/select-home-events"
 import type { HomeEventsState } from "../../model/use-home-events"
-import { CountdownChip, HomeEventVisual } from "./home-event-visual"
+import { HomeEventVisual } from "./home-event-visual"
 import { LegendaryEventPlanButton } from "./legendary-event-plan-button"
 import { useHomeEventName } from "./use-home-event-name"
 
 /** Home's "Upcoming events" card: the next occurrence of each kind (Home Screen Event, Legendary
- *  Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) by start; three rows
- *  until "Show more", the next Legendary Event pinned among them unless one is live. A shop with no
+ *  Event, Campaign Event, Incursion, Quest, Hero Release Event, event shop) by start, the next
+ *  Legendary Event pinned among the shown rows unless one is live. A shop with no
  *  start date yet reads "Start date TBA". Distinct from the Events calendar. Each row links to its
- *  own planner page. */
+ *  own planner page. Shows Home's card count (`homeCardLimit`) until "Show more". */
 export function UpcomingEvents({ events }: { events: HomeEventsState }) {
   const { t } = useTranslation("common")
   const [expanded, setExpanded] = useState(false)
+  const isMobile = useIsMobile()
 
   const body = (() => {
     if (events.status === "loading") {
@@ -53,7 +57,7 @@ export function UpcomingEvents({ events }: { events: HomeEventsState }) {
           ? t("home.events.openLegendaryEvents")
           : undefined
 
-    const collapsed = collapseUpcoming(events)
+    const collapsed = collapseUpcoming(events, homeCardLimit(isMobile))
     const hiddenCount = events.upcoming.length - collapsed.length
     const shown = expanded ? events.upcoming : collapsed
 

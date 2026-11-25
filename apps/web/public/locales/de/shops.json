@@ -2,6 +2,7 @@
   "title": "Shop-Empfehlungen",
   "subtitle": "Heutige Tages-Shop-Angebote, die sich für die aktiven Ziele von {{project}} lohnen",
   "subtitleAll": "Heutige Tages-Shop-Angebote, die sich für deine aktiven Ziele lohnen",
+  "schedulesLink": "Shop-Zeitpläne",
   "shopName": {
     "guild": "Gildenshop",
     "war": "Gildenkriegsshop",

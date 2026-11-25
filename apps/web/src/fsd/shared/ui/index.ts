@@ -52,6 +52,8 @@ export {
 export { closestOverlayContent } from "./overlay-content"
 export { DetailsOverlay, DetailsSheet } from "./details-sheet"
 export { EventIcon } from "./event-icon"
+export { LiveBadge, LiveDot } from "./live-badge"
+export { CountdownChip } from "./countdown-chip"
 export { SortableList, type SortableRenderProps } from "./sortable-list"
 export { DragGrip, SORTABLE_ITEM_GROUP } from "./drag-grip"
 export { FLOATING_BAR_SURFACE, FloatingBar } from "./floating-bar"

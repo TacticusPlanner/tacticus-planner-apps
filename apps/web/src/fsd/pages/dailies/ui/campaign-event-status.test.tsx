@@ -173,38 +173,37 @@ describe("CampaignEventTile", () => {
 
   it("names the detected event and its remaining time for a confirmed window", async () => {
     const text = detailOf(await renderWith(knownId, confirmedWindow))
-    expect(text).toContain(" · ends ")
     // The localized campaign name: "adepta-sororitas-vs-death-guard" reads "Death Guard".
     expect(text).toContain("Death Guard")
-    expect(text).toContain("in 3 days")
+    // Home's countdown, to the hour, not "in 3 days" or "next week".
+    expect(text).toMatch(/Ends in (2 days 23 hr|3 days)/)
   })
 
   it("names the detected event and states its end time is unconfirmed, without a numeric countdown", async () => {
     const text = detailOf(await renderWith(knownId, unconfirmedWindow))
     expect(text).toContain("end time not confirmed")
     expect(text).toContain("Death Guard")
-    expect(text).not.toContain("in 3 days")
-    expect(text).not.toContain(" · ends ")
+    expect(text).not.toContain("Ends in")
   })
 
   it("names the detected event without a time when the calendar has no active window", async () => {
     const text = detailOf(await renderWith(knownId, null))
     expect(text).toContain("Death Guard")
-    expect(text).not.toContain(" · ends ")
+    expect(text).not.toContain("Ends in")
     expect(text).not.toContain("end time not confirmed")
   })
 
   it("reports an unresolvable event as active without ever showing its raw group id", async () => {
     const text = detailOf(await renderWith(unknownId, confirmedWindow))
-    expect(text).toContain("Active · name unavailable · ends ")
-    expect(text).toContain("in 3 days")
+    expect(text).toContain("Active · name unavailable")
+    expect(text).toMatch(/Ends in (2 days 23 hr|3 days)/)
     expect(text).not.toContain(unknownId)
   })
 
   it("reports an unresolvable event with an unconfirmed window as active and unconfirmed, untimed", async () => {
     const text = detailOf(await renderWith(unknownId, unconfirmedWindow))
     expect(text).toContain("Active · name unavailable · end time not confirmed")
-    expect(text).not.toContain("in 3 days")
+    expect(text).not.toContain("Ends in")
     expect(text).not.toContain(unknownId)
   })
 
@@ -262,14 +261,14 @@ describe("CampaignEventTile", () => {
     )
     const before = detailOf(status)
     expect(before).toContain("Death Guard")
-    expect(before).not.toContain("in 3 days")
+    expect(before).not.toContain("Ends in")
 
     // A catalog sync replaces the projected placeholder with the authored occurrence.
     await seedCampaignEvent(knownId, confirmedWindow)
     refreshLocalDataAfterSync(queryClient, "catalog", ["events-calendar"])
-    await waitFor(() => expect(detailOf(status)).toContain(" · ends "))
+    await waitFor(() => expect(detailOf(status)).toContain("Ends in"))
     const after = detailOf(status)
-    expect(after).toContain("in 3 days")
+    expect(after).toMatch(/Ends in (2 days 23 hr|3 days)/)
     expect(after).not.toContain("end time not confirmed")
   })
 })

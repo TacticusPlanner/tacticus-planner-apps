@@ -1,12 +1,10 @@
 import {
   campaignIcon,
   characterIcon,
-  countdownIcon,
   eventIcon,
   gameMenuIcon,
 } from "@workspace/game-catalog"
 import type { CampaignId, UnitId } from "@workspace/game-domain"
-import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, EventIcon } from "@/shared/ui"
 import type { EntityIconSize } from "@/shared/ui"
@@ -111,26 +109,5 @@ export function HomeEventVisual({
       definitionType="HomeScreenEvent"
       parameters={row.parameters}
     />
-  )
-}
-
-/** A countdown chip with the game's timer icon. */
-export function CountdownChip({
-  text,
-  className,
-}: {
-  text: string
-  className?: string
-}) {
-  return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center gap-1 text-xs font-semibold whitespace-nowrap tabular-nums",
-        className
-      )}
-    >
-      <EntityIcon size="inline" alt="" src={countdownIcon()} />
-      {text}
-    </span>
   )
 }
