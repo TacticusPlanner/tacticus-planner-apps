@@ -3,6 +3,11 @@ import { Check, Circle, Ellipsis } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { ObjectiveIcon, AnnotationMarkIcon } from "@/entities/legendary-event"
 import type {
@@ -33,20 +38,24 @@ function ClearedCell({ cleared, label }: { cleared: boolean; label: string }) {
     objective: label,
   })
   return (
-    <span
-      className={cn(
-        "inline-flex size-6 items-center justify-center rounded-full",
-        cleared
-          ? "bg-(--event-legendary) text-white"
-          : "border border-dashed border-muted-foreground/40"
-      )}
-      data-cleared={cleared}
-      data-testid="progress-cell"
-      title={text}
-    >
-      {cleared ? <Check aria-hidden="true" className="size-icon" /> : null}
-      <span className="sr-only">{text}</span>
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className={cn(
+            "inline-flex size-6 items-center justify-center rounded-full",
+            cleared
+              ? "bg-(--event-legendary) text-white"
+              : "border border-dashed border-muted-foreground/40"
+          )}
+          data-cleared={cleared}
+          data-testid="progress-cell"
+        >
+          {cleared ? <Check aria-hidden="true" className="size-icon" /> : null}
+          <span className="sr-only">{text}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{text}</TooltipContent>
+    </Tooltip>
   )
 }
 
@@ -61,16 +70,20 @@ function MarkedCell({
   const { t } = useTranslation("legendaryEvents")
   const text = t(`annotations.cell.${status}`, { objective: label })
   return (
-    <span
-      className="inline-flex size-6 items-center justify-center rounded-full"
-      data-cleared="false"
-      data-mark={status}
-      data-testid="progress-cell"
-      title={text}
-    >
-      <AnnotationMarkIcon className="size-icon" status={status} />
-      <span className="sr-only">{text}</span>
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="inline-flex size-6 items-center justify-center rounded-full"
+          data-cleared="false"
+          data-mark={status}
+          data-testid="progress-cell"
+        >
+          <AnnotationMarkIcon className="size-icon" status={status} />
+          <span className="sr-only">{text}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{text}</TooltipContent>
+    </Tooltip>
   )
 }
 

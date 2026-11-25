@@ -7,6 +7,11 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { ObjectiveIcon } from "@/entities/legendary-event"
 import type {
@@ -67,21 +72,24 @@ export function LeaderboardTable({
               <span className="sr-only">{t("leaderboard.rank")}</span>
             </TableHead>
             {objectives.map(({ key, label, icon }, index) => (
-              <TableHead
-                className="px-0.5 text-center"
-                data-testid="leaderboard-objective-head"
-                key={key}
-                title={label}
-              >
-                <span className="inline-flex justify-center">
-                  {icon ? (
-                    <ObjectiveIcon icon={icon} />
-                  ) : (
-                    <span aria-hidden="true">{index + 1}</span>
-                  )}
-                </span>
-                <span className="sr-only">{label}</span>
-              </TableHead>
+              <Tooltip key={key}>
+                <TooltipTrigger asChild>
+                  <TableHead
+                    className="px-0.5 text-center"
+                    data-testid="leaderboard-objective-head"
+                  >
+                    <span className="inline-flex justify-center">
+                      {icon ? (
+                        <ObjectiveIcon icon={icon} />
+                      ) : (
+                        <span aria-hidden="true">{index + 1}</span>
+                      )}
+                    </span>
+                    <span className="sr-only">{label}</span>
+                  </TableHead>
+                </TooltipTrigger>
+                <TooltipContent>{label}</TooltipContent>
+              </Tooltip>
             ))}
             <TableHead
               className="text-right"
@@ -93,13 +101,17 @@ export function LeaderboardTable({
               {t("leaderboard.objectives")}
             </TableHead>
             {clearsOf ? (
-              <TableHead
-                className="text-right"
-                data-testid="leaderboard-clears-head"
-                title={t("estimates.howItWorks")}
-              >
-                {t("estimates.clears")}
-              </TableHead>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <TableHead
+                    className="text-right"
+                    data-testid="leaderboard-clears-head"
+                  >
+                    {t("estimates.clears")}
+                  </TableHead>
+                </TooltipTrigger>
+                <TooltipContent>{t("estimates.howItWorks")}</TooltipContent>
+              </Tooltip>
             ) : null}
             <TableHead className="w-10 px-1">
               <span className="sr-only">{t("leaderboardActions.header")}</span>

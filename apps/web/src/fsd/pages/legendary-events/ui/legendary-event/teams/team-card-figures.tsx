@@ -1,4 +1,9 @@
 import { useTranslation } from "react-i18next"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import type { TeamCardViewModel } from "./teams.view-model"
 
@@ -36,14 +41,18 @@ export function PointsLeft({
   }
   if (card.pointsLeft === null || card.displayedDepth === null) {
     return (
-      <span
-        className="whitespace-nowrap text-muted-foreground"
-        data-testid="team-card-points"
-        title={t("teams.pointsLeftNeedsDepth")}
-      >
-        <span aria-hidden>—</span>
-        <span className="sr-only">{t("teams.pointsLeftNeedsDepth")}</span>
-      </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className="whitespace-nowrap text-muted-foreground"
+            data-testid="team-card-points"
+          >
+            <span aria-hidden>—</span>
+            <span className="sr-only">{t("teams.pointsLeftNeedsDepth")}</span>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>{t("teams.pointsLeftNeedsDepth")}</TooltipContent>
+      </Tooltip>
     )
   }
   return (
@@ -75,23 +84,27 @@ export function TeamPower({
         ? t("teams.power.unavailable")
         : undefined
   return (
-    <span
-      className="whitespace-nowrap text-muted-foreground"
-      data-state={state}
-      data-testid="team-card-power"
-      title={reason}
-    >
-      {t("teams.power.label")}{" "}
-      {card.teamPower === null ? (
-        <>
-          <span aria-hidden className="text-foreground">
-            —
-          </span>
-          {reason ? <span className="sr-only">{reason}</span> : null}
-        </>
-      ) : (
-        <span className="text-foreground">{format(card.teamPower)}</span>
-      )}
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className="whitespace-nowrap text-muted-foreground"
+          data-state={state}
+          data-testid="team-card-power"
+        >
+          {t("teams.power.label")}{" "}
+          {card.teamPower === null ? (
+            <>
+              <span aria-hidden className="text-foreground">
+                —
+              </span>
+              {reason ? <span className="sr-only">{reason}</span> : null}
+            </>
+          ) : (
+            <span className="text-foreground">{format(card.teamPower)}</span>
+          )}
+        </span>
+      </TooltipTrigger>
+      {reason ? <TooltipContent>{reason}</TooltipContent> : null}
+    </Tooltip>
   )
 }

@@ -12,6 +12,7 @@ import {
   TriangleAlert,
 } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,11 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import {
   MIN_TEAM_MEMBERS,
@@ -38,7 +44,7 @@ import {
 } from "@/features/legendary-event-plan"
 import type { DepthEstimateContext } from "@/features/legendary-event-plan"
 import { useDebouncedCommit } from "@/shared/lib"
-import { DragGrip, SORTABLE_ITEM_GROUP } from "@/shared/ui"
+import { DragGrip, SORTABLE_ITEM_GROUP, TruncatedText } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
@@ -148,12 +154,8 @@ export function TeamCard({
           />
         ) : null}
         <span className="flex min-w-0 flex-1 items-center gap-2">
-          <h3
-            className="min-w-0 truncate font-semibold"
-            data-testid="team-card-name"
-            title={card.name}
-          >
-            {card.name}
+          <h3 className="min-w-0 font-semibold" data-testid="team-card-name">
+            <TruncatedText>{card.name}</TruncatedText>
           </h3>
           {card.memberCount < FULL_TEAM ? (
             <span
@@ -250,18 +252,17 @@ export function TeamCard({
         <div className="flex min-w-0 flex-col gap-2">
           <div className="flex min-w-0 items-center gap-2">
             <TeamDepthBar bar={bar} card={card} />
-            <Button
+            <IconButton
               aria-expanded={editorShown}
-              aria-label={t("teams.editDepth")}
               className="shrink-0"
               data-testid="team-card-depth-edit"
+              label={t("teams.editDepth")}
               onClick={() => setEditing((open) => !open)}
               size="icon-sm"
-              title={t("teams.editDepth")}
               variant={editorShown ? "secondary" : "ghost"}
             >
               <Pencil />
-            </Button>
+            </IconButton>
           </div>
           {/* The stepper stays mounted so a run of clicks survives closing it; it only shows
               while editing, or while the team has no depth at all to show. */}
@@ -352,20 +353,23 @@ function CoverageStrip({
         const entry = coverageByIndex.get(objective.index)
         if (!entry)
           return (
-            <li
-              className="flex w-9 min-w-0 shrink flex-col items-center opacity-25"
-              data-testid="team-card-objective-slot"
-              key={objective.index}
-              title={label}
-            >
-              <ObjectiveIcon icon={icon} muted />
-              <span aria-hidden="true" className="text-xs/3">
-                &nbsp;
-              </span>
-              <span className="sr-only">
-                {t("teams.objectiveUncovered", { objective: label })}
-              </span>
-            </li>
+            <Tooltip key={objective.index}>
+              <TooltipTrigger asChild>
+                <li
+                  className="flex w-9 min-w-0 shrink flex-col items-center opacity-25"
+                  data-testid="team-card-objective-slot"
+                >
+                  <ObjectiveIcon icon={icon} muted />
+                  <span aria-hidden="true" className="text-xs/3">
+                    &nbsp;
+                  </span>
+                  <span className="sr-only">
+                    {t("teams.objectiveUncovered", { objective: label })}
+                  </span>
+                </li>
+              </TooltipTrigger>
+              <TooltipContent>{label}</TooltipContent>
+            </Tooltip>
           )
         const muted = !entry.derived
         const cleared = !muted && entry.clearedThrough
@@ -374,43 +378,48 @@ function CoverageStrip({
             ? t("teams.clearedThrough", { battle: card.displayedDepth })
             : undefined
         return (
-          <li
-            className={cn(
-              "relative flex w-9 min-w-0 shrink flex-col items-center rounded-md border border-transparent py-0.5",
-              muted && "border-dashed border-border text-muted-foreground",
-              cleared && "text-muted-foreground"
-            )}
-            data-cleared={cleared ? "true" : undefined}
-            data-muted={muted ? "true" : undefined}
-            data-testid="team-card-objective"
-            key={objective.index}
-            title={[label, muted ? t("teams.notCovered") : clearedLabel]
-              .filter(Boolean)
-              .join(" · ")}
-          >
-            <ObjectiveIcon icon={icon} muted={muted || cleared} />
-            <span
-              className={cn(
-                "text-xs/3 font-semibold tabular-nums",
-                cleared && "line-through"
-              )}
-            >
-              {format(entry.points)}
-            </span>
-            {cleared ? (
-              <Check
-                aria-hidden
-                className="absolute -top-1 -right-0.5 size-icon-xs text-success-foreground"
-              />
-            ) : null}
-            <span className="sr-only">{label}</span>
-            {muted ? (
-              <span className="sr-only">{t("teams.notCovered")}</span>
-            ) : null}
-            {clearedLabel ? (
-              <span className="sr-only">{clearedLabel}</span>
-            ) : null}
-          </li>
+          <Tooltip key={objective.index}>
+            <TooltipTrigger asChild>
+              <li
+                className={cn(
+                  "relative flex w-9 min-w-0 shrink flex-col items-center rounded-md border border-transparent py-0.5",
+                  muted && "border-dashed border-border text-muted-foreground",
+                  cleared && "text-muted-foreground"
+                )}
+                data-cleared={cleared ? "true" : undefined}
+                data-muted={muted ? "true" : undefined}
+                data-testid="team-card-objective"
+              >
+                <ObjectiveIcon icon={icon} muted={muted || cleared} />
+                <span
+                  className={cn(
+                    "text-xs/3 font-semibold tabular-nums",
+                    cleared && "line-through"
+                  )}
+                >
+                  {format(entry.points)}
+                </span>
+                {cleared ? (
+                  <Check
+                    aria-hidden
+                    className="absolute -top-1 -right-0.5 size-icon-xs text-success-foreground"
+                  />
+                ) : null}
+                <span className="sr-only">{label}</span>
+                {muted ? (
+                  <span className="sr-only">{t("teams.notCovered")}</span>
+                ) : null}
+                {clearedLabel ? (
+                  <span className="sr-only">{clearedLabel}</span>
+                ) : null}
+              </li>
+            </TooltipTrigger>
+            <TooltipContent>
+              {[label, muted ? t("teams.notCovered") : clearedLabel]
+                .filter(Boolean)
+                .join(" · ")}
+            </TooltipContent>
+          </Tooltip>
         )
       })}
     </ul>
@@ -519,40 +528,44 @@ function TeamDepthBar({
       >
         {headline}
       </span>
-      <span
-        aria-label={[label, hint].filter(Boolean).join(" · ")}
-        className="flex h-2 min-w-16 flex-1 gap-px"
-        role="img"
-        title={hint}
-      >
-        {Array.from({ length: bar.total }, (_, index) => (
+      <Tooltip>
+        <TooltipTrigger asChild>
           <span
-            className={cn(
-              "h-full flex-1 first:rounded-l-full last:rounded-r-full",
-              index < bar.filled ? TONE_CLASS[bar.tone] : "bg-muted"
-            )}
-            // Sure battles are solid; close ones (past sure, within the depth) are striped with
-            // gaps, and stretch ones (past the depth) are empty with thin stripes of the tone.
-            style={
-              index >= bar.sure && index < bar.filled
-                ? { backgroundImage: CLOSE_STRIPES }
-                : index >= bar.filled && index < bar.stretch
-                  ? { backgroundImage: stretchStripes(bar.tone) }
-                  : undefined
-            }
-            data-band={
-              index < bar.sure
-                ? "sure"
-                : index < bar.filled
-                  ? "close"
-                  : index < bar.stretch
-                    ? "stretch"
-                    : undefined
-            }
-            key={index}
-          />
-        ))}
-      </span>
+            aria-label={[label, hint].filter(Boolean).join(" · ")}
+            className="flex h-2 min-w-16 flex-1 gap-px"
+            role="img"
+          >
+            {Array.from({ length: bar.total }, (_, index) => (
+              <span
+                key={index}
+                className={cn(
+                  "h-full flex-1 first:rounded-l-full last:rounded-r-full",
+                  index < bar.filled ? TONE_CLASS[bar.tone] : "bg-muted"
+                )}
+                // Sure battles are solid; close ones (past sure, within the depth) are striped with
+                // gaps, and stretch ones (past the depth) are empty with thin stripes of the tone.
+                style={
+                  index >= bar.sure && index < bar.filled
+                    ? { backgroundImage: CLOSE_STRIPES }
+                    : index >= bar.filled && index < bar.stretch
+                      ? { backgroundImage: stretchStripes(bar.tone) }
+                      : undefined
+                }
+                data-band={
+                  index < bar.sure
+                    ? "sure"
+                    : index < bar.filled
+                      ? "close"
+                      : index < bar.stretch
+                        ? "stretch"
+                        : undefined
+                }
+              />
+            ))}
+          </span>
+        </TooltipTrigger>
+        {hint ? <TooltipContent>{hint}</TooltipContent> : null}
+      </Tooltip>
     </div>
   )
 }

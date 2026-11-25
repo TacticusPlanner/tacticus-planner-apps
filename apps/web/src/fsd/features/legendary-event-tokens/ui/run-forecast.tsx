@@ -6,6 +6,11 @@ import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { useAnalyticsActions } from "@/shared/analytics"
 import { EntityIcon, IconLine } from "@/shared/ui"
@@ -214,20 +219,23 @@ function RunSummary({ run }: { run: RunForecast }) {
       data-testid="run-forecast-summary"
     >
       {items.map((item) => (
-        <span
-          className="inline-flex items-center gap-1"
-          data-stat={item.key}
-          key={item.key}
-          title={item.label}
-        >
-          <EntityIcon
-            size="inline"
-            alt={item.label}
-            className="shrink-0"
-            src={item.icon}
-          />
-          {item.value}
-        </span>
+        <Tooltip key={item.key}>
+          <TooltipTrigger asChild>
+            <span
+              className="inline-flex items-center gap-1"
+              data-stat={item.key}
+            >
+              <EntityIcon
+                size="inline"
+                alt={item.label}
+                className="shrink-0"
+                src={item.icon}
+              />
+              {item.value}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>{item.label}</TooltipContent>
+        </Tooltip>
       ))}
     </span>
   )

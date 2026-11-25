@@ -608,12 +608,12 @@ describe("TeamCard", () => {
     expect(cardActions.onUseEstimate).not.toHaveBeenCalled()
   })
 
-  it("carries uncalibrated in the estimated tag's tooltip", () => {
+  it("carries uncalibrated in the estimated tag's tooltip", async () => {
     renderEstimatedCard(team(), estimateOf({ calibrated: false }), { run: 2 })
-    expect(screen.getByTestId("team-card-depth-estimated")).toHaveAttribute(
-      "title",
-      expect.stringContaining("Rough guide")
-    )
+    fireEvent.pointerMove(screen.getByTestId("team-card-depth-estimated"), {
+      pointerType: "mouse",
+    })
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Rough guide")
   })
 
   it("reads Not enough for battle 1 yet for an estimate of 0", () => {
@@ -639,13 +639,16 @@ describe("TeamCard", () => {
     )
   })
 
-  it("mutes a chip the members no longer derive", () => {
+  it("mutes a chip the members no longer derive", async () => {
     renderCard(team({ objectiveIndexes: [0, 2] }))
     const muted = screen
       .getAllByTestId("team-card-objective")
       .filter((chip) => chip.dataset.muted === "true")
     expect(muted).toHaveLength(1)
-    expect(muted[0]!.title).toMatch(/· Not covered by the current members$/)
+    fireEvent.pointerMove(muted[0]!, { pointerType: "mouse" })
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(
+      /· Not covered by the current members$/
+    )
   })
 
   it("shows every lane objective in the coverage strip, faint where the team does not cover it", () => {
@@ -731,7 +734,6 @@ describe("TeamCard", () => {
         teamPowerStatus: "unavailable",
       })
       expect(power).toHaveAttribute("data-state", "unavailable")
-      expect(power).toHaveAttribute("title", "Power data unavailable")
       expect(within(power).getByText("—")).toHaveAttribute("aria-hidden")
       expect(within(power).getByText("Power data unavailable")).toHaveClass(
         "sr-only"
@@ -742,17 +744,17 @@ describe("TeamCard", () => {
       )
     })
 
-    it("names the unsynced roster, not the power data, as the reason", () => {
+    it("names the unsynced roster, not the power data, as the reason", async () => {
       const power = renderPower({
         teamPower: null,
         teamPowerStatus: "noRoster",
       })
       expect(power).toHaveAttribute("data-state", "noRoster")
-      expect(power).toHaveAttribute(
-        "title",
+      expect(power).not.toHaveTextContent("Power data unavailable")
+      fireEvent.pointerMove(power, { pointerType: "mouse" })
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(
         "Sync your roster to see team power"
       )
-      expect(power).not.toHaveTextContent("Power data unavailable")
     })
   })
 

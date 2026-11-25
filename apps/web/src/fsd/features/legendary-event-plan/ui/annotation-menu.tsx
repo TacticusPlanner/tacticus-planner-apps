@@ -8,6 +8,11 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { AnnotationMarkIcon } from "@/entities/legendary-event"
 import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
@@ -46,26 +51,30 @@ export function AnnotationMenu({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          className={cn(
-            "inline-flex items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-            touch ? "size-10" : "size-6",
-            status === null &&
-              "border border-dashed border-muted-foreground/40 hover:border-muted-foreground"
-          )}
-          data-cleared="false"
-          data-mark={status ?? "none"}
-          data-testid="progress-cell"
-          title={text}
-          type="button"
-        >
-          {status === null ? null : (
-            <AnnotationMarkIcon className="size-icon" status={status} />
-          )}
-          <span className="sr-only">{text}</span>
-        </button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <DropdownMenuTrigger asChild>
+          <TooltipTrigger asChild disableTouchToggle>
+            <button
+              className={cn(
+                "inline-flex items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                touch ? "size-10" : "size-6",
+                status === null &&
+                  "border border-dashed border-muted-foreground/40 hover:border-muted-foreground"
+              )}
+              data-cleared="false"
+              data-mark={status ?? "none"}
+              data-testid="progress-cell"
+              type="button"
+            >
+              {status === null ? null : (
+                <AnnotationMarkIcon className="size-icon" status={status} />
+              )}
+              <span className="sr-only">{text}</span>
+            </button>
+          </TooltipTrigger>
+        </DropdownMenuTrigger>
+        <TooltipContent>{text}</TooltipContent>
+      </Tooltip>
       <DropdownMenuContent align="center" data-testid="annotation-menu">
         <DropdownMenuLabel className="text-xs text-muted-foreground">
           {t("annotations.menuLabel", { objective, battle })}

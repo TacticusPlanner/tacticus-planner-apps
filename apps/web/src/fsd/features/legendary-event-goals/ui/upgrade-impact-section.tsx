@@ -323,7 +323,6 @@ export function UpgradeImpactSection({
             className="flex w-full min-w-0 items-center justify-between gap-3 rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
             data-testid="upgrade-impact-toggle"
             onClick={toggle}
-            title={t("upgradeImpact.toggle")}
             type="button"
           >
             {showLane

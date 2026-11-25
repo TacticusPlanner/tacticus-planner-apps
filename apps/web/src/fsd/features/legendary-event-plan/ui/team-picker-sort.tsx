@@ -1,12 +1,9 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { legendaryEventResourceIcon, powerIcon } from "@workspace/game-catalog"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group"
+import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HintedToggleGroupItem } from "@/shared/ui"
 
 import type { PickerSort } from "../model/team-picker"
 
@@ -40,35 +37,32 @@ export function TeamPickerSort({
         value={value}
         variant="outline"
       >
-        <ToggleGroupItem
+        <HintedToggleGroupItem
           aria-label={t("teams.picker.sortPointsLeft")}
           data-testid="team-picker-sort-points"
+          hint={t("teams.picker.sortPointsLeft")}
           size="sm"
-          title={t("teams.picker.sortPointsLeft")}
           value="pointsLeft"
         >
           <EntityIcon
             size="inline"
             alt=""
-
             src={legendaryEventResourceIcon("points")}
           />
-        </ToggleGroupItem>
-        <ToggleGroupItem
+        </HintedToggleGroupItem>
+        <HintedToggleGroupItem
           aria-describedby={powerAvailable ? undefined : reasonId}
           aria-label={t("teams.picker.sortPower")}
           data-testid="team-picker-sort-power"
-          disabled={!powerAvailable}
-          size="sm"
-          title={
-            powerAvailable
-              ? t("teams.picker.sortPower")
-              : t("teams.power.unavailable")
+          disabledReason={
+            powerAvailable ? undefined : t("teams.power.unavailable")
           }
+          hint={t("teams.picker.sortPower")}
+          size="sm"
           value="power"
         >
           <EntityIcon size="inline" alt="" src={powerIcon()} />
-        </ToggleGroupItem>
+        </HintedToggleGroupItem>
       </ToggleGroup>
       {powerAvailable ? null : (
         <span className="sr-only" id={reasonId}>

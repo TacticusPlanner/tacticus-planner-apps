@@ -36,7 +36,6 @@ export function TeamPickerTileMarkers({
           )}
           data-testid="team-picker-tier"
           data-tier={tier}
-          title={t("teams.picker.tier", { tier })}
         >
           <span aria-hidden="true">{tier}</span>
           <span className="sr-only">{t("teams.picker.tier", { tier })}</span>
@@ -50,7 +49,6 @@ export function TeamPickerTileMarkers({
             data-testid="team-picker-trait"
             data-trait={trait}
             key={trait}
-            title={label}
           >
             <EntityIcon size="inline" alt="" src={traitIcon(trait)} />
             <span className="sr-only">{label}</span>

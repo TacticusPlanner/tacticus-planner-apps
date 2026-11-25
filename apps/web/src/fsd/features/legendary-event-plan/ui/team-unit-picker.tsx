@@ -2,10 +2,15 @@ import { Fragment, useId, useMemo, useState } from "react"
 import type { Ref } from "react"
 import { useTranslation } from "react-i18next"
 import { ShieldPlus } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
+import { IconButton } from "@workspace/ui/components/icon-button"
 import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { UnitGoalBadge } from "@/entities/goal"
 import {
@@ -399,38 +404,43 @@ export function TeamUnitPicker({
                         />
                       ))}
                     </span>
-                    <span
-                      className="text-xs text-muted-foreground tabular-nums"
-                      data-testid="team-picker-points"
-                      title={t("teams.picker.pointsScope")}
-                    >
-                      {t("teams.picker.points", {
-                        points: number.format(tile.remainingPoints),
-                      })}
-                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild disableTouchToggle>
+                        <span
+                          className="text-xs text-muted-foreground tabular-nums"
+                          data-testid="team-picker-points"
+                        >
+                          {t("teams.picker.points", {
+                            points: number.format(tile.remainingPoints),
+                          })}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {t("teams.picker.pointsScope")}
+                      </TooltipContent>
+                    </Tooltip>
                   </button>
                   <TeamPickerTileMarkers
                     tier={hordeTiers?.get(id) ?? null}
                     traits={tile.unit.traits}
                   />
-                  <Button
-                    aria-label={t(
+                  <IconButton
+                    aria-pressed={isReserve}
+                    className="absolute top-0.5 right-0.5"
+                    data-testid="team-picker-reserve"
+                    label={t(
                       isReserve
                         ? "teams.picker.unsetReserve"
                         : "teams.picker.setReserve",
                       { name }
                     )}
-                    aria-pressed={isReserve}
-                    className="absolute top-0.5 right-0.5"
-                    data-testid="team-picker-reserve"
                     onClick={() => onToggleReserve(id)}
                     size="icon-xs"
-                    title={t("teams.reserve")}
                     type="button"
                     variant={isReserve ? "secondary" : "ghost"}
                   >
                     <ShieldPlus />
-                  </Button>
+                  </IconButton>
                 </li>
               </Fragment>
             )
