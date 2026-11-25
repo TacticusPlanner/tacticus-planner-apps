@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react"
+import { Suspense } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -102,10 +102,8 @@ export function CampaignBattleDialogHost({
 }: {
   dialog: CampaignBattleDialogStore
 }) {
-  const { i18n } = useTranslation()
-  useEffect(() => {
-    void i18n.loadNamespaces([...BATTLE_DIALOG_NAMESPACES])
-  }, [i18n])
+  // Loads the copy without suspending: the host re-renders once it is ready.
+  useTranslation(BATTLE_DIALOG_NAMESPACES, { useSuspense: false })
   const target = useCampaignBattleTarget(dialog)
   return <CampaignBattleDialog onClose={dialog.close} target={target} />
 }
