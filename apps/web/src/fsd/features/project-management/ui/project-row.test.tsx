@@ -74,40 +74,48 @@ describe("ProjectRow", () => {
     expect(screen.getByText("Other plan")).toBeInTheDocument()
   })
 
-  it("renders lightweight and extended metrics when a summary is ready", () => {
+  it("shows the same status facts on any live card, linking the blocked goals", () => {
     render(
       <ul>
         <ProjectRow
           actions={actionsHarness()}
           onEdit={vi.fn()}
-          project={defaultProject}
+          project={otherProject}
           summary={{
             status: "success",
             units: 3,
             goals: 7,
-            reached: 2,
-            blocked: 1,
-            completionDate: "2026-09-01",
-            unestimatedGoalCount: 0,
+            progress: {
+              status: "ready",
+              reached: 2,
+              blocked: 1,
+              completion: {
+                completionDate: "2026-09-01",
+                unestimatedGoalCount: 0,
+              },
+            },
           }}
         />
-      </ul>
+      </ul>,
+      { route: "/plan/projects" }
     )
 
     expect(
       screen.getByText("goals.project.unitGoalSummary")
     ).toBeInTheDocument()
-    expect(screen.getByText("goals.project.reachedSummary")).toBeInTheDocument()
-    expect(screen.getByText("goals.project.blockedSummary")).toBeInTheDocument()
-    expect(
-      screen.getByText("goals.project.completionSummary")
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByTestId("project-row-completion-excluded")
-    ).not.toBeInTheDocument()
+    expect(screen.getByTestId("project-status-reached")).toHaveTextContent(
+      "goals.project.reachedOf"
+    )
+    expect(screen.getByTestId("project-status-completion")).toHaveTextContent(
+      /^goals\.project\.completionSummary$/
+    )
+    expect(screen.getByTestId("project-status-blocked")).toHaveAttribute(
+      "href",
+      "/plan/goals?project=other&status=blocked"
+    )
   })
 
-  it("shows the excluded-goal caveat alongside a partial completion date", () => {
+  it("adds the not-estimated count beside a partial date, and hides zero blocked", () => {
     render(
       <ul>
         <ProjectRow
@@ -118,26 +126,29 @@ describe("ProjectRow", () => {
             status: "success",
             units: 3,
             goals: 7,
-            reached: 2,
-            blocked: 1,
-            completionDate: "2026-09-01",
-            unestimatedGoalCount: 1,
+            progress: {
+              status: "ready",
+              reached: 0,
+              blocked: 0,
+              completion: {
+                completionDate: "2026-09-01",
+                unestimatedGoalCount: 1,
+              },
+            },
           }}
         />
       </ul>
     )
 
+    expect(screen.getByTestId("project-status-completion")).toHaveTextContent(
+      "goals.project.completionSummarygoals.deadlineFit.header.separatorgoals.deadlineFit.header.notEstimated"
+    )
     expect(
-      screen.getByText("goals.project.completionSummary")
-    ).toBeInTheDocument()
-    expect(
-      screen.getByTestId("project-row-completion-excluded")
-    ).toBeInTheDocument()
+      screen.queryByTestId("project-status-blocked")
+    ).not.toBeInTheDocument()
   })
 
-  it("shows the caveat with no date line when nothing could be estimated", () => {
-    // plan-completion-outlook design Decision 5: this surface has no unknown placeholder, so the
-    // caveat alone is what keeps an omitted date from reading as "no information".
+  it("says No date when nothing could be estimated", () => {
     render(
       <ul>
         <ProjectRow
@@ -148,20 +159,52 @@ describe("ProjectRow", () => {
             status: "success",
             units: 3,
             goals: 7,
-            reached: 0,
-            blocked: 7,
-            completionDate: null,
-            unestimatedGoalCount: 7,
+            progress: {
+              status: "ready",
+              reached: 0,
+              blocked: 7,
+              completion: { completionDate: null, unestimatedGoalCount: 7 },
+            },
           }}
+        />
+      </ul>,
+      { route: "/plan/projects" }
+    )
+
+    expect(screen.getByTestId("project-status-completion")).toHaveTextContent(
+      /^goals\.project\.noDate/
+    )
+  })
+
+  it("shows a placeholder while the plan runs and no status line on archived cards", () => {
+    render(
+      <ul>
+        <ProjectRow
+          actions={actionsHarness()}
+          onEdit={vi.fn()}
+          project={otherProject}
+          summary={{
+            status: "success",
+            units: 1,
+            goals: 1,
+            progress: { status: "loading" },
+          }}
+        />
+        <ProjectRow
+          actions={actionsHarness()}
+          onEdit={vi.fn()}
+          project={archivedProject}
+          summary={{ status: "success", units: 1, goals: 1 }}
         />
       </ul>
     )
 
+    expect(screen.getByTestId("project-status-loading")).toBeInTheDocument()
+    expect(screen.queryByTestId("project-status-archived")).toBeNull()
     expect(
-      screen.queryByText("goals.project.completionSummary")
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByTestId("project-row-completion-excluded")
+      within(screen.getByTestId("project-row-archived")).getByText(
+        "goals.project.unitGoalSummary"
+      )
     ).toBeInTheDocument()
   })
 

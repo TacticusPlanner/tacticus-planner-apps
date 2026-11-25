@@ -7,6 +7,7 @@ const createProject = vi.fn()
 const listProjects = vi.fn()
 vi.mock("@/entities/project", () => ({
   createProject: (...args: unknown[]) => createProject(...args),
+  newProjectColorFromCache: () => "#22c55e",
   projectQueries: {
     all: () => ["projects"],
     list: () => ({
@@ -19,7 +20,7 @@ vi.mock("@/entities/project", () => ({
 import { useInlineProjectCreate } from "./use-inline-project-create"
 
 describe("useInlineProjectCreate", () => {
-  it("creates an unstyled custom project and writes it into the cached list without a refetch", async () => {
+  it("creates a custom project with an unused preset color and writes it into the cached list without a refetch", async () => {
     const existing = { projectId: "home", name: "Home", isDefault: true }
     const created = { projectId: "new", name: "Event", isDefault: false }
     createProject.mockResolvedValue(created)
@@ -38,7 +39,7 @@ describe("useInlineProjectCreate", () => {
     expect(createProject).toHaveBeenCalledWith({
       name: "Event",
       description: null,
-      color: null,
+      color: "#22c55e",
     })
     expect(returned).toBe(created)
     expect(queryClient.getQueryData(["projects", "list"])).toEqual({

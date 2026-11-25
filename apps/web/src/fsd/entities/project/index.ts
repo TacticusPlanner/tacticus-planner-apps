@@ -19,6 +19,11 @@ export {
 } from "./model/project-limit"
 
 export { isProjectNameValid } from "./model/project-name"
+export {
+  newProjectColorFromCache,
+  pickNewProjectColor,
+  PROJECT_PRESET_COLORS,
+} from "./model/project-color"
 export { useProjects } from "./model/use-projects"
 export { useSelectedProjectId } from "./model/selection/use-selected-project-id"
 export { type ProjectDeadline } from "./model/deadline/resolve-project-deadline"

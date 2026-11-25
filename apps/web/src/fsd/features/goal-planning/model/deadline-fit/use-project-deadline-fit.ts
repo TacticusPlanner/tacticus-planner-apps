@@ -9,6 +9,9 @@ import type {
 import type { EstimateOutcome } from "@/entities/goal-farming"
 
 import { useGoalAttainmentState } from "../attainment/use-goal-attainment"
+import { useGoalsOverviewMetrics } from "../attainment/use-goals-overview-metrics"
+import { projectCompletion } from "../project-cards/project-card-progress"
+import type { ProjectCompletion } from "../project-cards/project-card-progress"
 import { usePlanInsights } from "../insights/use-plan-insights"
 import { useGoals } from "../goals-data/use-goals"
 import type { GoalRow } from "../shared/types"
@@ -91,18 +94,65 @@ export type ProjectFitCount =
 
 const EMPTY_REACHED: ReadonlyMap<string, boolean> = new Map()
 
+const LOADING: ProjectFitCount = { status: "loading" }
+
+/** A targeted card's fit count from a resolved deadline, or null when the fit has none. */
+function cardFitCount(
+  project: Pick<ProjectSummary, "goalIds"> & { target: ProjectTarget },
+  deadline: ProjectDeadline,
+  goalsById: ReadonlyMap<string, GoalRow>,
+  estimates: ReadonlyMap<string, EstimateOutcome>,
+  attainmentByGoalId: ReadonlyMap<string, { reached: boolean }>
+): ProjectFitCount | null {
+  const rows = project.goalIds.flatMap((goalId) => {
+    const goal = goalsById.get(goalId)
+    return goal ? [goal] : []
+  })
+  const reached = new Map(
+    project.goalIds.map((goalId) => [
+      goalId,
+      attainmentByGoalId.get(goalId)?.reached ?? false,
+    ])
+  )
+  const fit = projectDeadlineFit(
+    project.target,
+    deadline,
+    rows,
+    estimates,
+    reached.size > 0 ? reached : EMPTY_REACHED
+  )
+  return fit.status === "ready"
+    ? { status: "ready", summary: fit.summary }
+    : null
+}
+
+/** A live project card's progress (project-management: "Every live project card shows the same
+ *  facts"): reached and blocked goals, and its "Done by" from the global run (null when the run
+ *  failed). */
+export type ProjectCardProgress =
+  | { status: "loading" }
+  | {
+      status: "ready"
+      reached: number
+      blocked: number
+      completion: ProjectCompletion | null
+    }
+
 /**
- * Fit counts for project cards (Projects page and home widget), keyed by project id. Only
- * non-archived projects with a resolvable, not-ended target get one; the one global-plan run is
- * computed only when such a project exists. A failed run hides the counts.
+ * Every live project card's progress and, for targeted ones, its deadline fit count (Projects page
+ * and home widget), keyed by project id, from one global-plan run. Archived projects get neither.
+ * The run is computed only when a live project holds a goal. A failed run hides the fit counts and
+ * the dates.
  */
-export function useProjectFitCounts(
-  projects: readonly ProjectSummary[]
-): ReadonlyMap<string, ProjectFitCount> {
-  const targeted = projects.flatMap((project) =>
-    project.status !== "Archived" && project.target
-      ? [{ ...project, target: project.target }]
-      : []
+export function useProjectCardOutlooks(projects: readonly ProjectSummary[]): {
+  fitCounts: ReadonlyMap<string, ProjectFitCount>
+  progress: ReadonlyMap<string, ProjectCardProgress>
+} {
+  const liveProjects = projects.filter(
+    (project) => project.status !== "Archived"
+  )
+  const targeted = liveProjects.flatMap((project) =>
+    project.target ? [{ ...project, target: project.target }] : []
   )
   const deadlines = useProjectDeadlines(targeted)
   const live = targeted.filter((project) => {
@@ -112,49 +162,62 @@ export function useProjectFitCounts(
       (deadline?.status === "ready" && !deadline.ended)
     )
   })
-  // An empty scope makes the run a no-op, so the page pays for it only when a count can show.
-  const insights = usePlanInsights(live.length > 0 ? null : [])
+  // Kept by content: the metrics below recompute (and re-stabilise) on a new array identity.
+  const memberKey = [
+    ...new Set(liveProjects.flatMap((project) => project.goalIds)),
+  ].join(",")
+  const memberIds = useMemo(
+    () => (memberKey === "" ? [] : memberKey.split(",")),
+    [memberKey]
+  )
+  // An empty scope makes the run a no-op, so the page pays for it only when a card can use it.
+  const insights = usePlanInsights(memberIds.length > 0 ? null : [])
   const goals = useGoals()
-  const memberIds = live.flatMap((project) => project.goalIds)
   const attainment = useGoalAttainmentState(memberIds)
+  const metrics = useGoalsOverviewMetrics(memberIds, insights.result.estimates)
 
-  const counts = new Map<string, ProjectFitCount>()
-  if (insights.isError || goals.fetchState.status === "error") return counts
+  const fitCounts = new Map<string, ProjectFitCount>()
+  const progress = new Map<string, ProjectCardProgress>()
+  if (goals.fetchState.status === "error") return { fitCounts, progress }
   const goalsById =
     goals.fetchState.status === "success"
       ? new Map(goals.fetchState.goals.map((goal) => [goal.goalId, goal]))
       : null
-  for (const project of live) {
-    const deadline = deadlines.get(project.projectId)
-    if (
-      deadline?.status !== "ready" ||
-      insights.loading ||
-      !goalsById ||
-      attainment.pending
-    ) {
-      counts.set(project.projectId, { status: "loading" })
+  const loading = insights.loading || !goalsById || attainment.pending
+
+  for (const project of liveProjects) {
+    if (loading) {
+      progress.set(project.projectId, { status: "loading" })
       continue
     }
-    const rows = project.goalIds.flatMap((goalId) => {
-      const goal = goalsById.get(goalId)
-      return goal ? [goal] : []
+    progress.set(project.projectId, {
+      status: "ready",
+      reached: project.goalIds.filter(
+        (goalId) => attainment.byGoalId.get(goalId)?.reached
+      ).length,
+      blocked: project.goalIds.filter(
+        (goalId) => metrics.get(goalId)?.blockers.isBlocked
+      ).length,
+      completion: insights.isError
+        ? null
+        : projectCompletion(project.goalIds, insights.result),
     })
-    const reached = new Map(
-      project.goalIds.map((goalId) => [
-        goalId,
-        attainment.byGoalId.get(goalId)?.reached ?? false,
-      ])
-    )
-    const fit = projectDeadlineFit(
-      project.target,
-      deadline,
-      rows,
-      insights.result.estimates,
-      reached.size > 0 ? reached : EMPTY_REACHED
-    )
-    if (fit.status === "ready") {
-      counts.set(project.projectId, { status: "ready", summary: fit.summary })
-    }
   }
-  return counts
+
+  if (insights.isError) return { fitCounts, progress }
+  for (const project of live) {
+    const deadline = deadlines.get(project.projectId)
+    const count =
+      deadline?.status === "ready" && !loading
+        ? cardFitCount(
+            project,
+            deadline,
+            goalsById,
+            insights.result.estimates,
+            attainment.byGoalId
+          )
+        : LOADING
+    if (count) fitCounts.set(project.projectId, count)
+  }
+  return { fitCounts, progress }
 }

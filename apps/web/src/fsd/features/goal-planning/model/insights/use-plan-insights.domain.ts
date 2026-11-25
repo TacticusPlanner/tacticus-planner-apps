@@ -191,6 +191,15 @@ export interface PlanInsightsResult {
    *  filtered out before estimation. Surfaces showing the date must show this alongside it, so a
    *  partial date never reads as covering the whole plan (see the `plan-completion-outlook` spec). */
   unestimatedGoalCount: number
+  /** Every planned goal's estimated finish date (ISO `yyyy-mm-dd`), scope or not: the goals a
+   *  project-scoped `completionDate` would be the latest of. Blocked and unestimated goals are absent. */
+  goalDates: ReadonlyMap<string, string>
+  /** Every goal the run planned (Active, in priority order), scope or not; the ones missing from
+   *  `goalDates` are what a scoped `unestimatedGoalCount` would count. */
+  plannedGoalIds: readonly string[]
+  /** The day the plan's Onslaught token wait ends, or null when it needs no wait. It extends a
+   *  completion date that is earlier, and never creates one. */
+  onslaughtWaitDate: string | null
   /** The scoped goals behind `completionDate`, latest finish first. */
   goalOutlook: PlanInsightsGoalOutlook[]
   /** The scoped goals `unestimatedGoalCount` counts, with their reason. */
@@ -236,6 +245,9 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
   levelPoolXpAvailableByGoalId: new Map(),
   completionDate: null,
   unestimatedGoalCount: 0,
+  goalDates: new Map(),
+  plannedGoalIds: [],
+  onslaughtWaitDate: null,
   goalOutlook: [],
   excludedGoals: [],
   bottlenecks: [],

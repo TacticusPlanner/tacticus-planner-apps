@@ -79,15 +79,17 @@ SHALL be shown wherever the date would be shown, whether or not a date is
 present; a date SHALL NOT appear on its own when the count is above zero.
 
 When no date can be reported, the Insights summary SHALL show its existing
-unknown placeholder alongside the exclusion information. The projects list row
-SHALL omit the date entirely and show the exclusion information alone — it
-carries no placeholder today and gains none, because a lone dash beside its
-inline reached/blocked counts reads as a broken value rather than an absent one.
+unknown placeholder alongside the exclusion information. A project card SHALL
+show "No date" with the not-estimated count instead.
 
-The projects list SHALL show this date only for the project whose insights are
-current; other project rows SHALL show no date and no placeholder implying one
-is missing. The Goals page, scoped to a project or not, SHALL NOT render a
-project-level completion date.
+Every live project card (Projects page and Home's Your projects) SHALL show its
+date, read from the one global run: the latest estimated finish among the
+project's planned goals, pushed out (never created) by the plan's Onslaught
+token wait, the same figure a run scoped to that project reports. The
+not-estimated count beside it is the project's planned goals with no date
+("Done by Dec 26 · 1 not estimated"). Archived cards show no date. The Goals
+page, scoped to a project or not, SHALL NOT render a project-level completion
+date.
 
 #### Scenario: Formatting matches the goal rows
 
@@ -113,16 +115,14 @@ project-level completion date.
 #### Scenario: Nothing estimable, on the project surfaces
 
 - **GIVEN** the same project
-- **WHEN** the projects list row renders
-- **THEN** it shows the exclusion information with no date line and no
-  placeholder in its place
+- **WHEN** its project card renders
+- **THEN** it shows "No date" with the not-estimated count
 
-#### Scenario: A non-current project row
+#### Scenario: Every live card shows its own date
 
-- **GIVEN** the projects list, with one project's insights current
-- **WHEN** the rows render
-- **THEN** only the current project's row shows a projected completion date, and
-  the others show neither a date nor a placeholder for one
+- **GIVEN** the Default project and a custom project, both with estimable goals
+- **WHEN** the Projects page renders
+- **THEN** each card shows its own "Done by" date from the one global run
 
 #### Scenario: Scoped Goals carries no project date
 

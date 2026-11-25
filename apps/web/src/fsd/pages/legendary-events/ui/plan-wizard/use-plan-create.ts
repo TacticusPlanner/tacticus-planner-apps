@@ -25,6 +25,7 @@ import {
   createProject,
   isProjectLimitError,
   MAX_PROJECTS,
+  newProjectColorFromCache,
   projectQueries,
 } from "@/entities/project"
 import { assertLaneHasRoom } from "@/features/legendary-event-plan"
@@ -271,7 +272,7 @@ export function usePlanCreate(eventId: string) {
       const project = await createProject({
         name: destination.kind === "new" ? destination.name : "",
         description: null,
-        color: null,
+        color: newProjectColorFromCache(queryClient),
         target: { kind: "legendaryEvent", eventId: targetEventId },
       })
       projectId.current = project.projectId

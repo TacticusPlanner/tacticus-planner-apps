@@ -1362,9 +1362,7 @@
       "membershipConflict": "{{unit}} already has an active or paused {{type}} goal.",
       "filterAll": "All projects",
       "archivedProjects": "Archived projects ({{count}})",
-      "unitGoalSummary": "{{units}} units · {{goals}} goals",
-      "reachedSummary": "{{count}} reached",
-      "blockedSummary": "{{count}} blocked",
+      "unitGoalSummary": "{{units}} · {{goals}}",
       "completionSummary": "Done by {{date}}",
       "summaryUnavailable": "Summary unavailable — retry",
       "moreActions": "More project actions",
@@ -1445,7 +1443,23 @@
       "addToProjectsDescription": "Choose one or more projects to add the selected goals to, or create a new one.",
       "addToProjectsConfirm": "Add to projects",
       "addToProjectsConfirmCount": "Add to {{count}} projects",
-      "saveProjects": "Save projects"
+      "saveProjects": "Save projects",
+      "unitCount_one": "{{count}} unit",
+      "unitCount_other": "{{count}} units",
+      "goalCount_one": "{{count}} goal",
+      "goalCount_other": "{{count}} goals",
+      "reachedOf_one": "{{count}} of {{total}} reached",
+      "reachedOf_other": "{{count}} of {{total}} reached",
+      "noDate": "No date",
+      "blockedLink_one": "{{count}} blocked",
+      "blockedLink_other": "{{count}} blocked",
+      "blockedLinkLabel_one": "Show {{count}} blocked goal in {{name}}",
+      "blockedLinkLabel_other": "Show {{count}} blocked goals in {{name}}",
+      "deadlineChip": {
+        "startsIn": "{{name}} · starts in {{when}}",
+        "endsIn": "{{name}} · ends in {{when}}",
+        "ended": "{{name}} · ended"
+      }
     },
     "toasts": {
       "statusConflict": "{{goal}} could not change: {{reason}}",

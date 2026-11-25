@@ -5,7 +5,11 @@ import { Button } from "@workspace/ui/components/button"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 
-import { isProjectNameValid } from "@/entities/project"
+import {
+  isProjectNameValid,
+  pickNewProjectColor,
+  useProjects,
+} from "@/entities/project"
 import type { ProjectSummary } from "@/entities/project"
 import {
   ResponsiveDialog,
@@ -102,7 +106,14 @@ function ProjectForm({
   const { t } = useTranslation()
   const [name, setName] = useState(project?.name ?? "")
   const [description, setDescription] = useState(project?.description ?? "")
-  const [color, setColor] = useState(project?.color ?? "")
+  const { projects } = useProjects()
+  // A new project starts with an unused preset, picked once so the swatch holds still; an existing
+  // project keeps its saved color, including none.
+  const [color, setColor] = useState(() =>
+    project
+      ? (project.color ?? "")
+      : pickNewProjectColor(projects.map((existing) => existing.color))
+  )
   const [targetEventId, setTargetEventId] = useState(
     project?.target?.eventId ?? null
   )

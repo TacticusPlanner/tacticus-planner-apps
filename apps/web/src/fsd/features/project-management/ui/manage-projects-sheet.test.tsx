@@ -86,7 +86,12 @@ describe("ManageProjectsSheet", () => {
       screen.getByLabelText("goals.project.description"),
       " Description "
     )
-    await user.type(screen.getByLabelText("goals.project.color"), " #abcdef ")
+    // A new project starts with an unused preset; it can be replaced.
+    const color = screen.getByLabelText("goals.project.color")
+    expect((color as HTMLInputElement).value).toMatch(/^#[\da-f]{6}$/)
+    expect(color).not.toHaveValue("#6b7280")
+    await user.clear(color)
+    await user.type(color, " #abcdef ")
     await user.click(screen.getByText("goals.project.create"))
 
     expect(actions.create).toHaveBeenCalledWith(

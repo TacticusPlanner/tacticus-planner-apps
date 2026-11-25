@@ -43,3 +43,19 @@ While the catalog loads, a Legendary Event target's deadline SHALL be loading. I
 - **GIVEN** a project targets Uthar with no run, and Uthar's run 3 started yesterday
 - **WHEN** the target is resolved
 - **THEN** it is ended
+
+### Requirement: A deadline shows as one chip with its timing
+
+A project with a deadline SHALL show one deadline chip on its cards (Projects page and Home): the deadline's icon, then its name and timing, with the run's dates ("runs Dec 3 – Dec 10", "(estimated)" for an unannounced run) as a design-system tooltip. Timing uses the same countdown wording as Home's events: "starts in 18 days" before the deadline's start, "ends in 3 days" between its start and its end, "ended" after. A Legendary Event deadline reads "LE · Lysander · starts in 18 days" and links to the event page where the catalog serves it. The chip takes a small view model (kind, name, link, start, end, state), so a new deadline kind adds a mapper, not a new chip. A project without a deadline shows no chip; a deadline that is loading or unavailable shows the name alone.
+
+#### Scenario: Upcoming run
+
+- **GIVEN** a project targets Lysander, whose next run starts in 18 days
+- **WHEN** its card renders
+- **THEN** the chip reads "LE · Lysander · starts in 18 days"
+
+#### Scenario: Running run
+
+- **GIVEN** a project targets Lysander's run 2, which started 4 days ago
+- **WHEN** its card renders
+- **THEN** the chip reads "LE · Lysander · ends in 3 days"

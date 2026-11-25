@@ -262,7 +262,7 @@ describe("GoalProjectsField", () => {
       expect(createProject).toHaveBeenCalledExactlyOnceWith({
         name: "Brand new",
         description: null,
-        color: null,
+        color: expect.stringMatching(/^#[\da-f]{6}$/),
       })
       await vi.waitFor(() =>
         expect(onSelectionChange).toHaveBeenCalledWith(["selected", "new-id"])

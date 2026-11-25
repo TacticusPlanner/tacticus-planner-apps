@@ -34,25 +34,36 @@ vi.mock("@/entities/project", async (importOriginal) => {
   }
 })
 
+// One result object, as the real hook keeps its result in state between renders.
+const planInsightsResult = {
+  result: {
+    estimates: new Map(),
+    goalDates: new Map(),
+    plannedGoalIds: [],
+    onslaughtWaitDate: null,
+  },
+  loading: false,
+  isError: false,
+}
 vi.mock("@/features/goal-planning/model/insights/use-plan-insights", () => ({
   usePlanInsights: (scope: unknown) => {
     planInsightsMock(scope)
-    return {
-      result: { estimates: new Map() },
-      loading: false,
-      isError: false,
-    }
+    return planInsightsResult
   },
 }))
 
-vi.mock("react-i18next", () => ({
-  initReactI18next: { type: "3rdParty", init: vi.fn() },
-  useTranslation: () => ({
+vi.mock("react-i18next", () => {
+  // One `t`, as the real hook's: the unit-name resolver behind the goal metrics memoises on it.
+  const translation = {
     t: (key: string, values?: Record<string, unknown>) =>
       values ? `${key}:${JSON.stringify(values)}` : key,
     i18n: { language: "en" },
-  }),
-}))
+  }
+  return {
+    initReactI18next: { type: "3rdParty", init: vi.fn() },
+    useTranslation: () => translation,
+  }
+})
 vi.mock("react-router", async (importOriginal) => ({
   ...(await importOriginal<typeof import("react-router")>()),
   useNavigate: () => navigateMock,
@@ -209,7 +220,17 @@ describe("ProjectsWidget", () => {
       remainingCount: 0,
     })
 
-    it("runs no plan when no listed project has a target", async () => {
+    it("runs the plan for Done by when a project holds a goal, target or not", async () => {
+      planInsightsMock.mockClear()
+      useHomeProjectsMock.mockReturnValue(
+        ready([project({ target: null, goalIds: ["g1"] })])
+      )
+      render(<ProjectsWidget />, { route: "/" })
+      await waitFor(() => expect(planInsightsMock).toHaveBeenCalled())
+      expect(planInsightsMock).toHaveBeenLastCalledWith(null)
+    })
+
+    it("runs no plan when no listed project holds a goal", async () => {
       planInsightsMock.mockClear()
       useHomeProjectsMock.mockReturnValue(
         ready([project({ target: null, goalIds: [] })])
@@ -248,11 +269,11 @@ describe("ProjectsWidget", () => {
         return deadlines?.get("p1")?.status
       }
 
-      const targeted = (eventId: string) =>
+      const targeted = (eventId: string, goalIds = ["g1"]) =>
         ready([
           project({
             target: { kind: "legendaryEvent", eventId },
-            goalIds: [],
+            goalIds,
           }),
         ])
 
@@ -264,11 +285,22 @@ describe("ProjectsWidget", () => {
         expect(planInsightsMock).toHaveBeenLastCalledWith(null)
       })
 
-      it("skips the plan once the deadline turns out unavailable", async () => {
-        useHomeProjectsMock.mockReturnValue(targeted("gone"))
+      it("skips the plan when the targeted project holds no goal", async () => {
+        useHomeProjectsMock.mockReturnValue(targeted("votanUthar", []))
         render(<ProjectsWidget />, { route: "/" })
-        await waitFor(() => expect(resolvedStatus()).toBe("unavailable"))
+        await waitFor(() => expect(resolvedStatus()).toBe("ready"))
         expect(planInsightsMock).toHaveBeenLastCalledWith([])
+      })
+
+      it("shows the deadline chip with its countdown", async () => {
+        useHomeProjectsMock.mockReturnValue(targeted("votanUthar"))
+        render(<ProjectsWidget />, { route: "/" })
+        await waitFor(() =>
+          expect(screen.getByTestId("home-project-target")).toHaveAttribute(
+            "data-state-timing",
+            "upcoming"
+          )
+        )
       })
     })
   })
