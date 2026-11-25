@@ -74,8 +74,33 @@ function hubRuns(
 
 export interface HubViewModel {
   active: HubCardViewModel[]
-  upcoming: HubCardViewModel[]
+  /** Upcoming events whose next run has an announced start, soonest first. */
+  upNext: HubCardViewModel[]
+  /** Upcoming events with no announced start yet, by guessed start (unguessable last). */
+  notAnnounced: HubCardViewModel[]
   archived: HubCardViewModel[]
+}
+
+/** The first run not yet over: the one an upcoming card counts down to. */
+const nextRun = (card: HubCardViewModel) =>
+  card.runs.find((run) => run.status !== "past")
+
+const byNextStart = (a: HubCardViewModel, b: HubCardViewModel) =>
+  (nextRun(a)?.startMs ?? Number.POSITIVE_INFINITY) -
+  (nextRun(b)?.startMs ?? Number.POSITIVE_INFINITY)
+
+/** Splits upcoming cards by whether their next run's start is announced. */
+function splitUpcoming(
+  cards: readonly HubCardViewModel[]
+): Pick<HubViewModel, "upNext" | "notAnnounced"> {
+  const announced = (card: HubCardViewModel) =>
+    nextRun(card)?.status === "upcoming"
+  return {
+    upNext: cards.filter(announced).toSorted(byNextStart),
+    notAnnounced: cards
+      .filter((card) => !announced(card))
+      .toSorted(byNextStart),
+  }
 }
 
 function syncedFor(
@@ -95,7 +120,8 @@ function syncedFor(
   }
 }
 
-/** Groups the catalog events for the hub (active, upcoming by start, archived by localized name)
+/** Groups the catalog events for the hub (active; upcoming split into up next and not announced
+ *  yet, each by start; archived by localized name)
  *  and attaches the synced run, tokens and points to the active ones. */
 export function buildHubViewModel(
   events: readonly LegendaryEvent[],
@@ -127,7 +153,7 @@ export function buildHubViewModel(
     })
   return {
     active: groups.active.map(toCard(true)),
-    upcoming: groups.upcoming.map(toCard(false)),
+    ...splitUpcoming(groups.upcoming.map(toCard(false))),
     archived: groups.archived.map(toCard(false)),
   }
 }

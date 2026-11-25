@@ -40,6 +40,13 @@ const dante = {
     "2026-01-04T00:00:00Z",
   ],
 }
+// Announced but with no start date yet.
+const calgar = {
+  ...utharEvent,
+  id: "ultraCalgar",
+  name: "Calgar",
+  eventStageStartDatesUtc: [],
+}
 const lysanderProgress = {
   id: "astarLysander",
   alpha: null,
@@ -92,7 +99,7 @@ describe("LegendaryEventsHubPage", () => {
   })
   beforeEach(async () => {
     await seedGameCatalog({
-      lres: [dante, farsightEvent, utharEvent, lysanderEvent],
+      lres: [dante, farsightEvent, utharEvent, lysanderEvent, calgar],
     })
     await seedPlayerData({ "lre-progress": [lysanderProgress] })
     reads = spyOnIndexedDbReads()
@@ -107,16 +114,20 @@ describe("LegendaryEventsHubPage", () => {
     vi.unstubAllEnvs()
   })
 
-  it("orders the events under Active, Upcoming and Archived", async () => {
+  it("orders the events under Active, Up next, Not announced yet and Archived", async () => {
     renderHub()
     await ready()
 
     expect(names(screen.getByTestId("legendary-events-group-active"))).toEqual([
       "Lysander",
     ])
+    expect(names(screen.getByTestId("legendary-events-group-upNext"))).toEqual([
+      "Ûthar",
+      "Farsight",
+    ])
     expect(
-      names(screen.getByTestId("legendary-events-group-upcoming"))
-    ).toEqual(["Ûthar", "Farsight"])
+      names(screen.getByTestId("legendary-events-group-notAnnounced"))
+    ).toEqual(["Calgar"])
     expect(
       names(screen.getByTestId("legendary-events-group-archived"))
     ).toEqual(["Dante"])
@@ -128,7 +139,7 @@ describe("LegendaryEventsHubPage", () => {
     ).toBeNull()
     expect(
       screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent)
-    ).toEqual(["Active", "Upcoming", "Archived"])
+    ).toEqual(["Active", "Up next", "Not announced yet", "Archived"])
     expect(screen.queryByTestId("legendary-events-no-active")).toBeNull()
   })
 
@@ -165,7 +176,7 @@ describe("LegendaryEventsHubPage", () => {
     await ready()
 
     const uthar = within(
-      screen.getByTestId("legendary-events-group-upcoming")
+      screen.getByTestId("legendary-events-group-upNext")
     ).getAllByTestId("legendary-event-card")[0]!
     expect(uthar).toHaveTextContent("Ûthar")
     // One line: the local start date without the time of day, then the countdown.
@@ -260,7 +271,7 @@ describe("LegendaryEventsHubPage", () => {
         active.getByTestId("legendary-event-synced-unavailable")
       ).toHaveTextContent("Synced data unavailable")
     )
-    expect(names(screen.getByTestId("legendary-events-hub"))).toHaveLength(4)
+    expect(names(screen.getByTestId("legendary-events-hub"))).toHaveLength(5)
   })
 
   it("opens the event page when a card is activated", async () => {
@@ -269,7 +280,7 @@ describe("LegendaryEventsHubPage", () => {
 
     fireEvent.click(
       within(
-        screen.getByTestId("legendary-events-group-upcoming")
+        screen.getByTestId("legendary-events-group-upNext")
       ).getAllByTestId("legendary-event-card")[0]!
     )
     expect(screen.getByTestId("event-page")).toHaveTextContent("votanUthar")
@@ -286,7 +297,7 @@ describe("LegendaryEventsHubPage", () => {
     for (const form of [steps.desktop, steps.mobile]) {
       expect(form.map((step) => step.target)).toEqual([
         '[data-testid="legendary-events-group-active"]',
-        '[data-testid="legendary-events-group-upcoming"] [data-testid="legendary-event-card"]',
+        '[data-upcoming] [data-testid="legendary-event-card"]',
       ])
       for (const step of form) {
         expect(document.querySelector(step.target)).not.toBeNull()

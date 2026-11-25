@@ -2,7 +2,8 @@
   "hub": {
     "groups": {
       "active": "Active",
-      "upcoming": "Upcoming",
+      "upNext": "Up next",
+      "notAnnounced": "Not announced yet",
       "archived": "Archived"
     },
     "noActive": "No Legendary Event is running right now.",

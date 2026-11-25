@@ -59,19 +59,19 @@ Assumptions:
 
 ### Requirement: The hub lists active, upcoming and archived events
 
-`/legendary-events` (All events) SHALL list every catalog Legendary Event in three groups in this order: Active, Upcoming (ascending next run start), Archived (alphabetical by localized unit name). A group with no events is omitted; when no event is active an explicit "no Legendary Event is running" line heads the page. Activating a row opens `/legendary-events/:eventId`. The old `/events` and `/events/legendary-events` routes SHALL NOT exist and SHALL NOT redirect.
+`/legendary-events` (All events) SHALL list every catalog Legendary Event in four groups in this order: Active; **Up next**, the upcoming events whose next run has an announced start (ascending start); **Not announced yet**, the other upcoming events (ascending guessed start of the next run, those with no guess last); Archived (alphabetical by localized unit name). Group headings use the same label style. A group with no events is omitted; when no event is active an explicit "no Legendary Event is running" line heads the page. Activating a row opens `/legendary-events/:eventId`. The old `/events` and `/events/legendary-events` routes SHALL NOT exist and SHALL NOT redirect.
 
 #### Scenario: Hub ordering
 
-- **GIVEN** Lysander active, Uthar upcoming (2026-10-04), Farsight upcoming (2026-10-18), Dante archived
+- **GIVEN** Lysander active, Uthar upcoming (2026-10-04), Farsight upcoming (2026-10-18), Calgar upcoming with no announced date, Dante archived
 - **WHEN** the hub renders
-- **THEN** the rows read Lysander, Uthar, Farsight, Dante under the Active, Upcoming and Archived headings respectively
+- **THEN** the rows read Lysander, Uthar, Farsight, Calgar, Dante under the Active, Up next, Not announced yet and Archived headings respectively
 
 #### Scenario: No active event
 
 - **GIVEN** no event is active
 - **WHEN** the hub renders
-- **THEN** the "no Legendary Event is running" line is shown above the Upcoming group and the Active heading is absent
+- **THEN** the "no Legendary Event is running" line is shown above the Up next group and the Active heading is absent
 
 #### Scenario: Section root redirects
 
@@ -274,7 +274,7 @@ While the catalog `lres` read is pending the hub and event page SHALL show a ske
 
 ### Requirement: The Events pages have Joyride tours
 
-The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row, on desktop and mobile. The event page SHALL have a page tour that targets, in order, on Overview the tab strip and the lane summary; on Teams the Event board, the first shown lane's Teams section (which holds its Create team button) and the Eligibility leaderboard (cross-lane, or the lane's own with one lane shown); on Plan the Token plan header, the Upgrade impact header (see `legendary-event-upgrade-impact`) and the Battles section heading; and on the run tab the Next token card, the Run status card, its Run inputs button, the progress grid and the Last run card when it renders (see `legendary-event-run-history`); the same steps on desktop and mobile. Each step SHALL first open its tab, so stepping back across tabs shows the right one. The Next token step SHALL target the card in whichever state it renders (token or empty state). Every step's tooltip SHALL lie fully inside the viewport when it shows; a tall target such as an expanded Token plan is highlighted by its header, not its whole list. Step titles and content SHALL be localized in en/de/es/fr.
+The hub SHALL have a page tour with steps for the Active group (or the no-event line) and one upcoming row (the first of Up next, else of Not announced yet), on desktop and mobile. The event page SHALL have a page tour that targets, in order, on Overview the tab strip and the lane summary; on Teams the Event board, the first shown lane's Teams section (which holds its Create team button) and the Eligibility leaderboard (cross-lane, or the lane's own with one lane shown); on Plan the Token plan header, the Upgrade impact header (see `legendary-event-upgrade-impact`) and the Battles section heading; and on the run tab the Next token card, the Run status card, its Run inputs button, the progress grid and the Last run card when it renders (see `legendary-event-run-history`); the same steps on desktop and mobile. Each step SHALL first open its tab, so stepping back across tabs shows the right one. The Next token step SHALL target the card in whichever state it renders (token or empty state). Every step's tooltip SHALL lie fully inside the viewport when it shows; a tall target such as an expanded Token plan is highlighted by its header, not its whole list. Step titles and content SHALL be localized in en/de/es/fr.
 
 #### Scenario: Event page tour on desktop
 
