@@ -4,9 +4,6 @@ import type { GoalRow } from "../shared/types"
 
 const EMPTY: ReadonlySet<string> = new Set()
 
-/** Which visible goals the select-all menu picks. */
-export type GoalSelectionPreset = "all" | "none" | "Active" | "Paused"
-
 type SelectionState = {
   key: string
   ids: ReadonlySet<string>
@@ -76,18 +73,6 @@ export function useGoalsSelection(rows: readonly GoalRow[], scopeKey: string) {
       }),
     [scopeKey, visibleKey]
   )
-  /** The select-all menu: every visible goal, none, or the visible Active or Paused ones. */
-  const selectPreset = (preset: GoalSelectionPreset) =>
-    update(
-      preset === "none"
-        ? EMPTY
-        : new Set(
-            rows
-              .filter((row) => preset === "all" || row.status === preset)
-              .map((row) => row.goalId)
-          )
-    )
-
   return {
     selection,
     selectedRows: rows.filter((row) => selection.has(row.goalId)),
@@ -95,7 +80,6 @@ export function useGoalsSelection(rows: readonly GoalRow[], scopeKey: string) {
     onToggleSelected,
     selectAllVisible,
     selectRange,
-    selectPreset,
     clearSelection: () => update(EMPTY),
   }
 }

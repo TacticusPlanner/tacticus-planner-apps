@@ -8,17 +8,17 @@ Defines how a user selects several goals on the Goals page and acts on them at o
 
 ### Requirement: Bulk actions are enabled by the selection
 
-The bulk actions SHALL be Pause, Resume, Add to project and Delete, on both platforms, plus Remove from project while the Goals page is scoped to a project (see "Remove from project takes the selection out of the scoped project"). The bulk actions SHALL render only in the select bar. In the bottom bar (phones) with no goal selected each SHALL be disabled; the top bar (desktop) SHALL show them only once a goal is selected. With a non-empty selection: Pause SHALL be enabled only when at least one selected goal is Active and not Reached; Resume SHALL be enabled only when at least one selected goal is Paused and not Reached; Add to project and Delete SHALL be enabled for any non-empty selection; Remove from project SHALL be enabled once the account's projects have loaded (a goal's memberships are part of the goals list, so they are always known with the rows). Each enabled action SHALL show the count of goals it would act on as a count badge after its label (never "(3)" in the text), and its accessible name SHALL say it in words ("Pause, 3 selected"). An action SHALL act on the applicable subset of the selection and skip the rest without error: Pause skips goals that are not Active or are Reached, Resume skips goals that are not Paused or are Reached. A goal whose own request is already in flight SHALL be skipped as well.
+The bulk actions SHALL be Pause, Resume, Add to project and Delete, on both platforms, plus Remove from project while the Goals page is scoped to a project (see "Remove from project takes the selection out of the scoped project"). The bulk actions SHALL render only in the select bar. With no goal selected each SHALL be disabled: in the bottom bar (phones) and in desktop Cards' top bar, which show from the start of select mode; the desktop table shows its top bar only once a goal is selected. With a non-empty selection: Pause SHALL be enabled only when at least one selected goal is Active and not Reached; Resume SHALL be enabled only when at least one selected goal is Paused and not Reached; Add to project and Delete SHALL be enabled for any non-empty selection; Remove from project SHALL be enabled once the account's projects have loaded (a goal's memberships are part of the goals list, so they are always known with the rows). Each enabled action SHALL show the count of goals it would act on as a count badge after its label (never "(3)" in the text), and its accessible name SHALL say it in words ("Pause, 3 selected"). An action SHALL act on the applicable subset of the selection and skip the rest without error: Pause skips goals that are not Active or are Reached, Resume skips goals that are not Paused or are Reached. A goal whose own request is already in flight SHALL be skipped as well.
 
 #### Scenario: Nothing selected
 
-- **WHEN** select mode is on below the mobile breakpoint and no goal is selected
-- **THEN** every bulk action in the bottom select bar is disabled
+- **WHEN** select mode is on (below the mobile breakpoint, or in desktop Cards) and no goal is selected
+- **THEN** every bulk action in the select bar is shown and disabled
 
 #### Scenario: Nothing selected on desktop
 
-- **WHEN** the desktop table shows its top select bar and no goal is selected
-- **THEN** the bar holds only the select-all checkbox and its menu, and no bulk action renders
+- **WHEN** desktop Table view shows and no goal is selected
+- **THEN** no select bar renders; the table header holds the select-all checkbox
 
 #### Scenario: Only Paused goals selected
 
@@ -179,13 +179,13 @@ While the Goals page is scoped to a project, activating Remove from project SHAL
 
 ### Requirement: Goals selects goals from checkboxes and a select bar
 
-At or above the mobile breakpoint, Goals **Table** view SHALL have no select mode, like Gmail: every row SHALL always show its selection checkbox in its leading cell, and a select bar SHALL always sit between the toolbar and the list, sticky at the top of the scrolling page while the list scrolls. The toolbar SHALL NOT show Select goals in desktop Table view.
+At or above the mobile breakpoint, Goals **Table** view SHALL have no select mode, like Gmail: every row SHALL always show its selection checkbox in its leading cell, the table header SHALL show a select-all checkbox, and from the first selection a select bar SHALL sit between the toolbar and the list, sticky at the top of the scrolling page while the list scrolls. With nothing selected no select bar renders. The toolbar SHALL NOT show Select goals in desktop Table view.
 
 Desktop **Cards** view and every view below the mobile breakpoint SHALL keep a select mode, entered from a **Select goals** button with an icon and a text label in the toolbar's Find slot, like Collection's Select units. The button SHALL always be present outside select mode, so the toolbar does not shift as goals load, and SHALL be disabled while goals load or when no row is visible. In select mode every goal card and table row SHALL show a selection checkbox (in Table view in the row's leading cell, in Cards view first in the card header), and the Select goals button SHALL be hidden until select mode ends. Outside select mode no checkbox or select bar renders there.
 
 The select bar uses the shared floating bar surface (`bg-popover`, a `ring-primary` outline, a large shadow):
 
-- **Top (desktop, Table and Cards):** with nothing selected it SHALL hold only a select-all checkbox and a menu beside it with All, None, Active and Paused, drawn quiet (card background, no shadow, border ring). From the first selection it SHALL add the number of selected goals, the bulk actions as labelled ghost buttons (Pause, Resume, Add to project, Delete, and Remove from project while scoped) and **Clear selection**. In desktop Cards' select mode it SHALL also show **Done**.
+- **Top (desktop, Table and Cards):** the number of selected goals, the bulk actions as labelled ghost buttons (Pause, Resume, Add to project, Delete, and Remove from project while scoped) and **Clear selection**, each disabled while it has nothing to act on. In desktop Cards' select mode it SHALL show from the moment select mode starts, with a select-all checkbox first (Cards have no header to hold it) and **Done** last. In Table view it SHALL show only while something is selected, without a select-all checkbox (the header holds it). There is no select-all menu.
 - **Bottom (below the mobile breakpoint):** a pill pinned to the bottom of the viewport with the number of selected goals in the foreground colour, **Select all goals**, the bulk actions and **Done**; Table view's header SHALL show a select-all checkbox in select mode.
 
 Behaviour:
@@ -193,11 +193,10 @@ Behaviour:
 - Toggling a goal's checkbox SHALL add or remove that goal from the selection without triggering any other control of its row or card.
 - Shift-clicking a checkbox SHALL select every visible goal between the last goal ticked and that one, in list order, keeping the rest of the selection.
 - Select all goals and the select-all checkbox SHALL select every currently visible goal, across every group, when not all are selected, and clear the selection when all are. The select-all checkbox SHALL render as indeterminate while some but not all are selected.
-- The select-all menu SHALL replace the selection with every visible goal (All), none (None), or every visible goal of that status (Active, Paused).
 - Clear selection, and Escape while something is selected on desktop, SHALL clear the selection without leaving the view.
 - Switching between Table and Cards view SHALL keep the selection; desktop Cards stays in select mode while anything is selected.
 - A Reached goal SHALL be selectable like any other. Whether each bulk action applies is decided per action (see "Bulk actions are enabled by the selection").
-- Each checkbox SHALL have an accessible name identifying the goal, or the select-all action, and the menu trigger SHALL be named "Choose which goals to select".
+- Each checkbox SHALL have an accessible name identifying the goal, or the select-all action.
 - Done SHALL end select mode and discard the selection.
 - Below the mobile breakpoint, select mode and reorder mode SHALL be mutually exclusive: entering either SHALL exit the other.
 
@@ -205,7 +204,7 @@ Behaviour:
 
 - **GIVEN** desktop Table view
 - **WHEN** the Goals list renders
-- **THEN** every row shows a checkbox, the top select bar shows only the select-all checkbox and its menu, and the toolbar has no Select goals
+- **THEN** every row shows a checkbox, the table header shows the select-all checkbox, no select bar renders, and the toolbar has no Select goals
 
 #### Scenario: Shift-click selects a range
 
@@ -213,23 +212,17 @@ Behaviour:
 - **WHEN** the user Shift-clicks #4's checkbox
 - **THEN** #1, #2, #3 and #4 are selected and the bar reports four
 
-#### Scenario: Selecting the Paused goals from the menu
-
-- **GIVEN** the visible goals are two Active and one Paused
-- **WHEN** the user opens the select-all menu and picks Paused
-- **THEN** only the Paused goal is selected
-
 #### Scenario: Escape clears the selection
 
 - **GIVEN** desktop Table view with two goals selected
 - **WHEN** the user presses Escape
-- **THEN** nothing is selected and the top bar is back to the select-all checkbox and its menu
+- **THEN** nothing is selected and the top select bar is gone
 
 #### Scenario: Entering select mode
 
 - **GIVEN** desktop Cards view, or any view below the mobile breakpoint
 - **WHEN** the user presses Select goals
-- **THEN** each card or row gains a checkbox and the select bar appears: on desktop at the top with the select-all checkbox, its menu and Done; on phones at the bottom with "0 selected", the bulk actions disabled, Select all goals and Done
+- **THEN** each card or row gains a checkbox and the select bar appears with "0 selected" and the bulk actions disabled: on desktop at the top with the select-all checkbox, Clear selection (disabled) and Done; on phones at the bottom with Select all goals and Done
 
 #### Scenario: Selecting two goals
 

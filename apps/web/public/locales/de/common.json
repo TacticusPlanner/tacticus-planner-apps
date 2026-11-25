@@ -1341,14 +1341,7 @@
       "selectMode": "Ziele auswählen",
       "selectDone": "Fertig",
       "removeFromProject": "Aus Projekt entfernen",
-      "clearSelection": "Auswahl aufheben",
-      "selectMenu": "Auswählen, welche Ziele markiert werden",
-      "presets": {
-        "all": "Alle",
-        "none": "Keine",
-        "Active": "Aktiv",
-        "Paused": "Pausiert"
-      }
+      "clearSelection": "Auswahl aufheben"
     },
     "delete": {
       "title_one": "Dieses Ziel löschen?",
@@ -2387,7 +2380,7 @@
         },
         "selectDesktop": {
           "title": "Ziele auswählen",
-          "content": "Hake in der Tabelle Ziele an oder nutze das Kästchen zum Auswählen aller und sein Menü (Alle, Keine, Aktiv, Pausiert); Umschalt-Klick hakt einen Bereich an. Pausiere, setze fort, füge sie einem Projekt hinzu oder lösche sie gemeinsam über die Leiste über der Liste, und drücke Esc oder Auswahl aufheben, um neu zu beginnen. In der Kartenansicht klicke zuerst auf Ziele auswählen."
+          "content": "Hake in der Tabelle Ziele an oder nutze das Kästchen zum Auswählen aller in der Kopfzeile; Umschalt-Klick hakt einen Bereich an. Sobald ein Ziel angehakt ist, pausiert, setzt fort, fügt einem Projekt hinzu oder löscht eine Leiste über der Liste sie gemeinsam; und drücke Esc oder Auswahl aufheben, um neu zu beginnen. In der Kartenansicht klicke zuerst auf Ziele auswählen."
         },
         "createGoal": {
           "title": "Ziel erstellen",

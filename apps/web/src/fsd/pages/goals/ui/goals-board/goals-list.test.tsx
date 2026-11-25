@@ -1021,7 +1021,7 @@ describe("GoalsList goal line on mobile", () => {
 describe("GoalsList selection", () => {
   beforeEach(() => useIsMobileMock.mockReturnValue(false))
 
-  it("puts the grip and per-row checkboxes in the leading cell, leaving select-all to the page's bar on desktop", async () => {
+  it("puts the grip and per-row checkboxes in the leading cell, select-all in its header", async () => {
     const onToggleSelected = vi.fn()
     const onSelectRange = vi.fn()
     const user = userEvent.setup()
@@ -1039,7 +1039,9 @@ describe("GoalsList selection", () => {
     )
     await screen.findByText("Hero One")
 
-    expect(screen.queryByTestId("goals-select-all")).toBeNull()
+    const selectAll = screen.getByTestId("goals-select-all")
+    expect(selectAll.closest("th")).not.toBeNull()
+    expect(selectAll).toHaveAttribute("data-state", "indeterminate")
     const rowBox = screen.getByTestId("goal-row-select-goal-1")
     expect(rowBox).toBeChecked()
     expect(rowBox.closest("td")).toContainElement(

@@ -385,7 +385,6 @@ export function GoalsPage() {
     onToggleSelected,
     selectAllVisible,
     selectRange,
-    selectPreset,
     clearSelection,
   } = useGoalsSelection(
     shownRows,
@@ -503,9 +502,9 @@ export function GoalsPage() {
       count={selectedRows.length}
       onClear={clearSelection}
       onDone={tableSelectable ? undefined : exitSelect}
-      onPreset={selectPreset}
       onSelectAll={selectAllVisible}
       placement={placement}
+      selectAll={!tableSelectable}
       total={visibleIds.length}
     >
       <GoalsBulkControls
@@ -644,7 +643,11 @@ export function GoalsPage() {
         />
       ) : null}
 
-      {!isMobile && (tableSelectable || selectActive) && rows.length > 0
+      {/* Cards' select mode shows the bar from the start, its actions disabled until a pick; the table
+          shows it from the first pick, with select-all in the table header. */}
+      {!isMobile &&
+      rows.length > 0 &&
+      (tableSelectable ? selectedRows.length > 0 : selectActive)
         ? selectBar("top")
         : null}
 

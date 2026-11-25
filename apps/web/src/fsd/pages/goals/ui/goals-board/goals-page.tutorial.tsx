@@ -54,7 +54,7 @@ export function useGoalsOverviewTutorial(deadlineScope = false) {
     // Desktop rows and cards carry a drag handle directly; mobile has a dedicated reorder mode, so the
     // reprioritize step targets different markup with the same content (and also explains the
     // order, which no on-page hint does). Cards point the select step at Select goals; the desktop
-    // table has no select mode, so the step points at its always-shown select bar instead. On mobile the View controls (Layout, Group
+    // table has no select mode, so the step points at its header's select-all checkbox instead. On mobile the View controls (Layout, Group
     // by, Sort, Season fit) sit behind the toolbar's View button, which gets one step.
     return {
       desktop: [
@@ -64,7 +64,7 @@ export function useGoalsOverviewTutorial(deadlineScope = false) {
         createStep('[data-testid="goals-view-toggle"]', "viewToggle"),
         createStep('[data-testid="goal-row-drag-handle"]', "reprioritize"),
         createStep(
-          '[data-testid="goals-select-toggle"], [data-testid="goals-select-bar"]',
+          '[data-testid="goals-select-toggle"], [data-testid="goals-select-all"]',
           "selectDesktop"
         ),
         ...after(false),

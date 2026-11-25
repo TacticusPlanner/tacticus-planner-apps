@@ -1341,14 +1341,7 @@
       "selectMode": "Sélectionner des objectifs",
       "selectDone": "Terminé",
       "removeFromProject": "Retirer du projet",
-      "clearSelection": "Effacer la sélection",
-      "selectMenu": "Choisir les objectifs à sélectionner",
-      "presets": {
-        "all": "Tous",
-        "none": "Aucun",
-        "Active": "Actifs",
-        "Paused": "En pause"
-      }
+      "clearSelection": "Effacer la sélection"
     },
     "delete": {
       "title_one": "Supprimer cet objectif ?",
@@ -2387,7 +2380,7 @@
         },
         "selectDesktop": {
           "title": "Sélectionner des objectifs",
-          "content": "Dans le tableau, cochez des objectifs ou utilisez la case Tout sélectionner et son menu (Tous, Aucun, Actifs, En pause) ; Maj + clic coche une plage. Mettez en pause, reprenez, ajoutez à un projet ou supprimez-les ensemble depuis la barre au-dessus de la liste, et appuyez sur Échap ou Effacer la sélection pour recommencer. En Cartes, cliquez d'abord sur Sélectionner des objectifs."
+          "content": "Dans le tableau, cochez des objectifs ou utilisez la case Tout sélectionner de l'en-tête ; Maj + clic coche une plage. Dès qu'un objectif est coché, une barre au-dessus de la liste permet de les mettre en pause, reprendre, ajouter à un projet ou supprimer ensemble ; et appuyez sur Échap ou Effacer la sélection pour recommencer. En Cartes, cliquez d'abord sur Sélectionner des objectifs."
         },
         "createGoal": {
           "title": "Créer un objectif",
