@@ -142,7 +142,9 @@ export function canPromote(
   )
 }
 
-/** Can pay for the next rarity's first step (the next step within Mythic) from what it holds. */
+/** Can pay for the next rarity's first step from what it holds. Mythic has no higher rarity, so a
+ *  Mythic unit never ascends: each Mythic star is a promotion (see `canPromote`), as the game calls
+ *  it, and a unit is never in both lists. */
 export function canAscend(
   unit: QuickFilterUnit,
   ladder: AscensionLadder,
@@ -165,9 +167,8 @@ export function blueStarReady(
 }
 
 function ascendTarget(current: Progression): Progression | undefined {
-  if (current === lastProgression) return undefined
   const rarity = progressionRarity(current)
-  if (rarity === "Mythic") return progressionAt(progressionIndex(current) + 1)
+  if (rarity === "Mythic") return undefined
   return progressionOrder.find(
     (step) => rarityRank(progressionRarity(step)) > rarityRank(rarity)
   )

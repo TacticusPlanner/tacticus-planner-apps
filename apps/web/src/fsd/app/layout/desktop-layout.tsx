@@ -313,6 +313,8 @@ function NavMenuItem({
   const { pathname } = useLocation()
   const compact = useSidebar().state === "collapsed"
   const isActive = matchesNavPath(pathname, item.path)
+  const label = t(item.labelKey)
+  const description = t(item.descriptionKey)
 
   return (
     <SidebarMenuItem>
@@ -320,7 +322,19 @@ function NavMenuItem({
         asChild
         data-testid={`desktop-nav-${item.path.slice(1)}`}
         isActive={isActive}
-        tooltip={t(item.labelKey)}
+        // Compact, the label is hidden, so the tooltip names the section and explains it; expanded,
+        // the label is on screen and the tooltip adds only the description.
+        tooltip={{
+          hidden: false,
+          children: compact ? (
+            <span className="flex flex-col gap-0.5">
+              <span className="font-semibold">{label}</span>
+              <span>{description}</span>
+            </span>
+          ) : (
+            description
+          ),
+        }}
       >
         <Link
           aria-current={pathname === item.path ? "page" : undefined}
@@ -332,7 +346,7 @@ function NavMenuItem({
             {compact ? <NavLiveDot corner item={item} /> : null}
           </span>
           <span>
-            {t(item.labelKey)}
+            {label}
             {compact ? null : <NavLiveDot item={item} />}
           </span>
         </Link>

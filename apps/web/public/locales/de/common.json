@@ -450,7 +450,7 @@
           "readyToRankUp": "Dein Verbesserungsinventar deckt alle Materialien, die im aktuellen Rang noch fehlen.",
           "needToAscend": "Auf dem höchsten Rang seiner Seltenheit, mit einem noch ausstehenden Aufstieg.",
           "canPromote": "Deine Scherben und Orbs reichen für den nächsten Stern innerhalb der aktuellen Seltenheit.",
-          "canAscend": "Deine Scherben und Orbs reichen für die nächste Seltenheit (bei Mythisch für den nächsten Stern).",
+          "canAscend": "Deine Scherben und Orbs reichen für die nächste Seltenheit.",
           "needToLevel": "Unter der Stufenobergrenze seiner Seltenheit.",
           "blueStarReady": "Deine Scherben und Orbs reichen für alle Schritte bis zum ersten blauen Stern.",
           "missingEquipment": "Mindestens ein Ausrüstungsplatz ist leer.",

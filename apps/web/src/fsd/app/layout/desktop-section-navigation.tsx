@@ -3,12 +3,17 @@ import { PanelLeftClose } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { findActiveChild } from "./find-active-child"
 import { NavChildIcon } from "./nav-child-icon"
 import { NavLiveDot } from "./nav-live-dot"
-import { subItemLabel } from "./nav-items"
+import { subItemDescription, subItemLabel } from "./nav-items"
 import type { NavItem } from "./nav-items"
 import { sectionShortcut } from "./section-shortcut"
 
@@ -89,22 +94,30 @@ export function DesktopSectionNavigation({
 
             return (
               <li key={child.path}>
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "flex items-center rounded-md px-3 py-2 text-sm transition-colors",
-                    isActive
-                      ? "bg-accent font-medium text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  )}
-                  to={child.path}
-                >
-                  <NavChildIcon child={child} className="mr-2" />
-                  <span className="min-w-0 wrap-break-word">
-                    {subItemLabel(t, child)}
-                  </span>
-                  <NavLiveDot item={child} />
-                </Link>
+                {/* The label is on screen, so the tooltip adds the page's description. */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "flex items-center rounded-md px-3 py-2 text-sm transition-colors",
+                        isActive
+                          ? "bg-accent font-medium text-accent-foreground shadow-[inset_3px_0_0_0_var(--accent-foreground)]"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      to={child.path}
+                    >
+                      <NavChildIcon child={child} className="mr-2" />
+                      <span className="min-w-0 wrap-break-word">
+                        {subItemLabel(t, child)}
+                      </span>
+                      <NavLiveDot item={child} />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent align="center" side="right">
+                    {subItemDescription(t, child)}
+                  </TooltipContent>
+                </Tooltip>
               </li>
             )
           })}

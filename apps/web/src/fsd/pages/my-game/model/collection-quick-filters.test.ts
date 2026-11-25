@@ -155,21 +155,30 @@ describe("canAscend", () => {
     )
   })
 
-  it("within Mythic targets the next Mythic step", () => {
+  it("never lists a Mythic unit: its next star is a promotion, so it is in Can promote only", () => {
     const unit = character({
       progression: "Mythic:OneBlueStar",
       mythicShards: 35,
     })
-    expect(canAscend(unit, ladder, { Mythic: 10 })).toBe(true)
-    expect(canAscend(unit, ladder, { Mythic: 9 })).toBe(false)
-  })
-
-  it("never lists a unit at Mythic wings", () => {
-    const unit = character({
+    const orbs = { Mythic: 10 }
+    expect(canAscend(unit, ladder, orbs)).toBe(false)
+    expect(canPromote(unit, ladder, orbs)).toBe(true)
+    const wings = character({
       progression: "Mythic:MythicWings",
       mythicShards: 1000,
     })
-    expect(canAscend(unit, ladder, { Mythic: 1000 })).toBe(false)
+    expect(canAscend(wings, ladder, { Mythic: 1000 })).toBe(false)
+  })
+
+  it("lists Legendary one blue star in Can ascend only: its next step is Mythic", () => {
+    const unit = character({
+      progression: "Legendary:OneBlueStar",
+      shards: 1000,
+      mythicShards: 1000,
+    })
+    const orbs = { Legendary: 1000, Mythic: 1000 }
+    expect(canAscend(unit, ladder, orbs)).toBe(true)
+    expect(canPromote(unit, ladder, orbs)).toBe(false)
   })
 
   it("applies to Machines of War along the same ladder", () => {

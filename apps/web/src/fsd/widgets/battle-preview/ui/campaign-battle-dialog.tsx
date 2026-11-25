@@ -1,3 +1,4 @@
+import { Suspense, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -24,6 +25,17 @@ import type {
 import { campaignEnemyTiles } from "../model/campaign-enemy-tiles"
 import type { EnemyNpcs } from "../model/enemy-tile"
 import { EnemyList } from "./enemy-list"
+
+/** The copy namespaces the dialog reads beyond the preloaded `common`, `dailies` and `library`: the
+ *  enemy tiles' level and detail (`legendaryEvents`, `progression`), the NPC names and their stats. */
+const BATTLE_DIALOG_NAMESPACES = [
+  "legendaryEvents",
+  "progression",
+  "npcs",
+  "factions",
+  "damageTypes",
+  "traits",
+] as const
 
 /**
  * A campaign location's battle, opened by tapping a planned raid location (V1's expandable raid
@@ -55,7 +67,7 @@ export function CampaignBattleDialog({
       >
         {target ? (
           <div className="flex min-w-0 flex-col gap-3">
-            <CampaignBattleContent isMobile target={target} />
+            <CampaignBattleContentBoundary isMobile target={target} />
           </div>
         ) : null}
       </DetailsSheet>
@@ -74,7 +86,7 @@ export function CampaignBattleDialog({
             <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
           </ResponsiveDialogHeader>
           <ResponsiveDialogBody className="flex min-w-0 flex-col gap-3">
-            <CampaignBattleContent isMobile={false} target={target} />
+            <CampaignBattleContentBoundary isMobile={false} target={target} />
           </ResponsiveDialogBody>
         </>
       ) : null}
@@ -83,14 +95,42 @@ export function CampaignBattleDialog({
 }
 
 /** The page's campaign battle dialog, opened through `dialog.show`. It alone re-renders when the
- *  dialog opens or closes. */
+ *  dialog opens or closes. Its copy loads with the page that hosts it, so the first opening does not
+ *  wait for it. */
 export function CampaignBattleDialogHost({
   dialog,
 }: {
   dialog: CampaignBattleDialogStore
 }) {
+  const { i18n } = useTranslation()
+  useEffect(() => {
+    void i18n.loadNamespaces([...BATTLE_DIALOG_NAMESPACES])
+  }, [i18n])
   const target = useCampaignBattleTarget(dialog)
   return <CampaignBattleDialog onClose={dialog.close} target={target} />
+}
+
+/** Its own boundary: copy still loading suspends the dialog's body, never the page behind it (the
+ *  route's boundary would swap the whole page for its loading fill). */
+function CampaignBattleContentBoundary(props: {
+  target: CampaignBattleTarget
+  isMobile: boolean
+}) {
+  return (
+    <Suspense fallback={<CampaignBattleLoading />}>
+      <CampaignBattleContent {...props} />
+    </Suspense>
+  )
+}
+
+function CampaignBattleLoading() {
+  const { t } = useTranslation("dailies")
+  return (
+    <div data-testid="campaign-battle-loading">
+      <span className="sr-only">{t("locationDetails.loading")}</span>
+      <Skeleton className="h-48 w-full rounded-xl" />
+    </div>
+  )
 }
 
 /** The battle's summary and enemies, laid out by the shell around it. */
@@ -119,10 +159,7 @@ function CampaignBattleContent({
   return (
     <>
       {battlesRead.status === "loading" ? (
-        <div data-testid="campaign-battle-loading">
-          <span className="sr-only">{t("locationDetails.loading")}</span>
-          <Skeleton className="h-48 w-full rounded-xl" />
-        </div>
+        <CampaignBattleLoading />
       ) : battlesRead.status === "error" ? (
         <div className="flex flex-col items-start gap-2">
           <p className="text-sm text-destructive">

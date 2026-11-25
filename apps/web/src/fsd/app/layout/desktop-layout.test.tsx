@@ -682,6 +682,35 @@ describe("DesktopShell", () => {
     )
   })
 
+  it("shows a rail entry's label and description while compact, and only the description while expanded", async () => {
+    render(
+      <MemoryRouter initialEntries={["/library/characters"]}>
+        <TooltipProvider delayDuration={0}>
+          <DesktopShell
+            visibleItems={navItems}
+            activeSection={lookupItem}
+            pageDescription="Lookup description"
+            sectionTitle="Lookup"
+            onCreateGoal={vi.fn()}
+            getEntryPath={identityEntryPath}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+    const home = screen.getByTestId("desktop-nav-home")
+
+    await userEvent.hover(home)
+    const compactTip = await screen.findByRole("tooltip")
+    expect(compactTip).toHaveTextContent("nav.home")
+    expect(compactTip).toHaveTextContent("nav.homeDescription")
+    await userEvent.unhover(home)
+
+    fireEvent.click(screen.getByRole("button", { name: "Toggle Sidebar" }))
+    await userEvent.hover(home)
+    const expandedTip = await screen.findByRole("tooltip")
+    expect(expandedTip).toHaveTextContent(/^nav\.homeDescription$/)
+  })
+
   it("starts compact even when an old sidebar cookie says expanded", () => {
     document.cookie = "sidebar_state=true; path=/"
     render(

@@ -450,7 +450,7 @@
           "readyToRankUp": "Your upgrade inventory covers every material still needed at the current rank.",
           "needToAscend": "At the highest rank for its rarity, with an ascension still ahead.",
           "canPromote": "Your shards and orbs pay for the next star within the current rarity.",
-          "canAscend": "Your shards and orbs pay for the next rarity (the next star at Mythic).",
+          "canAscend": "Your shards and orbs pay for the next rarity.",
           "needToLevel": "Below the level cap for its rarity.",
           "blueStarReady": "Your shards and orbs pay for every step up to one blue star.",
           "missingEquipment": "At least one equipment slot is empty.",

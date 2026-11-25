@@ -457,7 +457,7 @@ At viewport widths of at least 768px, the application SHALL show a slim global b
 
 ### Requirement: Persistent desktop section menu lists the active section's child pages
 
-On desktop, a section with one or more child pages SHALL expose them in a persistent full-height column, from just under the global bar to the bottom of the viewport, beside the page content. The page header (title or breadcrumb, description, page tour) and route content SHALL sit in the content column to the right of the panel, so an expanded panel pushes the page header right instead of the header spanning above the panel; when the panel is collapsed or absent the header spans the full content width. The column's header row SHALL show the section label at the left and the collapse icon at the right, the whole row being the collapse button, with the same top padding as the page header so the section label and page title share a vertical center. Below it, child links SHALL appear in navigation order, visibly mark the active child including nested detail routes. Each child row SHALL lead with its icon (see the navigation icons requirement) and SHALL show no counts. Clicking a child SHALL navigate directly to its route without closing the menu. Collapsing the menu SHALL remove the whole column and release its width - leaving no separate floating control - and the page header SHALL provide the reopen button (see the header title requirement). A childless destination SHALL render neither an empty section column nor any toggle. Main rail entries SHALL use label tooltips rather than child flyouts and SHALL retain existing section-entry resolution.
+On desktop, a section with one or more child pages SHALL expose them in a persistent full-height column, from just under the global bar to the bottom of the viewport, beside the page content. The page header (title or breadcrumb, description, page tour) and route content SHALL sit in the content column to the right of the panel, so an expanded panel pushes the page header right instead of the header spanning above the panel; when the panel is collapsed or absent the header spans the full content width. The column's header row SHALL show the section label at the left and the collapse icon at the right, the whole row being the collapse button, with the same top padding as the page header so the section label and page title share a vertical center. Below it, child links SHALL appear in navigation order, visibly mark the active child including nested detail routes. Each child row SHALL lead with its icon (see the navigation icons requirement) and SHALL show no counts. Clicking a child SHALL navigate directly to its route without closing the menu. Collapsing the menu SHALL remove the whole column and release its width - leaving no separate floating control - and the page header SHALL provide the reopen button (see the header title requirement). A childless destination SHALL render neither an empty section column nor any toggle. Each child link SHALL show the child's description in a design-system tooltip on hover and focus (never a native `title`). Main rail entries SHALL use tooltips rather than child flyouts and SHALL retain existing section-entry resolution: while the rail is compact a rail entry's tooltip shows its label and, below it, its description; while the rail is expanded, where the label is on screen, it shows the description only.
 
 #### Scenario: Sibling pages stay visible
 
@@ -524,15 +524,21 @@ On desktop, a section with one or more child pages SHALL expose them in a persis
 - **WHEN** a user activates the section collapse button with the keyboard
 - **THEN** the column and its links leave the DOM and tab order, focus moves to the reopen button in the page header, and activating that button restores the column, moves focus to the collapse button, and announces the expanded state accurately
 
-### Requirement: Desktop menu presentation resets only on full document load
+### Requirement: Desktop menu presentation is remembered per device
 
-On initial document load or refresh, the main rail SHALL start compact and the section menu SHALL start expanded. Each menu SHALL be independently controllable. Manual choices SHALL persist across all client-side navigation, including sibling pages, different sections, search navigation, and Back/Forward, using one shared section-menu choice. Visiting a childless page or temporarily switching to the mobile layout SHALL NOT reset either choice. These menu defaults SHALL NOT change the existing session memory for last-visited section children or persisted theme selection.
+Each desktop menu SHALL remember whether it is expanded or collapsed on the device, under its own `localStorage` key, and SHALL restore that choice on document load or refresh. Without a saved choice (a new device, a private window, blocked or unreadable storage) the main rail SHALL start compact and the section menu SHALL start expanded. The sidebar's own `sidebar_state` cookie SHALL NOT be a restoration source. Each menu SHALL be independently controllable. Manual choices SHALL persist across all client-side navigation, including sibling pages, different sections, search navigation, and Back/Forward, using one shared section-menu choice. Visiting a childless page or temporarily switching to the mobile layout SHALL NOT reset either choice. These menu choices SHALL NOT change the existing session memory for last-visited section children or persisted theme selection. Neither menu's width is adjustable.
 
-#### Scenario: Refresh resets both choices
+#### Scenario: Refresh restores both choices
 
 - **GIVEN** the main rail has been expanded and the section menu collapsed
 - **WHEN** the user refreshes on a child page
-- **THEN** the main rail is compact and the section menu is expanded, including when an older saved sidebar preference exists
+- **THEN** the main rail is still expanded and the section menu still collapsed
+
+#### Scenario: A new device starts from the defaults
+
+- **GIVEN** no saved menu choice on the device, including when an older `sidebar_state` cookie says expanded
+- **WHEN** the app loads on desktop
+- **THEN** the main rail is compact and the section menu is expanded
 
 #### Scenario: Navigation preserves both choices
 
