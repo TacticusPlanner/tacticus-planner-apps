@@ -35,3 +35,14 @@
 
 - [x] 6.1 Every Guild War phase on Home opens Offense, preparation too.
 - [x] 6.2 The first war's preparation opens 48 hours early (`firstWarPreparationBonusHours`), so Home shows it live as in the game.
+- [x] 6.3 Filters: the shared Filters control in form size, with Owned only and Show deployed as switches at the top; the badge counts Owned only.
+- [x] 6.4 Deployed units show, with Show deployed, in a Deployed section below a divider, dimmed and flagged with their zone.
+- [x] 6.5 The first 30 characters show on desktop and 12 on phones, then Show all (N); a search or filter shows every match; MoWs always show in full.
+- [x] 6.6 At most 5 characters and 1 MoW: once a kind is full its other tiles are blocked with a tooltip.
+- [x] 6.7 The selection bar shows the picked units with the Teams page's under-cap and capped-down marks, the reason in a hint.
+- [x] 6.8 An amber "No Machine of War · N available" reminder scrolls to the MoW list without blocking the log.
+- [x] 6.9 The battlefield level is a select in the toolbar beside Zone; the Settings sheet is removed and an unlisted season shows in a banner.
+- [x] 6.10 Start new war clears the level and zone; logging needs both; local storage keeps them for the current war only.
+- [x] 6.11 Attack log (N) in the summary scrolls to the log.
+- [x] 6.12 Log with details starts as Won, the result options carry trophy and skull icons, and the lost-units rows stay for every result.
+- [x] 6.13 The enemy map is picked by its board picture from the season's map pool.

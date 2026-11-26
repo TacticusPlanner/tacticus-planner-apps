@@ -1,15 +1,18 @@
 import { useId } from "react"
 import { useTranslation } from "react-i18next"
-import { FilePen, Skull, Trophy } from "lucide-react"
+import { CircleAlert, FilePen, Skull, Trophy } from "lucide-react"
 import { guildWarTokenIcon } from "@workspace/game-catalog"
+import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
+import type { TeamRoster } from "@/entities/team"
 import { EntityIcon, FloatingBar } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import type { LogBlock } from "../../model/offense"
+import type { LogBlock, Selection } from "../../model/offense"
+import { StagedTeam } from "./staged-team"
 
 /** The reason Log attack is off, in a player's words. */
 function useLogBlockText() {
@@ -34,18 +37,29 @@ function useLogBlockText() {
 }
 
 /**
- * The contextual bar while units are picked: how many, why logging is off, Clear selection, Log
- * with details, and Lost and Won, which log the attack at once at the page's zone and rarity.
+ * The contextual bar while units are picked: the picked units with their cap marks, how many, why
+ * logging is off, a reminder when no Machine of War is picked but one is free (it scrolls to them
+ * and never blocks), Clear selection, Log with details, and Lost and Won, which log the attack at
+ * once at the page's level, zone and rarity.
  */
 export function SelectionBar({
-  count,
+  selection,
+  roster,
+  cap,
+  mowsAvailable,
+  onShowMows,
   block,
   pending,
   onClear,
   onLogDetails,
   onQuickLog,
 }: {
-  count: number
+  selection: Selection
+  roster: TeamRoster | null
+  cap: Rarity | undefined
+  /** Free Machines of War when none is picked; 0 shows no reminder. */
+  mowsAvailable: number
+  onShowMows: () => void
   block: LogBlock | null
   pending: boolean
   onClear: () => void
@@ -69,9 +83,22 @@ export function SelectionBar({
       )}
       data-testid="guild-war-selection-bar"
     >
+      <StagedTeam cap={cap} roster={roster} selection={selection} />
       <p aria-live="polite" className="text-sm font-medium">
-        {t("select.count", { count })}
+        {t("select.count", { count: selection.size })}
       </p>
+      {mowsAvailable > 0 ? (
+        <Button
+          className="border-amber-500/60 bg-amber-500/10 text-amber-800 hover:bg-amber-500/20 dark:text-amber-300"
+          data-testid="guild-war-mow-reminder"
+          onClick={onShowMows}
+          size="sm"
+          variant="outline"
+        >
+          <CircleAlert data-icon="inline-start" />
+          {t("select.noMow", { count: mowsAvailable })}
+        </Button>
+      ) : null}
       {block ? (
         <p
           className="flex min-w-0 flex-1 items-center gap-1.5 text-sm text-muted-foreground"

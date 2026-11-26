@@ -1,6 +1,6 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown, Skull } from "lucide-react"
+import { ChevronDown, Skull, Trophy } from "lucide-react"
 import { guildWarZoneIcon, rarityIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -194,69 +194,69 @@ function TargetEditor({
   )
 }
 
-/** The lineup at the defenders' cap; once there is a result, a tap marks a unit lost. */
+/** The lineup at the defenders' cap, where a tap marks a unit lost. With no result recorded the
+ *  same rows show disabled, so switching the result never changes the dialog's height. */
 function LineupPicker({
   lineup,
   rarity,
   lostIds,
+  disabled,
   onLostChange,
 }: {
   lineup: readonly LineupEntry[]
   rarity: Rarity | undefined
-  lostIds: ReadonlySet<string> | null
+  lostIds: ReadonlySet<string>
+  disabled: boolean
   onLostChange: (unitIds: ReadonlySet<string>) => void
 }) {
   const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
-  const units = lineup.map((entry) => ({
-    id: entry.id,
-    name: unitName(entry.kind === "mow" ? "Mow" : "Character", entry.id),
-    portrait: (
-      <TeamUnitPortrait
-        className={cn(lostIds?.has(entry.id) && "opacity-60 grayscale")}
-        size="portrait-md"
-        unit={entry.view(rarity)}
-      />
-    ),
-  }))
-  if (!lostIds) {
-    return (
-      <ul aria-label={t("attack.lineup")} className="flex flex-wrap gap-2">
-        {units.map((unit) => (
-          <li aria-label={unit.name} key={unit.id}>
-            {unit.portrait}
-          </li>
-        ))}
-      </ul>
-    )
-  }
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-sm text-muted-foreground">{t("log.tapLost")}</p>
+    <div className="flex flex-col gap-2" data-testid="guild-war-log-lineup">
+      <p
+        className={cn(
+          "text-sm text-muted-foreground",
+          disabled && "opacity-50"
+        )}
+      >
+        {t("log.tapLost")}
+      </p>
       <ToggleGroup
         aria-label={t("log.tapLost")}
         className="flex-wrap"
+        disabled={disabled}
         onValueChange={(ids) => onLostChange(new Set(ids))}
         spacing={2}
         type="multiple"
-        value={[...lostIds]}
+        value={disabled ? [] : [...lostIds]}
       >
-        {units.map((unit) => (
-          <ToggleGroupItem
-            aria-label={t("log.markLost", { name: unit.name })}
-            className="relative h-auto p-0.5"
-            key={unit.id}
-            value={unit.id}
-          >
-            {unit.portrait}
-            {lostIds.has(unit.id) ? (
-              <Skull
-                aria-hidden="true"
-                className="absolute -top-1 -left-1 size-icon-sm rounded-full bg-background p-0.5 text-destructive"
+        {lineup.map((entry) => {
+          const name = unitName(
+            entry.kind === "mow" ? "Mow" : "Character",
+            entry.id
+          )
+          const lost = !disabled && lostIds.has(entry.id)
+          return (
+            <ToggleGroupItem
+              aria-label={t("log.markLost", { name })}
+              className="relative h-auto p-0.5"
+              key={entry.id}
+              value={entry.id}
+            >
+              <TeamUnitPortrait
+                className={cn(lost && "opacity-60 grayscale")}
+                size="portrait-md"
+                unit={entry.view(rarity)}
               />
-            ) : null}
-          </ToggleGroupItem>
-        ))}
+              {lost ? (
+                <Skull
+                  aria-hidden="true"
+                  className="absolute -top-1 -left-1 size-icon-sm rounded-full bg-background p-0.5 text-destructive"
+                />
+              ) : null}
+            </ToggleGroupItem>
+          )
+        })}
       </ToggleGroup>
     </div>
   )
@@ -292,7 +292,10 @@ export function LogAttackDialog({
   const notesId = useId()
   const enemyId = useId()
   const editing = subject.kind === "edit" ? subject.attack : null
-  const initial: AttackDetails = editing ? attackDetails(editing) : NO_DETAILS
+  // A new attack starts as won, the usual outcome; an edited one starts as logged.
+  const initial: AttackDetails = editing
+    ? attackDetails(editing)
+    : { ...NO_DETAILS, result: "won" }
   const [details, setDetails] = useState(initial)
   const [enemyOpen, setEnemyOpen] = useState(initial.enemy !== NO_DETAILS.enemy)
   // Edit only: the attack's zone (as its kind) and its rarity, until changed.
@@ -369,8 +372,9 @@ export function LogAttackDialog({
           />
         )}
         <LineupPicker
+          disabled={details.result === "none"}
           lineup={lineup}
-          lostIds={details.result === "none" ? null : details.lostIds}
+          lostIds={details.lostIds}
           onLostChange={(lostIds) => set({ lostIds })}
           rarity={target?.rarity}
         />
@@ -379,8 +383,16 @@ export function LogAttackDialog({
           onValueChange={(result) => set({ result })}
           options={[
             { value: "none", label: t("log.resultNone") },
-            { value: "won", label: t("log.resultWon") },
-            { value: "lost", label: t("log.resultLost") },
+            {
+              value: "won",
+              label: t("log.resultWon"),
+              icon: <Trophy aria-hidden="true" />,
+            },
+            {
+              value: "lost",
+              label: t("log.resultLost"),
+              icon: <Skull aria-hidden="true" />,
+            },
           ]}
           testId="guild-war-log-result"
           value={details.result}

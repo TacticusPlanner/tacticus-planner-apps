@@ -1,8 +1,5 @@
-import { useCallback } from "react"
 import { rarityOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
-
-import { usePersistedSelection } from "@/shared/lib"
 
 import {
   GUILD_WAR_SLOTS,
@@ -13,12 +10,6 @@ import {
 import type { GuildWarSeason } from "../lib/season"
 import type { GuildWarAttack } from "./types"
 
-/** The zone last attacked, per device like the app's other quick picks (plan row 5). */
-const LAST_ZONE_STORAGE_KEY = "guildWar.zone"
-const NONE = ""
-const isStoredString = (value: unknown): value is string =>
-  typeof value === "string"
-
 /** A stored zone as it applies to a season, as its kind (a stored "Bunker2" picks Bunker): one the
  *  season does not have reads as not picked. */
 export function resolveZone(
@@ -28,20 +19,6 @@ export function resolveZone(
   return season?.zones.some((zone) => zone.id === stored) === true
     ? zoneKindId(season, stored)
     : null
-}
-
-/** The zone last attacked on this device, checked against the war's season. */
-export function useLastZone(season: GuildWarSeason | undefined) {
-  const [zone, setZone] = usePersistedSelection(
-    LAST_ZONE_STORAGE_KEY,
-    isStoredString,
-    NONE
-  )
-  const setZoneId = useCallback(
-    (zoneId: string | null) => setZone(zoneId ?? NONE),
-    [setZone]
-  )
-  return [resolveZone(zone, season), setZoneId] as const
 }
 
 /** A rarity a zone's defenders are capped at, and the first slot holding it (what the API takes). */

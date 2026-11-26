@@ -1,39 +1,33 @@
 {
   "season": "Temporada {{name}}",
   "level": "Nivel {{level}}",
-  "settingsSummary": "{{season}} · Nivel de campo de batalla {{level}}",
   "page": {
     "loading": "Cargando tu guerra",
     "loadError": "No se pudo cargar tu guerra.",
     "retry": "Reintentar",
-    "noSeasons": "Los datos de la Guerra de gremios aún no están disponibles."
+    "noSeasons": "Los datos de la Guerra de gremios aún no están disponibles.",
+    "seasonNotListed": "El calendario de eventos no incluye la temporada de Guerra de Gremios en curso, así que esta guerra usa {{season}}."
   },
   "target": {
     "zone": "Zona",
     "zonePlaceholder": "Elige una zona",
-    "rarityPlaceholder": "Elige primero una zona"
+    "rarityPlaceholder": "Elige primero nivel y zona",
+    "level": "Nivel del campo de batalla",
+    "levelPlaceholder": "Elige un nivel",
+    "levelStale": "Tu guerra cambió en otro dispositivo. Se muestra tal como está ahora.",
+    "levelFailed": "No se pudo guardar el nivel del campo de batalla. Inténtalo de nuevo."
   },
   "toolbar": {
-    "label": "Zona y rareza de los defensores"
-  },
-  "settings": {
-    "title": "Ajustes de la Guerra de gremios",
-    "description": "La temporada y el nivel de campo de batalla de tu guerra actual.",
-    "season": "Temporada",
-    "seasonFromCalendar": "La fija el calendario de eventos.",
-    "battlefieldLevel": "Nivel de campo de batalla",
-    "capsKept": "Los ataques ya registrados conservan el límite de rareza con el que se registraron.",
-    "stale": "Tu guerra cambió en otro dispositivo. Se muestra tal como está ahora.",
-    "failed": "No se pudieron guardar los ajustes. Inténtalo de nuevo.",
-    "done": "Listo",
-    "seasonLocked": "Esta guerra tiene ataques, así que su temporada se mantiene. Empieza una guerra nueva para jugar otra temporada."
+    "label": "Nivel del campo de batalla, zona y rareza de los defensores"
   },
   "summary": {
     "tokens": "Fichas usadas",
     "tokensValue": "{{used}} / {{max}}",
     "results": "Ganados · perdidos",
     "resultsValue": "{{won}} · {{lost}}",
-    "unitsLeft": "Personajes restantes"
+    "unitsLeft": "Personajes restantes",
+    "attackLog_one": "Registro de ataques ({{count}})",
+    "attackLog_other": "Registro de ataques ({{count}})"
   },
   "history": {
     "empty": "Aún no hay guerras pasadas.",
@@ -69,13 +63,9 @@
     }
   },
   "tour": {
-    "settings": {
-      "title": "Ajustes",
-      "content": "La temporada y el nivel de campo de batalla de tu guerra. Cámbialos aquí."
-    },
     "target": {
-      "title": "Zona y rareza",
-      "content": "Elige la zona que atacas y la rareza de los defensores. Tus unidades se muestran limitadas a esa rareza y los ataques se registran ahí."
+      "title": "Nivel, zona y rareza",
+      "content": "Elige una vez por guerra tu nivel del campo de batalla y la zona que atacas, y luego la rareza de los defensores. Tus unidades se muestran limitadas a esa rareza y los ataques se registran ahí."
     },
     "summary": {
       "title": "Tu guerra",
@@ -124,7 +114,15 @@
   },
   "units": {
     "heading": "Unidades disponibles",
-    "noRoster": "Sincroniza con Tacticus para ver las unidades con las que puedes atacar."
+    "noRoster": "Sincroniza con Tacticus para ver las unidades con las que puedes atacar.",
+    "showDeployed": "Mostrar desplegadas",
+    "deployed": "Desplegadas",
+    "deployedIn": "Atacó en {{zone}}",
+    "charactersFull_one": "{{count}} personaje elegido",
+    "charactersFull_other": "{{count}} personajes elegidos",
+    "mowsFull_one": "{{count}} máquina de guerra elegida",
+    "mowsFull_other": "{{count}} máquinas de guerra elegidas",
+    "showAll": "Mostrar todos ({{count}})"
   },
   "select": {
     "count_one": "{{count}} seleccionada",
@@ -140,8 +138,11 @@
       "deployed": "{{name}} ya atacó en esta guerra",
       "notOwned": "{{name}} no está en tu plantel sincronizado",
       "noTokens": "No quedan fichas en esta guerra",
-      "noZone": "Elige una zona para atacar"
-    }
+      "noZone": "Elige una zona para atacar",
+      "noLevel": "Elige un nivel del campo de batalla"
+    },
+    "noMow_one": "Sin máquina de guerra · {{count}} disponible",
+    "noMow_other": "Sin máquina de guerra · {{count}} disponibles"
   },
   "log": {
     "title": "Registrar ataque",
@@ -191,7 +192,6 @@
     "buffs": "Mejoras de zona activas",
     "buffInfo": "Qué hace {{name}}",
     "map": "Mapa",
-    "mapAny": "Mapa sin registrar",
     "mapOption": "Mapa {{number}}"
   },
   "attackLog": {
@@ -214,5 +214,9 @@
     "cancel": "Cancelar",
     "started": "Nueva guerra empezada.",
     "failed": "No se pudo empezar una nueva guerra. Inténtalo de nuevo."
+  },
+  "staged": {
+    "label": "Unidades elegidas",
+    "overCap": "Limitado a {{rarity}}: {{parts}}"
   }
 }

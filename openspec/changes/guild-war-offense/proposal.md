@@ -12,6 +12,7 @@ Companion change: `guild-war-offense` in `tacticus-planner-api`, which applies f
 - **Offense**: a summary strip (tokens used of the season's attempts, units left per rarity, attacks logged), offense teams ready first then blocked with the reason, available units with search and filters, a contextual selection bar with Log attack, a Log attack dialog with an optional result and optional Enemy details, the attack log with Undo, Start new war behind a confirmation, and a Settings dialog for the season and battlefield level.
 - **History**: past wars newest first, each expanding in place to its attacks, plus totals (overall results; win rate by zone tier, zone and defender rarity; most used characters and lineups with win rates; enemies lost to most).
 - A second feedback round: the zone and rarity move to the page toolbar, Won and Lost log in one tap, attacks can be edited and deleted (replacing Undo), and battlefield level 0 is not offered.
+- A third feedback round: the battlefield level moves to the Offense toolbar and the Settings dialog goes (its season note becomes a banner), level and zone are picked once per war, the unit picker gains Filters with Owned only and Show deployed, a Deployed section, a cut-off with Show all and selection limits, the selection bar shows cap marks and a Machine of War reminder, Attack log (N) jumps to the log, Log with details starts as Won, and the map is picked by its picture.
 - **Home** shows the running Guild War phase and the next one, each opening Offense, with the first war's 72-hour preparation.
 - A `guildWar` i18n namespace in every locale (plus the game's zone, tier and buff names), a tour, and the `guild-war` catalog dataset in the game-catalog package.
 
@@ -24,7 +25,7 @@ Companion change: `guild-war-offense` in `tacticus-planner-api`, which applies f
 ### Modified Capabilities
 
 - `app-navigation`: the Guild section gains a Guild War group and grouped submenus; the guild boundary covers only the Guild group.
-- `home-events-widget`: Guild War phases show in Right now and Upcoming events; a preparation phase has no link yet.
+- `home-events-widget`: Guild War phases show in Right now and Upcoming events, each opening Offense.
 
 ## Impact
 

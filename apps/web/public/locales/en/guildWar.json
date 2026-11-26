@@ -1,39 +1,33 @@
 {
   "season": "Season {{name}}",
   "level": "Level {{level}}",
-  "settingsSummary": "{{season}} · Battlefield level {{level}}",
   "page": {
     "loading": "Loading your war",
     "loadError": "Couldn't load your war.",
     "retry": "Retry",
-    "noSeasons": "Guild War data isn't available yet."
+    "noSeasons": "Guild War data isn't available yet.",
+    "seasonNotListed": "The events calendar doesn't list the running Guild War season, so this war uses {{season}}."
   },
   "target": {
     "zone": "Zone",
     "zonePlaceholder": "Pick a zone",
-    "rarityPlaceholder": "Pick a zone first"
+    "rarityPlaceholder": "Pick a level and zone first",
+    "level": "Battlefield level",
+    "levelPlaceholder": "Pick a level",
+    "levelStale": "Your war changed on another device. It shows as it is now.",
+    "levelFailed": "Couldn't save the battlefield level. Try again."
   },
   "toolbar": {
-    "label": "Zone and defenders' rarity"
-  },
-  "settings": {
-    "title": "Guild War settings",
-    "description": "The season and battlefield level of your current war.",
-    "season": "Season",
-    "seasonFromCalendar": "Set by the events calendar.",
-    "battlefieldLevel": "Battlefield level",
-    "capsKept": "Attacks already logged keep the rarity cap they were logged at.",
-    "stale": "Your war changed on another device. It shows as it is now.",
-    "failed": "Couldn't save the settings. Try again.",
-    "done": "Done",
-    "seasonLocked": "This war has attacks, so its season stays. Start a new war to play another season."
+    "label": "Battlefield level, zone and defenders' rarity"
   },
   "summary": {
     "tokens": "Tokens used",
     "tokensValue": "{{used}} / {{max}}",
     "results": "Won · lost",
     "resultsValue": "{{won}} · {{lost}}",
-    "unitsLeft": "Characters left"
+    "unitsLeft": "Characters left",
+    "attackLog_one": "Attack log ({{count}})",
+    "attackLog_other": "Attack log ({{count}})"
   },
   "history": {
     "empty": "No past wars yet.",
@@ -69,13 +63,9 @@
     }
   },
   "tour": {
-    "settings": {
-      "title": "Settings",
-      "content": "Your war's season and battlefield level. Change them here."
-    },
     "target": {
-      "title": "Zone and rarity",
-      "content": "Pick the zone you attack and the defenders' rarity. Your units show capped at that rarity, and attacks are logged there."
+      "title": "Level, zone and rarity",
+      "content": "Pick your battlefield level and the zone you attack, once per war, then the defenders' rarity. Your units show capped at that rarity, and attacks are logged there."
     },
     "summary": {
       "title": "Your war",
@@ -124,7 +114,15 @@
   },
   "units": {
     "heading": "Available units",
-    "noRoster": "Sync with Tacticus to see the units you can attack with."
+    "noRoster": "Sync with Tacticus to see the units you can attack with.",
+    "showDeployed": "Show deployed",
+    "deployed": "Deployed",
+    "deployedIn": "Attacked in {{zone}}",
+    "charactersFull_one": "{{count}} character picked",
+    "charactersFull_other": "{{count}} characters picked",
+    "mowsFull_one": "{{count}} Machine of War picked",
+    "mowsFull_other": "{{count}} Machines of War picked",
+    "showAll": "Show all ({{count}})"
   },
   "select": {
     "count_one": "{{count}} selected",
@@ -140,8 +138,11 @@
       "deployed": "{{name}} already attacked in this war",
       "notOwned": "{{name}} isn't in your synced roster",
       "noTokens": "No tokens left in this war",
-      "noZone": "Pick a zone to attack"
-    }
+      "noZone": "Pick a zone to attack",
+      "noLevel": "Pick a battlefield level"
+    },
+    "noMow_one": "No Machine of War · {{count}} available",
+    "noMow_other": "No Machine of War · {{count}} available"
   },
   "log": {
     "title": "Log attack",
@@ -191,7 +192,6 @@
     "buffs": "Active zone buffs",
     "buffInfo": "What {{name}} does",
     "map": "Map",
-    "mapAny": "Map not noted",
     "mapOption": "Map {{number}}"
   },
   "attackLog": {
@@ -214,5 +214,9 @@
     "cancel": "Cancel",
     "started": "New war started.",
     "failed": "Couldn't start a new war. Try again."
+  },
+  "staged": {
+    "label": "Picked units",
+    "overCap": "Capped to {{rarity}}: {{parts}}"
   }
 }
