@@ -43,7 +43,6 @@ export {
 } from "./event-colors"
 export {
   afterNextPaint,
-  forgetUnsavedPreferences,
   installGlobalErrorCapture,
   isLocalStorageEvent,
   isMacPlatform,

@@ -19,7 +19,6 @@ export {
 } from "./storage-keys"
 export { migrateStorageOnStart } from "./migrate-storage-on-start"
 export {
-  forgetUnsavedPreferences,
   readPreference,
   storedPreference,
   useStoredFlag,
