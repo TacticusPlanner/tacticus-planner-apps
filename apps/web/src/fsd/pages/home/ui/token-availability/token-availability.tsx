@@ -7,7 +7,7 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { combineReadStates, useReadState } from "@/shared/lib"
+import { combineReadStates, useNow, useReadState } from "@/shared/lib"
 import { usePlayerChunk } from "@/shared/local-data"
 import { EntityIcon, LocalReadFailure } from "@/shared/ui"
 
@@ -183,7 +183,8 @@ export function TokenAvailability() {
     usePlayerChunk("live-progress"),
     useReadState("player-data-metadata", getPlayerDataMetadata, [])
   )
-  const [nowMs, setNowMs] = useState(() => Date.now())
+  // Ticks every second for the countdowns; pauses while the tab is hidden and catches up when shown.
+  const nowMs = useNow(NOW_TICK_MS)
   // As many placeholder rings as there were tokens last time, so the band keeps its height.
   const [placeholders] = useState(() =>
     rememberedCount(homeRememberedCounts.tokens)
@@ -199,11 +200,6 @@ export function TokenAvailability() {
       rememberCount(homeRememberedCounts.tokens, tokenCount)
     }
   }, [tokenCount])
-
-  useEffect(() => {
-    const interval = window.setInterval(() => setNowMs(Date.now()), NOW_TICK_MS)
-    return () => window.clearInterval(interval)
-  }, [])
 
   const body = (() => {
     if (read.status === "error") return <LocalReadFailure retry={read.retry} />

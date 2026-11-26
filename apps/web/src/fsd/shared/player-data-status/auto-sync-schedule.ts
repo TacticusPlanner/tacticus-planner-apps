@@ -3,8 +3,9 @@
 // the Sync controls show progress towards it, so both read the same interval.
 export const autoSyncIntervalMs = 60 * 60 * 1000
 
-// How often the provider re-checks whether a sync is due while the app stays open. The actual auto
-// sync therefore fires up to this long after `autoSyncIntervalMs` has elapsed.
+// How often the provider re-checks whether a sync is due while the tab stays visible. The actual auto
+// sync therefore fires up to this long after `autoSyncIntervalMs` has elapsed. A hidden tab doesn't
+// check at all; it checks again (and syncs if due) as soon as it is shown.
 export const autoSyncCheckIntervalMs = 5 * 60 * 1000
 
 export type AutoSyncProgress = {

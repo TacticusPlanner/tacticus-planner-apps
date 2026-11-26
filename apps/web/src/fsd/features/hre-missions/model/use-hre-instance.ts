@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import type { Alliance } from "@workspace/game-domain"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, useReadState } from "@/shared/lib"
+import { combineReadStates, useNow, useReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import {
@@ -82,12 +82,9 @@ const toHero = (character: HreFeaturedHero): HreFeaturedHero => ({
 export function useHreInstance(
   requestedKey: string | null = null
 ): HreInstanceState {
-  // A coarse tick re-selects from the cached calendar across an event boundary without a reload.
-  const [nowMs, setNowMs] = useState(() => Date.now())
-  useEffect(() => {
-    const timer = setInterval(() => setNowMs(Date.now()), TICK_MS)
-    return () => clearInterval(timer)
-  }, [])
+  // A coarse tick re-selects from the cached calendar across an event boundary without a
+  // reload; it pauses while the tab is hidden and catches up when shown.
+  const nowMs = useNow(TICK_MS)
   const synced = useReadState(
     "events-calendar-synced",
     hasEventsCalendarSynced,

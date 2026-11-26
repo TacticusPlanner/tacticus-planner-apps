@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, useReadState } from "@/shared/lib"
+import { combineReadStates, useNow, useReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { hreShardSources, nextHreBoundaryMs } from "./hre-shard-sources"
@@ -37,13 +37,12 @@ export function useHreShardSources(): ReadonlyMap<string, HreShardSource> {
       boundaryMs: nextHreBoundaryMs(entries, definitionsById, nowMs),
     }
   }, [read, nowMs])
-  // A coarse tick that re-selects only after the next HRE start or end has passed.
-  useEffect(() => {
-    if (boundaryMs === null) return
-    const timer = setInterval(() => {
-      if (Date.now() >= boundaryMs) setNowMs(Date.now())
-    }, TICK_MS)
-    return () => clearInterval(timer)
-  }, [boundaryMs])
+  // A coarse tick that re-selects only after the next HRE start or end has passed. The shared clock
+  // pauses while the tab is hidden and catches up when shown. The next boundary is always after the
+  // selection instant, so this update settles in one extra render.
+  const passedAtMs = useNow(TICK_MS, (clockMs) =>
+    boundaryMs !== null && clockMs >= boundaryMs ? clockMs : null
+  )
+  if (passedAtMs !== null && passedAtMs !== nowMs) setNowMs(passedAtMs)
   return sources
 }
