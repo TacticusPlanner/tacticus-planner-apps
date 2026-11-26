@@ -16,7 +16,104 @@
       "sync": {
         "title": "From your last sync",
         "content": "Counts come from the game. Sync again after raiding or crafting to update them."
+      },
+      "upgradesToolbar": {
+        "title": "Find a material",
+        "content": "Search by name, filter by rarity, stat or kind, and show only what your goals need or what you own."
+      },
+      "upgradesList": {
+        "title": "Have and need",
+        "content": "Each material shows what you hold and what your active goals still need. Tap one for its recipe, where to farm it and the goals that need it."
       }
+    }
+  },
+  "upgrades": {
+    "toolbar": {
+      "label": "Find upgrades",
+      "search": "Search upgrades",
+      "rarity": "Rarity",
+      "allRarities": "All rarities",
+      "clearRarities": "Clear rarities",
+      "stat": "Stat",
+      "allStats": "All stats",
+      "clearStats": "Clear stats",
+      "kind": "Kind",
+      "allKinds": "Basic and crafted",
+      "kinds": {
+        "basic": "Basic",
+        "crafted": "Crafted"
+      },
+      "needed": "Needed for goals",
+      "owned": "Owned only",
+      "clearFilters": "Clear filters",
+      "layouts": {
+        "grid": "Grid",
+        "table": "Table"
+      },
+      "groups": {
+        "none": "None",
+        "rarity": "Rarity",
+        "stat": "Stat"
+      },
+      "sort": "Sort",
+      "sorts": {
+        "rarity": "Rarity",
+        "name": "Name",
+        "have": "Have",
+        "need": "Need",
+        "short": "Short"
+      }
+    },
+    "stats": {
+      "Health": "Health",
+      "Damage": "Damage",
+      "Armour": "Armour"
+    },
+    "count": {
+      "haveNeed": "{{have}} / {{need}}",
+      "short": "{{amount}} short"
+    },
+    "tileLabel": "{{name}}, have {{have}}",
+    "tileLabelNeed": "{{name}}, have {{have}} of {{need}} needed",
+    "table": {
+      "label": "Upgrade materials",
+      "material": "Material",
+      "rarity": "Rarity",
+      "stat": "Stat",
+      "have": "Have",
+      "need": "Need",
+      "short": "Short",
+      "canCraft": "Can craft"
+    },
+    "needsLoading": "Working out what your goals need…",
+    "needsFailed": "Couldn't work out what your goals need.",
+    "retry": "Try again",
+    "noMatch": {
+      "title": "No upgrades match",
+      "description": "Try other filters or a different search.",
+      "clearSearch": "Clear search"
+    },
+    "details": {
+      "description": "{{rarity}} · {{stat}} · {{kind}}",
+      "have": "Have",
+      "need": "Need",
+      "short": "Short",
+      "recipe": "Recipe",
+      "partHave": "have {{have}}",
+      "canCraft": "You can craft {{amount}} now.",
+      "cannotCraft": "You can't craft one yet.",
+      "farm": "Where to farm",
+      "energyPerItem": "{{energy}} energy each",
+      "energyHint": "Energy one drop takes on average.",
+      "farmLoading": "Loading where it drops…",
+      "farmFailed": "Couldn't load where it drops.",
+      "unknownBattle": "Unknown battle",
+      "noFarm": "No campaign battle drops it.",
+      "goals": "Needed by",
+      "goalLabel": "{{name}} · {{goalType}}",
+      "unknownGoal": "Unknown goal",
+      "noGoals": "No active goal needs it.",
+      "close": "Close"
     }
   }
 }

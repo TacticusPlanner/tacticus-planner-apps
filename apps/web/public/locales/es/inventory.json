@@ -16,7 +16,104 @@
       "sync": {
         "title": "De tu última sincronización",
         "content": "Las cantidades vienen del juego. Vuelve a sincronizar tras hacer incursiones o fabricar para actualizarlas."
+      },
+      "upgradesToolbar": {
+        "title": "Busca un material",
+        "content": "Busca por nombre, filtra por rareza, atributo o tipo y muestra solo lo que necesitan tus objetivos o lo que tienes."
+      },
+      "upgradesList": {
+        "title": "Tienes y necesitas",
+        "content": "Cada material muestra lo que tienes y lo que aún necesitan tus objetivos activos. Tócalo para ver su receta, dónde conseguirlo y los objetivos que lo necesitan."
       }
+    }
+  },
+  "upgrades": {
+    "toolbar": {
+      "label": "Buscar mejoras",
+      "search": "Buscar mejoras",
+      "rarity": "Rareza",
+      "allRarities": "Todas las rarezas",
+      "clearRarities": "Borrar rarezas",
+      "stat": "Atributo",
+      "allStats": "Todos los atributos",
+      "clearStats": "Borrar atributos",
+      "kind": "Tipo",
+      "allKinds": "Básicas y fabricadas",
+      "kinds": {
+        "basic": "Básica",
+        "crafted": "Fabricada"
+      },
+      "needed": "Necesarias para objetivos",
+      "owned": "Solo en posesión",
+      "clearFilters": "Borrar filtros",
+      "layouts": {
+        "grid": "Cuadrícula",
+        "table": "Tabla"
+      },
+      "groups": {
+        "none": "Ninguno",
+        "rarity": "Rareza",
+        "stat": "Atributo"
+      },
+      "sort": "Ordenar",
+      "sorts": {
+        "rarity": "Rareza",
+        "name": "Nombre",
+        "have": "Tienes",
+        "need": "Necesitas",
+        "short": "Faltan"
+      }
+    },
+    "stats": {
+      "Health": "Salud",
+      "Damage": "Daño",
+      "Armour": "Armadura"
+    },
+    "count": {
+      "haveNeed": "{{have}} / {{need}}",
+      "short": "Faltan {{amount}}"
+    },
+    "tileLabel": "{{name}}, tienes {{have}}",
+    "tileLabelNeed": "{{name}}, tienes {{have}} de {{need}} necesarias",
+    "table": {
+      "label": "Materiales de mejora",
+      "material": "Material",
+      "rarity": "Rareza",
+      "stat": "Atributo",
+      "have": "Tienes",
+      "need": "Necesitas",
+      "short": "Faltan",
+      "canCraft": "Puedes fabricar"
+    },
+    "needsLoading": "Calculando lo que necesitan tus objetivos…",
+    "needsFailed": "No se pudo calcular lo que necesitan tus objetivos.",
+    "retry": "Reintentar",
+    "noMatch": {
+      "title": "Ninguna mejora coincide",
+      "description": "Prueba otros filtros u otra búsqueda.",
+      "clearSearch": "Borrar búsqueda"
+    },
+    "details": {
+      "description": "{{rarity}} · {{stat}} · {{kind}}",
+      "have": "Tienes",
+      "need": "Necesitas",
+      "short": "Faltan",
+      "recipe": "Receta",
+      "partHave": "tienes {{have}}",
+      "canCraft": "Puedes fabricar {{amount}} ahora.",
+      "cannotCraft": "Aún no puedes fabricar ninguna.",
+      "farm": "Dónde conseguirla",
+      "energyPerItem": "{{energy}} de energía cada una",
+      "energyHint": "Energía que cuesta de media cada botín.",
+      "farmLoading": "Cargando dónde se consigue…",
+      "farmFailed": "No se pudo cargar dónde se consigue.",
+      "unknownBattle": "Batalla desconocida",
+      "noFarm": "Ninguna batalla de campaña la da.",
+      "goals": "La necesitan",
+      "goalLabel": "{{name}} · {{goalType}}",
+      "unknownGoal": "Objetivo desconocido",
+      "noGoals": "Ningún objetivo activo la necesita.",
+      "close": "Cerrar"
     }
   }
 }

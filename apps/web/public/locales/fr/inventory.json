@@ -16,7 +16,104 @@
       "sync": {
         "title": "Depuis votre dernière synchronisation",
         "content": "Les quantités viennent du jeu. Resynchronisez après des raids ou de la fabrication pour les mettre à jour."
+      },
+      "upgradesToolbar": {
+        "title": "Trouver un matériau",
+        "content": "Recherchez par nom, filtrez par rareté, statistique ou type, et n'affichez que ce que vos objectifs requièrent ou ce que vous possédez."
+      },
+      "upgradesList": {
+        "title": "Possédé et requis",
+        "content": "Chaque matériau indique ce que vous possédez et ce que vos objectifs actifs requièrent encore. Touchez-en un pour voir sa recette, où le farmer et les objectifs qui en ont besoin."
       }
+    }
+  },
+  "upgrades": {
+    "toolbar": {
+      "label": "Trouver des améliorations",
+      "search": "Rechercher des améliorations",
+      "rarity": "Rareté",
+      "allRarities": "Toutes les raretés",
+      "clearRarities": "Effacer les raretés",
+      "stat": "Statistique",
+      "allStats": "Toutes les statistiques",
+      "clearStats": "Effacer les statistiques",
+      "kind": "Type",
+      "allKinds": "De base et fabriquées",
+      "kinds": {
+        "basic": "De base",
+        "crafted": "Fabriquée"
+      },
+      "needed": "Requises par les objectifs",
+      "owned": "Possédées uniquement",
+      "clearFilters": "Effacer les filtres",
+      "layouts": {
+        "grid": "Grille",
+        "table": "Tableau"
+      },
+      "groups": {
+        "none": "Aucun",
+        "rarity": "Rareté",
+        "stat": "Statistique"
+      },
+      "sort": "Trier",
+      "sorts": {
+        "rarity": "Rareté",
+        "name": "Nom",
+        "have": "Possédé",
+        "need": "Requis",
+        "short": "Manquant"
+      }
+    },
+    "stats": {
+      "Health": "Santé",
+      "Damage": "Dégâts",
+      "Armour": "Armure"
+    },
+    "count": {
+      "haveNeed": "{{have}} / {{need}}",
+      "short": "Manque {{amount}}"
+    },
+    "tileLabel": "{{name}}, {{have}} possédé(s)",
+    "tileLabelNeed": "{{name}}, {{have}} possédé(s) sur {{need}} requis",
+    "table": {
+      "label": "Matériaux d'amélioration",
+      "material": "Matériau",
+      "rarity": "Rareté",
+      "stat": "Statistique",
+      "have": "Possédé",
+      "need": "Requis",
+      "short": "Manquant",
+      "canCraft": "Fabricable"
+    },
+    "needsLoading": "Calcul des besoins de vos objectifs…",
+    "needsFailed": "Impossible de calculer les besoins de vos objectifs.",
+    "retry": "Réessayer",
+    "noMatch": {
+      "title": "Aucune amélioration ne correspond",
+      "description": "Essayez d'autres filtres ou une autre recherche.",
+      "clearSearch": "Effacer la recherche"
+    },
+    "details": {
+      "description": "{{rarity}} · {{stat}} · {{kind}}",
+      "have": "Possédé",
+      "need": "Requis",
+      "short": "Manquant",
+      "recipe": "Recette",
+      "partHave": "{{have}} possédé(s)",
+      "canCraft": "Vous pouvez en fabriquer {{amount}} maintenant.",
+      "cannotCraft": "Vous ne pouvez pas encore en fabriquer.",
+      "farm": "Où farmer",
+      "energyPerItem": "{{energy}} d'énergie l'unité",
+      "energyHint": "Énergie moyenne nécessaire pour un butin.",
+      "farmLoading": "Chargement des lieux de butin…",
+      "farmFailed": "Impossible de charger les lieux de butin.",
+      "unknownBattle": "Bataille inconnue",
+      "noFarm": "Aucune bataille de campagne ne la donne.",
+      "goals": "Requise par",
+      "goalLabel": "{{name}} · {{goalType}}",
+      "unknownGoal": "Objectif inconnu",
+      "noGoals": "Aucun objectif actif n'en a besoin.",
+      "close": "Fermer"
     }
   }
 }

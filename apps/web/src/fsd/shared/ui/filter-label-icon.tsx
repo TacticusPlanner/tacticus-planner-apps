@@ -12,6 +12,7 @@ import {
   shardIcon,
   statIcon,
   traitIcon,
+  UpgradeIcons,
 } from "@workspace/game-catalog"
 import type { GameIcon } from "@workspace/game-catalog"
 import { campaignIdSchema } from "@workspace/game-domain"
@@ -57,6 +58,8 @@ const FILTER_LABEL_ICONS = {
   gameMode: [gameMenuIcon("battle")],
   runningNow: [countdownIcon()],
   campaignType: [campaignIcon(campaignIdSchema.parse("campaign1"), "Standard")],
+  upgradeStat: [statIcon("health"), statIcon("damage"), statIcon("armour")],
+  upgradeKind: [UpgradeIcons.craftedBadge],
 } satisfies Record<string, (GameIcon | undefined)[]>
 
 export type FilterLabelIconKind = keyof typeof FILTER_LABEL_ICONS
