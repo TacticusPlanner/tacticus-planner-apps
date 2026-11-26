@@ -221,7 +221,16 @@
     "failed": "Es konnte kein neuer Krieg gestartet werden. Versuch es erneut."
   },
   "staged": {
-    "label": "Gewählte Einheiten",
-    "overCap": "Begrenzt auf {{rarity}}: {{parts}}"
+    "label": "Gewählte Einheiten"
+  },
+  "capFit": {
+    "under_one": "{{count}} unter der Grenze",
+    "under_other": "{{count}} unter der Grenze",
+    "over_one": "{{count}} über der Grenze",
+    "over_other": "{{count}} über der Grenze",
+    "underHint": "Unter der {{rarity}}-Grenze: Ihr Rang passt zu einer niedrigeren Grenze.",
+    "overHint": "Über der {{rarity}}-Grenze: Sie könnten bei einer höheren Grenze kämpfen.",
+    "unitRank": "{{name}}: {{rank}} ({{rarity}}-Rang)",
+    "unitRarity": "{{name}}: {{rarity}}"
   }
 }

@@ -221,7 +221,16 @@
     "failed": "Impossible de commencer une nouvelle guerre. Réessayez."
   },
   "staged": {
-    "label": "Unités choisies",
-    "overCap": "Limité à {{rarity}} : {{parts}}"
+    "label": "Unités choisies"
+  },
+  "capFit": {
+    "under_one": "{{count}} sous le plafond",
+    "under_other": "{{count}} sous le plafond",
+    "over_one": "{{count}} au-dessus du plafond",
+    "over_other": "{{count}} au-dessus du plafond",
+    "underHint": "Sous le plafond {{rarity}} : leur rang correspond à un plafond inférieur.",
+    "overHint": "Au-dessus du plafond {{rarity}} : ils pourraient combattre à un plafond supérieur.",
+    "unitRank": "{{name}} : {{rank}} (rang {{rarity}})",
+    "unitRarity": "{{name}} : {{rarity}}"
   }
 }

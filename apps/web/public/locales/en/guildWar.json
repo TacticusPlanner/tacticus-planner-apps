@@ -221,7 +221,16 @@
     "failed": "Couldn't start a new war. Try again."
   },
   "staged": {
-    "label": "Picked units",
-    "overCap": "Capped to {{rarity}}: {{parts}}"
+    "label": "Picked units"
+  },
+  "capFit": {
+    "under_one": "{{count}} under cap",
+    "under_other": "{{count}} under cap",
+    "over_one": "{{count}} over cap",
+    "over_other": "{{count}} over cap",
+    "underHint": "Under the {{rarity}} cap: their rank fits a lower cap.",
+    "overHint": "Over the {{rarity}} cap: they could fight at a higher cap.",
+    "unitRank": "{{name}}: {{rank}} ({{rarity}} rank)",
+    "unitRarity": "{{name}}: {{rarity}}"
   }
 }

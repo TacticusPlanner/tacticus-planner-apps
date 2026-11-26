@@ -304,12 +304,13 @@ describe("OffensePage", () => {
       within(toolbar).getByRole("combobox", { name: "Defenders' rarity" })
     ).toHaveTextContent("Uncommon")
     await user.click(await tile("ultraCalgar"))
-    // The Legendary Calgar fights capped down to Uncommon, and the bar says so.
-    const staged = screen.getByTestId("guild-war-staged-unit")
-    expect(staged).toHaveAttribute("data-cap", "over")
+    // The Diamond 3 Calgar could fight at a higher cap than Uncommon, and the bar says so.
     expect(
-      within(staged).getByRole("button", { name: /Capped to Uncommon/ })
-    ).toBeInTheDocument()
+      screen.getByRole("button", {
+        name: /^1 over cap\. Over the Uncommon cap/,
+      })
+    ).toHaveAccessibleName(/\(Legendary rank\)/)
+    expect(screen.queryByRole("button", { name: /under cap/ })).toBeNull()
     await user.click(screen.getByRole("button", { name: "Won" }))
 
     await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(2))
