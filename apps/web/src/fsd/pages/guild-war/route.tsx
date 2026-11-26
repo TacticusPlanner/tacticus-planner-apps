@@ -5,6 +5,7 @@ import { lazy } from "react"
 import { Navigate } from "react-router"
 import type { RouteObject } from "react-router"
 
+import { redirectOnlyHandle } from "@/shared/analytics"
 import { preloadOnMatch } from "@/shared/lib"
 
 // The group layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API
@@ -29,7 +30,12 @@ const HistoryPage = lazy(loadHistoryPage)
 // Nested under "/guild/war" — see app/routes.tsx, which owns the path, the layout element and the
 // ProtectedRoute wrapping, and splices this array in as `children`.
 export const routes: RouteObject[] = [
-  { index: true, element: <Navigate replace to="/guild/war/offense" /> },
+  {
+    index: true,
+    element: <Navigate replace to="/guild/war/offense" />,
+    // Only redirects: no page view of its own.
+    handle: redirectOnlyHandle,
+  },
   {
     path: "offense",
     element: <OffensePage />,
