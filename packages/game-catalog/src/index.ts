@@ -273,6 +273,7 @@ export {
   incursionEnhancementIcon,
   incursionTokenIcon,
   guildWarBoardImage,
+  guildWarBoardImageLarge,
   guildWarBuffIcon,
   guildWarTokenIcon,
   guildWarZoneIcon,

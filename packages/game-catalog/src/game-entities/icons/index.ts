@@ -24,6 +24,7 @@ export { battleBoardImage } from "./battle-board"
 export { factionIcon } from "./faction"
 export {
   guildWarBoardImage,
+  guildWarBoardImageLarge,
   guildWarBuffIcon,
   guildWarTokenIcon,
   guildWarZoneIcon,

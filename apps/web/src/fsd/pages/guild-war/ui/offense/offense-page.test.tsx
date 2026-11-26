@@ -488,6 +488,31 @@ describe("OffensePage", () => {
     )
     await user.click(board)
     expect(board).toHaveAttribute("data-state", "on")
+    // A board's magnifier opens it large; Next and Pick this map pick another from there.
+    await user.click(
+      within(dialog).getByRole("button", { name: "Zoom in on map 1" })
+    )
+    const viewer = await screen.findByTestId("guild-war-map-viewer")
+    expect(within(viewer).getByRole("img", { name: "Map 1" })).toHaveAttribute(
+      "src",
+      "/game_catalog/curated/guild_war_boards_large/EC1_09.webp"
+    )
+    await user.click(within(viewer).getByRole("button", { name: "Next map" }))
+    expect(
+      within(viewer).getByRole("button", { name: "Picked" })
+    ).toBeDisabled()
+    await user.click(within(viewer).getByRole("button", { name: "Next map" }))
+    await user.click(
+      within(viewer).getByRole("button", { name: "Pick this map" })
+    )
+    await waitFor(() =>
+      expect(screen.queryByTestId("guild-war-map-viewer")).toBeNull()
+    )
+    expect(within(maps).getByRole("radio", { name: "Map 3" })).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    await user.click(board)
     await user.click(within(dialog).getByRole("button", { name: "Log attack" }))
 
     await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(1))

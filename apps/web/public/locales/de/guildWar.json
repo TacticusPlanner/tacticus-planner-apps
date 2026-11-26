@@ -197,7 +197,12 @@
     "buffs": "Aktive Zonenboni",
     "buffInfo": "Was {{name}} bewirkt",
     "map": "Karte",
-    "mapOption": "Karte {{number}}"
+    "mapOption": "Karte {{number}}",
+    "zoomMap": "Karte {{number}} vergrößern",
+    "previousMap": "Vorherige Karte",
+    "nextMap": "Nächste Karte",
+    "pickMap": "Diese Karte wählen",
+    "mapPicked": "Gewählt"
   },
   "attackLog": {
     "heading": "Angriffsprotokoll",

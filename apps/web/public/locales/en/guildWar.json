@@ -197,7 +197,12 @@
     "buffs": "Active zone buffs",
     "buffInfo": "What {{name}} does",
     "map": "Map",
-    "mapOption": "Map {{number}}"
+    "mapOption": "Map {{number}}",
+    "zoomMap": "Zoom in on map {{number}}",
+    "previousMap": "Previous map",
+    "nextMap": "Next map",
+    "pickMap": "Pick this map",
+    "mapPicked": "Picked"
   },
   "attackLog": {
     "heading": "Attack log",

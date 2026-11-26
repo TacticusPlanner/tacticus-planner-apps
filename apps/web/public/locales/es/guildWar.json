@@ -197,7 +197,12 @@
     "buffs": "Mejoras de zona activas",
     "buffInfo": "Qué hace {{name}}",
     "map": "Mapa",
-    "mapOption": "Mapa {{number}}"
+    "mapOption": "Mapa {{number}}",
+    "zoomMap": "Ampliar el mapa {{number}}",
+    "previousMap": "Mapa anterior",
+    "nextMap": "Mapa siguiente",
+    "pickMap": "Elegir este mapa",
+    "mapPicked": "Elegido"
   },
   "attackLog": {
     "heading": "Registro de ataques",

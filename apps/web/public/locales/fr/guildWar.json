@@ -197,7 +197,12 @@
     "buffs": "Bonus de zone actifs",
     "buffInfo": "Effet de {{name}}",
     "map": "Carte",
-    "mapOption": "Carte {{number}}"
+    "mapOption": "Carte {{number}}",
+    "zoomMap": "Agrandir la carte {{number}}",
+    "previousMap": "Carte précédente",
+    "nextMap": "Carte suivante",
+    "pickMap": "Choisir cette carte",
+    "mapPicked": "Choisie"
   },
   "attackLog": {
     "heading": "Journal des attaques",
