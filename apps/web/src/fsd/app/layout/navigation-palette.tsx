@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import type { KeyboardEvent, ReactNode, MouseEvent } from "react"
 import { Link, useLocation, useNavigate } from "react-router"
 import { Search } from "lucide-react"
@@ -15,6 +15,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { EmptyState } from "@/shared/ui"
 
+import { matchesNavPath } from "./find-active-child"
+
 import { NavChildIcon, NavItemIcon } from "./nav-child-icon"
 import { NavGroupLabel } from "./nav-group-label"
 import { subItemDescription, subItemLabel } from "./nav-items"
@@ -22,10 +24,15 @@ import type { NavItem } from "./nav-items"
 import { NavLiveDot } from "./nav-live-dot"
 import { buildNavigationGroups } from "./navigation-search"
 import type { NavigationEntry, NavigationGroup } from "./navigation-search"
-import type { QuickActionId, QuickActionsController } from "./quick-actions"
+import type {
+  QuickAction,
+  QuickActionId,
+  QuickActionsController,
+} from "./quick-actions"
+import { RECENT_PAGES_SHOWN, readRecentPages } from "./recent-pages"
 
-/** `compact`: one line, the description only on the highlighted row (desktop). `comfortable`:
- *  label over description on every row (the phone drawer). */
+/** Rows are one line either way, with the description only on the highlighted row. `compact`:
+ *  mouse-sized rows (desktop). `comfortable`: touch-sized rows (the phone drawer). */
 type Density = "compact" | "comfortable"
 
 // The highlight shows only inside a list that opts in (`data-highlight`, see NavigationPalette).
@@ -38,7 +45,7 @@ function rowClassName(density: Density, isChild: boolean) {
     // The phone list's pointer does not move the highlight, so a mouse there gets the plain hover.
     density === "compact"
       ? "min-h-9 py-1.5"
-      : "min-h-12 interactive-surface py-2",
+      : "min-h-11 interactive-surface py-2",
     isChild && "font-normal"
   )
 }
@@ -50,6 +57,7 @@ function rowClassName(density: Density, isChild: boolean) {
  * top (desktop) or bottom (phone), with `footer` after the list.
  */
 export function NavigationPalette({
+  actionsAsChips = false,
   focusOnOpen = false,
   density,
   footer,
@@ -63,6 +71,8 @@ export function NavigationPalette({
   quickActions,
   search,
 }: {
+  /** With no query, shows the quick actions as a row of chips above the list (the phone). */
+  actionsAsChips?: boolean
   /** Moves focus into the field when the palette mounts (the desktop dialog). */
   focusOnOpen?: boolean
   density: Density
@@ -84,14 +94,25 @@ export function NavigationPalette({
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
   const { t } = useTranslation(["common", "dailies", "library"])
   const navigate = useNavigate()
+  const { pathname } = useLocation()
+  // Read once per opening (the surface mounts this on open): visits made while open don't move it.
+  const [storedRecent] = useState(readRecentPages)
+  const recentPaths = storedRecent
+    .filter((path) => !matchesNavPath(pathname, path))
+    .slice(0, RECENT_PAGES_SHOWN)
+  const isSearching = search.trim() !== ""
+  const showChips = actionsAsChips && !isSearching
   const groups = buildNavigationGroups({
     actions: quickActions.actions,
     getEntryPath,
     items,
     query: search,
+    recentPaths,
     t,
-  })
-  const isSearching = search.trim() !== ""
+  }).filter((group) => !showChips || group.id !== "actions")
+  const chipActions = quickActions.actions.filter(
+    (action) => !action.searchOnly
+  )
   // The phone drawer is tapped, not arrowed through: it shows the highlight only on a search's top
   // hit (what Go/Enter opens), and the pointer never moves it (no flicker while scrolling).
   const isTouchList = density === "comfortable"
@@ -142,6 +163,8 @@ export function NavigationPalette({
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus={focusOnOpen}
           className="h-full text-base"
+          // The phone keyboard's key opens the highlighted top hit.
+          enterKeyHint="go"
           onKeyDown={guardEnter}
           onValueChange={changeSearch}
           placeholder={t("nav.search")}
@@ -163,10 +186,17 @@ export function NavigationPalette({
       shouldFilter={false}
     >
       {inputPlacement === "top" ? field : null}
+      {showChips && chipActions.length > 0 ? (
+        <ActionChips actions={chipActions} onActionSelect={onActionSelect} />
+      ) : null}
       <CommandList
         className={cn(
-          "max-h-none min-h-0 flex-1 scroll-py-2 p-2",
-          density === "comfortable" && "px-4"
+          "flex max-h-none min-h-0 flex-1 scroll-py-2 flex-col p-2",
+          density === "comfortable" && "px-4",
+          // A field at the bottom: results that fit sit right above it, the best match nearest.
+          inputPlacement === "bottom" &&
+            isSearching &&
+            "*:[[cmdk-list-sizer]]:mt-auto"
         )}
       >
         {groups.length === 0 ? (
@@ -218,16 +248,19 @@ function PaletteGroup({
   onOpenPage: (to: string) => void
 }) {
   const { t } = useTranslation()
-  const heading =
-    group.id === "actions"
-      ? t("nav.quickActions.heading")
-      : t("nav.quickActions.pagesHeading")
+  const heading = {
+    recent: t("nav.quickActions.recentHeading"),
+    actions: t("nav.quickActions.heading"),
+    pages: t("nav.quickActions.pagesHeading"),
+  }[group.id]
+  // A recent page says where it lives, as search results do; the tree shows that by nesting.
+  const showCrumb = isSearching || group.id === "recent"
 
   // With no query, a section's children sit indented under it, each group under its label.
   const runs: NavigationEntry[][] = []
   for (const entry of group.entries) {
     const last = runs.at(-1)
-    if (!isSearching && entry.kind === "child" && last?.[0]?.kind === "child")
+    if (!showCrumb && entry.kind === "child" && last?.[0]?.kind === "child")
       last.push(entry)
     else runs.push([entry])
   }
@@ -239,6 +272,7 @@ function PaletteGroup({
       isSearching={isSearching}
       key={entry.key}
       onActionSelect={onActionSelect}
+      showCrumb={showCrumb}
       onModifiedClick={onModifiedClick}
       onOpenPage={onOpenPage}
     />
@@ -247,11 +281,17 @@ function PaletteGroup({
   return (
     <CommandGroup
       className="p-0 pb-2 **:[[cmdk-group-heading]]:px-3 **:[[cmdk-group-heading]]:text-sm"
-      data-testid={group.id === "actions" ? "quick-actions" : "pages"}
+      data-testid={
+        {
+          recent: "recent-pages",
+          actions: "quick-actions",
+          pages: "pages",
+        }[group.id]
+      }
       heading={heading}
     >
       {runs.map((run) =>
-        !isSearching && run[0]?.kind === "child" ? (
+        !showCrumb && run[0]?.kind === "child" ? (
           <div className="ml-6 border-l pl-2" key={run[0].key}>
             {run.map((entry) => (
               <div key={entry.key}>
@@ -277,6 +317,7 @@ function PaletteRow({
   onActionSelect,
   onModifiedClick,
   onOpenPage,
+  showCrumb,
 }: {
   density: Density
   entry: NavigationEntry
@@ -284,6 +325,7 @@ function PaletteRow({
   onActionSelect: (id: QuickActionId) => void
   onModifiedClick: (modified: boolean) => void
   onOpenPage: (to: string) => void
+  showCrumb: boolean
 }) {
   // Also declares the `dailies` namespace (see NavigationPalette).
   const { t } = useTranslation(["common", "dailies", "library"])
@@ -305,8 +347,9 @@ function PaletteRow({
           className="size-icon shrink-0 text-muted-foreground"
         />
         <RowText
-          density={density}
-          description={action.disabledReason ?? action.description}
+          description={
+            action.disabledReason ?? action.status ?? action.description
+          }
           // A disabled row always says why, not only while highlighted.
           descriptionAlways={disabled}
           label={action.label}
@@ -354,8 +397,7 @@ function PaletteRow({
           <NavItemIcon item={entry.item} />
         )}
         <RowText
-          crumb={isSearching && isChild ? entry.crumb : undefined}
-          density={density}
+          crumb={showCrumb && isChild ? entry.crumb : undefined}
           description={description}
           label={label}
           live={<NavLiveDot hidden={isSearching} item={entry.item} />}
@@ -372,37 +414,17 @@ function PaletteRow({
 
 function RowText({
   crumb,
-  density,
   description,
   descriptionAlways = false,
   label,
   live,
 }: {
   crumb?: string
-  density: Density
   description: ReactNode
   descriptionAlways?: boolean
   label: string
   live?: ReactNode
 }) {
-  if (density === "comfortable") {
-    return (
-      <span className="flex min-w-0 flex-1 flex-col">
-        <span className="flex min-w-0 items-center gap-1.5">
-          <span className="truncate">{label}</span>
-          {crumb ? (
-            <span className="shrink-0 font-normal text-muted-foreground">
-              · {crumb}
-            </span>
-          ) : null}
-          {live}
-        </span>
-        <span className="truncate text-xs font-normal text-muted-foreground">
-          {description}
-        </span>
-      </span>
-    )
-  }
   return (
     <span className="flex min-w-0 flex-1 items-baseline gap-1.5">
       <span className="truncate">{label}</span>
@@ -422,5 +444,51 @@ function RowText({
         {description}
       </span>
     </span>
+  )
+}
+
+/** The phone's quick actions at rest: one scrolling row of chips above the list. A disabled chip
+ *  says why in place of its label. */
+function ActionChips({
+  actions,
+  onActionSelect,
+}: {
+  actions: QuickAction[]
+  onActionSelect: (id: QuickActionId) => void
+}) {
+  const { t } = useTranslation()
+
+  return (
+    <div
+      aria-label={t("nav.quickActions.heading")}
+      className="scrollbar-none flex shrink-0 gap-2 overflow-x-auto px-4 pt-3 pb-1"
+      data-testid="quick-action-chips"
+      role="group"
+    >
+      {actions.map((action) => {
+        const disabled = action.disabledReason !== undefined
+        return (
+          <Button
+            className="shrink-0 rounded-full font-normal"
+            data-testid={`quick-action-${action.id}`}
+            disabled={disabled}
+            key={action.id}
+            onClick={() => onActionSelect(action.id)}
+            type="button"
+            variant="outline"
+          >
+            <action.icon aria-hidden="true" />
+            {disabled ? (
+              <>
+                <span className="sr-only">{action.label}: </span>
+                {action.disabledReason}
+              </>
+            ) : (
+              action.label
+            )}
+          </Button>
+        )
+      })}
+    </div>
   )
 }

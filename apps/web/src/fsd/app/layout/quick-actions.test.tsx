@@ -43,8 +43,25 @@ const signInRedirect = vi.hoisted(() => ({
   disabled: false,
   checkingSignIn: false,
 }))
+const signOut = vi.hoisted(() => vi.fn(() => Promise.resolve()))
 vi.mock("@/shared/auth", () => ({
   useSignInRedirect: () => signInRedirect,
+  signOut,
+}))
+
+const msal = vi.hoisted(() => ({
+  accounts: [{ homeAccountId: "account-1" }],
+  inProgress: "none",
+  instance: { getActiveAccount: () => null },
+}))
+vi.mock("@azure/msal-react", () => ({ useMsal: () => msal }))
+
+const setTheme = vi.hoisted(() => vi.fn())
+vi.mock("@/shared/theme", () => ({ useTheme: () => ({ setTheme }) }))
+
+const requestAccountSettings = vi.hoisted(() => vi.fn())
+vi.mock("../providers/account-settings-request", () => ({
+  requestAccountSettings,
 }))
 
 import type { QuickAction } from "./quick-actions"
@@ -69,9 +86,11 @@ describe("useQuickActions", () => {
     Object.assign(sync, { isSyncing: false })
     Object.assign(userJot, { status: "ready" })
     signInRedirect.disabled = false
+    msal.inProgress = "none"
+    document.documentElement.classList.remove("dark")
   })
 
-  it("lists the six actions in order for a signed-in user on a page with a tour", () => {
+  it("lists the actions in order for a signed-in user on a page with a tour", () => {
     const { result } = setup()
 
     expect(ids(result)).toEqual([
@@ -81,7 +100,14 @@ describe("useQuickActions", () => {
       "feedback",
       "reportBug",
       "tourPage",
+      "switchTheme",
+      "accountSettings",
+      "signOut",
     ])
+    // Listed only when searched for, so the resting list stays short.
+    expect(
+      result.current.actions.filter((a) => a.searchOnly).map((a) => a.id)
+    ).toEqual(["reportBug", "switchTheme", "accountSettings", "signOut"])
     expect(
       result.current.actions.every((a) => !hasNode(a.disabledReason))
     ).toBe(true)
@@ -91,7 +117,13 @@ describe("useQuickActions", () => {
     tour.hasPageTour = false
     const { result } = setup(false)
 
-    expect(ids(result)).toEqual(["signIn", "signUp", "feedback", "reportBug"])
+    expect(ids(result)).toEqual([
+      "signIn",
+      "signUp",
+      "feedback",
+      "reportBug",
+      "switchTheme",
+    ])
   })
 
   it("runs the guest's sign-in and sign-up redirects", () => {
@@ -193,6 +225,38 @@ describe("useQuickActions", () => {
       to: "feedback",
       compose: true,
     })
+  })
+
+  it("switches to the theme opposite the one showing", () => {
+    document.documentElement.classList.add("dark")
+    const { result } = setup()
+
+    result.current.select("switchTheme")
+    act(() => result.current.flush())
+
+    expect(setTheme).toHaveBeenCalledExactlyOnceWith("light")
+  })
+
+  it("opens Account settings and signs out of the active account", () => {
+    const { result } = setup()
+
+    result.current.select("accountSettings")
+    act(() => result.current.flush())
+    result.current.select("signOut")
+    act(() => result.current.flush())
+
+    expect(requestAccountSettings).toHaveBeenCalledTimes(1)
+    expect(signOut).toHaveBeenCalledExactlyOnceWith(msal.instance, "account-1")
+  })
+
+  it("disables Sign out while an account interaction is running", () => {
+    msal.inProgress = "logout"
+    const { result } = setup()
+
+    expect(result.current.select("signOut")).toBe(false)
+    expect(
+      result.current.actions.find((a) => a.id === "signOut")?.disabledReason
+    ).toBe("nav.quickActions.accountBusy")
   })
 
   it("re-checks eligibility at dispatch: authentication lost after selection", () => {

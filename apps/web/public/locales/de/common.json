@@ -329,7 +329,14 @@
       "tourRunning": "Eine Tour läuft bereits",
       "signInDescription": "Plane Ziele, Dailies, Legendary Events und Gildenraids mit deinem eigenen Roster",
       "signUpDescription": "Erstelle ein kostenloses Konto, um mit deinem eigenen Roster zu planen",
-      "signInBusy": "Die Anmeldung läuft bereits"
+      "signInBusy": "Die Anmeldung läuft bereits",
+      "switchThemeLabel": "Design wechseln",
+      "switchThemeDescription": "Zwischen hell und dunkel wechseln",
+      "accountSettingsLabel": "Kontoeinstellungen",
+      "accountSettingsDescription": "Tacticus-API-Schlüssel, Profil und deine Daten",
+      "signOutDescription": "Auf diesem Gerät abmelden",
+      "accountBusy": "Dein Konto ist gerade beschäftigt. Versuche es gleich noch einmal.",
+      "recentHeading": "Zuletzt besucht"
     },
     "breadcrumb": "Seitenpfad"
   },

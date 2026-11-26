@@ -320,7 +320,7 @@
       "createGoalDescription": "Open the new goal form",
       "createProjectDescription": "Open a blank project form",
       "syncDescription": "Refresh your planner from Tacticus",
-      "feedbackLabel": "Submit feedback",
+      "feedbackLabel": "Send feedback",
       "feedbackDescription": "Open the feedback, roadmap, and updates widget",
       "feedbackUnavailable": "Feedback is unavailable right now",
       "reportBugLabel": "Report a bug",
@@ -329,7 +329,14 @@
       "tourRunning": "A tour is already running",
       "signInDescription": "Plan goals, dailies, Legendary Events and guild raids with your own roster",
       "signUpDescription": "Create a free account to plan with your own roster",
-      "signInBusy": "Sign-in is already in progress"
+      "signInBusy": "Sign-in is already in progress",
+      "switchThemeLabel": "Switch theme",
+      "switchThemeDescription": "Change between light and dark",
+      "accountSettingsLabel": "Account settings",
+      "accountSettingsDescription": "Tacticus API key, profile and your data",
+      "signOutDescription": "Sign out on this device",
+      "accountBusy": "Your account is busy. Try again in a moment.",
+      "recentHeading": "Recent"
     },
     "breadcrumb": "Breadcrumb"
   },

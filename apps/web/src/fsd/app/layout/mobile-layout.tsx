@@ -10,6 +10,7 @@ import {
   PlusCircle,
   RefreshCw,
   UserPlus,
+  X,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
@@ -18,7 +19,6 @@ import {
   DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -328,22 +328,26 @@ function MobileBottomNav({
               ?.focus({ preventScroll: true })
           }}
         >
-          <DrawerHeader className="border-b px-6 py-5 text-left">
-            <DrawerTitle className="text-xl">{t("nav.navigation")}</DrawerTitle>
-            <DrawerDescription>{t("nav.navigationHint")}</DrawerDescription>
+          {/* One line, so the list gets the height; the handle, a swipe and the X close it. */}
+          <DrawerHeader className="flex-row items-center justify-between gap-2 border-b px-4 py-2 text-left">
+            <DrawerTitle className="text-lg">{t("nav.menu")}</DrawerTitle>
+            <DrawerDescription className="sr-only">
+              {t("nav.navigationHint")}
+            </DrawerDescription>
+            <DrawerClose asChild>
+              <Button
+                aria-label={t("common.close")}
+                size="icon"
+                variant="ghost"
+              >
+                <X aria-hidden="true" />
+              </Button>
+            </DrawerClose>
           </DrawerHeader>
           <Suspense fallback={null}>
             <LazyNavigationPalette
+              actionsAsChips
               density="comfortable"
-              footer={
-                <DrawerFooter className="px-6 pt-0 pb-4">
-                  <DrawerClose asChild>
-                    <Button className="w-full" variant="outline">
-                      {t("common.close")}
-                    </Button>
-                  </DrawerClose>
-                </DrawerFooter>
-              }
               getEntryPath={(item) => item.path}
               inputPlacement="bottom"
               items={items}

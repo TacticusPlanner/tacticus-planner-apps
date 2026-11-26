@@ -48,6 +48,7 @@ import {
 } from "@/shared/auth"
 import { TourButton, useTourControlledPopoverOpen } from "@/shared/tour"
 
+import { useAccountSettingsRequest } from "./account-settings-request"
 import { useUserJot } from "./userjot-provider"
 import { hasNode } from "@/shared/lib"
 import { TruncatedText } from "@/shared/ui"
@@ -105,6 +106,11 @@ export function AuthControl() {
   const [manageAccountTab, setManageAccountTab] =
     useState<ManageAccountTab>("integration")
   const [menuOpen, setMenuOpen] = useTourControlledPopoverOpen()
+  // Navigation search's Account settings action opens the same dialog as the account menu's row.
+  useAccountSettingsRequest(() => {
+    setManageAccountTab("integration")
+    setIsManageAccountOpen(true)
+  })
   const install = useAppInstall()
   const installGuide = useInstallGuide("accountMenu", install)
   const handleSignOut = () => {

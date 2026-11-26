@@ -10,6 +10,9 @@ export type QuickActionId =
   | "feedback"
   | "reportBug"
   | "tourPage"
+  | "switchTheme"
+  | "accountSettings"
+  | "signOut"
 
 export type QuickAction = {
   id: QuickActionId
@@ -20,6 +23,10 @@ export type QuickAction = {
   keywords: string[]
   /** Set when the action is visible but cannot run right now; shown instead of the description. */
   disabledReason?: ReactNode
+  /** Live status shown instead of the description, which search still matches (Sync's last sync). */
+  status?: ReactNode
+  /** Listed only when a query matches it, never in the resting list or the phone's chip row. */
+  searchOnly?: boolean
 }
 
 /** What the search surfaces need: the live eligible actions, the guarded selection, and the

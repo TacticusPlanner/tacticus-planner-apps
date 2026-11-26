@@ -29,7 +29,7 @@ export type NavigationEntry =
       crumb: string
     }
 
-type NavigationGroupId = "actions" | "pages"
+type NavigationGroupId = "recent" | "actions" | "pages"
 
 export interface NavigationGroup {
   id: NavigationGroupId
@@ -187,23 +187,41 @@ function rank(
   }
 }
 
+/** The pages at `paths` (most recent first), as rows of their own; paths no longer listed (a page
+ *  that is gone or hidden from this visitor) are skipped. */
+function recentEntries(
+  pages: NavigationEntry[],
+  paths: readonly string[]
+): NavigationEntry[] {
+  return paths.flatMap((path): NavigationEntry[] => {
+    const page = pages.find(
+      (entry) => entry.kind !== "action" && entry.item.path === path
+    )
+    return page ? [{ ...page, key: `recent:${page.key}` }] : []
+  })
+}
+
 /**
- * What navigation search lists for a query. With no query: every action, then the page tree in
- * menu order. With one: the matching actions and the matching pages, each ranked, as one flat list
- * per group, and the group holding the better match first (actions first on a tie). Groups with
- * no match are left out, so an empty result is an empty array.
+ * What navigation search lists for a query. With no query: the recent pages, every action that is
+ * not search-only, then the page tree in menu order. With one: the matching actions and the
+ * matching pages, each ranked, as one flat list per group, and the group holding the better match
+ * first (actions first on a tie). Groups with no match are left out, so an empty result is an
+ * empty array.
  */
 export function buildNavigationGroups({
   actions,
   getEntryPath,
   items,
   query,
+  recentPaths = [],
   t,
 }: {
   actions: QuickAction[]
   getEntryPath: (item: NavItem) => string
   items: NavItem[]
   query: string
+  /** Recently visited page paths, most recent first, already without the current page. */
+  recentPaths?: readonly string[]
   t: NavTranslate
 }): NavigationGroup[] {
   const actionEntries: NavigationEntry[] = actions.map((action) => ({
@@ -216,7 +234,13 @@ export function buildNavigationGroups({
 
   if (!normalized) {
     return [
-      { id: "actions" as const, entries: actionEntries },
+      { id: "recent" as const, entries: recentEntries(pages, recentPaths) },
+      {
+        id: "actions" as const,
+        entries: actionEntries.filter(
+          (entry) => entry.kind === "action" && !entry.action.searchOnly
+        ),
+      },
       { id: "pages" as const, entries: pages },
     ].filter((group) => group.entries.length > 0)
   }

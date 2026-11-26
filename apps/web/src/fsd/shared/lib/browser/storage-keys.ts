@@ -89,6 +89,7 @@ export const storageKeys = {
   userGoalsCollapsedGroups: "tp.user.goals.collapsedGroups",
   userLegendaryEventShownTokens: "tp.user.legendaryEvents.shownTokens",
   userV1ImportPendingMaterialSteps: "tp.user.v1Import.pendingMaterialSteps",
+  userNavRecentPages: "tp.user.nav.recentPages",
 } as const
 
 export type StorageKey =
