@@ -694,11 +694,20 @@ describe("OffensePage", () => {
     await seedPlayerData({ characters: many.map(rosterUnit), mows: [] })
     api.current.mockResolvedValue({ war: war() })
     api.teams.mockResolvedValue({
-      teams: [team("late", { characterIds: ["unit0", "unit13"] })],
+      teams: [
+        team("late", {
+          characterIds: ["unit0", "unit13", "unit5"],
+          flexStartIndex: 1,
+        }),
+      ],
     })
     renderOffense()
 
     await screen.findByRole("button", { name: "Show all (14)" })
+    // Flex units show after the core, and Select picks them too.
+    expect(
+      within(screen.getByTestId("guild-war-team-flex")).getAllByRole("listitem")
+    ).toHaveLength(2)
     await user.click(
       await screen.findByRole("button", { name: "Select Team late" })
     )
@@ -708,7 +717,7 @@ describe("OffensePage", () => {
       within(grid)
         .getAllByRole("checkbox")
         .filter((box) => box.getAttribute("aria-checked") === "true")
-    ).toHaveLength(2)
+    ).toHaveLength(3)
     expect(screen.getByRole("button", { name: "Show less" })).toBeEnabled()
   })
 

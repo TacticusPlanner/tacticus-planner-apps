@@ -8,8 +8,10 @@ import {
   kindFull,
   lineupUnit,
   logBlock,
+  flexUnits,
   offenseTeams,
   previewCharacters,
+  teamSelection,
   toggleSelection,
 } from "./offense"
 import type { Selection } from "./offense"
@@ -76,6 +78,42 @@ describe("offenseTeams", () => {
       ["blocked", ["a", "d"]],
       ["mow", ["m"]],
     ])
+  })
+})
+
+describe("teamSelection", () => {
+  const flexTeam = team("flex", {
+    characterIds: ["a", "b", "c", "d", "e", "f"],
+    flexStartIndex: 3,
+    mowIds: ["m", "n"],
+    mowFlexStartIndex: 0,
+  })
+
+  it("lists the flex units after the marker", () => {
+    expect(flexUnits(flexTeam).map((entry) => entry.id)).toEqual([
+      "d",
+      "e",
+      "f",
+      "m",
+      "n",
+    ])
+  })
+
+  it("picks the core, then flex units that have not attacked, while there is room", () => {
+    expect([...teamSelection(flexTeam, new Set(["d", "m"]))]).toEqual([
+      ["a", "character"],
+      ["b", "character"],
+      ["c", "character"],
+      ["e", "character"],
+      ["f", "character"],
+      ["n", "mow"],
+    ])
+    // Room for 5 characters only: the last flex character is left out.
+    expect(
+      [...teamSelection(flexTeam, new Set())].filter(
+        ([, kind]) => kind === "character"
+      )
+    ).toHaveLength(5)
   })
 })
 

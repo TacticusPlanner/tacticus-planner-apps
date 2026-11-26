@@ -110,6 +110,7 @@
     "select": "Seleccionar",
     "selectTeam": "Seleccionar {{name}}",
     "core": "Unidades principales",
+    "flex": "Unidades flexibles",
     "blocked_one": "{{names}} ya atacó en esta guerra.",
     "blocked_other": "{{names}} ya atacaron en esta guerra.",
     "more_one": "{{count}} más",

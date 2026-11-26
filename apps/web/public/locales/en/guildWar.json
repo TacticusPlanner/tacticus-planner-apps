@@ -110,6 +110,7 @@
     "select": "Select",
     "selectTeam": "Select {{name}}",
     "core": "Core units",
+    "flex": "Flex units",
     "blocked_one": "{{names}} already attacked in this war.",
     "blocked_other": "{{names}} already attacked in this war.",
     "more_one": "{{count}} more",

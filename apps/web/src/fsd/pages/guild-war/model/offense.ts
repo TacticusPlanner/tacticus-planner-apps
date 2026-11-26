@@ -90,6 +90,34 @@ export function coreUnits(team: Team): { id: string; kind: UnitKind }[] {
   ]
 }
 
+/** A team's flex units: its characters and MoWs from the flex marker on, in saved order. */
+export function flexUnits(team: Team): { id: string; kind: UnitKind }[] {
+  const characters = team.characterIds.slice(
+    team.flexStartIndex ?? team.characterIds.length
+  )
+  const mows = team.mowIds.slice(team.mowFlexStartIndex ?? team.mowIds.length)
+  return [
+    ...characters.map((id) => ({ id, kind: "character" as const })),
+    ...mows.map((id) => ({ id, kind: "mow" as const })),
+  ]
+}
+
+/** What a team's Select picks: its core, then its flex units that have not attacked, in saved
+ *  order, while an attack has room for them (5 characters, 1 Machine of War). */
+export function teamSelection(
+  team: Team,
+  deployed: ReadonlySet<string>
+): Selection {
+  let selection: Selection = new Map(
+    coreUnits(team).map((unit) => [unit.id, unit.kind])
+  )
+  for (const unit of flexUnits(team)) {
+    if (deployed.has(unit.id) || selection.has(unit.id)) continue
+    selection = toggleSelection(selection, unit.id, unit.kind)
+  }
+  return selection
+}
+
 /** An offense team and every one of its core units that already attacked (none when ready). */
 export interface OffenseTeam {
   team: Team

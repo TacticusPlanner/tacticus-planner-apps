@@ -6,41 +6,72 @@ import { cn } from "@workspace/ui/lib/utils"
 import type { Rarity } from "@workspace/game-domain"
 
 import { TeamUnitPortrait } from "@/entities/team"
-import type { TeamRoster } from "@/entities/team"
+import type { Team, TeamRoster } from "@/entities/team"
 import { EmptyState } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import { cappedView } from "../../model/capped-view"
-import { coreUnits } from "../../model/offense"
+import { coreUnits, flexUnits } from "../../model/offense"
 import type { OffenseTeam, UnitKind } from "../../model/offense"
 
 /** How many deployed units a blocked team names before "and N more". */
 const NAMED_DEPLOYED = 3
 
+/** One unit of a team card, at the defenders' cap; dimmed and named so once it attacked. */
+function TeamCardUnit({
+  unit,
+  deployed,
+  roster,
+  cap,
+}: {
+  unit: { id: string; kind: UnitKind }
+  deployed: boolean
+  roster: TeamRoster | null
+  cap: Rarity | undefined
+}) {
+  const { t } = useTranslation("guildWar")
+  const unitName = useUnitName()
+  const name = unitName(unit.kind === "mow" ? "Mow" : "Character", unit.id)
+  return (
+    <li
+      aria-label={deployed ? t("teams.deployedUnit", { name }) : name}
+      className={cn(deployed && "opacity-40 grayscale")}
+      data-deployed={deployed ? "true" : undefined}
+    >
+      <TeamUnitPortrait unit={cappedView(unit.kind, unit.id, roster, cap)} />
+    </li>
+  )
+}
+
 /**
  * The player's War Offense teams: the ready ones first, then the blocked ones, each naming every
- * core unit that already attacked (dimmed in the lineup), its units shown at the defenders' cap. Select puts a team's
- * core units in the selection; Create team opens the team editor with War Offense picked.
+ * core unit that already attacked. A card shows the core and, after a divider, the flex units, at
+ * the defenders' cap, the ones that attacked dimmed; only a core unit blocks a team. Select picks
+ * the core, then the flex units that have not attacked while the attack has room
+ * (`teamSelection`). Create team opens the team editor with War Offense picked.
  */
 export function OffenseTeams({
   teams,
   roster,
   cap,
+  deployed,
   onSelect,
   onNewTeam,
 }: {
   teams: readonly OffenseTeam[]
   roster: TeamRoster | null
   cap: Rarity | undefined
-  onSelect: (units: { id: string; kind: UnitKind }[]) => void
+  /** Every unit that already attacked in this war. */
+  deployed: ReadonlySet<string>
+  onSelect: (team: Team) => void
   onNewTeam: () => void
 }) {
   const { t, i18n } = useTranslation("guildWar")
   const unitName = useUnitName()
-  const nameOf = (kind: UnitKind, id: string) =>
-    unitName(kind === "mow" ? "Mow" : "Character", id)
   const deployedNames = (units: readonly { id: string; kind: UnitKind }[]) => {
-    const names = units.map((unit) => nameOf(unit.kind, unit.id))
+    const names = units.map((unit) =>
+      unitName(unit.kind === "mow" ? "Mow" : "Character", unit.id)
+    )
     const shown =
       names.length > NAMED_DEPLOYED
         ? [
@@ -79,8 +110,8 @@ export function OffenseTeams({
       <ul className="grid gap-2 sm:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
         {teams.map(({ team, deployedCore }) => {
           const core = coreUnits(team)
+          const flex = flexUnits(team)
           const blocked = deployedCore.length > 0
-          const deployedIds = new Set(deployedCore.map((unit) => unit.id))
           return (
             <li
               className="flex flex-col gap-2 rounded-xl border bg-card p-3"
@@ -95,36 +126,46 @@ export function OffenseTeams({
                 <Button
                   aria-label={t("teams.selectTeam", { name: team.name })}
                   disabled={blocked}
-                  onClick={() => onSelect(core)}
+                  onClick={() => onSelect(team)}
                   size="sm"
                   variant="outline"
                 >
                   {t("teams.select")}
                 </Button>
               </div>
-              <ul aria-label={t("teams.core")} className="flex flex-wrap gap-1">
-                {core.map((unit) => {
-                  const deployed = deployedIds.has(unit.id)
-                  return (
-                    <li
-                      aria-label={
-                        deployed
-                          ? t("teams.deployedUnit", {
-                              name: nameOf(unit.kind, unit.id),
-                            })
-                          : nameOf(unit.kind, unit.id)
-                      }
-                      className={cn(deployed && "opacity-40 grayscale")}
-                      data-deployed={deployed ? "true" : undefined}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <ul
+                  aria-label={t("teams.core")}
+                  className="flex flex-wrap gap-1"
+                >
+                  {core.map((unit) => (
+                    <TeamCardUnit
+                      cap={cap}
+                      deployed={deployed.has(unit.id)}
                       key={unit.id}
-                    >
-                      <TeamUnitPortrait
-                        unit={cappedView(unit.kind, unit.id, roster, cap)}
+                      roster={roster}
+                      unit={unit}
+                    />
+                  ))}
+                </ul>
+                {flex.length > 0 ? (
+                  <ul
+                    aria-label={t("teams.flex")}
+                    className="flex flex-wrap gap-1 border-l pl-2"
+                    data-testid="guild-war-team-flex"
+                  >
+                    {flex.map((unit) => (
+                      <TeamCardUnit
+                        cap={cap}
+                        deployed={deployed.has(unit.id)}
+                        key={unit.id}
+                        roster={roster}
+                        unit={unit}
                       />
-                    </li>
-                  )
-                })}
-              </ul>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
               {blocked ? (
                 <p
                   className="text-xs text-amber-800 dark:text-amber-400"

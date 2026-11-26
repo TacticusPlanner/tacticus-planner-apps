@@ -18,7 +18,7 @@ import {
 } from "@/features/team-editor"
 import type { PickerUnit } from "@/features/team-editor"
 import { DEFAULT_RARITY_CAP, useTeams } from "@/entities/team"
-import type { TeamMode, TeamRoster } from "@/entities/team"
+import type { Team, TeamMode, TeamRoster } from "@/entities/team"
 import {
   ConfirmationDialog,
   LocalReadFailure,
@@ -39,9 +39,10 @@ import {
   deployedZones,
   logBlock,
   offenseTeams,
+  teamSelection,
   toggleSelection,
 } from "../../model/offense"
-import type { Selection, UnitKind } from "../../model/offense"
+import type { Selection } from "../../model/offense"
 import type { GuildWarAttack, GuildWarAttackFields } from "../../model/types"
 import { DEFAULT_OFFENSE_FILTERS } from "../../model/offense-filters"
 import type { OffenseFilters } from "../../model/offense-filters"
@@ -248,12 +249,11 @@ export function OffensePage() {
       }
     )
   }
-  const selectTeam = (core: { id: string; kind: UnitKind }[]) => {
-    setSelection(new Map(core.map((unit) => [unit.id, unit.kind])))
+  const selectTeam = (team: Team) => {
+    const picks = teamSelection(team, deployed)
+    setSelection(picks)
     // A team's characters can sit past the first ones shown, so its picks show selected.
-    if (core.some((unit) => unit.kind === "character")) {
-      setCharactersExpanded(true)
-    }
+    if ([...picks.values()].includes("character")) setCharactersExpanded(true)
   }
 
   const saveError = (error: unknown) =>
@@ -374,6 +374,7 @@ export function OffensePage() {
       {picker.status === "ready" && roster === null ? <SyncPrompt /> : null}
       <OffenseTeams
         cap={cap}
+        deployed={deployed}
         onNewTeam={() => setNewTeamOpen(true)}
         onSelect={selectTeam}
         roster={roster}
