@@ -1,12 +1,12 @@
 import { useMemo } from "react"
 import type { ReactNode } from "react"
 
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 
 import { RankShadingContext } from "./rank-shading-context"
 import type { RankShading } from "./rank-shading-context"
 
-const RANK_SHADING_KEY = "legendaryEvents.unitChips.rankShading"
+const RANK_SHADING_KEY = storedPreference("legendaryEvents", "rankShading")
 
 type OnOff = "on" | "off"
 /** Whether a stored value is a valid Rank shading setting. */

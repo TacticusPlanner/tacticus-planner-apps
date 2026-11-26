@@ -1,3 +1,5 @@
+import { safeStorage, storageKeys } from "@/shared/lib"
+
 import type { UserJotOpenTarget } from "./userjot-targets"
 
 /**
@@ -12,7 +14,7 @@ const MAX_ID_LENGTH = 64
 
 /** The last post the Changelog entry point opened directly, so a dot that stays lit for another
  *  reason (a reply on the user's own post) does not reopen the same post every time. */
-export const LAST_OPENED_UPDATE_KEY = "tp.userjot.lastOpenedUpdateId"
+export const LAST_OPENED_UPDATE_KEY = storageKeys.userjotLastOpenedUpdate
 
 type UpdatesFeedPage = { items?: { id?: unknown }[] }
 
@@ -48,19 +50,12 @@ export function changelogTarget(
 }
 
 function readLastOpenedUpdateId(): string | null {
-  try {
-    return localStorage.getItem(LAST_OPENED_UPDATE_KEY)
-  } catch {
-    return null
-  }
+  return safeStorage.get(LAST_OPENED_UPDATE_KEY)
 }
 
 function rememberOpenedUpdateId(id: string) {
-  try {
-    localStorage.setItem(LAST_OPENED_UPDATE_KEY, id)
-  } catch {
-    // Storage unavailable (private mode): the post may open again next time, which is harmless.
-  }
+  // Storage unavailable (private mode): the post may open again next time, which is harmless.
+  safeStorage.set(LAST_OPENED_UPDATE_KEY, id)
 }
 
 /** Where the Changelog entry point opens: Home without unread activity, otherwise the newest post

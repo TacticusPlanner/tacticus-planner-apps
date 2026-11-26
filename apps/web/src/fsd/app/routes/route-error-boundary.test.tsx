@@ -92,7 +92,7 @@ describe("RouteErrorBoundary", () => {
   })
 
   it("shows the fallback page when the same URL already used its reload", async () => {
-    window.sessionStorage.setItem("tp:stale-reload:/dailies", "1")
+    window.sessionStorage.setItem("tp.staleReload./dailies", "1")
 
     renderRouter(
       "/dailies",

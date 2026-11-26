@@ -4,9 +4,9 @@ import { describe, expect, it, vi } from "vitest"
 
 import { render, screen } from "@/test/render"
 
-import { RAID_GROUPING_STORAGE_KEY } from "../model/raid-grouping/use-raid-grouping"
 import { CampaignGroupedList } from "./campaign-group"
 import { RaidGroupingSwitch } from "./raid-grouping-switch"
+import { readPreference, storedPreference, writePreference } from "@/shared/lib"
 
 const captureEvent = vi.fn()
 vi.mock("@/shared/analytics", () => ({
@@ -60,7 +60,7 @@ describe("RaidGroupingSwitch", () => {
 
     await userEvent.click(screen.getByRole("radio", { name: "Upgrade" }))
 
-    expect(window.localStorage.getItem(RAID_GROUPING_STORAGE_KEY)).toBe(
+    expect(readPreference(storedPreference("dailies", "raidGrouping"))).toBe(
       "upgrade"
     )
     expect(captureEvent).toHaveBeenCalledExactlyOnceWith({
@@ -76,18 +76,18 @@ describe("RaidGroupingSwitch", () => {
   })
 
   it("restores the remembered grouping, ignoring an unknown stored value", () => {
-    window.localStorage.setItem(RAID_GROUPING_STORAGE_KEY, "upgrade")
+    writePreference(storedPreference("dailies", "raidGrouping"), "upgrade")
     const { unmount } = render(<SwitchAndList />)
     expect(screen.getByRole("radio", { name: "Upgrade" })).toBeChecked()
     unmount()
 
-    window.localStorage.setItem(RAID_GROUPING_STORAGE_KEY, "nonsense")
+    writePreference(storedPreference("dailies", "raidGrouping"), "nonsense")
     render(<SwitchAndList />)
     expect(screen.getByRole("radio", { name: "Campaign" })).toBeChecked()
   })
 
   it("keeps the pick on this tab when storage refuses the write, even with an older value stored", async () => {
-    window.localStorage.setItem(RAID_GROUPING_STORAGE_KEY, "campaign")
+    writePreference(storedPreference("dailies", "raidGrouping"), "campaign")
     const setItem = vi
       .spyOn(Storage.prototype, "setItem")
       .mockImplementation(() => {

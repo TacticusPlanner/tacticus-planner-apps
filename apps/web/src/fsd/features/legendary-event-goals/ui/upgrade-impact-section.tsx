@@ -21,7 +21,7 @@ import type {
   UpgradeImpactRow,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
 import {
@@ -32,7 +32,10 @@ import {
 import type { UpgradeImpactState } from "../model/upgrade-impact-state"
 import { useGoalLabels } from "../model/use-goal-labels"
 
-export const UPGRADE_IMPACT_OPEN_KEY = "legendaryEvents.upgradeImpact.open"
+const UPGRADE_IMPACT_OPEN_KEY = storedPreference(
+  "legendaryEvents",
+  "upgradeImpactOpen"
+)
 const isOpenState = (value: unknown): value is "open" | "closed" =>
   value === "open" || value === "closed"
 

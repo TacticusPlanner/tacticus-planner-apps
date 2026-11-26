@@ -1,66 +1,63 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { migrateLegacyAccountKeys, safeStorage } from "./safe-storage"
+import { safeSessionStorage, safeStorage } from "./safe-storage"
+import { sessionStorageKeys, storageKeys } from "./storage-keys"
+
+const key = storageKeys.featureFlags
+const sessionKey = sessionStorageKeys.authTabId
+const blocked = () => {
+  throw new DOMException("blocked", "SecurityError")
+}
 
 describe("safeStorage", () => {
-  afterEach(() => vi.unstubAllGlobals())
-
-  it("reads, writes and removes through localStorage", () => {
-    safeStorage.set("k", "v")
-    expect(safeStorage.get("k")).toBe("v")
-    safeStorage.remove("k")
-    expect(safeStorage.get("k")).toBeNull()
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    localStorage.clear()
+    sessionStorage.clear()
   })
 
-  it("returns null and never throws when storage is blocked", () => {
-    const blocked = () => {
-      throw new DOMException("blocked", "SecurityError")
-    }
-    vi.stubGlobal("localStorage", {
+  it("reads, writes and removes through localStorage", () => {
+    safeStorage.set(key, "v")
+    expect(localStorage.getItem(key)).toBe("v")
+    expect(safeStorage.get(key)).toBe("v")
+    safeStorage.remove(key)
+    expect(safeStorage.get(key)).toBeNull()
+  })
+
+  it("reads, writes and removes through sessionStorage", () => {
+    safeSessionStorage.set(sessionKey, "v")
+    expect(sessionStorage.getItem(sessionKey)).toBe("v")
+    expect(localStorage.getItem(sessionKey)).toBeNull()
+    safeSessionStorage.remove(sessionKey)
+    expect(safeSessionStorage.get(sessionKey)).toBeNull()
+  })
+
+  it("removes only the keys under a prefix", () => {
+    localStorage.setItem(storageKeys.userOwner, "a")
+    localStorage.setItem(storageKeys.userHseProgress, "{}")
+    localStorage.setItem(storageKeys.theme, "dark")
+
+    safeStorage.removeByPrefix("tp.user.")
+
+    expect(Object.keys(localStorage)).toEqual([storageKeys.theme])
+  })
+
+  it("returns null, reports failed writes and never throws when storage is blocked", () => {
+    const storage = {
       getItem: blocked,
       setItem: blocked,
       removeItem: blocked,
-    })
+    }
+    vi.stubGlobal("localStorage", storage)
+    vi.stubGlobal("sessionStorage", storage)
 
-    expect(safeStorage.get("k")).toBeNull()
-    expect(() => safeStorage.set("k", "v")).not.toThrow()
-    expect(() => safeStorage.remove("k")).not.toThrow()
-  })
-})
-
-describe("migrateLegacyAccountKeys", () => {
-  afterEach(() => {
-    localStorage.clear()
-  })
-
-  it("moves dailies progress under the account prefix, so sign-out removes it", () => {
-    localStorage.setItem("tp.dailies.hse.progress.v2", '{"a":1}')
-    localStorage.setItem("tp.dailies.quest.progress.v1", '{"q":1}')
-    localStorage.setItem("theme", "dark")
-
-    migrateLegacyAccountKeys()
-
-    expect(localStorage.getItem("tp.session.dailies.hse.progress.v2")).toBe(
-      '{"a":1}'
-    )
-    expect(localStorage.getItem("tp.session.dailies.quest.progress.v1")).toBe(
-      '{"q":1}'
-    )
-    expect(localStorage.getItem("tp.dailies.hse.progress.v2")).toBeNull()
-    expect(localStorage.getItem("tp.dailies.quest.progress.v1")).toBeNull()
-    expect(localStorage.getItem("theme")).toBe("dark")
-  })
-
-  it("keeps a value already at the new key and still drops the legacy one", () => {
-    localStorage.setItem("tp.dailies.hre.progress.v1", "old")
-    localStorage.setItem("tp.session.dailies.hre.progress.v1", "new")
-
-    migrateLegacyAccountKeys()
-
-    expect(localStorage.getItem("tp.session.dailies.hre.progress.v1")).toBe(
-      "new"
-    )
-    expect(localStorage.getItem("tp.dailies.hre.progress.v1")).toBeNull()
+    expect(safeStorage.get(key)).toBeNull()
+    expect(() => safeStorage.set(key, "v")).not.toThrow()
+    expect(safeStorage.trySet(key, "v")).toBe(false)
+    expect(() => safeStorage.remove(key)).not.toThrow()
+    expect(() => safeStorage.removeByPrefix("tp.user.")).not.toThrow()
+    expect(safeSessionStorage.get(sessionKey)).toBeNull()
+    expect(safeSessionStorage.trySet(sessionKey, "v")).toBe(false)
   })
 })

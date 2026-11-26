@@ -26,7 +26,11 @@ import {
   UnclaimedRewardsDetails,
   useSavedBattleProgress,
 } from "@/features/daily-raids"
-import { combineReadStates, usePersistedSelection } from "@/shared/lib"
+import {
+  combineReadStates,
+  storedPreference,
+  usePersistedSelection,
+} from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 import {
   EntityIcon,
@@ -49,6 +53,10 @@ import { useCampaignsTutorial } from "./campaigns-page.tutorial"
 import { ProgressSummary } from "./progress-summary"
 
 const UNCLAIMED_ONLY = "unclaimedOnly"
+const UNCLAIMED_ONLY_PREFERENCE = storedPreference(
+  "progress",
+  "campaignsUnclaimedOnly"
+)
 const isOnOff = (value: unknown): value is "on" | "off" =>
   value === "on" || value === "off"
 
@@ -102,7 +110,7 @@ export function CampaignsPage() {
   const [medalsGroupId, setMedalsGroupId] = useState<string | null>(null)
   const overrides = useSavedBattleProgress()
   const [unclaimedOnly, setUnclaimedOnly] = usePersistedSelection(
-    "progress.campaigns.unclaimed-only",
+    UNCLAIMED_ONLY_PREFERENCE,
     isOnOff,
     "off"
   )

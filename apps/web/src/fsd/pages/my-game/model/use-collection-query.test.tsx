@@ -6,6 +6,7 @@ import { act, renderHook } from "@/test/render"
 
 import { defaultCollectionQuery } from "./collection-query"
 import { useCollectionQuery } from "./use-collection-query"
+import { readPreference, storedPreference, writePreference } from "@/shared/lib"
 
 const named = (...ids: string[]) => ids.map((id) => ({ id, name: id }))
 const options: UnitFilterOptions = {
@@ -66,7 +67,7 @@ describe("useCollectionQuery", () => {
   })
 
   it("reads the quick filter from this browser, not the URL", () => {
-    localStorage.setItem("collection.quick", "canAscend")
+    writePreference(storedPreference("collection", "quick"), "canAscend")
     const { result } = renderAt("/my-game/collection?quick=needToLevel")
     expect(result.current.state.query.quick).toBe("canAscend")
   })
@@ -75,7 +76,9 @@ describe("useCollectionQuery", () => {
     const { result } = renderAt("/my-game/collection?alliance=Chaos")
     act(() => result.current.state.update({ quick: "needToLevel" }))
     expect(result.current.state.query.quick).toBe("needToLevel")
-    expect(localStorage.getItem("collection.quick")).toBe("needToLevel")
+    expect(readPreference(storedPreference("collection", "quick"))).toBe(
+      "needToLevel"
+    )
     expect(result.current.location.search).toBe("?alliance=Chaos")
   })
 
@@ -164,7 +167,7 @@ describe("useCollectionQuery", () => {
   })
 
   it("ignores an unknown remembered quick filter", () => {
-    localStorage.setItem("collection.quick", "readyToAscend")
+    writePreference(storedPreference("collection", "quick"), "readyToAscend")
     const { result } = renderAt("/my-game/collection")
     expect(result.current.state.query.quick).toBeNull()
   })
@@ -232,13 +235,13 @@ describe("useCollectionQuery", () => {
   })
 
   it("lets the URL sort win over the remembered one", () => {
-    localStorage.setItem("collection.sort", "rank")
+    writePreference(storedPreference("collection", "sort"), "rank")
     const { result } = renderAt("/my-game/collection?sort=abilities")
     expect(result.current.state.query.sort).toBe("abilities")
   })
 
   it("clears every filter in one replacement and keeps the sort", () => {
-    localStorage.setItem("collection.quick", "needToLevel")
+    writePreference(storedPreference("collection", "quick"), "needToLevel")
     const { result } = renderAt(
       "/my-game/collection?q=ti&alliance=Imperial&sort=rank"
     )
@@ -250,7 +253,7 @@ describe("useCollectionQuery", () => {
       sort: "rank",
     })
     expect(result.current.location.search).toBe("?sort=rank")
-    expect(localStorage.getItem("collection.quick")).toBe("")
+    expect(readPreference(storedPreference("collection", "quick"))).toBe("")
     expect(result.current.navigationType).toBe("REPLACE")
     expect(window.history.length).toBe(historyLength)
   })
@@ -289,7 +292,7 @@ describe("useCollectionQuery", () => {
     })
 
     it("removes an unknown view and shows the remembered one", () => {
-      localStorage.setItem("collection.view", "roster")
+      writePreference(storedPreference("collection", "view"), "roster")
       const { result } = renderAt("/my-game/collection?view=gallery&kind=mow")
       expect(result.current.state.query.view).toBe("roster")
       expect(result.current.location.search).toBe("?kind=mow")
@@ -305,7 +308,7 @@ describe("useCollectionQuery", () => {
     })
 
     it("keeps the view when filters are cleared", () => {
-      localStorage.setItem("collection.quick", "needToLevel")
+      writePreference(storedPreference("collection", "quick"), "needToLevel")
       const { result } = renderAt("/my-game/collection?q=ti&view=roster")
       act(() => result.current.state.clear())
       expect(result.current.state.query.view).toBe("roster")

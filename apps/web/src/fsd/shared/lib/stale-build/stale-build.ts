@@ -1,3 +1,5 @@
+import { safeSessionStorage, staleReloadKey } from "../browser"
+
 // Recognises failures that mean "this tab is running a build that no longer exists on the server"
 // (or that a newer tab has moved the local databases on): a reload fixes all of them, nothing else
 // does. Shared by the route error boundary and main.tsx's `vite:preloadError` listener.
@@ -18,8 +20,6 @@ const closedDatabaseErrorNames = new Set([
   "VersionError",
   "InvalidStateError",
 ])
-
-const sessionKeyPrefix = "tp:stale-reload:"
 
 function unwrap(error: unknown): unknown[] {
   if (typeof error !== "object" || error === null) return [error]
@@ -54,13 +54,17 @@ const documentId = `${Date.now()}-${Math.random().toString(36).slice(2)}`
  * shows the fallback error page instead of looping on a build that is broken for everyone.
  */
 export function reloadOnceForStaleBuild(): boolean {
-  const key = `${sessionKeyPrefix}${window.location.pathname}${window.location.search}`
-  try {
-    const marker = window.sessionStorage.getItem(key)
-    if (marker === documentId) return true
-    if (marker) return false
-    window.sessionStorage.setItem(key, documentId)
-  } catch {
+  const key = staleReloadKey(
+    `${window.location.pathname}${window.location.search}`
+  )
+  const marker = safeSessionStorage.get(key)
+  if (marker === documentId) return true
+  if (marker) return false
+  // Storage that cannot record the attempt (or read it back) cannot stop a loop: no reload.
+  if (
+    !safeSessionStorage.trySet(key, documentId) ||
+    safeSessionStorage.get(key) !== documentId
+  ) {
     return false
   }
   window.location.reload()

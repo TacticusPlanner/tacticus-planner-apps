@@ -275,7 +275,12 @@ import { MemoryRouter, useLocation, useNavigate } from "react-router"
 
 import { GoalsPage } from ".//goals-page"
 import { CreateGoalLauncherProvider } from "@/features/goal-planning"
-import { compareCodeUnits } from "@/shared/lib"
+import {
+  compareCodeUnits,
+  readPreference,
+  storedPreference,
+  writePreference,
+} from "@/shared/lib"
 
 const onLaunch = vi.fn()
 
@@ -396,7 +401,7 @@ describe("GoalsPage", () => {
     mobile.value = false
     onLaunch.mockReset()
     insightsResult.value = insightsResult.emptyResult
-    window.localStorage.setItem("goals.overview.view", "Table")
+    writePreference(storedPreference("goals", "view"), "Table")
   })
 
   it("does not render page-level creation actions", async () => {
@@ -468,7 +473,7 @@ describe("GoalsPage", () => {
 
     await user.click(within(group).getByRole("radio", { name: "Type" }))
     expect(within(group).getByRole("radio", { name: "Type" })).toBeChecked()
-    expect(localStorage.getItem("goals.overview.group")).toContain("type")
+    expect(readPreference(storedPreference("goals", "group"))).toContain("type")
   })
 
   it("sorts by Priority by default, listing Active and Paused goals in global priority order", async () => {
@@ -859,7 +864,7 @@ describe("GoalsPage", () => {
   })
 
   it("leads with the type holding the top-priority goal under Group by type", async () => {
-    window.localStorage.setItem("goals.overview.group", "type")
+    writePreference(storedPreference("goals", "group"), "type")
     listGoals.mockResolvedValue({
       goals: [
         { ...activeGoal, goalId: "goal-2", goalType: "Ability" },
@@ -878,7 +883,7 @@ describe("GoalsPage", () => {
   })
 
   it("collapses a goal type section and remembers it", async () => {
-    window.localStorage.setItem("goals.overview.group", "type")
+    writePreference(storedPreference("goals", "group"), "type")
     listGoals.mockResolvedValue({
       goals: [
         activeGoal,
@@ -915,12 +920,12 @@ describe("GoalsPage", () => {
       await screen.findByRole("button", { name: "Rank 1 goal" })
     ).toHaveAttribute("aria-expanded", "false")
 
-    window.localStorage.removeItem("goals.overview.group")
-    window.localStorage.removeItem("goals.overview.collapsedGroups")
+    writePreference(storedPreference("goals", "group"), undefined)
+    window.localStorage.removeItem("tp.user.goals.collapsedGroups")
   })
 
   it("collapses and expands every section at once", async () => {
-    window.localStorage.setItem("goals.overview.group", "type")
+    writePreference(storedPreference("goals", "group"), "type")
     listGoals.mockResolvedValue({
       goals: [
         activeGoal,
@@ -949,8 +954,8 @@ describe("GoalsPage", () => {
     expect(screen.getAllByTestId("goal-row")).toHaveLength(2)
     expect(screen.getByRole("button", { name: "Collapse all" })).toBeVisible()
 
-    window.localStorage.removeItem("goals.overview.group")
-    window.localStorage.removeItem("goals.overview.collapsedGroups")
+    writePreference(storedPreference("goals", "group"), undefined)
+    window.localStorage.removeItem("tp.user.goals.collapsedGroups")
   })
 
   it("offers no Collapse all while the list is not grouped", async () => {
@@ -1061,7 +1066,7 @@ describe("GoalsPage", () => {
 
   it("opens scoped from a ?project= deep link and keeps status, type and group across scopes while counts follow the scope", async () => {
     twoProjects()
-    window.localStorage.setItem("goals.overview.group", "type")
+    writePreference(storedPreference("goals", "group"), "type")
     const user = userEvent.setup()
     renderPage("/plan/goals?project=proj-2")
 
@@ -1092,7 +1097,7 @@ describe("GoalsPage", () => {
     expect(
       await screen.findByRole("option", { name: "Unfulfilled (2)" })
     ).toBeInTheDocument()
-    window.localStorage.removeItem("goals.overview.group")
+    writePreference(storedPreference("goals", "group"), undefined)
   })
 
   it.each([
@@ -1303,8 +1308,8 @@ describe("GoalsPage", () => {
 
     afterEach(() => {
       vi.useRealTimers()
-      window.localStorage.removeItem("goals.overview.seasonFit")
-      window.localStorage.removeItem("goals.overview.group")
+      writePreference(storedPreference("goals", "seasonFit"), undefined)
+      writePreference(storedPreference("goals", "group"), undefined)
     })
 
     const fitOf = (goalId: string) =>
@@ -1369,7 +1374,7 @@ describe("GoalsPage", () => {
     })
 
     it("keeps the fit in a project scope and places the divider among that project's goals", async () => {
-      window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
+      writePreference(storedPreference("goals", "seasonFit"), "battlePass")
       renderPage("/plan/goals?project=proj-2")
 
       await vi.waitFor(() =>
@@ -1382,8 +1387,8 @@ describe("GoalsPage", () => {
     })
 
     it("drops the divider but keeps the labels when the list is grouped", async () => {
-      window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
-      window.localStorage.setItem("goals.overview.group", "type")
+      writePreference(storedPreference("goals", "seasonFit"), "battlePass")
+      writePreference(storedPreference("goals", "group"), "type")
       renderPage()
 
       await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
@@ -1393,8 +1398,8 @@ describe("GoalsPage", () => {
 
     it("shows the same labels and divider on mobile cards", async () => {
       mobile.value = true
-      window.localStorage.setItem("goals.overview.view", "Cards")
-      window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
+      writePreference(storedPreference("goals", "view"), "Cards")
+      writePreference(storedPreference("goals", "seasonFit"), "battlePass")
       renderPage()
 
       await vi.waitFor(() =>
@@ -1432,7 +1437,7 @@ describe("GoalsPage", () => {
             },
           ],
         })
-        window.localStorage.setItem("goals.overview.seasonFit", "battlePass")
+        writePreference(storedPreference("goals", "seasonFit"), "battlePass")
       })
 
       it("defaults Season fit to the project deadline and keeps the stored choice elsewhere", async () => {
@@ -1486,7 +1491,7 @@ describe("GoalsPage", () => {
 
         // The choice sticks for targeted scopes; the unscoped choice is untouched.
         view.unmount()
-        window.localStorage.setItem("goals.overview.seasonFit", "off")
+        writePreference(storedPreference("goals", "seasonFit"), "off")
         const again = renderPage("/plan/goals?project=proj-2")
         await vi.waitFor(() => expect(fitOf(goalB.goalId)).toBe("1"))
         expect(screen.queryByTestId("goals-deadline-fit")).toBeNull()
@@ -1712,7 +1717,7 @@ describe("GoalsPage bulk actions", () => {
     mobile.value = false
     onLaunch.mockReset()
     insightsResult.value = insightsResult.emptyResult
-    window.localStorage.setItem("goals.overview.view", "Table")
+    writePreference(storedPreference("goals", "view"), "Table")
     listGoals.mockResolvedValue({
       goals: [
         { ...activeGoal, globalPriority: 1 },
@@ -1845,7 +1850,7 @@ describe("GoalsPage bulk actions", () => {
   })
 
   it("bulk pause acts on goals selected from their cards in Cards view", async () => {
-    window.localStorage.setItem("goals.overview.view", "Cards")
+    writePreference(storedPreference("goals", "view"), "Cards")
     const user = userEvent.setup()
     renderPage()
     await screen.findByTestId("goals-list-cards")
@@ -1863,7 +1868,7 @@ describe("GoalsPage bulk actions", () => {
   })
 
   it("selects every visible goal from the top bar's select-all in Cards view, ending with Done", async () => {
-    window.localStorage.setItem("goals.overview.view", "Cards")
+    writePreference(storedPreference("goals", "view"), "Cards")
     const user = userEvent.setup()
     renderPage()
     await screen.findByTestId("goals-list-cards")
@@ -2134,7 +2139,7 @@ describe("GoalsPage bulk actions", () => {
   describe("on mobile", () => {
     beforeEach(() => {
       mobile.value = true
-      window.localStorage.setItem("goals.overview.view", "Cards")
+      writePreference(storedPreference("goals", "view"), "Cards")
     })
 
     it("enters select mode with a bar showing zero selected and disabled actions, and Done clears it", async () => {
@@ -2182,7 +2187,7 @@ describe("GoalsPage Goals view", () => {
     await seedGameCatalog({ characters: catalogCharacters })
     mobile.value = false
     insightsResult.value = insightsResult.emptyResult
-    window.localStorage.setItem("goals.overview.view", "Cards")
+    writePreference(storedPreference("goals", "view"), "Cards")
   })
 
   it("opens in the cards grid with Cards pressed", async () => {
@@ -2203,7 +2208,7 @@ describe("GoalsPage Goals view", () => {
   })
 
   it("renders the table for a stored Table view", async () => {
-    window.localStorage.setItem("goals.overview.view", "Table")
+    writePreference(storedPreference("goals", "view"), "Table")
     listGoals.mockResolvedValue({ goals: [activeGoal] })
     renderPage()
 
@@ -2224,7 +2229,7 @@ describe("GoalsPage Goals view", () => {
     await user.click(screen.getByTestId("goals-view-table"))
 
     expect(await screen.findByTestId("goals-list-table")).toBeInTheDocument()
-    expect(window.localStorage.getItem("goals.overview.view")).toBe("Table")
+    expect(readPreference(storedPreference("goals", "view"))).toBe("Table")
     expect(
       screen.getByTestId(`goal-row-select-${activeGoal.goalId}`)
     ).toBeChecked()
@@ -2236,7 +2241,7 @@ describe("GoalsPage Goals view", () => {
   it.each(["Cards", "Table"] as const)(
     "finds every desktop tour target in %s view",
     async (view) => {
-      window.localStorage.setItem("goals.overview.view", view)
+      writePreference(storedPreference("goals", "view"), view)
       listGoals.mockResolvedValue({
         goals: [
           { ...activeGoal, globalPriority: 1 },
@@ -2302,7 +2307,7 @@ describe("GoalsPage Goals view", () => {
     })
 
     it("offers no drag handle or checkbox in the table until select mode", async () => {
-      window.localStorage.setItem("goals.overview.view", "Table")
+      writePreference(storedPreference("goals", "view"), "Table")
       listGoals.mockResolvedValue({ goals: [activeGoal] })
       const user = userEvent.setup()
       renderPage()
@@ -2327,7 +2332,7 @@ describe("GoalsPage Goals view", () => {
     })
 
     it("uses the collapsed reorder cards in reorder mode from the table", async () => {
-      window.localStorage.setItem("goals.overview.view", "Table")
+      writePreference(storedPreference("goals", "view"), "Table")
       listGoals.mockResolvedValue({
         goals: [
           { ...activeGoal, globalPriority: 1 },

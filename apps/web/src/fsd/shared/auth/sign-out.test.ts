@@ -54,8 +54,8 @@ describe("signOut", () => {
   })
 
   it("removes the account's own localStorage keys and keeps device preferences", async () => {
-    localStorage.setItem("tp.session.v1-import.pending-material-steps", "[]")
-    localStorage.setItem("tp.session.dailies.hse.progress.v2", "{}")
+    localStorage.setItem("tp.user.v1Import.pendingMaterialSteps", "[]")
+    localStorage.setItem("tp.user.dailies.hse.progress", "{}")
     localStorage.setItem("theme", "dark")
     const instance = {
       getAllAccounts: () => [],
@@ -65,11 +65,9 @@ describe("signOut", () => {
     await signOut(instance as never, "account-1")
 
     expect(
-      localStorage.getItem("tp.session.v1-import.pending-material-steps")
+      localStorage.getItem("tp.user.v1Import.pendingMaterialSteps")
     ).toBeNull()
-    expect(
-      localStorage.getItem("tp.session.dailies.hse.progress.v2")
-    ).toBeNull()
+    expect(localStorage.getItem("tp.user.dailies.hse.progress")).toBeNull()
     expect(localStorage.getItem("theme")).toBe("dark")
   })
 

@@ -2,13 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, renderHook } from "@testing-library/react"
 
 import { useGoalsView } from "./use-goals-view"
-
-const KEY = "goals.overview.view"
+import { readPreference, storedPreference, writePreference } from "@/shared/lib"
 
 describe("useGoalsView", () => {
   beforeEach(() => {
     vi.restoreAllMocks()
-    window.localStorage.removeItem(KEY)
+    writePreference(storedPreference("goals", "view"), undefined)
   })
 
   it.each([
@@ -17,7 +16,7 @@ describe("useGoalsView", () => {
     ["Table", "Table"],
     ["Grid", "Cards"],
   ])("reads a stored %s as %s", (stored, expected) => {
-    if (stored) window.localStorage.setItem(KEY, stored)
+    if (stored) writePreference(storedPreference("goals", "view"), stored)
 
     expect(renderHook(() => useGoalsView()).result.current.view).toBe(expected)
   })
@@ -30,15 +29,15 @@ describe("useGoalsView", () => {
 
     expect(page.result.current.view).toBe("Table")
     expect(layout.result.current.view).toBe("Table")
-    expect(window.localStorage.getItem(KEY)).toBe("Table")
+    expect(readPreference(storedPreference("goals", "view"))).toBe("Table")
   })
 
   it("follows a change made in another tab", () => {
     const view = renderHook(() => useGoalsView())
 
-    window.localStorage.setItem(KEY, "Table")
+    writePreference(storedPreference("goals", "view"), "Table")
     act(() => {
-      window.dispatchEvent(new StorageEvent("storage", { key: KEY }))
+      window.dispatchEvent(new StorageEvent("storage", { key: "tp.goals" }))
     })
 
     expect(view.result.current.view).toBe("Table")

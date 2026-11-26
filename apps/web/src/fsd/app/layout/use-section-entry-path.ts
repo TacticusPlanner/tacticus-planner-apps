@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react"
 
+import { safeSessionStorage, sessionStorageKeys } from "@/shared/lib"
+
 import { findActiveChild, matchesNavPath } from "./find-active-child"
 import type { NavItem } from "./nav-items"
 
-const STORAGE_KEY = "nav.lastVisitedChild"
+const STORAGE_KEY = sessionStorageKeys.navLastVisitedChild
 
 function readStoredEntries(): Record<string, string> {
+  const raw = safeSessionStorage.get(STORAGE_KEY)
+  if (!raw) return {}
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY)
-    if (!raw) return {}
     const parsed: unknown = JSON.parse(raw)
     return typeof parsed === "object" && parsed !== null
       ? (parsed as Record<string, string>)
@@ -19,11 +21,8 @@ function readStoredEntries(): Record<string, string> {
 }
 
 function writeStoredEntries(entries: Record<string, string>) {
-  try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
-  } catch {
-    // sessionStorage unavailable (private mode, disabled by policy) - degrade to in-memory only.
-  }
+  // sessionStorage unavailable (private mode, disabled by policy) - degrade to in-memory only.
+  safeSessionStorage.set(STORAGE_KEY, JSON.stringify(entries))
 }
 
 function findActiveSection(navItems: NavItem[], pathname: string) {

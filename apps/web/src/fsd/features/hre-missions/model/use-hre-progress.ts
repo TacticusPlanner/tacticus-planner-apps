@@ -14,14 +14,12 @@ import type {
   HreProgress,
   HreOwnedInput,
 } from "@/entities/hre-mission"
-import { accountStorageKey, safeStorage } from "@/shared/lib"
+import { safeStorage, storageKeys } from "@/shared/lib"
 
 // Design D4: one entry per HRE instance (occurrence id), per browser. Every storage access is
 // guarded, so a private window or blocked site data degrades to in-memory progress. Account data:
 // kept under the account prefix, so sign-out removes it.
-export const HRE_PROGRESS_STORAGE_KEY = accountStorageKey(
-  "dailies.hre.progress.v1"
-)
+export const HRE_PROGRESS_STORAGE_KEY = storageKeys.userHreProgress
 
 function readAll(): Record<string, HreProgress> {
   try {

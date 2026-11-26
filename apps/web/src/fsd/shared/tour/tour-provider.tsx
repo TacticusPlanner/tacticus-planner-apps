@@ -4,7 +4,13 @@ import * as React from "react"
 
 import type { Step } from "react-joyride"
 
-import { isStaleBuildError, reportError, safeStorage } from "../lib"
+import {
+  isStaleBuildError,
+  readPreference,
+  reportError,
+  storedPreference,
+  writePreference,
+} from "../lib"
 
 /** Steps a page registers for its own tour, split by platform since the same target selectors
  *  don't always exist (or make sense) on both - `mobile` falls back to `desktop` when omitted. */
@@ -70,7 +76,7 @@ type TourContextValue = {
 const TourContext = React.createContext<TourContextValue | undefined>(undefined)
 
 // Set the first time the navigation tour auto-starts on this device, so it never repeats.
-const AUTO_STARTED_STORAGE_KEY = "tp.tour.autoStarted"
+const AUTO_STARTED = storedPreference("dismissed", "tourAutoStarted")
 
 export function TourProvider({ children }: { children: ReactNode }) {
   const [run, setRun] = React.useState(false)
@@ -116,8 +122,8 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const startTour = React.useCallback(() => start("general"), [start])
   const startPageTour = React.useCallback(() => start("page"), [start])
   const maybeAutoStartTour = React.useCallback(() => {
-    if (safeStorage.get(AUTO_STARTED_STORAGE_KEY)) return
-    safeStorage.set(AUTO_STARTED_STORAGE_KEY, "1")
+    if (readPreference(AUTO_STARTED) === true) return
+    writePreference(AUTO_STARTED, true)
     start("general")
   }, [start])
   const stopTour = React.useCallback(() => setRun(false), [])

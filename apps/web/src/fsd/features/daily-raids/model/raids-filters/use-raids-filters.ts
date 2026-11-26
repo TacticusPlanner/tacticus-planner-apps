@@ -1,16 +1,15 @@
-import { useSyncExternalStore } from "react"
 import { Rarity } from "@workspace/game-domain"
 
 import { emptyRaidsFilters, RAIDS_CAMPAIGN_TYPES } from "./raids-filters.domain"
 import type { RaidsCampaignType, RaidsFilters } from "./raids-filters.domain"
-import { safeStorage } from "@/shared/lib"
+import { storedPreference, useStoredPreference } from "@/shared/lib"
 
-const STORAGE_KEY = "raids-filters.v1"
+const RAIDS_FILTERS = storedPreference("dailies", "raidsFilters")
 
 // Validated by hand rather than with zod, which would otherwise be this hook's only reason to put
 // zod in the startup bundle (the shell reads the filters). Same contract as the earlier schema:
 // unknown keys are dropped, a missing list reads as empty (`enemiesTraits` was added after the first
-// release of `raids-filters.v1`), and any malformed field rejects the whole stored value.
+// release of the stored filters), and any malformed field rejects the whole stored value.
 const rarities: readonly unknown[] = Object.values(Rarity)
 
 function listOf<T>(value: unknown, isItem: (item: unknown) => item is T) {
@@ -51,67 +50,22 @@ function toRaidsFilters(value: unknown): RaidsFilters {
   }
 }
 
-function readRaw(): string | null {
-  return safeStorage.get(STORAGE_KEY)
-}
-
-function parse(raw: string | null): RaidsFilters {
-  if (raw === null) return emptyRaidsFilters
+function parseRaidsFilters(stored: unknown): RaidsFilters {
+  if (stored === undefined) return emptyRaidsFilters
   try {
-    return toRaidsFilters(JSON.parse(raw))
+    return toRaidsFilters(stored)
   } catch {
     return emptyRaidsFilters
   }
 }
 
-// One shared value for every consumer. `lastRaw` keeps the snapshot referentially stable until the
-// stored string changes (another tab, a test clearing storage); when storage is unavailable the value
-// written in this tab survives in `lastValue` because the raw read stays `null` either way.
-let lastRaw: string | null | undefined
-let lastValue: RaidsFilters = emptyRaidsFilters
-const listeners = new Set<() => void>()
-
-function getSnapshot(): RaidsFilters {
-  const raw = readRaw()
-  if (raw !== lastRaw) {
-    lastRaw = raw
-    lastValue = parse(raw)
-  }
-  return lastValue
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener)
-  const onStorage = (event: StorageEvent) => {
-    if (event.key === STORAGE_KEY || event.key === null) listener()
-  }
-  window.addEventListener("storage", onStorage)
-  return () => {
-    listeners.delete(listener)
-    window.removeEventListener("storage", onStorage)
-  }
-}
-
-function setRaidsFilters(next: RaidsFilters) {
-  // Best-effort: the in-memory value below still updates for this tab.
-  safeStorage.set(STORAGE_KEY, JSON.stringify(next))
-  lastRaw = readRaw()
-  lastValue = next
-  listeners.forEach((listener) => listener())
-}
-
 /**
- * The applied Raids Filters, persisted per browser (`raids-filters.v1`) and shared by every mount and
- * tab. Invalid or unavailable storage reads as the empty filter.
+ * The applied Raids Filters, persisted per browser (the `tp.dailies` record) and shared by every
+ * mount and tab. Invalid or unavailable storage reads as the empty filter.
  */
 export function useRaidsFilters(): [
   RaidsFilters,
   (next: RaidsFilters) => void,
 ] {
-  const filters = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    () => emptyRaidsFilters
-  )
-  return [filters, setRaidsFilters]
+  return useStoredPreference(RAIDS_FILTERS, parseRaidsFilters)
 }

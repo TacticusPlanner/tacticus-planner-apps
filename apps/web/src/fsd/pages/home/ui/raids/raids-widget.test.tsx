@@ -5,6 +5,7 @@ import type { BattleId } from "@workspace/game-domain"
 import { act, render, screen } from "@/test/render"
 
 import { RaidsWidget } from "./raids-widget"
+import { storedPreference, writePreference } from "@/shared/lib"
 
 const { useDailyRaidsMock } = vi.hoisted(() => ({
   useDailyRaidsMock: vi.fn(),
@@ -428,7 +429,7 @@ describe("RaidsWidget", () => {
     // Grouped by upgrade (picked on Dailies > Raids, here from another tab), every row stands
     // alone in plan order, naming its location in full.
     act(() => {
-      window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+      writePreference(storedPreference("dailies", "raidGrouping"), "upgrade")
       window.dispatchEvent(
         new StorageEvent("storage", { key: "dailies.raid-grouping.v1" })
       )
@@ -449,7 +450,7 @@ describe("RaidsWidget", () => {
 
     // An unknown stored value reads as the default, so the campaign groups come back.
     act(() => {
-      window.localStorage.setItem("dailies.raid-grouping.v1", "nonsense")
+      writePreference(storedPreference("dailies", "raidGrouping"), "nonsense")
       window.dispatchEvent(
         new StorageEvent("storage", { key: "dailies.raid-grouping.v1" })
       )

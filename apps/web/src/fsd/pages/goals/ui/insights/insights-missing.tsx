@@ -28,7 +28,7 @@ import type { GameIcon } from "@workspace/game-catalog"
 import { rarityOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 import { EntityIcon, SegmentedControl } from "@/shared/ui"
 
 import type {
@@ -47,7 +47,7 @@ import type { MaterialsShow } from "./insights-materials-view"
 import { InsightsUpgradeList } from "./insights-upgrade-list"
 import type { InsightsGoalInfo } from "./insights-view"
 
-const MATERIALS_SHOW_STORAGE_KEY = "goals.insights.materials-show.v1"
+const MATERIALS_SHOW_PREFERENCE = storedPreference("goals", "insightsMaterials")
 
 const ALLIANCES = ["Imperial", "Xenos", "Chaos"] as const
 
@@ -92,7 +92,7 @@ export function InsightsMissing({
 }) {
   const { t, i18n } = useTranslation(["common", "progression"])
   const [show, setShow] = usePersistedSelection<MaterialsShow>(
-    MATERIALS_SHOW_STORAGE_KEY,
+    MATERIALS_SHOW_PREFERENCE,
     isMaterialsShow,
     "missing"
   )

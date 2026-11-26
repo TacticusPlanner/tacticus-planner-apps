@@ -10,6 +10,7 @@ import {
   useTour,
   useTourPageSteps,
 } from "./tour-provider"
+import { readPreference, storedPreference, writePreference } from "../lib"
 
 const { joyrideStepsRef, joyrideOptionsRef, joyrideCalls, viewport } =
   vi.hoisted(() => ({
@@ -98,8 +99,6 @@ function PageWithSheet({ sheetOpen }: { sheetOpen: boolean }) {
     </>
   )
 }
-
-const AUTO_STARTED_STORAGE_KEY = "tp.tour.autoStarted"
 
 beforeEach(() => {
   joyrideCalls.mockClear()
@@ -214,7 +213,7 @@ describe("TourProvider overlay registrations", () => {
 
 describe("TourProvider", () => {
   it("auto-starts the tour the first time a page opts in on this device", () => {
-    window.localStorage.removeItem(AUTO_STARTED_STORAGE_KEY)
+    writePreference(storedPreference("dismissed", "tourAutoStarted"), undefined)
 
     render(
       <TourProvider>
@@ -223,11 +222,13 @@ describe("TourProvider", () => {
     )
 
     expect(screen.getByTestId("is-running")).toHaveTextContent("true")
-    expect(window.localStorage.getItem(AUTO_STARTED_STORAGE_KEY)).toBe("1")
+    expect(
+      readPreference(storedPreference("dismissed", "tourAutoStarted"))
+    ).toBe(true)
   })
 
   it("does not auto-start again on a device that has already seen it", () => {
-    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+    writePreference(storedPreference("dismissed", "tourAutoStarted"), true)
 
     render(
       <TourProvider>
@@ -241,7 +242,7 @@ describe("TourProvider", () => {
   it("does not auto-start on its own, without a page opting in", () => {
     // TourProvider wraps the whole app, above the router - so it also mounts on the landing page
     // and for signed-out visitors. Auto-start must come from the authenticated home page instead.
-    window.localStorage.removeItem(AUTO_STARTED_STORAGE_KEY)
+    writePreference(storedPreference("dismissed", "tourAutoStarted"), undefined)
 
     render(
       <TourProvider>
@@ -250,11 +251,13 @@ describe("TourProvider", () => {
     )
 
     expect(screen.getByTestId("is-running")).toHaveTextContent("false")
-    expect(window.localStorage.getItem(AUTO_STARTED_STORAGE_KEY)).toBeNull()
+    expect(
+      readPreference(storedPreference("dismissed", "tourAutoStarted"))
+    ).toBeUndefined()
   })
 
   it("reports that a page tour is available once a page registers steps", () => {
-    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+    writePreference(storedPreference("dismissed", "tourAutoStarted"), true)
 
     render(
       <TourProvider>
@@ -266,7 +269,7 @@ describe("TourProvider", () => {
   })
 
   it("startTour runs the general tour even while a page has its own registered", async () => {
-    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+    writePreference(storedPreference("dismissed", "tourAutoStarted"), true)
 
     render(
       <TourProvider>
@@ -280,7 +283,7 @@ describe("TourProvider", () => {
   })
 
   it("startPageTour runs the page's own steps", async () => {
-    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+    writePreference(storedPreference("dismissed", "tourAutoStarted"), true)
 
     render(
       <TourProvider>
@@ -294,7 +297,7 @@ describe("TourProvider", () => {
   })
 
   it("does not load the tour runtime until a tour is requested", async () => {
-    window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+    writePreference(storedPreference("dismissed", "tourAutoStarted"), true)
 
     render(
       <TourProvider>
@@ -307,7 +310,7 @@ describe("TourProvider", () => {
   })
 
   it("loads the tour runtime for the first-run auto-start", async () => {
-    window.localStorage.removeItem(AUTO_STARTED_STORAGE_KEY)
+    writePreference(storedPreference("dismissed", "tourAutoStarted"), undefined)
 
     render(
       <TourProvider>
@@ -327,7 +330,7 @@ describe("TourProvider scrolling", () => {
     "scrolls targets clear of the sticky shell header (mobile: %s)",
     async (isMobile, offset) => {
       viewport.isMobile = isMobile
-      window.localStorage.setItem(AUTO_STARTED_STORAGE_KEY, "1")
+      writePreference(storedPreference("dismissed", "tourAutoStarted"), true)
       render(
         <TourProvider>
           <PageTourProbe />

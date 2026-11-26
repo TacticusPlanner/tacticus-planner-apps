@@ -1,6 +1,10 @@
 import { useMemo, useState, useSyncExternalStore } from "react"
 
-import { safeStorage } from "@/shared/lib"
+import {
+  storedPreference,
+  useStoredPreference,
+  writePreference,
+} from "@/shared/lib"
 
 import { detectInstallPlatform, isRunningInstalled } from "./install-platform"
 import type { InstallPlatform } from "./install-platform"
@@ -9,7 +13,9 @@ import {
   subscribeInstallPrompt,
 } from "./install-prompt-store"
 
-const CARD_DISMISSED_KEY = "app-install-card-dismissed"
+// When the Home card was dismissed (an ISO date); unset while it has not been.
+const CARD_DISMISSED = storedPreference("dismissed", "appInstallCard")
+const isDismissed = (stored: unknown) => stored !== undefined
 
 export type AppInstallState = {
   platform: InstallPlatform
@@ -38,9 +44,7 @@ export function useAppInstall(): AppInstallState {
     () => detectInstallPlatform(navigator.userAgent, navigator.maxTouchPoints),
     []
   )
-  const [cardDismissed, setCardDismissed] = useState(
-    () => safeStorage.get(CARD_DISMISSED_KEY) !== null
-  )
+  const [cardDismissed] = useStoredPreference(CARD_DISMISSED, isDismissed)
 
   const canInstall = !installed && (canPrompt || platform !== "unsupported")
   const needsGuide = platform === "ios" || platform === "macSafari"
@@ -56,8 +60,7 @@ export function useAppInstall(): AppInstallState {
       !cardDismissed &&
       (justInstalled || canPrompt || needsGuide),
     dismissCard: () => {
-      safeStorage.set(CARD_DISMISSED_KEY, new Date().toISOString())
-      setCardDismissed(true)
+      writePreference(CARD_DISMISSED, new Date().toISOString())
     },
   }
 }

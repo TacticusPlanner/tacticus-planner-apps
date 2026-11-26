@@ -7,6 +7,7 @@ import { ready } from "@/test/fixtures/daily-raids"
 
 import type { DailiesOutletContext } from "./dailies-layout"
 import { TodayPage } from "./today-page"
+import { readPreference, storedPreference, writePreference } from "@/shared/lib"
 
 const { dailyRaidsArgs, plan } = vi.hoisted(() => ({
   dailyRaidsArgs: [] as unknown[][],
@@ -74,8 +75,6 @@ function renderToday(entry = "/") {
   )
 }
 
-const STORAGE_KEY = "dailies.quick-filters.v1"
-
 const lastQuickFilters = () =>
   (dailyRaidsArgs.at(-1)?.[1] as { quickFilters: unknown }).quickFilters
 
@@ -118,7 +117,9 @@ describe("Today quick filters", () => {
       screen.getByTestId("today-quick-filter-note-combineGoals")
     ).toBeInTheDocument()
     expect(screen.getByTestId("search")).toHaveTextContent("")
-    expect(window.localStorage.getItem(STORAGE_KEY)).toBe("combineGoals")
+    expect(readPreference(storedPreference("dailies", "quickFilters"))).toBe(
+      "combineGoals"
+    )
 
     await user.click(screen.getByTestId("today-quick-filter-fewerRaids"))
     expect(lastQuickFilters()).toEqual({
@@ -130,7 +131,7 @@ describe("Today quick filters", () => {
     expect(
       screen.getByTestId("today-quick-filter-note-fewerRaids")
     ).toBeInTheDocument()
-    expect(window.localStorage.getItem(STORAGE_KEY)).toBe(
+    expect(readPreference(storedPreference("dailies", "quickFilters"))).toBe(
       "fewerRaids,combineGoals"
     )
 
@@ -142,11 +143,16 @@ describe("Today quick filters", () => {
       raidableOnly: false,
       preferEvent: false,
     })
-    expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
+    expect(
+      readPreference(storedPreference("dailies", "quickFilters"))
+    ).toBeUndefined()
   })
 
   it("restores the remembered chips when Today opens again", () => {
-    window.localStorage.setItem(STORAGE_KEY, "fewerRaids,nope")
+    writePreference(
+      storedPreference("dailies", "quickFilters"),
+      "fewerRaids,nope"
+    )
     renderToday()
     expect(lastQuickFilters()).toEqual({
       fewerRaids: true,
@@ -199,7 +205,7 @@ describe("Today quick filters", () => {
   })
 
   it("keeps Raidable only visible while it is on, so it can be turned off", () => {
-    window.localStorage.setItem(STORAGE_KEY, "raidableOnly")
+    writePreference(storedPreference("dailies", "quickFilters"), "raidableOnly")
     renderToday()
     expect(lastQuickFilters()).toEqual({
       fewerRaids: false,
@@ -236,7 +242,7 @@ describe("Today quick filters", () => {
   })
 
   it("keeps CE nodes first visible while it is on, so it can be turned off", () => {
-    window.localStorage.setItem(STORAGE_KEY, "preferEvent")
+    writePreference(storedPreference("dailies", "quickFilters"), "preferEvent")
     renderToday()
     expect(
       screen.getByTestId("today-quick-filter-preferEvent")

@@ -9,7 +9,7 @@ vi.mock("@/shared/config", () => ({ isUiKitEnabled: true }))
 import { filterVisibleNavItems, navItems } from "./nav-items"
 import { useSectionEntryPath } from "./use-section-entry-path"
 
-const STORAGE_KEY = "nav.lastVisitedChild"
+const STORAGE_KEY = "tp.nav.lastVisitedChild"
 
 describe("useSectionEntryPath", () => {
   beforeEach(() => {

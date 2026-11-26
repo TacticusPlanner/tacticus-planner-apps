@@ -4,6 +4,10 @@ import "@testing-library/jest-dom/vitest"
 import { cleanup, configure } from "@testing-library/react"
 import { afterEach, vi } from "vitest"
 
+// The file, not the `@/shared/lib` barrel: loading the barrel here would load modules (such as
+// react-i18next users) before a test file's `vi.mock` of their dependencies applies.
+import { forgetUnsavedPreferences } from "@/shared/lib/browser/stored-preference"
+
 import "./i18n-instance"
 
 // Reads go through a real (fake-)IndexedDB, so `findBy*` waits on async storage; the 1 s default
@@ -60,4 +64,5 @@ jsdomElement.setPointerCapture ??= vi.fn()
 afterEach(() => {
   cleanup()
   window.localStorage.clear()
+  forgetUnsavedPreferences()
 })

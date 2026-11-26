@@ -1,11 +1,11 @@
-import { safeStorage } from "@/shared/lib"
+import { safeStorage, storageKeys } from "@/shared/lib"
 
 import { isAccountSetupComplete } from "./current-user"
 import type { CurrentUser } from "./current-user"
 
 // Which signed-in account (MSAL homeAccountId) last finished setup on this device. Only that one
 // bit is kept, never the account itself (spec: onboarding-gate).
-const SETUP_COMPLETE_KEY = "tp.account.setupComplete"
+const SETUP_COMPLETE_KEY = storageKeys.accountSetupComplete
 
 /** Whether `accountId` had finished setup when this device last loaded its account. */
 export function readSetupCompleteHint(accountId: string | undefined) {

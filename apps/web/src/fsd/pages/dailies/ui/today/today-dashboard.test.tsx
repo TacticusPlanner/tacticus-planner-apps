@@ -7,6 +7,7 @@ import { render, screen, within } from "@/test/render"
 import { battle, offPlanBattle, ready } from "@/test/fixtures/daily-raids"
 
 import { TodayDashboard } from "./today-dashboard"
+import { storedPreference, writePreference } from "@/shared/lib"
 
 // The shop card and the campaign event tile read their own data; their behaviour has its own tests.
 vi.mock("../today-shop-recommendations", () => ({
@@ -263,7 +264,7 @@ describe("TodayDashboard", () => {
   })
 
   it("groups Today's attempts by upgrade, showing a material's have / need once", () => {
-    window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+    writePreference(storedPreference("dailies", "raidGrouping"), "upgrade")
     const mirror = battleIdSchema.parse("B2M")
     const base = ready()
     const offPlanResource = base.resourceByBattleId.get(offPlanBattle)

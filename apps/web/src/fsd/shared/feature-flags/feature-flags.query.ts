@@ -1,10 +1,10 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { safeStorage } from "../lib"
+import { safeStorage, storageKeys } from "../lib"
 
 import { fetchEnabledFeatureFlags } from "./feature-flags.api"
 
-const storageKey = "tp.featureFlags"
+const storageKey = storageKeys.featureFlags
 
 // The API caches flags for 60s (Cache-Control), so refetching sooner gains nothing.
 const featureFlagsStaleTime = 60_000

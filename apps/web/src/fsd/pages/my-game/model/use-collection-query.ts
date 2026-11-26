@@ -9,7 +9,7 @@ import {
   serializeUnitFilter,
 } from "@/features/unit-filters"
 import type { ParamFixes, UnitFilterOptions } from "@/features/unit-filters"
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 
 import {
   defaultCollectionGrouping,
@@ -48,10 +48,10 @@ const isHideUnownedValue = (
   value: string
 ): value is typeof HIDE_UNOWNED_VALUE => value === HIDE_UNOWNED_VALUE
 
-const SORT_STORAGE_KEY = "collection.sort"
-const VIEW_STORAGE_KEY = "collection.view"
-const GROUP_STORAGE_KEY = "collection.group"
-const QUICK_STORAGE_KEY = "collection.quick"
+const SORT_STORAGE_KEY = storedPreference("collection", "sort")
+const VIEW_STORAGE_KEY = storedPreference("collection", "view")
+const GROUP_STORAGE_KEY = storedPreference("collection", "group")
+const QUICK_STORAGE_KEY = storedPreference("collection", "quick")
 
 /** The stored quick filter; `""` is none. */
 type RememberedQuick = CollectionQuickFilter | ""

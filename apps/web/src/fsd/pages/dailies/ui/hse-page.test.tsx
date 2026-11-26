@@ -21,6 +21,7 @@ import { hseTeamsFixtureRead } from "@/test/fixtures/hse-teams"
 
 import type { DailiesOutletContext } from "./dailies-layout"
 import { HsePage } from "./hse-page"
+import { readPreference, storedPreference, writePreference } from "@/shared/lib"
 
 const { mocks } = vi.hoisted(() => ({
   mocks: {
@@ -633,7 +634,7 @@ describe("HSE list controls", () => {
     await user.click(screen.getByTestId("today-quick-filter-combineGoals"))
 
     expect(screen.getByTestId("location")).not.toHaveTextContent("quick")
-    expect(localStorage.getItem("dailies.quick-filters.v1")).toBe(
+    expect(readPreference(storedPreference("dailies", "quickFilters"))).toBe(
       "combineGoals"
     )
     expect(mocks.raidsArgs.at(-1)?.[1]).toMatchObject({
@@ -735,10 +736,10 @@ describe("HSE list controls", () => {
 describe("HSE tab Raids Filters", () => {
   const applyFilter = () =>
     act(() => {
-      window.localStorage.setItem(
-        "raids-filters.v1",
-        JSON.stringify({ ...emptyRaidsFilters, slots: [3] })
-      )
+      writePreference(storedPreference("dailies", "raidsFilters"), {
+        ...emptyRaidsFilters,
+        slots: [3],
+      })
       window.dispatchEvent(new StorageEvent("storage"))
     })
   it("shows no filtered-out notice (the list is filter-then-pick)", () => {
@@ -760,7 +761,7 @@ describe("HSE tab Raids Filters", () => {
     await user.click(screen.getByTestId("hse-raids-reset"))
 
     expect(
-      JSON.parse(window.localStorage.getItem("raids-filters.v1") ?? "{}")
+      readPreference(storedPreference("dailies", "raidsFilters")) ?? {}
     ).not.toMatchObject({ slots: [3] })
   })
 

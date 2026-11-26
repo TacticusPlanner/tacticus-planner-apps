@@ -143,6 +143,7 @@ vi.mock("@/shared/tour", () => ({
 }))
 
 import { CollectionPage } from "./collection-page"
+import { readPreference, storedPreference, writePreference } from "@/shared/lib"
 
 /** Opens a Radix dropdown menu (it opens on pointer down, which jsdom's click does not send). */
 /** The name a tile or Roster row shows. */
@@ -703,7 +704,7 @@ describe("CollectionPage toolbar on desktop", () => {
     expect(
       screen.getByRole("combobox", { name: "Sort: Rank" })
     ).toBeInTheDocument()
-    expect(localStorage.getItem("collection.sort")).toBe("rank")
+    expect(readPreference(storedPreference("collection", "sort"))).toBe("rank")
   })
 
   it("counts a standalone filter already set on the Filters button and opens the panel on demand", () => {
@@ -740,7 +741,7 @@ describe("CollectionPage toolbar on desktop", () => {
 
   it("reports the active filters and clears them in one action, keeping the sort", () => {
     ready(synced)
-    localStorage.setItem("collection.quick", "needToLevel")
+    writePreference(storedPreference("collection", "quick"), "needToLevel")
     renderPage(1280, "/my-game/collection?q=ti&alliance=Imperial&sort=rank")
 
     expect(
@@ -846,7 +847,9 @@ describe("CollectionPage toolbar on desktop", () => {
     )
 
     expect(screen.getByTestId("location")).toHaveTextContent("")
-    expect(localStorage.getItem("collection.quick")).toBe("needToLevel")
+    expect(readPreference(storedPreference("collection", "quick"))).toBe(
+      "needToLevel"
+    )
 
     first.unmount()
     renderPage(1280)
@@ -860,13 +863,13 @@ describe("CollectionPage toolbar on desktop", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
 
-    expect(localStorage.getItem("collection.quick")).toBe("")
+    expect(readPreference(storedPreference("collection", "quick"))).toBe("")
     expect(screen.getAllByRole("link")).toHaveLength(4)
   })
 
   it("disables the roster-dependent controls without a roster and says why", () => {
     ready({ state: "anonymous" })
-    localStorage.setItem("collection.quick", "canAscend")
+    writePreference(storedPreference("collection", "quick"), "canAscend")
     renderPage(1280, "/my-game/collection?alliance=Imperial")
 
     const quick = screen.getByRole("radiogroup", { name: "Quick filters" })
@@ -1274,12 +1277,14 @@ describe("CollectionPage view switch and Roster on desktop", () => {
     expect(screen.getByTestId("collection-faction-owned")).toHaveTextContent(
       "1/3"
     )
-    expect(localStorage.getItem("collection.view")).toBe("roster")
+    expect(readPreference(storedPreference("collection", "view"))).toBe(
+      "roster"
+    )
   })
 
   it("keeps the Roster view when filters are cleared", () => {
     ready(synced)
-    localStorage.setItem("collection.quick", "needToLevel")
+    writePreference(storedPreference("collection", "quick"), "needToLevel")
     renderPage(1280, "/my-game/collection?q=ti&view=roster")
 
     fireEvent.click(screen.getByRole("button", { name: "Clear filters" }))
@@ -1520,7 +1525,7 @@ describe("CollectionPage faction grouping", () => {
       "2 of 4 units owned"
     )
     expect(screen.getByRole("button", { name: "Filters" })).toBeInTheDocument()
-    expect(localStorage.getItem("collection.group")).toBe("none")
+    expect(readPreference(storedPreference("collection", "group"))).toBe("none")
   })
 
   it("opens a unit with the ungrouped order", () => {

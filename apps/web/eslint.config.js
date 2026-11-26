@@ -128,6 +128,37 @@ export default defineConfig([
     },
   },
   {
+    // Web storage goes through `safeStorage` / `safeSessionStorage` and the key registry
+    // (spec: browser-storage-resilience); only safe-storage.ts and tests touch it directly.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/fsd/shared/lib/browser/safe-storage.ts",
+      "**/*.test.{ts,tsx}",
+      "src/test/**/*.{ts,tsx}",
+    ],
+    rules: {
+      "no-restricted-globals": [
+        "error",
+        ...["localStorage", "sessionStorage"].map((name) => ({
+          name,
+          message:
+            "Use safeStorage / safeSessionStorage from @/shared/lib with a key from storage-keys.ts.",
+        })),
+      ],
+      "no-restricted-properties": [
+        "error",
+        ...["localStorage", "sessionStorage"].flatMap((property) =>
+          ["window", "globalThis", "self"].map((object) => ({
+            object,
+            property,
+            message:
+              "Use safeStorage / safeSessionStorage from @/shared/lib with a key from storage-keys.ts.",
+          }))
+        ),
+      ],
+    },
+  },
+  {
     files: ["**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
     plugins: { vitest, "testing-library": testingLibrary },
     rules: {

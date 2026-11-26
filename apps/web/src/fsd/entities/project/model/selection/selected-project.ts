@@ -1,14 +1,12 @@
 import type { ProjectSummary } from "../types"
-import { accountStorageKey, safeStorage } from "@/shared/lib"
+import { safeStorage, storageKeys } from "@/shared/lib"
 
 /**
  * The one project selection every project-scoped page shares (Dailies, Plan > Schedule, Plan >
  * Insights), so picking a project on one keeps it picked on the others and after a reload. It is the
  * signed-in account's data (a project id), so it sits under the account prefix and sign-out drops it.
  */
-export const SELECTED_PROJECT_STORAGE_KEY = accountStorageKey(
-  "project.selected.v1"
-)
+export const SELECTED_PROJECT_STORAGE_KEY = storageKeys.userSelectedProject
 
 const listeners = new Set<() => void>()
 // Holds the selection for this visit only when the browser refuses the write (spec:

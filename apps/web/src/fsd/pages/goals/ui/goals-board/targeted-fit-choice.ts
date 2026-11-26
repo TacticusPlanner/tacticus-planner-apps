@@ -1,4 +1,5 @@
 import { isSeasonFitMode } from "@/features/goal-planning"
+import { storedPreference } from "@/shared/lib"
 import type { SeasonFitMode } from "@/features/goal-planning"
 
 /**
@@ -8,7 +9,7 @@ import type { SeasonFitMode } from "@/features/goal-planning"
  */
 export type TargetedFitChoice = SeasonFitMode | "projectDeadline"
 
-export const TARGETED_FIT_STORAGE_KEY = "goals.overview.targetedFit"
+export const TARGETED_FIT = storedPreference("goals", "targetedFit")
 
 export function isTargetedFitChoice(
   value: unknown

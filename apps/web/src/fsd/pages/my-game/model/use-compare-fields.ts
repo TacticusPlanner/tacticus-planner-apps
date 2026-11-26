@@ -1,11 +1,18 @@
-import { useCallback, useState } from "react"
+import { useCallback } from "react"
 
-import { safeStorage } from "@/shared/lib"
+import {
+  storedPreference,
+  useStoredPreference,
+  writePreference,
+} from "@/shared/lib"
 
 import { parseCompareFields, serializeCompareFields } from "./compare-view"
 import type { CompareField } from "./compare-view"
 
-const FIELDS_STORAGE_KEY = "collection.compare.fields"
+const COMPARE_FIELDS = storedPreference("collection", "compareFields")
+
+const parseStored = (stored: unknown): ReadonlySet<CompareField> =>
+  parseCompareFields(typeof stored === "string" ? stored : null)
 
 /** The compare fields setting, remembered on this device (never in the URL); all on when storage
  *  is unavailable or holds nothing valid. */
@@ -13,12 +20,9 @@ export function useCompareFields(): [
   ReadonlySet<CompareField>,
   (next: ReadonlySet<CompareField>) => void,
 ] {
-  const [fields, setFieldsState] = useState(() =>
-    parseCompareFields(safeStorage.get(FIELDS_STORAGE_KEY))
-  )
+  const [fields] = useStoredPreference(COMPARE_FIELDS, parseStored)
   const setFields = useCallback((next: ReadonlySet<CompareField>) => {
-    setFieldsState(new Set(next))
-    safeStorage.set(FIELDS_STORAGE_KEY, serializeCompareFields(next))
+    writePreference(COMPARE_FIELDS, serializeCompareFields(next))
   }, [])
   return [fields, setFields]
 }

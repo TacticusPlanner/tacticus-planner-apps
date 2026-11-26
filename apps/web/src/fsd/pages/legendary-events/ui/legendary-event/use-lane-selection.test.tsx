@@ -2,12 +2,16 @@ import { act, renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { useLaneSelection } from "./use-lane-selection"
+import { readPreference, storedPreference, writePreference } from "@/shared/lib"
 
 describe("useLaneSelection", () => {
   beforeEach(() => localStorage.clear())
 
   it("shows the first selected lane on mobile until one is picked", () => {
-    localStorage.setItem("legendaryEvents.eventBoard.lanes", "beta,gamma")
+    writePreference(
+      storedPreference("legendaryEvents", "eventBoardLanes"),
+      "beta,gamma"
+    )
     const { result } = renderHook(() => useLaneSelection(true))
     expect(result.current.shown).toEqual(["beta"])
   })
@@ -25,14 +29,18 @@ describe("useLaneSelection", () => {
     const { result } = renderHook(() => useLaneSelection(true))
     act(() => result.current.reveal("beta"))
     expect(result.current.shown).toEqual(["beta"])
-    expect(localStorage.getItem("legendaryEvents.eventBoard.lanes")).toBeNull()
+    expect(
+      readPreference(storedPreference("legendaryEvents", "eventBoardLanes"))
+    ).toBeUndefined()
   })
 
   it("remembers the picked mobile lane after a remount", () => {
     const first = renderHook(() => useLaneSelection(true))
     act(() => first.result.current.onPick("gamma"))
     first.unmount()
-    expect(localStorage.getItem("legendaryEvents.lanes.mobile")).toBe("gamma")
+    expect(
+      readPreference(storedPreference("legendaryEvents", "mobileLane"))
+    ).toBe("gamma")
 
     const second = renderHook(() => useLaneSelection(true))
     expect(second.result.current.shown).toEqual(["gamma"])

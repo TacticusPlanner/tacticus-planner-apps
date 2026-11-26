@@ -9,6 +9,7 @@ import {
 
 import { eventUnitChipData } from "@/entities/legendary-event"
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
+import { storedPreference } from "@/shared/lib"
 
 import { rosterMap } from "../legendary-event/teams/teams.view-model"
 
@@ -16,8 +17,14 @@ import type { PlanDraft } from "./use-plan-draft"
 import type { PlanSource } from "./use-plan-source"
 
 // The wizard remembers its own open state, apart from the event page's sections.
-const TOKEN_PLAN_OPEN_KEY = "legendaryEvents.planWizard.tokenPlan.open"
-const RUN_FORECAST_OPEN_KEY = "legendaryEvents.planWizard.runForecast.open"
+const TOKEN_PLAN_OPEN_KEY = storedPreference(
+  "legendaryEvents",
+  "planWizardTokenPlanOpen"
+)
+const RUN_FORECAST_OPEN_KEY = storedPreference(
+  "legendaryEvents",
+  "planWizardRunForecastOpen"
+)
 
 /**
  * Step 4 (spec: runs and tokens step shows its content): the token plan and run forecast of the
@@ -52,7 +59,7 @@ export function RunsStep({
         eventId={event.id}
         defaultOpen
         isMobile={isMobile}
-        openKey={TOKEN_PLAN_OPEN_KEY}
+        openPreference={TOKEN_PLAN_OPEN_KEY}
         trackExpand={false}
         view={draft.tokenView}
       />
@@ -61,7 +68,7 @@ export function RunsStep({
         eventId={event.id}
         isMobile={isMobile}
         onOpenTeams={(laneId) => onOpenTeams(laneId)}
-        openKey={RUN_FORECAST_OPEN_KEY}
+        openPreference={RUN_FORECAST_OPEN_KEY}
         trackExpand={false}
         view={draft.tokenView}
       />

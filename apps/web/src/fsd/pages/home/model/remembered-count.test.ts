@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest"
 
+import { writePreference } from "@/shared/lib"
+
 import {
   homeRememberedCounts,
   rememberCount,
@@ -41,7 +43,7 @@ describe("rememberedCount", () => {
     rememberCount(liveEvents, 40)
     expect(rememberedCount(liveEvents)).toBe(6)
 
-    window.localStorage.setItem(liveEvents.key, "lots")
+    writePreference(liveEvents.preference, "lots")
     expect(rememberedCount(liveEvents)).toBe(2)
   })
 })

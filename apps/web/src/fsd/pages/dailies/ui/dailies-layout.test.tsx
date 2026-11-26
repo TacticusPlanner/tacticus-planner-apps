@@ -242,7 +242,7 @@ describe("Dailies navigation", () => {
   })
 
   it("falls back to all goals when the remembered project was deleted", async () => {
-    window.localStorage.setItem("tp.session.project.selected.v1", "deleted")
+    window.localStorage.setItem("tp.user.project.selected", "deleted")
     renderDailies("/dailies/raids")
     await findRouteContent("dailies-no-farmable")
     expect(useDailyRaids).toHaveBeenLastCalledWith(undefined)

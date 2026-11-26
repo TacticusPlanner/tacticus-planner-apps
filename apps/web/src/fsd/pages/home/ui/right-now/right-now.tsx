@@ -24,7 +24,6 @@ import type { HomeEventsState } from "../../model/use-home-events"
 import { HomeEventTile } from "../events/home-event-tile"
 import { LegendaryEventPlanButton } from "../events/legendary-event-plan-button"
 import { TokenAvailability } from "../token-availability/token-availability"
-import { BetaPromoTile } from "./beta-promo-tile"
 
 /** Home's first card: token status and whatever event is live, the two things a glance at Home is
  *  for. Upcoming events live in their own card further down. */
@@ -37,7 +36,6 @@ export function RightNow({ events }: { events: HomeEventsState }) {
         <CardTitle>{t("home.rightNow.title")}</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4 lg:grid-cols-2 lg:items-center">
-        <BetaPromoTile />
         <TokenAvailability />
         <LiveEvents events={events} />
       </CardContent>

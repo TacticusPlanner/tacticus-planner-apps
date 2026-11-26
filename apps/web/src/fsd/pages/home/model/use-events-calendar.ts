@@ -5,6 +5,7 @@ import { selectUpcomingEvents } from "@workspace/game-catalog/queries"
 import {
   combineReadStates,
   getDeviceFirstDayOfWeek,
+  storedPreference,
   usePersistedSelection,
 } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
@@ -23,7 +24,7 @@ import type {
   EventsCalendarViewModel,
 } from "./events-calendar.types"
 
-const EVENTS_CALENDAR_VIEW_KEY = "home.eventsCalendar.view"
+const EVENTS_CALENDAR_VIEW = storedPreference("home", "calendarView")
 
 // Reaches back far enough to catch a season that ended just before the grid, whose break lands in it.
 const LOOKBACK_DAYS = 31
@@ -38,7 +39,7 @@ const isEventsCalendarView = (value: unknown): value is EventsCalendarView =>
  */
 export function useEventsCalendar(): EventsCalendarViewModel {
   const [view, setStoredView] = usePersistedSelection(
-    EVENTS_CALENDAR_VIEW_KEY,
+    EVENTS_CALENDAR_VIEW,
     isEventsCalendarView,
     "week"
   )

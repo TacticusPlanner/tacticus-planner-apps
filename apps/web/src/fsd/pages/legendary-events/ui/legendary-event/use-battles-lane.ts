@@ -2,9 +2,9 @@ import { startTransition, useCallback } from "react"
 
 import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 
-const BATTLES_LANE_KEY = "legendaryEvents.plan.battlesLane"
+const BATTLES_LANE_KEY = storedPreference("legendaryEvents", "battlesLane")
 
 const isLane = (value: unknown): value is LegendaryEventLaneId =>
   (LEGENDARY_EVENT_LANE_IDS as readonly unknown[]).includes(value)
