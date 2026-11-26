@@ -71,10 +71,16 @@ import { hasNode } from "@/shared/lib"
 describe("useQuickActions", () => {
   const onCreateGoal = vi.fn()
   const onCreateProject = vi.fn()
+  const onCreateGoalFor = vi.fn()
   const setup = (isAuthenticated = true) =>
     renderHook(
       (props: { isAuthenticated: boolean }) =>
-        useQuickActions({ ...props, onCreateGoal, onCreateProject }),
+        useQuickActions({
+          ...props,
+          onCreateGoal,
+          onCreateGoalFor,
+          onCreateProject,
+        }),
       { initialProps: { isAuthenticated } }
     )
   const ids = (result: { current: { actions: QuickAction[] } }) =>
@@ -257,6 +263,18 @@ describe("useQuickActions", () => {
     expect(
       result.current.actions.find((a) => a.id === "signOut")?.disabledReason
     ).toBe("nav.quickActions.accountBusy")
+  })
+
+  it("opens the goal form for a unit once, and only for a signed-in user", () => {
+    const unit = { entityType: "Character", entityId: "ultraCalgar" } as const
+    const { result, rerender } = setup()
+
+    expect(result.current.select({ createGoalFor: unit as never })).toBe(true)
+    act(() => result.current.flush())
+    expect(onCreateGoalFor).toHaveBeenCalledExactlyOnceWith(unit)
+
+    rerender({ isAuthenticated: false })
+    expect(result.current.select({ createGoalFor: unit as never })).toBe(false)
   })
 
   it("re-checks eligibility at dispatch: authentication lost after selection", () => {

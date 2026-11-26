@@ -336,7 +336,10 @@
       "accountSettingsDescription": "Tacticus API key, profile and your data",
       "signOutDescription": "Sign out on this device",
       "accountBusy": "Your account is busy. Try again in a moment.",
-      "recentHeading": "Recent"
+      "recentHeading": "Recent",
+      "createGoalFor": "Create goal for {{name}}",
+      "createGoalForDescription": "Open the new goal form with this unit selected",
+      "findInCollection": "Find “{{query}}” in Collection"
     },
     "breadcrumb": "Breadcrumb"
   },

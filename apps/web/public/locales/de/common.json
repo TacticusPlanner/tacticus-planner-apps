@@ -336,7 +336,10 @@
       "accountSettingsDescription": "Tacticus-API-Schlüssel, Profil und deine Daten",
       "signOutDescription": "Auf diesem Gerät abmelden",
       "accountBusy": "Dein Konto ist gerade beschäftigt. Versuche es gleich noch einmal.",
-      "recentHeading": "Zuletzt besucht"
+      "recentHeading": "Zuletzt besucht",
+      "createGoalFor": "Ziel für {{name}} erstellen",
+      "createGoalForDescription": "Das Zielformular mit dieser Einheit öffnen",
+      "findInCollection": "„{{query}}“ in der Sammlung suchen"
     },
     "breadcrumb": "Seitenpfad"
   },

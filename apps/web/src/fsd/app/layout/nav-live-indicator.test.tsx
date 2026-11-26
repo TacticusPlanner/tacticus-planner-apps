@@ -17,6 +17,14 @@ vi.mock("./navigation-palette-lazy", async () => ({
   preloadNavigationPalette: () => {},
 }))
 
+// The catalog-backed entity index reads IndexedDB through React Query; these tests give it directly.
+const entityIndex = vi.hoisted(() => ({
+  entities: [] as import("./entity-search").SearchEntity[],
+}))
+vi.mock("./use-entity-search-index", () => ({
+  useEntitySearchIndex: () => entityIndex.entities,
+}))
+
 vi.mock("./hse-live-context", async (importOriginal) => {
   const actual = await importOriginal<typeof import("./hse-live-context")>()
   return {

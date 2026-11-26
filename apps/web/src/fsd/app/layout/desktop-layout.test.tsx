@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { lazy, useState } from "react"
 import type { ComponentProps } from "react"
 import { Link, MemoryRouter, Route, Routes, useLocation } from "react-router"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 // The list loads lazily in the app; tests render it directly so they can query it synchronously.
@@ -11,6 +11,14 @@ vi.mock("./navigation-palette-lazy", async () => ({
   LazyNavigationPalette: (await import("./navigation-palette"))
     .NavigationPalette,
   preloadNavigationPalette: () => {},
+}))
+
+// The catalog-backed entity index reads IndexedDB through React Query; these tests give it directly.
+const entityIndex = vi.hoisted(() => ({
+  entities: [] as import("./entity-search").SearchEntity[],
+}))
+vi.mock("./use-entity-search-index", () => ({
+  useEntitySearchIndex: () => entityIndex.entities,
 }))
 
 vi.mock("react-i18next", () => ({
@@ -50,7 +58,7 @@ vi.mock("@/shared/tour", () => ({
 import { DesktopShell as ControlledDesktopShell } from "./desktop-layout"
 import type { NavItem } from "./nav-items"
 import { filterVisibleNavItems, navItems } from "./nav-items"
-import type { QuickAction } from "./quick-actions"
+import type { QuickAction, QuickSelection } from "./quick-actions"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
 import { useSectionEntryPath } from "./use-section-entry-path"
 import { hasNode } from "@/shared/lib"
@@ -1200,7 +1208,7 @@ describe("DesktopShell quick actions in navigation search", () => {
   function renderWithActions(actions: QuickAction[]) {
     const quickActions = {
       actions,
-      select: vi.fn((id: QuickAction["id"]) => {
+      select: vi.fn((id: QuickSelection) => {
         const found = actions.find((action) => action.id === id)
         return !!found && !hasNode(found.disabledReason)
       }),
@@ -1331,6 +1339,87 @@ describe("DesktopShell quick actions in navigation search", () => {
     fireEvent.click(dialog.getByRole("button", { name: "nav.clearSearch" }))
     expect(input).toHaveValue("")
     expect(dialog.getByRole("option", { name: /New project/ })).toBeVisible()
+  })
+})
+
+describe("DesktopShell game entities in navigation search", () => {
+  const calgar = {
+    kind: "characters" as const,
+    id: "ultraCalgar",
+    name: "Marneus Calgar",
+    searchNames: ["calgar"],
+    to: "/library/characters/ultraCalgar",
+  }
+  const createGoal: QuickAction = {
+    id: "createGoal",
+    icon: (() => null) as unknown as QuickAction["icon"],
+    label: "Create Goal",
+    description: "Open the new goal form",
+    keywords: [],
+  }
+
+  beforeEach(() => {
+    entityIndex.entities = [calgar]
+  })
+  afterEach(() => {
+    entityIndex.entities = []
+  })
+
+  const open = () => {
+    const quickActions = {
+      actions: [createGoal],
+      select: vi.fn(() => true),
+      flush: vi.fn(),
+    }
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <DesktopShell
+            activeSection={homeItem}
+            getEntryPath={identityEntryPath}
+            onCreateGoal={vi.fn()}
+            pageDescription="Home description"
+            quickActions={quickActions}
+            sectionTitle="Home"
+            visibleItems={navItems}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    return quickActions
+  }
+
+  it("finds a unit by name, offers a goal for it and Collection searched for the query", () => {
+    const quickActions = open()
+    const dialog = within(screen.getByTestId("desktop-navigation-dialog"))
+
+    fireEvent.change(screen.getByRole("combobox", { name: "nav.search" }), {
+      target: { value: "calgar" },
+    })
+
+    const characters = within(dialog.getByTestId("entities-characters"))
+    expect(
+      characters.getByRole("option", { name: /Marneus Calgar/ })
+    ).toHaveAttribute("href", "/library/characters/ultraCalgar")
+    expect(
+      characters.getByRole("option", { name: /findInCollection/ })
+    ).toHaveAttribute("href", "/my-game/collection?q=calgar")
+
+    fireEvent.click(dialog.getByTestId("quick-action-unitGoal"))
+    expect(quickActions.select).toHaveBeenCalledWith({
+      createGoalFor: { entityType: "Character", entityId: "ultraCalgar" },
+    })
+  })
+
+  it("lists no entities for a one-letter query", () => {
+    open()
+
+    fireEvent.change(screen.getByRole("combobox", { name: "nav.search" }), {
+      target: { value: "m" },
+    })
+
+    expect(screen.queryByTestId("entities-characters")).not.toBeInTheDocument()
   })
 })
 
