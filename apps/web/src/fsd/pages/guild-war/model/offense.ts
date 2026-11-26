@@ -226,3 +226,16 @@ export function charactersLeftByRarity(
     return count > 0 ? [{ rarity, count }] : []
   })
 }
+
+/** The Machines of War still free to attack when the selection has characters but no Machine of
+ *  War (what the selection bar's reminder counts); 0 otherwise. */
+export function freeMowCount(
+  selection: Selection,
+  roster: TeamRoster | null,
+  deployed: ReadonlySet<string>
+): number {
+  const picked = [...selection.values()]
+  if (!picked.includes("character") || picked.includes("mow")) return 0
+  return [...(roster?.mows.keys() ?? [])].filter((id) => !deployed.has(id))
+    .length
+}

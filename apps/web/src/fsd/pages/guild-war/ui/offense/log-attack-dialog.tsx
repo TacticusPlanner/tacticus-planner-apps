@@ -18,7 +18,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { TeamUnitPortrait } from "@/entities/team"
-import type { TeamRoster, TeamUnitView } from "@/entities/team"
+import type { TeamUnitView } from "@/entities/team"
 import type { PickerUnit } from "@/features/team-editor"
 import {
   EntityIcon,
@@ -32,7 +32,6 @@ import {
 } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import { zoneKindId } from "../../lib/season"
 import type { GuildWarSeason } from "../../lib/season"
 import {
   attackDetails,
@@ -43,13 +42,13 @@ import {
 } from "../../model/attack-draft"
 import type { AttackDetails } from "../../model/attack-draft"
 import { capEnemy } from "../../model/enemy-draft"
+import { useDialogTarget } from "../../model/use-dialog-target"
+import type { LogAttackSubject } from "../../model/use-dialog-target"
 import { zoneOwnBuff } from "../../model/zone-buffs"
-import { editRarities, editTarget } from "../../model/attack-target"
 import type { ZoneRarity } from "../../model/attack-target"
 import { cappedView, lineupUnitView } from "../../model/capped-view"
-import type { Selection, UnitKind } from "../../model/offense"
-import { pickRarity } from "../../model/page-target"
-import type { GuildWarAttack, GuildWarAttackFields } from "../../model/types"
+import type { UnitKind } from "../../model/offense"
+import type { GuildWarAttackFields } from "../../model/types"
 import { useOverlayContainer } from "../use-overlay-container"
 import { EnemyDetails } from "./enemy-details"
 import { ZoneOptions } from "./target-fields"
@@ -60,22 +59,6 @@ interface LineupEntry {
   kind: UnitKind
   view: (cap: Rarity | undefined) => TeamUnitView
 }
-
-/** What the dialog logs or edits: a new attack with the page's selection, at the page's zone and
- *  rarity (changing them here changes the page's too, so the next attack starts there), or a
- *  logged attack, whose zone and rarity can be changed here. */
-export type LogAttackSubject =
-  | {
-      kind: "new"
-      selection: Selection
-      roster: TeamRoster | null
-      zoneId: string
-      rarities: readonly ZoneRarity[]
-      target: ZoneRarity | undefined
-      onZoneChange: (zoneId: string) => void
-      onRarityChange: (rarity: Rarity) => void
-    }
-  | { kind: "edit"; attack: GuildWarAttack }
 
 function lineupOf(subject: LogAttackSubject): LineupEntry[] {
   if (subject.kind === "new") {
@@ -271,34 +254,20 @@ export function LogAttackDialog({
     : { ...NO_DETAILS, result: "won" }
   const [details, setDetails] = useState(initial)
   const [enemyOpen, setEnemyOpen] = useState(initial.enemy !== NO_DETAILS.enemy)
-  // Edit only: the attack's zone (as its kind) and its rarity, until changed.
-  const [zoneId, setZoneId] = useState(() =>
-    editing ? zoneKindId(season, editing.zoneId) : ""
-  )
-  const [picked, setPicked] = useState<Rarity | undefined>(editing?.rarityCap)
   const [buffsTouched, setBuffsTouched] = useState(editing !== null)
+  const dialogTarget = useDialogTarget(subject, season, battlefieldLevel)
+  const { target, saveTarget } = dialogTarget
 
   const lineup = lineupOf(subject)
-  const rarities: readonly ZoneRarity[] =
-    subject.kind === "new"
-      ? subject.rarities
-      : editRarities(season, battlefieldLevel, subject.attack, zoneId)
-  const target =
-    subject.kind === "new" ? subject.target : pickRarity(rarities, picked)
-  const targetZoneId = subject.kind === "new" ? subject.zoneId : zoneId
   // A new attack's Enemy details start with the zone's own buff ticked, following the zone until
   // a buff is changed by hand; an edited attack keeps what it logged.
-  const ownBuff = zoneOwnBuff(season, targetZoneId)
+  const ownBuff = zoneOwnBuff(season, dialogTarget.zoneId)
   const enemy =
     buffsTouched || !enemyOpen
       ? details.enemy
       : { ...details.enemy, buffIds: ownBuff ? [ownBuff] : [] }
   // Noted enemies stay within the defenders' cap, even after it is lowered here.
   const capped = { ...details, enemy: capEnemy(enemy, target?.rarity) }
-  const saveTarget =
-    subject.kind === "new"
-      ? target && { zoneId: subject.zoneId, slot: target.slot }
-      : editTarget(subject.attack, season, zoneId, target)
   const set = (patch: Partial<AttackDetails>) =>
     setDetails((current) => ({ ...current, ...patch }))
 
@@ -338,16 +307,12 @@ export function LogAttackDialog({
       <ResponsiveDialogBody className="gap-5">
         <TargetEditor
           battlefieldLevel={battlefieldLevel}
-          onRarityChange={
-            subject.kind === "new" ? subject.onRarityChange : setPicked
-          }
-          onZoneChange={
-            subject.kind === "new" ? subject.onZoneChange : setZoneId
-          }
-          rarities={rarities}
+          onRarityChange={dialogTarget.onRarityChange}
+          onZoneChange={dialogTarget.onZoneChange}
+          rarities={dialogTarget.rarities}
           rarity={target?.rarity}
           season={season}
-          zoneId={subject.kind === "new" ? subject.zoneId : zoneId}
+          zoneId={dialogTarget.zoneId}
         />
         <LineupPicker
           disabled={details.result === "none"}
@@ -423,7 +388,7 @@ export function LogAttackDialog({
                 season={season}
                 units={units}
                 value={capped.enemy}
-                zoneId={targetZoneId || null}
+                zoneId={dialogTarget.zoneId || null}
               />
             </div>
           ) : null}

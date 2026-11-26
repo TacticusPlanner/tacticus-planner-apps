@@ -37,6 +37,7 @@ import {
 import {
   charactersLeftByRarity,
   deployedZones,
+  freeMowCount,
   logBlock,
   offenseTeams,
   teamSelection,
@@ -58,7 +59,7 @@ import { tokensLeft } from "../../model/war-stats"
 import { useGuildWarTutorial } from "../guild-war.tutorial"
 import { AttackLog } from "./attack-log"
 import { LogAttackDialog } from "./log-attack-dialog"
-import type { LogAttackSubject } from "./log-attack-dialog"
+import type { LogAttackSubject } from "../../model/use-dialog-target"
 import { OffenseTeams } from "./offense-teams"
 import { OffenseUnitPicker } from "./offense-unit-picker"
 import { scrollToSection } from "./scroll-to-section"
@@ -224,12 +225,7 @@ export function OffensePage() {
   const levels = played.includes(settings.battlefieldLevel)
     ? played
     : [settings.battlefieldLevel, ...played]
-  const picked = [...selection.values()]
-  const freeMows =
-    picked.includes("character") && !picked.includes("mow")
-      ? [...(roster?.mows.keys() ?? [])].filter((id) => !deployed.has(id))
-          .length
-      : 0
+  const freeMows = freeMowCount(selection, roster, deployed)
 
   const toggle = (unit: PickerUnit) =>
     setSelection((current) => toggleSelection(current, unit.id, unit.kind))

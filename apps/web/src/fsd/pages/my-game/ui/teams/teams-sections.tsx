@@ -36,8 +36,10 @@ function sharedUnits(
 }
 
 /** The page a mode is played on, for the modes that have one: its section links there. */
-const MODE_PAGES: Partial<Record<TeamMode, string>> = {
-  warOffense: "/guild/war/offense",
+const MODE_PAGES: Partial<
+  Record<TeamMode, { to: string; label: "page.modePage.warOffense" }>
+> = {
+  warOffense: { to: "/guild/war/offense", label: "page.modePage.warOffense" },
 }
 
 /**
@@ -99,8 +101,8 @@ export function TeamsModeSection({
         ) : null}
         {page ? (
           <Button asChild className="ml-auto" size="sm" variant="ghost">
-            <Link to={page}>
-              {t(`page.modePage.${mode}`)}
+            <Link to={page.to}>
+              {t(page.label)}
               <ArrowRight data-icon="inline-end" />
             </Link>
           </Button>
