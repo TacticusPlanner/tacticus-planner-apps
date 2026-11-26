@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { Outlet } from "react-router"
 import { useTranslation } from "react-i18next"
+import { Info } from "lucide-react"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -8,32 +9,26 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { calendarSeasonId } from "../model/calendar-season"
 import { useCurrentGuildWar } from "../model/use-guild-war"
 import { useCatalogDataset } from "@/shared/local-data"
-import {
-  EmptyState,
-  LocalReadFailure,
-  PageHeaderSettings,
-  PageSettingsButton,
-} from "@/shared/ui"
+import { EmptyState, LocalReadFailure } from "@/shared/ui"
 import { PageContainer } from "@/widgets/page-container"
 
 import { newWarSettings, warSettings } from "../model/default-settings"
 import type { GuildWarContext } from "../model/guild-war-context"
 import { useSeasonName } from "../model/use-season-name"
-import { GuildWarSettingsDialog } from "./guild-war-settings-dialog"
 
 /**
- * The Guild War group's layout (Offense, History): the Settings button in the header (the only way
- * into Settings), the war's season and level above the tabs, and the war the tabs read. With no
- * war the season is the one the calendar says is running. Sign-in only: no registered guild needed.
+ * The Guild War group's layout (Offense, History): the war's season above the tabs, and the war the
+ * tabs read. The season is the war's own, else the one the events calendar says is running; when
+ * the calendar names none, a banner says which season the war uses. The battlefield level is picked
+ * on Offense. Sign-in only: no registered guild needed.
  */
 export function GuildWarLayout() {
   const { t } = useTranslation("guildWar")
-  const { seasonName } = useSeasonName()
+  const { seasonName, seasonNumber } = useSeasonName()
   const current = useCurrentGuildWar()
   const seasons = useCatalogDataset("guild-war")
   const calendar = useCatalogDataset("events-calendar")
   const [nowMs] = useState(() => Date.now())
-  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const war = current.data ?? null
   const seasonList = seasons.status === "ready" ? seasons.data : undefined
@@ -105,37 +100,31 @@ export function GuildWarLayout() {
   } else {
     content = (
       <>
-        <p
-          className="text-sm text-muted-foreground"
-          data-testid="guild-war-settings-summary"
-        >
-          {t("settingsSummary", {
-            season: seasonName(settings.seasonId, seasonAt),
-            level: settings.battlefieldLevel,
-          })}
-        </p>
+        {seasonNumber(settings.seasonId, seasonAt) === undefined ? (
+          // The calendar names no running season (a config letter stands in): say which is used.
+          <Alert data-testid="guild-war-season-not-listed">
+            <Info />
+            <AlertDescription>
+              {t("page.seasonNotListed", {
+                season: seasonName(settings.seasonId, seasonAt),
+              })}
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <p
+            className="text-sm text-muted-foreground"
+            data-testid="guild-war-season-line"
+          >
+            {seasonName(settings.seasonId, seasonAt)}
+          </p>
+        )}
         <Outlet context={context} />
-        <GuildWarSettingsDialog
-          onOpenChange={setSettingsOpen}
-          open={settingsOpen}
-          seasonAt={seasonAt}
-          seasons={seasonList ?? []}
-          settings={settings}
-          war={war}
-        />
       </>
     )
   }
 
   return (
     <PageContainer data-testid="guild-war-page">
-      <PageHeaderSettings>
-        <PageSettingsButton
-          disabled={!context}
-          onClick={() => setSettingsOpen(true)}
-          testId="guild-war-settings-button"
-        />
-      </PageHeaderSettings>
       <div className="flex flex-col gap-5">{content}</div>
     </PageContainer>
   )

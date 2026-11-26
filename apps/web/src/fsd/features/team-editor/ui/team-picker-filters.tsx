@@ -104,7 +104,9 @@ function FilterSelect<T extends string | number>({
   )
 }
 
-function FilterFields({
+/** The picker's filter fields (rank, rarity, faction, alliance, trait, attack, damage), for a page
+ *  that puts them in its own Filters panel. */
+export function TeamPickerFilterFields({
   filters,
   options,
   onChange,
@@ -373,7 +375,7 @@ export function TeamPickerFiltersPanel({
           {t("filtersControl.clear")}
         </Button>
       </div>
-      <FilterFields
+      <TeamPickerFilterFields
         className="grid-cols-2 @xl/editor:grid-cols-3 @3xl/editor:grid-cols-1"
         filters={filters}
         onChange={onChange}

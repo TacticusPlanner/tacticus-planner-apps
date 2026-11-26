@@ -24,7 +24,8 @@ export function AttackLog({
   return (
     <section
       aria-labelledby="guild-war-log-heading"
-      className="flex flex-col gap-2"
+      className="flex scroll-mt-4 flex-col gap-2"
+      id="guild-war-attack-log"
       data-testid="guild-war-attack-log"
     >
       <h2 className="text-sm font-medium" id="guild-war-log-heading">

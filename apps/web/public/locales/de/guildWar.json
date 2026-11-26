@@ -1,39 +1,33 @@
 {
   "season": "Saison {{name}}",
   "level": "Stufe {{level}}",
-  "settingsSummary": "{{season}} · Schlachtfeldstufe {{level}}",
   "page": {
     "loading": "Dein Krieg wird geladen",
     "loadError": "Dein Krieg konnte nicht geladen werden.",
     "retry": "Erneut versuchen",
-    "noSeasons": "Gildenkriegsdaten sind noch nicht verfügbar."
+    "noSeasons": "Gildenkriegsdaten sind noch nicht verfügbar.",
+    "seasonNotListed": "Der Ereigniskalender führt die laufende Gildenkrieg-Saison nicht, daher nutzt dieser Krieg {{season}}."
   },
   "target": {
     "zone": "Zone",
     "zonePlaceholder": "Zone wählen",
-    "rarityPlaceholder": "Erst eine Zone wählen"
+    "rarityPlaceholder": "Erst Stufe und Zone wählen",
+    "level": "Schlachtfeldstufe",
+    "levelPlaceholder": "Stufe wählen",
+    "levelStale": "Dein Krieg wurde auf einem anderen Gerät geändert. Er wird jetzt so angezeigt, wie er ist.",
+    "levelFailed": "Die Schlachtfeldstufe konnte nicht gespeichert werden. Versuch es erneut."
   },
   "toolbar": {
-    "label": "Zone und Verteidigerseltenheit"
-  },
-  "settings": {
-    "title": "Gildenkrieg-Einstellungen",
-    "description": "Saison und Schlachtfeldstufe deines aktuellen Kriegs.",
-    "season": "Saison",
-    "seasonFromCalendar": "Vom Event-Kalender festgelegt.",
-    "battlefieldLevel": "Schlachtfeldstufe",
-    "capsKept": "Bereits erfasste Angriffe behalten die Seltenheitsgrenze, mit der sie erfasst wurden.",
-    "stale": "Dein Krieg wurde auf einem anderen Gerät geändert. Er wird jetzt so angezeigt, wie er ist.",
-    "failed": "Die Einstellungen konnten nicht gespeichert werden. Versuch es erneut.",
-    "done": "Fertig",
-    "seasonLocked": "Dieser Krieg hat Angriffe, daher bleibt seine Saison. Starte einen neuen Krieg, um eine andere Saison zu spielen."
+    "label": "Schlachtfeldstufe, Zone und Verteidigerseltenheit"
   },
   "summary": {
     "tokens": "Verbrauchte Marken",
     "tokensValue": "{{used}} / {{max}}",
     "results": "Gewonnen · verloren",
     "resultsValue": "{{won}} · {{lost}}",
-    "unitsLeft": "Verbleibende Charaktere"
+    "unitsLeft": "Verbleibende Charaktere",
+    "attackLog_one": "Angriffsprotokoll ({{count}})",
+    "attackLog_other": "Angriffsprotokoll ({{count}})"
   },
   "history": {
     "empty": "Noch keine vergangenen Kriege.",
@@ -69,13 +63,9 @@
     }
   },
   "tour": {
-    "settings": {
-      "title": "Einstellungen",
-      "content": "Saison und Schlachtfeldstufe deines Kriegs. Ändere sie hier."
-    },
     "target": {
-      "title": "Zone und Seltenheit",
-      "content": "Wähle die Zone, die du angreifst, und die Seltenheit der Verteidiger. Deine Einheiten werden auf diese Seltenheit begrenzt angezeigt, und Angriffe werden dort erfasst."
+      "title": "Stufe, Zone und Seltenheit",
+      "content": "Wähle einmal pro Krieg deine Schlachtfeldstufe und die Zone, die du angreifst, dann die Seltenheit der Verteidiger. Deine Einheiten werden auf diese Seltenheit begrenzt angezeigt, und Angriffe werden dort erfasst."
     },
     "summary": {
       "title": "Dein Krieg",
@@ -124,7 +114,15 @@
   },
   "units": {
     "heading": "Verfügbare Einheiten",
-    "noRoster": "Synchronisiere mit Tacticus, um die Einheiten zu sehen, mit denen du angreifen kannst."
+    "noRoster": "Synchronisiere mit Tacticus, um die Einheiten zu sehen, mit denen du angreifen kannst.",
+    "showDeployed": "Eingesetzte zeigen",
+    "deployed": "Eingesetzt",
+    "deployedIn": "Hat in {{zone}} angegriffen",
+    "charactersFull_one": "{{count}} Charakter gewählt",
+    "charactersFull_other": "{{count}} Charaktere gewählt",
+    "mowsFull_one": "{{count}} Kriegsmaschine gewählt",
+    "mowsFull_other": "{{count}} Kriegsmaschinen gewählt",
+    "showAll": "Alle zeigen ({{count}})"
   },
   "select": {
     "count_one": "{{count}} ausgewählt",
@@ -140,8 +138,11 @@
       "deployed": "{{name}} hat in diesem Krieg schon angegriffen",
       "notOwned": "{{name}} ist nicht in deinem synchronisierten Kader",
       "noTokens": "In diesem Krieg sind keine Marken mehr übrig",
-      "noZone": "Wähle eine Zone zum Angreifen"
-    }
+      "noZone": "Wähle eine Zone zum Angreifen",
+      "noLevel": "Wähle eine Schlachtfeldstufe"
+    },
+    "noMow_one": "Keine Kriegsmaschine · {{count}} verfügbar",
+    "noMow_other": "Keine Kriegsmaschine · {{count}} verfügbar"
   },
   "log": {
     "title": "Angriff erfassen",
@@ -213,5 +214,9 @@
     "cancel": "Abbrechen",
     "started": "Neuer Krieg gestartet.",
     "failed": "Es konnte kein neuer Krieg gestartet werden. Versuch es erneut."
+  },
+  "staged": {
+    "label": "Gewählte Einheiten",
+    "overCap": "Begrenzt auf {{rarity}}: {{parts}}"
   }
 }

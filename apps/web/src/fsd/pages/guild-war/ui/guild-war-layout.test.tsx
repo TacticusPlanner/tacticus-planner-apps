@@ -4,7 +4,7 @@ import { guildWarFixture } from "@workspace/game-catalog/testing"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { GuildWar } from "../model/types"
-import { render, screen, waitFor, within } from "@/test/render"
+import { render, screen } from "@/test/render"
 import { resetTestDatabases, seedGameCatalog } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
 
@@ -49,8 +49,8 @@ function renderAt(path: string) {
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route element={<GuildWarLayout />} path="/guild/war">
-          <Route element={<WarSummary />} path="offense" />
-          <Route element={<WarSummary />} path="history" />
+          <Route element={<WarSummary onShowLog={vi.fn()} />} path="offense" />
+          <Route element={<WarSummary onShowLog={vi.fn()} />} path="history" />
         </Route>
       </Routes>
     </MemoryRouter>
@@ -68,38 +68,21 @@ describe("GuildWarLayout", () => {
     await resetTestDatabases()
   })
 
-  it("shows the first season at level 1 and no tokens used with no war", async () => {
+  it("says which season a war uses when the calendar names none, and has no Settings", async () => {
     api.current.mockResolvedValue({ war: null })
     renderAt("/guild/war/offense")
 
-    // Plain text: Settings in the header is the only way into Settings.
-    const summary = await screen.findByTestId("guild-war-settings-summary")
-    expect(summary).toHaveTextContent("Season A · Battlefield level 1")
-    expect(summary.tagName).toBe("P")
-    expect(screen.getByTestId("guild-war-summary")).toHaveTextContent("0 / 10")
-  })
-
-  it("offers no battlefield level 0, the game's not taking part", async () => {
-    const user = userEvent.setup()
-    api.current.mockResolvedValue({ war: war() })
-    renderAt("/guild/war/offense")
-
-    await user.click(await screen.findByRole("button", { name: "Settings" }))
-    const dialog = await screen.findByTestId("guild-war-settings")
-    await user.click(
-      within(dialog).getByRole("combobox", { name: "Battlefield level" })
+    expect(
+      await screen.findByTestId("guild-war-season-not-listed")
+    ).toHaveTextContent(
+      "The events calendar doesn't list the running Guild War season, so this war uses Season A."
     )
-    const levels = await screen.findAllByRole("option")
-    expect(levels.map((option) => option.textContent)).toEqual([
-      "Level 1",
-      "Level 2",
-      "Level 3",
-      "Level 4",
-      "Level 5",
-    ])
+    expect(screen.getByTestId("guild-war-summary")).toHaveTextContent("0 / 10")
+    // The battlefield level is picked on Offense; Settings is gone.
+    expect(screen.queryByRole("button", { name: "Settings" })).toBeNull()
   })
 
-  it("defaults to the season the calendar says is running", async () => {
+  it("names the season the calendar says is running", async () => {
     api.current.mockResolvedValue({ war: null })
     await seedGameCatalog({
       "events-calendar": {
@@ -115,89 +98,37 @@ describe("GuildWarLayout", () => {
         ],
       },
     })
-    const user = userEvent.setup()
     renderAt("/guild/war/offense")
 
     // Players know the season by its number, not the config letter it runs.
-    const summary = await screen.findByTestId("guild-war-settings-summary")
-    expect(summary).toHaveTextContent("Season 29 · Battlefield level 1")
-    await user.click(screen.getByRole("button", { name: "Settings" }))
-    const dialog = await screen.findByTestId("guild-war-settings")
-    expect(within(dialog).getByTestId("guild-war-season")).toHaveTextContent(
-      "Season 29"
-    )
     expect(
-      within(dialog).queryByRole("combobox", { name: "Season" })
-    ).toBeNull()
+      await screen.findByTestId("guild-war-season-line")
+    ).toHaveTextContent("Season 29")
+    expect(screen.queryByTestId("guild-war-season-not-listed")).toBeNull()
   })
 
-  it("keeps the season of a war with attacks", async () => {
+  it("jumps to the attack log from the summary once the war has attacks", async () => {
     const user = userEvent.setup()
     api.current.mockResolvedValue({
       war: war({ tokensUsed: 1, attacks: [{} as GuildWar["attacks"][number]] }),
     })
-    renderAt("/guild/war/history")
+    const onShowLog = vi.fn()
+    render(
+      <MemoryRouter initialEntries={["/guild/war/offense"]}>
+        <Routes>
+          <Route element={<GuildWarLayout />} path="/guild/war">
+            <Route
+              element={<WarSummary onShowLog={onShowLog} />}
+              path="offense"
+            />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
 
-    await user.click(await screen.findByRole("button", { name: "Settings" }))
-    const dialog = await screen.findByTestId("guild-war-settings")
-    expect(
-      within(dialog).getByRole("combobox", { name: "Season" })
-    ).toBeDisabled()
-    expect(
-      within(dialog).getByTestId("guild-war-season-locked")
-    ).toBeInTheDocument()
-    expect(
-      within(dialog).getByRole("combobox", { name: "Battlefield level" })
-    ).toBeEnabled()
-  })
-
-  it("saves a new battlefield level from Settings over the war's revision", async () => {
-    const user = userEvent.setup()
-    let stored = war()
-    api.current.mockImplementation(() => Promise.resolve({ war: stored }))
-    api.setCurrent.mockImplementation((body: { battlefieldLevel: number }) => {
-      stored = war({ revision: 4, battlefieldLevel: body.battlefieldLevel })
-      return Promise.resolve(stored)
-    })
-    renderAt("/guild/war/offense")
-
-    await user.click(await screen.findByRole("button", { name: "Settings" }))
-    const dialog = await screen.findByTestId("guild-war-settings")
     await user.click(
-      within(dialog).getByRole("combobox", { name: "Battlefield level" })
+      await screen.findByRole("button", { name: "Attack log (1)" })
     )
-    await user.click(await screen.findByRole("option", { name: "Level 4" }))
-
-    await waitFor(() =>
-      expect(api.setCurrent).toHaveBeenCalledWith({
-        seasonId: "guildWarSeasonD",
-        battlefieldLevel: 4,
-        revision: 3,
-      })
-    )
-    await user.click(within(dialog).getByRole("button", { name: "Done" }))
-    expect(
-      await screen.findByTestId("guild-war-settings-summary")
-    ).toHaveTextContent("Season D · Battlefield level 4")
-  })
-
-  it("clears a failed save when Settings closes", async () => {
-    const user = userEvent.setup()
-    api.current.mockResolvedValue({ war: war() })
-    api.setCurrent.mockRejectedValue(new Error("offline"))
-    renderAt("/guild/war/offense")
-
-    await user.click(await screen.findByRole("button", { name: "Settings" }))
-    let dialog = await screen.findByTestId("guild-war-settings")
-    await user.click(
-      within(dialog).getByRole("combobox", { name: "Battlefield level" })
-    )
-    await user.click(await screen.findByRole("option", { name: "Level 4" }))
-    expect(await within(dialog).findByRole("alert")).toBeInTheDocument()
-
-    await user.click(within(dialog).getByRole("button", { name: "Done" }))
-    await user.click(await screen.findByRole("button", { name: "Settings" }))
-    dialog = await screen.findByTestId("guild-war-settings")
-    expect(within(dialog).queryByRole("alert")).toBeNull()
+    expect(onShowLog).toHaveBeenCalledTimes(1)
   })
 })

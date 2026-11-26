@@ -30,11 +30,6 @@ export function staleGuildWar(error: unknown): GuildWar | null {
   return isGuildWar(current) ? current : null
 }
 
-/** Whether a settings save was refused because the war's season is locked by its attacks. */
-export function isGuildWarSeasonLocked(error: unknown): boolean {
-  return apiIssue(error, guildWarIssues.hasAttacks) !== null
-}
-
 /** Whether an attack was refused because there is no current war. */
 export function isGuildWarNotStarted(error: unknown): boolean {
   return apiIssue(error, guildWarIssues.notStarted) !== null

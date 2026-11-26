@@ -2,7 +2,6 @@ import { Suspense, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Flag, RefreshCw } from "lucide-react"
-import type { Rarity } from "@workspace/game-domain"
 import {
   Alert,
   AlertDescription,
@@ -15,11 +14,9 @@ import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import {
   TEAM_EDITOR_NAMESPACES,
   TeamEditorDialog,
-  TeamUnitPicker,
-  defaultPickerFilters,
   usePickerUnits,
 } from "@/features/team-editor"
-import type { PickerFilters, PickerUnit } from "@/features/team-editor"
+import type { PickerUnit } from "@/features/team-editor"
 import { DEFAULT_RARITY_CAP, useTeams } from "@/entities/team"
 import type { TeamMode, TeamRoster } from "@/entities/team"
 import {
@@ -29,21 +26,30 @@ import {
   RarityIcon,
 } from "@/shared/ui"
 
-import { maxAttempts } from "../../lib/season"
+import { maxAttempts, playedLevels } from "../../lib/season"
 import { attackFields, NO_DETAILS } from "../../model/attack-draft"
 import { useGuildWarContext } from "../../model/guild-war-context"
-import { attackSaveError, freshAttack } from "../../model/guild-war-errors"
+import {
+  attackSaveError,
+  freshAttack,
+  staleGuildWar,
+} from "../../model/guild-war-errors"
 import {
   charactersLeftByRarity,
+  deployedZones,
   logBlock,
   offenseTeams,
+  toggleSelection,
 } from "../../model/offense"
 import type { Selection, UnitKind } from "../../model/offense"
 import type { GuildWarAttack, GuildWarAttackFields } from "../../model/types"
+import { DEFAULT_OFFENSE_FILTERS } from "../../model/offense-filters"
+import type { OffenseFilters } from "../../model/offense-filters"
 import { usePageTarget } from "../../model/page-target"
 import {
   useDeleteGuildWarAttack,
   useLogGuildWarAttack,
+  useSetGuildWarSettings,
   useStartGuildWar,
   useUpdateGuildWarAttack,
 } from "../../model/use-guild-war"
@@ -53,6 +59,8 @@ import { AttackLog } from "./attack-log"
 import { LogAttackDialog } from "./log-attack-dialog"
 import type { LogAttackSubject } from "./log-attack-dialog"
 import { OffenseTeams } from "./offense-teams"
+import { OffenseUnitPicker } from "./offense-unit-picker"
+import { scrollToSection } from "./scroll-to-section"
 import { SelectionBar } from "./selection-bar"
 import { PageTargetFields } from "./target-fields"
 import { WarSummary } from "./war-summary"
@@ -60,9 +68,6 @@ import { WarSummary } from "./war-summary"
 const NO_UNITS: readonly PickerUnit[] = []
 /** A team made from this page starts as a War Offense team. */
 const WAR_OFFENSE: readonly TeamMode[] = ["warOffense"]
-const EMPTY_SET: ReadonlySet<string> = new Set()
-const NO_USAGE: ReadonlyMap<string, string[]> = new Map()
-const OWNED_ONLY: PickerFilters = { ...defaultPickerFilters, ownedOnly: true }
 
 function SyncPrompt() {
   const { t } = useTranslation(["guildWar", "common"])
@@ -122,54 +127,33 @@ function UnitsLeft({
   )
 }
 
-/** The units that have not attacked, in the team editor's picker, capped at the defenders' rarity
- *  picked in the toolbar. */
+/** The units that can attack (see `OffenseUnitPicker`), capped at the defenders' rarity picked in
+ *  the toolbar. */
 function AvailableUnits({
   picker,
-  units,
-  cap,
-  filters,
-  onFiltersChange,
-  selectedIds,
-  onToggle,
-}: {
+  ...props
+}: Omit<Parameters<typeof OffenseUnitPicker>[0], "units" | "roster"> & {
   picker: ReturnType<typeof usePickerUnits>
-  units: readonly PickerUnit[]
-  cap: Rarity | undefined
-  filters: PickerFilters
-  onFiltersChange: (patch: Partial<PickerFilters>) => void
-  selectedIds: ReadonlySet<string>
-  onToggle: (unit: PickerUnit) => void
 }) {
   if (picker.status === "loading") return <Skeleton className="h-64 w-full" />
   if (picker.status === "error") {
     return <LocalReadFailure retry={picker.retry} />
   }
   return (
-    // The picker lays out by the room it gets, as in the team editor.
-    <div className="@container/editor">
-      <TeamUnitPicker
-        allowedFactions={undefined}
-        filters={filters}
-        lockedIds={EMPTY_SET}
-        mows
-        onFiltersChange={onFiltersChange}
-        onToggle={onToggle}
-        rarityCap={cap ?? DEFAULT_RARITY_CAP}
-        roster={picker.data.roster}
-        selectedIds={selectedIds}
-        units={units}
-        usage={NO_USAGE}
-      />
-    </div>
+    <OffenseUnitPicker
+      roster={picker.data.roster}
+      units={picker.data.units}
+      {...props}
+    />
   )
 }
 
 /**
- * Guild War Offense: the toolbar with the zone and defenders' rarity (they cap every unit shown) and
- * Start new war; the war's summary; the offense teams ready then blocked; the units that have not
- * attacked; the selection bar, where Won or Lost logs an attack in one tap; and the attack log with
- * Edit and Delete. With no current war the first logged attack starts one.
+ * Guild War Offense: the toolbar with the battlefield level, zone and defenders' rarity (they cap
+ * every unit shown; level and zone are picked once per war) and Start new war; the war's summary
+ * with Attack log (N); the offense teams ready then blocked; the units that can attack; the
+ * selection bar, where Won or Lost logs an attack in one tap; and the attack log with Edit and
+ * Delete. With no current war the first logged attack (or a picked level) starts one.
  */
 export function OffensePage() {
   const { t, i18n } = useTranslation("guildWar")
@@ -180,9 +164,16 @@ export function OffensePage() {
   const updateAttack = useUpdateGuildWarAttack()
   const deleteAttack = useDeleteGuildWarAttack()
   const startWar = useStartGuildWar()
-  const pageTarget = usePageTarget(season, settings.battlefieldLevel)
+  const saveSettings = useSetGuildWarSettings()
+  const pageTarget = usePageTarget(
+    season,
+    war?.id ?? null,
+    settings.battlefieldLevel
+  )
   const [selection, setSelection] = useState<Selection>(() => new Map())
-  const [filters, setFilters] = useState<PickerFilters>(OWNED_ONLY)
+  const [filters, setFilters] = useState<OffenseFilters>(
+    DEFAULT_OFFENSE_FILTERS
+  )
   const [dialog, setDialog] = useState<LogAttackSubject | null>(null)
   const [dialogError, setDialogError] = useState<string | null>(null)
   const [confirmStart, setConfirmStart] = useState(false)
@@ -199,26 +190,53 @@ export function OffensePage() {
   const roster = picker.status === "ready" ? picker.data.roster : null
   const units = picker.status === "ready" ? picker.data.units : NO_UNITS
   const deployed = new Set(war?.deployedUnitIds ?? [])
-  const available = units.filter((unit) => !deployed.has(unit.id))
+  const zonesOfDeployed = deployedZones(war?.attacks ?? [])
+  // A unit the war lists as deployed without its attack still shows as deployed.
+  const deployedWhere = new Map(
+    [...deployed].map((id) => [id, zonesOfDeployed.get(id) ?? ""])
+  )
   const teams = offenseTeams(teamsQuery.data?.teams ?? [], deployed)
   const left = tokensLeft(war, maxAttempts(season))
-  const { zoneId, target } = pageTarget
+  const { zoneId, target, levelPicked } = pageTarget
   const cap = target?.rarity
   const block = logBlock({
     selection,
     deployed,
     roster,
     tokensLeft: left,
+    levelPicked,
     hasTarget: zoneId !== null && target !== undefined,
   })
+  // Level 0 (not taking part) is not offered; a war already stored at it still shows it.
+  const played = playedLevels(season)
+  const levels = played.includes(settings.battlefieldLevel)
+    ? played
+    : [settings.battlefieldLevel, ...played]
+  const picked = [...selection.values()]
+  const freeMows =
+    picked.includes("character") && !picked.includes("mow")
+      ? [...(roster?.mows.keys() ?? [])].filter((id) => !deployed.has(id))
+          .length
+      : 0
 
   const toggle = (unit: PickerUnit) =>
-    setSelection((current) => {
-      const next = new Map(current)
-      if (next.has(unit.id)) next.delete(unit.id)
-      else next.set(unit.id, unit.kind)
-      return next
-    })
+    setSelection((current) => toggleSelection(current, unit.id, unit.kind))
+  const changeLevel = (battlefieldLevel: number) => {
+    pageTarget.markLevelPicked()
+    if (war && battlefieldLevel === war.battlefieldLevel) return
+    saveSettings.mutate(
+      {
+        settings: { ...settings, battlefieldLevel },
+        revision: war?.revision ?? 0,
+      },
+      {
+        onError: (error) =>
+          toast.error(
+            t(staleGuildWar(error) ? "target.levelStale" : "target.levelFailed")
+          ),
+      }
+    )
+  }
   const selectTeam = (core: { id: string; kind: UnitKind }[]) =>
     setSelection(new Map(core.map((unit) => [unit.id, unit.kind])))
 
@@ -296,6 +314,8 @@ export function OffensePage() {
       {
         onSuccess: () => {
           setSelection(new Map())
+          // A new war starts with no level or zone picked.
+          pageTarget.resetPicks()
           toast.success(t("startWar.started"))
         },
         onError: () => toast.error(t("startWar.failed")),
@@ -318,6 +338,10 @@ export function OffensePage() {
         find={
           <PageTargetFields
             battlefieldLevel={settings.battlefieldLevel}
+            level={levelPicked ? settings.battlefieldLevel : undefined}
+            levelDisabled={!season || saveSettings.isPending}
+            levels={levels}
+            onLevelChange={changeLevel}
             onRarityChange={pageTarget.setRarity}
             onZoneChange={pageTarget.setZoneId}
             rarities={pageTarget.rarities}
@@ -328,7 +352,7 @@ export function OffensePage() {
         }
         label={t("toolbar.label")}
       />
-      <WarSummary>
+      <WarSummary onShowLog={() => scrollToSection("guild-war-attack-log")}>
         <UnitsLeft roster={roster} deployed={deployed} />
       </WarSummary>
       {picker.status === "ready" && roster === null ? <SyncPrompt /> : null}
@@ -359,15 +383,16 @@ export function OffensePage() {
           {t("units.heading")}
         </h2>
         <AvailableUnits
-          cap={cap}
+          cap={cap ?? DEFAULT_RARITY_CAP}
+          deployed={deployedWhere}
           filters={filters}
           onFiltersChange={(patch) =>
             setFilters((current) => ({ ...current, ...patch }))
           }
           onToggle={toggle}
           picker={picker}
-          selectedIds={new Set(selection.keys())}
-          units={available}
+          season={season}
+          selection={selection}
         />
       </section>
       {war && war.attacks.length > 0 ? (
@@ -385,7 +410,11 @@ export function OffensePage() {
       {selection.size > 0 ? (
         <SelectionBar
           block={block}
-          count={selection.size}
+          cap={cap}
+          mowsAvailable={freeMows}
+          onShowMows={() => scrollToSection("guild-war-mows")}
+          roster={roster}
+          selection={selection}
           onClear={() => setSelection(new Map())}
           onLogDetails={() => {
             if (zoneId === null || !target) return

@@ -1,4 +1,5 @@
 import { useId, useMemo, useState } from "react"
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rarity } from "@workspace/game-domain"
 import { ToggleGroup } from "@workspace/ui/components/toggle-group"
@@ -20,8 +21,17 @@ import {
 import { UnitTile } from "./unit-tile"
 import { useRovingGrid } from "./use-roving-grid"
 
-/** A grid of tiles with one Tab stop; the arrow keys move between tiles (see `useRovingGrid`). */
-function PickerGrid({
+/** What a page shows on one tile beyond its unit: why it can't be picked now, a dimmed look, and a
+ *  note under the name. */
+export interface PickerTileState {
+  blockedReason?: string
+  dimmed?: boolean
+  note?: ReactNode
+}
+
+/** A grid of tiles with one Tab stop; the arrow keys move between tiles (see `useRovingGrid`). A
+ *  tile blocked by `tileState` stays focusable, so its reason can be read. */
+export function TeamPickerGrid({
   units,
   testId,
   columns,
@@ -31,6 +41,7 @@ function PickerGrid({
   lockedIds,
   rarityCap,
   onToggle,
+  tileState,
 }: {
   units: readonly PickerUnit[]
   testId: string
@@ -42,6 +53,7 @@ function PickerGrid({
   lockedIds: ReadonlySet<string>
   rarityCap: Rarity
   onToggle: (unit: PickerUnit) => void
+  tileState?: (unit: PickerUnit) => PickerTileState | undefined
 }) {
   const focusable = useMemo(
     () =>
@@ -55,21 +67,27 @@ function PickerGrid({
       data-roving-grid
       data-testid={testId}
     >
-      {units.map((unit) => (
-        <UnitTile
-          disabled={lockedIds.has(unit.id)}
-          key={`${unit.kind}:${unit.id}`}
-          onFocus={onItemFocus}
-          onKeyDown={onItemKeyDown}
-          onToggle={onToggle}
-          rarityCap={rarityCap}
-          roster={roster}
-          selected={selectedIds.has(unit.id)}
-          tabIndex={tabIndexFor(unit.id)}
-          unit={unit}
-          usedIn={usage.get(unit.id)}
-        />
-      ))}
+      {units.map((unit) => {
+        const state = tileState?.(unit)
+        return (
+          <UnitTile
+            blockedReason={state?.blockedReason}
+            dimmed={state?.dimmed}
+            disabled={lockedIds.has(unit.id)}
+            key={`${unit.kind}:${unit.id}`}
+            onFocus={onItemFocus}
+            onKeyDown={onItemKeyDown}
+            onToggle={onToggle}
+            rarityCap={rarityCap}
+            roster={roster}
+            selected={selectedIds.has(unit.id)}
+            tabIndex={tabIndexFor(unit.id)}
+            note={state?.note}
+            unit={unit}
+            usedIn={usage.get(unit.id)}
+          />
+        )
+      })}
     </ul>
   )
 }
@@ -180,7 +198,7 @@ export function TeamUnitPicker({
     testId: string,
     columns: string
   ) => (
-    <PickerGrid
+    <TeamPickerGrid
       columns={columns}
       lockedIds={lockedIds}
       onToggle={onToggle}

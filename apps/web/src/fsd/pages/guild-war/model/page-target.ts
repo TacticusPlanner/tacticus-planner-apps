@@ -5,12 +5,22 @@ import type { Rarity } from "@workspace/game-domain"
 import { usePersistedSelection } from "@/shared/lib"
 
 import type { GuildWarSeason } from "../lib/season"
-import { useLastZone, zoneRarities } from "./attack-target"
+import { resolveZone, zoneRarities } from "./attack-target"
 import type { ZoneRarity } from "./attack-target"
 
-/** The defenders' rarity last picked, per device like the zone. */
+/** The zone picked for the war, per device. */
+const ZONE_STORAGE_KEY = "guildWar.zone"
+/** "picked" once a battlefield level is picked for the war, per device. */
+const LEVEL_STORAGE_KEY = "guildWar.levelPicked"
+/** The war the zone and level were picked in ("" before it exists): picks from another war don't
+ *  count, so a new war never inherits the last war's zone. */
+const PICKS_WAR_STORAGE_KEY = "guildWar.picksWar"
+/** The defenders' rarity last picked, per device (it carries over between wars). */
 const LAST_RARITY_STORAGE_KEY = "guildWar.rarity"
 const NONE = ""
+const PICKED = "picked"
+const isStoredString = (value: unknown): value is string =>
+  typeof value === "string"
 const isStoredRarity = (value: unknown): value is Rarity | typeof NONE =>
   value === NONE || rarityOrder.some((rarity) => rarity === value)
 
@@ -22,26 +32,87 @@ export function pickRarity(
   return rarities.find((entry) => entry.rarity === picked) ?? rarities[0]
 }
 
+/** Whether picks stored for `picksWarId` belong to the current war: the same war, or picks made
+ *  before any war existed (the first attack or level starts it). */
+function picksCount(picksWarId: string, warId: string | null): boolean {
+  return picksWarId === NONE || picksWarId === warId
+}
+
 /**
- * The zone and defenders' rarity the Offense page attacks at, both kept per device: the zone last
- * picked and, of that zone's caps at the war's level, the rarity last picked (else the highest).
- * They cap the units the page shows and are what Won, Lost and Log with details log at.
+ * The battlefield level, zone and defenders' rarity the Offense page attacks at. The level and zone
+ * are picked once per war and kept per device; Start new war clears them (`resetPicks`), and so does
+ * a war started on another device. The rarity is the zone's cap last picked (else its highest) and
+ * carries over. The rarity needs a picked level and zone; it caps the units the page shows, and the
+ * three are what Won, Lost and Log with details log at.
  */
 export function usePageTarget(
   season: GuildWarSeason | undefined,
+  warId: string | null,
   battlefieldLevel: number
 ) {
-  const [zoneId, setZoneId] = useLastZone(season)
-  const [stored, setStored] = usePersistedSelection(
+  const [storedZone, setStoredZone] = usePersistedSelection(
+    ZONE_STORAGE_KEY,
+    isStoredString,
+    NONE
+  )
+  const [storedLevel, setStoredLevel] = usePersistedSelection(
+    LEVEL_STORAGE_KEY,
+    isStoredString,
+    NONE
+  )
+  const [picksWar, setPicksWar] = usePersistedSelection(
+    PICKS_WAR_STORAGE_KEY,
+    isStoredString,
+    NONE
+  )
+  const [storedRarity, setStoredRarity] = usePersistedSelection(
     LAST_RARITY_STORAGE_KEY,
     isStoredRarity,
     NONE
   )
-  const rarities = zoneRarities(season, battlefieldLevel, zoneId)
-  const target = pickRarity(rarities, stored === NONE ? undefined : stored)
-  const setRarity = useCallback(
-    (rarity: Rarity) => setStored(rarity),
-    [setStored]
+  const current = picksCount(picksWar, warId)
+  const zoneId = current ? resolveZone(storedZone, season) : null
+  const levelPicked = current && storedLevel === PICKED
+  const rarities = levelPicked
+    ? zoneRarities(season, battlefieldLevel, zoneId)
+    : []
+  const target = pickRarity(
+    rarities,
+    storedRarity === NONE ? undefined : storedRarity
   )
-  return { zoneId, setZoneId, rarities, target, setRarity }
+
+  const setZoneId = useCallback(
+    (next: string) => {
+      setStoredZone(next)
+      setPicksWar(warId ?? NONE)
+      // Carried over from another war, a picked level does not count either.
+      if (!current) setStoredLevel(NONE)
+    },
+    [setStoredZone, setPicksWar, setStoredLevel, warId, current]
+  )
+  const markLevelPicked = useCallback(() => {
+    setStoredLevel(PICKED)
+    setPicksWar(warId ?? NONE)
+    if (!current) setStoredZone(NONE)
+  }, [setStoredLevel, setPicksWar, setStoredZone, warId, current])
+  const resetPicks = useCallback(() => {
+    setStoredZone(NONE)
+    setStoredLevel(NONE)
+    setPicksWar(NONE)
+  }, [setStoredZone, setStoredLevel, setPicksWar])
+  const setRarity = useCallback(
+    (rarity: Rarity) => setStoredRarity(rarity),
+    [setStoredRarity]
+  )
+
+  return {
+    zoneId,
+    setZoneId,
+    levelPicked,
+    markLevelPicked,
+    resetPicks,
+    rarities,
+    target,
+    setRarity,
+  }
 }

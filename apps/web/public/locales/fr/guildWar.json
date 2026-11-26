@@ -1,39 +1,33 @@
 {
   "season": "Saison {{name}}",
   "level": "Niveau {{level}}",
-  "settingsSummary": "{{season}} · Niveau du champ de bataille {{level}}",
   "page": {
     "loading": "Chargement de votre guerre",
     "loadError": "Impossible de charger votre guerre.",
     "retry": "Réessayer",
-    "noSeasons": "Les données de Guerre de guilde ne sont pas encore disponibles."
+    "noSeasons": "Les données de Guerre de guilde ne sont pas encore disponibles.",
+    "seasonNotListed": "Le calendrier des événements n'indique pas la saison de Guerre de guilde en cours, cette guerre utilise donc {{season}}."
   },
   "target": {
     "zone": "Zone",
     "zonePlaceholder": "Choisir une zone",
-    "rarityPlaceholder": "Choisissez d'abord une zone"
+    "rarityPlaceholder": "Choisissez d'abord un niveau et une zone",
+    "level": "Niveau du champ de bataille",
+    "levelPlaceholder": "Choisir un niveau",
+    "levelStale": "Votre guerre a changé sur un autre appareil. Elle s'affiche telle qu'elle est maintenant.",
+    "levelFailed": "Impossible d'enregistrer le niveau du champ de bataille. Réessayez."
   },
   "toolbar": {
-    "label": "Zone et rareté des défenseurs"
-  },
-  "settings": {
-    "title": "Paramètres de Guerre de guilde",
-    "description": "La saison et le niveau du champ de bataille de votre guerre en cours.",
-    "season": "Saison",
-    "seasonFromCalendar": "Fixée par le calendrier des événements.",
-    "battlefieldLevel": "Niveau du champ de bataille",
-    "capsKept": "Les attaques déjà notées gardent la limite de rareté avec laquelle elles ont été notées.",
-    "stale": "Votre guerre a changé sur un autre appareil. Elle s'affiche telle qu'elle est maintenant.",
-    "failed": "Impossible d'enregistrer les paramètres. Réessayez.",
-    "done": "Terminé",
-    "seasonLocked": "Cette guerre a des attaques, sa saison reste donc la même. Commencez une nouvelle guerre pour jouer une autre saison."
+    "label": "Niveau du champ de bataille, zone et rareté des défenseurs"
   },
   "summary": {
     "tokens": "Jetons utilisés",
     "tokensValue": "{{used}} / {{max}}",
     "results": "Gagnées · perdues",
     "resultsValue": "{{won}} · {{lost}}",
-    "unitsLeft": "Personnages restants"
+    "unitsLeft": "Personnages restants",
+    "attackLog_one": "Journal des attaques ({{count}})",
+    "attackLog_other": "Journal des attaques ({{count}})"
   },
   "history": {
     "empty": "Aucune guerre passée pour l'instant.",
@@ -69,13 +63,9 @@
     }
   },
   "tour": {
-    "settings": {
-      "title": "Paramètres",
-      "content": "La saison et le niveau du champ de bataille de votre guerre. Modifiez-les ici."
-    },
     "target": {
-      "title": "Zone et rareté",
-      "content": "Choisissez la zone que vous attaquez et la rareté des défenseurs. Vos unités s'affichent limitées à cette rareté, et les attaques y sont notées."
+      "title": "Niveau, zone et rareté",
+      "content": "Choisissez une fois par guerre votre niveau du champ de bataille et la zone que vous attaquez, puis la rareté des défenseurs. Vos unités s'affichent limitées à cette rareté, et les attaques y sont notées."
     },
     "summary": {
       "title": "Votre guerre",
@@ -124,7 +114,15 @@
   },
   "units": {
     "heading": "Unités disponibles",
-    "noRoster": "Synchronisez avec Tacticus pour voir les unités avec lesquelles vous pouvez attaquer."
+    "noRoster": "Synchronisez avec Tacticus pour voir les unités avec lesquelles vous pouvez attaquer.",
+    "showDeployed": "Afficher les unités déployées",
+    "deployed": "Déployées",
+    "deployedIn": "A attaqué en {{zone}}",
+    "charactersFull_one": "{{count}} personnage choisi",
+    "charactersFull_other": "{{count}} personnages choisis",
+    "mowsFull_one": "{{count}} machine de guerre choisie",
+    "mowsFull_other": "{{count}} machines de guerre choisies",
+    "showAll": "Tout afficher ({{count}})"
   },
   "select": {
     "count_one": "{{count}} sélectionnée",
@@ -140,8 +138,11 @@
       "deployed": "{{name}} a déjà attaqué dans cette guerre",
       "notOwned": "{{name}} n'est pas dans votre effectif synchronisé",
       "noTokens": "Plus aucun jeton dans cette guerre",
-      "noZone": "Choisissez une zone à attaquer"
-    }
+      "noZone": "Choisissez une zone à attaquer",
+      "noLevel": "Choisissez un niveau du champ de bataille"
+    },
+    "noMow_one": "Aucune machine de guerre · {{count}} disponible",
+    "noMow_other": "Aucune machine de guerre · {{count}} disponibles"
   },
   "log": {
     "title": "Noter l'attaque",
@@ -213,5 +214,9 @@
     "cancel": "Annuler",
     "started": "Nouvelle guerre commencée.",
     "failed": "Impossible de commencer une nouvelle guerre. Réessayez."
+  },
+  "staged": {
+    "label": "Unités choisies",
+    "overCap": "Limité à {{rarity}} : {{parts}}"
   }
 }

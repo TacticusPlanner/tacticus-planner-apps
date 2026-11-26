@@ -87,11 +87,16 @@ function RarityOptions({ rarities }: { rarities: readonly ZoneRarity[] }) {
 }
 
 /**
- * The Offense toolbar's Find slot: the zone and the defenders' rarity the page attacks at. They
- * cap the units the page shows and are what Won, Lost and Log with details log at.
+ * The Offense toolbar's Find slot: the battlefield level, the zone and the defenders' rarity the page
+ * attacks at. The level and zone are picked once per war; the rarity follows from them. They cap the
+ * units the page shows and are what Won, Lost and Log with details log at.
  */
 export function PageTargetFields({
   season,
+  levels,
+  level,
+  onLevelChange,
+  levelDisabled,
   battlefieldLevel,
   zoneId,
   onZoneChange,
@@ -100,6 +105,13 @@ export function PageTargetFields({
   onRarityChange,
 }: {
   season: GuildWarSeason | undefined
+  /** The levels offered (played levels, and a stored level 0 so it still shows). */
+  levels: readonly number[]
+  /** The picked level; undefined until one is picked for this war. */
+  level: number | undefined
+  onLevelChange: (level: number) => void
+  levelDisabled: boolean
+  /** The war's level, which groups the zones by tier even before a level is picked. */
   battlefieldLevel: number
   zoneId: string | null
   onZoneChange: (zoneId: string) => void
@@ -108,10 +120,33 @@ export function PageTargetFields({
   onRarityChange: (rarity: Rarity) => void
 }) {
   const { t } = useTranslation("guildWar")
+  const levelLabelId = useId()
   const zoneLabelId = useId()
   const rarityLabelId = useId()
   return (
     <>
+      <ToolbarField
+        label={t("target.level")}
+        labelId={levelLabelId}
+        testId="guild-war-level-field"
+      >
+        <Select
+          disabled={levelDisabled || levels.length === 0}
+          onValueChange={(next) => onLevelChange(Number(next))}
+          value={level === undefined ? "" : String(level)}
+        >
+          <SelectTrigger aria-labelledby={levelLabelId} className="min-w-28">
+            <SelectValue placeholder={t("target.levelPlaceholder")} />
+          </SelectTrigger>
+          <SelectContent position="popper">
+            {levels.map((entry) => (
+              <SelectItem key={entry} value={String(entry)}>
+                {t("level", { level: entry })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </ToolbarField>
       <ToolbarField
         label={t("target.zone")}
         labelId={zoneLabelId}

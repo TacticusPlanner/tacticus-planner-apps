@@ -110,6 +110,10 @@ One row directly under the header, three fixed slots, left to right:
 - Up to two filters may sit in the toolbar as labelled selects, each in a
   `ToolbarField` (`@/shared/ui`) with its label outside the trigger (Season
   fit on Goals). A third filter moves them all into `FiltersControl`.
+- When a page already has a `FiltersControl`, its on/off filters (Owned only,
+  Show deployed on Guild War Offense) go inside it as `Switch`es at the top of
+  the panel (`FilterField inline`), not as chips beside it, and the badge
+  counts each one that is on.
 - Browsing a set of items (characters, MoWs, NPCs, raid bosses) is a list
   whose items open their own page. That page starts with the shared unit top
   bar: Back to the list, then Previous / Next with "N of M" in the order the

@@ -4,9 +4,13 @@ import type { Team, TeamRoster, TeamRosterUnit } from "@/entities/team"
 
 import {
   charactersLeftByRarity,
+  deployedZones,
+  kindFull,
   lineupUnit,
   logBlock,
   offenseTeams,
+  previewCharacters,
+  toggleSelection,
 } from "./offense"
 import type { Selection } from "./offense"
 
@@ -78,6 +82,7 @@ const check = (selection: Selection, overrides = {}) =>
     deployed: new Set(["d"]),
     roster,
     tokensLeft: 3,
+    levelPicked: true,
     hasTarget: true,
     ...overrides,
   })
@@ -109,8 +114,87 @@ describe("logBlock", () => {
     expect(check(pick("a"), { tokensLeft: 0 })).toEqual({ reason: "noTokens" })
   })
 
-  it("needs a zone to log at", () => {
+  it("needs a battlefield level, then a zone, to log at", () => {
+    expect(check(pick("a"), { levelPicked: false, hasTarget: false })).toEqual({
+      reason: "noLevel",
+    })
     expect(check(pick("a"), { hasTarget: false })).toEqual({ reason: "noZone" })
+  })
+})
+
+describe("selection limits", () => {
+  it("is full at 5 characters or 1 Machine of War, and never adds past it", () => {
+    const five = pick("a", "b", "c", "e", "f")
+    expect(kindFull(five, "character")).toBe(true)
+    expect(kindFull(five, "mow")).toBe(false)
+    expect([...toggleSelection(five, "x", "character").keys()]).toEqual([
+      "a",
+      "b",
+      "c",
+      "e",
+      "f",
+    ])
+    // A picked unit can still be taken out, and a MoW still added.
+    expect(toggleSelection(five, "a", "character").has("a")).toBe(false)
+    const withMow = toggleSelection(five, "m", "mow")
+    expect(withMow.get("m")).toBe("mow")
+    expect(kindFull(withMow, "mow")).toBe(true)
+    expect(toggleSelection(withMow, "n", "mow").has("n")).toBe(false)
+  })
+})
+
+describe("previewCharacters", () => {
+  const list = Array.from({ length: 40 }, (_, index) => index)
+
+  it("shows the first ones and counts the rest", () => {
+    const { shown, hidden } = previewCharacters(list, {
+      expanded: false,
+      narrowed: false,
+      limit: 30,
+    })
+    expect(shown).toHaveLength(30)
+    expect(hidden).toBe(10)
+    expect(
+      previewCharacters(list, { expanded: false, narrowed: false, limit: 12 })
+        .hidden
+    ).toBe(28)
+  })
+
+  it("shows every one once expanded, narrowed by a search or filter, or within the limit", () => {
+    for (const options of [
+      { expanded: true, narrowed: false, limit: 30 },
+      { expanded: false, narrowed: true, limit: 30 },
+      { expanded: false, narrowed: false, limit: 40 },
+    ]) {
+      expect(previewCharacters(list, options)).toEqual({
+        shown: list,
+        hidden: 0,
+      })
+    }
+  })
+})
+
+describe("deployedZones", () => {
+  it("names the zone of each deployed unit's last attack, MoWs too", () => {
+    const attack = (zoneId: string, ids: string[], mow: string | null) =>
+      ({
+        zoneId,
+        characters: ids.map((unitId) => ({ unitId })),
+        mow: mow ? { unitId: mow } : null,
+      }) as unknown as Parameters<typeof deployedZones>[0][number]
+    expect(
+      deployedZones([
+        attack("Armoury", ["a", "b"], "m"),
+        attack("Bunker1", ["c"], null),
+      ])
+    ).toEqual(
+      new Map([
+        ["a", "Armoury"],
+        ["b", "Armoury"],
+        ["m", "Armoury"],
+        ["c", "Bunker1"],
+      ])
+    )
   })
 })
 
