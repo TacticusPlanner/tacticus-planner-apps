@@ -167,5 +167,43 @@
         "notOwned": "Not owned"
       }
     }
+  },
+  "reclaim": {
+    "toolbar": {
+      "label": "Find items",
+      "search": "Search items",
+      "chipsLabel": "Show",
+      "safe": "Safe only",
+      "upgraded": "Upgraded items",
+      "clearFilters": "Clear filters"
+    },
+    "summary": {
+      "title": "Safe to reclaim",
+      "all": "All spares",
+      "items_one": "{{count}} item",
+      "items_other": "{{count}} items",
+      "note": "You reclaim items in the game. This page only advises."
+    },
+    "reclaim": "Reclaim {{safe}} of {{spare}}",
+    "keep": "Keep all {{count}}",
+    "reserved_one": "{{count}} kept for Suggestions",
+    "reserved_other": "{{count}} kept for Suggestions",
+    "reasons": {
+      "covered": "Everyone who can use it wears {{rarity}} or better",
+      "surplus_one": "You hold {{held}}; {{count}} character could still use one",
+      "surplus_other": "You hold {{held}}; {{count}} characters could still use one",
+      "relic": "Relics are never marked safe",
+      "mythic": "Mythic items are never marked safe"
+    },
+    "none": {
+      "title": "Nothing safe to reclaim",
+      "description": "Every spare could still go to a character.",
+      "showAll": "Show all spares"
+    },
+    "noMatch": {
+      "title": "No items match",
+      "description": "Try another search, or clear the filters.",
+      "clearSearch": "Clear search"
+    }
   }
 }

@@ -1,10 +1,5 @@
 import { useTranslation } from "react-i18next"
-import {
-  factionIcon,
-  goldIcon,
-  mythicSalvageIcon,
-  salvageIcon,
-} from "@workspace/game-catalog"
+import { factionIcon } from "@workspace/game-catalog"
 import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -23,7 +18,6 @@ import {
   maxItemLevel,
   upgradeCost,
 } from "@/shared/equipment"
-import type { ItemCost } from "@/shared/equipment"
 import { UnitPortrait } from "@/entities/unit"
 import {
   EntityIcon,
@@ -36,6 +30,7 @@ import {
 } from "@/shared/ui"
 
 import type { OwnedPiece } from "../../../model/items/owned-items"
+import { CostRow } from "../item-cost"
 import { portraitSrc } from "../portrait-src"
 import type { PiecesListContext } from "./pieces-list"
 
@@ -317,39 +312,5 @@ function UpgradeCosts({ piece }: { piece: OwnedPiece<Item> }) {
         </>
       )}
     </Section>
-  )
-}
-
-/** One cost: its label, then gold, salvage and Mythic salvage where they aren't zero. */
-export function CostRow({ label, cost }: { label: string; cost: ItemCost }) {
-  const { t, i18n } = useTranslation("gameUi")
-  const format = (value: number) => value.toLocaleString(i18n.language)
-  const parts = [
-    { key: "gold", amount: cost.gold, icon: goldIcon(), name: t("items.gold") },
-    {
-      key: "salvage",
-      amount: cost.salvage,
-      icon: salvageIcon(),
-      name: t("items.salvage"),
-    },
-    {
-      key: "mythicSalvage",
-      amount: cost.mythicSalvage,
-      icon: mythicSalvageIcon(),
-      name: t("items.mythicSalvage"),
-    },
-  ].filter((part) => part.amount > 0)
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="flex flex-wrap items-center gap-3 tabular-nums">
-        {parts.map((part) => (
-          <span className="flex items-center gap-1" key={part.key}>
-            <EntityIcon alt={part.name} size="icon" src={part.icon} />
-            {format(part.amount)}
-          </span>
-        ))}
-      </dd>
-    </div>
   )
 }
