@@ -42,6 +42,7 @@ import {
   NO_DETAILS,
 } from "../../model/attack-draft"
 import type { AttackDetails } from "../../model/attack-draft"
+import { capEnemy } from "../../model/enemy-draft"
 import { editRarities, editTarget } from "../../model/attack-target"
 import type { ZoneRarity } from "../../model/attack-target"
 import { cappedView, lineupUnitView } from "../../model/capped-view"
@@ -282,6 +283,8 @@ export function LogAttackDialog({
       : editRarities(season, battlefieldLevel, subject.attack, zoneId)
   const target =
     subject.kind === "new" ? subject.target : pickRarity(rarities, picked)
+  // Noted enemies stay within the defenders' cap, even after it is lowered here.
+  const capped = { ...details, enemy: capEnemy(details.enemy, target?.rarity) }
   const saveTarget =
     subject.kind === "new"
       ? target && { zoneId: subject.zoneId, slot: target.slot }
@@ -298,9 +301,9 @@ export function LogAttackDialog({
             roster: subject.roster,
             zoneId: saveTarget.zoneId,
             slot: saveTarget.slot,
-            details,
+            details: capped,
           })
-        : editedAttackFields(subject.attack, saveTarget, details)
+        : editedAttackFields(subject.attack, saveTarget, capped)
     )
   }
 
@@ -404,7 +407,7 @@ export function LogAttackDialog({
                 onChange={(enemy) => set({ enemy })}
                 season={season}
                 units={units}
-                value={details.enemy}
+                value={capped.enemy}
               />
             </div>
           ) : null}
