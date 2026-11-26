@@ -10,7 +10,7 @@
       "modules": ["src/fsd/pages/home/index.ts"]
     },
     "/library/characters": {
-      "baselineKb": 1465,
+      "baselineKb": 1468,
       "modules": [
         "src/fsd/pages/library/ui/library-page.tsx",
         "src/fsd/pages/library/ui/characters/characters-list-page.tsx"
