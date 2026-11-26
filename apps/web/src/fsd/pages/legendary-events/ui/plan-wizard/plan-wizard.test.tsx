@@ -17,8 +17,12 @@ import { render, screen, waitFor, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
 import { PlanWizard } from "./plan-wizard"
-import { EMPTY_PLAN, RUN_3_START_MS, planInputs } from "./plan.fixtures"
-import type { PlanSource } from "./use-plan-source"
+import {
+  EMPTY_PLAN,
+  RUN_3_START_MS,
+  planInputs,
+} from "../../model/plan-wizard/plan.fixtures"
+import type { PlanSource } from "../../model/plan-wizard/use-plan-source"
 
 const MISSING_ONSLAUGHT = new Set<string>()
 const FARMING: { status: string; estimate: () => unknown } = {
@@ -27,7 +31,7 @@ const FARMING: { status: string; estimate: () => unknown } = {
     missingOnslaughtAlliances: MISSING_ONSLAUGHT,
   }),
 }
-vi.mock("./use-upgrade-farming-days", () => ({
+vi.mock("../../model/plan-wizard/use-upgrade-farming-days", () => ({
   useUpgradeFarmingDays: () => FARMING,
 }))
 
@@ -35,7 +39,7 @@ const run = vi.fn()
 const createState: { items: { key: string; status: string }[] } = {
   items: [],
 }
-vi.mock("./use-plan-create", () => ({
+vi.mock("../../model/plan-wizard/use-plan-create", () => ({
   usePlanCreate: () => ({ items: createState.items, running: false, run }),
 }))
 

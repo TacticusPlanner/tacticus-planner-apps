@@ -3,8 +3,11 @@ import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { StepTarget, StepVerdict } from "./plan-ceiling"
-import { targetBar } from "./target-step.model"
+import type {
+  StepTarget,
+  StepVerdict,
+} from "../../model/plan-wizard/plan-ceiling"
+import { targetBar } from "../../model/plan-wizard/target-step.model"
 
 const VERDICT_CLASS: Record<StepVerdict["kind"], string> = {
   reachableNow: "border-transparent bg-success text-success-foreground",

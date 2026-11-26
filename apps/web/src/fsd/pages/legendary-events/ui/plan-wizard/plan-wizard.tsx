@@ -18,22 +18,25 @@ import { UnsavedChangesGuard } from "@/shared/ui"
 
 import { useShowPaidOptions } from "@/features/legendary-event-plan"
 
-import { PLAN_WIZARD_STEPS } from "./plan-draft"
-import type { PlanWizardStep } from "./plan-draft"
-import { planWrites, writeCounts } from "./plan-create"
-import type { PlanDestination, PlanWrites } from "./plan-create"
+import { PLAN_WIZARD_STEPS } from "../../model/plan-wizard/plan-draft"
+import type { PlanWizardStep } from "../../model/plan-wizard/plan-draft"
+import { planWrites, writeCounts } from "../../model/plan-wizard/plan-create"
+import type {
+  PlanDestination,
+  PlanWrites,
+} from "../../model/plan-wizard/plan-create"
 import { PlanSummary } from "./plan-summary"
-import type { DraftTeam } from "./plan-teams"
+import type { DraftTeam } from "../../model/plan-wizard/plan-teams"
 import { usePlanWizardTutorial } from "./plan-wizard.tutorial"
 import { ReviewStep } from "./review-step"
 import { RunsStep } from "./runs-step"
 import { TargetStep } from "./target-step"
 import { TeamsStep } from "./teams-step"
 import { UpgradesStep } from "./upgrades-step"
-import { usePlanCreate } from "./use-plan-create"
-import { usePlanDestination } from "./use-plan-destination"
-import { usePlanDraft } from "./use-plan-draft"
-import type { PlanSource } from "./use-plan-source"
+import { usePlanCreate } from "../../model/plan-wizard/use-plan-create"
+import { usePlanDestination } from "../../model/plan-wizard/use-plan-destination"
+import { usePlanDraft } from "../../model/plan-wizard/use-plan-draft"
+import type { PlanSource } from "../../model/plan-wizard/use-plan-source"
 
 interface CreateSnapshot {
   writes: PlanWrites

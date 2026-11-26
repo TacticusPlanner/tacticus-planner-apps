@@ -10,7 +10,7 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { PlanWizard } from "./plan-wizard"
 import type { PlanWizardEntry } from "./plan-wizard"
-import { usePlanSource } from "./use-plan-source"
+import { usePlanSource } from "../../model/plan-wizard/use-plan-source"
 
 const ENTRIES: readonly string[] = ["overview", "suggestions"]
 const entryOf = (value: string | null): PlanWizardEntry =>
