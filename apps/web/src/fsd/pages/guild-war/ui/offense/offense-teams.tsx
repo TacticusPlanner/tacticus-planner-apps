@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { Plus } from "lucide-react"
+import { Link } from "react-router"
+import { ArrowRight, Plus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
@@ -48,7 +49,8 @@ function TeamCardUnit({
  * core unit that already attacked. A card shows the core and, after a divider, the flex units, at
  * the defenders' cap, the ones that attacked dimmed; only a core unit blocks a team. Select picks
  * the core, then the flex units that have not attacked while the attack has room
- * (`teamSelection`). Create team opens the team editor with War Offense picked.
+ * (`teamSelection`). All teams opens the Teams page; Create team opens the team editor with War
+ * Offense picked.
  */
 export function OffenseTeams({
   teams,
@@ -94,10 +96,18 @@ export function OffenseTeams({
         <h2 className="text-sm font-medium" id="guild-war-teams-heading">
           {t("teams.heading")}
         </h2>
-        <Button onClick={onNewTeam} size="sm" variant="ghost">
-          <Plus data-icon="inline-start" />
-          {t("teams.createTeam")}
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button asChild size="sm" variant="ghost">
+            <Link to="/my-game/teams">
+              {t("teams.allTeams")}
+              <ArrowRight data-icon="inline-end" />
+            </Link>
+          </Button>
+          <Button onClick={onNewTeam} size="sm" variant="ghost">
+            <Plus data-icon="inline-start" />
+            {t("teams.createTeam")}
+          </Button>
+        </div>
       </div>
       {teams.length === 0 ? (
         // Create team is in the heading row, so the empty state needs no action of its own.

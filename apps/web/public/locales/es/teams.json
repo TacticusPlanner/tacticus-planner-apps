@@ -21,6 +21,9 @@
     "importHint": "¿Vienes del planificador anterior?",
     "importLink": "Importa tus equipos de V1",
     "noMatch": "Ningún equipo tiene el modo {{mode}}.",
+    "modePage": {
+      "warOffense": "Abrir Ataque de Guerra de gremios"
+    },
     "noRoster": "Sincroniza tu plantel para ver qué unidades has desbloqueado y cuánto ha progresado cada una.",
     "listLabel": "Tus equipos",
     "search": "Buscar equipos o unidades",

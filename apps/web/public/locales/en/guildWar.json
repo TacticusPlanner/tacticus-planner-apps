@@ -106,6 +106,7 @@
   "teams": {
     "heading": "Offense teams",
     "createTeam": "Create team",
+    "allTeams": "All teams",
     "empty": "No War Offense teams yet.",
     "select": "Select",
     "selectTeam": "Select {{name}}",

@@ -786,6 +786,10 @@ describe("OffensePage", () => {
     renderOffense()
 
     expect(await screen.findByText("No War Offense teams yet.")).toBeVisible()
+    expect(screen.getByRole("link", { name: "All teams" })).toHaveAttribute(
+      "href",
+      "/my-game/teams"
+    )
     await user.click(await screen.findByRole("button", { name: "Create team" }))
     expect(
       await screen.findByRole("button", { name: "War Offense" })

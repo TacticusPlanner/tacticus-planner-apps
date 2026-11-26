@@ -106,6 +106,7 @@
   "teams": {
     "heading": "Equipos de ataque",
     "createTeam": "Crear equipo",
+    "allTeams": "Todos los equipos",
     "empty": "Aún no hay equipos de Ataque de guerra.",
     "select": "Seleccionar",
     "selectTeam": "Seleccionar {{name}}",

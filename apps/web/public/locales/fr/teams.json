@@ -21,6 +21,9 @@
     "importHint": "Vous venez de l'ancien planificateur ?",
     "importLink": "Importer vos équipes V1",
     "noMatch": "Aucune équipe n'a le mode {{mode}}.",
+    "modePage": {
+      "warOffense": "Ouvrir l'attaque de Guerre de guilde"
+    },
     "noRoster": "Synchronisez votre effectif pour voir quelles unités vous avez débloquées et où en est chacune.",
     "listLabel": "Vos équipes",
     "search": "Rechercher des équipes ou des unités",

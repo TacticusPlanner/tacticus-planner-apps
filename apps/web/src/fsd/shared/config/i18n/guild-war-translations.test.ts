@@ -47,6 +47,7 @@ const SAME_AS_ENGLISH = new Set([
   "summary.tokensValue",
   "summary.resultsValue",
   "attack.target",
+  "capFit.unitRarity",
   "log.notesCount",
   // "Notes" in French.
   "log.notes",

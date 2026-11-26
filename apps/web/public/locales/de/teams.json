@@ -21,6 +21,9 @@
     "importHint": "Du kommst vom alten Planner?",
     "importLink": "Importiere deine V1-Teams",
     "noMatch": "Kein Team hat den Modus {{mode}}.",
+    "modePage": {
+      "warOffense": "Gildenkrieg-Angriff öffnen"
+    },
     "noRoster": "Synchronisiere dein Roster, um zu sehen, welche Einheiten du freigeschaltet hast und wie weit jede fortgeschritten ist.",
     "listLabel": "Deine Teams",
     "search": "Teams oder Einheiten suchen",
