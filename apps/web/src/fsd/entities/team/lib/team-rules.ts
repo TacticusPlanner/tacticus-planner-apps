@@ -255,6 +255,33 @@ export function evaluateTeamRules(
   return TEAM_RULE_CODES.filter((code) => broken.has(code))
 }
 
+/** The Survival event's featured hero when the team stores it (it always fights, so never stored). */
+function storedFeaturedCharacter(
+  team: TeamRuleInput,
+  facts: TeamRuleFacts
+): string | undefined {
+  if (!team.survivalEventKey) return undefined
+  const featured = facts.survivalEvents.get(
+    team.survivalEventKey
+  )?.featuredCharacterId
+  return featured && team.characterIds.includes(featured) ? featured : undefined
+}
+
+/** Lineup characters outside the allowed factions, plus a stored Survival featured hero. */
+function charactersNotAllowed(team: TeamRuleInput, facts: TeamRuleFacts) {
+  const notAllowed = new Set<string>()
+  const allowed = allowedFactions(team, facts)
+  if (allowed) {
+    for (const id of team.characterIds) {
+      const faction = facts.characterFactions.get(id)
+      if (faction !== undefined && !allowed.has(faction)) notAllowed.add(id)
+    }
+  }
+  const featured = storedFeaturedCharacter(team, facts)
+  if (featured) notAllowed.add(featured)
+  return notAllowed
+}
+
 /**
  * The lineup characters a rule is about, so the editor can mark them: those outside the allowed
  * factions for `factionNotAllowed` (and a Survival event's featured hero, who is never stored),
@@ -265,19 +292,8 @@ export function charactersConcerned(
   team: TeamRuleInput,
   facts: TeamRuleFacts
 ): { notAllowed: Set<string>; missingCore: Set<string> } {
-  const notAllowed = new Set<string>()
+  const notAllowed = charactersNotAllowed(team, facts)
   const missingCore = new Set<string>()
-  const allowed = allowedFactions(team, facts)
-  if (allowed) {
-    for (const id of team.characterIds) {
-      const faction = facts.characterFactions.get(id)
-      if (faction !== undefined && !allowed.has(faction)) notAllowed.add(id)
-    }
-  }
-  const featured = team.survivalEventKey
-    ? facts.survivalEvents.get(team.survivalEventKey)?.featuredCharacterId
-    : undefined
-  if (featured && team.characterIds.includes(featured)) notAllowed.add(featured)
   const group =
     team.modes.includes("campaign") && team.campaignGroupId
       ? facts.campaigns.get(team.campaignGroupId)

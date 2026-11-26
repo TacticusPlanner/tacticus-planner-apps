@@ -378,14 +378,14 @@ describe("evaluateTeamRules (API spec scenarios)", () => {
   })
 })
 
-describe("evaluateTeamRules (Survival)", () => {
-  const survivalTeam = (overrides: Partial<TeamRuleInput> = {}) =>
-    team({
-      survivalEventKey: "december-2026",
-      characterIds: ["ultraTitus", "ultraApothecary", "templHelbrecht"],
-      ...overrides,
-    })
+const survivalTeam = (overrides: Partial<TeamRuleInput> = {}) =>
+  team({
+    survivalEventKey: "december-2026",
+    characterIds: ["ultraTitus", "ultraApothecary", "templHelbrecht"],
+    ...overrides,
+  })
 
+describe("evaluateTeamRules (Survival)", () => {
   it("passes a Horde team within the event's caps and factions", () => {
     expect(rules(survivalTeam())).toEqual([])
   })
