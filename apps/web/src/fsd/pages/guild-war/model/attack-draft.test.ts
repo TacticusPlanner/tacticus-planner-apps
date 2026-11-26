@@ -111,6 +111,18 @@ describe("editing an attack", () => {
     expect(start.enemy).toEqual(EMPTY_ENEMY)
   })
 
+  it("starts with no result, no losses and no note when the attack has none", () => {
+    const start = attackDetails({
+      ...attack,
+      result: null,
+      lostUnitIds: null,
+      notes: null,
+    })
+    expect(start.result).toBe("none")
+    expect(start.lostIds.size).toBe(0)
+    expect(start.notes).toBe("")
+  })
+
   it("moves the attack to a new zone and slot, keeping its lineup", () => {
     const fields = editedAttackFields(
       attack,
