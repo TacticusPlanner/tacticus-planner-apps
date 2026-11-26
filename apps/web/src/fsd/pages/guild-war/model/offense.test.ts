@@ -8,8 +8,10 @@ import {
   kindFull,
   lineupUnit,
   logBlock,
+  flexUnits,
   offenseTeams,
   previewCharacters,
+  teamSelection,
   toggleSelection,
 } from "./offense"
 import type { Selection } from "./offense"
@@ -58,21 +60,60 @@ const pick = (...ids: string[]): Selection =>
   new Map(ids.map((id) => [id, roster.mows.has(id) ? "mow" : "character"]))
 
 describe("offenseTeams", () => {
-  it("lists War Offense teams, ready first, blocked by a deployed core unit", () => {
+  it("lists War Offense teams, ready first, with every deployed core unit", () => {
     const teams = [
-      team("blocked", { characterIds: ["a", "b"] }),
+      team("blocked", { characterIds: ["a", "b", "d"] }),
       team("flexOnly", { characterIds: ["c", "a"], flexStartIndex: 1 }),
       team("defense", { modes: ["warDefense"], characterIds: ["c"] }),
       team("mow", { characterIds: ["c"], mowIds: ["m"] }),
     ]
-    const listed = offenseTeams(teams, new Set(["a", "m"]))
-    expect(listed.map((entry) => [entry.team.id, entry.blockedBy?.id])).toEqual(
-      [
-        ["flexOnly", undefined],
-        ["blocked", "a"],
-        ["mow", "m"],
-      ]
-    )
+    const listed = offenseTeams(teams, new Set(["a", "d", "m"]))
+    expect(
+      listed.map((entry) => [
+        entry.team.id,
+        entry.deployedCore.map((unit) => unit.id),
+      ])
+    ).toEqual([
+      ["flexOnly", []],
+      ["blocked", ["a", "d"]],
+      ["mow", ["m"]],
+    ])
+  })
+})
+
+describe("teamSelection", () => {
+  const flexTeam = team("flex", {
+    characterIds: ["a", "b", "c", "d", "e", "f"],
+    flexStartIndex: 3,
+    mowIds: ["m", "n"],
+    mowFlexStartIndex: 0,
+  })
+
+  it("lists the flex units after the marker", () => {
+    expect(flexUnits(flexTeam).map((entry) => entry.id)).toEqual([
+      "d",
+      "e",
+      "f",
+      "m",
+      "n",
+    ])
+  })
+
+  it("picks the core, then flex units that have not attacked, while there is room", () => {
+    expect([...teamSelection(flexTeam, new Set(["d", "m"]))]).toEqual([
+      ["a", "character"],
+      ["b", "character"],
+      ["c", "character"],
+      ["e", "character"],
+      ["f", "character"],
+      ["n", "mow"],
+    ])
+    // Room for 5 characters only: the last flex character is left out.
+    expect(
+      [...teamSelection(flexTeam, new Set())].filter(
+        ([, kind]) => kind === "character"
+      )
+    ).toHaveLength(5)
   })
 })
 

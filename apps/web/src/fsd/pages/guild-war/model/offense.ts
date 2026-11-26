@@ -90,10 +90,38 @@ export function coreUnits(team: Team): { id: string; kind: UnitKind }[] {
   ]
 }
 
-/** An offense team and the first of its core units that already attacked (null when ready). */
+/** A team's flex units: its characters and MoWs from the flex marker on, in saved order. */
+export function flexUnits(team: Team): { id: string; kind: UnitKind }[] {
+  const characters = team.characterIds.slice(
+    team.flexStartIndex ?? team.characterIds.length
+  )
+  const mows = team.mowIds.slice(team.mowFlexStartIndex ?? team.mowIds.length)
+  return [
+    ...characters.map((id) => ({ id, kind: "character" as const })),
+    ...mows.map((id) => ({ id, kind: "mow" as const })),
+  ]
+}
+
+/** What a team's Select picks: its core, then its flex units that have not attacked, in saved
+ *  order, while an attack has room for them (5 characters, 1 Machine of War). */
+export function teamSelection(
+  team: Team,
+  deployed: ReadonlySet<string>
+): Selection {
+  let selection: Selection = new Map(
+    coreUnits(team).map((unit) => [unit.id, unit.kind])
+  )
+  for (const unit of flexUnits(team)) {
+    if (deployed.has(unit.id) || selection.has(unit.id)) continue
+    selection = toggleSelection(selection, unit.id, unit.kind)
+  }
+  return selection
+}
+
+/** An offense team and every one of its core units that already attacked (none when ready). */
 export interface OffenseTeam {
   team: Team
-  blockedBy: { id: string; kind: UnitKind } | null
+  deployedCore: { id: string; kind: UnitKind }[]
 }
 
 /** The War Offense teams in their saved order, the ready ones first and the blocked ones after. */
@@ -105,11 +133,11 @@ export function offenseTeams(
     .filter((team) => team.modes.includes("warOffense"))
     .map((team) => ({
       team,
-      blockedBy: coreUnits(team).find((unit) => deployed.has(unit.id)) ?? null,
+      deployedCore: coreUnits(team).filter((unit) => deployed.has(unit.id)),
     }))
   return [
-    ...withStatus.filter((entry) => entry.blockedBy === null),
-    ...withStatus.filter((entry) => entry.blockedBy !== null),
+    ...withStatus.filter((entry) => entry.deployedCore.length === 0),
+    ...withStatus.filter((entry) => entry.deployedCore.length > 0),
   ]
 }
 
@@ -197,4 +225,17 @@ export function charactersLeftByRarity(
     const count = counts.get(rarity) ?? 0
     return count > 0 ? [{ rarity, count }] : []
   })
+}
+
+/** The Machines of War still free to attack when the selection has characters but no Machine of
+ *  War (what the selection bar's reminder counts); 0 otherwise. */
+export function freeMowCount(
+  selection: Selection,
+  roster: TeamRoster | null,
+  deployed: ReadonlySet<string>
+): number {
+  const picked = [...selection.values()]
+  if (!picked.includes("character") || picked.includes("mow")) return 0
+  return [...(roster?.mows.keys() ?? [])].filter((id) => !deployed.has(id))
+    .length
 }

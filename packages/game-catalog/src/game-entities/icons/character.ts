@@ -23,3 +23,9 @@ export function mowIcon(id: UnitId): string | undefined {
   const slug = mowIconOverrides.get(id) ?? camelToSnake(id)
   return roundPortraitIcon(slug)
 }
+
+/** The game's generic Machine of War badge (its MoW game-mode icon), which marks a MoW portrait
+ *  where a character's portrait shows its rank. */
+export function mowBadgeIcon(): string {
+  return datamineAssetUrl("liveevents/ui_gamemodeicon_mow.webp")
+}

@@ -5,8 +5,9 @@ import { curatedAssetUrl, datamineAssetUrl } from "./asset-path"
 // the seasons' map pools.
 
 /** The boards of every Guild War season's map pool, shipped as the game's board art
- *  (`sprites/boards/{boardId}_Visual.webp`) downscaled into curated/guild_war_boards/{boardId}.webp.
- *  `guild-war.test.ts` fails when this list and the directory drift apart. */
+ *  (`sprites/boards/{boardId}_Visual.webp`) downscaled into curated/guild_war_boards/{boardId}.webp
+ *  (360 px, the picker's tiles) and curated/guild_war_boards_large/{boardId}.webp (1080 px, the
+ *  zoomed view). `guild-war.test.ts` fails when this list and either directory drift apart. */
 export const GUILD_WAR_BOARD_IDS: ReadonlySet<string> = new Set([
   "C1_15",
   "C1_18",
@@ -80,5 +81,12 @@ export function guildWarTokenIcon(): string {
 export function guildWarBoardImage(boardId: string): string | undefined {
   return GUILD_WAR_BOARD_IDS.has(boardId)
     ? curatedAssetUrl(`guild_war_boards/${boardId}.webp`)
+    : undefined
+}
+
+/** A map-pool board's picture at 1080 px, for a zoomed view; undefined as `guildWarBoardImage`. */
+export function guildWarBoardImageLarge(boardId: string): string | undefined {
+  return GUILD_WAR_BOARD_IDS.has(boardId)
+    ? curatedAssetUrl(`guild_war_boards_large/${boardId}.webp`)
     : undefined
 }

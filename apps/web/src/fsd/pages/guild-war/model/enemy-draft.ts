@@ -1,8 +1,11 @@
 import {
   maxRankForProgression,
+  rankOrder,
+  rarityOrder,
+  rarityRank,
   startingProgression,
 } from "@workspace/game-domain"
-import type { Rarity } from "@workspace/game-domain"
+import type { Rank, Rarity } from "@workspace/game-domain"
 
 import type { GuildWarEnemy, GuildWarEnemyUnit } from "./types"
 
@@ -42,6 +45,59 @@ export function enemyUnit(
         ? maxRankForProgression(startingProgression(defenderRarity))
         : null,
     state: kind === "character" ? "killed" : null,
+  }
+}
+
+/** The highest rank a unit at a rarity can have: that rarity's rank cap. */
+function rarityMaxRank(rarity: Rarity): Rank {
+  return maxRankForProgression(startingProgression(rarity))
+}
+
+/** The rarities an enemy can be noted at: none above the defenders' cap (all without one). */
+export function enemyRarities(cap: Rarity | undefined): readonly Rarity[] {
+  return cap
+    ? rarityOrder.filter((rarity) => rarityRank(rarity) <= rarityRank(cap))
+    : rarityOrder
+}
+
+/** The ranks an enemy can be noted at: none above the cap of the defenders' rarity, nor of the
+ *  enemy's own noted rarity when it is lower. */
+export function enemyRanks(
+  cap: Rarity | undefined,
+  rarity: Rarity | null
+): readonly Rank[] {
+  const limits = [cap, rarity ?? undefined].filter(
+    (entry): entry is Rarity => entry !== undefined
+  )
+  const top = Math.min(
+    ...limits.map((entry) => rankOrder.indexOf(rarityMaxRank(entry))),
+    rankOrder.length - 1
+  )
+  return rankOrder.slice(0, top + 1)
+}
+
+/** An enemy unit brought within the defenders' cap: a rarity above it drops to it, and a rank
+ *  above what the cap and its rarity allow drops to the highest they do. */
+function capEnemyUnit(unit: GuildWarEnemyUnit, cap: Rarity): GuildWarEnemyUnit {
+  const rarity =
+    unit.rarity && rarityRank(unit.rarity) > rarityRank(cap) ? cap : unit.rarity
+  if (!unit.rank) return { ...unit, rarity }
+  const ranks = enemyRanks(cap, rarity)
+  const allowed = ranks.some((rank) => rank === unit.rank)
+  return { ...unit, rarity, rank: allowed ? unit.rank : (ranks.at(-1) ?? null) }
+}
+
+/** The enemy details within the defenders' cap, so lowering the cap in the dialog lowers the noted
+ *  enemies with it. Unchanged without a cap. */
+export function capEnemy(
+  draft: EnemyDraft,
+  cap: Rarity | undefined
+): EnemyDraft {
+  if (!cap) return draft
+  return {
+    ...draft,
+    characters: draft.characters.map((unit) => capEnemyUnit(unit, cap)),
+    mow: draft.mow && capEnemyUnit(draft.mow, cap),
   }
 }
 

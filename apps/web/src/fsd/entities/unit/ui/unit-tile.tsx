@@ -4,6 +4,7 @@ import {
   characterIcon,
   factionIcon,
   lockIcon,
+  mowBadgeIcon,
   mowIcon,
   progressionVisual,
   rankIcon,
@@ -186,6 +187,19 @@ function PortraitOverlays({
           data-testid="unit-tile-rank"
         >
           <EntityIcon src={rankIcon(data.rank)} alt="" className="size-full" />
+        </span>
+      ) : null}
+      {/* A Machine of War has no rank: the game's MoW badge marks it there instead, so it stands
+          apart from the characters it is listed with. */}
+      {kind === "mow" ? (
+        <span
+          className={cn(
+            "absolute -bottom-1.5 -left-1.5 drop-shadow-[0_1px_2px_rgb(0_0_0/0.7)]",
+            entityIconClassName("icon")
+          )}
+          data-testid="unit-tile-mow-badge"
+        >
+          <EntityIcon src={mowBadgeIcon()} alt="" className="size-full" />
         </span>
       ) : null}
       {usesMythicShards(data.progression) ? (

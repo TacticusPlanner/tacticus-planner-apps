@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { Flag } from "lucide-react"
 import type { Rarity } from "@workspace/game-domain"
@@ -34,6 +34,7 @@ import {
 import type { Selection } from "../../model/offense"
 import type { OffenseFilters } from "../../model/offense-filters"
 import { useGuildWarNames } from "../../model/use-guild-war-names"
+import { scrollToSection } from "./scroll-to-section"
 
 const NO_LOCKS: ReadonlySet<string> = new Set()
 const NO_USAGE: ReadonlyMap<string, string[]> = new Map()
@@ -78,8 +79,8 @@ function FilterSwitch({
 /**
  * The units that can attack, in the team editor's tiles capped at the defenders' rarity: a search
  * and the Filters dialog (Owned only and Show deployed at the top, then the team picker's fields),
- * the characters (the first 30 on desktop, 12 on phones, then Show all; a search or filter shows
- * every match), every Machine of War, and with Show deployed the units that already attacked,
+ * the characters (the first 30 on desktop, 12 on phones, then Show all and, once expanded, Show
+ * less; a search or filter shows every match), every Machine of War, and with Show deployed the units that already attacked,
  * dimmed and flagged with their zone. Once an attack has 5 characters (or 1 Machine of War) the
  * other tiles of that kind are blocked and say why.
  */
@@ -89,6 +90,8 @@ export function OffenseUnitPicker({
   cap,
   season,
   deployed,
+  expanded,
+  onExpandedChange,
   filters,
   onFiltersChange,
   selection,
@@ -100,6 +103,9 @@ export function OffenseUnitPicker({
   season: GuildWarSeason | undefined
   /** Each deployed unit and the zone it attacked. */
   deployed: ReadonlyMap<string, string>
+  /** Whether every character shows (Show all), held by the page so selecting a team expands it. */
+  expanded: boolean
+  onExpandedChange: (expanded: boolean) => void
   filters: OffenseFilters
   onFiltersChange: (patch: Partial<OffenseFilters>) => void
   selection: Selection
@@ -108,7 +114,6 @@ export function OffenseUnitPicker({
   const { t, i18n } = useTranslation(["guildWar", "teams"])
   const { zoneName } = useGuildWarNames()
   const isMobile = useIsMobile()
-  const [expanded, setExpanded] = useState(false)
   const options = useMemo(() => pickerFilterOptions(units), [units])
   const shown = useMemo(
     () =>
@@ -127,11 +132,9 @@ export function OffenseUnitPicker({
     : []
   const narrowed =
     filters.search.trim() !== "" || activeFilterCount(filters) > 0
-  const preview = previewCharacters(characters, {
-    expanded,
-    narrowed,
-    limit: isMobile ? CHARACTER_PREVIEW.phone : CHARACTER_PREVIEW.desktop,
-  })
+  const limit = isMobile ? CHARACTER_PREVIEW.phone : CHARACTER_PREVIEW.desktop
+  const preview = previewCharacters(characters, { expanded, narrowed, limit })
+  const canCollapse = expanded && !narrowed && characters.length > limit
   const selectedIds = new Set(selection.keys())
   const charactersFull = kindFull(selection, "character")
   const mowsFull = kindFull(selection, "mow")
@@ -250,7 +253,8 @@ export function OffenseUnitPicker({
         {characters.length > 0 ? (
           <section
             aria-labelledby="guild-war-characters-heading"
-            className="flex flex-col gap-1.5"
+            className="flex scroll-mt-4 flex-col gap-1.5"
+            id="guild-war-characters"
           >
             <h3
               className="text-sm font-medium"
@@ -267,10 +271,23 @@ export function OffenseUnitPicker({
             {preview.hidden > 0 ? (
               <Button
                 className="self-start"
-                onClick={() => setExpanded(true)}
+                onClick={() => onExpandedChange(true)}
                 variant="outline"
               >
                 {t("guildWar:units.showAll", { count: characters.length })}
+              </Button>
+            ) : null}
+            {canCollapse ? (
+              <Button
+                className="self-start"
+                onClick={() => {
+                  onExpandedChange(false)
+                  // The list shrinks above the button, so bring its heading back into view.
+                  scrollToSection("guild-war-characters")
+                }}
+                variant="outline"
+              >
+                {t("guildWar:units.showLess")}
               </Button>
             ) : null}
           </section>

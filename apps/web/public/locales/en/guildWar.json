@@ -106,11 +106,17 @@
   "teams": {
     "heading": "Offense teams",
     "createTeam": "Create team",
+    "allTeams": "All teams",
     "empty": "No War Offense teams yet.",
     "select": "Select",
     "selectTeam": "Select {{name}}",
     "core": "Core units",
-    "blocked": "{{name}} already attacked in this war."
+    "flex": "Flex units",
+    "blocked_one": "{{names}} already attacked in this war.",
+    "blocked_other": "{{names}} already attacked in this war.",
+    "more_one": "{{count}} more",
+    "more_other": "{{count}} more",
+    "deployedUnit": "{{name}}, already attacked"
   },
   "units": {
     "heading": "Available units",
@@ -122,7 +128,8 @@
     "charactersFull_other": "{{count}} characters picked",
     "mowsFull_one": "{{count}} Machine of War picked",
     "mowsFull_other": "{{count}} Machines of War picked",
-    "showAll": "Show all ({{count}})"
+    "showAll": "Show all ({{count}})",
+    "showLess": "Show less"
   },
   "select": {
     "count_one": "{{count}} selected",
@@ -192,7 +199,12 @@
     "buffs": "Active zone buffs",
     "buffInfo": "What {{name}} does",
     "map": "Map",
-    "mapOption": "Map {{number}}"
+    "mapOption": "Map {{number}}",
+    "zoomMap": "Zoom in on map {{number}}",
+    "previousMap": "Previous map",
+    "nextMap": "Next map",
+    "pickMap": "Pick this map",
+    "mapPicked": "Picked"
   },
   "attackLog": {
     "heading": "Attack log",
@@ -216,7 +228,16 @@
     "failed": "Couldn't start a new war. Try again."
   },
   "staged": {
-    "label": "Picked units",
-    "overCap": "Capped to {{rarity}}: {{parts}}"
+    "label": "Picked units"
+  },
+  "capFit": {
+    "under_one": "{{count}} under cap",
+    "under_other": "{{count}} under cap",
+    "over_one": "{{count}} over cap",
+    "over_other": "{{count}} over cap",
+    "underHint": "Under the {{rarity}} cap: their rank fits a lower cap.",
+    "overHint": "Over the {{rarity}} cap: they could fight at a higher cap.",
+    "unitRank": "{{name}}: {{rank}} ({{rarity}} rank)",
+    "unitRarity": "{{name}}: {{rarity}}"
   }
 }

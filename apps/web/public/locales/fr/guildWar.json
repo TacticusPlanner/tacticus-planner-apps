@@ -106,11 +106,17 @@
   "teams": {
     "heading": "Équipes d'attaque",
     "createTeam": "Créer une équipe",
+    "allTeams": "Toutes les équipes",
     "empty": "Aucune équipe Attaque de guerre pour l'instant.",
     "select": "Sélectionner",
     "selectTeam": "Sélectionner {{name}}",
     "core": "Unités principales",
-    "blocked": "{{name}} a déjà attaqué dans cette guerre."
+    "flex": "Unités flexibles",
+    "blocked_one": "{{names}} a déjà attaqué dans cette guerre.",
+    "blocked_other": "{{names}} ont déjà attaqué dans cette guerre.",
+    "more_one": "{{count}} autre",
+    "more_other": "{{count}} autres",
+    "deployedUnit": "{{name}}, a déjà attaqué"
   },
   "units": {
     "heading": "Unités disponibles",
@@ -122,7 +128,8 @@
     "charactersFull_other": "{{count}} personnages choisis",
     "mowsFull_one": "{{count}} machine de guerre choisie",
     "mowsFull_other": "{{count}} machines de guerre choisies",
-    "showAll": "Tout afficher ({{count}})"
+    "showAll": "Tout afficher ({{count}})",
+    "showLess": "Afficher moins"
   },
   "select": {
     "count_one": "{{count}} sélectionnée",
@@ -192,7 +199,12 @@
     "buffs": "Bonus de zone actifs",
     "buffInfo": "Effet de {{name}}",
     "map": "Carte",
-    "mapOption": "Carte {{number}}"
+    "mapOption": "Carte {{number}}",
+    "zoomMap": "Agrandir la carte {{number}}",
+    "previousMap": "Carte précédente",
+    "nextMap": "Carte suivante",
+    "pickMap": "Choisir cette carte",
+    "mapPicked": "Choisie"
   },
   "attackLog": {
     "heading": "Journal des attaques",
@@ -216,7 +228,16 @@
     "failed": "Impossible de commencer une nouvelle guerre. Réessayez."
   },
   "staged": {
-    "label": "Unités choisies",
-    "overCap": "Limité à {{rarity}} : {{parts}}"
+    "label": "Unités choisies"
+  },
+  "capFit": {
+    "under_one": "{{count}} sous le plafond",
+    "under_other": "{{count}} sous le plafond",
+    "over_one": "{{count}} au-dessus du plafond",
+    "over_other": "{{count}} au-dessus du plafond",
+    "underHint": "Sous le plafond {{rarity}} : leur rang correspond à un plafond inférieur.",
+    "overHint": "Au-dessus du plafond {{rarity}} : ils pourraient combattre à un plafond supérieur.",
+    "unitRank": "{{name}} : {{rank}} (rang {{rarity}})",
+    "unitRarity": "{{name}} : {{rarity}}"
   }
 }

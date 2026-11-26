@@ -213,13 +213,18 @@ describe("OffensePage", () => {
     await resetTestDatabases()
   })
 
-  it("lists ready teams first and says which unit blocks the others", async () => {
+  it("lists ready teams first and names every unit that blocks the others", async () => {
     api.current.mockResolvedValue({
-      war: war({ tokensUsed: 1, deployedUnitIds: ["ultraTitus"] }),
+      war: war({
+        tokensUsed: 2,
+        deployedUnitIds: ["ultraTitus", "ultraApothecary"],
+      }),
     })
     api.teams.mockResolvedValue({
       teams: [
-        team("blocked", { characterIds: ["ultraTitus", "ultraCalgar"] }),
+        team("blocked", {
+          characterIds: ["ultraTitus", "ultraCalgar", "ultraApothecary"],
+        }),
         team("defense", {
           modes: ["warDefense"],
           characterIds: ["ultraCalgar"],
@@ -237,7 +242,13 @@ describe("OffensePage", () => {
     expect(second).toHaveTextContent("Team blocked")
     expect(
       within(second as HTMLElement).getByTestId("guild-war-team-blocked")
-    ).toHaveTextContent(/already attacked in this war/)
+    ).toHaveTextContent(/^\S+ and \S+ already attacked in this war\.$/)
+    // Only the deployed units are dimmed.
+    expect(
+      within(second as HTMLElement).getAllByRole("listitem", {
+        name: /already attacked/,
+      })
+    ).toHaveLength(2)
     // A deployed unit is not offered again.
     await tile("ultraCalgar")
     expect(tileOf("ultraTitus")).toBeUndefined()
@@ -294,12 +305,13 @@ describe("OffensePage", () => {
       within(toolbar).getByRole("combobox", { name: "Defenders' rarity" })
     ).toHaveTextContent("Uncommon")
     await user.click(await tile("ultraCalgar"))
-    // The Legendary Calgar fights capped down to Uncommon, and the bar says so.
-    const staged = screen.getByTestId("guild-war-staged-unit")
-    expect(staged).toHaveAttribute("data-cap", "over")
+    // The Diamond 3 Calgar could fight at a higher cap than Uncommon, and the bar says so.
     expect(
-      within(staged).getByRole("button", { name: /Capped to Uncommon/ })
-    ).toBeInTheDocument()
+      screen.getByRole("button", {
+        name: /^1 over cap\. Over the Uncommon cap/,
+      })
+    ).toHaveAccessibleName(/\(Legendary rank\)/)
+    expect(screen.queryByRole("button", { name: /under cap/ })).toBeNull()
     await user.click(screen.getByRole("button", { name: "Won" }))
 
     await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(2))
@@ -376,10 +388,15 @@ describe("OffensePage", () => {
     await user.click(await tile("ultraCalgar"))
     await user.click(screen.getByRole("button", { name: "Log with details" }))
     const dialog = await screen.findByTestId("guild-war-log-dialog")
-    // At level 5 the Armoury's highest cap is Legendary.
+    // It starts at the page's zone and, at level 5, the Armoury's highest cap, Legendary.
     expect(
-      within(dialog).getByTestId("guild-war-log-target")
-    ).toHaveTextContent("Armoury · Legendary")
+      within(dialog).getByRole("combobox", { name: "Zone" })
+    ).toHaveTextContent("Armoury")
+    expect(
+      within(dialog).getByRole("radio", { name: "Legendary" })
+    ).toBeChecked()
+    // Picking Epic here moves the page's rarity too (checked once the dialog closes).
+    await user.click(within(dialog).getByRole("radio", { name: "Epic" }))
     await user.click(within(dialog).getByRole("radio", { name: "Lost" }))
     await user.click(within(dialog).getByRole("button", { name: /lost$/ }))
     await user.type(
@@ -389,6 +406,13 @@ describe("OffensePage", () => {
     await user.click(
       within(dialog).getByRole("button", { name: "Enemy details (optional)" })
     )
+    // The Armoury's own buff starts ticked; another zone's Local buff is not offered.
+    expect(
+      within(dialog).getByTestId("guild-war-buff-EnvArmourSupplies_Regional")
+    ).toBeChecked()
+    expect(
+      within(dialog).queryByTestId("guild-war-buff-EnvFortified_Local")
+    ).toBeNull()
     await user.click(
       within(dialog).getByRole("combobox", { name: "Add an enemy character" })
     )
@@ -399,7 +423,8 @@ describe("OffensePage", () => {
     expect(api.createAttack).toHaveBeenCalledWith(
       expect.objectContaining({
         zoneId: "Armoury",
-        slot: 0,
+        // At level 5 the Armoury's first Epic slot is the third.
+        slot: 2,
         result: "lost",
         lostUnitIds: ["ultraCalgar"],
         notes: "Close one.",
@@ -407,17 +432,23 @@ describe("OffensePage", () => {
           characters: [
             {
               unitId: "ultraTitus",
-              rarity: "Legendary",
-              rank: "Diamond3",
+              rarity: "Epic",
+              rank: "Gold1",
               state: "killed",
             },
           ],
           mow: null,
-          buffIds: [],
+          buffIds: ["EnvArmourSupplies_Regional"],
           boardId: null,
         },
       })
     )
+    await waitFor(() =>
+      expect(screen.queryByTestId("guild-war-log-dialog")).toBeNull()
+    )
+    expect(
+      screen.getByRole("combobox", { name: "Defenders' rarity" })
+    ).toHaveTextContent("Epic")
   })
 
   it("starts a detailed log as won, keeps the lineup rows for every result, and picks a map by its picture", async () => {
@@ -458,6 +489,31 @@ describe("OffensePage", () => {
     )
     await user.click(board)
     expect(board).toHaveAttribute("data-state", "on")
+    // A board's magnifier opens it large; Next and Pick this map pick another from there.
+    await user.click(
+      within(dialog).getByRole("button", { name: "Zoom in on map 1" })
+    )
+    const viewer = await screen.findByTestId("guild-war-map-viewer")
+    expect(within(viewer).getByRole("img", { name: "Map 1" })).toHaveAttribute(
+      "src",
+      "/game_catalog/curated/guild_war_boards_large/EC1_09.webp"
+    )
+    await user.click(within(viewer).getByRole("button", { name: "Next map" }))
+    expect(
+      within(viewer).getByRole("button", { name: "Picked" })
+    ).toBeDisabled()
+    await user.click(within(viewer).getByRole("button", { name: "Next map" }))
+    await user.click(
+      within(viewer).getByRole("button", { name: "Pick this map" })
+    )
+    await waitFor(() =>
+      expect(screen.queryByTestId("guild-war-map-viewer")).toBeNull()
+    )
+    expect(within(maps).getByRole("radio", { name: "Map 3" })).toHaveAttribute(
+      "data-state",
+      "on"
+    )
+    await user.click(board)
     await user.click(within(dialog).getByRole("button", { name: "Log attack" }))
 
     await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(1))
@@ -617,6 +673,53 @@ describe("OffensePage", () => {
         "checkbox"
       )
     ).toHaveLength(14)
+
+    await user.click(screen.getByRole("button", { name: "Show less" }))
+    expect(
+      within(screen.getByTestId("guild-war-characters")).getAllByRole(
+        "checkbox"
+      )
+    ).toHaveLength(12)
+    expect(screen.queryByRole("button", { name: "Show less" })).toBeNull()
+  })
+
+  it("shows every character when a team is selected, so its picks show", async () => {
+    const user = userEvent.setup()
+    setViewportWidth(390)
+    const many = Array.from({ length: 14 }, (_, index) => `unit${index}`)
+    await seedGameCatalog({
+      "guild-war": guildWarFixture,
+      characters: many.map(character),
+      mows: [],
+    })
+    await seedPlayerData({ characters: many.map(rosterUnit), mows: [] })
+    api.current.mockResolvedValue({ war: war() })
+    api.teams.mockResolvedValue({
+      teams: [
+        team("late", {
+          characterIds: ["unit0", "unit13", "unit5"],
+          flexStartIndex: 1,
+        }),
+      ],
+    })
+    renderOffense()
+
+    await screen.findByRole("button", { name: "Show all (14)" })
+    // Flex units show after the core, and Select picks them too.
+    expect(
+      within(screen.getByTestId("guild-war-team-flex")).getAllByRole("listitem")
+    ).toHaveLength(2)
+    await user.click(
+      await screen.findByRole("button", { name: "Select Team late" })
+    )
+    const grid = screen.getByTestId("guild-war-characters")
+    expect(within(grid).getAllByRole("checkbox")).toHaveLength(14)
+    expect(
+      within(grid)
+        .getAllByRole("checkbox")
+        .filter((box) => box.getAttribute("aria-checked") === "true")
+    ).toHaveLength(3)
+    expect(screen.getByRole("button", { name: "Show less" })).toBeEnabled()
   })
 
   it("reminds about a free Machine of War and goes to the list", async () => {
@@ -684,6 +787,10 @@ describe("OffensePage", () => {
     renderOffense()
 
     expect(await screen.findByText("No War Offense teams yet.")).toBeVisible()
+    expect(screen.getByRole("link", { name: "All teams" })).toHaveAttribute(
+      "href",
+      "/my-game/teams"
+    )
     await user.click(await screen.findByRole("button", { name: "Create team" }))
     expect(
       await screen.findByRole("button", { name: "War Offense" })

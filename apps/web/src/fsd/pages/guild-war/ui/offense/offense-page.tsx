@@ -18,7 +18,7 @@ import {
 } from "@/features/team-editor"
 import type { PickerUnit } from "@/features/team-editor"
 import { DEFAULT_RARITY_CAP, useTeams } from "@/entities/team"
-import type { TeamMode, TeamRoster } from "@/entities/team"
+import type { Team, TeamMode, TeamRoster } from "@/entities/team"
 import {
   ConfirmationDialog,
   LocalReadFailure,
@@ -37,11 +37,13 @@ import {
 import {
   charactersLeftByRarity,
   deployedZones,
+  freeMowCount,
   logBlock,
   offenseTeams,
+  teamSelection,
   toggleSelection,
 } from "../../model/offense"
-import type { Selection, UnitKind } from "../../model/offense"
+import type { Selection } from "../../model/offense"
 import type { GuildWarAttack, GuildWarAttackFields } from "../../model/types"
 import { DEFAULT_OFFENSE_FILTERS } from "../../model/offense-filters"
 import type { OffenseFilters } from "../../model/offense-filters"
@@ -57,13 +59,20 @@ import { tokensLeft } from "../../model/war-stats"
 import { useGuildWarTutorial } from "../guild-war.tutorial"
 import { AttackLog } from "./attack-log"
 import { LogAttackDialog } from "./log-attack-dialog"
-import type { LogAttackSubject } from "./log-attack-dialog"
+import type { LogAttackSubject } from "../../model/use-dialog-target"
 import { OffenseTeams } from "./offense-teams"
 import { OffenseUnitPicker } from "./offense-unit-picker"
 import { scrollToSection } from "./scroll-to-section"
 import { SelectionBar } from "./selection-bar"
 import { PageTargetFields } from "./target-fields"
 import { WarSummary } from "./war-summary"
+
+/** A new attack's dialog as the page keeps it: the selection it logs. Its zone and rarity are the
+ *  page's, read when it renders. */
+type NewAttackDialog = Pick<
+  Extract<LogAttackSubject, { kind: "new" }>,
+  "kind" | "selection" | "roster"
+>
 
 const NO_UNITS: readonly PickerUnit[] = []
 /** A team made from this page starts as a War Offense team. */
@@ -171,10 +180,14 @@ export function OffensePage() {
     settings.battlefieldLevel
   )
   const [selection, setSelection] = useState<Selection>(() => new Map())
+  // Lifted here so selecting a team can show every character, its picks among them.
+  const [charactersExpanded, setCharactersExpanded] = useState(false)
   const [filters, setFilters] = useState<OffenseFilters>(
     DEFAULT_OFFENSE_FILTERS
   )
-  const [dialog, setDialog] = useState<LogAttackSubject | null>(null)
+  const [dialog, setDialog] = useState<
+    NewAttackDialog | LogAttackSubject | null
+  >(null)
   const [dialogError, setDialogError] = useState<string | null>(null)
   const [confirmStart, setConfirmStart] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<GuildWarAttack | null>(
@@ -212,12 +225,7 @@ export function OffensePage() {
   const levels = played.includes(settings.battlefieldLevel)
     ? played
     : [settings.battlefieldLevel, ...played]
-  const picked = [...selection.values()]
-  const freeMows =
-    picked.includes("character") && !picked.includes("mow")
-      ? [...(roster?.mows.keys() ?? [])].filter((id) => !deployed.has(id))
-          .length
-      : 0
+  const freeMows = freeMowCount(selection, roster, deployed)
 
   const toggle = (unit: PickerUnit) =>
     setSelection((current) => toggleSelection(current, unit.id, unit.kind))
@@ -237,8 +245,12 @@ export function OffensePage() {
       }
     )
   }
-  const selectTeam = (core: { id: string; kind: UnitKind }[]) =>
-    setSelection(new Map(core.map((unit) => [unit.id, unit.kind])))
+  const selectTeam = (team: Team) => {
+    const picks = teamSelection(team, deployed)
+    setSelection(picks)
+    // A team's characters can sit past the first ones shown, so its picks show selected.
+    if ([...picks.values()].includes("character")) setCharactersExpanded(true)
+  }
 
   const saveError = (error: unknown) =>
     t(`log.errors.${attackSaveError(error)}`)
@@ -358,6 +370,7 @@ export function OffensePage() {
       {picker.status === "ready" && roster === null ? <SyncPrompt /> : null}
       <OffenseTeams
         cap={cap}
+        deployed={deployed}
         onNewTeam={() => setNewTeamOpen(true)}
         onSelect={selectTeam}
         roster={roster}
@@ -385,7 +398,9 @@ export function OffensePage() {
         <AvailableUnits
           cap={cap ?? DEFAULT_RARITY_CAP}
           deployed={deployedWhere}
+          expanded={charactersExpanded}
           filters={filters}
+          onExpandedChange={setCharactersExpanded}
           onFiltersChange={(patch) =>
             setFilters((current) => ({ ...current, ...patch }))
           }
@@ -419,7 +434,7 @@ export function OffensePage() {
           onLogDetails={() => {
             if (zoneId === null || !target) return
             setDialogError(null)
-            setDialog({ kind: "new", selection, roster, zoneId, target })
+            setDialog({ kind: "new", selection, roster })
           }}
           onQuickLog={quickLog}
           pending={logAttack.isPending}
@@ -439,7 +454,19 @@ export function OffensePage() {
           open
           pending={logAttack.isPending || updateAttack.isPending}
           season={season}
-          subject={dialog}
+          subject={
+            dialog.kind === "new"
+              ? {
+                  ...dialog,
+                  // Bound to the page's picks: a change in the dialog changes the page's too.
+                  zoneId: zoneId ?? "",
+                  rarities: pageTarget.rarities,
+                  target,
+                  onZoneChange: pageTarget.setZoneId,
+                  onRarityChange: pageTarget.setRarity,
+                }
+              : dialog
+          }
           units={units}
         />
       ) : null}

@@ -610,6 +610,13 @@ describe("TeamsPage", () => {
       expect(
         within(offense!).getByTestId("teams-section-shared")
       ).toHaveTextContent("Calgar in 2 teams")
+      // Only War Offense has a page of its own to go to.
+      expect(
+        within(offense as HTMLElement).getByRole("link", {
+          name: "Open Guild War Offense",
+        })
+      ).toHaveAttribute("href", "/guild/war/offense")
+      expect(screen.getAllByRole("link", { name: /^Open / })).toHaveLength(1)
     })
   })
 

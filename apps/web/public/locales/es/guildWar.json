@@ -106,11 +106,17 @@
   "teams": {
     "heading": "Equipos de ataque",
     "createTeam": "Crear equipo",
+    "allTeams": "Todos los equipos",
     "empty": "Aún no hay equipos de Ataque de guerra.",
     "select": "Seleccionar",
     "selectTeam": "Seleccionar {{name}}",
     "core": "Unidades principales",
-    "blocked": "{{name}} ya atacó en esta guerra."
+    "flex": "Unidades flexibles",
+    "blocked_one": "{{names}} ya atacó en esta guerra.",
+    "blocked_other": "{{names}} ya atacaron en esta guerra.",
+    "more_one": "{{count}} más",
+    "more_other": "{{count}} más",
+    "deployedUnit": "{{name}}, ya atacó"
   },
   "units": {
     "heading": "Unidades disponibles",
@@ -122,7 +128,8 @@
     "charactersFull_other": "{{count}} personajes elegidos",
     "mowsFull_one": "{{count}} máquina de guerra elegida",
     "mowsFull_other": "{{count}} máquinas de guerra elegidas",
-    "showAll": "Mostrar todos ({{count}})"
+    "showAll": "Mostrar todos ({{count}})",
+    "showLess": "Mostrar menos"
   },
   "select": {
     "count_one": "{{count}} seleccionada",
@@ -192,7 +199,12 @@
     "buffs": "Mejoras de zona activas",
     "buffInfo": "Qué hace {{name}}",
     "map": "Mapa",
-    "mapOption": "Mapa {{number}}"
+    "mapOption": "Mapa {{number}}",
+    "zoomMap": "Ampliar el mapa {{number}}",
+    "previousMap": "Mapa anterior",
+    "nextMap": "Mapa siguiente",
+    "pickMap": "Elegir este mapa",
+    "mapPicked": "Elegido"
   },
   "attackLog": {
     "heading": "Registro de ataques",
@@ -216,7 +228,16 @@
     "failed": "No se pudo empezar una nueva guerra. Inténtalo de nuevo."
   },
   "staged": {
-    "label": "Unidades elegidas",
-    "overCap": "Limitado a {{rarity}}: {{parts}}"
+    "label": "Unidades elegidas"
+  },
+  "capFit": {
+    "under_one": "{{count}} bajo el límite",
+    "under_other": "{{count}} bajo el límite",
+    "over_one": "{{count}} sobre el límite",
+    "over_other": "{{count}} sobre el límite",
+    "underHint": "Bajo el límite {{rarity}}: su rango encaja en un límite inferior.",
+    "overHint": "Sobre el límite {{rarity}}: podrían luchar en un límite superior.",
+    "unitRank": "{{name}}: {{rank}} (rango {{rarity}})",
+    "unitRarity": "{{name}}: {{rarity}}"
   }
 }

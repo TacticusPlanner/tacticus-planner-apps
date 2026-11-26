@@ -12,6 +12,7 @@ import { EntityIcon, FloatingBar } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { LogBlock, Selection } from "../../model/offense"
+import { CapChips } from "./cap-chips"
 import { StagedTeam } from "./staged-team"
 
 /** The reason Log attack is off, in a player's words. */
@@ -37,7 +38,8 @@ function useLogBlockText() {
 }
 
 /**
- * The contextual bar while units are picked: the picked units with their cap marks, how many, why
+ * The contextual bar while units are picked: the picked units, how many, the cap chips (under and
+ * over the defenders' cap), why
  * logging is off, a reminder when no Machine of War is picked but one is free (it scrolls to them
  * and never blocks), Clear selection, Log with details, and Lost and Won, which log the attack at
  * once at the page's level, zone and rarity.
@@ -87,6 +89,7 @@ export function SelectionBar({
       <p aria-live="polite" className="text-sm font-medium">
         {t("select.count", { count: selection.size })}
       </p>
+      <CapChips cap={cap} roster={roster} selection={selection} />
       {mowsAvailable > 0 ? (
         <Button
           className="border-amber-500/60 bg-amber-500/10 text-amber-800 hover:bg-amber-500/20 dark:text-amber-300"

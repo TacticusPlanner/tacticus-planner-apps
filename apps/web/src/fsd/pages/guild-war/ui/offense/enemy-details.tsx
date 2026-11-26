@@ -8,7 +8,7 @@ import {
   rankIcon,
   rarityIcon,
 } from "@workspace/game-catalog"
-import { groupByFaction, rankOrder, rarityOrder } from "@workspace/game-domain"
+import { groupByFaction } from "@workspace/game-domain"
 import type { FactionId, Rarity, UnitId } from "@workspace/game-domain"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { IconButton } from "@workspace/ui/components/icon-button"
@@ -26,10 +26,16 @@ import { EntityIcon, HintTrigger, UnitCombobox } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { GuildWarSeason } from "../../lib/season"
-import { MAX_ENEMY_CHARACTERS, enemyUnit } from "../../model/enemy-draft"
+import {
+  MAX_ENEMY_CHARACTERS,
+  enemyRanks,
+  enemyRarities,
+  enemyUnit,
+} from "../../model/enemy-draft"
 import type { EnemyDraft } from "../../model/enemy-draft"
 import type { GuildWarEnemyUnit } from "../../model/types"
 import { useGuildWarNames } from "../../model/use-guild-war-names"
+import { zoneBuffOptions } from "../../model/zone-buffs"
 import { useOverlayContainer } from "../use-overlay-container"
 import { MapPicker } from "./map-picker"
 
@@ -91,16 +97,19 @@ const STATE_ICONS = {
   damaged: <ShieldHalf aria-hidden="true" />,
 } as const
 
-/** One enemy unit: who, its rarity and rank when noted, and (a character only: a Machine of War is
- *  never killed) whether it was killed or left damaged. */
+/** One enemy unit: who, its rarity and rank when noted (none above the defenders' cap, nor a rank
+ *  above its rarity's), and (a character only: a Machine of War is never killed) whether it was
+ *  killed or left damaged. */
 function EnemyUnitRow({
   unit,
   kind,
+  cap,
   onChange,
   onRemove,
 }: {
   unit: GuildWarEnemyUnit
   kind: "character" | "mow"
+  cap: Rarity | undefined
   onChange: (unit: GuildWarEnemyUnit) => void
   onRemove: () => void
 }) {
@@ -133,8 +142,16 @@ function EnemyUnitRow({
         <OptionalSelect
           label={t("enemy.rarity", { name })}
           noneLabel={t("enemy.rarityAny")}
-          onChange={(rarity) => onChange({ ...unit, rarity })}
-          options={rarityOrder.map((rarity) => ({
+          onChange={(rarity) => {
+            // A lower rarity brings the rank down to what it allows.
+            const ranks = enemyRanks(cap, rarity)
+            const rank =
+              unit.rank && ranks.every((entry) => !(entry === unit.rank))
+                ? (ranks.at(-1) ?? null)
+                : unit.rank
+            onChange({ ...unit, rarity, rank })
+          }}
+          options={enemyRarities(cap).map((rarity) => ({
             value: rarity,
             label: t(`progression:rarities.${rarity}`),
             icon: <EntityIcon alt="" size="icon" src={rarityIcon(rarity)} />,
@@ -147,7 +164,7 @@ function EnemyUnitRow({
             label={t("enemy.rank", { name })}
             noneLabel={t("enemy.rankAny")}
             onChange={(rank) => onChange({ ...unit, rank })}
-            options={rankOrder.map((rank) => ({
+            options={enemyRanks(cap, unit.rarity).map((rank) => ({
               value: rank,
               label: t(`progression:ranks.${rank}`),
               icon: <EntityIcon alt="" size="icon" src={rankIcon(rank)} />,
@@ -177,8 +194,8 @@ function EnemyUnitRow({
 
 /**
  * The optional enemy details of an attack: the enemy lineup (any catalog character and MoW, each
- * with rarity, rank and whether it was killed or left damaged), the zone buffs that were active and
- * the map, picked by its board picture.
+ * with rarity, rank and whether it was killed or left damaged), the zone buffs that were active (only
+ * those that can be active in the zone attacked) and the map, picked by its board picture.
  */
 export function EnemyDetails({
   value,
@@ -186,6 +203,7 @@ export function EnemyDetails({
   units,
   season,
   defenderRarity,
+  zoneId,
 }: {
   value: EnemyDraft
   onChange: (value: EnemyDraft) => void
@@ -193,6 +211,8 @@ export function EnemyDetails({
   season: GuildWarSeason | undefined
   /** The rarity the defenders were capped at: what an added enemy starts at. */
   defenderRarity: Rarity | undefined
+  /** The zone attacked: which buffs can be active there (`zoneBuffOptions`). */
+  zoneId: string | null
 }) {
   const { t } = useTranslation(["guildWar", "factions"])
   const { buffName, buffDescription } = useGuildWarNames()
@@ -208,6 +228,7 @@ export function EnemyDetails({
         })),
       factionName
     )
+  const buffs = zoneBuffOptions(season, zoneId, value.buffIds)
   const takenCharacters = value.characters.map((unit) => unit.unitId)
   const characterGroups = groupsOf("character", takenCharacters)
   const mowGroups = groupsOf("mow", [])
@@ -230,6 +251,7 @@ export function EnemyDetails({
           <ul className="flex flex-col gap-2">
             {value.characters.map((unit, index) => (
               <EnemyUnitRow
+                cap={defenderRarity}
                 key={unit.unitId}
                 kind="character"
                 onChange={(next) => setCharacter(index, next)}
@@ -270,6 +292,7 @@ export function EnemyDetails({
         {value.mow ? (
           <ul>
             <EnemyUnitRow
+              cap={defenderRarity}
               kind="mow"
               onChange={(mow) => onChange({ ...value, mow })}
               onRemove={() => onChange({ ...value, mow: null })}
@@ -288,13 +311,13 @@ export function EnemyDetails({
           />
         )}
       </div>
-      {season && season.buffs.length > 0 ? (
+      {season && buffs.length > 0 ? (
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-2 text-sm text-muted-foreground">
             {t("enemy.buffs")}
           </legend>
           <div className="grid gap-2 @md:grid-cols-2">
-            {season.buffs.map((buff) => {
+            {buffs.map((buff) => {
               const checked = value.buffIds.includes(buff.id)
               const description = buffDescription(
                 season,

@@ -46,3 +46,16 @@
 - [x] 6.11 Attack log (N) in the summary scrolls to the log.
 - [x] 6.12 Log with details starts as Won, the result options carry trophy and skull icons, and the lost-units rows stay for every result.
 - [x] 6.13 The enemy map is picked by its board picture from the season's map pool.
+
+## 7. Eighth feedback round
+
+- [x] 7.1 A blocked team names every deployed core unit (three, then "and N more"), and its deployed portraits are dimmed.
+- [x] 7.2 The expanded characters list has Show less; a team's Select expands the list when it picks a character.
+- [x] 7.3 Each map in the map picker opens large (1080 px board art) with previous, next and Pick this map.
+- [x] 7.4 The zone's own buff starts ticked; the buff list offers it, the ticked buffs and the non-Local buffs given by other zones.
+- [x] 7.5 Enemy rarity and rank options stop at the defenders' cap.
+- [x] 7.6 The Log attack dialog changes the zone and rarity, for new attacks and edits; for a new attack the toolbar follows.
+- [x] 7.7 One under-cap chip and one over-cap chip by rank (rank at or below the previous rarity's rank cap, or at or above the next one's) replace the per-portrait marks.
+- [x] 7.8 MoW portraits show the generic MoW icon where characters show their rank beside them.
+- [x] 7.9 Offense team cards show flex units after a divider; Select picks the core, then the flex units not deployed while the attack has room; only a core unit blocks a team.
+- [x] 7.10 All teams on Offense opens the Teams page; the Teams page's War Offense section opens Guild War Offense.

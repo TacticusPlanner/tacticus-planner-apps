@@ -17,13 +17,14 @@ export {
   type OnslaughtAllianceIcon,
 } from "./onslaught"
 export { shardIcon } from "./shard"
-export { characterIcon, mowIcon } from "./character"
+export { characterIcon, mowBadgeIcon, mowIcon } from "./character"
 export { npcPortrait } from "./npc"
 export { legendaryEventMap } from "./le-map"
 export { battleBoardImage } from "./battle-board"
 export { factionIcon } from "./faction"
 export {
   guildWarBoardImage,
+  guildWarBoardImageLarge,
   guildWarBuffIcon,
   guildWarTokenIcon,
   guildWarZoneIcon,

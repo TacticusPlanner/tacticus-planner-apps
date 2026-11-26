@@ -106,11 +106,17 @@
   "teams": {
     "heading": "Angriffsteams",
     "createTeam": "Team erstellen",
+    "allTeams": "Alle Teams",
     "empty": "Noch keine Kriegsangriff-Teams.",
     "select": "Auswählen",
     "selectTeam": "{{name}} auswählen",
     "core": "Stammeinheiten",
-    "blocked": "{{name}} hat in diesem Krieg schon angegriffen."
+    "flex": "Flex-Einheiten",
+    "blocked_one": "{{names}} hat in diesem Krieg schon angegriffen.",
+    "blocked_other": "{{names}} haben in diesem Krieg schon angegriffen.",
+    "more_one": "{{count}} weiterer",
+    "more_other": "{{count}} weitere",
+    "deployedUnit": "{{name}}, hat schon angegriffen"
   },
   "units": {
     "heading": "Verfügbare Einheiten",
@@ -122,7 +128,8 @@
     "charactersFull_other": "{{count}} Charaktere gewählt",
     "mowsFull_one": "{{count}} Kriegsmaschine gewählt",
     "mowsFull_other": "{{count}} Kriegsmaschinen gewählt",
-    "showAll": "Alle zeigen ({{count}})"
+    "showAll": "Alle zeigen ({{count}})",
+    "showLess": "Weniger zeigen"
   },
   "select": {
     "count_one": "{{count}} ausgewählt",
@@ -192,7 +199,12 @@
     "buffs": "Aktive Zonenboni",
     "buffInfo": "Was {{name}} bewirkt",
     "map": "Karte",
-    "mapOption": "Karte {{number}}"
+    "mapOption": "Karte {{number}}",
+    "zoomMap": "Karte {{number}} vergrößern",
+    "previousMap": "Vorherige Karte",
+    "nextMap": "Nächste Karte",
+    "pickMap": "Diese Karte wählen",
+    "mapPicked": "Gewählt"
   },
   "attackLog": {
     "heading": "Angriffsprotokoll",
@@ -216,7 +228,16 @@
     "failed": "Es konnte kein neuer Krieg gestartet werden. Versuch es erneut."
   },
   "staged": {
-    "label": "Gewählte Einheiten",
-    "overCap": "Begrenzt auf {{rarity}}: {{parts}}"
+    "label": "Gewählte Einheiten"
+  },
+  "capFit": {
+    "under_one": "{{count}} unter der Grenze",
+    "under_other": "{{count}} unter der Grenze",
+    "over_one": "{{count}} über der Grenze",
+    "over_other": "{{count}} über der Grenze",
+    "underHint": "Unter der {{rarity}}-Grenze: Ihr Rang passt zu einer niedrigeren Grenze.",
+    "overHint": "Über der {{rarity}}-Grenze: Sie könnten bei einer höheren Grenze kämpfen.",
+    "unitRank": "{{name}}: {{rank}} ({{rarity}}-Rang)",
+    "unitRarity": "{{name}}: {{rarity}}"
   }
 }

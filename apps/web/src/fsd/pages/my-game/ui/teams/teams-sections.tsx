@@ -1,6 +1,8 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { AlertTriangle } from "lucide-react"
+import { Link } from "react-router"
+import { AlertTriangle, ArrowRight } from "lucide-react"
+import { Button } from "@workspace/ui/components/button"
 import {
   Tooltip,
   TooltipContent,
@@ -33,10 +35,18 @@ function sharedUnits(
   }))
 }
 
+/** The page a mode is played on, for the modes that have one: its section links there. */
+const MODE_PAGES: Partial<
+  Record<TeamMode, { to: string; label: "page.modePage.warOffense" }>
+> = {
+  warOffense: { to: "/guild/war/offense", label: "page.modePage.warOffense" },
+}
+
 /**
  * A mode's section when the page is grouped by mode (handoff 5.5): the mode, its team count and,
  * when one of its teams has a shared unit (a unit in another team of a Guild War mode it shares),
- * an amber note naming it. A null mode is the section of teams with none.
+ * an amber note naming it, and a link to the mode's own page where it has one (Guild War Offense).
+ * A null mode is the section of teams with none.
  */
 export function TeamsModeSection({
   mode,
@@ -58,6 +68,7 @@ export function TeamsModeSection({
   const [first] = shared
   const names = shared.map((unit) => unitName(unit.kind, unit.id)).join(", ")
   const headingId = `teams-section-${mode ?? "none"}`
+  const page = mode === null ? undefined : MODE_PAGES[mode]
   return (
     <section
       aria-labelledby={headingId}
@@ -87,6 +98,14 @@ export function TeamsModeSection({
                   })}
             </span>
           </SharedHint>
+        ) : null}
+        {page ? (
+          <Button asChild className="ml-auto" size="sm" variant="ghost">
+            <Link to={page.to}>
+              {t(page.label)}
+              <ArrowRight data-icon="inline-end" />
+            </Link>
+          </Button>
         ) : null}
       </div>
       {children}

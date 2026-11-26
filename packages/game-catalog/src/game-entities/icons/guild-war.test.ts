@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest"
 import {
   GUILD_WAR_BOARD_IDS,
   guildWarBoardImage,
+  guildWarBoardImageLarge,
   guildWarBuffIcon,
   guildWarTokenIcon,
   guildWarZoneIcon,
@@ -45,20 +46,27 @@ describe("guild war icons", () => {
       "/game_catalog/curated/guild_war_boards/EC1_09.webp"
     )
     expect(guildWarBoardImage("C9_99")).toBeUndefined()
+    expect(guildWarBoardImageLarge("EC1_09")).toBe(
+      "/game_catalog/curated/guild_war_boards_large/EC1_09.webp"
+    )
+    expect(guildWarBoardImageLarge("C9_99")).toBeUndefined()
   })
 
-  it("lists exactly the boards in the guild_war_boards directory", () => {
-    const shipped = readdirSync(
-      fileURLToPath(
-        new URL(
-          "../../../../../apps/web/public/game_catalog/curated/guild_war_boards/",
-          import.meta.url
+  it.each(["guild_war_boards", "guild_war_boards_large"])(
+    "lists exactly the boards in the %s directory",
+    (folder) => {
+      const shipped = readdirSync(
+        fileURLToPath(
+          new URL(
+            `../../../../../apps/web/public/game_catalog/curated/${folder}/`,
+            import.meta.url
+          )
         )
       )
-    )
-      .filter((file) => file.endsWith(".webp"))
-      .map((file) => file.slice(0, -".webp".length))
-      .sort()
-    expect([...GUILD_WAR_BOARD_IDS].sort()).toEqual(shipped)
-  })
+        .filter((file) => file.endsWith(".webp"))
+        .map((file) => file.slice(0, -".webp".length))
+        .sort()
+      expect([...GUILD_WAR_BOARD_IDS].sort()).toEqual(shipped)
+    }
+  )
 })

@@ -21,6 +21,9 @@
     "importHint": "Coming from the old planner?",
     "importLink": "Import your V1 teams",
     "noMatch": "No team has the {{mode}} mode.",
+    "modePage": {
+      "warOffense": "Open Guild War Offense"
+    },
     "noRoster": "Sync your roster to see which units you've unlocked and how far each one has progressed.",
     "listLabel": "Your teams",
     "search": "Search teams or units",
