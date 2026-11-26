@@ -408,6 +408,12 @@ export function useAnalyticsActions() {
             mission: event.mission,
           })
           break
+        case "survival_tab_viewed":
+          client.capture(event.type, {
+            tab: event.tab,
+            event_state: event.eventState,
+          })
+          break
         case "hre_event_switched":
           client.capture(event.type, { event_state: event.eventState })
           break

@@ -1271,6 +1271,8 @@
       "insightsDescription": "Upgrade and campaign recommendations for your goals.",
       "schedule": "Schedule",
       "scheduleDescription": "Day-by-day raids for your active goals until they're done.",
+      "survival": "Survival",
+      "survivalDescription": "Plan your team and rewards for each Survival event.",
       "all": "All statuses",
       "toReach": "Unfulfilled",
       "reached": "Reached",

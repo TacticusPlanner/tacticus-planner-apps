@@ -1,0 +1,184 @@
+{
+  "page": {
+    "loading": "Cargando eventos de Supervivencia…",
+    "noEvents": "Aún no hay eventos de Supervivencia.",
+    "noEventsDescription": "Aparecerán aquí cuando los datos del juego los incluyan."
+  },
+  "switcher": {
+    "label": "Evento de Supervivencia",
+    "placeholder": "Elige un evento",
+    "empty": "Sin eventos",
+    "previous": "Evento anterior",
+    "next": "Evento siguiente",
+    "groups": {
+      "running": "En curso",
+      "upcoming": "Próximos",
+      "past": "Pasados"
+    },
+    "option": "{{name}} · {{hero}}"
+  },
+  "line": {
+    "featured": "Héroe destacado: {{hero}}",
+    "tba": "Fechas por anunciar",
+    "running": "En curso ahora",
+    "factions": "Facciones permitidas",
+    "mows_one": "Hasta {{count}} Máquina de Guerra",
+    "mows_other": "Hasta {{count}} Máquinas de Guerra",
+    "noMows": "Sin Máquinas de Guerra"
+  },
+  "howItWorks": {
+    "summary": "Cómo funciona este evento",
+    "team_one": "Hasta {{count}} personaje además de {{hero}}, que siempre lucha.",
+    "team_other": "Hasta {{count}} personajes además de {{hero}}, que siempre lucha.",
+    "stamina": "{{start}} de resistencia al empezar, {{max}} como máximo, recuperas {{amount}} cada {{hours}} h.",
+    "statBoost": "Cada Mejora de atributos da +{{pct}} % de {{stats}} en Supervivencia.",
+    "lastStand": "Última resistencia: {{buff}}, con un multiplicador estratégico ×{{multiplier}}.",
+    "summon": "Puedes invocar un {{unit}} en cada batalla, con nivel de habilidad de {{min}} a {{max}} según el límite de rareza.",
+    "rarityUp": "Desde la oleada {{wave}}, los enemigos siguen siendo {{rarity}} el resto de la partida."
+  },
+  "stats": {
+    "hp": "salud",
+    "dmg": "daño"
+  },
+  "buffs": {
+    "RepairField": "Campo de reparación",
+    "Killzone": "Zona de muerte",
+    "PowerMatrix": "Matriz de energía"
+  },
+  "summons": {
+    "astraSmnGuardsman": "Guardia cadiano"
+  },
+  "events": {
+    "crescendo-a": "Crescendo A",
+    "crescendo-b": "Crescendo B"
+  },
+  "medals": {
+    "iron": "Hierro",
+    "bronze": "Bronce",
+    "silver": "Plata",
+    "gold": "Oro",
+    "platinum": "Platino",
+    "diamond": "Diamante",
+    "adamantine": "Adamantio"
+  },
+  "tabs": {
+    "label": "Supervivencia",
+    "team": "Equipo",
+    "enemies": "Enemigos",
+    "rewards": "Recompensas",
+    "missions": "Misiones",
+    "offers": "Ofertas"
+  },
+  "team": {
+    "count_one": "{{count}} / {{max}} personaje",
+    "count_other": "{{count}} / {{max}} personajes",
+    "featured": "Destacado",
+    "edit": "Editar equipo",
+    "create": "Crear equipo",
+    "none": "Aún no hay equipo para este evento.",
+    "loadError": "No se pudieron cargar tus equipos. Inténtalo más tarde.",
+    "newName": "Supervivencia · {{name}}",
+    "goals": "Objetivos para este equipo",
+    "goalsFailed": "No se pudieron cargar tus objetivos.",
+    "noGoals": "Sin objetivos",
+    "createGoal": "Crear objetivo",
+    "createGoalFor": "Crear objetivo para {{name}}"
+  },
+  "enemies": {
+    "intro": "Superar una oleada y cada baja dan puntos; cada turno omitido da {{skipped}}.",
+    "introClone": "Superar una oleada y cada baja dan puntos; una oleada de clones da {{clone}} y cada turno omitido {{skipped}}.",
+    "wave": "Oleada {{wave}}",
+    "round": "Ronda {{round}}",
+    "power": "Poder {{power}}",
+    "score": "{{score}} puntos",
+    "final": "Oleada final",
+    "finalHint": "Oleada {{wave}}. Su poder está pensado para que ningún equipo la supere: consigue tantos puntos como puedas antes de que caiga tu equipo.",
+    "clone": "Tu equipo, clonado con un {{pct}} % de salud.",
+    "afterWave": "Tras esta oleada:",
+    "rarityUp": "Los enemigos suben a {{rarity}}",
+    "killPoints": "{{points}} puntos por baja"
+  },
+  "rewards": {
+    "none": "Ninguna",
+    "milestones": "Hitos del evento",
+    "chests_one": "Cofres de progreso · {{count}}",
+    "chests_other": "Cofres de progreso · {{count}}",
+    "chest": "Cofre {{level}}",
+    "cost": "Cuesta {{amount}} de moneda del evento",
+    "rarityMilestones": "Recompensas de rareza del héroe destacado",
+    "points": {
+      "summary": "De dónde salen los puntos",
+      "freeMissions": "Misiones gratuitas",
+      "premiumMissions": "Misiones prémium",
+      "survivalFree": "Batallas de Supervivencia",
+      "survivalPremium": "Batallas de Supervivencia con el Pase de temporada",
+      "max": "Máximo de puntos del evento"
+    }
+  },
+  "missions": {
+    "none": "Sin misiones diarias",
+    "premiumNote": "Requiere el Pase de temporada.",
+    "statBoostNote": "Cada Mejora de atributos: +{{pct}} % de {{stats}} en Supervivencia."
+  },
+  "offers": {
+    "none": "No hay ofertas para este evento.",
+    "kinds": {
+      "pass": "Pase de temporada",
+      "playmore": "Lote para jugar más"
+    },
+    "purchases_one": "Se puede comprar una vez",
+    "purchases_other": "Se puede comprar {{count}} veces",
+    "passUnlocks": "Desbloquea las misiones prémium: {{points}} puntos del evento y {{currency}} de moneda del evento.",
+    "seeMissions": "Ver misiones"
+  },
+  "tour": {
+    "event": {
+      "title": "Elige un evento",
+      "content": "Primero se muestra el evento en curso. Pasa a anteriores o posteriores, o elige uno de la lista."
+    },
+    "line": {
+      "title": "El evento de un vistazo",
+      "content": "Su héroe destacado, las fechas, las facciones que puedes llevar y si se permiten Máquinas de Guerra."
+    },
+    "howItWorks": {
+      "title": "Cómo funciona este evento",
+      "content": "Resistencia, Mejora de atributos, Última resistencia y cómo se fortalecen los enemigos."
+    },
+    "tabs": {
+      "title": "Cinco pestañas",
+      "content": "Tu equipo, las oleadas de enemigos, las recompensas, las misiones y las ofertas."
+    },
+    "lineup": {
+      "title": "Tu equipo",
+      "content": "El héroe destacado siempre lucha. Crea o edita el equipo; también aparece en Mi juego, Equipos."
+    },
+    "goals": {
+      "title": "Objetivos para este equipo",
+      "content": "Crea un objetivo para una unidad desde aquí."
+    },
+    "waves": {
+      "title": "Las oleadas",
+      "content": "Enemigos, poder, puntos y medalla de cada oleada. Toca un enemigo para ver su ficha y los puntos por baja."
+    },
+    "milestones": {
+      "title": "Hitos del evento",
+      "content": "Lo que desbloquean los puntos del evento."
+    },
+    "chests": {
+      "title": "Cofres de progreso",
+      "content": "Lo que cuesta cada cofre en moneda del evento y lo que contiene."
+    },
+    "points": {
+      "title": "De dónde salen los puntos",
+      "content": "El máximo de puntos que da cada fuente."
+    },
+    "missions": {
+      "title": "Misiones",
+      "content": "Misiones diarias y las cadenas gratuitas y prémium."
+    },
+    "offers": {
+      "title": "Ofertas",
+      "content": "Las ofertas de pago del evento y su contenido."
+    }
+  }
+}

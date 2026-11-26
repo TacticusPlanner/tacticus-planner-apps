@@ -1,0 +1,184 @@
+{
+  "page": {
+    "loading": "Chargement des événements de Survie…",
+    "noEvents": "Aucun événement de Survie pour l'instant.",
+    "noEventsDescription": "Ils apparaîtront ici dès que les données du jeu les contiendront."
+  },
+  "switcher": {
+    "label": "Événement de Survie",
+    "placeholder": "Choisir un événement",
+    "empty": "Aucun événement",
+    "previous": "Événement précédent",
+    "next": "Événement suivant",
+    "groups": {
+      "running": "En cours",
+      "upcoming": "À venir",
+      "past": "Passés"
+    },
+    "option": "{{name}} · {{hero}}"
+  },
+  "line": {
+    "featured": "Héros vedette : {{hero}}",
+    "tba": "Dates à venir",
+    "running": "En cours",
+    "factions": "Factions autorisées",
+    "mows_one": "Jusqu'à {{count}} machine de guerre",
+    "mows_other": "Jusqu'à {{count}} machines de guerre",
+    "noMows": "Aucune machine de guerre"
+  },
+  "howItWorks": {
+    "summary": "Fonctionnement de l'événement",
+    "team_one": "Jusqu'à {{count}} personnage en plus de {{hero}}, qui combat toujours.",
+    "team_other": "Jusqu'à {{count}} personnages en plus de {{hero}}, qui combat toujours.",
+    "stamina": "{{start}} d'endurance au départ, {{max}} au maximum, {{amount}} récupérée toutes les {{hours}} h.",
+    "statBoost": "Chaque Bonus de stats donne +{{pct}} % de {{stats}} en Survie.",
+    "lastStand": "Dernier rempart : {{buff}}, avec un multiplicateur stratégique ×{{multiplier}}.",
+    "summon": "Tu peux invoquer un {{unit}} à chaque combat, au niveau de compétence {{min}} à {{max}} selon le plafond de rareté.",
+    "rarityUp": "À partir de la vague {{wave}}, les ennemis restent {{rarity}} jusqu'à la fin de la partie."
+  },
+  "stats": {
+    "hp": "santé",
+    "dmg": "dégâts"
+  },
+  "buffs": {
+    "RepairField": "Champ de réparation",
+    "Killzone": "Zone de mort",
+    "PowerMatrix": "Matrice d'énergie"
+  },
+  "summons": {
+    "astraSmnGuardsman": "Garde cadien"
+  },
+  "events": {
+    "crescendo-a": "Crescendo A",
+    "crescendo-b": "Crescendo B"
+  },
+  "medals": {
+    "iron": "Fer",
+    "bronze": "Bronze",
+    "silver": "Argent",
+    "gold": "Or",
+    "platinum": "Platine",
+    "diamond": "Diamant",
+    "adamantine": "Adamantium"
+  },
+  "tabs": {
+    "label": "Survie",
+    "team": "Équipe",
+    "enemies": "Ennemis",
+    "rewards": "Récompenses",
+    "missions": "Missions",
+    "offers": "Offres"
+  },
+  "team": {
+    "count_one": "{{count}} / {{max}} personnage",
+    "count_other": "{{count}} / {{max}} personnages",
+    "featured": "Vedette",
+    "edit": "Modifier l'équipe",
+    "create": "Créer une équipe",
+    "none": "Pas encore d'équipe pour cet événement.",
+    "loadError": "Impossible de charger tes équipes. Réessaie plus tard.",
+    "newName": "Survie · {{name}}",
+    "goals": "Objectifs pour cette équipe",
+    "goalsFailed": "Impossible de charger tes objectifs.",
+    "noGoals": "Aucun objectif",
+    "createGoal": "Créer un objectif",
+    "createGoalFor": "Créer un objectif pour {{name}}"
+  },
+  "enemies": {
+    "intro": "Terminer une vague et chaque élimination rapportent des points ; chaque tour passé rapporte {{skipped}}.",
+    "introClone": "Terminer une vague et chaque élimination rapportent des points ; une vague de clones rapporte {{clone}} et chaque tour passé {{skipped}}.",
+    "wave": "Vague {{wave}}",
+    "round": "Manche {{round}}",
+    "power": "Puissance {{power}}",
+    "score": "{{score}} points",
+    "final": "Vague finale",
+    "finalHint": "Vague {{wave}}. Sa puissance est prévue pour qu'aucune équipe ne la batte : marque un maximum de points avant que ton équipe tombe.",
+    "clone": "Ton équipe, clonée à {{pct}} % de santé.",
+    "afterWave": "Après cette vague :",
+    "rarityUp": "Les ennemis passent {{rarity}}",
+    "killPoints": "{{points}} points par élimination"
+  },
+  "rewards": {
+    "none": "Aucune",
+    "milestones": "Paliers de l'événement",
+    "chests_one": "Coffres de progression · {{count}}",
+    "chests_other": "Coffres de progression · {{count}}",
+    "chest": "Coffre {{level}}",
+    "cost": "Coûte {{amount}} de monnaie d'événement",
+    "rarityMilestones": "Récompenses de rareté du héros vedette",
+    "points": {
+      "summary": "D'où viennent les points",
+      "freeMissions": "Missions gratuites",
+      "premiumMissions": "Missions premium",
+      "survivalFree": "Combats de Survie",
+      "survivalPremium": "Combats de Survie avec le Pass de saison",
+      "max": "Maximum de points de l'événement"
+    }
+  },
+  "missions": {
+    "none": "Aucune mission quotidienne",
+    "premiumNote": "Nécessite le Pass de saison.",
+    "statBoostNote": "Chaque Bonus de stats : +{{pct}} % de {{stats}} en Survie."
+  },
+  "offers": {
+    "none": "Aucune offre pour cet événement.",
+    "kinds": {
+      "pass": "Pass de saison",
+      "playmore": "Pack pour jouer plus"
+    },
+    "purchases_one": "Achetable une fois",
+    "purchases_other": "Achetable {{count}} fois",
+    "passUnlocks": "Débloque les missions premium : {{points}} points d'événement et {{currency}} de monnaie d'événement.",
+    "seeMissions": "Voir les missions"
+  },
+  "tour": {
+    "event": {
+      "title": "Choisir un événement",
+      "content": "L'événement en cours s'affiche d'abord. Passe aux précédents ou suivants, ou choisis-en un dans la liste."
+    },
+    "line": {
+      "title": "L'événement en bref",
+      "content": "Son héros vedette, ses dates, les factions autorisées et si les machines de guerre peuvent participer."
+    },
+    "howItWorks": {
+      "title": "Fonctionnement de l'événement",
+      "content": "Endurance, Bonus de stats, Dernier rempart et comment les ennemis se renforcent."
+    },
+    "tabs": {
+      "title": "Cinq onglets",
+      "content": "Ton équipe, les vagues d'ennemis, les récompenses, les missions et les offres."
+    },
+    "lineup": {
+      "title": "Ton équipe",
+      "content": "Le héros vedette combat toujours. Crée ou modifie l'équipe ; elle apparaît aussi dans Mon jeu, Équipes."
+    },
+    "goals": {
+      "title": "Objectifs pour cette équipe",
+      "content": "Crée un objectif pour une unité directement ici."
+    },
+    "waves": {
+      "title": "Les vagues",
+      "content": "Ennemis, puissance, points et médaille de chaque vague. Touche un ennemi pour sa fiche et ses points par élimination."
+    },
+    "milestones": {
+      "title": "Paliers de l'événement",
+      "content": "Ce que débloquent les points d'événement."
+    },
+    "chests": {
+      "title": "Coffres de progression",
+      "content": "Le coût de chaque coffre en monnaie d'événement et son contenu."
+    },
+    "points": {
+      "title": "D'où viennent les points",
+      "content": "Le maximum de points rapporté par chaque source."
+    },
+    "missions": {
+      "title": "Missions",
+      "content": "Missions quotidiennes et chaînes gratuites et premium."
+    },
+    "offers": {
+      "title": "Offres",
+      "content": "Les offres payantes de l'événement et leur contenu."
+    }
+  }
+}

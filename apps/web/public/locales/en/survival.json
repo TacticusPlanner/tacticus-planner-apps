@@ -1,0 +1,184 @@
+{
+  "page": {
+    "loading": "Loading Survival events…",
+    "noEvents": "No Survival events yet.",
+    "noEventsDescription": "They show here once the game data has them."
+  },
+  "switcher": {
+    "label": "Survival event",
+    "placeholder": "Choose an event",
+    "empty": "No events",
+    "previous": "Previous event",
+    "next": "Next event",
+    "groups": {
+      "running": "Running",
+      "upcoming": "Upcoming",
+      "past": "Past"
+    },
+    "option": "{{name}} · {{hero}}"
+  },
+  "line": {
+    "featured": "Featured hero: {{hero}}",
+    "tba": "Dates to be announced",
+    "running": "Running now",
+    "factions": "Allowed factions",
+    "mows_one": "Up to {{count}} Machine of War",
+    "mows_other": "Up to {{count}} Machines of War",
+    "noMows": "No Machines of War"
+  },
+  "howItWorks": {
+    "summary": "How this event works",
+    "team_one": "Up to {{count}} character besides {{hero}}, who always fights.",
+    "team_other": "Up to {{count}} characters besides {{hero}}, who always fights.",
+    "stamina": "{{start}} stamina to start, {{max}} max, {{amount}} back every {{hours}} h.",
+    "statBoost": "Each Stat Boost gives +{{pct}}% {{stats}} in Survival.",
+    "lastStand": "Last Stand: {{buff}}, with a ×{{multiplier}} strategic multiplier.",
+    "summon": "You can summon a {{unit}} in every battle, at ability level {{min}} to {{max}} by rarity cap.",
+    "rarityUp": "From wave {{wave}}, enemies stay {{rarity}} for the rest of the run."
+  },
+  "stats": {
+    "hp": "health",
+    "dmg": "damage"
+  },
+  "buffs": {
+    "RepairField": "Repair Field",
+    "Killzone": "Killzone",
+    "PowerMatrix": "Power Matrix"
+  },
+  "summons": {
+    "astraSmnGuardsman": "Cadian Guardsman"
+  },
+  "events": {
+    "crescendo-a": "Crescendo A",
+    "crescendo-b": "Crescendo B"
+  },
+  "medals": {
+    "iron": "Iron",
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "platinum": "Platinum",
+    "diamond": "Diamond",
+    "adamantine": "Adamantine"
+  },
+  "tabs": {
+    "label": "Survival",
+    "team": "Team",
+    "enemies": "Enemies",
+    "rewards": "Rewards",
+    "missions": "Missions",
+    "offers": "Offers"
+  },
+  "team": {
+    "count_one": "{{count}} / {{max}} character",
+    "count_other": "{{count}} / {{max}} characters",
+    "featured": "Featured",
+    "edit": "Edit team",
+    "create": "Create team",
+    "none": "No team for this event yet.",
+    "loadError": "Your teams couldn't be loaded. Try again later.",
+    "newName": "Survival · {{name}}",
+    "goals": "Goals for this team",
+    "goalsFailed": "Your goals couldn't be loaded.",
+    "noGoals": "No goals",
+    "createGoal": "Create goal",
+    "createGoalFor": "Create goal for {{name}}"
+  },
+  "enemies": {
+    "intro": "Clearing a wave and each kill score points; each skipped turn scores {{skipped}}.",
+    "introClone": "Clearing a wave and each kill score points; a clone wave scores {{clone}} and each skipped turn {{skipped}}.",
+    "wave": "Wave {{wave}}",
+    "round": "Round {{round}}",
+    "power": "Power {{power}}",
+    "score": "{{score}} points",
+    "final": "Final wave",
+    "finalHint": "Wave {{wave}}. Its power is set so no team can beat it: score as many points as you can before your team falls.",
+    "clone": "Your team, cloned at {{pct}}% health.",
+    "afterWave": "After this wave:",
+    "rarityUp": "Enemies rise to {{rarity}}",
+    "killPoints": "{{points}} points per kill"
+  },
+  "rewards": {
+    "none": "None",
+    "milestones": "Event milestones",
+    "chests_one": "Progress chests · {{count}}",
+    "chests_other": "Progress chests · {{count}}",
+    "chest": "Chest {{level}}",
+    "cost": "Costs {{amount}} event currency",
+    "rarityMilestones": "Featured hero rarity rewards",
+    "points": {
+      "summary": "Where points come from",
+      "freeMissions": "Free missions",
+      "premiumMissions": "Premium missions",
+      "survivalFree": "Survival battles",
+      "survivalPremium": "Survival battles with the Season Pass",
+      "max": "Most points in the event"
+    }
+  },
+  "missions": {
+    "none": "No daily missions",
+    "premiumNote": "Needs the Season Pass.",
+    "statBoostNote": "Each Stat Boost: +{{pct}}% {{stats}} in Survival."
+  },
+  "offers": {
+    "none": "No offers for this event.",
+    "kinds": {
+      "pass": "Season Pass",
+      "playmore": "Play more bundle"
+    },
+    "purchases_one": "Can be bought once",
+    "purchases_other": "Can be bought {{count}} times",
+    "passUnlocks": "Unlocks the premium missions: {{points}} event points and {{currency}} event currency.",
+    "seeMissions": "See missions"
+  },
+  "tour": {
+    "event": {
+      "title": "Pick an event",
+      "content": "The running event shows first. Step to earlier or later ones, or pick one from the list."
+    },
+    "line": {
+      "title": "The event at a glance",
+      "content": "Its featured hero, dates, the factions you can bring and whether Machines of War may join."
+    },
+    "howItWorks": {
+      "title": "How this event works",
+      "content": "Stamina, the Stat Boost, Last Stand and how enemies grow stronger."
+    },
+    "tabs": {
+      "title": "Five tabs",
+      "content": "Your team, the waves of enemies, the rewards, the missions and the offers."
+    },
+    "lineup": {
+      "title": "Your team",
+      "content": "The featured hero always fights. Create or edit the team; it also shows in My Game, Teams."
+    },
+    "goals": {
+      "title": "Goals for this team",
+      "content": "Create a goal for a unit straight from here."
+    },
+    "waves": {
+      "title": "The waves",
+      "content": "Each wave's enemies, power, score and medal. Tap an enemy for its card and points per kill."
+    },
+    "milestones": {
+      "title": "Event milestones",
+      "content": "What event points unlock."
+    },
+    "chests": {
+      "title": "Progress chests",
+      "content": "Each chest's cost in event currency and what it holds."
+    },
+    "points": {
+      "title": "Where points come from",
+      "content": "The most points each source pays."
+    },
+    "missions": {
+      "title": "Missions",
+      "content": "Daily missions and the free and premium chains."
+    },
+    "offers": {
+      "title": "Offers",
+      "content": "The event's real-money offers and what they hold."
+    }
+  }
+}

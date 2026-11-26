@@ -46,6 +46,11 @@ import {
   protectedRoutes as myGameProtectedRoutes,
   publicRoutes as myGamePublicRoutes,
 } from "@/pages/my-game"
+import {
+  routes as survivalRoutes,
+  SurvivalLayout,
+  preloadSurvivalLayout,
+} from "@/pages/survival"
 import { isUiKitEnabled } from "@/shared/config"
 import { preloadOnMatch } from "@/shared/lib"
 
@@ -241,6 +246,18 @@ const appRoutes: RouteObject[] = [
         ),
         children: eventShopRoutes,
         loader: preloadDailiesLayout,
+      },
+      // Plan › Survival: its own layout (event switcher, tabs as routes). The more specific path
+      // wins over "/plan" below.
+      {
+        path: "/plan/survival",
+        element: (
+          <ProtectedRoute>
+            <SurvivalLayout />
+          </ProtectedRoute>
+        ),
+        children: survivalRoutes,
+        loader: preloadSurvivalLayout,
       },
       {
         path: "/plan",
