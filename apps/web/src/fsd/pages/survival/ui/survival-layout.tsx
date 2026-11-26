@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
   Navigate,
@@ -30,6 +29,7 @@ import {
 } from "../model/survival-tabs"
 import type { SurvivalTab } from "../model/survival-tabs"
 import { useSurvivalEvents } from "../model/use-survival-events"
+import { useSurvivalNow } from "../model/use-survival-now"
 import { useSurvivalTabViewed } from "../model/use-survival-tab-viewed"
 import { HowEventWorks, SurvivalEventLine } from "./survival-event-line"
 import { SurvivalEventPicker } from "./survival-event-picker"
@@ -47,11 +47,11 @@ export function SurvivalLayout() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const match = useMatch("/plan/survival/:tab")
-  const [now] = useState(() => Date.now())
+  const list = events.status === "ready" ? events.data : undefined
+  const now = useSurvivalNow(list)
   const tabParam = match?.params.tab
   const tab: SurvivalTab | null = isSurvivalTab(tabParam) ? tabParam : null
 
-  const list = events.status === "ready" ? events.data : undefined
   const requested = params.get("event")
   const requestedEvent = list?.find((event) => event.id === requested)
   const selectedId = list

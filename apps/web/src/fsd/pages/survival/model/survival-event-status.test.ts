@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   compareSurvivalEvents,
   defaultSurvivalEventId,
+  nextSurvivalBoundary,
   survivalEventStatus,
 } from "./survival-event-status"
 
@@ -72,5 +73,27 @@ describe("defaultSurvivalEventId", () => {
   it("opens an undated event when no event is dated, and none for no events", () => {
     expect(defaultSurvivalEventId([crescendo], 0)).toBe("crescendo-a")
     expect(defaultSurvivalEventId([], 0)).toBeNull()
+  })
+})
+
+describe("nextSurvivalBoundary", () => {
+  const events = [
+    { startUtc: "2026-12-03T00:00:00Z", endUtc: "2026-12-10T00:00:00Z" },
+    { startUtc: null, endUtc: null },
+  ]
+
+  it("is the next start or end after now", () => {
+    expect(nextSurvivalBoundary(events, Date.parse("2026-11-26T00:00Z"))).toBe(
+      Date.parse("2026-12-03T00:00:00Z")
+    )
+    expect(nextSurvivalBoundary(events, Date.parse("2026-12-03T00:00Z"))).toBe(
+      Date.parse("2026-12-10T00:00:00Z")
+    )
+  })
+
+  it("is null once every event has ended", () => {
+    expect(nextSurvivalBoundary(events, Date.parse("2027-01-01T00:00Z"))).toBe(
+      null
+    )
   })
 })

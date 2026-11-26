@@ -560,7 +560,9 @@ export function TeamEditorDialog({
 
   const data = editorData.status === "ready" ? editorData.data : undefined
   const fields = draftToFields(draft)
-  const broken = data ? evaluateTeamRules(fields, data.facts) : []
+  const broken = data
+    ? evaluateTeamRules(fields, data.facts, team?.survivalEventKey)
+    : []
   const canTrySave = data !== undefined && !saving && !deleted
 
   const save = async () => {

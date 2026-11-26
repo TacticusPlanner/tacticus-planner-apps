@@ -235,7 +235,7 @@
       "fix_other": "Haz flexibles {{count}} Máquinas de Guerra."
     },
     "mowsNotAllowed": {
-      "reason": "Los equipos de Campaña e Incursión no tienen Máquina de Guerra.",
+      "reason": "Este equipo no puede tener Máquinas de Guerra.",
       "fix": "Quita las Máquinas de Guerra."
     },
     "campaignRequired": {
@@ -279,12 +279,16 @@
       "fix": "Quita el héroe destacado."
     },
     "survivalTooManyCharacters": {
-      "reason": "Un equipo de Supervivencia puede tener como máximo 10 personajes además del héroe destacado.",
-      "fix": "Quita personajes hasta que queden 10."
+      "reason": "Un equipo de Supervivencia puede tener como máximo {{max}} personajes además del héroe destacado.",
+      "reason_unknown": "Este equipo de Supervivencia tiene más personajes de los que permite su evento.",
+      "fix": "Quita personajes hasta que queden {{max}}.",
+      "fix_unknown": "Quita personajes."
     },
     "survivalTooManyMows": {
-      "reason": "Un equipo de Supervivencia puede tener como máximo 3 Máquinas de Guerra.",
-      "fix": "Quita Máquinas de Guerra hasta que queden 3."
+      "reason": "Un equipo de Supervivencia puede tener como máximo {{max}} Máquinas de Guerra.",
+      "reason_unknown": "Este equipo de Supervivencia tiene más Máquinas de Guerra de las que permite su evento.",
+      "fix": "Quita Máquinas de Guerra hasta que queden {{max}}.",
+      "fix_unknown": "Quita Máquinas de Guerra."
     }
   },
   "tour": {
@@ -346,8 +350,10 @@
       "survivalModeRequired": "Solo Horda",
       "unknownSurvivalEvent": "Evento de Supervivencia desconocido",
       "survivalFeaturedCharacter": "Héroe destacado en el equipo",
-      "survivalTooManyCharacters": "Más de 10 personajes",
-      "survivalTooManyMows": "Más de 3 Máquinas de Guerra",
+      "survivalTooManyCharacters": "Más de {{max}} personajes",
+      "survivalTooManyCharacters_unknown": "Demasiados personajes",
+      "survivalTooManyMows": "Más de {{max}} Máquinas de Guerra",
+      "survivalTooManyMows_unknown": "Demasiadas Máquinas de Guerra",
       "tooFewCharacters_one": "{{count}} personaje (mín. {{min}})",
       "tooFewCharacters_other": "{{count}} personajes (mín. {{min}})"
     }

@@ -235,7 +235,7 @@
       "fix_other": "Make {{count}} Machines of War flex."
     },
     "mowsNotAllowed": {
-      "reason": "Campaign and Incursion teams have no Machine of War.",
+      "reason": "This team can't have Machines of War.",
       "fix": "Remove the Machines of War."
     },
     "campaignRequired": {
@@ -279,12 +279,16 @@
       "fix": "Remove the featured hero."
     },
     "survivalTooManyCharacters": {
-      "reason": "A Survival team can have at most 10 characters besides the featured hero.",
-      "fix": "Remove characters until 10 are left."
+      "reason": "A Survival team can have at most {{max}} characters besides the featured hero.",
+      "reason_unknown": "This Survival team has more characters than its event allows.",
+      "fix": "Remove characters until {{max}} are left.",
+      "fix_unknown": "Remove characters."
     },
     "survivalTooManyMows": {
-      "reason": "A Survival team can have at most 3 Machines of War.",
-      "fix": "Remove Machines of War until 3 are left."
+      "reason": "A Survival team can have at most {{max}} Machines of War.",
+      "reason_unknown": "This Survival team has more Machines of War than its event allows.",
+      "fix": "Remove Machines of War until {{max}} are left.",
+      "fix_unknown": "Remove Machines of War."
     }
   },
   "tour": {
@@ -346,8 +350,10 @@
       "survivalModeRequired": "Horde only",
       "unknownSurvivalEvent": "Unknown Survival event",
       "survivalFeaturedCharacter": "Featured hero in team",
-      "survivalTooManyCharacters": "Over 10 characters",
-      "survivalTooManyMows": "Over 3 Machines of War",
+      "survivalTooManyCharacters": "Over {{max}} characters",
+      "survivalTooManyCharacters_unknown": "Too many characters",
+      "survivalTooManyMows": "Over {{max}} Machines of War",
+      "survivalTooManyMows_unknown": "Too many Machines of War",
       "tooFewCharacters_one": "{{count}} character (min {{min}})",
       "tooFewCharacters_other": "{{count}} characters (min {{min}})"
     }

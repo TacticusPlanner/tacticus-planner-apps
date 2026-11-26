@@ -402,6 +402,21 @@ describe("evaluateTeamRules (Survival)", () => {
     ])
   })
 
+  it("keeps a saved key the catalog no longer serves as a label only", () => {
+    const kept = survivalTeam({
+      survivalEventKey: "march-2020",
+      modes: ["warOffense"],
+    })
+    expect(evaluateTeamRules(kept, facts, "march-2020")).toEqual([])
+    expect(
+      evaluateTeamRules(
+        survivalTeam({ survivalEventKey: "april-2020" }),
+        facts,
+        "march-2020"
+      )
+    ).toEqual(["unknownSurvivalEvent"])
+  })
+
   it("does not store the featured hero", () => {
     expect(
       rules(

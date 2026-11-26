@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { survivalEventsFixture } from "@workspace/game-catalog/testing"
 
-import { render, screen, waitFor, within } from "@/test/render"
+import { act, render, screen, waitFor, within } from "@/test/render"
 
 import type { SurvivalEvent } from "../model/survival-event"
 import { EnemiesTab } from "./enemies-tab"
@@ -11,6 +11,7 @@ import { MissionsTab } from "./missions-tab"
 import { OffersTab } from "./offers-tab"
 import { RewardsTab } from "./rewards-tab"
 import { SurvivalLayout } from "./survival-layout"
+import { SurvivalTeamRedirect } from "./survival-team-redirect"
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: vi.fn() },
@@ -68,10 +69,13 @@ function renderPage(path: string) {
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route element={<SurvivalLayout />} path="/plan/survival">
+          <Route element={<SurvivalTeamRedirect />} index />
+          <Route element={<span>team</span>} path="team" />
           <Route element={<EnemiesTab />} path="enemies" />
           <Route element={<RewardsTab />} path="rewards" />
           <Route element={<MissionsTab />} path="missions" />
           <Route element={<OffersTab />} path="offers" />
+          <Route element={<SurvivalTeamRedirect />} path="*" />
         </Route>
       </Routes>
       <LocationProbe />
@@ -133,7 +137,7 @@ describe("SurvivalLayout", () => {
     renderPage("/plan/survival/missions?event=december-2026")
     expect(screen.getByTestId("survival-missions")).toBeInTheDocument()
 
-    await user.click(screen.getByTestId("survival-tab-offers"))
+    await user.click(screen.getByRole("tab", { name: "tabs.offers" }))
 
     expect(screen.getByTestId("location")).toHaveTextContent(
       "/plan/survival/offers?event=december-2026"
@@ -144,6 +148,39 @@ describe("SurvivalLayout", () => {
     ).toBeInTheDocument()
     // The premium missions are described in the pass's note, not as a reward line.
     expect(within(pass).queryByText(/premiumMissions/)).not.toBeInTheDocument()
+  })
+
+  it.each([
+    "/plan/survival?event=crescendo-a",
+    "/plan/survival/nope?event=crescendo-a",
+  ])(
+    "keeps the picked event when %s redirects to the Team tab",
+    async (path) => {
+      renderPage(path)
+
+      await waitFor(() =>
+        expect(screen.getByTestId("location")).toHaveTextContent(
+          "/plan/survival/team?event=crescendo-a"
+        )
+      )
+    }
+  )
+
+  it("follows the clock when an event starts while the page is open", () => {
+    vi.useFakeTimers({
+      toFake: ["Date", "setTimeout", "clearTimeout"],
+      now: Date.parse("2026-12-02T23:59:59Z"),
+    })
+    renderPage("/plan/survival/enemies")
+    expect(captureEvent).toHaveBeenLastCalledWith(
+      expect.objectContaining({ eventState: "upcoming" })
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(2000)
+    })
+
+    expect(screen.getByText(/line\.running/)).toBeInTheDocument()
   })
 
   it("says when there are no events", () => {

@@ -205,19 +205,21 @@ function evaluateIncursion(
 /**
  * A team tied to a Survival event fields the Horde mode alone, does not store the event's featured
  * hero (it always fights), stays within the event's character and MoW caps and takes characters only
- * from allowed factions.
+ * from allowed factions. A kept key the catalog no longer serves is only a label, as on the API.
  */
 function evaluateSurvival(
   team: TeamRuleInput,
   facts: TeamRuleFacts,
+  storedKey: string | null | undefined,
   broken: Broken
 ) {
   const key = team.survivalEventKey
   if (!key) return
+  const survival = facts.survivalEvents.get(key)
+  if (!survival && key === storedKey) return
   if (team.modes.length !== 1 || team.modes[0] !== "horde") {
     broken.add("survivalModeRequired")
   }
-  const survival = facts.survivalEvents.get(key)
   if (!survival) {
     broken.add("unknownSurvivalEvent")
     return
@@ -241,17 +243,20 @@ function evaluateSurvival(
 /**
  * The rules a team breaks, in the API's order (design D3): the same evaluation the API runs on
  * every save and read, so the editor can say why Save is unavailable before the API is asked.
- * The API stays the authority. Locked and unowned units never matter.
+ * The API stays the authority. Locked and unowned units never matter. `storedSurvivalEventKey` is
+ * the key the saved team already has (none for a new team): kept while its event is no longer
+ * served, it is only a label and the Survival rules are skipped.
  */
 export function evaluateTeamRules(
   team: TeamRuleInput,
-  facts: TeamRuleFacts
+  facts: TeamRuleFacts,
+  storedSurvivalEventKey?: string | null
 ): TeamRuleCode[] {
   const broken: Broken = new Set()
   evaluateShape(team, facts, broken)
   evaluateCampaign(team, facts, broken)
   evaluateIncursion(team, facts, broken)
-  evaluateSurvival(team, facts, broken)
+  evaluateSurvival(team, facts, storedSurvivalEventKey, broken)
   return TEAM_RULE_CODES.filter((code) => broken.has(code))
 }
 

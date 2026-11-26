@@ -235,7 +235,7 @@
       "fix_other": "Rendez {{count}} machines de guerre flexibles."
     },
     "mowsNotAllowed": {
-      "reason": "Les équipes Campagne et Incursion n'ont pas de machine de guerre.",
+      "reason": "Cette équipe ne peut pas avoir de machine de guerre.",
       "fix": "Retirez les machines de guerre."
     },
     "campaignRequired": {
@@ -279,12 +279,16 @@
       "fix": "Retire le héros vedette."
     },
     "survivalTooManyCharacters": {
-      "reason": "Une équipe de Survie peut avoir au plus 10 personnages en plus du héros vedette.",
-      "fix": "Retire des personnages jusqu'à en garder 10."
+      "reason": "Une équipe de Survie peut avoir au plus {{max}} personnages en plus du héros vedette.",
+      "reason_unknown": "Cette équipe de Survie a plus de personnages que son événement ne le permet.",
+      "fix": "Retire des personnages jusqu'à en garder {{max}}.",
+      "fix_unknown": "Retire des personnages."
     },
     "survivalTooManyMows": {
-      "reason": "Une équipe de Survie peut avoir au plus 3 machines de guerre.",
-      "fix": "Retire des machines de guerre jusqu'à en garder 3."
+      "reason": "Une équipe de Survie peut avoir au plus {{max}} machines de guerre.",
+      "reason_unknown": "Cette équipe de Survie a plus de machines de guerre que son événement ne le permet.",
+      "fix": "Retire des machines de guerre jusqu'à en garder {{max}}.",
+      "fix_unknown": "Retire des machines de guerre."
     }
   },
   "tour": {
@@ -346,8 +350,10 @@
       "survivalModeRequired": "Horde uniquement",
       "unknownSurvivalEvent": "Événement de Survie inconnu",
       "survivalFeaturedCharacter": "Héros vedette dans l'équipe",
-      "survivalTooManyCharacters": "Plus de 10 personnages",
-      "survivalTooManyMows": "Plus de 3 machines de guerre",
+      "survivalTooManyCharacters": "Plus de {{max}} personnages",
+      "survivalTooManyCharacters_unknown": "Trop de personnages",
+      "survivalTooManyMows": "Plus de {{max}} machines de guerre",
+      "survivalTooManyMows_unknown": "Trop de machines de guerre",
       "tooFewCharacters_one": "{{count}} personnage (min. {{min}})",
       "tooFewCharacters_other": "{{count}} personnages (min. {{min}})"
     }

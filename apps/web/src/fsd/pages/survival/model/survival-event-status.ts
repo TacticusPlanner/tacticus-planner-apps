@@ -46,3 +46,18 @@ export function defaultSurvivalEventId(
     null
   )
 }
+
+/** The first event start or end after `now`, when an event's status next changes; null for none. */
+export function nextSurvivalBoundary(
+  events: readonly Pick<SurvivalEvent, "startUtc" | "endUtc">[],
+  now: number
+): number | null {
+  let next: number | null = null
+  for (const event of events) {
+    for (const date of [event.startUtc, event.endUtc]) {
+      const at = date === null ? Number.NaN : Date.parse(date)
+      if (at > now && (next === null || at < next)) next = at
+    }
+  }
+  return next
+}

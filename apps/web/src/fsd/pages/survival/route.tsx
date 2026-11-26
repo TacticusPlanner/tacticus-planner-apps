@@ -2,11 +2,12 @@
 // "only export components" rule does not apply.
 /* eslint-disable react-refresh/only-export-components */
 import { lazy } from "react"
-import { Navigate } from "react-router"
 import type { RouteObject } from "react-router"
 
 import { redirectOnlyHandle } from "@/shared/analytics"
 import { preloadOnMatch } from "@/shared/lib"
+
+import { SurvivalTeamRedirect } from "./ui/survival-team-redirect"
 
 // The page layout, lazy-loaded by app/routes.tsx (exported from here so the page's public API never
 // statically pulls the layout into the entry chunk).
@@ -32,11 +33,11 @@ const loadOffersTab = () =>
 const OffersTab = lazy(loadOffersTab)
 
 // Nested under "/plan/survival" — see app/routes.tsx, which owns the path, the layout element and the
-// ProtectedRoute wrapping, and splices this array in as `children`. An unknown tab goes to Team.
+// ProtectedRoute wrapping, and splices this array in as `children`. An unknown tab goes to Team, keeping `?event=`.
 export const routes: RouteObject[] = [
   {
     index: true,
-    element: <Navigate replace to="/plan/survival/team" />,
+    element: <SurvivalTeamRedirect />,
     handle: redirectOnlyHandle,
   },
   { path: "team", element: <TeamTab />, loader: preloadOnMatch(loadTeamTab) },
@@ -62,7 +63,7 @@ export const routes: RouteObject[] = [
   },
   {
     path: "*",
-    element: <Navigate replace to="/plan/survival/team" />,
+    element: <SurvivalTeamRedirect />,
     handle: redirectOnlyHandle,
   },
 ]

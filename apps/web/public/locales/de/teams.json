@@ -235,7 +235,7 @@
       "fix_other": "Mache {{count}} Kriegsmaschinen zu Flex."
     },
     "mowsNotAllowed": {
-      "reason": "Kampagnen- und Incursion-Teams haben keine Kriegsmaschine.",
+      "reason": "Dieses Team kann keine Kriegsmaschinen haben.",
       "fix": "Entferne die Kriegsmaschinen."
     },
     "campaignRequired": {
@@ -279,12 +279,16 @@
       "fix": "Entferne den vorgestellten Helden."
     },
     "survivalTooManyCharacters": {
-      "reason": "Ein Überlebensteam kann neben dem vorgestellten Helden höchstens 10 Charaktere haben.",
-      "fix": "Entferne Charaktere, bis 10 übrig sind."
+      "reason": "Ein Überlebensteam kann neben dem vorgestellten Helden höchstens {{max}} Charaktere haben.",
+      "reason_unknown": "Dieses Überlebensteam hat mehr Charaktere, als sein Event erlaubt.",
+      "fix": "Entferne Charaktere, bis {{max}} übrig sind.",
+      "fix_unknown": "Entferne Charaktere."
     },
     "survivalTooManyMows": {
-      "reason": "Ein Überlebensteam kann höchstens 3 Kriegsmaschinen haben.",
-      "fix": "Entferne Kriegsmaschinen, bis 3 übrig sind."
+      "reason": "Ein Überlebensteam kann höchstens {{max}} Kriegsmaschinen haben.",
+      "reason_unknown": "Dieses Überlebensteam hat mehr Kriegsmaschinen, als sein Event erlaubt.",
+      "fix": "Entferne Kriegsmaschinen, bis {{max}} übrig sind.",
+      "fix_unknown": "Entferne Kriegsmaschinen."
     }
   },
   "tour": {
@@ -346,8 +350,10 @@
       "survivalModeRequired": "Nur Horde",
       "unknownSurvivalEvent": "Unbekanntes Überlebensevent",
       "survivalFeaturedCharacter": "Vorgestellter Held im Team",
-      "survivalTooManyCharacters": "Über 10 Charaktere",
-      "survivalTooManyMows": "Über 3 Kriegsmaschinen",
+      "survivalTooManyCharacters": "Über {{max}} Charaktere",
+      "survivalTooManyCharacters_unknown": "Zu viele Charaktere",
+      "survivalTooManyMows": "Über {{max}} Kriegsmaschinen",
+      "survivalTooManyMows_unknown": "Zu viele Kriegsmaschinen",
       "tooFewCharacters_one": "{{count}} Charakter (min. {{min}})",
       "tooFewCharacters_other": "{{count}} Charaktere (min. {{min}})"
     }
