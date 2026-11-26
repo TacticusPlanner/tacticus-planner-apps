@@ -529,6 +529,12 @@ export const npcPortraitOverrides: Record<string, string> = {
     "datamines/atlases/ui_image_portrait_powup_heroSpawn_01.webp",
   powupHeroSpawn_BladeChampion:
     "datamines/atlases/ui_image_portrait_powup_heroSpawn_01.webp",
+  powupSummonSpawn_admecSmnVanguard:
+    "datamines/atlases/ui_image_portrait_powup_heroSpawn_01.webp",
+  powupSummonSpawn_admecSmnTechpriest:
+    "datamines/atlases/ui_image_portrait_powup_heroSpawn_01.webp",
+  powupSummonSpawn_admecSmnElectropriest:
+    "datamines/atlases/ui_image_portrait_powup_heroSpawn_01.webp",
   powupSummonSpawn_ultraSmnInceptor:
     "datamines/atlases/ui_image_portrait_powup_heroSpawn_01.webp",
   powupSummonSpawn_ultraSmnHeavyIntercessor:

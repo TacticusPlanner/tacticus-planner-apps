@@ -21,6 +21,7 @@ import {
 import { lreBattleViewSchema, lreViewSchema } from "./lre"
 import { guildRaidMetaPayloadSchema } from "./guild-raid-meta"
 import { guildWarSeasonSchema } from "./guild-war"
+import { survivalEventSchema } from "./survival-events"
 import { hordeModeTiersSchema } from "./horde-mode-tiers"
 import { npcTiersSchema } from "./npc-tiers"
 import { mowSchema, mowUpgradeCostSchema } from "./mow"
@@ -78,6 +79,7 @@ export const datasetPayloadSchemas = {
   incursions: z.array(incursionSchema),
   "npc-encounters": npcEncountersPayloadSchema,
   "guild-war": z.array(guildWarSeasonSchema),
+  "survival-events": z.array(survivalEventSchema),
 } satisfies Record<GameCatalogDatasetKey, z.ZodType>
 
 // Record (per-item) type for each dataset. Every dataset is a plain array, so the record type is the
@@ -120,4 +122,5 @@ export type GameCatalogRecordByKey = {
   incursions: z.infer<typeof incursionSchema>
   "npc-encounters": z.infer<typeof npcEncounterSchema>
   "guild-war": z.infer<typeof guildWarSeasonSchema>
+  "survival-events": z.infer<typeof survivalEventSchema>
 }

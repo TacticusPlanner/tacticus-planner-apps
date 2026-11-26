@@ -1,0 +1,2643 @@
+[
+  {
+    "id": "crescendo-a",
+    "eventKey": "season_crescendo_a_event",
+    "definitionId": null,
+    "startUtc": null,
+    "endUtc": null,
+    "featuredCharacterId": "astraDreir",
+    "currency": "seasonalEventCurrencyCrescendo",
+    "rules": {
+      "allowedFactionIds": [
+        "Ultramarines",
+        "Sisterhood",
+        "AstraMilitarum",
+        "AdeptusMechanicus",
+        "Custodes"
+      ],
+      "mowsAllowed": false,
+      "maxCharacters": 10,
+      "maxMows": 0,
+      "stamina": {
+        "start": 2,
+        "max": 5,
+        "regenSeconds": 43201,
+        "regenAmount": 1
+      },
+      "statBoostPct": 7,
+      "statBoostStats": ["hp", "dmg"],
+      "summon": {
+        "unitId": "astraSmnGuardsman",
+        "levels": [
+          {
+            "rarityCap": "Common",
+            "abilityLevel": 8
+          },
+          {
+            "rarityCap": "Uncommon",
+            "abilityLevel": 17
+          },
+          {
+            "rarityCap": "Rare",
+            "abilityLevel": 26
+          },
+          {
+            "rarityCap": "Epic",
+            "abilityLevel": 35
+          },
+          {
+            "rarityCap": "Legendary",
+            "abilityLevel": 50
+          },
+          {
+            "rarityCap": "Mythic",
+            "abilityLevel": 65
+          }
+        ]
+      },
+      "persistentRarityUps": [
+        {
+          "rarity": "Uncommon",
+          "wave": 3
+        },
+        {
+          "rarity": "Rare",
+          "wave": 6
+        },
+        {
+          "rarity": "Epic",
+          "wave": 9
+        }
+      ],
+      "featuredHeroStats": [
+        {
+          "rarity": "Common",
+          "critChance": 20,
+          "critDamage": 50,
+          "blockChance": 30,
+          "blockDamage": 34
+        },
+        {
+          "rarity": "Uncommon",
+          "critChance": 30,
+          "critDamage": 95,
+          "blockChance": 35,
+          "blockDamage": 74
+        },
+        {
+          "rarity": "Rare",
+          "critChance": 38,
+          "critDamage": 252,
+          "blockChance": 35,
+          "blockDamage": 185
+        },
+        {
+          "rarity": "Epic",
+          "critChance": 39,
+          "critDamage": 811,
+          "blockChance": 35,
+          "blockDamage": 604
+        },
+        {
+          "rarity": "Legendary",
+          "critChance": 40,
+          "critDamage": 1356,
+          "blockChance": 35,
+          "blockDamage": 1024
+        },
+        {
+          "rarity": "Mythic",
+          "critChance": 41,
+          "critDamage": 2082,
+          "blockChance": 30,
+          "blockDamage": 1828
+        }
+      ]
+    },
+    "waves": [
+      {
+        "wave": 1,
+        "round": 1,
+        "power": 504,
+        "score": 100,
+        "enemies": [
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 6,
+            "count": 8
+          },
+          {
+            "npcId": "blackNpc1Bloodletter",
+            "statsIndex": 6,
+            "count": 2
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHits",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 2,
+        "round": 3,
+        "power": 1488,
+        "score": 150,
+        "enemies": [
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 9,
+            "count": 12
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealth",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcementShield",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 3,
+        "round": 5,
+        "power": 1132,
+        "score": 150,
+        "enemies": [
+          {
+            "npcId": "blackNpc1Bloodletter",
+            "statsIndex": 7,
+            "count": 5
+          },
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 7,
+            "count": 4
+          }
+        ],
+        "enemyRarityOnClear": "Uncommon",
+        "powerUpsOnClear": [
+          {
+            "id": "powupResurrect",
+            "count": 1
+          },
+          {
+            "id": "powupReactivateAbility",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 4,
+        "round": 8,
+        "power": 3616,
+        "score": 200,
+        "enemies": [
+          {
+            "npcId": "thousNpc1PinkHorror",
+            "statsIndex": 7,
+            "count": 8
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          },
+          {
+            "id": "powupMeleeHits",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 5,
+        "round": 10,
+        "power": 3505,
+        "score": 250,
+        "enemies": [
+          {
+            "npcId": "deathNpc1Poxwalker",
+            "statsIndex": 12,
+            "count": 5
+          },
+          {
+            "npcId": "deathNpc2PlagueMarine",
+            "statsIndex": 10,
+            "count": 2
+          },
+          {
+            "npcId": "deathNpc3Nurglings",
+            "statsIndex": 10,
+            "count": 1
+          }
+        ],
+        "enemyRarityOnClear": "Rare",
+        "powerUpsOnClear": [
+          {
+            "id": "powupBomb",
+            "count": 1
+          },
+          {
+            "id": "powupHealing",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 6,
+        "round": 12,
+        "power": 15362,
+        "score": 400,
+        "enemies": [
+          {
+            "npcId": "blackNpc2Terminator",
+            "statsIndex": 13,
+            "count": 2
+          },
+          {
+            "npcId": "blackNpc1Bloodletter",
+            "statsIndex": 13,
+            "count": 4
+          },
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 13,
+            "count": 4
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcementShield",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 7,
+        "round": 14,
+        "power": 40594,
+        "score": 450,
+        "enemies": [
+          {
+            "npcId": "thousNpc2Screamer",
+            "statsIndex": 16,
+            "count": 6
+          },
+          {
+            "npcId": "thousNpc1PinkHorror",
+            "statsIndex": 16,
+            "count": 4
+          }
+        ],
+        "enemyRarityOnClear": "Epic",
+        "powerUpsOnClear": [
+          {
+            "id": "powupResurrect",
+            "count": 1
+          },
+          {
+            "id": "powupReactivateAbility",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 8,
+        "round": 16,
+        "power": 63105,
+        "score": 600,
+        "enemies": [
+          {
+            "npcId": "deathNpcPutrifier",
+            "statsIndex": 12,
+            "count": 1
+          },
+          {
+            "npcId": "deathNpc2PlagueMarine",
+            "statsIndex": 17,
+            "count": 5
+          },
+          {
+            "npcId": "deathNpc3Nurglings",
+            "statsIndex": 17,
+            "count": 3
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupDamage",
+            "count": 1
+          },
+          {
+            "id": "powupHealing",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 9,
+        "round": 18,
+        "power": 109720,
+        "score": 600,
+        "enemies": [
+          {
+            "npcId": "blackBossTerminator",
+            "statsIndex": 5,
+            "count": 1
+          },
+          {
+            "npcId": "blackNpc1Bloodletter",
+            "statsIndex": 21,
+            "count": 5
+          },
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 25,
+            "count": 4
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupBomb",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 10,
+        "round": 20,
+        "power": 174644,
+        "score": 650,
+        "enemies": [
+          {
+            "npcId": "thousNpc2Screamer",
+            "statsIndex": 21,
+            "count": 5
+          },
+          {
+            "npcId": "thousNpcInfernalMaster",
+            "statsIndex": 13,
+            "count": 1
+          },
+          {
+            "npcId": "thousNpc3RubricMarine",
+            "statsIndex": 21,
+            "count": 4
+          }
+        ],
+        "enemyRarityOnClear": "Legendary",
+        "powerUpsOnClear": [
+          {
+            "id": "powupArmor",
+            "count": 1
+          },
+          {
+            "id": "powupReactivateAbility",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 11,
+        "round": 22,
+        "power": 260235,
+        "score": 650,
+        "enemies": [
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 24,
+            "count": 9
+          },
+          {
+            "npcId": "blackNpc4Havoc",
+            "statsIndex": 24,
+            "count": 3
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHits",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 12,
+        "round": 24,
+        "power": 472778,
+        "score": 1000,
+        "enemies": [
+          {
+            "npcId": "deathNpc3Nurglings",
+            "statsIndex": 24,
+            "count": 3
+          },
+          {
+            "npcId": "deathNpc2PlagueMarine",
+            "statsIndex": 24,
+            "count": 5
+          },
+          {
+            "npcId": "deathNpcBlightlord",
+            "statsIndex": 14,
+            "count": 1
+          },
+          {
+            "npcId": "deathNpcRotbone",
+            "statsIndex": 14,
+            "count": 1
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealing",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 13,
+        "round": 26,
+        "power": 1639489,
+        "score": 1000,
+        "enemies": [
+          {
+            "npcId": "thousNpc1PinkHorror",
+            "statsIndex": 28,
+            "count": 6
+          },
+          {
+            "npcId": "thousNpcAhriman",
+            "statsIndex": 16,
+            "count": 1
+          },
+          {
+            "npcId": "thousNpcSekhetar",
+            "statsIndex": 16,
+            "count": 1
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupMeleeHits",
+            "count": 1
+          },
+          {
+            "id": "powupResurrect",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 14,
+        "round": 28,
+        "power": 2212371,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "blackNpc1Bloodletter",
+            "statsIndex": 33,
+            "count": 6
+          },
+          {
+            "npcId": "blackNpc4Havoc",
+            "statsIndex": 33,
+            "count": 3
+          },
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 33,
+            "count": 3
+          }
+        ],
+        "enemyRarityOnClear": "Mythic",
+        "powerUpsOnClear": [
+          {
+            "id": "powupBomb",
+            "count": 1
+          },
+          {
+            "id": "powupReactivateAbility",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 15,
+        "round": 30,
+        "power": 3524933,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "thousNpc2Screamer",
+            "statsIndex": 35,
+            "count": 5
+          },
+          {
+            "npcId": "thousNpcTerminator",
+            "statsIndex": 17,
+            "count": 1
+          },
+          {
+            "npcId": "thousNpc3RubricMarine",
+            "statsIndex": 35,
+            "count": 4
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupDamage",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 16,
+        "round": 32,
+        "power": 4904030,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "deathNpc1Poxwalker",
+            "statsIndex": 38,
+            "count": 5
+          },
+          {
+            "npcId": "deathNpcBlightbringer",
+            "statsIndex": 17,
+            "count": 1
+          },
+          {
+            "npcId": "deathNpc2PlagueMarine",
+            "statsIndex": 38,
+            "count": 4
+          },
+          {
+            "npcId": "deathNpcTyphus",
+            "statsIndex": 17,
+            "count": 1
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealing",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 17,
+        "round": 34,
+        "power": 6813223,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "blackNpc1Bloodletter",
+            "statsIndex": 40,
+            "count": 4
+          },
+          {
+            "npcId": "blackNpcHaarken",
+            "statsIndex": 18,
+            "count": 1
+          },
+          {
+            "npcId": "blackNpcAbaddon",
+            "statsIndex": 18,
+            "count": 1
+          },
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 40,
+            "count": 4
+          },
+          {
+            "npcId": "blackNpcObliterator",
+            "statsIndex": 18,
+            "count": 1
+          },
+          {
+            "npcId": "blackNpc2Terminator",
+            "statsIndex": 43,
+            "count": 1
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupBomb",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 18,
+        "round": 36,
+        "power": 9681680,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "thousNpc1PinkHorror",
+            "statsIndex": 42,
+            "count": 4
+          },
+          {
+            "npcId": "thousNpcInfernalMaster",
+            "statsIndex": 18,
+            "count": 1
+          },
+          {
+            "npcId": "thousNpc3RubricMarine",
+            "statsIndex": 42,
+            "count": 3
+          },
+          {
+            "npcId": "thousNpcTzaangor",
+            "statsIndex": 18,
+            "count": 1
+          },
+          {
+            "npcId": "thousNpcSorcerer",
+            "statsIndex": 18,
+            "count": 1
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealing",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 19,
+        "round": 38,
+        "power": 13991848,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "deathNpc3Nurglings",
+            "statsIndex": 45,
+            "count": 3
+          },
+          {
+            "npcId": "deathBossBlightlordSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "deathBossPutrifierSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "deathBossBlightbringerSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "deathNpc2PlagueMarine",
+            "statsIndex": 45,
+            "count": 3
+          },
+          {
+            "npcId": "deathBossTyphusSurv",
+            "statsIndex": 2,
+            "count": 1
+          },
+          {
+            "npcId": "deathBossRotboneSurv",
+            "statsIndex": 1,
+            "count": 1
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupBomb",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 20,
+        "round": 41,
+        "power": 145508047328,
+        "score": 2000,
+        "enemies": [
+          {
+            "npcId": "deathNpc2PlagueMarineSurv",
+            "statsIndex": 3,
+            "count": 4
+          },
+          {
+            "npcId": "thousNpc3RubricMarineSurv",
+            "statsIndex": 3,
+            "count": 4
+          },
+          {
+            "npcId": "blackNpc4HavocSurv",
+            "statsIndex": 3,
+            "count": 4
+          }
+        ],
+        "powerUpsOnClear": []
+      }
+    ],
+    "scoring": {
+      "medals": [
+        {
+          "medal": "iron",
+          "wave": 1,
+          "rewards": [
+            {
+              "type": "xp_crusadePoints",
+              "min": 25,
+              "max": 25
+            }
+          ]
+        },
+        {
+          "medal": "bronze",
+          "wave": 3,
+          "rewards": [
+            {
+              "type": "xp_crusadePoints",
+              "min": 50,
+              "max": 50
+            }
+          ]
+        },
+        {
+          "medal": "silver",
+          "wave": 6,
+          "rewards": [
+            {
+              "type": "xp_crusadePoints",
+              "min": 75,
+              "max": 75
+            }
+          ]
+        },
+        {
+          "medal": "gold",
+          "wave": 9,
+          "rewards": [
+            {
+              "type": "xp_crusadePoints",
+              "min": 100,
+              "max": 100
+            }
+          ]
+        },
+        {
+          "medal": "platinum",
+          "wave": 11,
+          "rewards": [
+            {
+              "type": "xp_crusadePoints",
+              "min": 125,
+              "max": 125
+            }
+          ]
+        },
+        {
+          "medal": "diamond",
+          "wave": 13,
+          "rewards": [
+            {
+              "type": "xp_crusadePoints",
+              "min": 150,
+              "max": 150
+            }
+          ]
+        },
+        {
+          "medal": "adamantine",
+          "wave": 16,
+          "rewards": [
+            {
+              "type": "xp_crusadePoints",
+              "min": 200,
+              "max": 200
+            }
+          ]
+        }
+      ],
+      "killScores": [
+        {
+          "npcId": "blackBossTerminator",
+          "statsIndex": 5,
+          "score": 388
+        },
+        {
+          "npcId": "blackNpc1Bloodletter",
+          "statsIndex": 6,
+          "score": 12
+        },
+        {
+          "npcId": "blackNpc1Bloodletter",
+          "statsIndex": 7,
+          "score": 61
+        },
+        {
+          "npcId": "blackNpc1Bloodletter",
+          "statsIndex": 13,
+          "score": 100
+        },
+        {
+          "npcId": "blackNpc1Bloodletter",
+          "statsIndex": 21,
+          "score": 180
+        },
+        {
+          "npcId": "blackNpc1Bloodletter",
+          "statsIndex": 33,
+          "score": 330
+        },
+        {
+          "npcId": "blackNpc1Bloodletter",
+          "statsIndex": 40,
+          "score": 400
+        },
+        {
+          "npcId": "blackNpc2Terminator",
+          "statsIndex": 13,
+          "score": 200
+        },
+        {
+          "npcId": "blackNpc2Terminator",
+          "statsIndex": 43,
+          "score": 435
+        },
+        {
+          "npcId": "blackNpc3TraitorGuardsman",
+          "statsIndex": 6,
+          "score": 8
+        },
+        {
+          "npcId": "blackNpc3TraitorGuardsman",
+          "statsIndex": 7,
+          "score": 30
+        },
+        {
+          "npcId": "blackNpc3TraitorGuardsman",
+          "statsIndex": 9,
+          "score": 40
+        }
+      ],
+      "skippedTurnScore": 400,
+      "rarityMilestones": [
+        {
+          "rarity": "Uncommon",
+          "rewards": [
+            {
+              "type": "xp_seasonalCrescendo",
+              "min": 45,
+              "max": 45
+            }
+          ]
+        },
+        {
+          "rarity": "Rare",
+          "rewards": [
+            {
+              "type": "xp_seasonalCrescendo",
+              "min": 25,
+              "max": 25
+            }
+          ]
+        },
+        {
+          "rarity": "Epic",
+          "rewards": [
+            {
+              "type": "xp_seasonalCrescendo",
+              "min": 25,
+              "max": 25
+            }
+          ]
+        },
+        {
+          "rarity": "Legendary",
+          "rewards": [
+            {
+              "type": "xp_seasonalCrescendo",
+              "min": 25,
+              "max": 25
+            }
+          ]
+        },
+        {
+          "rarity": "Mythic",
+          "rewards": [
+            {
+              "type": "xp_seasonalCrescendo",
+              "min": 15,
+              "max": 15
+            }
+          ]
+        }
+      ]
+    },
+    "points": {
+      "max": 5450,
+      "freeMissions": 2020,
+      "premiumMissions": 1000,
+      "survivalFree": 2025,
+      "survivalPremium": 405
+    },
+    "milestones": [
+      {
+        "requiredProgress": 100,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyCrescendo",
+            "min": 30,
+            "max": 30
+          }
+        ]
+      },
+      {
+        "requiredProgress": 205,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyCrescendo",
+            "min": 40,
+            "max": 40
+          }
+        ]
+      },
+      {
+        "requiredProgress": 315,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyCrescendo",
+            "min": 55,
+            "max": 55
+          }
+        ]
+      },
+      {
+        "requiredProgress": 430,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyCrescendo",
+            "min": 60,
+            "max": 60
+          }
+        ]
+      }
+    ],
+    "chests": [
+      {
+        "level": 1,
+        "cost": {
+          "type": "seasonalEventCurrencyCrescendo",
+          "amount": 40
+        },
+        "rewards": [
+          {
+            "type": "gold",
+            "min": 600,
+            "max": 660
+          },
+          {
+            "type": "xp_crusadePoints",
+            "min": 100,
+            "max": 100
+          },
+          {
+            "type": "xpEpic",
+            "min": 5,
+            "max": 5
+          }
+        ]
+      },
+      {
+        "level": 2,
+        "cost": {
+          "type": "seasonalEventCurrencyCrescendo",
+          "amount": 45
+        },
+        "rewards": [
+          {
+            "type": "gold",
+            "min": 800,
+            "max": 880
+          },
+          {
+            "type": "xp_crusadePoints",
+            "min": 150,
+            "max": 150
+          },
+          {
+            "type": "xpEpic",
+            "min": 5,
+            "max": 5
+          }
+        ]
+      },
+      {
+        "level": 3,
+        "cost": {
+          "type": "seasonalEventCurrencyCrescendo",
+          "amount": 50
+        },
+        "rewards": [
+          {
+            "type": "gold",
+            "min": 900,
+            "max": 990
+          },
+          {
+            "type": "xp_crusadePoints",
+            "min": 200,
+            "max": 200
+          },
+          {
+            "type": "xpEpic",
+            "min": 5,
+            "max": 5
+          }
+        ]
+      }
+    ],
+    "missions": {
+      "daily": [
+        {
+          "id": "crescendo_a_daily_01",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 70,
+              "max": 70
+            },
+            {
+              "type": "crusadeNpc",
+              "min": 10,
+              "max": 10
+            }
+          ],
+          "tasks": [
+            {
+              "taskId": "SlayEnemies",
+              "target": 75
+            }
+          ]
+        },
+        {
+          "id": "crescendo_a_daily_02",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 70,
+              "max": 70
+            },
+            {
+              "type": "crusadeNpc",
+              "min": 10,
+              "max": 10
+            }
+          ],
+          "tasks": [
+            {
+              "taskId": "SlayEnemiesFromHigherElevation",
+              "target": 15
+            }
+          ]
+        }
+      ],
+      "free": [
+        {
+          "id": "crescendo_a_free_1",
+          "missions": [
+            {
+              "id": "crescendo_a_free_1_chain_01",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 76,
+                  "max": 76
+                },
+                {
+                  "type": "survivalBoost_stats",
+                  "min": 1,
+                  "max": 1
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "PlayBattlesInGameMode",
+                  "target": 1,
+                  "parameters": {
+                    "gameMode": "Survival"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "crescendo_a_free_1_chain_02",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 76,
+                  "max": 76
+                },
+                {
+                  "type": "survivalBoost_stats",
+                  "min": 1,
+                  "max": 1
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "SlayEnemiesWithFactionTrait",
+                  "target": 50,
+                  "parameters": {
+                    "factionTrait": "Imperial"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "premium": [
+        {
+          "id": "crescendo_a_premium",
+          "missions": [
+            {
+              "id": "crescendo_a_premium_chain_01",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 100,
+                  "max": 100
+                },
+                {
+                  "type": "seasonalEventCurrencyCrescendo",
+                  "min": 50,
+                  "max": 50
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "SlayEnemiesOfFactionTrait",
+                  "target": 50,
+                  "parameters": {
+                    "factionTrait": "Chaos"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "crescendo_a_premium_chain_02",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 100,
+                  "max": 100
+                },
+                {
+                  "type": "seasonalEventCurrencyCrescendo",
+                  "min": 50,
+                  "max": 50
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "SlayEnemiesOfFactionTrait",
+                  "target": 65,
+                  "parameters": {
+                    "factionTrait": "Chaos"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "offers": [
+      {
+        "id": "offer_seasonal_event_crescendo_01_pass",
+        "kind": "pass",
+        "priceCents": 999,
+        "maxPurchases": 1,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyCrescendo",
+            "min": 200,
+            "max": 200
+          },
+          {
+            "type": "seasonalEcBonus",
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": "seasonalPremium",
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": "gems",
+            "min": 1000,
+            "max": 1000
+          }
+        ]
+      },
+      {
+        "id": "offer_seasonal_event_crescendo_01_playmore",
+        "kind": "playmore",
+        "priceCents": 1599,
+        "maxPurchases": 3,
+        "rewards": [
+          {
+            "type": "stamina_survival",
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": "stamina_waves",
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": "stamina_treasureBeach",
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": "specialSummoningToken",
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": "stamina",
+            "min": 120,
+            "max": 120
+          },
+          {
+            "type": "raidTicket",
+            "min": 20,
+            "max": 20
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "december-2026",
+    "eventKey": "season_december_2026_event",
+    "definitionId": "survival",
+    "startUtc": "2026-12-03T00:00:00+00:00",
+    "endUtc": "2026-12-10T00:00:00+00:00",
+    "featuredCharacterId": "admecManipulus",
+    "currency": "seasonalEventCurrencyDecember2026",
+    "rules": {
+      "allowedFactionIds": [
+        "Ultramarines",
+        "Sisterhood",
+        "AstraMilitarum",
+        "AdeptusMechanicus",
+        "Custodes",
+        "LeaguesOfVotann",
+        "AdeptusAstartes"
+      ],
+      "mowsAllowed": false,
+      "maxCharacters": 10,
+      "maxMows": 0,
+      "stamina": {
+        "start": 2,
+        "max": 5,
+        "regenSeconds": 43201,
+        "regenAmount": 1
+      },
+      "statBoostPct": 7,
+      "statBoostStats": ["hp", "dmg"],
+      "lastStand": {
+        "buffId": "RepairField",
+        "strategicMultiplier": 25
+      },
+      "persistentRarityUps": [
+        {
+          "rarity": "Uncommon",
+          "wave": 3
+        },
+        {
+          "rarity": "Rare",
+          "wave": 6
+        },
+        {
+          "rarity": "Epic",
+          "wave": 9
+        }
+      ],
+      "featuredHeroStats": [
+        {
+          "rarity": "Common",
+          "critChance": 20,
+          "critDamage": 50,
+          "blockChance": 30,
+          "blockDamage": 34
+        },
+        {
+          "rarity": "Uncommon",
+          "critChance": 30,
+          "critDamage": 95,
+          "blockChance": 35,
+          "blockDamage": 74
+        },
+        {
+          "rarity": "Rare",
+          "critChance": 38,
+          "critDamage": 252,
+          "blockChance": 35,
+          "blockDamage": 185
+        },
+        {
+          "rarity": "Epic",
+          "critChance": 39,
+          "critDamage": 811,
+          "blockChance": 35,
+          "blockDamage": 604
+        },
+        {
+          "rarity": "Legendary",
+          "critChance": 40,
+          "critDamage": 1356,
+          "blockChance": 35,
+          "blockDamage": 1024
+        },
+        {
+          "rarity": "Mythic",
+          "critChance": 41,
+          "critDamage": 2082,
+          "blockChance": 30,
+          "blockDamage": 1828
+        }
+      ]
+    },
+    "waves": [
+      {
+        "wave": 1,
+        "round": 1,
+        "power": 350,
+        "score": 100,
+        "enemies": [
+          {
+            "npcId": "necroNpc2FlayedOne",
+            "statsIndex": 3,
+            "count": 7
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          },
+          {
+            "id": "powupSummonSpawn_admecSmnVanguard",
+            "npcId": "powupSummonSpawn_admecSmnVanguard",
+            "statsIndex": 1,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 2,
+        "round": 3,
+        "power": 449,
+        "score": 150,
+        "enemies": [
+          {
+            "npcId": "orksNpc1Grot",
+            "statsIndex": 6,
+            "count": 5
+          },
+          {
+            "npcId": "orksNpc2OrkBoy",
+            "statsIndex": 6,
+            "count": 3
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHits",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcementShield",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 3,
+        "round": 5,
+        "power": 1292,
+        "score": 150,
+        "enemies": [
+          {
+            "npcId": "eldarNpc2Warlock",
+            "statsIndex": 7,
+            "count": 1
+          },
+          {
+            "npcId": "eldarNpc1Guardian",
+            "statsIndex": 7,
+            "count": 5
+          }
+        ],
+        "enemyRarityOnClear": "Uncommon",
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealing",
+            "count": 1
+          },
+          {
+            "id": "powupSummonSpawn_admecSmnTechpriest",
+            "npcId": "powupSummonSpawn_admecSmnTechpriest",
+            "statsIndex": 2,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 4,
+        "round": 8,
+        "power": 1675,
+        "score": 200,
+        "enemies": [
+          {
+            "npcId": "tauNpc6Carnivore",
+            "statsIndex": 8,
+            "count": 4
+          },
+          {
+            "npcId": "tauNpc1FireWarrior",
+            "statsIndex": 8,
+            "count": 5
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealth",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 5,
+        "round": 10,
+        "power": 3579,
+        "score": 250,
+        "enemies": [
+          {
+            "npcId": "blackNpc2Terminator",
+            "statsIndex": 10,
+            "count": 1
+          },
+          {
+            "npcId": "blackNpc1Bloodletter",
+            "statsIndex": 10,
+            "count": 3
+          },
+          {
+            "npcId": "blackNpc3TraitorGuardsman",
+            "statsIndex": 11,
+            "count": 5
+          }
+        ],
+        "enemyRarityOnClear": "Rare",
+        "powerUpsOnClear": [
+          {
+            "id": "powupMeleeHits",
+            "count": 1
+          },
+          {
+            "id": "powupSummonSpawn_admecSmnElectropriest",
+            "npcId": "powupSummonSpawn_admecSmnElectropriest",
+            "statsIndex": 3,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 6,
+        "round": 12,
+        "power": 10215,
+        "score": 400,
+        "enemies": [
+          {
+            "npcId": "thousNpc1PinkHorror",
+            "statsIndex": 12,
+            "count": 5
+          },
+          {
+            "npcId": "thousNpc2Screamer",
+            "statsIndex": 12,
+            "count": 4
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealing",
+            "count": 1
+          },
+          {
+            "id": "powupReactivateAbility",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 7,
+        "round": 14,
+        "power": 15683,
+        "score": 450,
+        "enemies": [
+          {
+            "npcId": "tyranBossTyrantGuardSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "tyranNpc1Hormagaunt",
+            "statsIndex": 15,
+            "count": 4
+          },
+          {
+            "npcId": "tyranNpc3Termagant",
+            "statsIndex": 15,
+            "count": 4
+          },
+          {
+            "npcId": "tyranNpc2RipperSwarm",
+            "statsIndex": 15,
+            "count": 2
+          }
+        ],
+        "enemyRarityOnClear": "Epic",
+        "powerUpsOnClear": [
+          {
+            "id": "powupReinforcementShield",
+            "count": 1
+          },
+          {
+            "id": "powupSummonSpawn_admecSmnTechpriest",
+            "npcId": "powupSummonSpawn_admecSmnTechpriest",
+            "statsIndex": 4,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 8,
+        "round": 16,
+        "power": 66898,
+        "score": 600,
+        "enemies": [
+          {
+            "npcId": "necroNpcPlasmancer",
+            "statsIndex": 12,
+            "count": 1
+          },
+          {
+            "npcId": "necroNpcDestroyer",
+            "statsIndex": 12,
+            "count": 1
+          },
+          {
+            "npcId": "necroNpc1Warrior",
+            "statsIndex": 17,
+            "count": 3
+          },
+          {
+            "npcId": "necroNpc3Deathmark",
+            "statsIndex": 17,
+            "count": 3
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupDamage",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 9,
+        "round": 18,
+        "power": 70964,
+        "score": 600,
+        "enemies": [
+          {
+            "npcId": "deathBossBlightlordSurv",
+            "statsIndex": 2,
+            "count": 1
+          },
+          {
+            "npcId": "deathBossRotboneSurv",
+            "statsIndex": 2,
+            "count": 1
+          },
+          {
+            "npcId": "deathNpc1Poxwalker",
+            "statsIndex": 18,
+            "count": 4
+          },
+          {
+            "npcId": "deathNpc2PlagueMarine",
+            "statsIndex": 18,
+            "count": 3
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupArmor",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 10,
+        "round": 20,
+        "power": 122260,
+        "score": 650,
+        "enemies": [
+          {
+            "npcId": "worldBossJakhalSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "worldNpc1Berzerker",
+            "statsIndex": 21,
+            "count": 7
+          }
+        ],
+        "enemyRarityOnClear": "Legendary",
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealing",
+            "count": 1
+          },
+          {
+            "id": "powupSummonSpawn_admecSmnTechpriest",
+            "npcId": "powupSummonSpawn_admecSmnTechpriest",
+            "statsIndex": 5,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 11,
+        "round": 22,
+        "power": 275409,
+        "score": 650,
+        "enemies": [
+          {
+            "npcId": "eldarNpc4Wraithguard",
+            "statsIndex": 22,
+            "count": 1
+          },
+          {
+            "npcId": "eldarBossLhykhisSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "eldarNpc3Harlequin",
+            "statsIndex": 23,
+            "count": 4
+          },
+          {
+            "npcId": "eldarNpc1Guardian",
+            "statsIndex": 23,
+            "count": 4
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHits",
+            "count": 1
+          },
+          {
+            "id": "powupReactivateAbility",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 12,
+        "round": 24,
+        "power": 262440,
+        "score": 1000,
+        "enemies": [
+          {
+            "npcId": "genesNpc2Genestealer",
+            "statsIndex": 24,
+            "count": 4
+          },
+          {
+            "npcId": "genesNpcPrimus",
+            "statsIndex": 13,
+            "count": 1
+          },
+          {
+            "npcId": "genesNpcPatriarch",
+            "statsIndex": 13,
+            "count": 1
+          },
+          {
+            "npcId": "genesNpc1Aberrant",
+            "statsIndex": 24,
+            "count": 2
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupSummonSpawn_admecSmnElectropriest",
+            "npcId": "powupSummonSpawn_admecSmnElectropriest",
+            "statsIndex": 5,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 13,
+        "round": 26,
+        "power": 595202,
+        "score": 1000,
+        "enemies": [
+          {
+            "npcId": "orksBossRuntherdSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "orksBossWeirdboySurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "orksNpc2OrkBoy",
+            "statsIndex": 38,
+            "count": 2
+          },
+          {
+            "npcId": "orksNpc3GrotTank",
+            "statsIndex": 38,
+            "count": 5
+          },
+          {
+            "npcId": "orksNpc6Stormboy",
+            "statsIndex": 38,
+            "count": 3
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupDamage",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 14,
+        "round": 28,
+        "power": 1181575,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "necroNpcSpyder",
+            "statsIndex": 17,
+            "count": 1
+          },
+          {
+            "npcId": "necroNpcWarden",
+            "statsIndex": 17,
+            "count": 1
+          },
+          {
+            "npcId": "necroNpc4Destroyer",
+            "statsIndex": 22,
+            "count": 1
+          },
+          {
+            "npcId": "necroNpc3Deathmark",
+            "statsIndex": 26,
+            "count": 7
+          },
+          {
+            "npcId": "necroNpcOverlord",
+            "statsIndex": 17,
+            "count": 1
+          }
+        ],
+        "enemyRarityOnClear": "Mythic",
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealing",
+            "count": 1
+          },
+          {
+            "id": "powupSummonSpawn_admecSmnTechpriest",
+            "npcId": "powupSummonSpawn_admecSmnTechpriest",
+            "statsIndex": 6,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 15,
+        "round": 30,
+        "power": 2491558,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "thousNpc4Terminator",
+            "statsIndex": 30,
+            "count": 2
+          },
+          {
+            "npcId": "thousNpc3RubricMarine",
+            "statsIndex": 30,
+            "count": 2
+          },
+          {
+            "npcId": "thousNpc1PinkHorror",
+            "statsIndex": 30,
+            "count": 4
+          },
+          {
+            "npcId": "thousBossSekhetarSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "thousBossAhrimanSurv",
+            "statsIndex": 1,
+            "count": 1
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupMeleeHits",
+            "count": 1
+          },
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 16,
+        "round": 32,
+        "power": 0,
+        "score": 1500,
+        "cloneHealthPct": 80,
+        "enemies": [],
+        "powerUpsOnClear": [
+          {
+            "id": "powupResurrect",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 17,
+        "round": 34,
+        "power": 5263279,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "tauNpc5StealthSuit",
+            "statsIndex": 34,
+            "count": 4
+          },
+          {
+            "npcId": "tauBossMarksmanInc",
+            "statsIndex": 19,
+            "count": 1
+          },
+          {
+            "npcId": "tauBossCrisisInc",
+            "statsIndex": 19,
+            "count": 1
+          },
+          {
+            "npcId": "tauNpc3DroneShield",
+            "statsIndex": 34,
+            "count": 2
+          },
+          {
+            "npcId": "tauNpc1FireWarrior",
+            "statsIndex": 34,
+            "count": 4
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupReactivateAbility",
+            "count": 1
+          },
+          {
+            "id": "powupSummonSpawn_admecSmnElectropriest",
+            "npcId": "powupSummonSpawn_admecSmnElectropriest",
+            "statsIndex": 6,
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 18,
+        "round": 36,
+        "power": 7073674,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "blackNpcTerminator",
+            "statsIndex": 18,
+            "count": 1
+          },
+          {
+            "npcId": "blackNpcHaarken",
+            "statsIndex": 18,
+            "count": 1
+          },
+          {
+            "npcId": "blackNpcAbaddon",
+            "statsIndex": 18,
+            "count": 1
+          },
+          {
+            "npcId": "blackNpc1Bloodletter",
+            "statsIndex": 39,
+            "count": 3
+          },
+          {
+            "npcId": "blackNpc4Havoc",
+            "statsIndex": 39,
+            "count": 3
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupReinforcement",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 19,
+        "round": 38,
+        "power": 12247428,
+        "score": 1500,
+        "enemies": [
+          {
+            "npcId": "worldBossKharnSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "worldBossExecutionsSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "worldBossEightboundSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "worldBossTerminatorSurv",
+            "statsIndex": 1,
+            "count": 1
+          },
+          {
+            "npcId": "worldNpc1Berzerker",
+            "statsIndex": 44,
+            "count": 6
+          }
+        ],
+        "powerUpsOnClear": [
+          {
+            "id": "powupHealing",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "wave": 20,
+        "round": 41,
+        "power": 60022256310,
+        "score": 2000,
+        "enemies": [
+          {
+            "npcId": "necroNpc1WarriorSurv",
+            "statsIndex": 3,
+            "count": 6
+          },
+          {
+            "npcId": "necroNpc4DestroyerSurv",
+            "statsIndex": 3,
+            "count": 6
+          }
+        ],
+        "powerUpsOnClear": []
+      }
+    ],
+    "scoring": {
+      "medals": [
+        {
+          "medal": "iron",
+          "wave": 1,
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 20,
+              "max": 20
+            }
+          ]
+        },
+        {
+          "medal": "bronze",
+          "wave": 3,
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 20,
+              "max": 20
+            }
+          ]
+        },
+        {
+          "medal": "silver",
+          "wave": 6,
+          "rewards": [
+            {
+              "type": "xpEpic",
+              "min": 5,
+              "max": 5
+            }
+          ]
+        },
+        {
+          "medal": "gold",
+          "wave": 9,
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 20,
+              "max": 20
+            }
+          ]
+        },
+        {
+          "medal": "platinum",
+          "wave": 11,
+          "rewards": [
+            {
+              "type": "xpLegendary",
+              "min": 3,
+              "max": 3
+            }
+          ]
+        },
+        {
+          "medal": "diamond",
+          "wave": 13,
+          "rewards": [
+            {
+              "type": "xpMythic",
+              "min": 1,
+              "max": 1
+            }
+          ]
+        }
+      ],
+      "killScores": [
+        {
+          "npcId": "blackNpc1Bloodletter",
+          "statsIndex": 10,
+          "score": 127
+        },
+        {
+          "npcId": "blackNpc1Bloodletter",
+          "statsIndex": 39,
+          "score": 457
+        },
+        {
+          "npcId": "blackNpc2Terminator",
+          "statsIndex": 10,
+          "score": 163
+        },
+        {
+          "npcId": "blackNpc3TraitorGuardsman",
+          "statsIndex": 11,
+          "score": 99
+        },
+        {
+          "npcId": "blackNpc4Havoc",
+          "statsIndex": 39,
+          "score": 575
+        },
+        {
+          "npcId": "blackNpcAbaddon",
+          "statsIndex": 18,
+          "score": 1755
+        },
+        {
+          "npcId": "blackNpcHaarken",
+          "statsIndex": 18,
+          "score": 1599
+        },
+        {
+          "npcId": "blackNpcTerminator",
+          "statsIndex": 18,
+          "score": 1595
+        },
+        {
+          "npcId": "deathBossBlightlordSurv",
+          "statsIndex": 2,
+          "score": 653
+        },
+        {
+          "npcId": "deathBossRotboneSurv",
+          "statsIndex": 2,
+          "score": 627
+        },
+        {
+          "npcId": "deathNpc1Poxwalker",
+          "statsIndex": 18,
+          "score": 255
+        },
+        {
+          "npcId": "deathNpc2PlagueMarine",
+          "statsIndex": 18,
+          "score": 303
+        }
+      ],
+      "cloneWaveScore": 1000,
+      "skippedTurnScore": 400,
+      "rarityMilestones": [
+        {
+          "rarity": "Uncommon",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 15,
+              "max": 15
+            }
+          ]
+        },
+        {
+          "rarity": "Rare",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 15,
+              "max": 15
+            }
+          ]
+        },
+        {
+          "rarity": "Epic",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 15,
+              "max": 15
+            }
+          ]
+        },
+        {
+          "rarity": "Legendary",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 15,
+              "max": 15
+            }
+          ]
+        },
+        {
+          "rarity": "Mythic",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 15,
+              "max": 15
+            }
+          ]
+        }
+      ]
+    },
+    "points": {
+      "max": 5450,
+      "freeMissions": 2020,
+      "premiumMissions": 1000,
+      "survivalFree": 2025,
+      "survivalPremium": 405
+    },
+    "milestones": [
+      {
+        "requiredProgress": 100,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyDecember2026",
+            "min": 30,
+            "max": 30
+          }
+        ]
+      },
+      {
+        "requiredProgress": 205,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyDecember2026",
+            "min": 40,
+            "max": 40
+          }
+        ]
+      },
+      {
+        "requiredProgress": 315,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyDecember2026",
+            "min": 55,
+            "max": 55
+          }
+        ]
+      },
+      {
+        "requiredProgress": 430,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyDecember2026",
+            "min": 60,
+            "max": 60
+          }
+        ]
+      }
+    ],
+    "chests": [
+      {
+        "level": 1,
+        "cost": {
+          "type": "seasonalEventCurrencyDecember2026",
+          "amount": 40
+        },
+        "rewards": [
+          {
+            "type": "gold",
+            "min": 600,
+            "max": 660
+          },
+          {
+            "type": "shards_astarCyrus",
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": "abilityTokenCommon_Imperial",
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": "upgDmgC009",
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "level": 2,
+        "cost": {
+          "type": "seasonalEventCurrencyDecember2026",
+          "amount": 45
+        },
+        "rewards": [
+          {
+            "type": "gold",
+            "min": 800,
+            "max": 880
+          },
+          {
+            "type": "shards_astarCyrus",
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": "abilityTokenCommon_Imperial",
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": "upgHpC015",
+            "min": 1,
+            "max": 1
+          }
+        ]
+      },
+      {
+        "level": 3,
+        "cost": {
+          "type": "seasonalEventCurrencyDecember2026",
+          "amount": 50
+        },
+        "rewards": [
+          {
+            "type": "gold",
+            "min": 900,
+            "max": 990
+          },
+          {
+            "type": "shards_astarCyrus",
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": "abilityTokenCommon_Imperial",
+            "min": 2,
+            "max": 2
+          },
+          {
+            "type": "upgDmgC009",
+            "min": 1,
+            "max": 1
+          }
+        ]
+      }
+    ],
+    "missions": {
+      "daily": [
+        {
+          "id": "december_2026_daily_01",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 70,
+              "max": 70
+            }
+          ],
+          "tasks": [
+            {
+              "taskId": "SlayEnemies",
+              "target": 75
+            }
+          ]
+        },
+        {
+          "id": "december_2026_daily_02",
+          "rewards": [
+            {
+              "type": "xp_seasonal",
+              "min": 70,
+              "max": 70
+            }
+          ],
+          "tasks": [
+            {
+              "taskId": "SlayEnemiesFromHigherElevation",
+              "target": 15
+            }
+          ]
+        }
+      ],
+      "free": [
+        {
+          "id": "december_2026_free_1",
+          "missions": [
+            {
+              "id": "december_2026_free_1_chain_01",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 76,
+                  "max": 76
+                },
+                {
+                  "type": "survivalBoost_stats",
+                  "min": 1,
+                  "max": 1
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "PlayBattlesInGameMode",
+                  "target": 1,
+                  "parameters": {
+                    "gameMode": "Survival"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "december_2026_free_1_chain_02",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 76,
+                  "max": 76
+                },
+                {
+                  "type": "survivalBoost_stats",
+                  "min": 1,
+                  "max": 1
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "SlayEnemiesWithFactionTrait",
+                  "target": 50,
+                  "parameters": {
+                    "factionTrait": "Imperial"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "premium": [
+        {
+          "id": "december_2026_premium",
+          "missions": [
+            {
+              "id": "december_2026_premium_chain_01",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 100,
+                  "max": 100
+                },
+                {
+                  "type": "seasonalEventCurrencyDecember2026",
+                  "min": 50,
+                  "max": 50
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "SlayEnemiesOfFactionTrait",
+                  "target": 30,
+                  "parameters": {
+                    "factionTrait": "Xenos"
+                  }
+                },
+                {
+                  "taskId": "SlayEnemiesOfFactionTrait",
+                  "target": 15,
+                  "parameters": {
+                    "factionTrait": "Chaos"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "december_2026_premium_chain_02",
+              "rewards": [
+                {
+                  "type": "xp_seasonal",
+                  "min": 100,
+                  "max": 100
+                },
+                {
+                  "type": "seasonalEventCurrencyDecember2026",
+                  "min": 50,
+                  "max": 50
+                }
+              ],
+              "tasks": [
+                {
+                  "taskId": "SlayEnemiesOfFactionTrait",
+                  "target": 40,
+                  "parameters": {
+                    "factionTrait": "Xenos"
+                  }
+                },
+                {
+                  "taskId": "SlayEnemiesOfFactionTrait",
+                  "target": 20,
+                  "parameters": {
+                    "factionTrait": "Chaos"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "offers": [
+      {
+        "id": "offer_seasonal_event_december_2026_pass",
+        "kind": "pass",
+        "priceCents": 999,
+        "maxPurchases": 1,
+        "rewards": [
+          {
+            "type": "seasonalEventCurrencyDecember2026",
+            "min": 200,
+            "max": 200
+          },
+          {
+            "type": "seasonalEcBonus",
+            "min": 10,
+            "max": 10
+          },
+          {
+            "type": "seasonalPremium",
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": "gems",
+            "min": 1000,
+            "max": 1000
+          }
+        ]
+      },
+      {
+        "id": "offer_seasonal_event_december_2026_playmore",
+        "kind": "playmore",
+        "priceCents": 1599,
+        "maxPurchases": 3,
+        "rewards": [
+          {
+            "type": "stamina_survival",
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": "stamina_waves",
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": "stamina_treasureBeach",
+            "min": 1,
+            "max": 1
+          },
+          {
+            "type": "specialSummoningToken",
+            "min": 5,
+            "max": 5
+          },
+          {
+            "type": "stamina",
+            "min": 90,
+            "max": 90
+          },
+          {
+            "type": "raidTicket",
+            "min": 15,
+            "max": 15
+          }
+        ]
+      }
+    ]
+  }
+]

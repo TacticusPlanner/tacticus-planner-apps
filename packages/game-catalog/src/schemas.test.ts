@@ -5,6 +5,7 @@ import globalValues from "./schemas/global-values.fixture.json"
 import progressionRules from "./schemas/progression-rules.fixture.json"
 import hre from "./schemas/hre.fixture.json"
 import guildWar from "./schemas/guild-war.fixture.json"
+import survivalEvents from "./schemas/survival-events.fixture.json"
 import incursions from "./schemas/incursions.fixture.json"
 import npcEncounters from "./schemas/npc-encounters.fixture.json"
 import questCrates from "./schemas/quest-crates.fixture.json"
@@ -1273,6 +1274,38 @@ describe("guild-war schema", () => {
     expect(
       datasetPayloadSchemas["guild-war"].safeParse([
         { ...season, tiers: [{ id: "Hero", rarityCaps: ["Mythic"] }] },
+      ]).success
+    ).toBe(false)
+  })
+})
+
+describe("survival-events schema", () => {
+  it("parses the served events with their waves, scoring and offers", () => {
+    const events =
+      datasetPayloadSchemas["survival-events"].parse(survivalEvents)
+    const december = events.find((event) => event.id === "december-2026")
+    expect(december?.startUtc).toBe("2026-12-03T00:00:00+00:00")
+    expect(december?.waves).toHaveLength(20)
+    expect(
+      december?.waves.find((wave) => wave.wave === 16)?.cloneHealthPct
+    ).toBeGreaterThan(0)
+    expect(december?.rules.lastStand?.buffId).toBe("RepairField")
+    expect(december?.offers.map((offer) => offer.kind)).toEqual([
+      "pass",
+      "playmore",
+    ])
+
+    const crescendo = events.find((event) => event.id === "crescendo-a")
+    expect(crescendo?.startUtc).toBeNull()
+    expect(crescendo?.rules.summon?.unitId).toBe("astraSmnGuardsman")
+    expect(crescendo?.scoring.medals.at(-1)?.medal).toBe("adamantine")
+  })
+
+  it("rejects an event without waves", () => {
+    const [event] = survivalEvents
+    expect(
+      datasetPayloadSchemas["survival-events"].safeParse([
+        { ...event, waves: [] },
       ]).success
     ).toBe(false)
   })
