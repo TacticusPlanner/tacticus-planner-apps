@@ -57,8 +57,11 @@ describe("changelogTarget", () => {
     })
   })
 
+  it("opens Home without unread activity", () => {
+    expect(changelogTarget(false, "upd_2", null)).toEqual({ to: "home" })
+  })
+
   it.each([
-    ["no unread activity", false, "upd_2", null],
     ["an unknown newest post", true, null, null],
     ["the newest post already opened from here", true, "upd_2", "upd_2"],
   ])("opens the Updates list with %s", (_, hasUnread, latest, lastOpened) => {
@@ -69,13 +72,13 @@ describe("changelogTarget", () => {
 })
 
 describe("resolveChangelogTarget", () => {
-  it("opens the list without asking the feed when nothing is unread", async () => {
+  it("opens Home without asking the feed when nothing is unread", async () => {
     const fetchImpl = feed({ items: [{ id: "upd_1" }] })
 
     await expect(
       resolveChangelogTarget(false, "proj", fetchImpl)
     ).resolves.toEqual({
-      to: "updates",
+      to: "home",
     })
     expect(fetchImpl).not.toHaveBeenCalled()
   })
