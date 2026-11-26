@@ -84,7 +84,9 @@ describe("accountQueries.current freshness", () => {
   })
 
   it("never serves the feedback-widget token from the cache", () => {
-    expect(accountQueries.userJotToken()).toMatchObject({
+    expect(
+      accountQueries.userJotToken({ appMode: "browser", language: "en" })
+    ).toMatchObject({
       staleTime: 0,
       gcTime: 0,
     })

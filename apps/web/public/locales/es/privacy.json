@@ -24,7 +24,7 @@
     },
     "feedback": {
       "title": "Tablero de sugerencias",
-      "body": "El tablero de sugerencias funciona con UserJot. Si lo abres desde el botón de sugerencias o el menú de la cuenta del planificador con la sesión iniciada, el planificador te identifica ante UserJot con un token firmado de tu cuenta y tu nombre de planificador, para que tus publicaciones y votos se te atribuyan. Abrir el enlace público del tablero, como el del pie de página, no envía nada desde el planificador."
+      "body": "El tablero de sugerencias funciona con UserJot. Si lo abres desde el botón de sugerencias o el menú de la cuenta del planificador con la sesión iniciada, el planificador te identifica ante UserJot con un token firmado de tu cuenta y tu nombre de planificador, para que tus publicaciones y votos se te atribuyan. El token también incluye algunos datos que nos ayudan a atender un informe: la versión del planificador, si usas la app instalada o un navegador, tu idioma y si hay una clave de la API de Tacticus vinculada (nunca la clave). Una publicación enviada desde el widget registra la página desde la que se envió. Abrir el enlace público del tablero, como el del pie de página, no envía nada desde el planificador."
     },
     "noSale": {
       "title": "Sin anuncios ni venta de datos",

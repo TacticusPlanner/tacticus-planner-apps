@@ -25,7 +25,22 @@ const useCurrentUserMock = vi.fn<() => { state: CurrentUserState }>(() => ({
 const fetchUserJotToken = vi.fn()
 vi.mock("@/entities/account", () => ({
   useCurrentUser: () => useCurrentUserMock(),
-  accountQueries: { userJotToken: () => ({ queryKey: ["userjot-token"] }) },
+  accountQueries: {
+    userJotToken: (context: unknown) => ({
+      queryKey: ["userjot-token", context],
+    }),
+  },
+}))
+
+const runningInstalled = vi.fn(() => false)
+vi.mock("@/widgets/app-install", () => ({
+  isRunningInstalled: () => runningInstalled(),
+}))
+
+const searchParams = { current: new URLSearchParams() }
+const setSearchParams = vi.fn()
+vi.mock("react-router", () => ({
+  useSearchParams: () => [searchParams.current, setSearchParams],
 }))
 
 const queryMock = vi.fn()
@@ -71,6 +86,9 @@ describe("UserJotProvider", () => {
     isAuthenticated.mockReturnValue(true)
     theme.mockReturnValue("light")
     language.mockReturnValue("en")
+    runningInstalled.mockReturnValue(false)
+    searchParams.current = new URLSearchParams()
+    setSearchParams.mockClear()
     useCurrentUserMock.mockReturnValue({
       state: {
         status: "success",
@@ -158,7 +176,7 @@ describe("UserJotProvider", () => {
       expect(open).toHaveBeenCalledOnce()
     })
 
-    it("inits the widget never to pop updates open by itself", async () => {
+    it("inits the widget to record the page path and pop up replies, never updates", async () => {
       delete window.uj
       delete window.$ujq
       vi.resetModules()
@@ -168,7 +186,12 @@ describe("UserJotProvider", () => {
       const queued = window.$ujq as unknown[][] | undefined
       const init = queued?.find(([method]) => method === "init")
       expect(init?.[2]).toMatchObject({
-        widget: { notifications: { updates: "none" } },
+        pageContext: "path",
+        widget: {
+          launcher: false,
+          whispers: true,
+          notifications: { updates: "none" },
+        },
       })
     })
 
@@ -195,6 +218,45 @@ describe("UserJotProvider", () => {
       expect(identify).toHaveBeenCalledWith({ token: "signed-jwt" })
     })
     expect(logout).not.toHaveBeenCalled()
+  })
+
+  it("asks for a token carrying the app mode and UI language as feedback context", async () => {
+    runningInstalled.mockReturnValue(true)
+    language.mockReturnValue("de")
+    renderProvider()
+
+    await waitFor(() => expect(identify).toHaveBeenCalledTimes(1))
+    expect(queryMock).toHaveBeenCalledWith({
+      queryKey: [
+        "userjot-token",
+        expect.objectContaining({ appMode: "installed", language: "de" }),
+      ],
+    })
+  })
+
+  it("opens a changelog post from a deep link once and drops the link from the URL", () => {
+    searchParams.current = new URLSearchParams("changelog=upd_1&tab=raids")
+    renderProvider()
+
+    expect(open).toHaveBeenCalledWith({ to: "updates", updateId: "upd_1" })
+    expect(setSearchParams).toHaveBeenCalledWith(
+      new URLSearchParams("tab=raids"),
+      { replace: true }
+    )
+  })
+
+  it("opens a feedback request from a deep link", () => {
+    searchParams.current = new URLSearchParams("feedback=req_9")
+    renderProvider()
+
+    expect(open).toHaveBeenCalledWith({ to: "feedback", submissionId: "req_9" })
+  })
+
+  it("leaves the URL alone without a deep link", () => {
+    renderProvider()
+
+    expect(open).not.toHaveBeenCalled()
+    expect(setSearchParams).not.toHaveBeenCalled()
   })
 
   it("re-identifies with a freshly fetched token after the confirmed name changes", async () => {

@@ -108,7 +108,7 @@ describe("useQuickActions", () => {
     signInRedirect.disabled = false
   })
 
-  it("lists the five actions in order for a signed-in user on a page with a tour", () => {
+  it("lists the six actions in order for a signed-in user on a page with a tour", () => {
     const { result } = setup()
 
     expect(ids(result)).toEqual([
@@ -116,6 +116,7 @@ describe("useQuickActions", () => {
       "createProject",
       "sync",
       "feedback",
+      "reportBug",
       "tourPage",
     ])
     expect(
@@ -127,7 +128,7 @@ describe("useQuickActions", () => {
     tour.hasPageTour = false
     const { result } = setup(false)
 
-    expect(ids(result)).toEqual(["signIn", "signUp", "feedback"])
+    expect(ids(result)).toEqual(["signIn", "signUp", "feedback", "reportBug"])
   })
 
   it("runs the guest's sign-in and sign-up redirects", () => {
@@ -182,6 +183,9 @@ describe("useQuickActions", () => {
     expect(byId("feedback")?.disabledReason).toBe(
       "nav.quickActions.feedbackUnavailable"
     )
+    expect(byId("reportBug")?.disabledReason).toBe(
+      "nav.quickActions.feedbackUnavailable"
+    )
     expect(byId("tourPage")?.disabledReason).toBe(
       "nav.quickActions.tourRunning"
     )
@@ -214,6 +218,18 @@ describe("useQuickActions", () => {
     expect(sync.syncNow).toHaveBeenCalledTimes(1)
     expect(userJot.open).toHaveBeenCalledTimes(1)
     expect(tour.startPageTour).toHaveBeenCalledTimes(1)
+  })
+
+  it("opens the widget's submit form from Report a bug", () => {
+    const { result } = setup()
+
+    result.current.select("reportBug")
+    act(() => result.current.flush())
+
+    expect(userJot.open).toHaveBeenCalledWith({
+      to: "feedback",
+      compose: true,
+    })
   })
 
   it("re-checks eligibility at dispatch: authentication lost after selection", () => {

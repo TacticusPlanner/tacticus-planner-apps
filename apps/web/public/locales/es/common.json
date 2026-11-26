@@ -164,7 +164,8 @@
     "description": "Esta página encontró un error inesperado. Recargar suele solucionarlo, sobre todo justo después de una actualización.",
     "reload": "Recargar",
     "goHome": "Ir a Inicio",
-    "feedbackHint": "Si sigue ocurriendo, cuéntanoslo con el botón de Feedback."
+    "feedbackHint": "Si sigue ocurriendo, avísanos.",
+    "report": "Informar de un error"
   },
   "onboarding": {
     "genericError": "Algo salió mal. Inténtalo de nuevo.",
@@ -314,6 +315,8 @@
       "feedbackLabel": "Enviar comentarios",
       "feedbackDescription": "Abrir el widget de comentarios, hoja de ruta y novedades",
       "feedbackUnavailable": "Los comentarios no están disponibles ahora mismo",
+      "reportBugLabel": "Informar de un error",
+      "reportBugDescription": "Abre el formulario de comentarios para describir un problema",
       "tourDescription": "Recorrer las funciones de esta página",
       "tourRunning": "Ya hay un recorrido en curso",
       "signInDescription": "Planifica objetivos, diarias, Eventos Legendarios e incursiones de gremio con tu propio roster",

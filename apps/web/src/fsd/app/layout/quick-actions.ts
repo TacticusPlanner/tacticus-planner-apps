@@ -8,6 +8,7 @@ export type QuickActionId =
   | "createProject"
   | "sync"
   | "feedback"
+  | "reportBug"
   | "tourPage"
 
 export type QuickAction = {

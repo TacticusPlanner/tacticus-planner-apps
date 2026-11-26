@@ -25,7 +25,8 @@ async function renderShell(shell: ReactElement) {
     [
       {
         path: "/home",
-        element: shell,
+        // Inside the router, as in the app: the provider reads the URL for widget deep links.
+        element: <UserJotProvider>{shell}</UserJotProvider>,
         children: [{ index: true, element: <StubPage /> }],
       },
     ],
@@ -33,11 +34,9 @@ async function renderShell(shell: ReactElement) {
   )
   const { container } = render(
     <PlayerDataProvider baseUrl="http://api.test">
-      <UserJotProvider>
-        <TourProvider>
-          <RouterProvider router={router} />
-        </TourProvider>
-      </UserJotProvider>
+      <TourProvider>
+        <RouterProvider router={router} />
+      </TourProvider>
     </PlayerDataProvider>,
     { theme: true }
   )

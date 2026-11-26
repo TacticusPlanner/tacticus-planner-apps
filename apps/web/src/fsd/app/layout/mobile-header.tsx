@@ -135,6 +135,10 @@ function MobileGuestSettings() {
             setOpen(false)
             openUserJot({ to: "updates" })
           }}
+          onRoadmap={() => {
+            setOpen(false)
+            openUserJot({ to: "roadmap" })
+          }}
           tourRow={
             <TourButton
               className="h-8 w-full justify-start px-2 font-normal"

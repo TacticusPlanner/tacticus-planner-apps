@@ -8,6 +8,7 @@ export {
 export { accountQueries } from "./api/account.queries"
 export type {
   ImportPartResult,
+  UserJotTokenContext,
   ImportV1ProfileResult,
   V1GoalOutcome,
   V1LegendaryEventIssue,

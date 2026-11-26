@@ -48,6 +48,7 @@ export function AccountCard({
   onEditName,
   onFeedback,
   onChangelog,
+  onRoadmap,
   changelogUnread = false,
   feedbackUnavailable,
   onImportV1,
@@ -71,6 +72,9 @@ export function AccountCard({
   onFeedback: () => void
   /** Opens the widget's Updates, so reading there clears the feedback button's unread dot. */
   onChangelog: () => void
+  /** Opens the widget's Roadmap, so the planner stays in place (and signed in to the board). While the widget is
+   *  unavailable the row falls back to the public board in a new tab. */
+  onRoadmap: () => void
   /** The widget reports unread activity: mark the Changelog row with a dot. */
   changelogUnread?: boolean
   /** Why the feedback row is disabled (the widget failed to load), or undefined when it works. */
@@ -79,7 +83,7 @@ export function AccountCard({
   /** Opens the install guide; the row is left out where the app is installed or cannot be. */
   onInstallApp?: () => void
   onOpenAccountSettings: () => void
-  /** Closes the menu when a row leaves it (Roadmap, Discord, Buy Me a Coffee, Privacy & cookies, Terms of use). */
+  /** Closes the menu when a row leaves it (the Roadmap fallback link, Discord, Buy Me a Coffee, Privacy & cookies, Terms of use). */
   onExternalLink?: () => void
   onSignOut: () => void
   signInMethod: SignInMethod
@@ -177,13 +181,22 @@ export function AccountCard({
           onClick={onFeedback}
         />
         {tourRow}
-        <MenuLinkRow
-          data-testid="auth-roadmap"
-          onClick={onExternalLink}
-          href={USERJOT_ROADMAP_URL}
-          icon={MapIcon}
-          label={t("feedback.roadmap")}
-        />
+        {feedbackUnavailable ? (
+          <MenuLinkRow
+            data-testid="auth-roadmap"
+            onClick={onExternalLink}
+            href={USERJOT_ROADMAP_URL}
+            icon={MapIcon}
+            label={t("feedback.roadmap")}
+          />
+        ) : (
+          <MenuRow
+            data-testid="auth-roadmap"
+            icon={MapIcon}
+            label={t("feedback.roadmap")}
+            onClick={onRoadmap}
+          />
+        )}
         <MenuRow
           data-testid="auth-changelog"
           disabled={Boolean(feedbackUnavailable)}

@@ -164,7 +164,8 @@
     "description": "Auf dieser Seite ist ein unerwarteter Fehler aufgetreten. Neu laden hilft meistens, besonders direkt nach einem Update.",
     "reload": "Neu laden",
     "goHome": "Zur Startseite",
-    "feedbackHint": "Wenn es weiterhin passiert, melde es uns über den Feedback-Button."
+    "feedbackHint": "Wenn es weiterhin passiert, sag uns Bescheid.",
+    "report": "Fehler melden"
   },
   "onboarding": {
     "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
@@ -314,6 +315,8 @@
       "feedbackLabel": "Feedback senden",
       "feedbackDescription": "Widget für Feedback, Roadmap und Neuigkeiten öffnen",
       "feedbackUnavailable": "Feedback ist gerade nicht verfügbar",
+      "reportBugLabel": "Fehler melden",
+      "reportBugDescription": "Öffne das Feedback-Formular, um ein Problem zu beschreiben",
       "tourDescription": "Die Funktionen dieser Seite kennenlernen",
       "tourRunning": "Eine Tour läuft bereits",
       "signInDescription": "Plane Ziele, Dailies, Legendary Events und Gildenraids mit deinem eigenen Roster",
