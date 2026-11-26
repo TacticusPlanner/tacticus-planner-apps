@@ -6,7 +6,8 @@
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
     "Content-Security-Policy": "frame-ancestors 'none'",
     "X-Frame-Options": "DENY",
-    "Content-Security-Policy-Report-Only": "default-src 'self'; script-src 'self' https://cdn.userjot.com; style-src 'self' 'unsafe-inline' https://*.userjot.com; img-src 'self' data: blob: https://*.userjot.com; font-src 'self' data: https://*.userjot.com; connect-src 'self' https://api.tacticusplanner.app https://api-staging.tacticusplanner.app https://tacticusplannerext.ciamlogin.com https://us.i.posthog.com https://*.userjot.com; frame-src https://tacticusplannerext.ciamlogin.com https://*.userjot.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+    "Content-Security-Policy-Report-Only": "default-src 'self'; script-src 'self' https://cdn.userjot.com; style-src 'self' 'unsafe-inline' https://*.userjot.com; img-src 'self' data: blob: https://*.userjot.com; font-src 'self' data: https://*.userjot.com; connect-src 'self' https://api.tacticusplanner.app https://api-staging.tacticusplanner.app https://tacticusplannerext.ciamlogin.com https://us.i.posthog.com https://*.userjot.com; frame-src https://tacticusplannerext.ciamlogin.com https://*.userjot.com; object-src 'none'; base-uri 'self'; form-action 'self'; report-uri https://us.i.posthog.com/report/?token=phc_yyw5HkeN3q3pneyzPqTSTvBY5ZvDT7SRJizVq6Ra55iy; report-to posthog",
+    "Reporting-Endpoints": "posthog=\"https://us.i.posthog.com/report/?token=phc_yyw5HkeN3q3pneyzPqTSTvBY5ZvDT7SRJizVq6Ra55iy\""
   },
   "routes": [
     {
