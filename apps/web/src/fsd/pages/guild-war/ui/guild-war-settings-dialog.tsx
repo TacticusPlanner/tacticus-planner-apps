@@ -27,6 +27,7 @@ import {
 } from "@/shared/ui"
 
 import { useSeasonName } from "../model/use-season-name"
+import { useOverlayContainer } from "./use-overlay-container"
 
 /**
  * The page's Settings: the war's season and battlefield level. A change saves at once (creating
@@ -53,6 +54,16 @@ export function GuildWarSettingsDialog({
   const { t } = useTranslation("guildWar")
   const { seasonName, seasonNumber } = useSeasonName()
   const save = useSetGuildWarSettings()
+  const {
+    setTrigger: setSeasonTrigger,
+    container: seasonContainer,
+    onOpenChange: seasonOpenChange,
+  } = useOverlayContainer()
+  const {
+    setTrigger: setLevelTrigger,
+    container: levelContainer,
+    onOpenChange: levelOpenChange,
+  } = useOverlayContainer()
   const season = seasons.find((entry) => entry.id === settings.seasonId)
   // Level 0 (not taking part) is not offered; a war already stored at it still shows it.
   const played = playedLevels(season)
@@ -121,6 +132,7 @@ export function GuildWarSettingsDialog({
             {({ id, labelId }) => (
               <Select
                 disabled={save.isPending || seasonLocked}
+                onOpenChange={seasonOpenChange}
                 onValueChange={changeSeason}
                 value={settings.seasonId}
               >
@@ -128,10 +140,11 @@ export function GuildWarSettingsDialog({
                   aria-labelledby={labelId}
                   id={id}
                   className="w-full"
+                  ref={setSeasonTrigger}
                 >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent position="popper">
+                <SelectContent container={seasonContainer} position="popper">
                   {season ? null : (
                     <SelectItem value={settings.seasonId}>
                       {seasonName(settings.seasonId)}
@@ -151,6 +164,7 @@ export function GuildWarSettingsDialog({
           {({ id, labelId }) => (
             <Select
               disabled={save.isPending || !season}
+              onOpenChange={levelOpenChange}
               onValueChange={(next) =>
                 change({ ...settings, battlefieldLevel: Number(next) })
               }
@@ -160,10 +174,11 @@ export function GuildWarSettingsDialog({
                 aria-labelledby={labelId}
                 id={id}
                 className="w-full"
+                ref={setLevelTrigger}
               >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent position="popper">
+              <SelectContent container={levelContainer} position="popper">
                 {levels.map((level) => (
                   <SelectItem key={level} value={String(level)}>
                     {t("level", { level })}

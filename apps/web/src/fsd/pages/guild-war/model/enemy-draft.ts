@@ -64,5 +64,7 @@ export function enemyFields(draft: EnemyDraft): GuildWarEnemy | null {
     draft.mow === null &&
     draft.buffIds.length === 0 &&
     draft.boardId === null
-  return empty ? null : draft
+  if (empty) return null
+  // A Machine of War has no outcome; an older attack may still store one.
+  return { ...draft, mow: draft.mow && { ...draft.mow, state: null } }
 }

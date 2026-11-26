@@ -30,6 +30,7 @@ import { MAX_ENEMY_CHARACTERS, enemyUnit } from "../../model/enemy-draft"
 import type { EnemyDraft } from "../../model/enemy-draft"
 import type { GuildWarEnemyUnit } from "../../model/types"
 import { useGuildWarNames } from "../../model/use-guild-war-names"
+import { useOverlayContainer } from "../use-overlay-container"
 
 const ANY = "any"
 
@@ -49,17 +50,28 @@ function OptionalSelect<T extends string>({
   noneLabel: string
   testId: string
 }) {
+  const {
+    setTrigger,
+    container: overlayContainer,
+    onOpenChange: onOverlayOpenChange,
+  } = useOverlayContainer()
   return (
     <Select
+      onOpenChange={onOverlayOpenChange}
       onValueChange={(next) =>
         onChange(options.find((option) => option.value === next)?.value ?? null)
       }
       value={value ?? ANY}
     >
-      <SelectTrigger aria-label={label} className="w-full" data-testid={testId}>
+      <SelectTrigger
+        aria-label={label}
+        className="w-full"
+        data-testid={testId}
+        ref={setTrigger}
+      >
         <SelectValue />
       </SelectTrigger>
-      <SelectContent position="popper">
+      <SelectContent container={overlayContainer} position="popper">
         <SelectItem value={ANY}>{noneLabel}</SelectItem>
         {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>

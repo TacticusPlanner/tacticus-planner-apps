@@ -679,4 +679,39 @@ describe("selectHomeEvents Guild War", () => {
       }),
     ])
   })
+
+  it("links by phase, not by whether it is running", () => {
+    const events = selectHomeEvents({
+      homeScreen: null,
+      legendary: null,
+      guildWar: {
+        live: guildWarPhase("preparation", 2, "2026-11-29T21:00:00Z"),
+        next: guildWarPhase("war", 2, "2026-11-30T21:00:00Z"),
+      },
+      nowMs: Date.parse("2026-11-30T12:00:00Z"),
+    })
+    expect(events.live).toEqual([
+      expect.objectContaining({ phase: "preparation", destination: null }),
+    ])
+    expect(events.upcoming).toEqual([
+      expect.objectContaining({
+        phase: "war",
+        destination: "/guild/war/offense",
+      }),
+    ])
+  })
+
+  it("adds no row for a missing phase", () => {
+    const events = selectHomeEvents({
+      homeScreen: null,
+      legendary: null,
+      guildWar: {
+        live: null,
+        next: guildWarPhase("preparation", 1, "2026-11-27T09:00:00Z"),
+      },
+      nowMs: Date.parse("2026-11-26T12:00:00Z"),
+    })
+    expect(events.live).toEqual([])
+    expect(events.upcoming).toHaveLength(1)
+  })
 })

@@ -311,6 +311,37 @@ describe("OffensePage", () => {
     )
   })
 
+  it("logs the first attack in a war another device just started", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({ war: null })
+    api.createAttack
+      .mockRejectedValueOnce(
+        new ApiError(409, "No current war", {
+          issueCode: "guildWarNotStarted",
+        })
+      )
+      .mockResolvedValueOnce(
+        war({ tokensUsed: 1, deployedUnitIds: ["ultraCalgar"] })
+      )
+    api.setCurrent.mockRejectedValue(
+      new ApiError(409, "Stale", {
+        issueCode: "guildWarRevisionStale",
+        current: war({ revision: 1 }),
+      })
+    )
+    window.localStorage.setItem("guildWar.zone", "Armoury")
+    renderOffense()
+
+    await user.click(await tile("ultraCalgar"))
+    await user.click(screen.getByRole("button", { name: "Won" }))
+
+    // The stale start is ignored and the attack logged once more, with no second tap.
+    await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(2))
+    await waitFor(() =>
+      expect(screen.queryByTestId("guild-war-selection-bar")).toBeNull()
+    )
+  })
+
   it("logs with details: the lost units, a note and an enemy at the defenders' rarity", async () => {
     const user = userEvent.setup()
     api.current.mockResolvedValue({ war: war() })
@@ -440,6 +471,33 @@ describe("OffensePage", () => {
         revision: 1,
       })
     )
+  })
+
+  it("keeps the edit open while its save runs", async () => {
+    const user = userEvent.setup()
+    const logged = attack()
+    api.current.mockResolvedValue({
+      war: war({
+        tokensUsed: 1,
+        deployedUnitIds: ["ultraTitus"],
+        attacks: [logged],
+      }),
+    })
+    api.updateAttack.mockReturnValue(new Promise(() => {}))
+    renderOffense()
+
+    const log = await screen.findByTestId("guild-war-attack-log")
+    await user.click(within(log).getByRole("button", { name: "Edit attack" }))
+    const dialog = await screen.findByTestId("guild-war-log-dialog")
+    await user.click(within(dialog).getByRole("button", { name: "Save" }))
+
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole("button", { name: "Cancel" })
+      ).toBeDisabled()
+    )
+    await user.keyboard("{Escape}")
+    expect(screen.getByTestId("guild-war-log-dialog")).toBeInTheDocument()
   })
 
   it("deletes an attack only after confirming", async () => {

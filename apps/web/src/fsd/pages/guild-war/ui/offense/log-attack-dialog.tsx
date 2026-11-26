@@ -49,6 +49,7 @@ import type { Selection, UnitKind } from "../../model/offense"
 import { pickRarity } from "../../model/page-target"
 import type { GuildWarAttack, GuildWarAttackFields } from "../../model/types"
 import { useGuildWarNames } from "../../model/use-guild-war-names"
+import { useOverlayContainer } from "../use-overlay-container"
 import { EnemyDetails } from "./enemy-details"
 import { ZoneOptions } from "./target-fields"
 
@@ -142,19 +143,34 @@ function TargetEditor({
   onRarityChange: (rarity: Rarity) => void
 }) {
   const { t } = useTranslation(["guildWar", "progression"])
+  const {
+    setTrigger,
+    container: overlayContainer,
+    onOpenChange: onOverlayOpenChange,
+  } = useOverlayContainer()
   return (
     <div className="flex flex-col gap-3">
       <FilterField label={t("target.zone")}>
         {({ id, labelId }) => (
           <Select
             disabled={!season}
+            onOpenChange={onOverlayOpenChange}
             onValueChange={onZoneChange}
             value={zoneId}
           >
-            <SelectTrigger aria-labelledby={labelId} className="w-full" id={id}>
+            <SelectTrigger
+              aria-labelledby={labelId}
+              className="w-full"
+              id={id}
+              ref={setTrigger}
+            >
               <SelectValue placeholder={t("target.zonePlaceholder")} />
             </SelectTrigger>
-            <ZoneOptions battlefieldLevel={battlefieldLevel} season={season} />
+            <ZoneOptions
+              battlefieldLevel={battlefieldLevel}
+              container={overlayContainer}
+              season={season}
+            />
           </Select>
         )}
       </FilterField>
@@ -316,10 +332,16 @@ export function LogAttackDialog({
     )
   }
 
+  // While a save runs the dialog stays open, so its result never lands on a dialog opened after
+  // it (another attack's edit); a failed save keeps the dialog for a retry.
+  const requestOpenChange = (next: boolean) => {
+    if (!pending) onOpenChange(next)
+  }
+
   return (
     <ResponsiveDialog
       data-testid="guild-war-log-dialog"
-      onOpenChange={onOpenChange}
+      onOpenChange={requestOpenChange}
       open={open}
       width="form"
     >
@@ -417,7 +439,11 @@ export function LogAttackDialog({
         ) : null}
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
-        <Button onClick={() => onOpenChange(false)} variant="outline">
+        <Button
+          disabled={pending}
+          onClick={() => requestOpenChange(false)}
+          variant="outline"
+        >
           {t("log.cancel")}
         </Button>
         <Button disabled={pending || !saveTarget} onClick={save}>

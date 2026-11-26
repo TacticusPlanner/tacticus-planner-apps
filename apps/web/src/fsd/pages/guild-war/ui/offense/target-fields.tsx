@@ -28,14 +28,17 @@ import { useGuildWarNames } from "../../model/use-guild-war-names"
 export function ZoneOptions({
   season,
   battlefieldLevel,
+  container,
 }: {
   season: GuildWarSeason | undefined
   battlefieldLevel: number
+  /** The dialog or sheet the select opens in (see `useOverlayContainer`). */
+  container?: HTMLElement
 }) {
   const { zoneName, tierName, buffName } = useGuildWarNames()
   const groups = season ? zonesByTier(season, battlefieldLevel) : []
   return (
-    <SelectContent position="popper">
+    <SelectContent container={container} position="popper">
       {groups.map((group) => (
         <SelectGroup key={group.tierId}>
           <SelectLabel>{tierName(group.tierId)}</SelectLabel>
@@ -71,12 +74,14 @@ function RarityOptions({ rarities }: { rarities: readonly ZoneRarity[] }) {
   const { t } = useTranslation("progression")
   return (
     <SelectContent position="popper">
-      {rarities.map((entry) => (
-        <SelectItem key={entry.rarity} value={entry.rarity}>
-          <EntityIcon alt="" size="icon" src={rarityIcon(entry.rarity)} />
-          {t(`rarities.${entry.rarity}`)}
-        </SelectItem>
-      ))}
+      <SelectGroup>
+        {rarities.map((entry) => (
+          <SelectItem key={entry.rarity} value={entry.rarity}>
+            <EntityIcon alt="" size="icon" src={rarityIcon(entry.rarity)} />
+            {t(`rarities.${entry.rarity}`)}
+          </SelectItem>
+        ))}
+      </SelectGroup>
     </SelectContent>
   )
 }

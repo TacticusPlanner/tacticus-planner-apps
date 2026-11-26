@@ -59,6 +59,14 @@ describe("editing an attack's target", () => {
     ).toEqual({ zoneId: "Armoury", slot: 0 })
   })
 
+  it("keeps the attack's own target, but saves no new zone, while no rarity is known", () => {
+    expect(editTarget(attack, seasonA, "Armoury", undefined)).toEqual({
+      zoneId: "Armoury",
+      slot: 2,
+    })
+    expect(editTarget(attack, seasonA, "OtherZone", undefined)).toBeUndefined()
+  })
+
   it("keeps the attack's cap pickable when the level no longer has it", () => {
     const mythic = { ...attack, rarityCap: "Mythic", slot: 4 } as GuildWarAttack
     expect(editRarities(seasonA, 5, mythic, "Armoury")[0]).toEqual({
