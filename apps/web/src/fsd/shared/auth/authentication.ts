@@ -4,7 +4,6 @@ import {
   BrowserAuthErrorCodes,
   BrowserCacheLocation,
   CacheLookupPolicy,
-  ClientAuthErrorCodes,
   EventType,
   InteractionRequiredAuthError,
   InteractionType,
@@ -452,7 +451,9 @@ const NETWORK_ERROR_CODES: ReadonlySet<string> = new Set([
   BrowserAuthErrorCodes.noNetworkConnectivity,
   BrowserAuthErrorCodes.postRequestFailed,
   BrowserAuthErrorCodes.getRequestFailed,
-  ClientAuthErrorCodes.endpointResolutionError,
+  // ClientAuthErrorCodes.endpointResolutionError, spelled out: importing that namespace pulls every
+  // client error code into the startup bundle.
+  "endpoints_resolution_error",
 ])
 
 /** The identity provider could not be reached (offline, a failed request, no authority metadata). */

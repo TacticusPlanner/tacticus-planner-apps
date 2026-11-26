@@ -86,9 +86,6 @@ vi.mock("@azure/msal-browser", () => {
       SessionStorage: "sessionStorage",
     },
     CacheLookupPolicy: { AccessTokenAndRefreshToken: 1 },
-    ClientAuthErrorCodes: {
-      endpointResolutionError: "endpoints_resolution_error",
-    },
     EventType: {
       ACQUIRE_TOKEN_SUCCESS: "acquire-token-success",
       LOGIN_SUCCESS: "login-success",
