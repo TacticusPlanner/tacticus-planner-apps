@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router"
 import { guildWarFixture } from "@workspace/game-catalog/testing"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { ApiError } from "@/shared/api"
 import { render, screen, waitFor, within } from "@/test/render"
 import { resetTestDatabases, seedGameCatalog } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
@@ -225,6 +226,44 @@ describe("HistoryPage", () => {
           notes: "Close one.",
           revision: 1,
         })
+      )
+    )
+  })
+
+  it("keeps the player's changes when an ended war's attack changed elsewhere, and saves over it", async () => {
+    const user = userEvent.setup()
+    const logged = attack("a1", ["ultraCalgar"], { notes: "Close one." })
+    const ended = war("war-1", [logged])
+    const changed = { ...logged, revision: 2, notes: "Edited elsewhere." }
+    api.past.mockResolvedValue({ items: [ended], nextAfter: null })
+    api.updateAttack
+      .mockRejectedValueOnce(
+        new ApiError(409, "Stale", {
+          issueCode: "guildWarAttackRevisionStale",
+          current: war("war-1", [changed]),
+        })
+      )
+      .mockResolvedValueOnce(war("war-1", [changed]))
+    renderHistory()
+
+    const [past] = await screen.findAllByTestId("guild-war-past-war")
+    await user.click(within(past as HTMLElement).getByRole("button"))
+    await user.click(screen.getByRole("button", { name: "Edit attack" }))
+    const dialog = await screen.findByTestId("guild-war-log-dialog")
+    const notes = within(dialog).getByRole("textbox", { name: "Notes" })
+    await user.clear(notes)
+    await user.type(notes, "Mine")
+    await user.click(within(dialog).getByRole("button", { name: "Save" }))
+
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(
+      "This attack changed on another device."
+    )
+    expect(notes).toHaveValue("Mine")
+    await user.click(within(dialog).getByRole("button", { name: "Save" }))
+    await waitFor(() =>
+      expect(api.updateAttack).toHaveBeenLastCalledWith(
+        "a1",
+        expect.objectContaining({ notes: "Mine", revision: 2 })
       )
     )
   })

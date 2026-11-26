@@ -111,6 +111,18 @@ describe("editing an attack", () => {
     expect(start.enemy).toEqual(EMPTY_ENEMY)
   })
 
+  it("moves the attack to a new zone and slot, keeping its lineup", () => {
+    const fields = editedAttackFields(
+      attack,
+      { zoneId: "Armoury", slot: 4 },
+      attackDetails(attack)
+    )
+    expect(fields.zoneId).toBe("Armoury")
+    expect(fields.slot).toBe(4)
+    expect(fields.characters).toEqual(attack.characters)
+    expect(fields.mow).toEqual(attack.mow)
+  })
+
   it("keeps the logged lineup and sends the new details", () => {
     const fields = editedAttackFields(
       attack,
