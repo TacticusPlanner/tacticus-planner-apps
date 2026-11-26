@@ -129,7 +129,8 @@
     "purchases_one": "Se puede comprar una vez",
     "purchases_other": "Se puede comprar {{count}} veces",
     "passUnlocks": "Desbloquea las misiones prémium: {{points}} puntos del evento y {{currency}} de moneda del evento.",
-    "seeMissions": "Ver misiones"
+    "seeMissions": "Ver misiones",
+    "currencyBonus": "+{{pct}} % de bonificación de moneda del evento"
   },
   "tour": {
     "event": {

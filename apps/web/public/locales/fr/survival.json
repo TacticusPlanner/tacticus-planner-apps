@@ -129,7 +129,8 @@
     "purchases_one": "Achetable une fois",
     "purchases_other": "Achetable {{count}} fois",
     "passUnlocks": "Débloque les missions premium : {{points}} points d'événement et {{currency}} de monnaie d'événement.",
-    "seeMissions": "Voir les missions"
+    "seeMissions": "Voir les missions",
+    "currencyBonus": "+{{pct}} % de bonus de monnaie d'événement"
   },
   "tour": {
     "event": {

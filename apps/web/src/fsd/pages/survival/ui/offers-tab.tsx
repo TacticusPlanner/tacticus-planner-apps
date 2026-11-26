@@ -52,11 +52,20 @@ function OfferCard({ offer }: { offer: SurvivalOffer }) {
         </p>
       )}
       <ul className="flex flex-col gap-1.5">
-        {offer.rewards.map((reward) => (
-          <li key={reward.type}>
-            <RewardText format={format} rewards={[reward]} />
-          </li>
-        ))}
+        {offer.rewards
+          // The pass's premium missions are described below the list.
+          .filter((reward) => reward.type !== "seasonalPremium")
+          .map((reward) => (
+            <li key={reward.type}>
+              {reward.type === "seasonalEcBonus" ? (
+                <span className="text-xs">
+                  {t("offers.currencyBonus", { pct: reward.min })}
+                </span>
+              ) : (
+                <RewardText format={format} rewards={[reward]} />
+              )}
+            </li>
+          ))}
       </ul>
       {offer.kind === "pass" ? (
         <p className="text-sm">

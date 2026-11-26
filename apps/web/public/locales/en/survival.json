@@ -129,7 +129,8 @@
     "purchases_one": "Can be bought once",
     "purchases_other": "Can be bought {{count}} times",
     "passUnlocks": "Unlocks the premium missions: {{points}} event points and {{currency}} event currency.",
-    "seeMissions": "See missions"
+    "seeMissions": "See missions",
+    "currencyBonus": "+{{pct}}% event currency"
   },
   "tour": {
     "event": {

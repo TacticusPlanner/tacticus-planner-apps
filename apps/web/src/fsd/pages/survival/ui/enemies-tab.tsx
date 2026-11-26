@@ -147,7 +147,9 @@ function WaveCard({
         <span className="text-xs text-muted-foreground">
           {t("enemies.round", { round: wave.round })}
         </span>
-        <Power value={wave.power} />
+        {wave.cloneHealthPct === undefined ? (
+          <Power value={wave.power} />
+        ) : null}
         <span className="text-xs text-muted-foreground tabular-nums">
           {t("enemies.score", { score: format.number(wave.score) })}
         </span>

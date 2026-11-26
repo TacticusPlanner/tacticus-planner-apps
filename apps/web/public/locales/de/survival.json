@@ -129,7 +129,8 @@
     "purchases_one": "Einmal kaufbar",
     "purchases_other": "{{count}}-mal kaufbar",
     "passUnlocks": "Schaltet die Premium-Missionen frei: {{points}} Eventpunkte und {{currency}} Eventwährung.",
-    "seeMissions": "Missionen ansehen"
+    "seeMissions": "Missionen ansehen",
+    "currencyBonus": "+{{pct}} % Bonus auf Eventwährung"
   },
   "tour": {
     "event": {

@@ -103,6 +103,12 @@ describe("SurvivalLayout", () => {
         "survival-clone-wave"
       )
     ).toBeInTheDocument()
+    // A clone wave fights the player's own team, so it has no power of its own.
+    expect(
+      within(screen.getByTestId("survival-wave-16")).queryByRole("img", {
+        name: /^enemies\.power/,
+      })
+    ).not.toBeInTheDocument()
     expect(captureEvent).toHaveBeenCalledWith({
       type: "survival_tab_viewed",
       tab: "enemies",
@@ -132,7 +138,12 @@ describe("SurvivalLayout", () => {
     expect(screen.getByTestId("location")).toHaveTextContent(
       "/plan/survival/offers?event=december-2026"
     )
-    expect(screen.getByTestId("survival-offer-pass")).toBeInTheDocument()
+    const pass = screen.getByTestId("survival-offer-pass")
+    expect(
+      within(pass).getByText(/^offers\.currencyBonus:\{"pct":\d+\}$/)
+    ).toBeInTheDocument()
+    // The premium missions are described in the pass's note, not as a reward line.
+    expect(within(pass).queryByText(/premiumMissions/)).not.toBeInTheDocument()
   })
 
   it("says when there are no events", () => {
