@@ -290,8 +290,10 @@ export function PlayerDataProvider({
       clearInterval(interval)
       interval = undefined
     }
+    // Not `??=`: React Compiler can't lower it, and would skip this whole component.
     const startChecking = () => {
-      interval ??= setInterval(() => {
+      if (interval !== undefined) return
+      interval = setInterval(() => {
         void check()
       }, autoSyncCheckIntervalMs)
     }
