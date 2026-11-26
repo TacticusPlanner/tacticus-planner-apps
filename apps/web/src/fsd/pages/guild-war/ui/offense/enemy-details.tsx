@@ -31,6 +31,7 @@ import type { EnemyDraft } from "../../model/enemy-draft"
 import type { GuildWarEnemyUnit } from "../../model/types"
 import { useGuildWarNames } from "../../model/use-guild-war-names"
 import { useOverlayContainer } from "../use-overlay-container"
+import { MapPicker } from "./map-picker"
 
 const ANY = "any"
 
@@ -177,7 +178,7 @@ function EnemyUnitRow({
 /**
  * The optional enemy details of an attack: the enemy lineup (any catalog character and MoW, each
  * with rarity, rank and whether it was killed or left damaged), the zone buffs that were active and
- * the map.
+ * the map, picked by its board picture.
  */
 export function EnemyDetails({
   value,
@@ -344,15 +345,9 @@ export function EnemyDetails({
           <Label className="text-sm text-muted-foreground">
             {t("enemy.map")}
           </Label>
-          <OptionalSelect
-            label={t("enemy.map")}
-            noneLabel={t("enemy.mapAny")}
+          <MapPicker
             onChange={(boardId) => onChange({ ...value, boardId })}
-            options={season.maps.map((map, index) => ({
-              value: map.boardId,
-              label: t("enemy.mapOption", { number: index + 1 }),
-            }))}
-            testId="guild-war-enemy-map"
+            season={season}
             value={value.boardId}
           />
         </div>

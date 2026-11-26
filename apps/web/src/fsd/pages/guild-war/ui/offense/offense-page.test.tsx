@@ -398,6 +398,56 @@ describe("OffensePage", () => {
     )
   })
 
+  it("starts a detailed log as won, keeps the lineup rows for every result, and picks a map by its picture", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({ war: war() })
+    api.createAttack.mockResolvedValue(
+      war({ tokensUsed: 1, deployedUnitIds: ["ultraCalgar"] })
+    )
+    window.localStorage.setItem("guildWar.zone", "Armoury")
+    renderOffense()
+
+    await user.click(await tile("ultraCalgar"))
+    await user.click(screen.getByRole("button", { name: "Log with details" }))
+    const dialog = await screen.findByTestId("guild-war-log-dialog")
+    expect(within(dialog).getByRole("radio", { name: "Won" })).toBeChecked()
+    const lostToggle = within(dialog).getByRole("button", { name: /lost$/ })
+    expect(lostToggle).toBeEnabled()
+    // Not recorded keeps the same rows, disabled, so the dialog keeps its height.
+    await user.click(
+      within(dialog).getByRole("radio", { name: "Not recorded" })
+    )
+    expect(
+      within(dialog).getByText("Tap the units you lost")
+    ).toBeInTheDocument()
+    expect(within(dialog).getByRole("button", { name: /lost$/ })).toBeDisabled()
+    await user.click(within(dialog).getByRole("radio", { name: "Won" }))
+
+    await user.click(
+      within(dialog).getByRole("button", { name: "Enemy details (optional)" })
+    )
+    const maps = within(dialog).getByTestId("guild-war-enemy-map")
+    // The season's pool, each board by its picture.
+    expect(within(maps).getAllByRole("radio")).toHaveLength(4)
+    const board = within(maps).getByRole("radio", { name: "Map 2" })
+    expect(within(board).getByRole("presentation")).toHaveAttribute(
+      "src",
+      "/game_catalog/curated/guild_war_boards/C1_37.webp"
+    )
+    await user.click(board)
+    expect(board).toHaveAttribute("data-state", "on")
+    await user.click(within(dialog).getByRole("button", { name: "Log attack" }))
+
+    await waitFor(() => expect(api.createAttack).toHaveBeenCalledTimes(1))
+    expect(api.createAttack).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: "won",
+        lostUnitIds: [],
+        enemy: expect.objectContaining({ boardId: "C1_37" }),
+      })
+    )
+  })
+
   it("needs a zone before an attack can be logged", async () => {
     const user = userEvent.setup()
     api.current.mockResolvedValue({ war: war() })

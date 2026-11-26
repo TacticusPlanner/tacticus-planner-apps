@@ -191,7 +191,6 @@
     "buffs": "Active zone buffs",
     "buffInfo": "What {{name}} does",
     "map": "Map",
-    "mapAny": "Map not noted",
     "mapOption": "Map {{number}}"
   },
   "attackLog": {

@@ -191,7 +191,6 @@
     "buffs": "Bonus de zone actifs",
     "buffInfo": "Effet de {{name}}",
     "map": "Carte",
-    "mapAny": "Carte non notée",
     "mapOption": "Carte {{number}}"
   },
   "attackLog": {

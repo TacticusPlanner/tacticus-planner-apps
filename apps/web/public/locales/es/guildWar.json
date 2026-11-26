@@ -191,7 +191,6 @@
     "buffs": "Mejoras de zona activas",
     "buffInfo": "Qué hace {{name}}",
     "map": "Mapa",
-    "mapAny": "Mapa sin registrar",
     "mapOption": "Mapa {{number}}"
   },
   "attackLog": {

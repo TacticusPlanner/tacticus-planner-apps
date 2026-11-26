@@ -191,7 +191,6 @@
     "buffs": "Aktive Zonenboni",
     "buffInfo": "Was {{name}} bewirkt",
     "map": "Karte",
-    "mapAny": "Karte nicht erfasst",
     "mapOption": "Karte {{number}}"
   },
   "attackLog": {

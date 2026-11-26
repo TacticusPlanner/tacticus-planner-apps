@@ -64,6 +64,7 @@ export {
   incursionBoardImage,
   incursionEnhancementIcon,
   incursionTokenIcon,
+  guildWarBoardImage,
   guildWarBuffIcon,
   guildWarTokenIcon,
   guildWarZoneIcon,

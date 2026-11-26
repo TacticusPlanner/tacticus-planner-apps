@@ -23,6 +23,7 @@ export { legendaryEventMap } from "./le-map"
 export { battleBoardImage } from "./battle-board"
 export { factionIcon } from "./faction"
 export {
+  guildWarBoardImage,
   guildWarBuffIcon,
   guildWarTokenIcon,
   guildWarZoneIcon,
