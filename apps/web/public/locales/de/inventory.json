@@ -7,6 +7,10 @@
       "action": "Jetzt synchronisieren"
     }
   },
+  "count": {
+    "haveNeed": "{{have}} / {{need}}",
+    "short": "{{amount}} fehlen"
+  },
   "tour": {
     "steps": {
       "tabs": {
@@ -24,6 +28,14 @@
       "upgradesList": {
         "title": "Vorhanden und benötigt",
         "content": "Jedes Material zeigt, was du besitzt und was deine aktiven Ziele noch brauchen. Tippe darauf für Rezept, Farmorte und die Ziele, die es brauchen."
+      },
+      "ascensionXp": {
+        "title": "EP-Bücher",
+        "content": "Die EP deiner Bücher neben den EP, die deine aktiven Ziele noch brauchen."
+      },
+      "ascensionResources": {
+        "title": "Abzeichen, Kugeln und mehr",
+        "content": "Jede Ressource zeigt, was du besitzt und was deine Ziele brauchen, nach Allianz und Seltenheit."
       }
     }
   },
@@ -69,10 +81,6 @@
       "Damage": "Schaden",
       "Armour": "Rüstung"
     },
-    "count": {
-      "haveNeed": "{{have}} / {{need}}",
-      "short": "{{amount}} fehlen"
-    },
     "tileLabel": "{{name}}, {{have}} vorhanden",
     "tileLabelNeed": "{{name}}, {{have}} von {{need}} benötigten vorhanden",
     "table": {
@@ -114,6 +122,36 @@
       "unknownGoal": "Unbekanntes Ziel",
       "noGoals": "Kein aktives Ziel benötigt es.",
       "close": "Schließen"
+    }
+  },
+  "ascension": {
+    "sections": {
+      "xpBooks": "EP-Bücher",
+      "abilityBadges": "Fähigkeitsabzeichen",
+      "orbs": "Kugeln",
+      "forgeBadges": "Schmiedeabzeichen",
+      "components": "Kriegsmaschinen-Komponenten",
+      "other": "Requisitionsbefehle und Rücksetzsteine"
+    },
+    "xp": {
+      "total": "EP gesamt",
+      "need": "Ziele benötigen",
+      "short": "Fehlt",
+      "booksShort": "Es fehlen etwa {{books}} {{rarity}}-Bücher.",
+      "covered": "Deine Bücher decken, was deine Ziele brauchen.",
+      "bookRarity": "EP werden mit {{rarity}}-Büchern geplant.",
+      "change": "Buchseltenheit ändern"
+    },
+    "alliance": "Allianz",
+    "items": {
+      "xpBook": "{{rarity}}-EP-Buch",
+      "abilityBadge": "{{rarity}} {{alliance}}-Fähigkeitsabzeichen",
+      "orb": "{{rarity}} {{alliance}}-Kugel",
+      "forgeBadge": "{{rarity}}-Schmiedeabzeichen",
+      "component": "{{alliance}}-Komponente",
+      "regular": "Requisitionsbefehle",
+      "blessed": "Gesegnete Requisitionsbefehle",
+      "resetStones": "Rücksetzsteine"
     }
   }
 }

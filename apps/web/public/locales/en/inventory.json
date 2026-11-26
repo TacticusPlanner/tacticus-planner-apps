@@ -7,6 +7,10 @@
       "action": "Sync now"
     }
   },
+  "count": {
+    "haveNeed": "{{have}} / {{need}}",
+    "short": "{{amount}} short"
+  },
   "tour": {
     "steps": {
       "tabs": {
@@ -24,6 +28,14 @@
       "upgradesList": {
         "title": "Have and need",
         "content": "Each material shows what you hold and what your active goals still need. Tap one for its recipe, where to farm it and the goals that need it."
+      },
+      "ascensionXp": {
+        "title": "XP books",
+        "content": "The XP your books add up to, beside the XP your active goals still need."
+      },
+      "ascensionResources": {
+        "title": "Badges, orbs and more",
+        "content": "Each resource shows what you hold and what your goals need, by alliance and rarity."
       }
     }
   },
@@ -69,10 +81,6 @@
       "Damage": "Damage",
       "Armour": "Armour"
     },
-    "count": {
-      "haveNeed": "{{have}} / {{need}}",
-      "short": "{{amount}} short"
-    },
     "tileLabel": "{{name}}, have {{have}}",
     "tileLabelNeed": "{{name}}, have {{have}} of {{need}} needed",
     "table": {
@@ -114,6 +122,36 @@
       "unknownGoal": "Unknown goal",
       "noGoals": "No active goal needs it.",
       "close": "Close"
+    }
+  },
+  "ascension": {
+    "sections": {
+      "xpBooks": "XP books",
+      "abilityBadges": "Ability badges",
+      "orbs": "Orbs",
+      "forgeBadges": "Forge badges",
+      "components": "Machine of War components",
+      "other": "Requisition orders and reset stones"
+    },
+    "xp": {
+      "total": "Total XP",
+      "need": "Goals need",
+      "short": "Short",
+      "booksShort": "About {{books}} {{rarity}} books short.",
+      "covered": "Your books cover what your goals need.",
+      "bookRarity": "XP is planned in {{rarity}} books.",
+      "change": "Change book rarity"
+    },
+    "alliance": "Alliance",
+    "items": {
+      "xpBook": "{{rarity}} XP book",
+      "abilityBadge": "{{rarity}} {{alliance}} ability badge",
+      "orb": "{{rarity}} {{alliance}} orb",
+      "forgeBadge": "{{rarity}} forge badge",
+      "component": "{{alliance}} component",
+      "regular": "Requisition orders",
+      "blessed": "Blessed requisition orders",
+      "resetStones": "Reset stones"
     }
   }
 }

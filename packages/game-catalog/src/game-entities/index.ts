@@ -25,6 +25,8 @@ export {
   raidTicketIcon,
   mowAmmoIcon,
   xpBookIcon,
+  requisitionOrderIcon,
+  resetStoneIcon,
   gameModeTokenIcon,
   type GameModeToken,
   type GameIcon,

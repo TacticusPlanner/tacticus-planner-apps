@@ -7,6 +7,10 @@
       "action": "Sincronizar ahora"
     }
   },
+  "count": {
+    "haveNeed": "{{have}} / {{need}}",
+    "short": "Faltan {{amount}}"
+  },
   "tour": {
     "steps": {
       "tabs": {
@@ -24,6 +28,14 @@
       "upgradesList": {
         "title": "Tienes y necesitas",
         "content": "Cada material muestra lo que tienes y lo que aún necesitan tus objetivos activos. Tócalo para ver su receta, dónde conseguirlo y los objetivos que lo necesitan."
+      },
+      "ascensionXp": {
+        "title": "Libros de XP",
+        "content": "La XP que suman tus libros, junto a la XP que aún necesitan tus objetivos activos."
+      },
+      "ascensionResources": {
+        "title": "Insignias, orbes y más",
+        "content": "Cada recurso muestra lo que tienes y lo que necesitan tus objetivos, por alianza y rareza."
       }
     }
   },
@@ -69,10 +81,6 @@
       "Damage": "Daño",
       "Armour": "Armadura"
     },
-    "count": {
-      "haveNeed": "{{have}} / {{need}}",
-      "short": "Faltan {{amount}}"
-    },
     "tileLabel": "{{name}}, tienes {{have}}",
     "tileLabelNeed": "{{name}}, tienes {{have}} de {{need}} necesarias",
     "table": {
@@ -114,6 +122,36 @@
       "unknownGoal": "Objetivo desconocido",
       "noGoals": "Ningún objetivo activo la necesita.",
       "close": "Cerrar"
+    }
+  },
+  "ascension": {
+    "sections": {
+      "xpBooks": "Libros de XP",
+      "abilityBadges": "Insignias de habilidad",
+      "orbs": "Orbes",
+      "forgeBadges": "Insignias de forja",
+      "components": "Componentes de Máquinas de Guerra",
+      "other": "Órdenes de requisición y piedras de reinicio"
+    },
+    "xp": {
+      "total": "XP total",
+      "need": "Objetivos necesitan",
+      "short": "Faltan",
+      "booksShort": "Faltan unos {{books}} libros {{rarity}}.",
+      "covered": "Tus libros cubren lo que necesitan tus objetivos.",
+      "bookRarity": "La XP se planifica con libros {{rarity}}.",
+      "change": "Cambiar rareza de libro"
+    },
+    "alliance": "Alianza",
+    "items": {
+      "xpBook": "Libro de XP {{rarity}}",
+      "abilityBadge": "Insignia de habilidad {{alliance}} {{rarity}}",
+      "orb": "Orbe {{alliance}} {{rarity}}",
+      "forgeBadge": "Insignia de forja {{rarity}}",
+      "component": "Componente {{alliance}}",
+      "regular": "Órdenes de requisición",
+      "blessed": "Órdenes de requisición benditas",
+      "resetStones": "Piedras de reinicio"
     }
   }
 }

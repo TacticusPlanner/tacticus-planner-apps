@@ -166,3 +166,19 @@ export function xpBookIcon(rarity: Rarity): string {
     `atlases/ui_icon_consumable_xp_book_${XP_BOOK_INDEX[rarity]}.webp`
   )
 }
+
+/** A requisition order: the regular summoning token, or the blessed one. */
+export function requisitionOrderIcon(blessed = false): string {
+  return datamineAssetUrl(
+    blessed
+      ? `atlases/ui_icon_resource_summoning_special.webp`
+      : `atlases/ui_icon_resource_summoning_token.webp`
+  )
+}
+
+/** The reset stone, which resets a unit's spent resources. */
+export function resetStoneIcon(): string {
+  return datamineAssetUrl(
+    `atlases/ui_icon_resource_unit_reset_token_medium.webp`
+  )
+}

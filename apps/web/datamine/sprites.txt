@@ -661,6 +661,7 @@ atlases/ui_icon_resource_token_battle_standard.webp
 atlases/ui_icon_resource_token_battle_treasureBeach.webp
 atlases/ui_icon_resource_token_battle_waves.webp
 atlases/ui_icon_resource_token_sync_pvp.webp
+atlases/ui_icon_resource_unit_reset_token_medium.webp
 atlases/ui_icon_star_herodetail_01.webp
 atlases/ui_icon_star_herodetail_epic_01.webp
 atlases/ui_icon_star_legendary_large_01.webp

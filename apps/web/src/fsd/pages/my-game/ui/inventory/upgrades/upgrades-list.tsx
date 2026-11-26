@@ -107,7 +107,7 @@ function useCounts() {
     /** "12 / 30" while the goals need it, else just what is held. */
     haveNeed: (row: InventoryUpgradeRow, needsReady: boolean) =>
       needsReady && row.need > 0
-        ? t("upgrades.count.haveNeed", {
+        ? t("count.haveNeed", {
             have: format(row.have),
             need: format(row.need),
           })
@@ -120,8 +120,7 @@ function useCounts() {
             need: format(row.need),
           })
         : t("upgrades.tileLabel", { name: row.name, have: format(row.have) }),
-    short: (amount: number) =>
-      t("upgrades.count.short", { amount: format(amount) }),
+    short: (amount: number) => t("count.short", { amount: format(amount) }),
   }
 }
 

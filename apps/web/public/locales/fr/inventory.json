@@ -7,6 +7,10 @@
       "action": "Synchroniser"
     }
   },
+  "count": {
+    "haveNeed": "{{have}} / {{need}}",
+    "short": "Manque {{amount}}"
+  },
   "tour": {
     "steps": {
       "tabs": {
@@ -24,6 +28,14 @@
       "upgradesList": {
         "title": "Possédé et requis",
         "content": "Chaque matériau indique ce que vous possédez et ce que vos objectifs actifs requièrent encore. Touchez-en un pour voir sa recette, où le farmer et les objectifs qui en ont besoin."
+      },
+      "ascensionXp": {
+        "title": "Livres d'XP",
+        "content": "L'XP de vos livres, à côté de l'XP que vos objectifs actifs requièrent encore."
+      },
+      "ascensionResources": {
+        "title": "Insignes, orbes et plus",
+        "content": "Chaque ressource indique ce que vous possédez et ce que vos objectifs requièrent, par alliance et rareté."
       }
     }
   },
@@ -69,10 +81,6 @@
       "Damage": "Dégâts",
       "Armour": "Armure"
     },
-    "count": {
-      "haveNeed": "{{have}} / {{need}}",
-      "short": "Manque {{amount}}"
-    },
     "tileLabel": "{{name}}, {{have}} possédé(s)",
     "tileLabelNeed": "{{name}}, {{have}} possédé(s) sur {{need}} requis",
     "table": {
@@ -114,6 +122,36 @@
       "unknownGoal": "Objectif inconnu",
       "noGoals": "Aucun objectif actif n'en a besoin.",
       "close": "Fermer"
+    }
+  },
+  "ascension": {
+    "sections": {
+      "xpBooks": "Livres d'XP",
+      "abilityBadges": "Insignes de compétence",
+      "orbs": "Orbes",
+      "forgeBadges": "Insignes de forge",
+      "components": "Composants de Machines de guerre",
+      "other": "Ordres de réquisition et pierres de réinitialisation"
+    },
+    "xp": {
+      "total": "XP totale",
+      "need": "Requis par les objectifs",
+      "short": "Manquant",
+      "booksShort": "Il manque environ {{books}} livres {{rarity}}.",
+      "covered": "Vos livres couvrent les besoins de vos objectifs.",
+      "bookRarity": "L'XP est planifiée en livres {{rarity}}.",
+      "change": "Changer la rareté des livres"
+    },
+    "alliance": "Alliance",
+    "items": {
+      "xpBook": "Livre d'XP {{rarity}}",
+      "abilityBadge": "Insigne de compétence {{alliance}} {{rarity}}",
+      "orb": "Orbe {{alliance}} {{rarity}}",
+      "forgeBadge": "Insigne de forge {{rarity}}",
+      "component": "Composant {{alliance}}",
+      "regular": "Ordres de réquisition",
+      "blessed": "Ordres de réquisition bénis",
+      "resetStones": "Pierres de réinitialisation"
     }
   }
 }

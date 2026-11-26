@@ -14,6 +14,8 @@ import {
   orbAllianceIcon,
   orbIcon,
   xpBookIcon,
+  requisitionOrderIcon,
+  resetStoneIcon,
 } from "./resource"
 
 describe("goal resource icons", () => {
@@ -32,6 +34,15 @@ describe("goal resource icons", () => {
     )
     expect(xpBookIcon("Legendary")).toBe(
       "/game_catalog/datamines/atlases/ui_icon_consumable_xp_book_4.webp"
+    )
+    expect(requisitionOrderIcon()).toBe(
+      "/game_catalog/datamines/atlases/ui_icon_resource_summoning_token.webp"
+    )
+    expect(requisitionOrderIcon(true)).toBe(
+      "/game_catalog/datamines/atlases/ui_icon_resource_summoning_special.webp"
+    )
+    expect(resetStoneIcon()).toBe(
+      "/game_catalog/datamines/atlases/ui_icon_resource_unit_reset_token_medium.webp"
     )
     expect(goldIcon()).toBe(
       "/game_catalog/datamines/atlases/ui_icon_resource_coin_small.webp"
