@@ -387,10 +387,15 @@ describe("OffensePage", () => {
     await user.click(await tile("ultraCalgar"))
     await user.click(screen.getByRole("button", { name: "Log with details" }))
     const dialog = await screen.findByTestId("guild-war-log-dialog")
-    // At level 5 the Armoury's highest cap is Legendary.
+    // It starts at the page's zone and, at level 5, the Armoury's highest cap, Legendary.
     expect(
-      within(dialog).getByTestId("guild-war-log-target")
-    ).toHaveTextContent("Armoury · Legendary")
+      within(dialog).getByRole("combobox", { name: "Zone" })
+    ).toHaveTextContent("Armoury")
+    expect(
+      within(dialog).getByRole("radio", { name: "Legendary" })
+    ).toBeChecked()
+    // Picking Epic here moves the page's rarity too (checked once the dialog closes).
+    await user.click(within(dialog).getByRole("radio", { name: "Epic" }))
     await user.click(within(dialog).getByRole("radio", { name: "Lost" }))
     await user.click(within(dialog).getByRole("button", { name: /lost$/ }))
     await user.type(
@@ -410,7 +415,8 @@ describe("OffensePage", () => {
     expect(api.createAttack).toHaveBeenCalledWith(
       expect.objectContaining({
         zoneId: "Armoury",
-        slot: 0,
+        // At level 5 the Armoury's first Epic slot is the third.
+        slot: 2,
         result: "lost",
         lostUnitIds: ["ultraCalgar"],
         notes: "Close one.",
@@ -418,8 +424,8 @@ describe("OffensePage", () => {
           characters: [
             {
               unitId: "ultraTitus",
-              rarity: "Legendary",
-              rank: "Diamond3",
+              rarity: "Epic",
+              rank: "Gold1",
               state: "killed",
             },
           ],
@@ -429,6 +435,12 @@ describe("OffensePage", () => {
         },
       })
     )
+    await waitFor(() =>
+      expect(screen.queryByTestId("guild-war-log-dialog")).toBeNull()
+    )
+    expect(
+      screen.getByRole("combobox", { name: "Defenders' rarity" })
+    ).toHaveTextContent("Epic")
   })
 
   it("starts a detailed log as won, keeps the lineup rows for every result, and picks a map by its picture", async () => {

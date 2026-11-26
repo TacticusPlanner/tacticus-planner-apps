@@ -65,6 +65,13 @@ import { SelectionBar } from "./selection-bar"
 import { PageTargetFields } from "./target-fields"
 import { WarSummary } from "./war-summary"
 
+/** A new attack's dialog as the page keeps it: the selection it logs. Its zone and rarity are the
+ *  page's, read when it renders. */
+type NewAttackDialog = Pick<
+  Extract<LogAttackSubject, { kind: "new" }>,
+  "kind" | "selection" | "roster"
+>
+
 const NO_UNITS: readonly PickerUnit[] = []
 /** A team made from this page starts as a War Offense team. */
 const WAR_OFFENSE: readonly TeamMode[] = ["warOffense"]
@@ -176,7 +183,9 @@ export function OffensePage() {
   const [filters, setFilters] = useState<OffenseFilters>(
     DEFAULT_OFFENSE_FILTERS
   )
-  const [dialog, setDialog] = useState<LogAttackSubject | null>(null)
+  const [dialog, setDialog] = useState<
+    NewAttackDialog | LogAttackSubject | null
+  >(null)
   const [dialogError, setDialogError] = useState<string | null>(null)
   const [confirmStart, setConfirmStart] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<GuildWarAttack | null>(
@@ -428,7 +437,7 @@ export function OffensePage() {
           onLogDetails={() => {
             if (zoneId === null || !target) return
             setDialogError(null)
-            setDialog({ kind: "new", selection, roster, zoneId, target })
+            setDialog({ kind: "new", selection, roster })
           }}
           onQuickLog={quickLog}
           pending={logAttack.isPending}
@@ -448,7 +457,19 @@ export function OffensePage() {
           open
           pending={logAttack.isPending || updateAttack.isPending}
           season={season}
-          subject={dialog}
+          subject={
+            dialog.kind === "new"
+              ? {
+                  ...dialog,
+                  // Bound to the page's picks: a change in the dialog changes the page's too.
+                  zoneId: zoneId ?? "",
+                  rarities: pageTarget.rarities,
+                  target,
+                  onZoneChange: pageTarget.setZoneId,
+                  onRarityChange: pageTarget.setRarity,
+                }
+              : dialog
+          }
           units={units}
         />
       ) : null}
