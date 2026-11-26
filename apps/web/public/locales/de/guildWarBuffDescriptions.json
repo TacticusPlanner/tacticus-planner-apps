@@ -1,0 +1,12 @@
+{
+  "EnvAngelsOfDeath_Regional": "Zu Beginn des dritten Verteidiger-Zugs werden {[nrOfSummons]} Intercessoren mit Sprungmodul zur Unterstützung der Verteidiger beschworen. Ihre Werte hängen von der Durchschnittsstufe der Verteidiger ab.",
+  "EnvArmourSupplies_Regional": "Alle defensiven Einheiten verfügen über {[extraArmorPct]} % mehr Rüstung.",
+  "EnvArtillerySupport_Regional": "Zu Beginn des Kampfes werden {[nrOfProjectiles]} Artilleriegranaten auf zufällige angreifende Einheiten abgefeuert. Jeder Treffer reduziert die Lebenspunkte der getroffenen Einheiten um {[hpPct]} %.",
+  "EnvDefenderHealthBuff2_Global": "Alle Verteidiger-Charaktere verfügen über {[hpPct]} % mehr Lebenspunkte.",
+  "EnvDefenderHealthBuff_Global": "Alle defensiven Einheiten Charaktere verfügen über {[hpPct]} % mehr Lebenspunkte.",
+  "EnvFlakFire_Regional": "Zu Beginn des Kampfes feuert die Flugabwehr auf alle fliegenden Einheiten. Jeder Treffer reduziert die Lebenspunkte der getroffenen Einheit um {[hpPct]}%.",
+  "EnvFortified_Local": "Alle defensiven Einheiten verfügen über {[extraArmorPct]} % mehr Rüstung und {[extraDmgPct]} % erhöhten Schaden.",
+  "EnvGarrison_Global": "Zu Beginn des Kampfes werden {[nrOfSummons]} Cadianische Gardisten zur Unterstützung der Verteidiger beschworen. Ihre Werte hängen von der Durchschnittsstufe der Verteidiger ab.",
+  "EnvThinVeil_Global": "Psioniker-Charaktere verursachen +{[extraDmgPct]} % mehr Schaden. Wenn sie besiegt werden, beschwören sie einen zufälligen Dämon mit derselben Stufe wie der besiegte Psioniker, der sowohl für den Angreifer als auch für den Verteidiger als Gegner gilt.",
+  "EnvValkyrieStrike_Global": "Am Ende des ersten, dritten und fünften Zugs des Verteidigers wird ein beliebiges Feld auf dem Schlachtfeld markiert. Zu Beginn des nächsten Zugs des Verteidigers werden das Zielfeld und alle umliegenden Felder mit Donnerkeil-Raketen getroffen, die jeweils {[nrOfHits]}x Explosionsschaden verursachen. Der Schaden hängt von der Seltenheitsbeschränkung der Verteidiger ab."
+}

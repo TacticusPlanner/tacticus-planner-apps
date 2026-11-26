@@ -10,6 +10,9 @@
 //   public/locales/{en,de,es,fr}/guildWarZones.json     Guild War zone visual id -> name
 //   public/locales/{en,de,es,fr}/guildWarTiers.json     Guild War zone tier id   -> name
 //   public/locales/{en,de,es,fr}/guildWarBuffs.json     Guild War buff id        -> name
+//   public/locales/{en,de,es,fr}/guildWarBuffDescriptions.json
+//                                                        Guild War buff id -> the game's description, its
+//                                                        {[variable]} slots kept for the page to fill
 //   public/locales/{en,de,es,fr}/mythicQuestTasks.json  task loca key       -> template
 //   public/locales/{en,de,es,fr}/eventMissions.json     seasonal event mission task templates, chain names,
 //                                                        game modes and event names ({ tasks, chains, gameModes,
@@ -110,6 +113,17 @@ const seasonalGameModes = [
   ),
 ]
 
+/** A game description as plain text: its style tags dropped, and the lines that only pull in another
+ *  text (`{[S/AbilityDamageExplanation]}`) left out. Its `{[variable]}` slots stay. */
+function gameDescription(text) {
+  return text
+    .replaceAll(/<\/?style[^>]*>/g, "")
+    .split("\n")
+    .filter((line) => !/^\s*\{\[S\/[^\]]*\]\}\s*$/.test(line))
+    .join("\n")
+    .trim()
+}
+
 /** Ids named by `<prefix><id><suffix>` English keys. */
 const idsOfKeys = (prefix, suffix) =>
   Object.keys(languages.en)
@@ -172,7 +186,9 @@ const NAMESPACES = {
     ids: [
       ...new Set(
         guildWarSeasons.flatMap((season) =>
-          Object.values(season.zoneTypeConfigs ?? {}).map((zone) => zone.visualId)
+          Object.values(season.zoneTypeConfigs ?? {}).map(
+            (zone) => zone.visualId
+          )
         )
       ),
     ],
@@ -192,6 +208,14 @@ const NAMESPACES = {
   guildWarBuffs: {
     ids: Object.keys(guildWarBuffs),
     key: (id) => `Abilities/${guildWarBuffs[id].abilityId}_Name`,
+  },
+  // The game's own description of what a buff does. Optional: a buff the game describes nowhere has none.
+  guildWarBuffDescriptions: {
+    ids: Object.keys(guildWarBuffs),
+    key: (id) =>
+      `Abilities/${guildWarBuffs[id].abilityId}_CurrentLevelDescription`,
+    optional: true,
+    clean: gameDescription,
   },
   mythicQuestTasks: {
     ids: [...mythicTaskKeys(config("quests/groups.json"))],
@@ -217,7 +241,10 @@ const NAMESPACES = {
 const unnamed = []
 const tables = {}
 
-for (const [namespace, { ids, key, fallback }] of Object.entries(NAMESPACES)) {
+for (const [
+  namespace,
+  { ids, key, fallback, optional, clean },
+] of Object.entries(NAMESPACES)) {
   const overrides = curated[namespace] ?? {}
   const values = overrides.values ?? {}
   const allIds = [
@@ -236,6 +263,7 @@ for (const [namespace, { ids, key, fallback }] of Object.entries(NAMESPACES)) {
         .map((k) =>
           languages[locale][k]?.replace(/[\u200B-\u200D\uFEFF]/g, "").trim()
         )
+        .map((term) => (term && clean ? clean(term) : term))
         .find(Boolean)
     for (const locale of LOCALES) {
       const term =
@@ -245,7 +273,7 @@ for (const [namespace, { ids, key, fallback }] of Object.entries(NAMESPACES)) {
         game("en") ??
         fallback?.(id)
       if (term === undefined) {
-        if (locale === "en") unnamed.push(`${namespace}/${id}`)
+        if (locale === "en" && !optional) unnamed.push(`${namespace}/${id}`)
         continue
       }
       tables[namespace][locale][id] = term
