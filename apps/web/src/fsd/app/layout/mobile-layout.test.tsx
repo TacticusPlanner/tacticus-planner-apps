@@ -107,7 +107,7 @@ import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { filterVisibleNavItems, navItems } from "./nav-items"
 import type { QuickAction, QuickActionsController } from "./quick-actions"
-import { hasNode } from "@/shared/lib"
+import { hasNode, storageKeys } from "@/shared/lib"
 
 const noQuickActions = { actions: [], select: () => false, flush: () => {} }
 
@@ -530,25 +530,87 @@ describe("MobileBottomNav quick actions in Menu search", () => {
     flush: vi.fn(),
   })
 
-  it("shows the Quick actions group before Pages, with action buttons and page links", () => {
-    renderShell(vi.fn(), true, "/", undefined, controller([createGoalAction]))
+  it("shows the quick actions as chips above Pages at rest, and as rows while searching", () => {
+    renderShell(
+      vi.fn(),
+      true,
+      "/",
+      undefined,
+      controller([
+        createGoalAction,
+        {
+          ...createGoalAction,
+          id: "signOut",
+          label: "Sign out",
+          searchOnly: true,
+        },
+      ])
+    )
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
     const drawer = within(screen.getByTestId("mobile-menu"))
 
+    const chips = drawer.getByRole("group", {
+      name: "nav.quickActions.heading",
+    })
     expect(
-      drawer
-        .getAllByRole("group")
-        .map(
-          (group) =>
-            document.getElementById(group.getAttribute("aria-labelledby") ?? "")
-              ?.textContent
-        )
-    ).toEqual(["nav.quickActions.heading", "nav.quickActions.pagesHeading"])
-    expect(drawer.getByRole("option", { name: /Create Goal/ })).toBeVisible()
+      within(chips)
+        .getAllByRole("button")
+        .map((chip) => chip.textContent)
+    ).toEqual(["Create Goal"])
+    expect(drawer.queryByTestId("quick-actions")).not.toBeInTheDocument()
     expect(drawer.getByRole("option", { name: /^nav\.home/ })).toHaveAttribute(
       "href",
       "/home"
     )
+
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "sign out" },
+    })
+    expect(drawer.queryByTestId("quick-action-chips")).not.toBeInTheDocument()
+    expect(drawer.getByRole("option", { name: /Sign out/ })).toBeVisible()
+  })
+
+  it("titles the drawer Menu on one line and closes it from the header's X", () => {
+    renderShell(vi.fn(), true, "/", undefined, controller([createGoalAction]))
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const drawer = within(screen.getByTestId("mobile-menu"))
+
+    expect(drawer.getByRole("heading", { name: "nav.menu" })).toBeVisible()
+    expect(
+      drawer.getAllByRole("button", { name: "common.close" })
+    ).toHaveLength(1)
+    fireEvent.click(drawer.getByRole("button", { name: "common.close" }))
+    expect(screen.getByTestId("mobile-menu-trigger")).toHaveAttribute(
+      "data-state",
+      "closed"
+    )
+  })
+
+  it("lists the recent pages first, without the page you are on", () => {
+    localStorage.setItem(
+      storageKeys.userNavRecentPages,
+      JSON.stringify(["/library/machines-of-war", "/home", "/dailies/raids"])
+    )
+    try {
+      renderShell(
+        vi.fn(),
+        true,
+        "/home",
+        undefined,
+        controller([createGoalAction])
+      )
+      fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+
+      const recent = within(screen.getByTestId("recent-pages"))
+      expect(
+        recent.getAllByRole("option").map((row) => row.getAttribute("href"))
+      ).toEqual(["/library/machines-of-war", "/dailies/raids"])
+      expect(recent.getAllByRole("option")[1]).toHaveTextContent(
+        "· nav.dailies"
+      )
+    } finally {
+      localStorage.removeItem(storageKeys.userNavRecentPages)
+    }
   })
 
   it("selects an action, closes the drawer, and resets the query", () => {
@@ -591,7 +653,7 @@ describe("MobileBottomNav quick actions in Menu search", () => {
       const quickActions = controller([createGoalAction])
       renderShell(vi.fn(), true, "/", undefined, quickActions)
       fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
-      fireEvent.click(screen.getByRole("option", { name: /Create Goal/ }))
+      fireEvent.click(screen.getByRole("button", { name: "Create Goal" }))
       expect(quickActions.flush).not.toHaveBeenCalled()
 
       act(() => void vi.advanceTimersByTime(600))
@@ -611,6 +673,14 @@ describe("MobileBottomNav quick actions in Menu search", () => {
     renderShell(vi.fn(), true, "/", undefined, quickActions)
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
 
+    const chip = screen.getByRole("button", {
+      name: /^Sync with Tacticus: ?Syncing 1\/2$/,
+    })
+    expect(chip).toBeDisabled()
+    fireEvent.click(chip)
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "sync" },
+    })
     const row = screen.getByRole("option", { name: /Sync with Tacticus/ })
     expect(row).toHaveAttribute("aria-disabled", "true")
     expect(row).toHaveTextContent("Syncing 1/2")

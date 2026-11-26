@@ -329,7 +329,14 @@
       "tourRunning": "Une visite est déjà en cours",
       "signInDescription": "Planifiez objectifs, quotidiennes, Événements légendaires et raids de guilde avec votre propre roster",
       "signUpDescription": "Créez un compte gratuit pour planifier avec votre propre roster",
-      "signInBusy": "Une connexion est déjà en cours"
+      "signInBusy": "Une connexion est déjà en cours",
+      "switchThemeLabel": "Changer de thème",
+      "switchThemeDescription": "Basculer entre clair et sombre",
+      "accountSettingsLabel": "Paramètres du compte",
+      "accountSettingsDescription": "Clé API Tacticus, profil et vos données",
+      "signOutDescription": "Se déconnecter sur cet appareil",
+      "accountBusy": "Votre compte est occupé. Réessayez dans un instant.",
+      "recentHeading": "Récents"
     },
     "breadcrumb": "Fil d'Ariane"
   },

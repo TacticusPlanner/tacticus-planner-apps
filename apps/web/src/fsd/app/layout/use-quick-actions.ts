@@ -3,19 +3,27 @@ import {
   Bug,
   HelpCircle,
   LogIn,
+  LogOut,
   MessageSquareText,
   PlusCircle,
   FolderPlus,
   RefreshCw,
+  SunMoon,
+  UserCog,
   UserPlus,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { toast } from "sonner"
+import { InteractionStatus } from "@azure/msal-browser"
+import { useMsal } from "@azure/msal-react"
 
-import { useSignInRedirect } from "@/shared/auth"
+import { signOut, useSignInRedirect } from "@/shared/auth"
 import { usePlayerDataStatus } from "@/shared/player-data-status"
+import { useTheme } from "@/shared/theme"
 import { useTour } from "@/shared/tour"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
+import { requestAccountSettings } from "../providers/account-settings-request"
 import { useUserJot } from "../providers/userjot-provider"
 import type {
   QuickAction,
@@ -44,6 +52,8 @@ export function useQuickActions({
   const { hasPageTour, isRunning, startPageTour } = useTour()
   const { open: openFeedback, status: feedbackStatus } = useUserJot()
   const signInRedirect = useSignInRedirect()
+  const { setTheme } = useTheme()
+  const { accounts, inProgress, instance } = useMsal()
 
   const entries: { action: QuickAction; run: () => void }[] = []
   if (!isAuthenticated) {
@@ -109,6 +119,7 @@ export function useQuickActions({
             sync.status === "syncing" || sync.syncBlockedUntil !== null
               ? createElement(SyncStatusText)
               : undefined,
+          status: createElement(LastSyncText),
         },
         run: () => sync.syncNow(),
       }
@@ -139,6 +150,8 @@ export function useQuickActions({
         feedbackStatus === "failed"
           ? t("nav.quickActions.feedbackUnavailable")
           : undefined,
+      // Send feedback covers it at rest; the widget's form is one tap away from there.
+      searchOnly: true,
     },
     // Straight to the submit form, not the widget's home.
     run: () => openFeedback({ to: "feedback", compose: true }),
@@ -157,6 +170,56 @@ export function useQuickActions({
       },
       run: startPageTour,
     })
+  }
+  entries.push({
+    action: {
+      id: "switchTheme",
+      icon: SunMoon,
+      label: t("nav.quickActions.switchThemeLabel"),
+      description: t("nav.quickActions.switchThemeDescription"),
+      keywords: ["dark", "light", "mode", "appearance"],
+      searchOnly: true,
+    },
+    // Flips what is showing now, so a "system" theme turns into the opposite fixed one.
+    run: () =>
+      setTheme(
+        document.documentElement.classList.contains("dark") ? "light" : "dark"
+      ),
+  })
+  const account = instance.getActiveAccount() ?? accounts[0]
+  if (isAuthenticated && account) {
+    entries.push(
+      {
+        action: {
+          id: "accountSettings",
+          icon: UserCog,
+          label: t("nav.quickActions.accountSettingsLabel"),
+          description: t("nav.quickActions.accountSettingsDescription"),
+          keywords: ["api key", "profile", "account", "settings"],
+          searchOnly: true,
+        },
+        run: requestAccountSettings,
+      },
+      {
+        action: {
+          id: "signOut",
+          icon: LogOut,
+          label: t("auth.signOut"),
+          description: t("nav.quickActions.signOutDescription"),
+          keywords: ["log out", "logout"],
+          disabledReason:
+            inProgress === InteractionStatus.None
+              ? undefined
+              : t("nav.quickActions.accountBusy"),
+          searchOnly: true,
+        },
+        run: () => {
+          void signOut(instance, account.homeAccountId).catch(() => {
+            toast.error(t("auth.error"))
+          })
+        },
+      }
+    )
   }
 
   const latest = useRef(entries)
@@ -186,4 +249,9 @@ export function useQuickActions({
 
 function SyncStatusText() {
   return usePlayerDataSyncStatus().statusText
+}
+
+/** Sync's row says when the last sync happened; it ticks on its own, not the shell. */
+function LastSyncText() {
+  return usePlayerDataSyncStatus().lastSyncText
 }

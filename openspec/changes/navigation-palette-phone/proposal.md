@@ -6,7 +6,7 @@ On a phone the Menu drawer is both the main menu and navigation search, yet its 
 
 - Phone Menu layout: a one-line header ("Menu" and a close button) and no footer Close button (the handle, a swipe and the X still close it). Quick actions become a horizontal chip row, hidden while typing because matching actions then show as rows. Rows are one line. While typing, results sit at the bottom so the best match is right above the field, and the keyboard's Go/Enter opens it. The search field stays at the bottom and is not autofocused, since the drawer is also used to browse.
 - Recent pages on both platforms: the last 3 visited pages, not counting the current one, kept on the device and shown above Quick actions when nothing is typed. Storage failures are tolerated (`browser-storage-resilience`).
-- Tidy the actions: "Submit feedback" and "Report a bug" become one "Send feedback" row with a "Report a bug" shortcut (desktop) or a single Feedback chip (phone). Add Switch theme, Account settings and Sign out (Sign in and Sign up stay for guests). The Sync row shows when the last sync happened.
+- Tidy the actions: "Submit feedback" becomes "Send feedback", and "Report a bug" is listed only when a query matches it (bug, problem, error…), so the two no longer sit side by side. Add Switch theme, Account settings and Sign out, also listed only when searched for, so the resting list stays short (Sign in and Sign up stay for guests). The Sync row shows when the last sync happened.
 
 ## Capabilities
 
@@ -17,6 +17,7 @@ On a phone the Menu drawer is both the main menu and navigation search, yet its 
 ## Impact
 
 - `apps/web/src/fsd/app/layout/mobile-layout.tsx`, the shared navigation list from `navigation-palette-core`, `use-quick-actions.ts`, a new recent-pages store, locales and tests.
+- `apps/web/src/fsd/app/providers/auth-control.tsx`: opens Account settings when the quick action asks.
 - No API change.
 
 Stacked on `navigation-palette-core`.

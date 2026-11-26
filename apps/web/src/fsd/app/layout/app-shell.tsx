@@ -26,6 +26,7 @@ import {
   subItemLabel,
 } from "./nav-items"
 import type { NavItem } from "./nav-items"
+import { useRecordRecentPage } from "./recent-pages"
 import { resolveActiveNavigation } from "./resolve-active-navigation"
 import { createGoalScopeProjectId } from "./create-goal-scope"
 import { useDesktopMenuState } from "./use-desktop-menu-state"
@@ -65,6 +66,11 @@ export function AppShell() {
   const { activeItem, activeChild } = resolveActiveNavigation(
     navItems,
     pathname
+  )
+  // Navigation search lists the last pages opened; a section with child pages is never one itself.
+  useRecordRecentPage(
+    activeChild?.path ??
+      ((activeItem?.children?.length ?? 0) === 0 ? activeItem?.path : undefined)
   )
   const pageTitle = activeChild
     ? subItemLabel(t, activeChild)

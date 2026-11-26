@@ -49,6 +49,16 @@ const build = (query: string, actions: QuickAction[] = [sync]) =>
     t,
   })
 
+const recentBuild = (query: string) =>
+  buildNavigationGroups({
+    actions: [sync],
+    getEntryPath: (item) => item.path,
+    items: navItems,
+    query,
+    recentPaths: ["/dailies/raids", "/gone", "/home"],
+    t,
+  })
+
 /** The entries of the query's first (best) group, or of the group at `index`. */
 const entriesOf = (query: string, index = 0, actions?: QuickAction[]) =>
   build(query, actions).at(index)?.entries ?? []
@@ -169,6 +179,31 @@ describe("buildNavigationGroups", () => {
     expect(build("raids", [goalAction]).map((group) => group.id)).toEqual([
       "pages",
     ])
+  })
+
+  it("lists recent pages first with no query, and only then", () => {
+    const [recent] = recentBuild("")
+    expect(recent?.id).toBe("recent")
+    expect(recent?.entries.map(labelOf)).toEqual(["Raids", "Home"])
+    expect(recent?.entries[0]?.key).toBe("recent:child:/dailies/raids")
+    expect(recentBuild("raid").map((group) => group.id)).not.toContain("recent")
+  })
+
+  it("leaves search-only actions out until a query matches them", () => {
+    const signOut = {
+      ...sync,
+      id: "signOut" as const,
+      label: "Sign out",
+      keywords: ["log out"],
+      searchOnly: true,
+    }
+
+    expect(entriesOf("", 0, [sync, signOut]).map(labelOf)).toEqual([
+      "Sync with Tacticus",
+    ])
+    expect(labelOf(entriesOf("log out", 0, [sync, signOut])[0])).toBe(
+      "Sign out"
+    )
   })
 
   it("returns no groups when nothing matches", () => {

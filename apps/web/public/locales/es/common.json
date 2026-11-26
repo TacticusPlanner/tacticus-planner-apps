@@ -329,7 +329,14 @@
       "tourRunning": "Ya hay un recorrido en curso",
       "signInDescription": "Planifica objetivos, diarias, Eventos Legendarios e incursiones de gremio con tu propio roster",
       "signUpDescription": "Crea una cuenta gratuita para planificar con tu propio roster",
-      "signInBusy": "Ya hay un inicio de sesión en curso"
+      "signInBusy": "Ya hay un inicio de sesión en curso",
+      "switchThemeLabel": "Cambiar tema",
+      "switchThemeDescription": "Alterna entre claro y oscuro",
+      "accountSettingsLabel": "Ajustes de la cuenta",
+      "accountSettingsDescription": "Clave API de Tacticus, perfil y tus datos",
+      "signOutDescription": "Cierra sesión en este dispositivo",
+      "accountBusy": "Tu cuenta está ocupada. Inténtalo de nuevo en un momento.",
+      "recentHeading": "Recientes"
     },
     "breadcrumb": "Ruta de navegación"
   },
