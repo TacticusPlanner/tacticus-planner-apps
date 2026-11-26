@@ -2,7 +2,7 @@ import { EquipmentIcons } from "@workspace/game-catalog"
 import type { EquipmentId, Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { EntityIcon, entityIconClassName } from "@/shared/ui"
+import { EntityIcon, entityIconClassName } from "../ui"
 
 /**
  * An item's art on its rarity frame, with the relic frame over a relic, as the game draws it: the art

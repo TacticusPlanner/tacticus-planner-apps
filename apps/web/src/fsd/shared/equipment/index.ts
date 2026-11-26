@@ -5,7 +5,7 @@ export {
   itemSlotRank,
   slotIndexOf,
   type ItemSlotType,
-} from "./lib/item-slots"
+} from "./item-slots"
 export {
   NO_COST,
   addCosts,
@@ -21,6 +21,6 @@ export {
   type ItemCost,
   type ItemLadderStep,
   type LadderItem,
-} from "./lib/item-levels"
-export { useItemName, useItemSlotName } from "./lib/use-item-names"
-export { ItemIcon } from "./ui/item-icon"
+} from "./item-levels"
+export { useItemName, useItemSlotName } from "./use-item-names"
+export { ItemIcon } from "./item-icon"

@@ -1,7 +1,7 @@
 import type { Rarity } from "@workspace/game-domain"
 import { rarityRank } from "@workspace/game-domain"
 
-import { firstDifference } from "@/shared/lib"
+import { firstDifference } from "../lib"
 
 /** One level's price on an item's upgrade ladder (the catalog's `upgradeLevels[]`). Level 1's entry
  *  carries no gold: its salvage is what the item is worth when found. */

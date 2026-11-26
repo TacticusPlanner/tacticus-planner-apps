@@ -5,8 +5,8 @@ import {
   rarityRank,
 } from "@workspace/game-domain"
 
-import { itemSlotRank, slotIndexOf } from "@/entities/equipment"
-import type { LadderItem } from "@/entities/equipment"
+import { itemSlotRank, slotIndexOf } from "@/shared/equipment"
+import type { LadderItem } from "@/shared/equipment"
 import { firstDifference } from "@/shared/lib"
 
 /** What the Items pages read of a catalog equipment record. */

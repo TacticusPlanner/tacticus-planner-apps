@@ -2,6 +2,7 @@ import {
   battleGlyphIcon,
   campaignIcon,
   countdownIcon,
+  equipmentSlotIcon,
   factionIcon,
   gameMenuIcon,
   datamineAssetUrl,
@@ -60,6 +61,11 @@ const FILTER_LABEL_ICONS = {
   campaignType: [campaignIcon(campaignIdSchema.parse("campaign1"), "Standard")],
   upgradeStat: [statIcon("health"), statIcon("damage"), statIcon("armour")],
   upgradeKind: [UpgradeIcons.craftedBadge],
+  itemSlot: [
+    equipmentSlotIcon("I_Crit"),
+    equipmentSlotIcon("I_Block"),
+    equipmentSlotIcon("I_Defensive"),
+  ],
 } satisfies Record<string, (GameIcon | undefined)[]>
 
 export type FilterLabelIconKind = keyof typeof FILTER_LABEL_ICONS

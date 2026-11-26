@@ -47,5 +47,84 @@
       "title": "One stack",
       "content": "How many copies are safe to reclaim, and why. You reclaim them in the game."
     }
+  },
+  "pieces": {
+    "toolbar": {
+      "label": "Find items",
+      "search": "Search items",
+      "rarity": "Rarity",
+      "allRarities": "All rarities",
+      "clearRarities": "Clear rarities",
+      "slot": "Slot",
+      "allSlots": "All slots",
+      "clearSlots": "Clear slots",
+      "faction": "Faction",
+      "allFactions": "All factions",
+      "clearFactions": "Clear factions",
+      "character": "Character",
+      "allCharacters": "All characters",
+      "clearCharacters": "Clear characters",
+      "searchCharacters": "Search characters",
+      "chipsLabel": "Show",
+      "spares": "Spares only",
+      "relics": "Relics only",
+      "clearFilters": "Clear filters",
+      "layouts": {
+        "cards": "Cards",
+        "table": "Table"
+      },
+      "groups": {
+        "slot": "Slot",
+        "rarity": "Rarity",
+        "none": "None"
+      }
+    },
+    "level": "Lv {{level}}",
+    "spare_one": "{{count}} spare",
+    "spare_other": "{{count}} spare",
+    "worn_one": "{{count}} worn",
+    "worn_other": "{{count}} worn",
+    "more": "+{{count}}",
+    "for": "For",
+    "cardLabel": "{{name}}: {{spare}}, {{worn}}",
+    "table": {
+      "label": "Items",
+      "item": "Item",
+      "slot": "Slot",
+      "rarity": "Rarity",
+      "levels": "Levels",
+      "spare": "Spare",
+      "worn": "Worn"
+    },
+    "noMatch": {
+      "title": "No items match",
+      "description": "Try another search, or clear the filters.",
+      "clearSearch": "Clear search"
+    },
+    "unknown_one": "{{count}} copy of an item the planner doesn't know yet isn't shown.",
+    "unknown_other": "{{count}} copies of items the planner doesn't know yet aren't shown.",
+    "details": {
+      "description": "{{rarity}} · {{slot}}",
+      "relicDescription": "{{rarity}} · {{slot}} · Relic",
+      "for": "Who can wear it",
+      "owned": "Your copies",
+      "spareAt": "Spare",
+      "wornBy": "Worn by",
+      "stats": "Stats",
+      "statLevel": "Level",
+      "max": "Max",
+      "upgrade": "Upgrade costs",
+      "upgradeFrom": "From your highest copy, Lv {{level}}",
+      "toNext": "To Lv {{level}}",
+      "toMax": "To Lv {{level}} (max)",
+      "maxed": "Your highest copy is already at the top level.",
+      "close": "Close",
+      "everyone": "Every faction",
+      "ownedSummary": "{{spare}}, {{worn}}"
+    },
+    "none": {
+      "title": "No items yet",
+      "description": "Items you find or win show up here after your next sync."
+    }
   }
 }

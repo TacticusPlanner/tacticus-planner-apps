@@ -19,6 +19,7 @@ export function testItem(
     chance = 20,
     isRelic = false,
     allowedUnits = [],
+    allowedFactions = [],
     name = id,
   }: {
     rarity?: Rarity
@@ -27,6 +28,7 @@ export function testItem(
     chance?: number
     isRelic?: boolean
     allowedUnits?: string[]
+    allowedFactions?: string[]
     name?: string
   } = {}
 ): CatalogItem {
@@ -48,7 +50,7 @@ export function testItem(
     isRelic,
     isUniqueRelic: false,
     allowedUnits,
-    allowedFactions: [],
+    allowedFactions,
     levels: Array.from({ length: levels }, () => ({
       stats: chanceStat ? { [chanceStat]: chance } : { armor: 10 },
     })),
