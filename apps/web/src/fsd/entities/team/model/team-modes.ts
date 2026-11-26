@@ -28,6 +28,11 @@ export const TEAM_RULE_CODES = [
   "incursionRequired",
   "unknownIncursion",
   "noSharedIncursionFaction",
+  "survivalModeRequired",
+  "unknownSurvivalEvent",
+  "survivalFeaturedCharacter",
+  "survivalTooManyCharacters",
+  "survivalTooManyMows",
 ] as const satisfies readonly TeamRuleCode[]
 
 export function isTeamMode(value: unknown): value is TeamMode {

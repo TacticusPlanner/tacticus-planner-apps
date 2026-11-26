@@ -51,6 +51,7 @@
     "mows": "Machines of War",
     "campaign": "Campaign: {{name}}",
     "incursions": "Incursions: {{names}}",
+    "survival": "Survival: {{name}}",
     "locked": "{{name}} (locked)",
     "editTeam": "Edit {{name}}",
     "drag": "Drag {{name}} to reorder",
@@ -148,6 +149,14 @@
     "allowed": "Allowed factions",
     "noShared": "These Incursions have no faction in common.",
     "clears": "Changing the Incursions clears the lineup."
+  },
+  "survival": {
+    "label": "Survival event",
+    "featured": "{{hero}} always fights and isn't part of the team.",
+    "caps": "Up to {{characters}} characters and {{mows}} Machines of War.",
+    "capsNoMows": "Up to {{characters}} characters, no Machines of War.",
+    "allowed": "Allowed factions",
+    "unknown": "This Survival event isn't in the game data."
   },
   "picker": {
     "label": "Add units",
@@ -256,6 +265,26 @@
     "noSharedIncursionFaction": {
       "reason": "These Incursions have no faction in common.",
       "fix": "Remove an Incursion."
+    },
+    "survivalModeRequired": {
+      "reason": "A Survival team plays Horde mode only.",
+      "fix": "Keep only the Horde mode."
+    },
+    "unknownSurvivalEvent": {
+      "reason": "This Survival event isn't in the game data.",
+      "fix": "Create the team again from the Survival page."
+    },
+    "survivalFeaturedCharacter": {
+      "reason": "The event's featured hero always fights, so it isn't part of the team.",
+      "fix": "Remove the featured hero."
+    },
+    "survivalTooManyCharacters": {
+      "reason": "A Survival team can have at most 10 characters besides the featured hero.",
+      "fix": "Remove characters until 10 are left."
+    },
+    "survivalTooManyMows": {
+      "reason": "A Survival team can have at most 3 Machines of War.",
+      "fix": "Remove Machines of War until 3 are left."
     }
   },
   "tour": {
@@ -314,6 +343,11 @@
       "incursionRequired": "Incursion missing",
       "unknownIncursion": "Unknown Incursion",
       "noSharedIncursionFaction": "No shared faction",
+      "survivalModeRequired": "Horde only",
+      "unknownSurvivalEvent": "Unknown Survival event",
+      "survivalFeaturedCharacter": "Featured hero in team",
+      "survivalTooManyCharacters": "Over 10 characters",
+      "survivalTooManyMows": "Over 3 Machines of War",
       "tooFewCharacters_one": "{{count}} character (min {{min}})",
       "tooFewCharacters_other": "{{count}} characters (min {{min}})"
     }

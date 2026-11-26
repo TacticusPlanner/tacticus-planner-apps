@@ -51,6 +51,7 @@
     "mows": "Kriegsmaschinen",
     "campaign": "Kampagne: {{name}}",
     "incursions": "Incursions: {{names}}",
+    "survival": "Überleben: {{name}}",
     "locked": "{{name}} (gesperrt)",
     "editTeam": "{{name}} bearbeiten",
     "drag": "{{name}} zum Sortieren ziehen",
@@ -148,6 +149,14 @@
     "allowed": "Erlaubte Fraktionen",
     "noShared": "Diese Incursions haben keine gemeinsame Fraktion.",
     "clears": "Eine Änderung der Incursions leert die Aufstellung."
+  },
+  "survival": {
+    "label": "Überlebensevent",
+    "featured": "{{hero}} kämpft immer mit und gehört nicht zum Team.",
+    "caps": "Bis zu {{characters}} Charaktere und {{mows}} Kriegsmaschinen.",
+    "capsNoMows": "Bis zu {{characters}} Charaktere, keine Kriegsmaschinen.",
+    "allowed": "Erlaubte Fraktionen",
+    "unknown": "Dieses Überlebensevent ist nicht in den Spieldaten."
   },
   "picker": {
     "label": "Einheiten hinzufügen",
@@ -256,6 +265,26 @@
     "noSharedIncursionFaction": {
       "reason": "Diese Incursions haben keine gemeinsame Fraktion.",
       "fix": "Entferne eine Incursion."
+    },
+    "survivalModeRequired": {
+      "reason": "Ein Überlebensteam spielt nur den Horde-Modus.",
+      "fix": "Behalte nur den Horde-Modus."
+    },
+    "unknownSurvivalEvent": {
+      "reason": "Dieses Überlebensevent ist nicht in den Spieldaten.",
+      "fix": "Erstelle das Team erneut auf der Überlebensseite."
+    },
+    "survivalFeaturedCharacter": {
+      "reason": "Der vorgestellte Held des Events kämpft immer mit und gehört daher nicht zum Team.",
+      "fix": "Entferne den vorgestellten Helden."
+    },
+    "survivalTooManyCharacters": {
+      "reason": "Ein Überlebensteam kann neben dem vorgestellten Helden höchstens 10 Charaktere haben.",
+      "fix": "Entferne Charaktere, bis 10 übrig sind."
+    },
+    "survivalTooManyMows": {
+      "reason": "Ein Überlebensteam kann höchstens 3 Kriegsmaschinen haben.",
+      "fix": "Entferne Kriegsmaschinen, bis 3 übrig sind."
     }
   },
   "tour": {
@@ -314,6 +343,11 @@
       "incursionRequired": "Incursion fehlt",
       "unknownIncursion": "Unbekannte Incursion",
       "noSharedIncursionFaction": "Keine gemeinsame Fraktion",
+      "survivalModeRequired": "Nur Horde",
+      "unknownSurvivalEvent": "Unbekanntes Überlebensevent",
+      "survivalFeaturedCharacter": "Vorgestellter Held im Team",
+      "survivalTooManyCharacters": "Über 10 Charaktere",
+      "survivalTooManyMows": "Über 3 Kriegsmaschinen",
       "tooFewCharacters_one": "{{count}} Charakter (min. {{min}})",
       "tooFewCharacters_other": "{{count}} Charaktere (min. {{min}})"
     }

@@ -51,6 +51,7 @@
     "mows": "Máquinas de Guerra",
     "campaign": "Campaña: {{name}}",
     "incursions": "Incursiones: {{names}}",
+    "survival": "Supervivencia: {{name}}",
     "locked": "{{name}} (bloqueada)",
     "editTeam": "Editar {{name}}",
     "drag": "Arrastra {{name}} para reordenar",
@@ -148,6 +149,14 @@
     "allowed": "Facciones permitidas",
     "noShared": "Estas Incursiones no tienen ninguna facción en común.",
     "clears": "Cambiar las Incursiones vacía la alineación."
+  },
+  "survival": {
+    "label": "Evento de Supervivencia",
+    "featured": "{{hero}} siempre lucha y no forma parte del equipo.",
+    "caps": "Hasta {{characters}} personajes y {{mows}} Máquinas de Guerra.",
+    "capsNoMows": "Hasta {{characters}} personajes, sin Máquinas de Guerra.",
+    "allowed": "Facciones permitidas",
+    "unknown": "Este evento de Supervivencia no está en los datos del juego."
   },
   "picker": {
     "label": "Añadir unidades",
@@ -256,6 +265,26 @@
     "noSharedIncursionFaction": {
       "reason": "Estas Incursiones no tienen ninguna facción en común.",
       "fix": "Quita una Incursión."
+    },
+    "survivalModeRequired": {
+      "reason": "Un equipo de Supervivencia solo juega el modo Horda.",
+      "fix": "Deja solo el modo Horda."
+    },
+    "unknownSurvivalEvent": {
+      "reason": "Este evento de Supervivencia no está en los datos del juego.",
+      "fix": "Vuelve a crear el equipo desde la página de Supervivencia."
+    },
+    "survivalFeaturedCharacter": {
+      "reason": "El héroe destacado del evento siempre lucha, así que no forma parte del equipo.",
+      "fix": "Quita el héroe destacado."
+    },
+    "survivalTooManyCharacters": {
+      "reason": "Un equipo de Supervivencia puede tener como máximo 10 personajes además del héroe destacado.",
+      "fix": "Quita personajes hasta que queden 10."
+    },
+    "survivalTooManyMows": {
+      "reason": "Un equipo de Supervivencia puede tener como máximo 3 Máquinas de Guerra.",
+      "fix": "Quita Máquinas de Guerra hasta que queden 3."
     }
   },
   "tour": {
@@ -314,6 +343,11 @@
       "incursionRequired": "Falta la Incursión",
       "unknownIncursion": "Incursión desconocida",
       "noSharedIncursionFaction": "Sin facción común",
+      "survivalModeRequired": "Solo Horda",
+      "unknownSurvivalEvent": "Evento de Supervivencia desconocido",
+      "survivalFeaturedCharacter": "Héroe destacado en el equipo",
+      "survivalTooManyCharacters": "Más de 10 personajes",
+      "survivalTooManyMows": "Más de 3 Máquinas de Guerra",
       "tooFewCharacters_one": "{{count}} personaje (mín. {{min}})",
       "tooFewCharacters_other": "{{count}} personajes (mín. {{min}})"
     }

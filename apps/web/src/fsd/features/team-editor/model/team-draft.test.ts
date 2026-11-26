@@ -296,6 +296,34 @@ describe("campaign and Incursion", () => {
     ],
     campaignBattles: [],
     incursions: [],
+    survivalEvents: [
+      {
+        id: "december-2026",
+        featuredCharacterId: "ultraCalgar",
+        rules: { allowedFactionIds: [], maxCharacters: 10, maxMows: 0 },
+      },
+    ],
+  })
+
+  it("a Survival team takes MoWs only when its event allows them", () => {
+    expect(
+      takesMows({ modes: ["horde"], survivalEventKey: "december-2026" }, facts)
+    ).toBe(false)
+    expect(
+      takesMows({ modes: ["horde"], survivalEventKey: "unknown" }, facts)
+    ).toBe(true)
+  })
+
+  it("a new Survival team is a named Horde team for its event", () => {
+    const fresh = emptyDraft(["horde"], {
+      name: "Survival",
+      survivalEventKey: "december-2026",
+    })
+    expect(fresh).toMatchObject({
+      name: "Survival",
+      modes: ["horde"],
+      survivalEventKey: "december-2026",
+    })
   })
 
   it("choosing a campaign replaces the lineup with its core characters", () => {
@@ -350,6 +378,7 @@ describe("saved teams", () => {
     incursionMowIds: [],
     notes: null,
     rarityCap: "Epic",
+    survivalEventKey: null,
     issues: ["tooManyCoreMows"],
   }
 

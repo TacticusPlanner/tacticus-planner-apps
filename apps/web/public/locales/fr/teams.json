@@ -51,6 +51,7 @@
     "mows": "Machines de guerre",
     "campaign": "Campagne : {{name}}",
     "incursions": "Incursions : {{names}}",
+    "survival": "Survie : {{name}}",
     "locked": "{{name}} (verrouillée)",
     "editTeam": "Modifier {{name}}",
     "drag": "Faites glisser {{name}} pour réordonner",
@@ -148,6 +149,14 @@
     "allowed": "Factions autorisées",
     "noShared": "Ces Incursions n'ont aucune faction en commun.",
     "clears": "Changer les Incursions vide la composition."
+  },
+  "survival": {
+    "label": "Événement de Survie",
+    "featured": "{{hero}} combat toujours et ne fait pas partie de l'équipe.",
+    "caps": "Jusqu'à {{characters}} personnages et {{mows}} machines de guerre.",
+    "capsNoMows": "Jusqu'à {{characters}} personnages, sans machines de guerre.",
+    "allowed": "Factions autorisées",
+    "unknown": "Cet événement de Survie n'est pas dans les données du jeu."
   },
   "picker": {
     "label": "Ajouter des unités",
@@ -256,6 +265,26 @@
     "noSharedIncursionFaction": {
       "reason": "Ces Incursions n'ont aucune faction en commun.",
       "fix": "Retirez une Incursion."
+    },
+    "survivalModeRequired": {
+      "reason": "Une équipe de Survie ne joue que le mode Horde.",
+      "fix": "Ne garde que le mode Horde."
+    },
+    "unknownSurvivalEvent": {
+      "reason": "Cet événement de Survie n'est pas dans les données du jeu.",
+      "fix": "Recrée l'équipe depuis la page Survie."
+    },
+    "survivalFeaturedCharacter": {
+      "reason": "Le héros vedette de l'événement combat toujours, il ne fait donc pas partie de l'équipe.",
+      "fix": "Retire le héros vedette."
+    },
+    "survivalTooManyCharacters": {
+      "reason": "Une équipe de Survie peut avoir au plus 10 personnages en plus du héros vedette.",
+      "fix": "Retire des personnages jusqu'à en garder 10."
+    },
+    "survivalTooManyMows": {
+      "reason": "Une équipe de Survie peut avoir au plus 3 machines de guerre.",
+      "fix": "Retire des machines de guerre jusqu'à en garder 3."
     }
   },
   "tour": {
@@ -314,6 +343,11 @@
       "incursionRequired": "Incursion manquante",
       "unknownIncursion": "Incursion inconnue",
       "noSharedIncursionFaction": "Aucune faction commune",
+      "survivalModeRequired": "Horde uniquement",
+      "unknownSurvivalEvent": "Événement de Survie inconnu",
+      "survivalFeaturedCharacter": "Héros vedette dans l'équipe",
+      "survivalTooManyCharacters": "Plus de 10 personnages",
+      "survivalTooManyMows": "Plus de 3 machines de guerre",
       "tooFewCharacters_one": "{{count}} personnage (min. {{min}})",
       "tooFewCharacters_other": "{{count}} personnages (min. {{min}})"
     }

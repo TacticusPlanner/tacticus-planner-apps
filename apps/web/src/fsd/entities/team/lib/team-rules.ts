@@ -12,6 +12,17 @@ export interface TeamCampaignFacts {
   coreCharacterIds: readonly string[]
 }
 
+/**
+ * A Survival event a team can be built for: its featured hero (always fights, never stored), the
+ * factions its battle allows and its caps on stored characters and MoWs (0 MoWs when it bars them).
+ */
+interface TeamSurvivalFacts {
+  featuredCharacterId: string
+  allowedFactions: ReadonlySet<string>
+  maxCharacters: number
+  maxMows: number
+}
+
 /** The catalog facts the rules read, built from the served catalog by `useTeamRuleFacts`. */
 export interface TeamRuleFacts {
   /** Every catalog character's faction. */
@@ -21,6 +32,8 @@ export interface TeamRuleFacts {
   campaigns: ReadonlyMap<string, TeamCampaignFacts>
   /** Each Incursion's allowed factions, by its MoW. */
   incursionFactionsByMowId: ReadonlyMap<string, ReadonlySet<string>>
+  /** Each Survival event's rules, by its id (`december-2026`). */
+  survivalEvents: ReadonlyMap<string, TeamSurvivalFacts>
 }
 
 /** The fields the rules read; a draft in the editor and a saved team both fit. */
@@ -34,7 +47,10 @@ export type TeamRuleInput = Pick<
   | "mowFlexStartIndex"
   | "campaignGroupId"
   | "incursionMowIds"
->
+> & {
+  /** The Survival event the team is for; absent or null when none. */
+  survivalEventKey?: string | null
+}
 
 /** How many of the lineup's characters are core: those before the flex section. */
 export function coreCount(
@@ -68,9 +84,15 @@ export function sharedIncursionFactions(
 
 /** The factions the team's characters must come from, or undefined when any faction is allowed. */
 export function allowedFactions(
-  team: Pick<TeamFields, "modes" | "campaignGroupId" | "incursionMowIds">,
+  team: Pick<
+    TeamRuleInput,
+    "modes" | "campaignGroupId" | "incursionMowIds" | "survivalEventKey"
+  >,
   facts: TeamRuleFacts
 ): ReadonlySet<string> | undefined {
+  if (team.survivalEventKey) {
+    return facts.survivalEvents.get(team.survivalEventKey)?.allowedFactions
+  }
   if (team.modes.includes("campaign") && team.campaignGroupId) {
     return facts.campaigns.get(team.campaignGroupId)?.alliesFactions
   }
@@ -181,6 +203,42 @@ function evaluateIncursion(
 }
 
 /**
+ * A team tied to a Survival event fields the Horde mode alone, does not store the event's featured
+ * hero (it always fights), stays within the event's character and MoW caps and takes characters only
+ * from allowed factions.
+ */
+function evaluateSurvival(
+  team: TeamRuleInput,
+  facts: TeamRuleFacts,
+  broken: Broken
+) {
+  const key = team.survivalEventKey
+  if (!key) return
+  if (team.modes.length !== 1 || team.modes[0] !== "horde") {
+    broken.add("survivalModeRequired")
+  }
+  const survival = facts.survivalEvents.get(key)
+  if (!survival) {
+    broken.add("unknownSurvivalEvent")
+    return
+  }
+  if (team.characterIds.includes(survival.featuredCharacterId)) {
+    broken.add("survivalFeaturedCharacter")
+  }
+  if (team.characterIds.length > survival.maxCharacters) {
+    broken.add("survivalTooManyCharacters")
+  }
+  if (team.mowIds.length > 0 && survival.maxMows === 0) {
+    broken.add("mowsNotAllowed")
+  } else if (team.mowIds.length > survival.maxMows) {
+    broken.add("survivalTooManyMows")
+  }
+  if (!fromFactions(team, facts, survival.allowedFactions)) {
+    broken.add("factionNotAllowed")
+  }
+}
+
+/**
  * The rules a team breaks, in the API's order (design D3): the same evaluation the API runs on
  * every save and read, so the editor can say why Save is unavailable before the API is asked.
  * The API stays the authority. Locked and unowned units never matter.
@@ -193,13 +251,15 @@ export function evaluateTeamRules(
   evaluateShape(team, facts, broken)
   evaluateCampaign(team, facts, broken)
   evaluateIncursion(team, facts, broken)
+  evaluateSurvival(team, facts, broken)
   return TEAM_RULE_CODES.filter((code) => broken.has(code))
 }
 
 /**
  * The lineup characters a rule is about, so the editor can mark them: those outside the allowed
- * factions for `factionNotAllowed`, and the campaign's core characters missing from the core for
- * `coreCharacterMissing` (they may sit in the flex section).
+ * factions for `factionNotAllowed` (and a Survival event's featured hero, who is never stored),
+ * and the campaign's core characters missing from the core for `coreCharacterMissing` (they may
+ * sit in the flex section).
  */
 export function charactersConcerned(
   team: TeamRuleInput,
@@ -214,6 +274,10 @@ export function charactersConcerned(
       if (faction !== undefined && !allowed.has(faction)) notAllowed.add(id)
     }
   }
+  const featured = team.survivalEventKey
+    ? facts.survivalEvents.get(team.survivalEventKey)?.featuredCharacterId
+    : undefined
+  if (featured && team.characterIds.includes(featured)) notAllowed.add(featured)
   const group =
     team.modes.includes("campaign") && team.campaignGroupId
       ? facts.campaigns.get(team.campaignGroupId)

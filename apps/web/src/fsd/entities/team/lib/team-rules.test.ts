@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
 
+import { compareCodeUnits } from "@/shared/lib"
+
 import { TEAM_RULE_CODES } from "../model/team-modes"
 import type { TeamMode, TeamRuleCode } from "../model/types"
 import { buildTeamRuleFacts } from "./team-rule-facts"
@@ -73,6 +75,26 @@ const facts = buildTeamRuleFacts({
     {
       mowId: "ultraDreadnought",
       allowedFactions: ["BlackLegion", "WorldEaters"],
+    },
+  ],
+  survivalEvents: [
+    {
+      id: "december-2026",
+      featuredCharacterId: "ultraCalgar",
+      rules: {
+        allowedFactionIds: ["Ultramarines", "BlackTemplars"],
+        maxCharacters: 4,
+        maxMows: 0,
+      },
+    },
+    {
+      id: "crescendo-a",
+      featuredCharacterId: "orksNob",
+      rules: {
+        allowedFactionIds: ["Ultramarines"],
+        maxCharacters: 10,
+        maxMows: 1,
+      },
     },
   ],
 })
@@ -352,6 +374,96 @@ describe("evaluateTeamRules (API spec scenarios)", () => {
       "tooManyCoreMows",
       "mowsNotAllowed",
       "campaignRequired",
+    ])
+  })
+})
+
+describe("evaluateTeamRules (Survival)", () => {
+  const survivalTeam = (overrides: Partial<TeamRuleInput> = {}) =>
+    team({
+      survivalEventKey: "december-2026",
+      characterIds: ["ultraTitus", "ultraApothecary", "templHelbrecht"],
+      ...overrides,
+    })
+
+  it("passes a Horde team within the event's caps and factions", () => {
+    expect(rules(survivalTeam())).toEqual([])
+  })
+
+  it("needs the Horde mode alone", () => {
+    expect(rules(survivalTeam({ modes: ["horde", "guildRaid"] }))).toEqual([
+      "survivalModeRequired",
+    ])
+  })
+
+  it("rejects an event the catalog does not know", () => {
+    expect(rules(survivalTeam({ survivalEventKey: "march-2020" }))).toEqual([
+      "unknownSurvivalEvent",
+    ])
+  })
+
+  it("does not store the featured hero", () => {
+    expect(
+      rules(
+        survivalTeam({
+          characterIds: ["ultraCalgar", "ultraTitus", "templHelbrecht"],
+        })
+      )
+    ).toEqual(["survivalFeaturedCharacter"])
+  })
+
+  it("caps the characters", () => {
+    expect(
+      rules(
+        survivalTeam({
+          characterIds: [
+            "ultraTigurius",
+            "ultraEliminatorSgt",
+            "ultraInceptorSgt",
+            "ultraTitus",
+            "templHelbrecht",
+          ],
+        })
+      )
+    ).toEqual(["survivalTooManyCharacters"])
+  })
+
+  it("rejects MoWs when the event takes none, and caps them otherwise", () => {
+    expect(rules(survivalTeam({ mowIds: ["ultraDreadnought"] }))).toEqual([
+      "mowsNotAllowed",
+    ])
+    const crescendo = survivalTeam({
+      survivalEventKey: "crescendo-a",
+      characterIds: ["ultraTitus", "ultraApothecary", "ultraTigurius"],
+    })
+    expect(rules({ ...crescendo, mowIds: ["ultraDreadnought"] })).toEqual([])
+    expect(
+      rules({ ...crescendo, mowIds: ["ultraDreadnought", "tauBroadside"] })
+    ).toEqual(["survivalTooManyMows"])
+  })
+
+  it("takes characters only from the allowed factions", () => {
+    expect(
+      rules(
+        survivalTeam({
+          characterIds: ["ultraTitus", "orksNob", "templHelbrecht"],
+        })
+      )
+    ).toEqual(["factionNotAllowed"])
+  })
+
+  it("marks the featured hero and the characters from other factions", () => {
+    const concerned = charactersConcerned(
+      survivalTeam({ characterIds: ["ultraCalgar", "orksNob", "ultraTitus"] }),
+      facts
+    )
+    expect([...concerned.notAllowed].toSorted(compareCodeUnits)).toEqual([
+      "orksNob",
+      "ultraCalgar",
+    ])
+    expect([...(allowedFactions(survivalTeam(), facts) ?? [])]).toEqual([
+      "Ultramarines",
+      "BlackTemplars",
     ])
   })
 })

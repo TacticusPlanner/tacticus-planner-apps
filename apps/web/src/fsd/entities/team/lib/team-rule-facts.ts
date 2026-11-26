@@ -21,6 +21,15 @@ export function buildTeamRuleFacts(datasets: {
     alliesFactions: readonly string[]
   }[]
   incursions: readonly { mowId: string; allowedFactions: readonly string[] }[]
+  survivalEvents: readonly {
+    id: string
+    featuredCharacterId: string
+    rules: {
+      allowedFactionIds: readonly string[]
+      maxCharacters: number
+      maxMows: number
+    }
+  }[]
 }): TeamRuleFacts {
   // The served definition carries no factions; every battle of a group carries the same copy, so
   // the group's factions are read from its battles.
@@ -48,6 +57,17 @@ export function buildTeamRuleFacts(datasets: {
       datasets.incursions.map((incursion) => [
         incursion.mowId,
         new Set(incursion.allowedFactions),
+      ])
+    ),
+    survivalEvents: new Map(
+      datasets.survivalEvents.map((survival) => [
+        survival.id,
+        {
+          featuredCharacterId: survival.featuredCharacterId,
+          allowedFactions: new Set(survival.rules.allowedFactionIds),
+          maxCharacters: survival.rules.maxCharacters,
+          maxMows: survival.rules.maxMows,
+        },
       ])
     ),
   }
