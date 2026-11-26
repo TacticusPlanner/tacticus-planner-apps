@@ -2,7 +2,6 @@
   "season": "Temporada {{name}}",
   "level": "Nivel {{level}}",
   "settingsSummary": "{{season}} · Nivel de campo de batalla {{level}}",
-  "settingsOpen": "{{summary}}. Abrir ajustes",
   "page": {
     "loading": "Cargando tu guerra",
     "loadError": "No se pudo cargar tu guerra.",
@@ -11,7 +10,11 @@
   },
   "target": {
     "zone": "Zona",
-    "zonePlaceholder": "Elige una zona"
+    "zonePlaceholder": "Elige una zona",
+    "rarityPlaceholder": "Elige primero una zona"
+  },
+  "toolbar": {
+    "label": "Zona y rareza de los defensores"
   },
   "settings": {
     "title": "Ajustes de la Guerra de gremios",
@@ -52,8 +55,7 @@
     "attackCount_other": "{{count}} ataques",
     "lossCount_one": "{{count}} derrota",
     "lossCount_other": "{{count}} derrotas",
-    "warSummary": "{{season}} · Nivel {{level}} ·",
-    "warResults": "{{tokens}} · {{won}} ganados · {{lost}} perdidos",
+    "warSummary": "{{season}} · Nivel {{level}} · <token/> {{tokens}} · {{won}} ganados · {{lost}} perdidos",
     "noAttacks": "No se registraron ataques en esta guerra.",
     "loading": "Cargando guerras anteriores",
     "loadError": "No se pudieron cargar tus guerras anteriores.",
@@ -68,8 +70,12 @@
   },
   "tour": {
     "settings": {
-      "title": "Temporada y nivel",
-      "content": "La temporada y el nivel de campo de batalla de tu guerra. Cámbialos con Ajustes arriba a la derecha."
+      "title": "Ajustes",
+      "content": "La temporada y el nivel de campo de batalla de tu guerra. Cámbialos aquí."
+    },
+    "target": {
+      "title": "Zona y rareza",
+      "content": "Elige la zona que atacas y la rareza de los defensores. Tus unidades se muestran limitadas a esa rareza y los ataques se registran ahí."
     },
     "summary": {
       "title": "Tu guerra",
@@ -81,11 +87,11 @@
     },
     "units": {
       "title": "Unidades disponibles",
-      "content": "Tus unidades que no han atacado en esta guerra. Toca unidades o Seleccionar en un equipo y luego Registrar ataque para elegir la zona y la rareza de los defensores."
+      "content": "Tus unidades que no han atacado en esta guerra, limitadas a la rareza de los defensores. Toca unidades o Seleccionar en un equipo y luego Ganado o Perdido para registrar el ataque."
     },
     "log": {
       "title": "Registro de ataques",
-      "content": "Todos los ataques de esta guerra, los más recientes primero. Deshacer quita un error y libera sus unidades."
+      "content": "Todos los ataques de esta guerra, los más recientes primero. Editar cambia sus detalles; Eliminar lo quita y libera sus unidades."
     },
     "totals": {
       "title": "Totales",
@@ -109,8 +115,8 @@
   },
   "teams": {
     "heading": "Equipos de ataque",
-    "newTeam": "Nuevo equipo",
-    "empty": "Aún no hay equipos de Ataque de guerra. Crea uno para seleccionar sus unidades con un toque.",
+    "createTeam": "Crear equipo",
+    "empty": "Aún no hay equipos de Ataque de guerra.",
     "select": "Seleccionar",
     "selectTeam": "Seleccionar {{name}}",
     "core": "Unidades principales",
@@ -123,19 +129,23 @@
   "select": {
     "count_one": "{{count}} seleccionada",
     "count_other": "{{count}} seleccionadas",
-    "clear": "Borrar",
-    "log": "Registrar ataque",
+    "clear": "Borrar selección",
+    "logDetails": "Registrar con detalles",
+    "lost": "Perdido",
+    "won": "Ganado",
     "blocked": {
       "noCharacter": "Elige al menos 1 personaje",
       "tooManyCharacters": "Elige como máximo 5 personajes",
       "tooManyMows": "Elige como máximo 1 Máquina de guerra",
       "deployed": "{{name}} ya atacó en esta guerra",
       "notOwned": "{{name}} no está en tu plantel sincronizado",
-      "noTokens": "No quedan fichas en esta guerra"
+      "noTokens": "No quedan fichas en esta guerra",
+      "noZone": "Elige una zona para atacar"
     }
   },
   "log": {
     "title": "Registrar ataque",
+    "editTitle": "Editar ataque",
     "rarity": "Rareza de los defensores",
     "result": "Resultado",
     "resultNone": "Sin registrar",
@@ -149,12 +159,15 @@
     "enemyDetails": "Detalles del enemigo (opcional)",
     "cancel": "Cancelar",
     "save": "Registrar ataque",
+    "saveEdit": "Guardar",
     "logged": "Ataque registrado.",
+    "saved": "Ataque guardado.",
     "errors": {
       "guildWarUnknownZone": "Esa zona no está en el campo de batalla de esta temporada. Elige otra zona.",
       "guildWarUnknownUnit": "Una unidad de este ataque es desconocida. Revisa la alineación y los detalles del enemigo.",
       "guildWarUnitDeployed": "Una unidad de esta alineación ya atacó en esta guerra.",
       "guildWarTokensSpent": "No quedan fichas en esta guerra.",
+      "stale": "Este ataque cambió en otro dispositivo. Guarda de nuevo para reemplazarlo con tus cambios.",
       "failed": "No se pudo registrar el ataque. Inténtalo de nuevo."
     }
   },
@@ -176,15 +189,21 @@
       "damaged": "Dañado"
     },
     "buffs": "Mejoras de zona activas",
+    "buffInfo": "Qué hace {{name}}",
     "map": "Mapa",
     "mapAny": "Mapa sin registrar",
     "mapOption": "Mapa {{number}}"
   },
   "attackLog": {
     "heading": "Registro de ataques",
-    "undo": "Deshacer",
-    "undone": "Ataque deshecho.",
-    "undoFailed": "No se pudo deshacer el ataque. Inténtalo de nuevo."
+    "edit": "Editar ataque",
+    "delete": "Eliminar ataque",
+    "deleteTitle": "¿Eliminar este ataque?",
+    "deleteDescription": "Se liberan su ficha y sus unidades. No se puede deshacer.",
+    "deleteConfirm": "Eliminar ataque",
+    "deleteCancel": "Cancelar",
+    "deleted": "Ataque eliminado.",
+    "deleteFailed": "No se pudo eliminar el ataque. Inténtalo de nuevo."
   },
   "startWar": {
     "action": "Empezar nueva guerra",

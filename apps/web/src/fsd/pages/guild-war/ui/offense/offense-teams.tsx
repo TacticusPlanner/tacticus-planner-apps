@@ -3,26 +3,32 @@ import { Plus } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { TeamUnitPortrait, teamUnitView } from "@/entities/team"
+import type { Rarity } from "@workspace/game-domain"
+
+import { TeamUnitPortrait } from "@/entities/team"
 import type { TeamRoster } from "@/entities/team"
+import { EmptyState } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
+import { cappedView } from "../../model/capped-view"
 import { coreUnits } from "../../model/offense"
 import type { OffenseTeam, UnitKind } from "../../model/offense"
 
 /**
  * The player's War Offense teams: the ready ones first, then the blocked ones, each saying which of
- * its core units already attacked. Select puts a team's core units in the selection; New team
- * opens the team editor with War Offense picked.
+ * its core units already attacked, its units shown at the defenders' cap. Select puts a team's
+ * core units in the selection; Create team opens the team editor with War Offense picked.
  */
 export function OffenseTeams({
   teams,
   roster,
+  cap,
   onSelect,
   onNewTeam,
 }: {
   teams: readonly OffenseTeam[]
   roster: TeamRoster | null
+  cap: Rarity | undefined
   onSelect: (units: { id: string; kind: UnitKind }[]) => void
   onNewTeam: () => void
 }) {
@@ -43,11 +49,16 @@ export function OffenseTeams({
         </h2>
         <Button onClick={onNewTeam} size="sm" variant="ghost">
           <Plus data-icon="inline-start" />
-          {t("teams.newTeam")}
+          {t("teams.createTeam")}
         </Button>
       </div>
       {teams.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("teams.empty")}</p>
+        // Create team is in the heading row, so the empty state needs no action of its own.
+        <EmptyState
+          testId="guild-war-teams-empty"
+          title={t("teams.empty")}
+          variant="empty"
+        />
       ) : null}
       <ul className="grid gap-2 sm:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
         {teams.map(({ team, blockedBy }) => {
@@ -80,7 +91,7 @@ export function OffenseTeams({
                 {core.map((unit) => (
                   <li aria-label={nameOf(unit.kind, unit.id)} key={unit.id}>
                     <TeamUnitPortrait
-                      unit={teamUnitView(unit.kind, unit.id, roster)}
+                      unit={cappedView(unit.kind, unit.id, roster, cap)}
                     />
                   </li>
                 ))}

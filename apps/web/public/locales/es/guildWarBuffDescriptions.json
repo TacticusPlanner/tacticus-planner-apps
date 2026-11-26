@@ -1,0 +1,12 @@
+{
+  "EnvAngelsOfDeath_Regional": "Al inicio del tercer turno del defensor, se invocan {[nrOfSummons]} Intercesores con propulsores de salto para apoyar a los defensores. Sus atributos dependen del nivel promedio de los defensores.",
+  "EnvArmourSupplies_Regional": "Todas las unidades defensoras tienen un {[extraArmorPct]} % de aumento de Armadura.",
+  "EnvArtillerySupport_Regional": "Al inicio de la batalla, {[nrOfProjectiles]} proyectiles de artillería impactan unidades atacantes al azar, y cada uno reduce la Salud actual de las unidades impactadas un {[hpPct]} %.",
+  "EnvDefenderHealthBuff2_Global": "Todos los personajes defensores tienen un {[hpPct]} % de aumento de Salud.",
+  "EnvDefenderHealthBuff_Global": "Todos los personajes defensores tienen un {[hpPct]} % de aumento de Salud.",
+  "EnvFlakFire_Regional": "Al inicio de la batalla, el fuego antiaéreo impacta a todas las unidades atacantes voladoras, lo que reduce la Salud actual de la unidad impactada un {[hpPct]} %.",
+  "EnvFortified_Local": "Todas las unidades defensoras tienen un {[extraArmorPct]} % de aumento de Armadura y un {[extraDmgPct]} % de aumento de Daño.",
+  "EnvGarrison_Global": "Al inicio de la batalla, se invocan {[nrOfSummons]} Guardias Cadianos para apoyar a los defensores. Sus atributos dependen del nivel promedio de los defensores.",
+  "EnvThinVeil_Global": "Los personajes psíquicos infligen un {[extraDmgPct]} % más de daño y, cuando son derrotados, invocan un daemon al azar que tiene el mismo nivel que el psíquico derrotado y es enemigo tanto del atacante y del defensor.",
+  "EnvValkyrieStrike_Global": "Al final del primer, tercer y quinto turno del defensor, marca un hexágono en cualquier lugar del campo de batalla. Al inicio del siguiente turno del defensor, el hexágono objetivo y todos los hexágonos circundantes son impactados por misiles Hellstrike, cada uno de los cuales inflige x{[nrOfHits]} de Daño de explosión. La cantidad de daño depende del límite de rareza de los defensores."
+}

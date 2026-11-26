@@ -2,7 +2,6 @@
   "season": "Season {{name}}",
   "level": "Level {{level}}",
   "settingsSummary": "{{season}} · Battlefield level {{level}}",
-  "settingsOpen": "{{summary}}. Open settings",
   "page": {
     "loading": "Loading your war",
     "loadError": "Couldn't load your war.",
@@ -11,7 +10,11 @@
   },
   "target": {
     "zone": "Zone",
-    "zonePlaceholder": "Pick a zone"
+    "zonePlaceholder": "Pick a zone",
+    "rarityPlaceholder": "Pick a zone first"
+  },
+  "toolbar": {
+    "label": "Zone and defenders' rarity"
   },
   "settings": {
     "title": "Guild War settings",
@@ -52,8 +55,7 @@
     "attackCount_other": "{{count}} attacks",
     "lossCount_one": "{{count}} loss",
     "lossCount_other": "{{count}} losses",
-    "warSummary": "{{season}} · Level {{level}} ·",
-    "warResults": "{{tokens}} · {{won}} won · {{lost}} lost",
+    "warSummary": "{{season}} · Level {{level}} · <token/> {{tokens}} · {{won}} won · {{lost}} lost",
     "noAttacks": "No attacks were logged in this war.",
     "loading": "Loading past wars",
     "loadError": "Couldn't load your past wars.",
@@ -68,8 +70,12 @@
   },
   "tour": {
     "settings": {
-      "title": "Season and level",
-      "content": "Your war's season and battlefield level. Change them with Settings at the top right."
+      "title": "Settings",
+      "content": "Your war's season and battlefield level. Change them here."
+    },
+    "target": {
+      "title": "Zone and rarity",
+      "content": "Pick the zone you attack and the defenders' rarity. Your units show capped at that rarity, and attacks are logged there."
     },
     "summary": {
       "title": "Your war",
@@ -81,11 +87,11 @@
     },
     "units": {
       "title": "Available units",
-      "content": "Your units that have not attacked in this war. Tap units or a team's Select, then Log attack to pick the zone and the defenders' rarity."
+      "content": "Your units that have not attacked in this war, capped at the defenders' rarity. Tap units or a team's Select, then Won or Lost to log the attack."
     },
     "log": {
       "title": "Attack log",
-      "content": "Every attack of this war, newest first. Undo removes a mistap and frees its units."
+      "content": "Every attack of this war, newest first. Edit changes its details; Delete removes it and frees its units."
     },
     "totals": {
       "title": "Totals",
@@ -109,8 +115,8 @@
   },
   "teams": {
     "heading": "Offense teams",
-    "newTeam": "New team",
-    "empty": "No War Offense teams yet. Create one to select its units in one tap.",
+    "createTeam": "Create team",
+    "empty": "No War Offense teams yet.",
     "select": "Select",
     "selectTeam": "Select {{name}}",
     "core": "Core units",
@@ -123,19 +129,23 @@
   "select": {
     "count_one": "{{count}} selected",
     "count_other": "{{count}} selected",
-    "clear": "Clear",
-    "log": "Log attack",
+    "clear": "Clear selection",
+    "logDetails": "Log with details",
+    "lost": "Lost",
+    "won": "Won",
     "blocked": {
       "noCharacter": "Pick at least 1 character",
       "tooManyCharacters": "Pick at most 5 characters",
       "tooManyMows": "Pick at most 1 Machine of War",
       "deployed": "{{name}} already attacked in this war",
       "notOwned": "{{name}} isn't in your synced roster",
-      "noTokens": "No tokens left in this war"
+      "noTokens": "No tokens left in this war",
+      "noZone": "Pick a zone to attack"
     }
   },
   "log": {
     "title": "Log attack",
+    "editTitle": "Edit attack",
     "rarity": "Defenders' rarity",
     "result": "Result",
     "resultNone": "Not recorded",
@@ -149,12 +159,15 @@
     "enemyDetails": "Enemy details (optional)",
     "cancel": "Cancel",
     "save": "Log attack",
+    "saveEdit": "Save",
     "logged": "Attack logged.",
+    "saved": "Attack saved.",
     "errors": {
       "guildWarUnknownZone": "That zone isn't on this season's battlefield. Pick another zone.",
       "guildWarUnknownUnit": "A unit in this attack isn't known. Check the lineup and enemy details.",
       "guildWarUnitDeployed": "A unit in this lineup already attacked in this war.",
       "guildWarTokensSpent": "This war has no tokens left.",
+      "stale": "This attack changed on another device. Save again to replace it with your changes.",
       "failed": "Couldn't log the attack. Try again."
     }
   },
@@ -176,15 +189,21 @@
       "damaged": "Damaged"
     },
     "buffs": "Active zone buffs",
+    "buffInfo": "What {{name}} does",
     "map": "Map",
     "mapAny": "Map not noted",
     "mapOption": "Map {{number}}"
   },
   "attackLog": {
     "heading": "Attack log",
-    "undo": "Undo",
-    "undone": "Attack undone.",
-    "undoFailed": "Couldn't undo the attack. Try again."
+    "edit": "Edit attack",
+    "delete": "Delete attack",
+    "deleteTitle": "Delete this attack?",
+    "deleteDescription": "Its token and units are freed. This can't be undone.",
+    "deleteConfirm": "Delete attack",
+    "deleteCancel": "Cancel",
+    "deleted": "Attack deleted.",
+    "deleteFailed": "Couldn't delete the attack. Try again."
   },
   "startWar": {
     "action": "Start new war",

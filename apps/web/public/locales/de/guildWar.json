@@ -2,7 +2,6 @@
   "season": "Saison {{name}}",
   "level": "Stufe {{level}}",
   "settingsSummary": "{{season}} · Schlachtfeldstufe {{level}}",
-  "settingsOpen": "{{summary}}. Einstellungen öffnen",
   "page": {
     "loading": "Dein Krieg wird geladen",
     "loadError": "Dein Krieg konnte nicht geladen werden.",
@@ -11,7 +10,11 @@
   },
   "target": {
     "zone": "Zone",
-    "zonePlaceholder": "Zone wählen"
+    "zonePlaceholder": "Zone wählen",
+    "rarityPlaceholder": "Erst eine Zone wählen"
+  },
+  "toolbar": {
+    "label": "Zone und Verteidigerseltenheit"
   },
   "settings": {
     "title": "Gildenkrieg-Einstellungen",
@@ -52,8 +55,7 @@
     "attackCount_other": "{{count}} Angriffe",
     "lossCount_one": "{{count}} Niederlage",
     "lossCount_other": "{{count}} Niederlagen",
-    "warSummary": "{{season}} · Stufe {{level}} ·",
-    "warResults": "{{tokens}} · {{won}} gewonnen · {{lost}} verloren",
+    "warSummary": "{{season}} · Stufe {{level}} · <token/> {{tokens}} · {{won}} gewonnen · {{lost}} verloren",
     "noAttacks": "In diesem Krieg wurden keine Angriffe erfasst.",
     "loading": "Vergangene Kriege werden geladen",
     "loadError": "Deine vergangenen Kriege konnten nicht geladen werden.",
@@ -68,8 +70,12 @@
   },
   "tour": {
     "settings": {
-      "title": "Saison und Stufe",
-      "content": "Saison und Schlachtfeldstufe deines Kriegs. Ändere sie oben rechts unter Einstellungen."
+      "title": "Einstellungen",
+      "content": "Saison und Schlachtfeldstufe deines Kriegs. Ändere sie hier."
+    },
+    "target": {
+      "title": "Zone und Seltenheit",
+      "content": "Wähle die Zone, die du angreifst, und die Seltenheit der Verteidiger. Deine Einheiten werden auf diese Seltenheit begrenzt angezeigt, und Angriffe werden dort erfasst."
     },
     "summary": {
       "title": "Dein Krieg",
@@ -81,11 +87,11 @@
     },
     "units": {
       "title": "Verfügbare Einheiten",
-      "content": "Deine Einheiten, die in diesem Krieg noch nicht angegriffen haben. Tippe Einheiten oder bei einem Team auf Auswählen, dann auf Angriff erfassen, um Zone und Verteidigerseltenheit zu wählen."
+      "content": "Deine Einheiten, die in diesem Krieg noch nicht angegriffen haben, begrenzt auf die Verteidigerseltenheit. Tippe Einheiten oder bei einem Team auf Auswählen, dann auf Gewonnen oder Verloren, um den Angriff zu erfassen."
     },
     "log": {
       "title": "Angriffsprotokoll",
-      "content": "Alle Angriffe dieses Kriegs, die neuesten zuerst. Rückgängig entfernt einen Fehlgriff und gibt seine Einheiten wieder frei."
+      "content": "Alle Angriffe dieses Kriegs, die neuesten zuerst. Bearbeiten ändert die Details; Löschen entfernt einen Angriff und gibt seine Einheiten frei."
     },
     "totals": {
       "title": "Gesamtwerte",
@@ -109,8 +115,8 @@
   },
   "teams": {
     "heading": "Angriffsteams",
-    "newTeam": "Neues Team",
-    "empty": "Noch keine Kriegsangriff-Teams. Erstelle eins, um seine Einheiten mit einem Tippen auszuwählen.",
+    "createTeam": "Team erstellen",
+    "empty": "Noch keine Kriegsangriff-Teams.",
     "select": "Auswählen",
     "selectTeam": "{{name}} auswählen",
     "core": "Stammeinheiten",
@@ -123,19 +129,23 @@
   "select": {
     "count_one": "{{count}} ausgewählt",
     "count_other": "{{count}} ausgewählt",
-    "clear": "Leeren",
-    "log": "Angriff erfassen",
+    "clear": "Auswahl leeren",
+    "logDetails": "Mit Details erfassen",
+    "lost": "Verloren",
+    "won": "Gewonnen",
     "blocked": {
       "noCharacter": "Wähle mindestens 1 Charakter",
       "tooManyCharacters": "Wähle höchstens 5 Charaktere",
       "tooManyMows": "Wähle höchstens 1 Kriegsmaschine",
       "deployed": "{{name}} hat in diesem Krieg schon angegriffen",
       "notOwned": "{{name}} ist nicht in deinem synchronisierten Kader",
-      "noTokens": "In diesem Krieg sind keine Marken mehr übrig"
+      "noTokens": "In diesem Krieg sind keine Marken mehr übrig",
+      "noZone": "Wähle eine Zone zum Angreifen"
     }
   },
   "log": {
     "title": "Angriff erfassen",
+    "editTitle": "Angriff bearbeiten",
     "rarity": "Seltenheit der Verteidiger",
     "result": "Ergebnis",
     "resultNone": "Nicht erfasst",
@@ -149,12 +159,15 @@
     "enemyDetails": "Gegnerdetails (optional)",
     "cancel": "Abbrechen",
     "save": "Angriff erfassen",
+    "saveEdit": "Speichern",
     "logged": "Angriff erfasst.",
+    "saved": "Angriff gespeichert.",
     "errors": {
       "guildWarUnknownZone": "Diese Zone gibt es auf dem Schlachtfeld dieser Saison nicht. Wähle eine andere Zone.",
       "guildWarUnknownUnit": "Eine Einheit in diesem Angriff ist unbekannt. Prüfe Aufstellung und Gegnerdetails.",
       "guildWarUnitDeployed": "Eine Einheit dieser Aufstellung hat in diesem Krieg schon angegriffen.",
       "guildWarTokensSpent": "In diesem Krieg sind keine Marken mehr übrig.",
+      "stale": "Dieser Angriff wurde auf einem anderen Gerät geändert. Speichere erneut, um ihn durch deine Änderungen zu ersetzen.",
       "failed": "Der Angriff konnte nicht erfasst werden. Versuch es erneut."
     }
   },
@@ -176,15 +189,21 @@
       "damaged": "Beschädigt"
     },
     "buffs": "Aktive Zonenboni",
+    "buffInfo": "Was {{name}} bewirkt",
     "map": "Karte",
     "mapAny": "Karte nicht erfasst",
     "mapOption": "Karte {{number}}"
   },
   "attackLog": {
     "heading": "Angriffsprotokoll",
-    "undo": "Rückgängig",
-    "undone": "Angriff rückgängig gemacht.",
-    "undoFailed": "Der Angriff konnte nicht rückgängig gemacht werden. Versuch es erneut."
+    "edit": "Angriff bearbeiten",
+    "delete": "Angriff löschen",
+    "deleteTitle": "Diesen Angriff löschen?",
+    "deleteDescription": "Seine Marke und Einheiten werden freigegeben. Das kann nicht rückgängig gemacht werden.",
+    "deleteConfirm": "Angriff löschen",
+    "deleteCancel": "Abbrechen",
+    "deleted": "Angriff gelöscht.",
+    "deleteFailed": "Der Angriff konnte nicht gelöscht werden. Versuch es erneut."
   },
   "startWar": {
     "action": "Neuen Krieg starten",

@@ -17,7 +17,9 @@ const {
   incursionWindowMock,
   calendarMock,
   eventShopsMock,
+  definitionsMock,
 } = vi.hoisted(() => ({
+  definitionsMock: vi.fn((): unknown => ({ status: "loading" })),
   eventShopsMock: vi.fn((): unknown => ({ status: "loading" })),
   incursionWindowMock: vi.fn((): unknown => null),
   calendarMock: vi.fn((): unknown => ({ status: "loading" })),
@@ -70,10 +72,12 @@ vi.mock("@/shared/local-data", async (importOriginal) => {
         ? calendarMock()
         : dataset === "event-shops"
           ? eventShopsMock()
-          : (actual.useCatalogDataset as (...args: unknown[]) => unknown)(
-              dataset,
-              ...rest
-            ),
+          : dataset === "event-definitions"
+            ? definitionsMock()
+            : (actual.useCatalogDataset as (...args: unknown[]) => unknown)(
+                dataset,
+                ...rest
+              ),
   }
 })
 vi.mock("@/entities/incursion", () => ({
@@ -347,6 +351,57 @@ describe("Home events (Right now + Upcoming events)", () => {
     await userEvent.click(within(tile!).getByTestId("home-events-row"))
     expect(currentPath()).toBe("/dailies/quest")
     calendarMock.mockReturnValue({ status: "loading" })
+  })
+
+  it("lists the running Guild War phase in Right now and the next one in Upcoming events", async () => {
+    calendarMock.mockReturnValue({
+      status: "ready",
+      data: [
+        entry(
+          "guild-war-season",
+          "2026-10-02T00:00:00Z",
+          "2026-10-17T00:00:00Z"
+        ),
+      ],
+    })
+    definitionsMock.mockReturnValue({
+      status: "ready",
+      data: new Map([
+        [
+          "guild-war-season",
+          {
+            id: "guild-war-season",
+            type: "GuildWarSeason",
+            recurrence: null,
+            config: {
+              warsPerSeason: 6,
+              preparationPhaseHours: 24,
+              activeFightingPhaseHours: 36,
+            },
+          },
+        ],
+      ]),
+    })
+    renderWidget()
+
+    // War 1's war phase runs 10-03 00:00 to 10-04 12:00; war 2's preparation follows.
+    const upcoming = within(screen.getByTestId("home-events-widget"))
+      .getAllByTestId("home-events-row")
+      .find((row) => row.dataset.type === "guildWar")
+    expect(upcoming).toHaveTextContent(
+      "withWarPhase:definitions.guild-war-season,details.phases.row:2,details.phases.preparation"
+    )
+    // Preparation will open Guild War Defense; until then the row opens nothing.
+    expect(upcoming?.tagName).toBe("DIV")
+
+    const link = within(screen.getByTestId("home-live-events")).getByRole(
+      "link",
+      { name: /withWarPhase:.*details\.phases\.row:1,details\.phases\.war/ }
+    )
+    await userEvent.click(link)
+    expect(currentPath()).toBe("/guild/war/offense")
+    calendarMock.mockReturnValue({ status: "loading" })
+    definitionsMock.mockReturnValue({ status: "loading" })
   })
 
   it("lists an upcoming Quest Event without a hero in Upcoming events", () => {

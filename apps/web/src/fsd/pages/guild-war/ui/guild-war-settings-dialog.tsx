@@ -14,6 +14,7 @@ import {
 } from "../model/guild-war-errors"
 import { useSetGuildWarSettings } from "../model/use-guild-war"
 import type { GuildWar, GuildWarSettings } from "../model/types"
+import { playedLevels, startLevel } from "../lib/season"
 import type { GuildWarSeason } from "../lib/season"
 import {
   FilterField,
@@ -26,6 +27,7 @@ import {
 } from "@/shared/ui"
 
 import { useSeasonName } from "../model/use-season-name"
+import { useOverlayContainer } from "./use-overlay-container"
 
 /**
  * The page's Settings: the war's season and battlefield level. A change saves at once (creating
@@ -52,8 +54,22 @@ export function GuildWarSettingsDialog({
   const { t } = useTranslation("guildWar")
   const { seasonName, seasonNumber } = useSeasonName()
   const save = useSetGuildWarSettings()
+  const {
+    setTrigger: setSeasonTrigger,
+    container: seasonContainer,
+    onOpenChange: seasonOpenChange,
+  } = useOverlayContainer()
+  const {
+    setTrigger: setLevelTrigger,
+    container: levelContainer,
+    onOpenChange: levelOpenChange,
+  } = useOverlayContainer()
   const season = seasons.find((entry) => entry.id === settings.seasonId)
-  const levels = (season?.levels ?? []).map((level) => level.battlefieldLevel)
+  // Level 0 (not taking part) is not offered; a war already stored at it still shows it.
+  const played = playedLevels(season)
+  const levels = played.includes(settings.battlefieldLevel)
+    ? played
+    : [settings.battlefieldLevel, ...played]
   const seasonLocked = (war?.attacks.length ?? 0) > 0
   // The calendar names the season (Season 29), so it is shown, not picked; a season it does not
   // name (a config letter) can still be picked.
@@ -64,15 +80,12 @@ export function GuildWarSettingsDialog({
     save.mutate({ settings: next, revision: war?.revision ?? 0 })
   }
   const changeSeason = (seasonId: string) => {
-    const nextLevels =
-      seasons
-        .find((entry) => entry.id === seasonId)
-        ?.levels.map((level) => level.battlefieldLevel) ?? []
+    const next = seasons.find((entry) => entry.id === seasonId)
     change({
       seasonId,
-      battlefieldLevel: nextLevels.includes(settings.battlefieldLevel)
-        ? settings.battlefieldLevel
-        : (nextLevels.at(-1) ?? 0),
+      battlefieldLevel: next
+        ? startLevel(next, settings.battlefieldLevel)
+        : settings.battlefieldLevel,
     })
   }
 
@@ -119,6 +132,7 @@ export function GuildWarSettingsDialog({
             {({ id, labelId }) => (
               <Select
                 disabled={save.isPending || seasonLocked}
+                onOpenChange={seasonOpenChange}
                 onValueChange={changeSeason}
                 value={settings.seasonId}
               >
@@ -126,10 +140,11 @@ export function GuildWarSettingsDialog({
                   aria-labelledby={labelId}
                   id={id}
                   className="w-full"
+                  ref={setSeasonTrigger}
                 >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent position="popper">
+                <SelectContent container={seasonContainer} position="popper">
                   {season ? null : (
                     <SelectItem value={settings.seasonId}>
                       {seasonName(settings.seasonId)}
@@ -149,6 +164,7 @@ export function GuildWarSettingsDialog({
           {({ id, labelId }) => (
             <Select
               disabled={save.isPending || !season}
+              onOpenChange={levelOpenChange}
               onValueChange={(next) =>
                 change({ ...settings, battlefieldLevel: Number(next) })
               }
@@ -158,10 +174,11 @@ export function GuildWarSettingsDialog({
                 aria-labelledby={labelId}
                 id={id}
                 className="w-full"
+                ref={setLevelTrigger}
               >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent position="popper">
+              <SelectContent container={levelContainer} position="popper">
                 {levels.map((level) => (
                   <SelectItem key={level} value={String(level)}>
                     {t("level", { level })}

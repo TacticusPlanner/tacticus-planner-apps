@@ -14,7 +14,7 @@ import type { HomeEventRow } from "../../model/select-home-events"
 /** A Home event's picture: the featured hero's portrait for a Legendary Event, the running
  *  campaign's icon (else the Campaign Events menu icon) for a Campaign Event, Incursion's icon, the
  *  featured hero's portrait (else the Quests menu icon) for a Quest Event, the featured hero's
- *  portrait (else the HRE icon) for a Hero Release Event, the event shop icon for an event shop, else
+ *  portrait (else the HRE icon) for a Hero Release Event, the event shop icon for an event shop, the Guild War icon for a Guild War phase, else
  *  the Home Screen Event's game medallion. Decorative; the row names the event. */
 export function HomeEventVisual({
   row,
@@ -88,6 +88,16 @@ export function HomeEventVisual({
         className="shrink-0"
         definitionId={row.definitionId ?? ""}
         definitionType="ShopEvent"
+      />
+    )
+  }
+  if (row.type === "guildWar") {
+    return (
+      <EventIcon
+        size={size}
+        className="shrink-0"
+        definitionId="guild-war-season"
+        definitionType="GuildWarSeason"
       />
     )
   }

@@ -59,6 +59,8 @@ declare module "i18next" {
       guildWarZones: Record<string, string>
       guildWarTiers: Record<string, string>
       guildWarBuffs: Record<string, string>
+      // The game's description of each buff, its `{[variable]}` slots filled by the page.
+      guildWarBuffDescriptions: Record<string, string>
       // NPC variation ids -> localized unit name (ported from V1 npc_names; see the npc-library change).
       npcs: Record<string, string>
       abilities: Record<string, string>

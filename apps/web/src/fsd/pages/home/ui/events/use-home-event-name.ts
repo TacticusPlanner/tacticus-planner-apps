@@ -9,8 +9,8 @@ import type { HomeEventRow } from "../../model/select-home-events"
 
 /** A Home event's display name: the featured hero for a Legendary Event, the running campaign (else
  *  "Campaign Event") for a Campaign Event, Incursion, "Quest: <hero>" for a Quest Event, "New
- *  Character Event: <hero>" for a Hero Release Event, the shop's name for an event shop, else the
- *  HSE's name. */
+ *  Character Event: <hero>" for a Hero Release Event, the shop's name for an event shop, "Guild War · War 2 · Preparation" for a Guild War phase,
+ *  else the HSE's name. */
 export function useHomeEventName(): (row: HomeEventRow) => string {
   const { t } = useTranslation(["events", "eventMissions"])
   const unitName = useUnitName()
@@ -68,6 +68,13 @@ export function useHomeEventName(): (row: HomeEventRow) => string {
       }
       case "eventShop": {
         return eventShopName(row.definitionId, row.eventKey)
+      }
+      case "guildWar": {
+        return t("withWarPhase", {
+          name: t("definitions.guild-war-season"),
+          war: t("details.phases.row", { war: row.war }),
+          phase: t(`details.phases.${row.phase}`),
+        })
       }
       case "homeScreen": {
         return t(`definitions.${row.definitionId}` as never, {

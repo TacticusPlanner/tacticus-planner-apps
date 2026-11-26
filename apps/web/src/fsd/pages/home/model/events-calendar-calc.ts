@@ -204,8 +204,8 @@ const ONE_HOUR_MS = 60 * 60 * 1000
  * `warsPerSeason`, `preparationPhaseHours` and `activeFightingPhaseHours` (and `warIntervalHours` when
  * a gap follows each war; it defaults to preparation + war). Clipped to the season's own end.
  */
-function deriveGuildWarPhases(
-  entry: RawEventsCalendarEntry,
+export function deriveGuildWarPhases(
+  entry: Pick<RawEventsCalendarEntry, "startUtc" | "endUtc">,
   definition: RawEventDefinition | undefined
 ): EventPhase[] {
   if (definition?.type !== "GuildWarSeason") return []

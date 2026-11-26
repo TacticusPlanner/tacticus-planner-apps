@@ -1,7 +1,7 @@
 import { apiIssue } from "@/shared/api"
 
 import { GUILD_WAR_ATTACK_RULES, guildWarIssues } from "./types"
-import type { GuildWar, GuildWarAttackRule } from "./types"
+import type { GuildWar, GuildWarAttack, GuildWarAttackRule } from "./types"
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null
@@ -41,7 +41,25 @@ export function isGuildWarNotStarted(error: unknown): boolean {
 }
 
 /** The rule a refused attack broke, else null. */
-export function guildWarAttackRule(error: unknown): GuildWarAttackRule | null {
+function guildWarAttackRule(error: unknown): GuildWarAttackRule | null {
   const code = apiIssue(error, ...GUILD_WAR_ATTACK_RULES)?.issueCode
   return GUILD_WAR_ATTACK_RULES.find((rule) => rule === code) ?? null
+}
+
+/** Why an attack save failed, as a `log.errors` key: the war changed meanwhile, the rule it
+ *  broke, or anything else. */
+export function attackSaveError(
+  error: unknown
+): "stale" | GuildWarAttackRule | "failed" {
+  if (staleGuildWar(error)) return "stale"
+  return guildWarAttackRule(error) ?? "failed"
+}
+
+/** The attack as it now stands when an edit was stale, so saving again replaces it; undefined when
+ *  the save was not stale or the attack is gone. */
+export function freshAttack(
+  error: unknown,
+  attackId: string
+): GuildWarAttack | undefined {
+  return staleGuildWar(error)?.attacks.find((attack) => attack.id === attackId)
 }

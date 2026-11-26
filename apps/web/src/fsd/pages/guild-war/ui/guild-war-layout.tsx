@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { Settings } from "lucide-react"
 
 import { calendarSeasonId } from "../model/calendar-season"
 import { useCurrentGuildWar } from "../model/use-guild-war"
@@ -23,8 +22,8 @@ import { useSeasonName } from "../model/use-season-name"
 import { GuildWarSettingsDialog } from "./guild-war-settings-dialog"
 
 /**
- * The Guild War group's layout (Offense, History): the Settings button in the header, the war's
- * season and level above the tabs (tapping it opens Settings), and the war the tabs read. With no
+ * The Guild War group's layout (Offense, History): the Settings button in the header (the only way
+ * into Settings), the war's season and level above the tabs, and the war the tabs read. With no
  * war the season is the one the calendar says is running. Sign-in only: no registered guild needed.
  */
 export function GuildWarLayout() {
@@ -106,25 +105,15 @@ export function GuildWarLayout() {
   } else {
     content = (
       <>
-        <Button
-          aria-label={t("settingsOpen", {
-            summary: t("settingsSummary", {
-              season: seasonName(settings.seasonId, seasonAt),
-              level: settings.battlefieldLevel,
-            }),
-          })}
-          className="self-start text-muted-foreground"
+        <p
+          className="text-sm text-muted-foreground"
           data-testid="guild-war-settings-summary"
-          onClick={() => setSettingsOpen(true)}
-          size="sm"
-          variant="ghost"
         >
-          <Settings data-icon="inline-start" />
           {t("settingsSummary", {
             season: seasonName(settings.seasonId, seasonAt),
             level: settings.battlefieldLevel,
           })}
-        </Button>
+        </p>
         <Outlet context={context} />
         <GuildWarSettingsDialog
           onOpenChange={setSettingsOpen}
@@ -144,6 +133,7 @@ export function GuildWarLayout() {
         <PageSettingsButton
           disabled={!context}
           onClick={() => setSettingsOpen(true)}
+          testId="guild-war-settings-button"
         />
       </PageHeaderSettings>
       <div className="flex flex-col gap-5">{content}</div>

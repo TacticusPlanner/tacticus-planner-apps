@@ -1,26 +1,12 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Skull } from "lucide-react"
-import {
-  guildWarBuffIcon,
-  guildWarZoneIcon,
-  rarityIcon,
-} from "@workspace/game-catalog"
+import { ChevronDown, Skull } from "lucide-react"
+import { guildWarZoneIcon, rarityIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@workspace/ui/components/accordion"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import {
   Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
@@ -31,8 +17,8 @@ import {
 } from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { TeamUnitPortrait, teamUnitView } from "@/entities/team"
-import type { TeamRoster } from "@/entities/team"
+import { TeamUnitPortrait } from "@/entities/team"
+import type { TeamRoster, TeamUnitView } from "@/entities/team"
 import type { PickerUnit } from "@/features/team-editor"
 import {
   EntityIcon,
@@ -46,107 +32,190 @@ import {
 } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import { zonesByTier } from "../../lib/season"
+import { zoneKindId } from "../../lib/season"
 import type { GuildWarSeason } from "../../lib/season"
-import { attackFields, GUILD_WAR_NOTES_MAX } from "../../model/attack-draft"
-import type { ResultChoice } from "../../model/attack-draft"
 import {
-  likelyRarity,
-  useLastZone,
-  zoneRarities,
-} from "../../model/attack-target"
-import { cappedView } from "../../model/capped-view"
-import { EMPTY_ENEMY } from "../../model/enemy-draft"
-import type { EnemyDraft } from "../../model/enemy-draft"
-import type { Selection } from "../../model/offense"
-import type { GuildWarAttackFields } from "../../model/types"
+  attackDetails,
+  attackFields,
+  editedAttackFields,
+  GUILD_WAR_NOTES_MAX,
+  NO_DETAILS,
+} from "../../model/attack-draft"
+import type { AttackDetails } from "../../model/attack-draft"
+import { editRarities, editTarget } from "../../model/attack-target"
+import type { ZoneRarity } from "../../model/attack-target"
+import { cappedView, lineupUnitView } from "../../model/capped-view"
+import type { Selection, UnitKind } from "../../model/offense"
+import { pickRarity } from "../../model/page-target"
+import type { GuildWarAttack, GuildWarAttackFields } from "../../model/types"
 import { useGuildWarNames } from "../../model/use-guild-war-names"
+import { useOverlayContainer } from "../use-overlay-container"
 import { EnemyDetails } from "./enemy-details"
+import { ZoneOptions } from "./target-fields"
 
-/** The zone picker: zones grouped by their tier at the war's level, each with its picture and buff. */
-function ZoneSelect({
+/** One lineup unit as the dialog shows it, at a cap. */
+interface LineupEntry {
+  id: string
+  kind: UnitKind
+  view: (cap: Rarity | undefined) => TeamUnitView
+}
+
+/** What the dialog logs or edits: a new attack with the page's selection at the page's zone and
+ *  rarity, or a logged attack, whose zone and rarity can be changed here. */
+export type LogAttackSubject =
+  | {
+      kind: "new"
+      selection: Selection
+      roster: TeamRoster | null
+      zoneId: string
+      target: ZoneRarity
+    }
+  | { kind: "edit"; attack: GuildWarAttack }
+
+function lineupOf(subject: LogAttackSubject): LineupEntry[] {
+  if (subject.kind === "new") {
+    return [...subject.selection].map(([id, kind]) => ({
+      id,
+      kind,
+      view: (cap) => cappedView(kind, id, subject.roster, cap),
+    }))
+  }
+  const { attack } = subject
+  return [
+    ...attack.characters.map((unit) => ({ unit, kind: "character" as const })),
+    ...(attack.mow ? [{ unit: attack.mow, kind: "mow" as const }] : []),
+  ].map(({ unit, kind }) => ({
+    id: unit.unitId,
+    kind,
+    view: (cap) => lineupUnitView(kind, unit, cap ?? attack.rarityCap),
+  }))
+}
+
+/** The zone and defenders' rarity a new attack logs at, read only: they are picked on the page. */
+function TargetSummary({
   season,
-  battlefieldLevel,
-  value,
-  onChange,
+  zoneId,
+  rarity,
 }: {
   season: GuildWarSeason | undefined
-  battlefieldLevel: number
-  value: string | null
-  onChange: (zoneId: string) => void
+  zoneId: string
+  rarity: Rarity
 }) {
-  const { t } = useTranslation("guildWar")
-  const { zoneName, tierName, buffName } = useGuildWarNames()
-  const groups = season ? zonesByTier(season, battlefieldLevel) : []
+  const { t } = useTranslation(["guildWar", "progression"])
+  const { zoneName } = useGuildWarNames()
+  const visualId = season?.zones.find((zone) => zone.id === zoneId)?.visualId
   return (
-    <FilterField label={t("target.zone")}>
-      {({ id, labelId }) => (
-        <Select disabled={!season} onValueChange={onChange} value={value ?? ""}>
-          <SelectTrigger aria-labelledby={labelId} className="w-full" id={id}>
-            <SelectValue placeholder={t("target.zonePlaceholder")} />
-          </SelectTrigger>
-          <SelectContent position="popper">
-            {groups.map((group) => (
-              <SelectGroup key={group.tierId}>
-                <SelectLabel>{tierName(group.tierId)}</SelectLabel>
-                {group.zones.map((zone) => (
-                  <SelectItem key={zone.id} value={zone.id}>
-                    <EntityIcon
-                      alt=""
-                      className="object-contain"
-                      size="icon-md"
-                      src={guildWarZoneIcon(zone.visualId)}
-                    />
-                    {zoneName(season, zone.id)}
-                    {zone.buffId ? (
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <EntityIcon
-                          alt=""
-                          size="icon-sm"
-                          src={guildWarBuffIcon(zone.buffId)}
-                        />
-                        {buffName(zone.buffId)}
-                      </span>
-                    ) : null}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
-    </FilterField>
+    <p
+      className="flex items-center gap-1.5 text-sm font-medium"
+      data-testid="guild-war-log-target"
+    >
+      <EntityIcon
+        alt=""
+        className="object-contain"
+        size="icon"
+        src={visualId ? guildWarZoneIcon(visualId) : undefined}
+      />
+      {t("attack.target", {
+        zone: zoneName(season, zoneId),
+        rarity: t(`progression:rarities.${rarity}`),
+      })}
+      <EntityIcon alt="" size="icon" src={rarityIcon(rarity)} />
+    </p>
   )
 }
 
-/** The lineup, capped at the defenders' rarity; once there is a result, a tap marks a unit lost. */
+/** An edited attack's zone and defenders' rarity. */
+function TargetEditor({
+  season,
+  battlefieldLevel,
+  zoneId,
+  onZoneChange,
+  rarities,
+  rarity,
+  onRarityChange,
+}: {
+  season: GuildWarSeason | undefined
+  battlefieldLevel: number
+  zoneId: string
+  onZoneChange: (zoneId: string) => void
+  rarities: readonly ZoneRarity[]
+  rarity: Rarity | undefined
+  onRarityChange: (rarity: Rarity) => void
+}) {
+  const { t } = useTranslation(["guildWar", "progression"])
+  const {
+    setTrigger,
+    container: overlayContainer,
+    onOpenChange: onOverlayOpenChange,
+  } = useOverlayContainer()
+  return (
+    <div className="flex flex-col gap-3">
+      <FilterField label={t("target.zone")}>
+        {({ id, labelId }) => (
+          <Select
+            disabled={!season}
+            onOpenChange={onOverlayOpenChange}
+            onValueChange={onZoneChange}
+            value={zoneId}
+          >
+            <SelectTrigger
+              aria-labelledby={labelId}
+              className="w-full"
+              id={id}
+              ref={setTrigger}
+            >
+              <SelectValue placeholder={t("target.zonePlaceholder")} />
+            </SelectTrigger>
+            <ZoneOptions
+              battlefieldLevel={battlefieldLevel}
+              container={overlayContainer}
+              season={season}
+            />
+          </Select>
+        )}
+      </FilterField>
+      {rarity ? (
+        <SegmentedControl
+          label={t("log.rarity")}
+          onValueChange={onRarityChange}
+          options={rarities.map((entry) => ({
+            value: entry.rarity,
+            label: t(`progression:rarities.${entry.rarity}`),
+            icon: (
+              <EntityIcon alt="" size="icon" src={rarityIcon(entry.rarity)} />
+            ),
+            testId: `guild-war-rarity-${entry.rarity}`,
+          }))}
+          testId="guild-war-log-rarity"
+          value={rarity}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+/** The lineup at the defenders' cap; once there is a result, a tap marks a unit lost. */
 function LineupPicker({
-  selection,
-  roster,
+  lineup,
   rarity,
   lostIds,
   onLostChange,
 }: {
-  selection: Selection
-  roster: TeamRoster | null
+  lineup: readonly LineupEntry[]
   rarity: Rarity | undefined
   lostIds: ReadonlySet<string> | null
   onLostChange: (unitIds: ReadonlySet<string>) => void
 }) {
   const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
-  const units = [...selection].map(([id, kind]) => ({
-    id,
-    name: unitName(kind === "mow" ? "Mow" : "Character", id),
+  const units = lineup.map((entry) => ({
+    id: entry.id,
+    name: unitName(entry.kind === "mow" ? "Mow" : "Character", entry.id),
     portrait: (
       <TeamUnitPortrait
-        className={cn(lostIds?.has(id) && "opacity-60 grayscale")}
+        className={cn(lostIds?.has(entry.id) && "opacity-60 grayscale")}
         size="portrait-md"
-        unit={
-          rarity
-            ? cappedView(kind, id, roster, rarity)
-            : teamUnitView(kind, id, roster)
-        }
+        unit={entry.view(rarity)}
       />
     ),
   }))
@@ -194,15 +263,14 @@ function LineupPicker({
 }
 
 /**
- * Log attack (a bottom sheet on phones): the zone (the last one attacked to start) and the
- * defenders' rarity (the slot), the lineup at that cap, an optional result with the units lost,
- * a short note, and the collapsed optional Enemy details.
+ * Log attack with details, or Edit attack (a bottom sheet on phones). A new attack logs at the
+ * page's zone and rarity; an edited one can change them, but not its lineup. Both note the result
+ * with the units lost, a short note, and the optional Enemy details.
  */
 export function LogAttackDialog({
   open,
   onOpenChange,
-  selection,
-  roster,
+  subject,
   units,
   season,
   battlefieldLevel,
@@ -212,8 +280,7 @@ export function LogAttackDialog({
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  selection: Selection
-  roster: TeamRoster | null
+  subject: LogAttackSubject
   units: readonly PickerUnit[]
   season: GuildWarSeason | undefined
   battlefieldLevel: number
@@ -221,132 +288,150 @@ export function LogAttackDialog({
   error: string | null
   onSave: (fields: GuildWarAttackFields) => void
 }) {
-  const { t } = useTranslation(["guildWar", "progression"])
+  const { t } = useTranslation("guildWar")
   const notesId = useId()
-  const [lastZone, setLastZone] = useLastZone(season)
-  const [zoneId, setZoneId] = useState<string | null>(lastZone)
-  const [picked, setPicked] = useState<Rarity | null>(null)
-  const [result, setResult] = useState<ResultChoice>("none")
-  const [lost, setLost] = useState<ReadonlySet<string>>(() => new Set())
-  const [notes, setNotes] = useState("")
-  const [enemy, setEnemy] = useState<EnemyDraft>(EMPTY_ENEMY)
+  const enemyId = useId()
+  const editing = subject.kind === "edit" ? subject.attack : null
+  const initial: AttackDetails = editing ? attackDetails(editing) : NO_DETAILS
+  const [details, setDetails] = useState(initial)
+  const [enemyOpen, setEnemyOpen] = useState(initial.enemy !== NO_DETAILS.enemy)
+  // Edit only: the attack's zone (as its kind) and its rarity, until changed.
+  const [zoneId, setZoneId] = useState(() =>
+    editing ? zoneKindId(season, editing.zoneId) : ""
+  )
+  const [picked, setPicked] = useState<Rarity | undefined>(editing?.rarityCap)
 
-  const rarities = zoneRarities(season, battlefieldLevel, zoneId)
-  const target =
-    rarities.find((entry) => entry.rarity === picked) ??
-    rarities.find(
-      (entry) => entry.rarity === likelyRarity(rarities, selection, roster)
-    )
+  const lineup = lineupOf(subject)
+  let rarities: ZoneRarity[] = []
+  let target: ZoneRarity | undefined
+  if (subject.kind === "new") {
+    target = subject.target
+  } else {
+    rarities = editRarities(season, battlefieldLevel, subject.attack, zoneId)
+    target = pickRarity(rarities, picked)
+  }
+  const saveTarget =
+    subject.kind === "new"
+      ? { zoneId: subject.zoneId, slot: subject.target.slot }
+      : editTarget(subject.attack, season, zoneId, target)
+  const set = (patch: Partial<AttackDetails>) =>
+    setDetails((current) => ({ ...current, ...patch }))
 
   const save = () => {
-    if (zoneId === null || !target) return
-    setLastZone(zoneId)
+    if (!saveTarget) return
     onSave(
-      attackFields({
-        selection,
-        roster,
-        zoneId,
-        slot: target.slot,
-        result,
-        lostIds: lost,
-        notes,
-        enemy,
-      })
+      subject.kind === "new"
+        ? attackFields({
+            selection: subject.selection,
+            roster: subject.roster,
+            zoneId: saveTarget.zoneId,
+            slot: saveTarget.slot,
+            details,
+          })
+        : editedAttackFields(subject.attack, saveTarget, details)
     )
+  }
+
+  // While a save runs the dialog stays open, so its result never lands on a dialog opened after
+  // it (another attack's edit); a failed save keeps the dialog for a retry.
+  const requestOpenChange = (next: boolean) => {
+    if (!pending) onOpenChange(next)
   }
 
   return (
     <ResponsiveDialog
       data-testid="guild-war-log-dialog"
-      onOpenChange={onOpenChange}
+      onOpenChange={requestOpenChange}
       open={open}
       width="form"
     >
       <ResponsiveDialogHeader>
-        <ResponsiveDialogTitle>{t("log.title")}</ResponsiveDialogTitle>
+        <ResponsiveDialogTitle>
+          {editing ? t("log.editTitle") : t("log.title")}
+        </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody className="gap-5">
-        <div className="flex flex-col gap-3">
-          <ZoneSelect
-            battlefieldLevel={battlefieldLevel}
-            onChange={(next) => {
-              setZoneId(next)
-              setPicked(null)
-            }}
+        {subject.kind === "new" ? (
+          <TargetSummary
+            rarity={subject.target.rarity}
             season={season}
-            value={zoneId}
+            zoneId={subject.zoneId}
           />
-          {target ? (
-            <SegmentedControl
-              label={t("log.rarity")}
-              onValueChange={(next) => setPicked(next)}
-              options={rarities.map((entry) => ({
-                value: entry.rarity,
-                label: t(`progression:rarities.${entry.rarity}`),
-                icon: (
-                  <EntityIcon
-                    alt=""
-                    size="icon"
-                    src={rarityIcon(entry.rarity)}
-                  />
-                ),
-                testId: `guild-war-rarity-${entry.rarity}`,
-              }))}
-              testId="guild-war-log-rarity"
-              value={target.rarity}
-            />
-          ) : null}
-        </div>
+        ) : (
+          <TargetEditor
+            battlefieldLevel={battlefieldLevel}
+            onRarityChange={setPicked}
+            onZoneChange={setZoneId}
+            rarities={rarities}
+            rarity={target?.rarity}
+            season={season}
+            zoneId={zoneId}
+          />
+        )}
         <LineupPicker
-          lostIds={result === "none" ? null : lost}
-          onLostChange={setLost}
+          lineup={lineup}
+          lostIds={details.result === "none" ? null : details.lostIds}
+          onLostChange={(lostIds) => set({ lostIds })}
           rarity={target?.rarity}
-          roster={roster}
-          selection={selection}
         />
         <SegmentedControl
           label={t("log.result")}
-          onValueChange={setResult}
+          onValueChange={(result) => set({ result })}
           options={[
             { value: "none", label: t("log.resultNone") },
             { value: "won", label: t("log.resultWon") },
             { value: "lost", label: t("log.resultLost") },
           ]}
           testId="guild-war-log-result"
-          value={result}
+          value={details.result}
         />
         <div className="flex flex-col gap-1.5">
           <Label htmlFor={notesId}>{t("log.notes")}</Label>
           <Textarea
             id={notesId}
             maxLength={GUILD_WAR_NOTES_MAX}
-            onChange={(event) => setNotes(event.target.value)}
+            onChange={(event) => set({ notes: event.target.value })}
             placeholder={t("log.notesPlaceholder")}
             rows={2}
-            value={notes}
+            value={details.notes}
           />
           <p className="text-right text-xs text-muted-foreground tabular-nums">
             {t("log.notesCount", {
-              count: notes.length,
+              count: details.notes.length,
               max: GUILD_WAR_NOTES_MAX,
             })}
           </p>
         </div>
-        <Accordion collapsible type="single">
-          <AccordionItem value="enemy">
-            <AccordionTrigger data-testid="guild-war-enemy-toggle">
-              {t("log.enemyDetails")}
-            </AccordionTrigger>
-            <AccordionContent>
+        {/* No height animation: the section grows as enemies are added and the body scrolls. */}
+        <div className="flex flex-col gap-3 border-t pt-3">
+          <Button
+            aria-controls={enemyId}
+            aria-expanded={enemyOpen}
+            className="justify-between"
+            onClick={() => setEnemyOpen((current) => !current)}
+            variant="ghost"
+          >
+            {t("log.enemyDetails")}
+            <ChevronDown
+              aria-hidden="true"
+              className={cn(
+                "motion-safe:transition-transform",
+                enemyOpen && "rotate-180"
+              )}
+            />
+          </Button>
+          {enemyOpen ? (
+            <div id={enemyId}>
               <EnemyDetails
-                onChange={setEnemy}
+                defenderRarity={target?.rarity}
+                onChange={(enemy) => set({ enemy })}
                 season={season}
                 units={units}
-                value={enemy}
+                value={details.enemy}
               />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+            </div>
+          ) : null}
+        </div>
         {error ? (
           <p className="text-sm text-destructive" role="alert">
             {error}
@@ -354,11 +439,15 @@ export function LogAttackDialog({
         ) : null}
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
-        <Button onClick={() => onOpenChange(false)} variant="outline">
+        <Button
+          disabled={pending}
+          onClick={() => requestOpenChange(false)}
+          variant="outline"
+        >
           {t("log.cancel")}
         </Button>
-        <Button disabled={pending || zoneId === null || !target} onClick={save}>
-          {t("log.save")}
+        <Button disabled={pending || !saveTarget} onClick={save}>
+          {editing ? t("log.saveEdit") : t("log.save")}
         </Button>
       </ResponsiveDialogFooter>
     </ResponsiveDialog>

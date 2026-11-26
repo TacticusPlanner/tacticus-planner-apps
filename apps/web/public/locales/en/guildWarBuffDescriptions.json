@@ -1,0 +1,12 @@
+{
+  "EnvAngelsOfDeath_Regional": "At the beginning of the defender's third turn, {[nrOfSummons]} Jump Pack Intercessors are summoned supporting the defenders. Their stats depend on the average level of the defenders.",
+  "EnvArmourSupplies_Regional": "All defending units have {[extraArmorPct]}% increased Armour.",
+  "EnvArtillerySupport_Regional": "At the start of the battle {[nrOfProjectiles]} artillery shells hit random attacking units, each reducing the hit units' current Health by {[hpPct]}%.",
+  "EnvDefenderHealthBuff2_Global": "All defending Characters have {[hpPct]}% increased Health.",
+  "EnvDefenderHealthBuff_Global": "All defending Characters have {[hpPct]}% increased Health.",
+  "EnvFlakFire_Regional": "At the start of the battle Anti-Air fire hits all attacking flying units, reducing the hit unit's current Health by {[hpPct]}%.",
+  "EnvFortified_Local": "All defending units have {[extraArmorPct]}% increased Armour and {[extraDmgPct]}% increased Damage.",
+  "EnvGarrison_Global": "At the start of the battle, summons {[nrOfSummons]} Cadian Guardsmen supporting the defenders. Their stats depend on the average level of the defenders.",
+  "EnvThinVeil_Global": "Psyker Characters deal +{[extraDmgPct]}% more damage and when they are defeated, summon a random Daemon that has the same level as the defeated Psyker and is enemy to both attacker and defender.",
+  "EnvValkyrieStrike_Global": "At the end of the first, third and fifth defender turn, marks a hex anywhere on the battlefield. At the beginning of the defender's next turn, the target hex and all surrounding hexes are hit with Hellstrike Missiles, each dealing {[nrOfHits]}x Blast Damage. The amount of damage depends on the rarity cap of the defenders."
+}

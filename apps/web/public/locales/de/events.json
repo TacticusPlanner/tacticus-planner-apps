@@ -47,6 +47,7 @@
   "withIteration": "{{name}} (Iteration {{iteration}})",
   "withSeason": "{{name}} Saison {{season}}",
   "withSeasonShort": "{{name}} S{{season}}",
+  "withWarPhase": "{{name}} · {{war}} · {{phase}}",
   "withNewCampaign": "{{name}} (Neue Kampagne)",
   "withNewMow": "{{name}} (Neue MoW)",
   "withEventNumber": "{{name}} {{number}}",

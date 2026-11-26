@@ -76,8 +76,8 @@ describe("app routes", () => {
         isValidElement(route.element) && route.element.type === Navigate
     )
 
-    // The bare /dailies, /library, /plan and /guild, and the old /dailies/shops.
-    expect(redirectOnly).toHaveLength(5)
+    // The bare /dailies, /library, /plan, /guild and /guild/war, and the old /dailies/shops.
+    expect(redirectOnly).toHaveLength(6)
     for (const route of redirectOnly) {
       expect(route.handle).toBe(redirectOnlyHandle)
     }

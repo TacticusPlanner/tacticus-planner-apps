@@ -11,6 +11,8 @@ Companion change: `guild-war-offense` in `tacticus-planner-api`, which applies f
 - The zone and the defenders' rarity are picked in Log attack. The last zone is kept on the device (local storage), not in the URL. Together with the war's battlefield level the rarity sets the cap the attack's lineup is shown and stored at; the page shows units at their own progression.
 - **Offense**: a summary strip (tokens used of the season's attempts, units left per rarity, attacks logged), offense teams ready first then blocked with the reason, available units with search and filters, a contextual selection bar with Log attack, a Log attack dialog with an optional result and optional Enemy details, the attack log with Undo, Start new war behind a confirmation, and a Settings dialog for the season and battlefield level.
 - **History**: past wars newest first, each expanding in place to its attacks, plus totals (overall results; win rate by zone tier, zone and defender rarity; most used characters and lineups with win rates; enemies lost to most).
+- A second feedback round: the zone and rarity move to the page toolbar, Won and Lost log in one tap, attacks can be edited and deleted (replacing Undo), and battlefield level 0 is not offered.
+- **Home** shows the running Guild War phase and the next one; a war phase opens Offense.
 - A `guildWar` i18n namespace in every locale (plus the game's zone, tier and buff names), a tour, and the `guild-war` catalog dataset in the game-catalog package.
 
 ## Capabilities
@@ -22,6 +24,7 @@ Companion change: `guild-war-offense` in `tacticus-planner-api`, which applies f
 ### Modified Capabilities
 
 - `app-navigation`: the Guild section gains a Guild War group and grouped submenus; the guild boundary covers only the Guild group.
+- `home-events-widget`: Guild War phases show in Right now and Upcoming events; a preparation phase has no link yet.
 
 ## Impact
 
@@ -30,3 +33,4 @@ Companion change: `guild-war-offense` in `tacticus-planner-api`, which applies f
 - `pages/guild` (boundary moves to its own routes), `app/routes`, `app/layout/nav-items.ts` and the section menu, drawer and tabs.
 - `shared/api/schema.d.ts`, regenerated from the API contract.
 - A new `guildWar` i18n namespace and nav keys in `common.json`.
+- `pages/home`: the Guild War row in Right now and Upcoming events, and a Home row that may have no link.

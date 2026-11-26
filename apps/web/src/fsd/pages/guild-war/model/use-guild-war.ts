@@ -12,10 +12,16 @@ import {
   deleteAttack,
   setCurrentWar,
   startWar,
+  updateAttack,
 } from "../api/guild-war.api"
 import { guildWarQueries } from "../api/guild-war.queries"
 import { isGuildWarNotStarted, staleGuildWar } from "./guild-war-errors"
-import type { GuildWar, GuildWarAttackFields, GuildWarSettings } from "./types"
+import type {
+  GuildWar,
+  GuildWarAttack,
+  GuildWarAttackFields,
+  GuildWarSettings,
+} from "./types"
 
 /** The caller's current war (null when there is none). */
 export function useCurrentGuildWar() {
@@ -49,6 +55,15 @@ function adoptWar(client: QueryClient, war: GuildWar) {
   } else {
     void client.invalidateQueries({ queryKey: guildWarQueries.past().queryKey })
   }
+}
+
+/** Refetches the war a save touched: the current one, else the past wars. */
+function refreshWar(client: QueryClient, warId: string) {
+  const current = client.getQueryData<GuildWar | null>(currentKey())
+  void client.invalidateQueries({
+    queryKey:
+      current?.id === warId ? currentKey() : guildWarQueries.past().queryKey,
+  })
 }
 
 /** Refetches the current war in the background: a save resolves as soon as the API answers it. */
@@ -135,8 +150,31 @@ export function useLogGuildWarAttack() {
   })
 }
 
-/** Removes an attack (Undo), freeing its units and token. */
-export function useUndoGuildWarAttack() {
+/** Changes a logged attack (of the current war or an ended one). A stale save adopts the war as it
+ *  stands, so the dialog can say so and the player can save again. */
+export function useUpdateGuildWarAttack() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      warId,
+      attack,
+      fields,
+    }: {
+      warId: string
+      attack: GuildWarAttack
+      fields: GuildWarAttackFields
+    }) => updateAttack(warId, attack.id, fields, attack.revision),
+    onSuccess: (war) => adoptWar(client, war),
+    onError: (error) => {
+      const current = staleGuildWar(error)
+      if (current) adoptWar(client, current)
+    },
+    onSettled: (_war, _error, { warId }) => refreshWar(client, warId),
+  })
+}
+
+/** Removes an attack, freeing its units and token. */
+export function useDeleteGuildWarAttack() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: ({ warId, attackId }: { warId: string; attackId: string }) =>

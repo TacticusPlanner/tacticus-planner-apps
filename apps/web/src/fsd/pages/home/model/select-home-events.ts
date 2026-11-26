@@ -6,6 +6,7 @@ import { deriveLegendaryEventLifecycle } from "@/entities/legendary-event"
 import type { LegendaryEventProgress } from "@/entities/legendary-event"
 
 import type { CalendarWindow } from "./calendar-window"
+import type { GuildWarPhase } from "./guild-war-phases"
 
 /** The fields the rows read from a Home Screen Event calendar entry. */
 export interface HomeScreenEventEntry {
@@ -51,7 +52,8 @@ interface HomeEventRowBase {
   live: boolean
   startMs: number
   endMs: number
-  destination: string
+  /** Where the tile links; null when the event has no page yet (it shows, but opens nothing). */
+  destination: string | null
 }
 
 export type HomeEventRow =
@@ -96,6 +98,13 @@ export type HomeEventRow =
       /** True when the start date is not announced yet: `startMs`/`endMs` are then Infinity. */
       dateTba: boolean
     })
+  | (HomeEventRowBase & {
+      type: "guildWar"
+      /** Preparation (defenses are set) or war (attacks are made). */
+      phase: GuildWarPhase["phase"]
+      /** 1 for a season's first war. */
+      war: number
+    })
 
 const DAY_MS = 86_400_000
 
@@ -114,7 +123,9 @@ export interface HomeEvents {
  * Event or event shop off Home: the Home Screen Events that start first (several when they start
  * together), the next Legendary Event with a known start, Campaign Event, Incursion, Quest, Hero
  * Release Event, and the next dated event shop, else one whose start date is TBA. A shop with no date
- * is never live. Any source may be `null` when its read failed or is pending.
+ * is never live. A Guild War shows its running phase and the next one; a war phase opens Guild War
+ * Offense, a preparation phase opens nothing until Guild War Defense exists. Any source may be `null`
+ * when its read failed or is pending.
  */
 export function selectHomeEvents({
   homeScreen,
@@ -124,6 +135,7 @@ export function selectHomeEvents({
   quest = null,
   hre = null,
   eventShops = null,
+  guildWar = null,
   nowMs,
 }: {
   homeScreen: {
@@ -140,6 +152,10 @@ export function selectHomeEvents({
   quest?: LiveAndNext<FeaturedOccurrence> | null
   hre?: LiveAndNext<FeaturedOccurrence> | null
   eventShops?: readonly EventShopEntry[] | null
+  guildWar?: {
+    live: GuildWarPhase | null
+    next: GuildWarPhase | null
+  } | null
   nowMs: number
 }): HomeEvents {
   const hseRow = (
@@ -291,11 +307,40 @@ export function selectHomeEvents({
   if (!nextShop && undated) nextShop = shopRow(undated, false)
   if (nextShop) upcoming.push(nextShop)
 
+  const guildWarRows = guildWarRowsOf(guildWar)
+  live.push(...guildWarRows.live)
+  upcoming.push(...guildWarRows.upcoming)
+
   live.sort(compareLive)
   // Infinity − Infinity is NaN, so two TBA starts compare equal explicitly.
   upcoming.sort((a, b) => (a.startMs === b.startMs ? 0 : a.startMs - b.startMs))
 
   return { live, upcoming }
+}
+
+/** A Guild War phase's row: a war phase opens Guild War Offense; a preparation phase will open
+ *  Guild War Defense once that page exists, and opens nothing until then. */
+function guildWarRow(phase: GuildWarPhase, isLive: boolean): HomeEventRow {
+  return {
+    type: "guildWar",
+    key: `guild-war:${phase.phase}:${phase.startMs}`,
+    phase: phase.phase,
+    war: phase.war,
+    live: isLive,
+    startMs: phase.startMs,
+    endMs: phase.endMs,
+    destination: phase.phase === "war" ? "/guild/war/offense" : null,
+  }
+}
+
+/** The running Guild War phase (live) and the next one (upcoming), as rows. */
+function guildWarRowsOf(
+  guildWar: { live: GuildWarPhase | null; next: GuildWarPhase | null } | null
+): { live: HomeEventRow[]; upcoming: HomeEventRow[] } {
+  return {
+    live: guildWar?.live ? [guildWarRow(guildWar.live, true)] : [],
+    upcoming: guildWar?.next ? [guildWarRow(guildWar.next, false)] : [],
+  }
 }
 
 /** Breaks ties between live events that end and start together, so the order is the same on every
@@ -308,6 +353,7 @@ const LIVE_TYPE_ORDER: readonly HomeEventRow["type"][] = [
   "quest",
   "hre",
   "eventShop",
+  "guildWar",
 ]
 
 /** Live order: by end, then start, then a fixed type order, then the row key (stable between

@@ -78,6 +78,7 @@ const check = (selection: Selection, overrides = {}) =>
     deployed: new Set(["d"]),
     roster,
     tokensLeft: 3,
+    hasTarget: true,
     ...overrides,
   })
 
@@ -106,6 +107,10 @@ describe("logBlock", () => {
 
   it("needs a token", () => {
     expect(check(pick("a"), { tokensLeft: 0 })).toEqual({ reason: "noTokens" })
+  })
+
+  it("needs a zone to log at", () => {
+    expect(check(pick("a"), { hasTarget: false })).toEqual({ reason: "noZone" })
   })
 })
 

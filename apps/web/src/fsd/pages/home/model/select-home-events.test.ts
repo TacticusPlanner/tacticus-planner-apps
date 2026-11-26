@@ -636,3 +636,82 @@ describe("collapseUpcoming", () => {
     ])
   })
 })
+
+const guildWarPhase = (
+  kind: "preparation" | "war",
+  war: number,
+  start: string
+) => ({
+  phase: kind,
+  war,
+  season: 29,
+  startMs: Date.parse(start),
+  endMs: Date.parse(start) + 36 * 3_600_000,
+})
+
+describe("selectHomeEvents Guild War", () => {
+  it("links a war phase to Offense and a preparation phase nowhere yet", () => {
+    const events = selectHomeEvents({
+      homeScreen: null,
+      legendary: null,
+      guildWar: {
+        live: guildWarPhase("war", 1, "2026-11-28T09:00:00Z"),
+        next: guildWarPhase("preparation", 2, "2026-11-29T21:00:00Z"),
+      },
+      nowMs: Date.parse("2026-11-29T12:00:00Z"),
+    })
+    expect(events.live).toEqual([
+      expect.objectContaining({
+        type: "guildWar",
+        phase: "war",
+        war: 1,
+        live: true,
+        destination: "/guild/war/offense",
+      }),
+    ])
+    expect(events.upcoming).toEqual([
+      expect.objectContaining({
+        type: "guildWar",
+        phase: "preparation",
+        war: 2,
+        live: false,
+        destination: null,
+      }),
+    ])
+  })
+
+  it("links by phase, not by whether it is running", () => {
+    const events = selectHomeEvents({
+      homeScreen: null,
+      legendary: null,
+      guildWar: {
+        live: guildWarPhase("preparation", 2, "2026-11-29T21:00:00Z"),
+        next: guildWarPhase("war", 2, "2026-11-30T21:00:00Z"),
+      },
+      nowMs: Date.parse("2026-11-30T12:00:00Z"),
+    })
+    expect(events.live).toEqual([
+      expect.objectContaining({ phase: "preparation", destination: null }),
+    ])
+    expect(events.upcoming).toEqual([
+      expect.objectContaining({
+        phase: "war",
+        destination: "/guild/war/offense",
+      }),
+    ])
+  })
+
+  it("adds no row for a missing phase", () => {
+    const events = selectHomeEvents({
+      homeScreen: null,
+      legendary: null,
+      guildWar: {
+        live: null,
+        next: guildWarPhase("preparation", 1, "2026-11-27T09:00:00Z"),
+      },
+      nowMs: Date.parse("2026-11-26T12:00:00Z"),
+    })
+    expect(events.live).toEqual([])
+    expect(events.upcoming).toHaveLength(1)
+  })
+})

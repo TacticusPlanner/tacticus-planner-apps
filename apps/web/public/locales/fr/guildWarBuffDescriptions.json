@@ -1,0 +1,12 @@
+{
+  "EnvAngelsOfDeath_Regional": "Au début du troisième tour du défenseur, invoque {[nrOfSummons]} Intercessors à réacteur dorsal qui soutiennent les défenseurs. Leurs stats dépendent du niveau moyen des défenseurs.",
+  "EnvArmourSupplies_Regional": "L'armure de toutes les unités de défense augmente de {[extraArmorPct]} %.",
+  "EnvArtillerySupport_Regional": "Au début du combat, {[nrOfProjectiles]} obus d'artillerie touchent des unités d'attaque aléatoires, chacun réduisant la santé actuelle des unités touchées de {[hpPct]} %.",
+  "EnvDefenderHealthBuff2_Global": "La santé de tous les personnages de défense augmente de {[hpPct]} %.",
+  "EnvDefenderHealthBuff_Global": "La santé de tous les personnages de défense augmente de {[hpPct]} %.",
+  "EnvFlakFire_Regional": "Au début du combat, des tirs antiaériens touchent toutes les unités volantes d'attaque, réduisant la santé actuelle des unités touchées de {[hpPct]} %.",
+  "EnvFortified_Local": "L'armure de toutes les unités de défense augmente de {[extraArmorPct]} % et leurs dégâts augmentent de {[extraDmgPct]} %.",
+  "EnvGarrison_Global": "Au début du combat, invoque {[nrOfSummons]} Gardes Impériaux Cadiens qui soutiennent les défenseurs. Leurs stats dépendent du niveau moyen des défenseurs.",
+  "EnvThinVeil_Global": "Le personnage psyker inflige +{[extraDmgPct]} % de dégâts supplémentaires et lorsqu'il est vaincu, invoque un Démon aléatoire qui a le même niveau que le psyker vaincu, et est à la fois l'ennemi de l'attaquant et du défenseur.",
+  "EnvValkyrieStrike_Global": "À la fin des premier, troisième et cinquième tours du défenseur, marque un hexagone cible n'importe où sur le champ de bataille. Au début du prochain tour du défenseur, l'hexagone cible et tous les hexagones autour de lui sont touchés par un barrage de missiles Hellstrike infligeant chacun {[nrOfHits]}x dégâts d'explosion. Les dégâts dépendent de la limite de rareté des défenseurs."
+}

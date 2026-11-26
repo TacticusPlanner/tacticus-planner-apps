@@ -4,7 +4,6 @@ import { guildWarTokenIcon } from "@workspace/game-catalog"
 import { EntityIcon } from "@/shared/ui"
 
 import { maxAttempts } from "../../lib/season"
-
 import { useGuildWarContext } from "../../model/guild-war-context"
 import { attackResults } from "../../model/war-stats"
 
@@ -21,7 +20,7 @@ export function WarSummary({ children }: { children?: React.ReactNode }) {
       <div className="flex flex-col gap-0.5">
         <dt className="text-xs text-muted-foreground">{t("summary.tokens")}</dt>
         <dd className="flex items-center gap-1.5 text-xl font-semibold tabular-nums">
-          <EntityIcon alt="" size="icon-md" src={guildWarTokenIcon()} />
+          <EntityIcon alt="" size="icon" src={guildWarTokenIcon()} />
           {t("summary.tokensValue", {
             used: war?.tokensUsed ?? 0,
             max: maxAttempts(season),
