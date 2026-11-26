@@ -1,4 +1,4 @@
-import { compareCodeUnits, firstDifference } from "@/shared/lib"
+import { compareCodeUnits, firstDifference, HOUR_MS } from "@/shared/lib"
 /** What the Quest selection reads of a calendar entry (`EventsCalendarStorageModel` satisfies it). */
 export type QuestCalendarEntry = {
   occurrenceId?: string | null
@@ -27,7 +27,6 @@ export type QuestInstance<
 }
 
 const QUEST_DEFINITION_TYPE = "Quest"
-const HOUR_MS = 3_600_000
 /** The claim window when a definition does not state one (the shipped `quest` definition says 24). */
 const DEFAULT_CLAIM_WINDOW_HOURS = 24
 

@@ -5,8 +5,7 @@ import {
   isSeasonFitEligible,
 } from "../season-fit/season-fit"
 import type { GoalRow } from "../shared/types"
-
-const DAY_MS = 86_400_000
+import { DAY_MS } from "@/shared/lib"
 
 /** One eligible goal against a Legendary Event run (project-deadline-fit): it fits (done before the
  *  run starts), finishes during the run, or misses it, by whole UTC days after the run ends. */

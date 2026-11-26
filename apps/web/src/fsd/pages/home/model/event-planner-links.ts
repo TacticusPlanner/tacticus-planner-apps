@@ -1,6 +1,5 @@
 import type { EventShopEntry } from "./select-home-events"
-
-const DAY_MS = 86_400_000
+import { DAY_MS } from "@/shared/lib"
 
 /** What the planner link reads of a calendar entry. */
 export type PlannerLinkEntry = {

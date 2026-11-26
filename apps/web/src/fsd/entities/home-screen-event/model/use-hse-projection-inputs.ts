@@ -4,7 +4,7 @@ import { NO_HSE_MILESTONE_PROGRESS } from "../lib/hse-milestones"
 import type { HseMilestoneProgress } from "../lib/hse-milestones"
 import { HSE_TOKEN_MODES, isHseManualTokenMode } from "../lib/hse-token-supply"
 import type { HseManualTokenMode, HseTokenMode } from "../lib/hse-token-supply"
-import { safeStorage, storageKeys } from "@/shared/lib"
+import { safeStorage, storageKeys, isRecord } from "@/shared/lib"
 import type { StorageKey } from "@/shared/lib"
 
 // Design D5: averages persist per browser by (definition, mode), milestone progress by instance,
@@ -26,9 +26,6 @@ type StoredProgress = Record<string, HseMilestoneProgress>
 /** Entered tokens of one instance; absent means none (0). */
 type HseManualTokens = Partial<Record<HseManualTokenMode, number>>
 type StoredTokens = Record<string, HseManualTokens>
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value)
 
 const isAverage = (value: unknown): value is number | null =>
   value === null ||

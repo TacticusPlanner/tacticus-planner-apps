@@ -1,12 +1,15 @@
 import { useMemo } from "react"
 import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, useNow, useReadState } from "@/shared/lib"
+import {
+  combineReadStates,
+  useNow,
+  useReadState,
+  MINUTE_MS,
+} from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { selectHreInstance } from "@/entities/hre-mission"
-
-const TICK_MS = 60_000
 
 /**
  * Whether an HRE is running now, for the navigation's live indicator (never true while loading).
@@ -16,7 +19,7 @@ const TICK_MS = 60_000
 export function useIsHreLive(): boolean {
   // A coarse tick re-selects from the cached calendar across an event boundary without a
   // reload; it pauses while the tab is hidden and catches up when shown.
-  const nowMs = useNow(TICK_MS)
+  const nowMs = useNow(MINUTE_MS)
   const synced = useReadState(
     "events-calendar-synced",
     hasEventsCalendarSynced,

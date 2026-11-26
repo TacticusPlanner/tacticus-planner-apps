@@ -4,9 +4,7 @@ import {
   LEGENDARY_EVENT_RUN_DURATION_MS,
 } from "./lifecycle"
 import type { LegendaryEventSchedule } from "./lifecycle"
-import { required } from "@/shared/lib"
-
-const DAY_MS = 24 * 60 * 60 * 1000
+import { required, DAY_MS } from "@/shared/lib"
 
 /** One run's start: announced by the catalog, or estimated from the run gap. */
 export interface LegendaryEventRunStart {

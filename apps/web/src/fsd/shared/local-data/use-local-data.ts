@@ -63,3 +63,9 @@ export function usePlayerChunk<
 export function toById<T extends { id: string }>(records: T[]): Map<string, T> {
   return new Map(records.map((record) => [record.id, record]))
 }
+
+/** The dataset's only record (single-record datasets such as `npc-tiers`), or null when it has none;
+ *  a module-level selector, like `toById`. */
+export function firstRecord<T>(records: T[]): T | null {
+  return records[0] ?? null
+}
