@@ -22,7 +22,6 @@ import { useTheme } from "@/shared/theme"
 import type { Theme } from "@/shared/theme"
 
 import { findWidgetBackButton } from "./userjot-back"
-import { resolveChangelogTarget } from "./userjot-latest-update"
 import {
   readUserJotDeepLink,
   userJotTokenContext,
@@ -333,12 +332,19 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   }, [searchParams, setSearchParams])
 
   const openChangelog = useCallback(() => {
-    // Start loading now, so the SDK is ready by the time the newest post is known.
+    // Start loading now, so the SDK is ready by the time the newest post is known. The feed reader
+    // is only needed on this click, so it stays out of the startup bundle.
     loadSdk()
-    void resolveChangelogTarget(
-      unreadCount > 0,
-      import.meta.env.VITE_USERJOT_PROJECT_ID
-    ).then(openUserJotWidget)
+    const hasUnread = unreadCount > 0
+    void import("./userjot-latest-update")
+      .then(({ resolveChangelogTarget }) =>
+        resolveChangelogTarget(
+          hasUnread,
+          import.meta.env.VITE_USERJOT_PROJECT_ID
+        )
+      )
+      .catch(() => ({ to: "updates" }) as const)
+      .then(openUserJotWidget)
   }, [unreadCount])
 
   const value = useMemo<UserJotContextValue>(
