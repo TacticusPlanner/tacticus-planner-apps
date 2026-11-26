@@ -4,6 +4,7 @@ import { rarityOrder, rarityRank } from "@workspace/game-domain"
 import { ITEM_SLOT_TYPES, itemSlotRank } from "@/shared/equipment"
 
 import type { CatalogItem, OwnedPiece } from "./owned-items"
+import { readFlag, readList, readOneOf, writeUrlQuery } from "./url-query"
 
 export const PIECES_LAYOUTS = ["cards", "table"] as const
 export type PiecesLayout = (typeof PIECES_LAYOUTS)[number]
@@ -60,60 +61,31 @@ export const CLEARED_PIECES_PANEL: Partial<PiecesQuery> = {
   character: [],
 }
 
-const ON = "1"
-
-const list = (params: URLSearchParams, key: string) =>
-  (params.get(key) ?? "").split(",").filter(Boolean)
-
-function oneOf<T extends string>(
-  value: string | null,
-  options: readonly T[],
-  fallback: T
-): T {
-  return options.find((option) => option === value) ?? fallback
-}
-
 /** Reads the query from the URL; unknown values are dropped. */
 export function readPiecesQuery(params: URLSearchParams): PiecesQuery {
   return {
     q: params.get("q") ?? "",
-    rarity: list(params, "rarity").filter((value): value is Rarity =>
+    rarity: readList(params, "rarity").filter((value): value is Rarity =>
       (rarityOrder as readonly string[]).includes(value)
     ),
-    slot: list(params, "slot").filter((value) =>
+    slot: readList(params, "slot").filter((value) =>
       (ITEM_SLOT_TYPES as readonly string[]).includes(value)
     ),
-    faction: list(params, "faction"),
-    character: list(params, "character"),
-    relic: params.get("relic") === ON,
-    spares: params.get("spares") === ON,
-    layout: oneOf(params.get("layout"), PIECES_LAYOUTS, "cards"),
-    group: oneOf(params.get("group"), PIECES_GROUPS, "slot"),
+    faction: readList(params, "faction"),
+    character: readList(params, "character"),
+    relic: readFlag(params, "relic"),
+    spares: readFlag(params, "spares"),
+    layout: readOneOf(params.get("layout"), PIECES_LAYOUTS, "cards"),
+    group: readOneOf(params.get("group"), PIECES_GROUPS, "slot"),
     piece: params.get("piece") || null,
   }
 }
 
 /** Writes a change into the URL's parameters, leaving defaults out and other parameters alone. */
-export function writePiecesQuery(
+export const writePiecesQuery = (
   params: URLSearchParams,
   patch: Partial<PiecesQuery>
-): URLSearchParams {
-  const next = new URLSearchParams(params)
-  const set = (key: string, value: string) => {
-    if (value) next.set(key, value)
-    else next.delete(key)
-  }
-  for (const [key, value] of Object.entries(patch)) {
-    if (value === null) set(key, "")
-    else if (Array.isArray(value)) set(key, value.join(","))
-    else if (typeof value === "boolean") set(key, value ? ON : "")
-    else if (typeof value === "string") {
-      const fallback = DEFAULT_PIECES_QUERY[key as keyof PiecesQuery]
-      set(key, value === fallback ? "" : value)
-    }
-  }
-  return next
-}
+): URLSearchParams => writeUrlQuery(params, patch, DEFAULT_PIECES_QUERY)
 
 /** How many filters are set inside the Filters panel (search and chips are counted apart). */
 export function activePiecesFilterCount(query: PiecesQuery): number {

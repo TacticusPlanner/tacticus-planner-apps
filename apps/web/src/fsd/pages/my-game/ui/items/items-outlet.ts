@@ -5,6 +5,7 @@ import type {
 } from "@workspace/game-catalog"
 
 import type { OwnedItems } from "../../model/items/owned-items"
+import type { ItemSuggestions } from "../../model/items/suggestions"
 
 export const ITEMS_PATH = "/my-game/items"
 
@@ -20,6 +21,7 @@ export function isItemsTab(value: string | undefined): value is ItemsTab {
 /** What the Items page hands its tabs: the synced items, joined once and shared by every tab. */
 export type ItemsOutlet = {
   owned: OwnedItems<EquipmentStorageModel>
+  suggestions: ItemSuggestions<EquipmentStorageModel>
   itemsById: ReadonlyMap<string, EquipmentStorageModel>
   charactersById: ReadonlyMap<string, CharacterStorageModel>
 }

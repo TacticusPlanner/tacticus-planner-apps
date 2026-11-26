@@ -126,5 +126,46 @@
       "title": "No items yet",
       "description": "Items you find or win show up here after your next sync."
     }
+  },
+  "suggestions": {
+    "toolbar": {
+      "label": "Find characters",
+      "search": "Search characters",
+      "faction": "Faction",
+      "allFactions": "All factions",
+      "clearFactions": "Clear factions",
+      "chipsLabel": "Show",
+      "unlocked": "Unlocked slots only",
+      "clearFilters": "Clear filters"
+    },
+    "slot": "{{slot}} slot",
+    "equip": "Equip {{item}} Lv {{level}}",
+    "swap": "Swap {{current}} Lv {{currentLevel}} for {{item}} Lv {{level}}",
+    "reasons": {
+      "empty": "Empty slot",
+      "rarity": "{{to}} beats {{from}}",
+      "level": "Lv {{to}} beats Lv {{from}}",
+      "chance": "{{to}}% chance beats {{from}}%"
+    },
+    "locked": "Once the third slot opens at Rare 4 stars",
+    "none": {
+      "title": "Nothing to equip right now",
+      "description": "Every character already wears the best spares you hold."
+    },
+    "noMatch": {
+      "title": "No characters match",
+      "description": "Try another search, or clear the filters.",
+      "clearSearch": "Clear search"
+    },
+    "relics": {
+      "title": "Relics nobody wears",
+      "copies": "Lv {{level}} · {{count}} spare",
+      "status": {
+        "ready": "Can wear it now",
+        "needsMythic": "Needs Mythic",
+        "hasRelic": "Wears a relic",
+        "notOwned": "Not owned"
+      }
+    }
   }
 }

@@ -115,6 +115,7 @@ export function ItemsPage() {
           context={
             {
               owned: data.owned,
+              suggestions: data.suggestions,
               itemsById: data.itemsById,
               charactersById: data.charactersById,
             } satisfies ItemsOutlet
