@@ -69,7 +69,7 @@ export function RewardsTab() {
                     {format.number(chest.cost.amount)}
                   </span>
                 </span>
-                <RewardText format={format} rewards={chest.rewards} />
+                <RewardText compact format={format} rewards={chest.rewards} />
               </li>
             ))}
           </ol>
@@ -91,7 +91,11 @@ export function RewardsTab() {
                     defaultValue: milestone.rarity,
                   })}
                 </span>
-                <RewardText format={format} rewards={milestone.rewards} />
+                <RewardText
+                  compact
+                  format={format}
+                  rewards={milestone.rewards}
+                />
               </li>
             ))}
           </ul>

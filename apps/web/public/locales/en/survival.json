@@ -95,8 +95,14 @@
     "finalHint": "Wave {{wave}}. Its power is set so no team can beat it: score as many points as you can before your team falls.",
     "clone": "Your team, cloned at {{pct}}% health.",
     "afterWave": "After this wave:",
-    "rarityUp": "Enemies rise to {{rarity}}",
-    "killPoints": "{{points}} points per kill"
+    "rarityUp": "Rarity cap rises to {{rarity}}",
+    "killPoints": "{{points}} points per kill",
+    "rarityCap": "Rarity cap: {{rarity}}",
+    "waves": "Waves {{from}}–{{to}}",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all",
+    "groupEnemies": "Enemies in these waves",
+    "enemyCount": "{{name}} ×{{count}}"
   },
   "rewards": {
     "none": "None",

@@ -95,8 +95,14 @@
     "finalHint": "Vague {{wave}}. Sa puissance est prévue pour qu'aucune équipe ne la batte : marque un maximum de points avant que ton équipe tombe.",
     "clone": "Ton équipe, clonée à {{pct}} % de santé.",
     "afterWave": "Après cette vague :",
-    "rarityUp": "Les ennemis passent {{rarity}}",
-    "killPoints": "{{points}} points par élimination"
+    "rarityUp": "La limite de rareté passe à {{rarity}}",
+    "killPoints": "{{points}} points par élimination",
+    "rarityCap": "Limite de rareté : {{rarity}}",
+    "waves": "Vagues {{from}}–{{to}}",
+    "expandAll": "Tout déplier",
+    "collapseAll": "Tout replier",
+    "groupEnemies": "Ennemis de ces vagues",
+    "enemyCount": "{{name}} ×{{count}}"
   },
   "rewards": {
     "none": "Aucune",

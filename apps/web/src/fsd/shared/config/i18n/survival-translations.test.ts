@@ -50,6 +50,7 @@ const SAME_AS_ENGLISH = new Set([
   "tabs.team",
   "tabs.missions",
   "enemies.score",
+  "enemies.enemyCount",
   "tour.missions.title",
   "tour.missions.content",
 ])

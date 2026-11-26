@@ -95,8 +95,14 @@
     "finalHint": "Oleada {{wave}}. Su poder está pensado para que ningún equipo la supere: consigue tantos puntos como puedas antes de que caiga tu equipo.",
     "clone": "Tu equipo, clonado con un {{pct}} % de salud.",
     "afterWave": "Tras esta oleada:",
-    "rarityUp": "Los enemigos suben a {{rarity}}",
-    "killPoints": "{{points}} puntos por baja"
+    "rarityUp": "El límite de rareza sube a {{rarity}}",
+    "killPoints": "{{points}} puntos por baja",
+    "rarityCap": "Límite de rareza: {{rarity}}",
+    "waves": "Oleadas {{from}}–{{to}}",
+    "expandAll": "Desplegar todo",
+    "collapseAll": "Plegar todo",
+    "groupEnemies": "Enemigos de estas oleadas",
+    "enemyCount": "{{name}} ×{{count}}"
   },
   "rewards": {
     "none": "Ninguna",

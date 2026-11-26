@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { survivalEventsFixture } from "@workspace/game-catalog/testing"
 
-import { killScoreIndex, waveRows } from "./wave-view"
+import { killScoreIndex, waveGroups, waveRows } from "./wave-view"
 
 const december = survivalEventsFixture.find(
   (event) => event.id === "december-2026"
@@ -31,5 +31,40 @@ describe("killScoreIndex", () => {
     expect(
       killScoreIndex(december).get(`${first.npcId}:${first.statsIndex}`)
     ).toBe(first.score)
+  })
+})
+
+describe("waveGroups", () => {
+  it("starts a group after each wave that raises the rarity cap", () => {
+    if (!december) throw new Error("fixture")
+    const groups = waveGroups(december)
+    expect(
+      groups.map((group) => [
+        group.rarity,
+        group.rows.map((row) => row.wave.wave),
+      ])
+    ).toEqual([
+      ["Common", [1, 2, 3]],
+      ["Uncommon", [4, 5]],
+      ["Rare", [6, 7]],
+      ["Epic", [8, 9, 10]],
+      ["Legendary", [11, 12, 13, 14]],
+      ["Mythic", [15, 16, 17, 18, 19, 20]],
+    ])
+  })
+
+  it("totals each enemy across the group's waves", () => {
+    if (!december) throw new Error("fixture")
+    const [first] = waveGroups(december)
+    const spawned = december.waves
+      .filter((wave) => wave.wave <= 3)
+      .flatMap((wave) => wave.enemies)
+      .reduce((sum, enemy) => sum + enemy.count, 0)
+    expect(first?.enemies.reduce((sum, enemy) => sum + enemy.count, 0)).toBe(
+      spawned
+    )
+    expect(new Set(first?.enemies.map((enemy) => enemy.npcId)).size).toBe(
+      first?.enemies.length
+    )
   })
 })

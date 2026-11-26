@@ -95,19 +95,32 @@ describe("SurvivalLayout", () => {
     vi.useRealTimers()
   })
 
-  it("shows the next event's waves, the last one as the final wave", () => {
+  it("shows the next event's waves, the last one as the final wave", async () => {
+    const user = userEvent.setup()
     renderPage("/plan/survival/enemies")
+
+    // Folded, each rarity-cap group shows only the enemies it fields.
+    expect(screen.queryAllByTestId(/^survival-wave-\d+$/)).toHaveLength(0)
+    expect(screen.getAllByTestId("survival-group-enemies")).toHaveLength(6)
+    expect(
+      screen.getByRole("button", { name: /enemies\.rarityCap.*Uncommon/ })
+    ).toHaveAttribute("aria-expanded", "false")
+
+    await user.click(screen.getByRole("button", { name: "enemies.expandAll" }))
 
     expect(screen.getAllByTestId(/^survival-wave-\d+$/)).toHaveLength(20)
     expect(
+      screen.getByRole("button", { name: "enemies.collapseAll" })
+    ).toBeInTheDocument()
+    expect(
       within(screen.getByTestId("survival-wave-20")).getByText("enemies.final")
     ).toBeInTheDocument()
+    // A clone wave fights the player's own team, so it has no power of its own.
     expect(
       within(screen.getByTestId("survival-wave-16")).getByTestId(
         "survival-clone-wave"
       )
     ).toBeInTheDocument()
-    // A clone wave fights the player's own team, so it has no power of its own.
     expect(
       within(screen.getByTestId("survival-wave-16")).queryByRole("img", {
         name: /^enemies\.power/,
@@ -136,6 +149,10 @@ describe("SurvivalLayout", () => {
     const user = userEvent.setup()
     renderPage("/plan/survival/missions?event=december-2026")
     expect(screen.getByTestId("survival-missions")).toBeInTheDocument()
+    // The free chain mixes tasks, so its missions are listed, not drawn as bars.
+    expect(
+      screen.getAllByTestId("survival-chain-steps").length
+    ).toBeGreaterThan(0)
 
     await user.click(screen.getByRole("tab", { name: "tabs.offers" }))
 

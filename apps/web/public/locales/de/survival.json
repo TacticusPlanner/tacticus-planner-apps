@@ -95,8 +95,14 @@
     "finalHint": "Welle {{wave}}. Ihre Macht ist so hoch, dass kein Team sie schlagen kann: Sammle so viele Punkte wie möglich, bevor dein Team fällt.",
     "clone": "Dein Team, geklont mit {{pct}} % Lebenspunkten.",
     "afterWave": "Nach dieser Welle:",
-    "rarityUp": "Gegner steigen auf {{rarity}}",
-    "killPoints": "{{points}} Punkte pro Abschuss"
+    "rarityUp": "Seltenheitsgrenze steigt auf {{rarity}}",
+    "killPoints": "{{points}} Punkte pro Abschuss",
+    "rarityCap": "Seltenheitsgrenze: {{rarity}}",
+    "waves": "Wellen {{from}}–{{to}}",
+    "expandAll": "Alle ausklappen",
+    "collapseAll": "Alle einklappen",
+    "groupEnemies": "Gegner in diesen Wellen",
+    "enemyCount": "{{name}} ×{{count}}"
   },
   "rewards": {
     "none": "Keine",

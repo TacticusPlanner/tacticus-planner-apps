@@ -1,6 +1,11 @@
 import { Fragment } from "react"
 import type { ReactNode } from "react"
 import type { GameCatalogEventShopRewardRange } from "@workspace/game-catalog"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { hasNode } from "@/shared/lib"
@@ -46,20 +51,64 @@ export function RewardPanel({
   )
 }
 
-/** "[icon] 90 Event points + [icon] 50 Event currency". */
+/** "[icon] 90 + [icon] 50": each reward's icon and amount, its name in a tooltip (a single item
+ *  shows its icon alone). */
+function CompactReward({
+  reward,
+  format,
+}: {
+  reward: Reward
+  format: EventRewardFormat
+}) {
+  const text = format.reward(reward.type)
+  const amount = rewardAmount(reward, format)
+  const single = reward.min === 1 && reward.max === 1
+  const label = single ? text.label : `${amount} ${text.label}`
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          aria-label={label}
+          className="inline-flex items-center gap-1"
+          role="img"
+        >
+          <EntityIcon size="icon" alt="" src={text.iconUrl} />
+          {single ? null : (
+            <span className="font-semibold text-foreground tabular-nums">
+              {amount}
+            </span>
+          )}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  )
+}
+
+/** "[icon] 90 Event points + [icon] 50 Event currency"; `compact` drops the names into tooltips. */
 export function RewardText({
   rewards,
   format,
   suffix,
+  compact = false,
 }: {
   rewards: readonly Reward[]
   format: EventRewardFormat
   suffix?: string
+  compact?: boolean
 }) {
   return (
     <span className="inline-flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
       {rewards.map((reward, index) => {
         const text = format.reward(reward.type)
+        if (compact) {
+          return (
+            <Fragment key={reward.type}>
+              {index > 0 ? <span aria-hidden="true">+</span> : null}
+              <CompactReward format={format} reward={reward} />
+            </Fragment>
+          )
+        }
         return (
           <Fragment key={reward.type}>
             {index > 0 ? <span aria-hidden="true">+</span> : null}
