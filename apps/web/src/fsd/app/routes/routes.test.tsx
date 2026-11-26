@@ -76,10 +76,19 @@ describe("app routes", () => {
         isValidElement(route.element) && route.element.type === Navigate
     )
 
-    // The bare /dailies, /library, /plan, /plan/survival, /guild and /guild/war, the old
-    // /dailies/shops, and an unknown Survival tab.
-    expect(redirectOnly).toHaveLength(8)
+    // The bare /dailies, /library, /plan, /guild and /guild/war, and the old /dailies/shops.
+    expect(redirectOnly).toHaveLength(6)
     for (const route of redirectOnly) {
+      expect(route.handle).toBe(redirectOnlyHandle)
+    }
+    // The bare /plan/survival and an unknown Survival tab redirect through a component that keeps
+    // `?event=`.
+    const survival = findRoute(routes, "/plan/survival")?.children ?? []
+    const survivalRedirects = survival.filter(
+      (route) => route.index === true || route.path === "*"
+    )
+    expect(survivalRedirects).toHaveLength(2)
+    for (const route of survivalRedirects) {
       expect(route.handle).toBe(redirectOnlyHandle)
     }
     // The bare /my-game too, whose redirect is wrapped in the public-page guard.
