@@ -35,6 +35,7 @@ import {
 import type { EnemyDraft } from "../../model/enemy-draft"
 import type { GuildWarEnemyUnit } from "../../model/types"
 import { useGuildWarNames } from "../../model/use-guild-war-names"
+import { zoneBuffOptions } from "../../model/zone-buffs"
 import { useOverlayContainer } from "../use-overlay-container"
 import { MapPicker } from "./map-picker"
 
@@ -193,8 +194,8 @@ function EnemyUnitRow({
 
 /**
  * The optional enemy details of an attack: the enemy lineup (any catalog character and MoW, each
- * with rarity, rank and whether it was killed or left damaged), the zone buffs that were active and
- * the map, picked by its board picture.
+ * with rarity, rank and whether it was killed or left damaged), the zone buffs that were active (only
+ * those that can be active in the zone attacked) and the map, picked by its board picture.
  */
 export function EnemyDetails({
   value,
@@ -202,6 +203,7 @@ export function EnemyDetails({
   units,
   season,
   defenderRarity,
+  zoneId,
 }: {
   value: EnemyDraft
   onChange: (value: EnemyDraft) => void
@@ -209,6 +211,8 @@ export function EnemyDetails({
   season: GuildWarSeason | undefined
   /** The rarity the defenders were capped at: what an added enemy starts at. */
   defenderRarity: Rarity | undefined
+  /** The zone attacked: which buffs can be active there (`zoneBuffOptions`). */
+  zoneId: string | null
 }) {
   const { t } = useTranslation(["guildWar", "factions"])
   const { buffName, buffDescription } = useGuildWarNames()
@@ -224,6 +228,7 @@ export function EnemyDetails({
         })),
       factionName
     )
+  const buffs = zoneBuffOptions(season, zoneId, value.buffIds)
   const takenCharacters = value.characters.map((unit) => unit.unitId)
   const characterGroups = groupsOf("character", takenCharacters)
   const mowGroups = groupsOf("mow", [])
@@ -306,13 +311,13 @@ export function EnemyDetails({
           />
         )}
       </div>
-      {season && season.buffs.length > 0 ? (
+      {season && buffs.length > 0 ? (
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-2 text-sm text-muted-foreground">
             {t("enemy.buffs")}
           </legend>
           <div className="grid gap-2 @md:grid-cols-2">
-            {season.buffs.map((buff) => {
+            {buffs.map((buff) => {
               const checked = value.buffIds.includes(buff.id)
               const description = buffDescription(
                 season,

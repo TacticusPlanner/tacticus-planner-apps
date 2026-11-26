@@ -405,6 +405,13 @@ describe("OffensePage", () => {
     await user.click(
       within(dialog).getByRole("button", { name: "Enemy details (optional)" })
     )
+    // The Armoury's own buff starts ticked; another zone's Local buff is not offered.
+    expect(
+      within(dialog).getByTestId("guild-war-buff-EnvArmourSupplies_Regional")
+    ).toBeChecked()
+    expect(
+      within(dialog).queryByTestId("guild-war-buff-EnvFortified_Local")
+    ).toBeNull()
     await user.click(
       within(dialog).getByRole("combobox", { name: "Add an enemy character" })
     )
@@ -430,7 +437,7 @@ describe("OffensePage", () => {
             },
           ],
           mow: null,
-          buffIds: [],
+          buffIds: ["EnvArmourSupplies_Regional"],
           boardId: null,
         },
       })

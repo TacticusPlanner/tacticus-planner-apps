@@ -43,6 +43,7 @@ import {
 } from "../../model/attack-draft"
 import type { AttackDetails } from "../../model/attack-draft"
 import { capEnemy } from "../../model/enemy-draft"
+import { zoneOwnBuff } from "../../model/zone-buffs"
 import { editRarities, editTarget } from "../../model/attack-target"
 import type { ZoneRarity } from "../../model/attack-target"
 import { cappedView, lineupUnitView } from "../../model/capped-view"
@@ -275,6 +276,7 @@ export function LogAttackDialog({
     editing ? zoneKindId(season, editing.zoneId) : ""
   )
   const [picked, setPicked] = useState<Rarity | undefined>(editing?.rarityCap)
+  const [buffsTouched, setBuffsTouched] = useState(editing !== null)
 
   const lineup = lineupOf(subject)
   const rarities: readonly ZoneRarity[] =
@@ -283,8 +285,16 @@ export function LogAttackDialog({
       : editRarities(season, battlefieldLevel, subject.attack, zoneId)
   const target =
     subject.kind === "new" ? subject.target : pickRarity(rarities, picked)
+  const targetZoneId = subject.kind === "new" ? subject.zoneId : zoneId
+  // A new attack's Enemy details start with the zone's own buff ticked, following the zone until
+  // a buff is changed by hand; an edited attack keeps what it logged.
+  const ownBuff = zoneOwnBuff(season, targetZoneId)
+  const enemy =
+    buffsTouched || !enemyOpen
+      ? details.enemy
+      : { ...details.enemy, buffIds: ownBuff ? [ownBuff] : [] }
   // Noted enemies stay within the defenders' cap, even after it is lowered here.
-  const capped = { ...details, enemy: capEnemy(details.enemy, target?.rarity) }
+  const capped = { ...details, enemy: capEnemy(enemy, target?.rarity) }
   const saveTarget =
     subject.kind === "new"
       ? target && { zoneId: subject.zoneId, slot: target.slot }
@@ -404,10 +414,16 @@ export function LogAttackDialog({
             <div id={enemyId}>
               <EnemyDetails
                 defenderRarity={target?.rarity}
-                onChange={(enemy) => set({ enemy })}
+                onChange={(next) => {
+                  if (next.buffIds !== capped.enemy.buffIds) {
+                    setBuffsTouched(true)
+                  }
+                  set({ enemy: next })
+                }}
                 season={season}
                 units={units}
                 value={capped.enemy}
+                zoneId={targetZoneId || null}
               />
             </div>
           ) : null}
