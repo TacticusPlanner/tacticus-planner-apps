@@ -1,8 +1,6 @@
 import { AuthError } from "@azure/msal-browser"
 
 import {
-  clearPageLeaving,
-  markPageLeaving,
   safeSessionStorage,
   safeStorage,
   sessionStorageKeys,
@@ -146,19 +144,30 @@ export function takeAuthJournal(): JournaledAuthStep[] {
 
 export type RedirectKind = "quiet" | "interactive"
 
-/** Remembers that a redirect of this kind is about to leave the page, and holds off stale-build
- *  reloads that would cancel it (see markPageLeaving). */
+// Set while a redirect is leaving this page (spec: app-error-recovery). Firefox and WebKit abort the
+// page's in-flight module loads as soon as that navigation starts, which reads as a stale build; a
+// stale-build reload then cancels the redirect and brings the user straight back without its
+// response (auth_step data, Nov 2026: most `no_response` returns on those browsers came back within
+// half a second of leaving).
+let redirectLeaving = false
+
+/** Whether a redirect is leaving this page, so a stale-build failure is the page being torn down. */
+export function isRedirectLeavingPage(): boolean {
+  return redirectLeaving
+}
+
+/** Remembers that a redirect of this kind is about to leave the page. */
 export function markRedirectPending(kind: RedirectKind) {
   tabStorage.set(PENDING_REDIRECT_KEY, kind)
-  markPageLeaving()
+  redirectLeaving = true
 }
 
 /** The redirect this page load returns from, if one left the page; read once. Also called when a
- *  redirect could not start, so the page stays and stale-build reloads work again. */
+ *  redirect could not start, so the page stays. */
 export function takePendingRedirect(): RedirectKind | null {
   const kind = tabStorage.get(PENDING_REDIRECT_KEY)
   tabStorage.remove(PENDING_REDIRECT_KEY)
-  clearPageLeaving()
+  redirectLeaving = false
   return kind === "quiet" || kind === "interactive" ? kind : null
 }
 

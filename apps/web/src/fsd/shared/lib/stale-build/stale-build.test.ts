@@ -1,12 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import {
-  clearPageLeaving,
-  isStaleBuildError,
-  markPageLeaving,
-  reloadOnceForStaleBuild,
-} from "./stale-build"
+import { isStaleBuildError, reloadOnceForStaleBuild } from "./stale-build"
 
 function named(name: string, message = "") {
   const error = new Error(message)
@@ -71,24 +66,8 @@ describe("reloadOnceForStaleBuild", () => {
   })
 
   afterEach(() => {
-    clearPageLeaving()
     vi.unstubAllGlobals()
     reload.mockReset()
-  })
-
-  it("does not reload while a redirect is leaving the page, and keeps the attempt", () => {
-    markPageLeaving()
-    expect(reloadOnceForStaleBuild()).toBe(true)
-    expect(reload).not.toHaveBeenCalled()
-    expect(window.sessionStorage.getItem(key)).toBeNull()
-  })
-
-  it("reloads again once a redirect that could not start lets the page stay", () => {
-    markPageLeaving()
-    reloadOnceForStaleBuild()
-    clearPageLeaving()
-    expect(reloadOnceForStaleBuild()).toBe(true)
-    expect(reload).toHaveBeenCalledTimes(1)
   })
 
   it("reloads on the first failure for a URL and marks it in session storage", () => {

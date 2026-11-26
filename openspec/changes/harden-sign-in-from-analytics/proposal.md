@@ -24,5 +24,5 @@ The PostHog "Sign-in health" dashboard (`auth_step` events, Nov 2026) shows thre
 
 ## Impact
 
-- `apps/web/src/fsd/shared/lib/stale-build`, `apps/web/src/fsd/shared/auth` (journal, restore, hidden-frame support), the `auth_step` event declaration, mapping and capture.
+- `apps/web/src/fsd/shared/auth` (journal, restore, hidden-frame support), the stale-build callers in `app/boot/stale-build-recovery.ts` and `app/routes/route-error-boundary.tsx`, the `auth_step` event declaration, mapping and capture.
 - No API, locale or UI change. The PostHog dashboard can split the new properties once data arrives.

@@ -30,9 +30,7 @@ export {
   type ReadState,
 } from "./react"
 export {
-  clearPageLeaving,
   isStaleBuildError,
-  markPageLeaving,
   preloadOnMatch,
   reloadOnceForStaleBuild,
 } from "./stale-build"

@@ -1,3 +1,4 @@
+import { isRedirectLeavingPage } from "@/shared/auth"
 import { reloadOnceForStaleBuild } from "@/shared/lib"
 
 // The analytics SDK chunk (named by the `posthog` group in vite.config.ts) is optional: a blocker or
@@ -34,7 +35,9 @@ function isStylesheetPreloadError(event: Event): boolean {
 export function installPreloadErrorRecovery(target: Window = window) {
   const onPreloadError = (event: Event) => {
     if (isOptionalChunkError(event)) return
-    if (reloadOnceForStaleBuild() && isStylesheetPreloadError(event)) {
+    // A sign-in redirect leaving the page aborts its module loads: never reload over it.
+    const reloading = isRedirectLeavingPage() || reloadOnceForStaleBuild()
+    if (reloading && isStylesheetPreloadError(event)) {
       event.preventDefault()
     }
   }

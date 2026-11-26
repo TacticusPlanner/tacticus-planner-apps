@@ -1,11 +1,10 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { reloadOnceForStaleBuild } from "../lib"
-
 import {
   authErrorCode,
   forgetAuthJournal,
+  isRedirectLeavingPage,
   markRedirectPending,
   recordAuthStep,
   takeAuthJournal,
@@ -90,18 +89,12 @@ describe("auth journal", () => {
     expect(authErrorCode("nope")).toBeUndefined()
   })
 
-  it("holds off stale-build reloads while a redirect leaves the page", () => {
-    const reload = vi.fn()
-    vi.stubGlobal("location", { pathname: "/home", search: "", reload })
-
-    markRedirectPending("interactive")
-    expect(reloadOnceForStaleBuild()).toBe(true)
-    expect(reload).not.toHaveBeenCalled()
-
-    // The redirect could not start: the page stays, and a stale build reloads again.
+  it("reports a redirect leaving the page until it is taken back", () => {
+    expect(isRedirectLeavingPage()).toBe(false)
+    markRedirectPending("quiet")
+    expect(isRedirectLeavingPage()).toBe(true)
+    // The redirect could not start: the page stays.
     takePendingRedirect()
-    expect(reloadOnceForStaleBuild()).toBe(true)
-    expect(reload).toHaveBeenCalledOnce()
-    vi.unstubAllGlobals()
+    expect(isRedirectLeavingPage()).toBe(false)
   })
 })
