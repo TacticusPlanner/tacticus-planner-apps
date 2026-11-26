@@ -32,6 +32,7 @@ export {
   type LayeredIcon,
   characterIcon,
   mowIcon,
+  mowBadgeIcon,
   npcPortrait,
   legendaryEventMap,
   battleBoardImage,

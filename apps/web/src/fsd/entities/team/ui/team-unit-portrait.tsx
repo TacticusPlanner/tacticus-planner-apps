@@ -1,6 +1,7 @@
 import {
   characterIcon,
   lockIcon,
+  mowBadgeIcon,
   mowIcon,
   rankIcon,
 } from "@workspace/game-catalog"
@@ -25,7 +26,9 @@ export interface TeamUnitView {
 /**
  * A team unit on the shared `UnitPortrait` (`portrait-sm` in rows and chips, `portrait-md` in a grid; ui-style-guide
  * rule 6): ringed in its rarity colour when owned, greyed with a padlock badge when the synced roster
- * shows it locked, else with its rank as the badge. Decorative: the caller names the unit.
+ * shows it locked, else with its rank as the badge. A Machine of War, which has no rank, shows the
+ * game's MoW badge there instead, so it stands apart from characters in a mixed lineup.
+ * Decorative: the caller names the unit.
  */
 export function TeamUnitPortrait({
   unit,
@@ -59,6 +62,13 @@ export function TeamUnitPortrait({
       {unit.owned === false ? (
         <span className="absolute -top-1 -right-1 grid place-items-center rounded-full bg-overlay p-0.5">
           <EntityIcon alt="" size={badge} src={lockIcon()} />
+        </span>
+      ) : unit.kind === "mow" ? (
+        <span
+          className="absolute -right-1 -bottom-1 flex"
+          data-testid="team-unit-mow-badge"
+        >
+          <EntityIcon alt="" size={badge} src={mowBadgeIcon()} />
         </span>
       ) : unit.rank ? (
         <span className="absolute -right-1 -bottom-1 flex">

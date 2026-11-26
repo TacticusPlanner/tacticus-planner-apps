@@ -7,6 +7,7 @@ import { ChevronDown } from "lucide-react"
 import {
   characterIcon,
   factionIcon,
+  mowBadgeIcon,
   mowIcon,
   progressionVisual,
   rankIcon,
@@ -236,7 +237,15 @@ function Name({ unit }: { unit: UnitTileUnit }) {
 }
 
 function RankCell({ kind, data }: { kind: UnitKind; data: OwnedUnitTileData }) {
-  return kind === "character" && data.rank ? (
+  if (kind === "mow") {
+    // No rank: the game's MoW badge marks it apart from the characters around it.
+    return (
+      <span className="block size-icon-md" data-testid="unit-row-mow-badge">
+        <EntityIcon src={mowBadgeIcon()} alt="" className="size-full" />
+      </span>
+    )
+  }
+  return data.rank ? (
     <span className="block size-icon-md" data-testid="unit-row-rank">
       <EntityIcon src={rankIcon(data.rank)} alt="" className="size-full" />
     </span>

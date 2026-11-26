@@ -171,13 +171,14 @@ describe("UnitRosterRow as a link (desktop)", () => {
     expect(screen.getByTestId("state")).toHaveTextContent('{"from":"x"}')
   })
 
-  it("leaves a Machine of War's rank, level and equipment cells empty, keeping the columns", () => {
+  it("shows the MoW badge in a Machine of War's rank cell and leaves level and equipment empty", () => {
     renderRow(ownedMow)
     const row = screen.getByTestId("row")
 
     // Portrait, name, rank, stars, level, two abilities, equipment: one cell per column.
     expect(row.children).toHaveLength(8)
     expect(within(row).queryByTestId("unit-row-rank")).not.toBeInTheDocument()
+    expect(within(row).getByTestId("unit-row-mow-badge")).toBeInTheDocument()
     expect(within(row).queryByTestId("unit-row-level")).not.toBeInTheDocument()
     expect(
       within(row).queryByTestId("unit-row-equipment")

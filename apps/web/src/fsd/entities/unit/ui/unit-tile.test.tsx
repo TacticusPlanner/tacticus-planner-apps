@@ -209,7 +209,7 @@ describe("UnitTile", () => {
     expect(screen.getByTestId("tile").textContent).toBe(text)
   })
 
-  it("shows a Machine of War's abilities and shards but no rank, XP level or equipment", () => {
+  it("shows a Machine of War's abilities, shards and MoW badge but no rank, XP level or equipment", () => {
     renderTile(ownedMow)
     const tile = screen.getByTestId("tile")
 
@@ -217,6 +217,7 @@ describe("UnitTile", () => {
       "3025"
     )
     expect(within(tile).queryByTestId("unit-tile-rank")).not.toBeInTheDocument()
+    expect(within(tile).getByTestId("unit-tile-mow-badge")).toBeInTheDocument()
     expect(
       within(tile).queryByTestId("unit-tile-xp-level")
     ).not.toBeInTheDocument()
