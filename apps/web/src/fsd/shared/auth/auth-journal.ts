@@ -41,6 +41,7 @@ export type AuthStep =
       step: "quiet_renewal_returned"
       outcome: "success" | "no_session" | "failed" | "no_response"
       errorCode?: string
+      navigation?: NavigationType
     }
   /** An interactive redirect left the page: started by the app (an API call or the player-data sync
    *  needed a new authorization) or by the user (a Sign in / Sign up button). */
@@ -61,7 +62,12 @@ export type AuthStep =
       step: "interactive_redirect_returned"
       outcome: "success" | "cancelled" | "failed" | "no_response"
       errorCode?: string
+      navigation?: NavigationType
     }
+
+/** How the page a redirect returned to was loaded (the Navigation Timing entry's type): a `reload`
+ *  with no response means the page was reloaded before the redirect ever left it. */
+export type NavigationType = NavigationTimingType
 
 export type JournaledAuthStep = AuthStep & {
   /** Epoch ms when the step happened. */
@@ -70,6 +76,8 @@ export type JournaledAuthStep = AuthStep & {
   load: string
   /** The sign-in method of the account this page load is restoring, when known. */
   method?: SignInMethod | "unknown"
+  /** The build that recorded the step. The tab that later sends it may run another build. */
+  version?: string
 }
 
 const JOURNAL_KEY = storageKeys.authJournal
@@ -110,12 +118,15 @@ function readJournal(): JournaledAuthStep[] {
   }
 }
 
+const appVersion = import.meta.env.VITE_APP_VERSION
+
 /** Records one step. Best effort: storage that refuses the write loses the entry, nothing else. */
 export function recordAuthStep(step: AuthStep) {
   const entries = [
     ...readJournal(),
     {
       ...(pageLoadMethod ? { method: pageLoadMethod } : {}),
+      ...(appVersion ? { version: appVersion } : {}),
       ...step,
       at: Date.now(),
       load: pageLoadId,
@@ -133,16 +144,42 @@ export function takeAuthJournal(): JournaledAuthStep[] {
 
 export type RedirectKind = "quiet" | "interactive"
 
+// Set while a redirect is leaving this page (spec: app-error-recovery). Firefox and WebKit abort the
+// page's in-flight module loads as soon as that navigation starts, which reads as a stale build; a
+// stale-build reload then cancels the redirect and brings the user straight back without its
+// response (auth_step data, Nov 2026: most `no_response` returns on those browsers came back within
+// half a second of leaving).
+let redirectLeaving = false
+
+/** Whether a redirect is leaving this page, so a stale-build failure is the page being torn down. */
+export function isRedirectLeavingPage(): boolean {
+  return redirectLeaving
+}
+
 /** Remembers that a redirect of this kind is about to leave the page. */
 export function markRedirectPending(kind: RedirectKind) {
   tabStorage.set(PENDING_REDIRECT_KEY, kind)
+  redirectLeaving = true
 }
 
-/** The redirect this page load returns from, if one left the page; read once. */
+/** The redirect this page load returns from, if one left the page; read once. Also called when a
+ *  redirect could not start, so the page stays. */
 export function takePendingRedirect(): RedirectKind | null {
   const kind = tabStorage.get(PENDING_REDIRECT_KEY)
   tabStorage.remove(PENDING_REDIRECT_KEY)
+  redirectLeaving = false
   return kind === "quiet" || kind === "interactive" ? kind : null
+}
+
+/** How this page was loaded, from the Navigation Timing entry; undefined where it is unavailable. */
+export function currentNavigationType(): NavigationType | undefined {
+  try {
+    const [entry] = performance.getEntriesByType("navigation") as
+      PerformanceNavigationTiming[] | []
+    return entry?.type
+  } catch {
+    return undefined
+  }
 }
 
 /** Signing out drops the journal, so the next account on the device never reports this one's. */

@@ -509,6 +509,10 @@ type AuthStepEvent = {
   trigger: string | null
   method: string | null
   freshLogin: boolean | null
+  /** How the page a redirect returned to was loaded (`navigate`, `reload`, `back_forward`). */
+  navigationType: string | null
+  /** The build that recorded the step; the event's own app version is the sending build's. */
+  recordedAppVersion: string | null
 }
 
 export type AnalyticsEvent =

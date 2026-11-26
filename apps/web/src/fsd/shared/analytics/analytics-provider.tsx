@@ -511,6 +511,8 @@ export function useAnalyticsActions() {
               trigger: event.trigger,
               method: event.method,
               fresh_login: event.freshLogin,
+              navigation_type: event.navigationType,
+              recorded_app_version: event.recordedAppVersion,
             },
             { timestamp: new Date(event.occurredAt) }
           )

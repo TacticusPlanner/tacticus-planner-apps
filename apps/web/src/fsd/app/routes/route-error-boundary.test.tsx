@@ -12,6 +12,9 @@ vi.mock("../providers/userjot-provider", () => ({
   openUserJotWidget: (...args: unknown[]) => openUserJotWidget(...args),
 }))
 
+const redirect = vi.hoisted(() => ({ leaving: vi.fn(() => false) }))
+vi.mock("@/shared/auth", () => ({ isRedirectLeavingPage: redirect.leaving }))
+
 import { setErrorReporter } from "@/shared/lib"
 
 import { RouteErrorBoundary } from "./route-error-boundary"
@@ -89,6 +92,21 @@ describe("RouteErrorBoundary", () => {
 
     await waitFor(() => expect(reload).toHaveBeenCalledTimes(1))
     expect(screen.queryByTestId("app-error-page")).not.toBeInTheDocument()
+  })
+
+  it("renders nothing and keeps the reload while a sign-in redirect leaves the page", async () => {
+    redirect.leaving.mockReturnValue(true)
+
+    renderRouter(
+      "/dailies",
+      new TypeError("error loading dynamically imported module: /assets/x.js")
+    )
+
+    await waitFor(() => expect(redirect.leaving).toHaveBeenCalled())
+    expect(reload).not.toHaveBeenCalled()
+    expect(screen.queryByTestId("app-error-page")).not.toBeInTheDocument()
+    expect(window.sessionStorage.getItem("tp.staleReload./dailies")).toBeNull()
+    redirect.leaving.mockReturnValue(false)
   })
 
   it("shows the fallback page when the same URL already used its reload", async () => {

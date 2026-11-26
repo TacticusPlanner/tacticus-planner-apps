@@ -3,6 +3,7 @@ import { useNavigate, useRouteError } from "react-router"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 
+import { isRedirectLeavingPage } from "@/shared/auth"
 import {
   isStaleBuildError,
   reloadOnceForStaleBuild,
@@ -30,7 +31,14 @@ export function RouteErrorBoundary() {
   // reporter before this boundary's effects would run. React caught the error, so it never reaches
   // the window listeners (spec: client-error-reporting).
   const [reloading] = useState(() => {
-    if (isStaleBuildError(error) && reloadOnceForStaleBuild()) return true
+    // While a sign-in redirect leaves the page, its aborted module loads read as stale: render
+    // nothing and let the redirect replace the page, without spending this URL's reload.
+    if (
+      isStaleBuildError(error) &&
+      (isRedirectLeavingPage() || reloadOnceForStaleBuild())
+    ) {
+      return true
+    }
     reportError(error, "route render")
     return false
   })

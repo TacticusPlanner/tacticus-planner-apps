@@ -75,7 +75,12 @@ vi.mock("@azure/msal-browser", () => {
   return {
     AuthError,
     BrowserAuthError,
-    BrowserAuthErrorCodes: { timedOut: "timed_out" },
+    BrowserAuthErrorCodes: {
+      getRequestFailed: "get_request_failed",
+      noNetworkConnectivity: "no_network_connectivity",
+      postRequestFailed: "post_request_failed",
+      timedOut: "timed_out",
+    },
     BrowserCacheLocation: {
       LocalStorage: "localStorage",
       SessionStorage: "sessionStorage",
@@ -816,6 +821,33 @@ describe("authentication", () => {
       ).toBeGreaterThan(0)
     })
 
+    it.each([
+      "no_network_connectivity",
+      "post_request_failed",
+      "endpoints_resolution_error",
+    ])(
+      "stops at the cached tokens when the identity provider cannot be reached (%s)",
+      async (errorCode) => {
+        mocks.instance.acquireTokenSilent.mockRejectedValue(
+          new errors.BrowserAuthError(errorCode)
+        )
+        mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
+
+        await expect(
+          auth.attemptSilentSignIn(mocks.instance as never)
+        ).resolves.toBe("failed")
+
+        expect(mocks.instance.ssoSilent).not.toHaveBeenCalled()
+        expect(mocks.instance.acquireTokenRedirect).not.toHaveBeenCalled()
+        expect(localStorage.getItem("tp.auth.quietRenewal")).toBeNull()
+        expect(
+          JSON.parse(localStorage.getItem("tp.auth.journal") ?? "[]")
+        ).toMatchObject([
+          { step: "restore_cache", outcome: "failed", errorCode },
+        ])
+      }
+    )
+
     it("goes straight to the quiet renewal where the browser blocks the hidden frame", async () => {
       frames.blocked.mockReturnValue(true)
       mocks.instance.getAllAccounts.mockReturnValue([emailAccount] as never)
@@ -1200,6 +1232,51 @@ describe("authentication", () => {
 
       expect(journal()).toMatchObject([
         { step: "interactive_redirect_returned", outcome: "success" },
+      ])
+    })
+
+    it("stamps a return step with the hint's sign-in method and how the page loaded", async () => {
+      sessionStorage.setItem("tp.auth.pendingRedirect", "interactive")
+      localStorage.setItem(
+        "tp.auth.accountHint",
+        JSON.stringify({
+          homeAccountId: "g",
+          username:
+            "0f1e2d3c-4b5a-6978-8796-a5b4c3d2e1f0@tenant.onmicrosoft.com",
+          signInMethod: "google",
+        })
+      )
+      const entries = vi
+        .spyOn(performance, "getEntriesByType")
+        .mockReturnValue([{ type: "reload" }] as never)
+
+      await auth.initializeAuthentication()
+
+      expect(journal()).toMatchObject([
+        {
+          step: "interactive_redirect_returned",
+          outcome: "no_response",
+          method: "google",
+          navigation: "reload",
+        },
+      ])
+      entries.mockRestore()
+    })
+
+    it("stamps a completed redirect with the signed-in account's method", async () => {
+      sessionStorage.setItem("tp.auth.pendingRedirect", "interactive")
+      mocks.instance.handleRedirectPromise.mockResolvedValue({
+        account: emailAccount,
+      })
+
+      await auth.initializeAuthentication()
+
+      expect(journal()).toMatchObject([
+        {
+          step: "interactive_redirect_returned",
+          outcome: "success",
+          method: "email",
+        },
       ])
     })
 

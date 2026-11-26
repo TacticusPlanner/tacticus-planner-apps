@@ -16,11 +16,21 @@ const UA = {
     "Mozilla/5.0 (iPhone; CPU iPhone OS 18_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/131.0.6778.73 Mobile/15E148 Safari/604.1",
   firefox:
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0",
+  samsung:
+    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/27.0 Chrome/125.0.0.0 Mobile Safari/537.36",
+  chromeAndroid:
+    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
 }
 
 describe("hiddenFrameCannotSeeSession", () => {
-  it("is true for Safari, every iOS browser and Firefox", () => {
-    for (const ua of [UA.safari, UA.iphone, UA.chromeIos, UA.firefox]) {
+  it("is true for Safari, every iOS browser, Firefox and Samsung Internet", () => {
+    for (const ua of [
+      UA.safari,
+      UA.iphone,
+      UA.chromeIos,
+      UA.firefox,
+      UA.samsung,
+    ]) {
       expect(hiddenFrameCannotSeeSession(ua, false)).toBe(true)
     }
   })
@@ -29,8 +39,8 @@ describe("hiddenFrameCannotSeeSession", () => {
     expect(hiddenFrameCannotSeeSession(UA.chrome, true)).toBe(true)
   })
 
-  it("is false for Chrome and Edge", () => {
-    for (const ua of [UA.chrome, UA.chromeMac, UA.edge]) {
+  it("is false for Chrome (desktop and Android) and Edge", () => {
+    for (const ua of [UA.chrome, UA.chromeMac, UA.chromeAndroid, UA.edge]) {
       expect(hiddenFrameCannotSeeSession(ua, false)).toBe(false)
     }
   })

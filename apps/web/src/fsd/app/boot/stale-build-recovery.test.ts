@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+const redirect = vi.hoisted(() => ({ leaving: vi.fn(() => false) }))
+vi.mock("@/shared/auth", () => ({ isRedirectLeavingPage: redirect.leaving }))
+
 import { installPreloadErrorRecovery } from "./stale-build-recovery"
 
 describe("installPreloadErrorRecovery", () => {
@@ -83,5 +86,18 @@ describe("installPreloadErrorRecovery", () => {
 
     expect(reload).not.toHaveBeenCalled()
     expect(event.defaultPrevented).toBe(false)
+  })
+
+  it("never reloads over a sign-in redirect leaving the page, and keeps the attempt", () => {
+    redirect.leaving.mockReturnValue(true)
+
+    const stylesheet = dispatchPreloadError(stylesheetFailure)
+    const module = dispatchPreloadError()
+
+    expect(reload).not.toHaveBeenCalled()
+    expect(stylesheet.defaultPrevented).toBe(true)
+    expect(module.defaultPrevented).toBe(false)
+    expect(window.sessionStorage.getItem("tp.staleReload./home")).toBeNull()
+    redirect.leaving.mockReturnValue(false)
   })
 })

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import {
   authErrorCode,
   forgetAuthJournal,
+  isRedirectLeavingPage,
   markRedirectPending,
   recordAuthStep,
   takeAuthJournal,
@@ -86,5 +87,14 @@ describe("auth journal", () => {
   it("keeps an error's name only when it is not an MSAL error", () => {
     expect(authErrorCode(new TypeError("secret message"))).toBe("TypeError")
     expect(authErrorCode("nope")).toBeUndefined()
+  })
+
+  it("reports a redirect leaving the page until it is taken back", () => {
+    expect(isRedirectLeavingPage()).toBe(false)
+    markRedirectPending("quiet")
+    expect(isRedirectLeavingPage()).toBe(true)
+    // The redirect could not start: the page stays.
+    takePendingRedirect()
+    expect(isRedirectLeavingPage()).toBe(false)
   })
 })

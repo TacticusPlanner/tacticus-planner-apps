@@ -2,15 +2,20 @@
   "$comment": "Startup-JS budget read by scripts/bundle-budget.mjs. Each limit is baselineKb + headroomPercent. A PR over its baseline but under the limit passes with a warning; raise a baseline only for growth you mean to keep, with `pnpm --filter web bundle:budget --update`.",
   "headroomPercent": 5,
   "maxPreloads": 20,
-  "shared": { "baselineKb": 1446 },
+  "shared": {
+    "baselineKb": 1486
+  },
   "routes": {
-    "/": { "baselineKb": 1446, "modules": [] },
+    "/": {
+      "baselineKb": 1486,
+      "modules": []
+    },
     "/home": {
-      "baselineKb": 1750,
+      "baselineKb": 1825,
       "modules": ["src/fsd/pages/home/index.ts"]
     },
     "/library/characters": {
-      "baselineKb": 1465,
+      "baselineKb": 1538,
       "modules": [
         "src/fsd/pages/library/ui/library-page.tsx",
         "src/fsd/pages/library/ui/characters/characters-list-page.tsx"
