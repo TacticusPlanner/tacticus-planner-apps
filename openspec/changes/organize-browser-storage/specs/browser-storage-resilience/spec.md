@@ -45,7 +45,7 @@ Every key the app writes SHALL start with `tp.`, except `theme` and `i18nextLng`
 
 ### Requirement: Values under older key names move at startup
 
-Before anything reads storage, every start SHALL move values kept under older key names to the current ones: each per-device preference key into its feature's record field, `tp.session.*` and older unprefixed account keys to their `tp.user.*` names, and the session keys `nav.lastVisitedChild` and `tp:stale-reload:*` to `tp.nav.lastVisitedChild` and `tp.staleReload.*`. A value already present under the current name SHALL win over the older one. The older key SHALL be removed once its value is stored under the new name. Running the move when there is nothing to move SHALL change nothing.
+Before anything reads storage, every start SHALL move values kept under older key names to the current ones: each per-device preference key into its feature's record field, `tp.session.*` and older unprefixed account keys to their `tp.user.*` names, and the session keys `nav.lastVisitedChild` and `tp:stale-reload:*` to `tp.nav.lastVisitedChild` and `tp.staleReload.*`. A value already present under the current name SHALL win over the older one. The older key SHALL be removed once its value is stored under the new name. Running the move when there is nothing to move SHALL change nothing, and a start that finds no older key SHALL NOT download the move's code.
 
 #### Scenario: Saved choices survive the rename
 

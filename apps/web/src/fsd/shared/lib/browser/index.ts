@@ -17,7 +17,7 @@ export {
   userStoragePrefix,
   type StorageKey,
 } from "./storage-keys"
-export { migrateStorage } from "./storage-migration"
+export { migrateStorageOnStart } from "./migrate-storage-on-start"
 export {
   forgetUnsavedPreferences,
   readPreference,

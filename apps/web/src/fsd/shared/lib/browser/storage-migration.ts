@@ -296,9 +296,9 @@ function migrateSessionKeys() {
 
 /**
  * Moves values kept under older key names to the current ones (spec: browser-storage-resilience).
- * Runs at every start, before anything reads storage: a tab still running an older build may
- * write an old key at any time, and the next start folds it in. Costs a few reads when there is
- * nothing to move. Remove the old names here once no device can still hold them.
+ * `migrateStorageOnStart` loads it at every start that finds an old key, before anything reads
+ * storage: a tab still running an older build may write an old key at any time, and the next start
+ * folds it in. Remove the old names here (and their prefixes there) once no device can hold them.
  */
 export function migrateStorage(): void {
   migratePreferences()

@@ -1,6 +1,11 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from "vitest"
 
+import {
+  legacyKeyPrefixes,
+  legacySessionKeyPrefixes,
+  migrateStorageOnStart,
+} from "./migrate-storage-on-start"
 import { preferenceRecords, storageKeys } from "./storage-keys"
 import {
   accountMoves,
@@ -178,5 +183,37 @@ describe("the key registry", () => {
     for (const { record: name, field } of preferenceMoves) {
       expect(preferenceRecords[name] as readonly string[]).toContain(field)
     }
+  })
+
+  it("loads the migration on start for every old key, and only then", async () => {
+    const sources = [
+      ...preferenceMoves.map((entry) => entry.from),
+      ...accountMoves.flatMap(([from]) => from),
+      ...removedKeys,
+      "tp.session.lre.shownTokens.event-1",
+    ]
+    for (const key of sources) {
+      expect(legacyKeyPrefixes.some((prefix) => key.startsWith(prefix))).toBe(
+        true
+      )
+    }
+    for (const key of ["nav.lastVisitedChild", "tp:stale-reload:/plan"]) {
+      expect(
+        legacySessionKeyPrefixes.some((prefix) => key.startsWith(prefix))
+      ).toBe(true)
+    }
+    for (const key of [
+      ...Object.values(storageKeys),
+      ...Object.keys(preferenceRecords).map((name) => `tp.${name}`),
+    ]) {
+      expect(legacyKeyPrefixes.some((prefix) => key.startsWith(prefix))).toBe(
+        false
+      )
+    }
+
+    local.clear()
+    local.setItem("collection.view", "table")
+    await migrateStorageOnStart()
+    expect(record("tp.collection")).toEqual({ view: "table" })
   })
 })

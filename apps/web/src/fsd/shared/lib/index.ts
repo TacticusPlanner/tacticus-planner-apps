@@ -47,7 +47,7 @@ export {
   installGlobalErrorCapture,
   isLocalStorageEvent,
   isMacPlatform,
-  migrateStorage,
+  migrateStorageOnStart,
   readPreference,
   reportError,
   safeSessionStorage,

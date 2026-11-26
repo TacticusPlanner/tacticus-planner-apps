@@ -15,7 +15,7 @@ import {
 } from "@/shared/auth"
 import {
   installGlobalErrorCapture,
-  migrateStorage,
+  migrateStorageOnStart,
   required,
 } from "@/shared/lib"
 import { ThemeProvider } from "@/shared/theme"
@@ -32,7 +32,7 @@ listenForInstallPrompt()
 
 async function bootstrap() {
   // Before anything reads web storage: values kept under older key names move to the current ones.
-  migrateStorage()
+  await migrateStorageOnStart()
   const msalInstance = await initializeAuthentication()
   // Before anything reads the player data: a copy left by a different account is dropped.
   await claimAccountLocalData(msalInstance.getActiveAccount()?.homeAccountId)
