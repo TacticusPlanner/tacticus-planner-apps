@@ -391,8 +391,8 @@ describe("Home events (Right now + Upcoming events)", () => {
     expect(upcoming).toHaveTextContent(
       "withWarPhase:definitions.guild-war-season,details.phases.row:2,details.phases.preparation"
     )
-    // Preparation will open Guild War Defense; until then the row opens nothing.
-    expect(upcoming?.tagName).toBe("DIV")
+    // Preparation opens Offense too, until Guild War Defense exists.
+    expect(upcoming).toHaveAttribute("href", "/guild/war/offense")
 
     const link = within(screen.getByTestId("home-live-events")).getByRole(
       "link",

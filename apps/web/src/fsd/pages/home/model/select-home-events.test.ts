@@ -650,7 +650,7 @@ const guildWarPhase = (
 })
 
 describe("selectHomeEvents Guild War", () => {
-  it("links a war phase to Offense and a preparation phase nowhere yet", () => {
+  it("links every phase to Offense, preparation too", () => {
     const events = selectHomeEvents({
       homeScreen: null,
       legendary: null,
@@ -675,27 +675,6 @@ describe("selectHomeEvents Guild War", () => {
         phase: "preparation",
         war: 2,
         live: false,
-        destination: null,
-      }),
-    ])
-  })
-
-  it("links by phase, not by whether it is running", () => {
-    const events = selectHomeEvents({
-      homeScreen: null,
-      legendary: null,
-      guildWar: {
-        live: guildWarPhase("preparation", 2, "2026-11-29T21:00:00Z"),
-        next: guildWarPhase("war", 2, "2026-11-30T21:00:00Z"),
-      },
-      nowMs: Date.parse("2026-11-30T12:00:00Z"),
-    })
-    expect(events.live).toEqual([
-      expect.objectContaining({ phase: "preparation", destination: null }),
-    ])
-    expect(events.upcoming).toEqual([
-      expect.objectContaining({
-        phase: "war",
         destination: "/guild/war/offense",
       }),
     ])
