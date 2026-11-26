@@ -22,8 +22,7 @@
     "tba": "Dates à venir",
     "running": "En cours",
     "factions": "Factions autorisées",
-    "mows_one": "Jusqu'à {{count}} machine de guerre",
-    "mows_other": "Jusqu'à {{count}} machines de guerre",
+    "mows": "Machines de guerre autorisées",
     "noMows": "Aucune machine de guerre"
   },
   "howItWorks": {

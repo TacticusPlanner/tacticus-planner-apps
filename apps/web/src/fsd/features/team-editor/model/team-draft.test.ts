@@ -300,7 +300,7 @@ describe("campaign and Incursion", () => {
       {
         id: "december-2026",
         featuredCharacterId: "ultraCalgar",
-        rules: { allowedFactionIds: [], maxCharacters: 10, maxMows: 0 },
+        rules: { allowedFactionIds: [], maxCharacters: 10, mowsAllowed: false },
       },
     ],
   })

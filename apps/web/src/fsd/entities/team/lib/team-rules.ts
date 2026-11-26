@@ -14,13 +14,13 @@ export interface TeamCampaignFacts {
 
 /**
  * A Survival event a team can be built for: its featured hero (always fights, never stored), the
- * factions its battle allows and its caps on stored characters and MoWs (0 MoWs when it bars them).
+ * factions its battle allows, its cap on stored characters and whether its battle takes MoWs at all.
  */
 interface TeamSurvivalFacts {
   featuredCharacterId: string
   allowedFactions: ReadonlySet<string>
   maxCharacters: number
-  maxMows: number
+  mowsAllowed: boolean
 }
 
 /** The catalog facts the rules read, built from the served catalog by `useTeamRuleFacts`. */
@@ -230,10 +230,8 @@ function evaluateSurvival(
   if (team.characterIds.length > survival.maxCharacters) {
     broken.add("survivalTooManyCharacters")
   }
-  if (team.mowIds.length > 0 && survival.maxMows === 0) {
+  if (team.mowIds.length > 0 && !survival.mowsAllowed) {
     broken.add("mowsNotAllowed")
-  } else if (team.mowIds.length > survival.maxMows) {
-    broken.add("survivalTooManyMows")
   }
   if (!fromFactions(team, facts, survival.allowedFactions)) {
     broken.add("factionNotAllowed")

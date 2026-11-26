@@ -4298,8 +4298,6 @@ export interface components {
       mowsAllowed: boolean
       /** Format: int32 */
       maxCharacters: number
-      /** Format: int32 */
-      maxMows: number
       stamina: components["schemas"]["GameCatalogSurvivalStamina"]
       /** Format: int32 */
       statBoostPct: number
@@ -5401,7 +5399,6 @@ export interface components {
       | "unknownSurvivalEvent"
       | "survivalFeaturedCharacter"
       | "survivalTooManyCharacters"
-      | "survivalTooManyMows"
     UnitId: string
     /** @enum {string} */
     UnitProgression:

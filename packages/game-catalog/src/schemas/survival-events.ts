@@ -45,7 +45,6 @@ const survivalRulesSchema = z.looseObject({
   allowedFactionIds: z.array(z.string().min(1)),
   mowsAllowed: z.boolean(),
   maxCharacters: z.number().int().positive(),
-  maxMows: countSchema,
   stamina: z.looseObject({
     start: countSchema,
     max: countSchema,

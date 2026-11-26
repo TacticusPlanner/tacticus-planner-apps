@@ -22,8 +22,7 @@
     "tba": "Termine folgen",
     "running": "Läuft gerade",
     "factions": "Erlaubte Fraktionen",
-    "mows_one": "Bis zu {{count}} Kriegsmaschine",
-    "mows_other": "Bis zu {{count}} Kriegsmaschinen",
+    "mows": "Kriegsmaschinen erlaubt",
     "noMows": "Keine Kriegsmaschinen"
   },
   "howItWorks": {

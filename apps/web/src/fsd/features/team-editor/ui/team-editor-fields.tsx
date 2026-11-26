@@ -421,10 +421,9 @@ function TeamSurvivalField({
             {t("survival.featured", {
               hero: unitName("Character", survival.featuredCharacterId),
             })}{" "}
-            {survival.maxMows > 0
+            {survival.mowsAllowed
               ? t("survival.caps", {
                   characters: survival.maxCharacters,
-                  mows: survival.maxMows,
                 })
               : t("survival.capsNoMows", {
                   characters: survival.maxCharacters,

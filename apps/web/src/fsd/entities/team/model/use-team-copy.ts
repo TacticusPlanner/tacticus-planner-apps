@@ -30,7 +30,6 @@ const RULE_COPY = {
   unknownSurvivalEvent: { counted: false },
   survivalFeaturedCharacter: { counted: false },
   survivalTooManyCharacters: { counted: false },
-  survivalTooManyMows: { counted: false },
 } as const satisfies Record<TeamRuleCode, { counted: boolean }>
 
 /** How many units a counted fix asks the player to change, for this team. */
@@ -84,10 +83,7 @@ export function useTeamRuleText() {
           ?.counted ?? false
       const max = survivalCap(code, team?.survivalEventKey)
       const capped = { max, context: max === undefined ? "unknown" : undefined }
-      if (
-        code === "survivalTooManyCharacters" ||
-        code === "survivalTooManyMows"
-      ) {
+      if (code === "survivalTooManyCharacters") {
         return {
           code,
           reason: t(`rules.${code}.reason`, capped),

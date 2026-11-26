@@ -22,8 +22,7 @@
     "tba": "Fechas por anunciar",
     "running": "En curso ahora",
     "factions": "Facciones permitidas",
-    "mows_one": "Hasta {{count}} Máquina de Guerra",
-    "mows_other": "Hasta {{count}} Máquinas de Guerra",
+    "mows": "Máquinas de Guerra permitidas",
     "noMows": "Sin Máquinas de Guerra"
   },
   "howItWorks": {

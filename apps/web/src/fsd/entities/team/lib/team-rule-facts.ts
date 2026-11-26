@@ -26,8 +26,8 @@ export function buildTeamRuleFacts(datasets: {
     featuredCharacterId: string
     rules: {
       allowedFactionIds: readonly string[]
+      mowsAllowed: boolean
       maxCharacters: number
-      maxMows: number
     }
   }[]
 }): TeamRuleFacts {
@@ -66,7 +66,7 @@ export function buildTeamRuleFacts(datasets: {
           featuredCharacterId: survival.featuredCharacterId,
           allowedFactions: new Set(survival.rules.allowedFactionIds),
           maxCharacters: survival.rules.maxCharacters,
-          maxMows: survival.rules.maxMows,
+          mowsAllowed: survival.rules.mowsAllowed,
         },
       ])
     ),

@@ -22,8 +22,7 @@
     "tba": "Dates to be announced",
     "running": "Running now",
     "factions": "Allowed factions",
-    "mows_one": "Up to {{count}} Machine of War",
-    "mows_other": "Up to {{count}} Machines of War",
+    "mows": "Machines of War allowed",
     "noMows": "No Machines of War"
   },
   "howItWorks": {

@@ -17,7 +17,6 @@
       ],
       "mowsAllowed": false,
       "maxCharacters": 10,
-      "maxMows": 0,
       "stamina": {
         "start": 2,
         "max": 5,
@@ -1331,7 +1330,6 @@
       ],
       "mowsAllowed": false,
       "maxCharacters": 10,
-      "maxMows": 0,
       "stamina": {
         "start": 2,
         "max": 5,

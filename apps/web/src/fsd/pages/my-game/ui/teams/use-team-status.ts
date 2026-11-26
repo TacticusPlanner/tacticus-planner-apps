@@ -78,10 +78,7 @@ export function useTeamStatus(
             max: TEAM_LIMITS.maxWarCoreMows,
           })
         }
-        if (
-          code === "survivalTooManyCharacters" ||
-          code === "survivalTooManyMows"
-        ) {
+        if (code === "survivalTooManyCharacters") {
           const max = survivalCap(code, team.survivalEventKey)
           return t(`chips.rules.${code}`, {
             max,

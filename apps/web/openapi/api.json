@@ -15265,7 +15265,6 @@
           "allowedFactionIds",
           "mowsAllowed",
           "maxCharacters",
-          "maxMows",
           "stamina",
           "statBoostPct",
           "statBoostStats",
@@ -15283,10 +15282,6 @@
             "type": "boolean"
           },
           "maxCharacters": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "maxMows": {
             "type": "integer",
             "format": "int32"
           },
@@ -19055,8 +19050,7 @@
           "survivalModeRequired",
           "unknownSurvivalEvent",
           "survivalFeaturedCharacter",
-          "survivalTooManyCharacters",
-          "survivalTooManyMows"
+          "survivalTooManyCharacters"
         ],
         "type": "string"
       },

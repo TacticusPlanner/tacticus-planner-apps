@@ -84,7 +84,7 @@ const facts = buildTeamRuleFacts({
       rules: {
         allowedFactionIds: ["Ultramarines", "BlackTemplars"],
         maxCharacters: 4,
-        maxMows: 0,
+        mowsAllowed: false,
       },
     },
     {
@@ -93,7 +93,7 @@ const facts = buildTeamRuleFacts({
       rules: {
         allowedFactionIds: ["Ultramarines"],
         maxCharacters: 10,
-        maxMows: 1,
+        mowsAllowed: true,
       },
     },
   ],
@@ -443,7 +443,7 @@ describe("evaluateTeamRules (Survival)", () => {
     ).toEqual(["survivalTooManyCharacters"])
   })
 
-  it("rejects MoWs when the event takes none, and caps them otherwise", () => {
+  it("rejects MoWs when the event takes none, with no cap of its own otherwise", () => {
     expect(rules(survivalTeam({ mowIds: ["ultraDreadnought"] }))).toEqual([
       "mowsNotAllowed",
     ])
@@ -453,8 +453,11 @@ describe("evaluateTeamRules (Survival)", () => {
     })
     expect(rules({ ...crescendo, mowIds: ["ultraDreadnought"] })).toEqual([])
     expect(
-      rules({ ...crescendo, mowIds: ["ultraDreadnought", "tauBroadside"] })
-    ).toEqual(["survivalTooManyMows"])
+      rules({
+        ...crescendo,
+        mowIds: ["ultraDreadnought", "tauBroadside", "orksRukkatrukk"],
+      })
+    ).toEqual([])
   })
 
   it("takes characters only from the allowed factions", () => {

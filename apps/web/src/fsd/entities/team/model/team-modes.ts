@@ -32,7 +32,6 @@ export const TEAM_RULE_CODES = [
   "unknownSurvivalEvent",
   "survivalFeaturedCharacter",
   "survivalTooManyCharacters",
-  "survivalTooManyMows",
 ] as const satisfies readonly TeamRuleCode[]
 
 export function isTeamMode(value: unknown): value is TeamMode {

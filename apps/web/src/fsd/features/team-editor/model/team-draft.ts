@@ -401,7 +401,7 @@ export function takesMows(
     : undefined
   return (
     draft.modes.every((mode) => !EXCLUSIVE_MODES.includes(mode)) &&
-    survival?.maxMows !== 0
+    survival?.mowsAllowed !== false
   )
 }
 

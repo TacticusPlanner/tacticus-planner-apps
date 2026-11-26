@@ -76,9 +76,7 @@ export function SurvivalEventLine({
         </ul>
       </span>
       <span className="text-muted-foreground">
-        {rules.mowsAllowed && rules.maxMows > 0
-          ? t("line.mows", { count: rules.maxMows })
-          : t("line.noMows")}
+        {rules.mowsAllowed ? t("line.mows") : t("line.noMows")}
       </span>
     </div>
   )

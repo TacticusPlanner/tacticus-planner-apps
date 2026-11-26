@@ -153,7 +153,7 @@
   "survival": {
     "label": "Événement de Survie",
     "featured": "{{hero}} combat toujours et ne fait pas partie de l'équipe.",
-    "caps": "Jusqu'à {{characters}} personnages et {{mows}} machines de guerre.",
+    "caps": "Jusqu'à {{characters}} personnages, machines de guerre autorisées.",
     "capsNoMows": "Jusqu'à {{characters}} personnages, sans machines de guerre.",
     "allowed": "Factions autorisées",
     "unknown": "Cet événement de Survie n'est pas dans les données du jeu."
@@ -283,12 +283,6 @@
       "reason_unknown": "Cette équipe de Survie a plus de personnages que son événement ne le permet.",
       "fix": "Retire des personnages jusqu'à en garder {{max}}.",
       "fix_unknown": "Retire des personnages."
-    },
-    "survivalTooManyMows": {
-      "reason": "Une équipe de Survie peut avoir au plus {{max}} machines de guerre.",
-      "reason_unknown": "Cette équipe de Survie a plus de machines de guerre que son événement ne le permet.",
-      "fix": "Retire des machines de guerre jusqu'à en garder {{max}}.",
-      "fix_unknown": "Retire des machines de guerre."
     }
   },
   "tour": {
@@ -352,8 +346,6 @@
       "survivalFeaturedCharacter": "Héros vedette dans l'équipe",
       "survivalTooManyCharacters": "Plus de {{max}} personnages",
       "survivalTooManyCharacters_unknown": "Trop de personnages",
-      "survivalTooManyMows": "Plus de {{max}} machines de guerre",
-      "survivalTooManyMows_unknown": "Trop de machines de guerre",
       "tooFewCharacters_one": "{{count}} personnage (min. {{min}})",
       "tooFewCharacters_other": "{{count}} personnages (min. {{min}})"
     }
