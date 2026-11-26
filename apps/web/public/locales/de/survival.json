@@ -100,7 +100,11 @@
     "waves": "Wellen {{from}}–{{to}}",
     "expandAll": "Alle ausklappen",
     "collapseAll": "Alle einklappen",
-    "groupEnemies": "Gegner in diesen Wellen",
+    "summary": {
+      "enemies": "Gegner",
+      "rewards": "Belohnungen",
+      "buffs": "Verstärkungen"
+    },
     "enemyCount": "{{name}} ×{{count}}"
   },
   "rewards": {

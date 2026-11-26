@@ -67,4 +67,30 @@ describe("waveGroups", () => {
       first?.enemies.length
     )
   })
+
+  it("lists the medals and totals the power-ups each group's clears bring", () => {
+    if (!december) throw new Error("fixture")
+    const groups = waveGroups(december)
+    expect(groups.map((group) => group.medals)).toEqual([
+      ["iron", "bronze"],
+      [],
+      ["silver"],
+      ["gold"],
+      ["platinum", "diamond"],
+      [],
+    ])
+    const [first] = groups
+    const granted = december.waves
+      .filter((wave) => wave.wave <= 3)
+      .flatMap((wave) => wave.powerUpsOnClear)
+      .reduce((sum, powerUp) => sum + powerUp.count, 0)
+    expect(
+      first?.powerUps.reduce((sum, powerUp) => sum + powerUp.count, 0)
+    ).toBe(granted)
+    const mythic = groups.at(-1)
+    expect(
+      mythic?.powerUps.find((powerUp) => powerUp.id === "powupReinforcement")
+        ?.count
+    ).toBe(2)
+  })
 })

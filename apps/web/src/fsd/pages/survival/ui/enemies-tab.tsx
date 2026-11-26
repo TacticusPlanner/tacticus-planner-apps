@@ -198,53 +198,156 @@ function WaveCard({
   )
 }
 
-/** Every enemy the group's waves field, as portraits with their total count: the folded view. */
-function GroupEnemies({ group }: { group: WaveGroup }) {
-  const { t } = useTranslation("survival")
-  const { variationName } = useNpcLabels()
-  const npcsRead = useNpcsById()
-  const npcs = npcsRead.status === "ready" ? npcsRead.data : undefined
+/** A count badge on the corner of a portrait or icon. */
+function CornerCount({ count }: { count: number }) {
   return (
-    <ul
-      aria-label={t("enemies.groupEnemies")}
-      className="flex flex-wrap gap-2"
-      data-testid="survival-group-enemies"
-    >
-      {group.enemies.map((enemy) => {
-        const name = variationName(
-          enemy.npcId,
-          npcs?.get(enemy.npcId)?.name ?? enemy.npcId
-        )
-        const label = t("enemies.enemyCount", { name, count: enemy.count })
-        return (
-          <li key={enemy.npcId}>
-            <HintTrigger className="relative" label={label}>
-              <NpcPortrait
-                name=""
-                size="portrait-sm"
-                variationId={enemy.npcId}
-              />
-              <span className="absolute -right-1 -bottom-1 rounded-full border bg-background px-1 text-xs font-semibold tabular-nums">
-                {enemy.count}
-              </span>
-            </HintTrigger>
-          </li>
-        )
-      })}
-    </ul>
+    <span className="absolute -right-1 -bottom-1 rounded-full border bg-background px-1 text-xs font-semibold tabular-nums">
+      {count}
+    </span>
   )
 }
 
-/** The waves at one rarity cap: a heading that folds them, the enemies when folded, the waves when open. */
+/** One labelled row of the folded view. */
+function SummaryRow({
+  label,
+  children,
+}: {
+  label: string
+  children: ReactNode
+}) {
+  return (
+    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
+      <dt className="text-xs font-medium text-muted-foreground sm:w-20 sm:shrink-0">
+        {label}
+      </dt>
+      <dd>{children}</dd>
+    </div>
+  )
+}
+
+/**
+ * The folded view of a group: every enemy its waves field (portraits with their totals), the medals
+ * first earned in them with their rewards, and the buffs their clears grant.
+ */
+function GroupSummary({
+  group,
+  medalRewards,
+}: {
+  group: WaveGroup
+  medalRewards: ReturnType<typeof useMedalRewards>
+}) {
+  const { t } = useTranslation("survival")
+  const { variationName } = useNpcLabels()
+  const format = useEventRewardFormat()
+  const npcsRead = useNpcsById()
+  const npcs = npcsRead.status === "ready" ? npcsRead.data : undefined
+  return (
+    <dl className="flex flex-col gap-2">
+      <SummaryRow label={t("enemies.summary.enemies")}>
+        <ul
+          className="flex flex-wrap gap-2"
+          data-testid="survival-group-enemies"
+        >
+          {group.enemies.map((enemy) => {
+            const name = variationName(
+              enemy.npcId,
+              npcs?.get(enemy.npcId)?.name ?? enemy.npcId
+            )
+            return (
+              <li key={enemy.npcId}>
+                <HintTrigger
+                  className="relative"
+                  label={t("enemies.enemyCount", { name, count: enemy.count })}
+                >
+                  <NpcPortrait
+                    name=""
+                    size="portrait-sm"
+                    variationId={enemy.npcId}
+                  />
+                  <CornerCount count={enemy.count} />
+                </HintTrigger>
+              </li>
+            )
+          })}
+        </ul>
+      </SummaryRow>
+      {group.medals.length > 0 ? (
+        <SummaryRow label={t("enemies.summary.rewards")}>
+          <ul
+            className="flex flex-wrap items-center gap-x-4 gap-y-1"
+            data-testid="survival-group-rewards"
+          >
+            {group.medals.map((medal) => (
+              <li
+                className="inline-flex items-center gap-1 text-xs"
+                key={medal}
+              >
+                <Medal aria-hidden className="size-icon-sm text-primary" />
+                <span className="font-medium">
+                  {t(`medals.${medal}` as never, { defaultValue: medal })}
+                </span>
+                <RewardText
+                  compact
+                  format={format}
+                  rewards={medalRewards.get(medal) ?? []}
+                />
+              </li>
+            ))}
+          </ul>
+        </SummaryRow>
+      ) : null}
+      {group.powerUps.length > 0 ? (
+        <SummaryRow label={t("enemies.summary.buffs")}>
+          <ul
+            className="flex flex-wrap gap-2"
+            data-testid="survival-group-buffs"
+          >
+            {group.powerUps.map((powerUp) => {
+              const name = variationName(powerUp.id, powerUp.id)
+              return (
+                <li key={powerUp.id}>
+                  <HintTrigger
+                    className="relative"
+                    label={
+                      powerUp.count > 1
+                        ? t("enemies.enemyCount", {
+                            name,
+                            count: powerUp.count,
+                          })
+                        : name
+                    }
+                  >
+                    <EntityIcon
+                      alt=""
+                      size="icon-lg"
+                      src={npcPortrait(powerUp.npcId ?? powerUp.id)}
+                    />
+                    {powerUp.count > 1 ? (
+                      <CornerCount count={powerUp.count} />
+                    ) : null}
+                  </HintTrigger>
+                </li>
+              )
+            })}
+          </ul>
+        </SummaryRow>
+      ) : null}
+    </dl>
+  )
+}
+
+/** The waves at one rarity cap: a heading that folds them, a summary when folded, the waves when open. */
 function WaveGroupSection({
   group,
   open,
   onToggle,
+  medalRewards,
   children,
 }: {
   group: WaveGroup
   open: boolean
   onToggle: () => void
+  medalRewards: ReturnType<typeof useMedalRewards>
   children: ReactNode
 }) {
   const { t } = useTranslation(["survival", "progression"])
@@ -293,7 +396,7 @@ function WaveGroupSection({
         {open ? (
           <ol className="flex flex-col gap-3">{children}</ol>
         ) : (
-          <GroupEnemies group={group} />
+          <GroupSummary group={group} medalRewards={medalRewards} />
         )}
       </div>
     </li>
@@ -376,6 +479,7 @@ export function EnemiesTab() {
           <WaveGroupSection
             group={group}
             key={firstWave(group)}
+            medalRewards={medalRewards}
             onToggle={() => toggle(firstWave(group))}
             open={opened.has(firstWave(group))}
           >

@@ -100,7 +100,11 @@
     "waves": "Oleadas {{from}}–{{to}}",
     "expandAll": "Desplegar todo",
     "collapseAll": "Plegar todo",
-    "groupEnemies": "Enemigos de estas oleadas",
+    "summary": {
+      "enemies": "Enemigos",
+      "rewards": "Recompensas",
+      "buffs": "Mejoras"
+    },
     "enemyCount": "{{name}} ×{{count}}"
   },
   "rewards": {

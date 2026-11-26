@@ -100,7 +100,11 @@
     "waves": "Vagues {{from}}–{{to}}",
     "expandAll": "Tout déplier",
     "collapseAll": "Tout replier",
-    "groupEnemies": "Ennemis de ces vagues",
+    "summary": {
+      "enemies": "Ennemis",
+      "rewards": "Récompenses",
+      "buffs": "Bonus"
+    },
     "enemyCount": "{{name}} ×{{count}}"
   },
   "rewards": {

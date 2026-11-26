@@ -99,9 +99,15 @@ describe("SurvivalLayout", () => {
     const user = userEvent.setup()
     renderPage("/plan/survival/enemies")
 
-    // Folded, each rarity-cap group shows only the enemies it fields.
+    // Folded, each rarity-cap group shows the enemies it fields, the medals first earned in it
+    // and the buffs its clears grant.
     expect(screen.queryAllByTestId(/^survival-wave-\d+$/)).toHaveLength(0)
     expect(screen.getAllByTestId("survival-group-enemies")).toHaveLength(6)
+    expect(screen.getAllByTestId("survival-group-rewards")).toHaveLength(4)
+    expect(screen.getAllByTestId("survival-group-buffs")).toHaveLength(6)
+    expect(
+      within(screen.getByTestId("survival-group-1")).getByText("medals.bronze")
+    ).toBeInTheDocument()
     expect(
       screen.getByRole("button", { name: /enemies\.rarityCap.*Uncommon/ })
     ).toHaveAttribute("aria-expanded", "false")
@@ -117,12 +123,17 @@ describe("SurvivalLayout", () => {
     ).toBeInTheDocument()
     // A clone wave fights the player's own team, so it has no power of its own.
     expect(
+      within(screen.getByTestId("survival-wave-15")).getByRole("button", {
+        name: /^enemies\.power/,
+      })
+    ).toBeInTheDocument()
+    expect(
       within(screen.getByTestId("survival-wave-16")).getByTestId(
         "survival-clone-wave"
       )
     ).toBeInTheDocument()
     expect(
-      within(screen.getByTestId("survival-wave-16")).queryByRole("img", {
+      within(screen.getByTestId("survival-wave-16")).queryByRole("button", {
         name: /^enemies\.power/,
       })
     ).not.toBeInTheDocument()

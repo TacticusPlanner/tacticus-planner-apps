@@ -100,7 +100,11 @@
     "waves": "Waves {{from}}–{{to}}",
     "expandAll": "Expand all",
     "collapseAll": "Collapse all",
-    "groupEnemies": "Enemies in these waves",
+    "summary": {
+      "enemies": "Enemies",
+      "rewards": "Rewards",
+      "buffs": "Buffs"
+    },
     "enemyCount": "{{name}} ×{{count}}"
   },
   "rewards": {
