@@ -110,7 +110,11 @@
     "select": "Select",
     "selectTeam": "Select {{name}}",
     "core": "Core units",
-    "blocked": "{{name}} already attacked in this war."
+    "blocked_one": "{{names}} already attacked in this war.",
+    "blocked_other": "{{names}} already attacked in this war.",
+    "more_one": "{{count}} more",
+    "more_other": "{{count}} more",
+    "deployedUnit": "{{name}}, already attacked"
   },
   "units": {
     "heading": "Available units",
@@ -122,7 +126,8 @@
     "charactersFull_other": "{{count}} characters picked",
     "mowsFull_one": "{{count}} Machine of War picked",
     "mowsFull_other": "{{count}} Machines of War picked",
-    "showAll": "Show all ({{count}})"
+    "showAll": "Show all ({{count}})",
+    "showLess": "Show less"
   },
   "select": {
     "count_one": "{{count}} selected",

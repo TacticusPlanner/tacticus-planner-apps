@@ -212,13 +212,18 @@ describe("OffensePage", () => {
     await resetTestDatabases()
   })
 
-  it("lists ready teams first and says which unit blocks the others", async () => {
+  it("lists ready teams first and names every unit that blocks the others", async () => {
     api.current.mockResolvedValue({
-      war: war({ tokensUsed: 1, deployedUnitIds: ["ultraTitus"] }),
+      war: war({
+        tokensUsed: 2,
+        deployedUnitIds: ["ultraTitus", "ultraApothecary"],
+      }),
     })
     api.teams.mockResolvedValue({
       teams: [
-        team("blocked", { characterIds: ["ultraTitus", "ultraCalgar"] }),
+        team("blocked", {
+          characterIds: ["ultraTitus", "ultraCalgar", "ultraApothecary"],
+        }),
         team("defense", {
           modes: ["warDefense"],
           characterIds: ["ultraCalgar"],
@@ -236,7 +241,13 @@ describe("OffensePage", () => {
     expect(second).toHaveTextContent("Team blocked")
     expect(
       within(second as HTMLElement).getByTestId("guild-war-team-blocked")
-    ).toHaveTextContent(/already attacked in this war/)
+    ).toHaveTextContent(/^\S+ and \S+ already attacked in this war\.$/)
+    // Only the deployed units are dimmed.
+    expect(
+      within(second as HTMLElement).getAllByRole("listitem", {
+        name: /already attacked/,
+      })
+    ).toHaveLength(2)
     // A deployed unit is not offered again.
     await tile("ultraCalgar")
     expect(tileOf("ultraTitus")).toBeUndefined()
@@ -616,6 +627,44 @@ describe("OffensePage", () => {
         "checkbox"
       )
     ).toHaveLength(14)
+
+    await user.click(screen.getByRole("button", { name: "Show less" }))
+    expect(
+      within(screen.getByTestId("guild-war-characters")).getAllByRole(
+        "checkbox"
+      )
+    ).toHaveLength(12)
+    expect(screen.queryByRole("button", { name: "Show less" })).toBeNull()
+  })
+
+  it("shows every character when a team is selected, so its picks show", async () => {
+    const user = userEvent.setup()
+    setViewportWidth(390)
+    const many = Array.from({ length: 14 }, (_, index) => `unit${index}`)
+    await seedGameCatalog({
+      "guild-war": guildWarFixture,
+      characters: many.map(character),
+      mows: [],
+    })
+    await seedPlayerData({ characters: many.map(rosterUnit), mows: [] })
+    api.current.mockResolvedValue({ war: war() })
+    api.teams.mockResolvedValue({
+      teams: [team("late", { characterIds: ["unit0", "unit13"] })],
+    })
+    renderOffense()
+
+    await screen.findByRole("button", { name: "Show all (14)" })
+    await user.click(
+      await screen.findByRole("button", { name: "Select Team late" })
+    )
+    const grid = screen.getByTestId("guild-war-characters")
+    expect(within(grid).getAllByRole("checkbox")).toHaveLength(14)
+    expect(
+      within(grid)
+        .getAllByRole("checkbox")
+        .filter((box) => box.getAttribute("aria-checked") === "true")
+    ).toHaveLength(2)
+    expect(screen.getByRole("button", { name: "Show less" })).toBeEnabled()
   })
 
   it("reminds about a free Machine of War and goes to the list", async () => {

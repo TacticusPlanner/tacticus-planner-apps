@@ -110,7 +110,11 @@
     "select": "Seleccionar",
     "selectTeam": "Seleccionar {{name}}",
     "core": "Unidades principales",
-    "blocked": "{{name}} ya atacó en esta guerra."
+    "blocked_one": "{{names}} ya atacó en esta guerra.",
+    "blocked_other": "{{names}} ya atacaron en esta guerra.",
+    "more_one": "{{count}} más",
+    "more_other": "{{count}} más",
+    "deployedUnit": "{{name}}, ya atacó"
   },
   "units": {
     "heading": "Unidades disponibles",
@@ -122,7 +126,8 @@
     "charactersFull_other": "{{count}} personajes elegidos",
     "mowsFull_one": "{{count}} máquina de guerra elegida",
     "mowsFull_other": "{{count}} máquinas de guerra elegidas",
-    "showAll": "Mostrar todos ({{count}})"
+    "showAll": "Mostrar todos ({{count}})",
+    "showLess": "Mostrar menos"
   },
   "select": {
     "count_one": "{{count}} seleccionada",

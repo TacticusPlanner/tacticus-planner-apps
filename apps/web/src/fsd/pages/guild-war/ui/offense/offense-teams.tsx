@@ -14,9 +14,12 @@ import { cappedView } from "../../model/capped-view"
 import { coreUnits } from "../../model/offense"
 import type { OffenseTeam, UnitKind } from "../../model/offense"
 
+/** How many deployed units a blocked team names before "and N more". */
+const NAMED_DEPLOYED = 3
+
 /**
- * The player's War Offense teams: the ready ones first, then the blocked ones, each saying which of
- * its core units already attacked, its units shown at the defenders' cap. Select puts a team's
+ * The player's War Offense teams: the ready ones first, then the blocked ones, each naming every
+ * core unit that already attacked (dimmed in the lineup), its units shown at the defenders' cap. Select puts a team's
  * core units in the selection; Create team opens the team editor with War Offense picked.
  */
 export function OffenseTeams({
@@ -32,10 +35,23 @@ export function OffenseTeams({
   onSelect: (units: { id: string; kind: UnitKind }[]) => void
   onNewTeam: () => void
 }) {
-  const { t } = useTranslation("guildWar")
+  const { t, i18n } = useTranslation("guildWar")
   const unitName = useUnitName()
   const nameOf = (kind: UnitKind, id: string) =>
     unitName(kind === "mow" ? "Mow" : "Character", id)
+  const deployedNames = (units: readonly { id: string; kind: UnitKind }[]) => {
+    const names = units.map((unit) => nameOf(unit.kind, unit.id))
+    const shown =
+      names.length > NAMED_DEPLOYED
+        ? [
+            ...names.slice(0, NAMED_DEPLOYED - 1),
+            t("teams.more", { count: names.length - NAMED_DEPLOYED + 1 }),
+          ]
+        : names
+    return new Intl.ListFormat(i18n.language, {
+      type: "conjunction",
+    }).format(shown)
+  }
 
   return (
     <section
@@ -61,15 +77,14 @@ export function OffenseTeams({
         />
       ) : null}
       <ul className="grid gap-2 sm:grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
-        {teams.map(({ team, blockedBy }) => {
+        {teams.map(({ team, deployedCore }) => {
           const core = coreUnits(team)
+          const blocked = deployedCore.length > 0
+          const deployedIds = new Set(deployedCore.map((unit) => unit.id))
           return (
             <li
-              className={cn(
-                "flex flex-col gap-2 rounded-xl border bg-card p-3",
-                blockedBy && "opacity-70"
-              )}
-              data-blocked={blockedBy ? "true" : undefined}
+              className="flex flex-col gap-2 rounded-xl border bg-card p-3"
+              data-blocked={blocked ? "true" : undefined}
               data-testid="guild-war-team"
               key={team.id}
             >
@@ -79,7 +94,7 @@ export function OffenseTeams({
                 </span>
                 <Button
                   aria-label={t("teams.selectTeam", { name: team.name })}
-                  disabled={blockedBy !== null}
+                  disabled={blocked}
                   onClick={() => onSelect(core)}
                   size="sm"
                   variant="outline"
@@ -88,21 +103,36 @@ export function OffenseTeams({
                 </Button>
               </div>
               <ul aria-label={t("teams.core")} className="flex flex-wrap gap-1">
-                {core.map((unit) => (
-                  <li aria-label={nameOf(unit.kind, unit.id)} key={unit.id}>
-                    <TeamUnitPortrait
-                      unit={cappedView(unit.kind, unit.id, roster, cap)}
-                    />
-                  </li>
-                ))}
+                {core.map((unit) => {
+                  const deployed = deployedIds.has(unit.id)
+                  return (
+                    <li
+                      aria-label={
+                        deployed
+                          ? t("teams.deployedUnit", {
+                              name: nameOf(unit.kind, unit.id),
+                            })
+                          : nameOf(unit.kind, unit.id)
+                      }
+                      className={cn(deployed && "opacity-40 grayscale")}
+                      data-deployed={deployed ? "true" : undefined}
+                      key={unit.id}
+                    >
+                      <TeamUnitPortrait
+                        unit={cappedView(unit.kind, unit.id, roster, cap)}
+                      />
+                    </li>
+                  )
+                })}
               </ul>
-              {blockedBy ? (
+              {blocked ? (
                 <p
                   className="text-xs text-amber-800 dark:text-amber-400"
                   data-testid="guild-war-team-blocked"
                 >
                   {t("teams.blocked", {
-                    name: nameOf(blockedBy.kind, blockedBy.id),
+                    count: deployedCore.length,
+                    names: deployedNames(deployedCore),
                   })}
                 </p>
               ) : null}

@@ -58,21 +58,24 @@ const pick = (...ids: string[]): Selection =>
   new Map(ids.map((id) => [id, roster.mows.has(id) ? "mow" : "character"]))
 
 describe("offenseTeams", () => {
-  it("lists War Offense teams, ready first, blocked by a deployed core unit", () => {
+  it("lists War Offense teams, ready first, with every deployed core unit", () => {
     const teams = [
-      team("blocked", { characterIds: ["a", "b"] }),
+      team("blocked", { characterIds: ["a", "b", "d"] }),
       team("flexOnly", { characterIds: ["c", "a"], flexStartIndex: 1 }),
       team("defense", { modes: ["warDefense"], characterIds: ["c"] }),
       team("mow", { characterIds: ["c"], mowIds: ["m"] }),
     ]
-    const listed = offenseTeams(teams, new Set(["a", "m"]))
-    expect(listed.map((entry) => [entry.team.id, entry.blockedBy?.id])).toEqual(
-      [
-        ["flexOnly", undefined],
-        ["blocked", "a"],
-        ["mow", "m"],
-      ]
-    )
+    const listed = offenseTeams(teams, new Set(["a", "d", "m"]))
+    expect(
+      listed.map((entry) => [
+        entry.team.id,
+        entry.deployedCore.map((unit) => unit.id),
+      ])
+    ).toEqual([
+      ["flexOnly", []],
+      ["blocked", ["a", "d"]],
+      ["mow", ["m"]],
+    ])
   })
 })
 

@@ -171,6 +171,8 @@ export function OffensePage() {
     settings.battlefieldLevel
   )
   const [selection, setSelection] = useState<Selection>(() => new Map())
+  // Lifted here so selecting a team can show every character, its picks among them.
+  const [charactersExpanded, setCharactersExpanded] = useState(false)
   const [filters, setFilters] = useState<OffenseFilters>(
     DEFAULT_OFFENSE_FILTERS
   )
@@ -237,8 +239,13 @@ export function OffensePage() {
       }
     )
   }
-  const selectTeam = (core: { id: string; kind: UnitKind }[]) =>
+  const selectTeam = (core: { id: string; kind: UnitKind }[]) => {
     setSelection(new Map(core.map((unit) => [unit.id, unit.kind])))
+    // A team's characters can sit past the first ones shown, so its picks show selected.
+    if (core.some((unit) => unit.kind === "character")) {
+      setCharactersExpanded(true)
+    }
+  }
 
   const saveError = (error: unknown) =>
     t(`log.errors.${attackSaveError(error)}`)
@@ -385,7 +392,9 @@ export function OffensePage() {
         <AvailableUnits
           cap={cap ?? DEFAULT_RARITY_CAP}
           deployed={deployedWhere}
+          expanded={charactersExpanded}
           filters={filters}
+          onExpandedChange={setCharactersExpanded}
           onFiltersChange={(patch) =>
             setFilters((current) => ({ ...current, ...patch }))
           }

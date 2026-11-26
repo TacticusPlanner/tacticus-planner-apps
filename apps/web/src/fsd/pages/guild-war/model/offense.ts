@@ -90,10 +90,10 @@ export function coreUnits(team: Team): { id: string; kind: UnitKind }[] {
   ]
 }
 
-/** An offense team and the first of its core units that already attacked (null when ready). */
+/** An offense team and every one of its core units that already attacked (none when ready). */
 export interface OffenseTeam {
   team: Team
-  blockedBy: { id: string; kind: UnitKind } | null
+  deployedCore: { id: string; kind: UnitKind }[]
 }
 
 /** The War Offense teams in their saved order, the ready ones first and the blocked ones after. */
@@ -105,11 +105,11 @@ export function offenseTeams(
     .filter((team) => team.modes.includes("warOffense"))
     .map((team) => ({
       team,
-      blockedBy: coreUnits(team).find((unit) => deployed.has(unit.id)) ?? null,
+      deployedCore: coreUnits(team).filter((unit) => deployed.has(unit.id)),
     }))
   return [
-    ...withStatus.filter((entry) => entry.blockedBy === null),
-    ...withStatus.filter((entry) => entry.blockedBy !== null),
+    ...withStatus.filter((entry) => entry.deployedCore.length === 0),
+    ...withStatus.filter((entry) => entry.deployedCore.length > 0),
   ]
 }
 
