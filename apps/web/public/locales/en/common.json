@@ -882,14 +882,6 @@
     },
     "calendar": {
       "title": "Events calendar"
-    },
-    "betaPromo": {
-      "title": "Beta launch gift",
-      "body": "Thanks for trying the V2 beta. Redeem this promo code in Tacticus by {{date}}.",
-      "copy": "Copy code",
-      "copied": "Copied",
-      "copyFailed": "Couldn't copy",
-      "dismiss": "Dismiss promo code"
     }
   },
   "guild": {

@@ -51,7 +51,7 @@ import {
   PlanningSettingsDialog,
   usePlanningSettings,
 } from "@/entities/planning-setting"
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 
 import type { GoalRow } from "@/features/goal-planning"
 import { GoalsLateNotices } from "./goals-estimates-error"
@@ -69,7 +69,7 @@ import { GoalsCollapseAllToggle } from "./goals-collapse-all-toggle"
 import { useGoalsView } from "./use-goals-view"
 import { SeasonFitSelect } from "./season-fit-select"
 import {
-  TARGETED_FIT_STORAGE_KEY,
+  TARGETED_FIT,
   effectiveSeasonFitMode,
   isTargetedFitChoice,
 } from "./targeted-fit-choice"
@@ -104,33 +104,37 @@ import { useGoalsOverviewTutorial } from "./goals-page.tutorial"
  * wrapper. Dailies > Raids (Today) and Plan > Schedule each have its own separate entry point onto the same shared
  * dialog (`expose-planning-settings-from-dailies`); the two never import from each other.
  */
+const GOALS_GROUP = storedPreference("goals", "group")
+const GOALS_SEASON_FIT = storedPreference("goals", "seasonFit")
+const GOALS_SORT = storedPreference("goals", "sort")
+
 export function GoalsPage() {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const { tab, setTab, goalType, setGoalType, filtered, clearFilters } =
     useGoalsListFilters()
-  // Persisted per browser (see project detail's own group state for the same reasoning) so it
-  // survives navigating away and a reload instead of resetting to "none" every time.
+  // Persisted per browser so it survives navigating away and a reload instead of resetting to
+  // "none" every time.
   const [group, setGroup] = usePersistedSelection(
-    "goals.overview.group",
+    GOALS_GROUP,
     isGoalGroupValue,
     "none"
   )
   // Per browser like Group, and shared by the unscoped and project-scoped list (goal-season-fit).
   const [seasonFitMode, setSeasonFitMode] = usePersistedSelection(
-    "goals.overview.seasonFit",
+    GOALS_SEASON_FIT,
     isSeasonFitMode,
     "off"
   )
   // A targeted project scope has its own choice, defaulting to the project's deadline.
   const [targetedFitChoice, setTargetedFitChoice] = usePersistedSelection(
-    TARGETED_FIT_STORAGE_KEY,
+    TARGETED_FIT,
     isTargetedFitChoice,
     "projectDeadline"
   )
   // Per browser like Group. Only the priority sort can be reordered by dragging.
   const [sort, setSort] = usePersistedSelection(
-    "goals.overview.sort",
+    GOALS_SORT,
     isGoalSortValue,
     "priority"
   )

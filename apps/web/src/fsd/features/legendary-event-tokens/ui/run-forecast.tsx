@@ -19,16 +19,16 @@ import type { MilestoneGap } from "../lib/milestone-push"
 import type { RunForecast } from "../lib/run-forecast"
 import type { TokenPlanView } from "../lib/token-plan-view"
 import { MilestoneGapSection } from "./milestone-gap"
-import { useStoredOpen } from "../model/use-stored-open"
 import type { OpenTeamsHandler } from "./next-token-card"
-import { hasNode } from "@/shared/lib"
+import { hasNode, storedPreference, useStoredFlag } from "@/shared/lib"
+import type { StoredPreference } from "@/shared/lib"
 
 const tokensIcon = legendaryEventResourceIcon("tokens")
 const pointsIcon = legendaryEventResourceIcon("points")
 const chestsIcon = legendaryEventResourceIcon("chests")
 const shardsIcon = legendaryEventResourceIcon("shards")
 
-const OPEN_KEY = "legendaryEvents.runForecast.open"
+const OPEN = storedPreference("legendaryEvents", "runForecastOpen")
 const REGION_ID = "legendary-event-run-forecast-runs"
 
 /**
@@ -44,7 +44,7 @@ export function RunForecastSection({
   isMobile,
   runInputs,
   onOpenTeams,
-  openKey = OPEN_KEY,
+  openPreference = OPEN,
   defaultOpen = false,
   trackExpand = true,
 }: {
@@ -55,14 +55,14 @@ export function RunForecastSection({
   runInputs?: (run: RunForecast) => ReactNode
   onOpenTeams: OpenTeamsHandler
   /** Where the open state is remembered; another page keeps its own. */
-  openKey?: string
+  openPreference?: StoredPreference
   defaultOpen?: boolean
   /** Report expanding it to analytics (the event page's sections do). */
   trackExpand?: boolean
 }) {
   const { t } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
-  const [open, setOpen] = useStoredOpen(openKey, defaultOpen)
+  const [open, setOpen] = useStoredFlag(openPreference, defaultOpen)
   if (view.kind === "loading") {
     return (
       <div data-testid="legendary-event-run-forecast-loading">

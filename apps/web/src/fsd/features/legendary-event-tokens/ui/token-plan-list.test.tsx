@@ -13,6 +13,7 @@ import { splitPlanByRun } from "../lib/token-runs"
 import type { RunSupply } from "../lib/token-supply"
 import { BattleInfoContext } from "./battle-info-context"
 import { TokenPlanList } from "./token-plan-list"
+import { readPreference, storedPreference } from "@/shared/lib"
 
 const capture = vi.hoisted(() => vi.fn())
 vi.mock("@/shared/analytics", () => ({
@@ -186,8 +187,8 @@ describe("TokenPlanList", () => {
     fireEvent.click(screen.getByRole("button", { name: "Expand all" }))
     expect(toggle()).toHaveAttribute("aria-expanded", "true")
     expect(
-      localStorage.getItem("legendaryEvents.tokenPlan.expandBattles")
-    ).toBe("true")
+      readPreference(storedPreference("legendaryEvents", "expandBattles"))
+    ).toBe(true)
 
     // A row can still be closed on its own.
     fireEvent.click(toggle())
@@ -400,7 +401,10 @@ describe("TokenPlanList on another page", () => {
         event={utharEvent}
         eventId="votanUthar"
         isMobile={false}
-        openKey="wizard.open"
+        openPreference={storedPreference(
+          "legendaryEvents",
+          "planWizardTokenPlanOpen"
+        )}
         trackExpand={false}
         view={buildTokenPlanView(workedViewInput())}
       />,
@@ -410,10 +414,14 @@ describe("TokenPlanList on another page", () => {
     fireEvent.click(screen.getByTestId("token-plan-toggle"))
     fireEvent.click(screen.getByTestId("token-plan-toggle"))
     expect(capture).not.toHaveBeenCalled()
-    expect(localStorage.getItem("wizard.open")).toBe("true")
     expect(
-      Object.keys(localStorage).filter((key) => key !== "wizard.open")
-    ).toEqual([])
+      readPreference(
+        storedPreference("legendaryEvents", "planWizardTokenPlanOpen")
+      )
+    ).toBe(true)
+    expect(
+      readPreference(storedPreference("legendaryEvents", "tokenPlanOpen"))
+    ).toBeUndefined()
   })
 
   describe("Missions order", () => {

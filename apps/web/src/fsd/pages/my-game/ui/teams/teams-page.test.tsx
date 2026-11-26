@@ -3,7 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { Team } from "@/entities/team"
 import { ApiError } from "@/shared/api"
-import { compareCodeUnits } from "@/shared/lib"
+import {
+  compareCodeUnits,
+  readPreference,
+  storedPreference,
+  writePreference,
+} from "@/shared/lib"
 import { act, fireEvent, render, screen, waitFor, within } from "@/test/render"
 import { seedPlayerData } from "@/test/seed"
 import { setViewportWidth } from "@/test/viewport"
@@ -67,12 +72,7 @@ vi.mock("@/shared/api", async (importOriginal) => {
 
 import { useTourPageSteps } from "@/shared/tour"
 
-import {
-  TEAMS_GROUP_BY_STORAGE_KEY,
-  TEAMS_LAYOUT_STORAGE_KEY,
-  TEAMS_MODE_STORAGE_KEY,
-  TeamsPage,
-} from "./teams-page"
+import { TeamsPage } from "./teams-page"
 
 const team = (id: string, overrides: Partial<Team> = {}): Team => ({
   id,
@@ -115,7 +115,7 @@ describe("TeamsPage", () => {
     vi.resetAllMocks()
     setViewportWidth(1440)
     // Play order unless a test is about grouping.
-    window.localStorage.setItem(TEAMS_GROUP_BY_STORAGE_KEY, "none")
+    writePreference(storedPreference("teams", "groupBy"), "none")
   })
   afterEach(() => {
     vi.unstubAllGlobals()
@@ -456,14 +456,12 @@ describe("TeamsPage", () => {
       ).toHaveLength(2)
       expect(within(rows[0]!).queryByTestId("team-status")).toBeNull()
       expect(rows[1]).toHaveAttribute("data-issues", "true")
-      expect(window.localStorage.getItem(TEAMS_LAYOUT_STORAGE_KEY)).toBe(
-        "table"
-      )
+      expect(readPreference(storedPreference("teams", "layout"))).toBe("table")
     })
 
     it("shows a saved table as a list on a phone", async () => {
       setViewportWidth(390)
-      window.localStorage.setItem(TEAMS_LAYOUT_STORAGE_KEY, "table")
+      writePreference(storedPreference("teams", "layout"), "table")
       api.list.mockResolvedValue(
         list(
           team("A", {
@@ -495,11 +493,11 @@ describe("TeamsPage", () => {
       await user.click(screen.getByRole("combobox", { name: "Mode" }))
       await user.click(screen.getByRole("option", { name: "Horde" }))
       expect(cardNames()).toEqual(["Team A", "Team C"])
-      expect(window.localStorage.getItem(TEAMS_MODE_STORAGE_KEY)).toBe("horde")
+      expect(readPreference(storedPreference("teams", "mode"))).toBe("horde")
     })
 
     it("restores the mode chosen on this device", async () => {
-      window.localStorage.setItem(TEAMS_MODE_STORAGE_KEY, "warOffense")
+      writePreference(storedPreference("teams", "mode"), "warOffense")
       api.list.mockResolvedValue(
         list(
           team("A", { modes: ["warOffense"] }),
@@ -526,7 +524,7 @@ describe("TeamsPage", () => {
     })
 
     it("says when no team matches and clears the filters", async () => {
-      window.localStorage.setItem(TEAMS_MODE_STORAGE_KEY, "incursion")
+      writePreference(storedPreference("teams", "mode"), "incursion")
       api.list.mockResolvedValue(three())
       await renderPage()
       expect(await screen.findByText("No teams match.")).toBeInTheDocument()
@@ -537,7 +535,7 @@ describe("TeamsPage", () => {
     })
 
     it("groups by mode by default, a team once under its first mode", async () => {
-      window.localStorage.removeItem(TEAMS_GROUP_BY_STORAGE_KEY)
+      writePreference(storedPreference("teams", "groupBy"), undefined)
       api.list.mockResolvedValue(three())
       await renderPage()
       await screen.findAllByTestId("team-card")
@@ -559,7 +557,7 @@ describe("TeamsPage", () => {
     })
 
     it("does not repeat a section's mode on its cards, and counts every shared unit", async () => {
-      window.localStorage.removeItem(TEAMS_GROUP_BY_STORAGE_KEY)
+      writePreference(storedPreference("teams", "groupBy"), undefined)
       api.list.mockResolvedValue(
         list(
           team("A", {
@@ -591,7 +589,7 @@ describe("TeamsPage", () => {
     })
 
     it("notes a unit a section's team shares through another Guild War mode, as its chip does", async () => {
-      window.localStorage.removeItem(TEAMS_GROUP_BY_STORAGE_KEY)
+      writePreference(storedPreference("teams", "groupBy"), undefined)
       api.list.mockResolvedValue(
         list(
           team("A", {
@@ -647,7 +645,7 @@ describe("TeamsPage", () => {
     })
 
     it("moves teams only among the listed teams' positions", async () => {
-      window.localStorage.setItem(TEAMS_MODE_STORAGE_KEY, "horde")
+      writePreference(storedPreference("teams", "mode"), "horde")
       let saved = abc()
       api.list.mockImplementation(() => Promise.resolve(saved))
       api.reorder.mockImplementation((body: { teamIds: string[] }) => {
@@ -730,7 +728,7 @@ describe("TeamsPage", () => {
     })
 
     it("moves a team within its mode section only", async () => {
-      window.localStorage.removeItem(TEAMS_GROUP_BY_STORAGE_KEY)
+      writePreference(storedPreference("teams", "groupBy"), undefined)
       api.list.mockResolvedValue(abc())
       api.reorder.mockResolvedValue(abc())
       await renderPage()

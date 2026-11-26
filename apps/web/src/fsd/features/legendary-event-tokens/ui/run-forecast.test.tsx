@@ -1,6 +1,8 @@
 import type { i18n as I18n } from "i18next"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { readPreference, storedPreference } from "@/shared/lib"
+
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 
@@ -194,7 +196,10 @@ describe("RunForecastSection on another page", () => {
         eventId="votanUthar"
         isMobile={false}
         onOpenTeams={onOpenTeams}
-        openKey="wizard.open"
+        openPreference={storedPreference(
+          "legendaryEvents",
+          "planWizardRunForecastOpen"
+        )}
         trackExpand={false}
         view={buildTokenPlanView(workedViewInput())}
       />,
@@ -204,9 +209,13 @@ describe("RunForecastSection on another page", () => {
     fireEvent.click(screen.getByTestId("run-forecast-toggle"))
     fireEvent.click(screen.getByTestId("run-forecast-toggle"))
     expect(capture).not.toHaveBeenCalled()
-    expect(localStorage.getItem("wizard.open")).toBe("true")
     expect(
-      Object.keys(localStorage).filter((key) => key !== "wizard.open")
-    ).toEqual([])
+      readPreference(
+        storedPreference("legendaryEvents", "planWizardRunForecastOpen")
+      )
+    ).toBe(true)
+    expect(
+      readPreference(storedPreference("legendaryEvents", "runForecastOpen"))
+    ).toBeUndefined()
   })
 })

@@ -52,6 +52,9 @@ const initOptions: Partial<PostHogConfig> = {
   capture_pageleave: true,
   disable_session_recording: true,
   person_profiles: "identified_only",
+  // localStorage only: the default also writes a cookie on the parent domain, which every
+  // tacticusplanner.app host (V1, staging, prod) then shares and sends with each request.
+  persistence: "localStorage",
   advanced_disable_flags: true,
   disable_external_dependency_loading: true,
   // Attribution names the shifted element, the slow interaction's target and the LCP element, so

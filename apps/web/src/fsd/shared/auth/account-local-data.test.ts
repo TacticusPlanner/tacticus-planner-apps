@@ -7,7 +7,7 @@ import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
 import { claimAccountLocalData } from "./account-local-data"
 
-const OWNER_KEY = "tp.session.owner"
+const OWNER_KEY = "tp.user.owner"
 
 const storedChunkKeys = async () => [...(await getPlayerDataMetadata()).keys()]
 
@@ -23,16 +23,14 @@ describe("claimAccountLocalData", () => {
     await seedGameCatalog({ characters: [{ id: "ultraCalgar" }] })
     await seedPlayerData({ characters: [{ unitId: "ultraCalgar" }] })
     localStorage.setItem(OWNER_KEY, "account-a")
-    localStorage.setItem("tp.session.dailies.quest.progress.v1", "{}")
+    localStorage.setItem("tp.user.dailies.quest.progress", "{}")
     localStorage.setItem("theme", "dark")
 
     await claimAccountLocalData("account-b")
 
     expect(await storedChunkKeys()).toEqual([])
     expect(await databaseNames()).toContain("tacticus-planner-game-catalog")
-    expect(
-      localStorage.getItem("tp.session.dailies.quest.progress.v1")
-    ).toBeNull()
+    expect(localStorage.getItem("tp.user.dailies.quest.progress")).toBeNull()
     expect(localStorage.getItem("theme")).toBe("dark")
     expect(localStorage.getItem(OWNER_KEY)).toBe("account-b")
   })
@@ -40,14 +38,12 @@ describe("claimAccountLocalData", () => {
   it("keeps the copy of the account that owns it", async () => {
     await seedPlayerData({ characters: [{ unitId: "ultraCalgar" }] })
     localStorage.setItem(OWNER_KEY, "account-a")
-    localStorage.setItem("tp.session.dailies.quest.progress.v1", "{}")
+    localStorage.setItem("tp.user.dailies.quest.progress", "{}")
 
     await claimAccountLocalData("account-a")
 
     expect(await storedChunkKeys()).toContain("characters")
-    expect(localStorage.getItem("tp.session.dailies.quest.progress.v1")).toBe(
-      "{}"
-    )
+    expect(localStorage.getItem("tp.user.dailies.quest.progress")).toBe("{}")
   })
 
   it("adopts a copy that predates the owner record instead of deleting it", async () => {

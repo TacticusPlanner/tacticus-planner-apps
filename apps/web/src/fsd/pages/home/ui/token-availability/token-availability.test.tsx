@@ -5,6 +5,7 @@ import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { render, screen } from "@/test/render"
 
 import { TokenAvailability } from "./token-availability"
+import { storedPreference, writePreference } from "@/shared/lib"
 
 function bucket(
   overrides: Partial<{
@@ -48,7 +49,7 @@ describe("TokenAvailability", () => {
   })
 
   it("holds a row of rings while loading when this device showed tokens last time", () => {
-    window.localStorage.setItem("home-token-count", "4")
+    writePreference(storedPreference("home", "tokenCount"), 4)
 
     render(<TokenAvailability />)
 
@@ -57,7 +58,7 @@ describe("TokenAvailability", () => {
     expect(
       loading.querySelectorAll('[data-slot="skeleton"].rounded-full')
     ).toHaveLength(4)
-    window.localStorage.removeItem("home-token-count")
+    writePreference(storedPreference("home", "tokenCount"), undefined)
   })
 
   it("shows an empty state, not loading forever, when the account has never synced", async () => {

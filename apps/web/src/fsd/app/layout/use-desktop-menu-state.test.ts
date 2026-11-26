@@ -2,9 +2,11 @@
 import { act, renderHook } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
+import { readPreference, writePreference } from "@/shared/lib"
+
 import {
-  PRIMARY_MENU_STORAGE_KEY,
-  SECTION_MENU_STORAGE_KEY,
+  PRIMARY_MENU,
+  SECTION_MENU,
   useDesktopMenuState,
 } from "./use-desktop-menu-state"
 
@@ -43,20 +45,16 @@ describe("useDesktopMenuState", () => {
 
     const { result } = renderHook(() => useDesktopMenuState())
 
-    expect(window.localStorage.getItem(PRIMARY_MENU_STORAGE_KEY)).toBe(
-      "expanded"
-    )
-    expect(window.localStorage.getItem(SECTION_MENU_STORAGE_KEY)).toBe(
-      "collapsed"
-    )
+    expect(readPreference(PRIMARY_MENU)).toBe("expanded")
+    expect(readPreference(SECTION_MENU)).toBe("collapsed")
     expect(result.current.primaryExpanded).toBe(true)
     expect(result.current.sectionExpanded).toBe(false)
   })
 
   it("never restores from the sidebar's own cookie or an unknown stored value", () => {
     document.cookie = "sidebar_state=true; path=/"
-    window.localStorage.setItem(PRIMARY_MENU_STORAGE_KEY, "true")
-    window.localStorage.setItem(SECTION_MENU_STORAGE_KEY, "wide")
+    writePreference(PRIMARY_MENU, "true")
+    writePreference(SECTION_MENU, "wide")
 
     const { result } = renderHook(() => useDesktopMenuState())
 

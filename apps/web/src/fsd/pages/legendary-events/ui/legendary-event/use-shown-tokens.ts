@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react"
 
 import type { LegendaryEventProgress } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { accountStorageKey, safeStorage } from "@/shared/lib"
+import { safeStorage, storageKeys } from "@/shared/lib"
 
 import {
   forgetShownToken,
@@ -13,24 +13,44 @@ import {
 import type { ShownToken } from "./token-cleared-analytics"
 import type { ReadValue } from "./legendary-event-page.view-model"
 
-function storageKey(eventId: string): string {
-  return accountStorageKey(`lre.shownTokens.${eventId}`)
-}
+// One record for every event, `{ [eventId]: ShownToken[] }`, under the account prefix.
+const STORAGE_KEY = storageKeys.userLegendaryEventShownTokens
+// Events with tokens still waiting to be reported; the oldest beyond this are dropped so the
+// record cannot grow with every event the account ever opened.
+const MAX_EVENTS_WITH_SHOWN_TOKENS = 10
 
-function load(eventId: string): ShownToken[] {
-  const raw = safeStorage.get(storageKey(eventId))
-  if (!raw) return []
+type ShownTokensByEvent = Record<string, ShownToken[]>
+
+function loadAll(): ShownTokensByEvent {
+  const raw = safeStorage.get(STORAGE_KEY)
+  if (!raw) return {}
   try {
     const parsed: unknown = JSON.parse(raw)
-    return Array.isArray(parsed) ? (parsed as ShownToken[]) : []
+    return typeof parsed === "object" &&
+      parsed !== null &&
+      !Array.isArray(parsed)
+      ? (parsed as ShownTokensByEvent)
+      : {}
   } catch {
-    return []
+    return {}
   }
 }
 
+function load(eventId: string): ShownToken[] {
+  const tokens = loadAll()[eventId]
+  return Array.isArray(tokens) ? tokens : []
+}
+
 function save(eventId: string, tokens: readonly ShownToken[]): void {
-  if (tokens.length === 0) safeStorage.remove(storageKey(eventId))
-  else safeStorage.set(storageKey(eventId), JSON.stringify(tokens))
+  const others = Object.fromEntries(
+    Object.entries(loadAll()).filter(([id]) => id !== eventId)
+  )
+  // Re-inserted last, so the record's key order runs from least to most recently written.
+  const all =
+    tokens.length === 0 ? others : { ...others, [eventId]: [...tokens] }
+  const kept = Object.entries(all).slice(-MAX_EVENTS_WITH_SHOWN_TOKENS)
+  if (kept.length === 0) safeStorage.remove(STORAGE_KEY)
+  else safeStorage.set(STORAGE_KEY, JSON.stringify(Object.fromEntries(kept)))
 }
 
 /**

@@ -77,7 +77,7 @@ describe("installPreloadErrorRecovery", () => {
   })
 
   it("lets the failure propagate when an earlier document already used the reload", () => {
-    window.sessionStorage.setItem("tp:stale-reload:/home", "previous-document")
+    window.sessionStorage.setItem("tp.staleReload./home", "previous-document")
 
     const event = dispatchPreloadError(stylesheetFailure)
 

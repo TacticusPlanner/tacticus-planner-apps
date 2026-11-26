@@ -2,21 +2,21 @@ import { useCallback } from "react"
 import { rarityOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 
 import type { GuildWarSeason } from "../lib/season"
 import { resolveZone, zoneRarities } from "./attack-target"
 import type { ZoneRarity } from "./attack-target"
 
 /** The zone picked for the war, per device. */
-const ZONE_STORAGE_KEY = "guildWar.zone"
+const ZONE_STORAGE_KEY = storedPreference("guildWar", "zone")
 /** "picked" once a battlefield level is picked for the war, per device. */
-const LEVEL_STORAGE_KEY = "guildWar.levelPicked"
+const LEVEL_STORAGE_KEY = storedPreference("guildWar", "level")
 /** The war the zone and level were picked in ("" before it exists): picks from another war don't
  *  count, so a new war never inherits the last war's zone. */
-const PICKS_WAR_STORAGE_KEY = "guildWar.picksWar"
+const PICKS_WAR_STORAGE_KEY = storedPreference("guildWar", "picksWar")
 /** The defenders' rarity last picked, per device (it carries over between wars). */
-const LAST_RARITY_STORAGE_KEY = "guildWar.rarity"
+const LAST_RARITY_STORAGE_KEY = storedPreference("guildWar", "rarity")
 const NONE = ""
 const PICKED = "picked"
 const isStoredString = (value: unknown): value is string =>

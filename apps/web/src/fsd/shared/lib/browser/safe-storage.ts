@@ -1,81 +1,92 @@
-/**
- * localStorage keys that hold the signed-in account's own data start with this prefix, so sign-out
- * removes them with the rest of the account's local copy. Per-browser preferences use any other key.
- */
-export const accountStoragePrefix = "tp.session."
+import type { SessionStorageKey, StorageKey } from "./storage-keys"
+
+type StorageArea = "localStorage" | "sessionStorage"
 
 /**
- * `localStorage` that never throws (spec: browser-storage-resilience): a browser that blocks site
+ * Web storage that never throws (spec: browser-storage-resilience): a browser that blocks site
  * data, a private window or a full quota reads as "nothing stored" and drops writes, so callers fall
- * back to their in-memory defaults.
+ * back to their in-memory defaults. This file is the only one allowed to touch `localStorage` and
+ * `sessionStorage` directly (an ESLint rule enforces it).
  */
+function guardedStorage<K extends string>(area: StorageArea) {
+  return {
+    get(key: K): string | null {
+      try {
+        return globalThis[area].getItem(key)
+      } catch {
+        return null
+      }
+    },
+    set(key: K, value: string): void {
+      try {
+        globalThis[area].setItem(key, value)
+      } catch {
+        // Best effort: the caller's in-memory value still applies for this visit.
+      }
+    },
+    /** `set` that reports whether the write landed, for callers that tell the player it did not. */
+    trySet(key: K, value: string): boolean {
+      try {
+        globalThis[area].setItem(key, value)
+        return true
+      } catch {
+        return false
+      }
+    },
+    remove(key: K): void {
+      try {
+        globalThis[area].removeItem(key)
+      } catch {
+        // Best effort, as above.
+      }
+    },
+    /** Every stored key starting with `prefix`; none when storage is unavailable. */
+    keysStartingWith(prefix: string): string[] {
+      try {
+        return Object.keys(globalThis[area]).filter((key) =>
+          key.startsWith(prefix)
+        )
+      } catch {
+        return []
+      }
+    },
+  }
+}
+
+/** `localStorage`, limited to the keys in `storage-keys.ts`. */
 export const safeStorage = {
-  get(key: string): string | null {
-    try {
-      return window.localStorage.getItem(key)
-    } catch {
-      return null
-    }
-  },
-  set(key: string, value: string): void {
-    try {
-      window.localStorage.setItem(key, value)
-    } catch {
-      // Best effort: the caller's in-memory value still applies for this visit.
-    }
-  },
-  /** `set` that reports whether the write landed, for callers that tell the player it did not. */
-  trySet(key: string, value: string): boolean {
-    try {
-      window.localStorage.setItem(key, value)
-      return true
-    } catch {
-      return false
-    }
-  },
-  remove(key: string): void {
-    try {
-      window.localStorage.removeItem(key)
-    } catch {
-      // Best effort, as above.
-    }
-  },
+  ...guardedStorage<StorageKey>("localStorage"),
+  /** Removes every key starting with `prefix` (the account's `tp.user.` data on sign-out). */
   removeByPrefix(prefix: string): void {
-    try {
-      const { localStorage } = window
-      const keys = Object.keys(localStorage).filter((key) =>
-        key.startsWith(prefix)
-      )
-      for (const key of keys) localStorage.removeItem(key)
-    } catch {
-      // Best effort, as above.
-    }
+    const local = guardedStorage<string>("localStorage")
+    for (const key of local.keysStartingWith(prefix)) local.remove(key)
   },
 }
 
-// Dailies progress predates the prefix rule, so it sat under plain keys that sign-out kept and the
-// next account on the browser inherited. Each now lives at the same name under the prefix.
-const LEGACY_ACCOUNT_KEYS = [
-  "tp.dailies.hse.averages.v1",
-  "tp.dailies.hse.progress.v2",
-  "tp.dailies.hse.tokens.v1",
-  "tp.dailies.hre.progress.v1",
-  "tp.dailies.quest.progress.v1",
-] as const
+/** `sessionStorage`, limited to the keys in `storage-keys.ts`. */
+export const safeSessionStorage =
+  guardedStorage<SessionStorageKey>("sessionStorage")
 
-/** The prefixed key a legacy `tp.<name>` account key moved to. */
-export function accountStorageKey(name: string): string {
-  return `${accountStoragePrefix}${name}`
+/** Any `localStorage` key, for the startup migration of keys that are no longer registered. */
+export const legacyStorage = guardedStorage<string>("localStorage")
+
+/** Any `sessionStorage` key, for the same migration. */
+export const legacySessionStorage = guardedStorage<string>("sessionStorage")
+
+/** Whether a `storage` event reports a change to `localStorage` (not `sessionStorage`). */
+export function isLocalStorageEvent(event: StorageEvent): boolean {
+  try {
+    return event.storageArea === window.localStorage
+  } catch {
+    return false
+  }
 }
 
-/** Moves account data stored under a pre-prefix key to its prefixed name, once, before the app reads
- *  it. A value already at the new name wins; the legacy key is removed either way. */
-export function migrateLegacyAccountKeys(): void {
-  for (const legacy of LEGACY_ACCOUNT_KEYS) {
-    const value = safeStorage.get(legacy)
-    if (value === null) continue
-    const next = accountStorageKey(legacy.slice("tp.".length))
-    if (safeStorage.get(next) === null) safeStorage.set(next, value)
-    safeStorage.remove(legacy)
+/** Whether a `storage` event reports a change to `sessionStorage`. */
+export function isSessionStorageEvent(event: StorageEvent): boolean {
+  try {
+    return event.storageArea === window.sessionStorage
+  } catch {
+    return false
   }
 }

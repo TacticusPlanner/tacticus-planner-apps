@@ -21,7 +21,7 @@ import { catalogManifestMetadataKey } from "@workspace/game-catalog"
 import { replaceGameCatalogDataset } from "@workspace/game-catalog/testing"
 
 import { CreateGoalLauncherContext } from "@/entities/goal"
-import { safeStorage } from "@/shared/lib"
+import { storedPreference, writePreference } from "@/shared/lib"
 import { setTestAuth } from "@/test/auth"
 import { spyOnIndexedDbReads } from "@/test/fixtures/indexeddb-failure"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
@@ -360,7 +360,10 @@ describe("LegendaryEventPage", { timeout: 15_000 }, () => {
     await seedPlayerData({ characters: roster })
     reads = spyOnIndexedDbReads()
     battlesHold.set(false)
-    safeStorage.remove("legendaryEvents.eventBoard.lanes")
+    writePreference(
+      storedPreference("legendaryEvents", "eventBoardLanes"),
+      undefined
+    )
     // Signed in, with an empty plan per event.
     setTestAuth({ authenticated: true })
     goals.summaries = []

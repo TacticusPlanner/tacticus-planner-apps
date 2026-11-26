@@ -35,7 +35,7 @@ import {
   useTeams,
 } from "@/entities/team"
 import type { Team, TeamMode, TeamRoster } from "@/entities/team"
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 import {
   ConfirmationDialog,
   EmptyState,
@@ -76,9 +76,9 @@ import { useTeamStatus } from "./use-team-status"
 import type { TeamStatusItem } from "./use-team-status"
 
 /** Per device, like the app's other quick filters (#638). */
-export const TEAMS_MODE_STORAGE_KEY = "teams.mode"
-export const TEAMS_LAYOUT_STORAGE_KEY = "teams.layout"
-export const TEAMS_GROUP_BY_STORAGE_KEY = "teams.groupBy"
+const TEAMS_MODE_STORAGE_KEY = storedPreference("teams", "mode")
+const TEAMS_LAYOUT_STORAGE_KEY = storedPreference("teams", "layout")
+const TEAMS_GROUP_BY_STORAGE_KEY = storedPreference("teams", "groupBy")
 
 const NO_QUICK_FILTERS: TeamsQuickFilters = { needsFixes: false, shared: false }
 

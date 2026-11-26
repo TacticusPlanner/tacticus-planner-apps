@@ -12,6 +12,7 @@ import {
 import { PageHeaderSettingsSlot, PageHeaderSlotProvider } from "@/shared/ui"
 
 import { SchedulePage } from "./schedule-page"
+import { storedPreference, writePreference } from "@/shared/lib"
 
 const useDailyRaids = vi.fn()
 const useProjects = vi.fn()
@@ -136,10 +137,7 @@ describe("Schedule page", () => {
   })
 
   it("has no Raids Filters trigger and shows the unfiltered plan whatever filter Today applied", () => {
-    window.localStorage.setItem(
-      "raids-filters.v1",
-      JSON.stringify({ slots: [5] })
-    )
+    writePreference(storedPreference("dailies", "raidsFilters"), { slots: [5] })
     render(<SchedulePage />)
 
     expect(screen.queryByTestId("raids-filters")).not.toBeInTheDocument()

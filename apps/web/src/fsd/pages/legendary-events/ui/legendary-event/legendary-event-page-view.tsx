@@ -19,6 +19,7 @@ import {
   RankShadingProvider,
   eventUnitChipData,
 } from "@/entities/legendary-event"
+import { storedPreference } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
 
 import { BattleInfoHost } from "./battles/battle-info-host"
@@ -48,7 +49,10 @@ import { TeamsSection } from "./teams/teams-section"
 import { rosterMap } from "./teams/teams.view-model"
 
 /** Plan's Token plan opens by default and remembers its own open state. */
-const PLAN_TOKEN_PLAN_OPEN_KEY = "legendaryEvents.planTab.tokenPlan.open"
+const PLAN_TOKEN_PLAN_OPEN = storedPreference(
+  "legendaryEvents",
+  "planTabTokenPlanOpen"
+)
 
 /**
  * The event page on both forms (design D3): header (with the linked projects and the plan wizard
@@ -299,7 +303,7 @@ function LegendaryEventPageBody({
               eventId={props.event.id}
               isMobile={isMobile}
               onOpenTeam={teamsState.kind === "ready" ? openTeam : undefined}
-              openKey={PLAN_TOKEN_PLAN_OPEN_KEY}
+              openPreference={PLAN_TOKEN_PLAN_OPEN}
               view={tokens.view}
             />
             {laneBattles ? (

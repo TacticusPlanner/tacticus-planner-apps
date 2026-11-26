@@ -2,7 +2,7 @@ import { startTransition, useCallback, useMemo } from "react"
 
 import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 
 import {
   isVisibleLanesValue,
@@ -11,11 +11,11 @@ import {
 } from "./overview/event-board.view-model"
 
 // The Event board's key from before the page shared one selection, so a choice made there stays.
-const SHOWN_LANES_KEY = "legendaryEvents.eventBoard.lanes"
+const SHOWN_LANES_KEY = storedPreference("legendaryEvents", "eventBoardLanes")
 const ALL_LANES = serializeVisibleLanes(LEGENDARY_EVENT_LANE_IDS)
 // Mobile's one lane, kept apart so picking it never narrows the desktop selection; empty until
 // picked (the first desktop-selected lane shows).
-const MOBILE_LANE_KEY = "legendaryEvents.lanes.mobile"
+const MOBILE_LANE_KEY = storedPreference("legendaryEvents", "mobileLane")
 const isMobileLaneValue = (
   value: unknown
 ): value is "" | LegendaryEventLaneId =>

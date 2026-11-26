@@ -37,7 +37,7 @@ import {
   setAuthJournalMethod,
   takePendingRedirect,
 } from "./auth-journal"
-import { safeStorage } from "../lib"
+import { safeStorage, storageKeys } from "../lib"
 
 let authentication: PublicClientApplication | undefined
 
@@ -51,7 +51,7 @@ export const SILENT_FRAME_TIMEOUT_MS = 6000
 
 // The one thing about the session kept on the device (spec: silent-sign-in): which account to
 // restore, kept apart from MSAL's own token cache so it survives that cache being cleared.
-const ACCOUNT_HINT_KEY = "tp.auth.accountHint"
+const ACCOUNT_HINT_KEY = storageKeys.authAccountHint
 
 // `signInMethod` is absent on hints written before it existed; those are treated as unknown.
 // `loginHint` (the ID token's opaque `login_hint` claim) and `sid` (its session id), when the app
@@ -109,7 +109,7 @@ export function forgetAccountHint() {
 // identity provider may be answering from a session we can't use (in production, one whose account
 // was deleted on another device), so the next interactive flow asks for a fresh login instead.
 // Kept in localStorage like the hint, so a new tab doesn't spend another failing round trip.
-const FRESH_LOGIN_KEY = "tp.auth.freshLogin"
+const FRESH_LOGIN_KEY = storageKeys.authFreshLogin
 
 export function forgetFreshLogin() {
   safeStorage.remove(FRESH_LOGIN_KEY)
@@ -126,7 +126,7 @@ function freshLoginPrompt(): { prompt?: string } {
 // cookies first-party: with a live session it comes straight back signed in, with none it comes
 // back with an error and the user lands signed out as before. Recorded here so the return trip is
 // recognized, and so a failed attempt is not repeated on every load.
-const QUIET_RENEWAL_KEY = "tp.auth.quietRenewal"
+const QUIET_RENEWAL_KEY = storageKeys.authQuietRenewal
 export const QUIET_RENEWAL_COOLDOWN_MS = 12 * 60 * 60 * 1000
 
 function readQuietRenewalStartedAt(): number | null {
@@ -471,7 +471,7 @@ let interaction: Promise<void> | null = null
 // Loop guard (spec: redirect-authentication): automatic re-authentication redirects are capped per
 // device, so a redirect that keeps coming back without a usable response can't bounce the user
 // forever. A completed redirect sign-in resets it; a user's own Sign in is never capped.
-const AUTO_REDIRECTS_KEY = "tp.auth.autoRedirects"
+const AUTO_REDIRECTS_KEY = storageKeys.authAutoRedirects
 export const MAX_AUTO_REDIRECTS = 3
 export const AUTO_REDIRECT_WINDOW_MS = 10 * 60 * 1000
 

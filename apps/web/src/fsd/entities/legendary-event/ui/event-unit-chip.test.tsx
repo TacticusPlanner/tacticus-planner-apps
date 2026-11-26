@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { fireEvent, render, screen, waitFor, within } from "@/test/render"
 
-import { safeStorage } from "@/shared/lib"
+import { storedPreference, writePreference } from "@/shared/lib"
 
 import type { EventUnitChipData as UnitChipData } from "../lib/event-unit-chip-data"
 import { RankShadingProvider } from "../model/rank-shading"
@@ -17,7 +17,7 @@ function UnitChip(props: Parameters<typeof EventUnitChip>[0]) {
   )
 }
 
-const SHADING_KEY = "legendaryEvents.unitChips.rankShading"
+const SHADING = storedPreference("legendaryEvents", "rankShading")
 const helbrecht: UnitChipData = {
   unitId: "templHelbrecht",
   owned: true,
@@ -36,7 +36,7 @@ async function chipOf(name: string | RegExp) {
 }
 
 describe("EventUnitChip", () => {
-  beforeEach(() => safeStorage.remove(SHADING_KEY))
+  beforeEach(() => writePreference(SHADING, undefined))
 
   it("shows an owned unit's name, rarity letter, rank and abilities", async () => {
     render(<UnitChip unit={helbrecht} />)
@@ -97,7 +97,7 @@ describe("EventUnitChip", () => {
     expect(chip.style.backgroundColor).toContain("--rank-diamond1")
     unmount()
 
-    safeStorage.set(SHADING_KEY, "off")
+    writePreference(SHADING, "off")
     render(<UnitChip unit={helbrecht} />)
     const plain = await chipOf(HELBRECHT_LABEL)
     expect(plain).not.toHaveAttribute("data-shaded")

@@ -1,21 +1,21 @@
 import { clearPlayerDataDb, deletePlayerDataDb } from "@workspace/player-data"
 
-import { accountStorageKey, accountStoragePrefix, safeStorage } from "../lib"
+import { safeStorage, storageKeys, userStoragePrefix } from "../lib"
 import { clearLocalDataCache } from "../local-data"
 
-// Which account the browser's local copy (player-data database, `tp.session.*` keys) belongs to.
+// Which account the browser's local copy (player-data database, `tp.user.*` keys) belongs to.
 // Under the prefix itself, so clearing the copy also forgets its owner.
-const OWNER_KEY = accountStorageKey("owner")
+const OWNER_KEY = storageKeys.userOwner
 
 /**
  * Deletes the browser's local copy of an account's data: the player-data database, the in-memory
- * local-data cache, and every `tp.session.*` key. The game catalog is public data shared by every
+ * local-data cache, and every `tp.user.*` key. The game catalog is public data shared by every
  * visitor, so it stays (spec: redirect-authentication).
  */
 export async function clearAccountLocalData(): Promise<void> {
   await deletePlayerDataDb()
   clearLocalDataCache()
-  safeStorage.removeByPrefix(accountStoragePrefix)
+  safeStorage.removeByPrefix(userStoragePrefix)
 }
 
 /**
@@ -34,7 +34,7 @@ export async function claimAccountLocalData(
     // Emptied, not deleted: unlike sign-out, the app keeps running on this database.
     await clearPlayerDataDb()
     clearLocalDataCache()
-    safeStorage.removeByPrefix(accountStoragePrefix)
+    safeStorage.removeByPrefix(userStoragePrefix)
   }
 
   safeStorage.set(OWNER_KEY, accountId)

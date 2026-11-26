@@ -3,9 +3,10 @@ import { render, screen } from "@/test/render"
 import { MemoryRouter, Route, Routes } from "react-router"
 
 import { GoalsLayout } from ".//goals-layout"
+import { storedPreference, writePreference } from "@/shared/lib"
 
 beforeEach(() => {
-  window.localStorage.removeItem("goals.overview.view")
+  writePreference(storedPreference("goals", "view"), undefined)
 })
 
 function renderLayout(initialEntry: string) {
@@ -51,12 +52,12 @@ describe("GoalsLayout", () => {
   })
 
   it("drops the page width cap on the Goals tab in both layouts", () => {
-    window.localStorage.setItem("goals.overview.view", "Cards")
+    writePreference(storedPreference("goals", "view"), "Cards")
     const cards = renderLayout("/plan/goals")
     expect(screen.getByTestId("goals-page-container")).toHaveClass("max-w-none")
     cards.unmount()
 
-    window.localStorage.setItem("goals.overview.view", "Table")
+    writePreference(storedPreference("goals", "view"), "Table")
     renderLayout("/plan/goals")
     expect(screen.getByTestId("goals-page-container")).toHaveClass("max-w-none")
   })

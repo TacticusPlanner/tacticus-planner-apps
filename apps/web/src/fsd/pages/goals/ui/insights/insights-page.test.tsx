@@ -346,7 +346,7 @@ describe("InsightsPage", () => {
     ]
     listProjects.mockResolvedValue({ projects: projectList })
     planGoals = []
-    window.localStorage.setItem("tp.session.project.selected.v1", "proj-1")
+    window.localStorage.setItem("tp.user.project.selected", "proj-1")
 
     const first = render(
       <TooltipProvider>
@@ -359,7 +359,7 @@ describe("InsightsPage", () => {
     )
     first.unmount()
 
-    window.localStorage.setItem("tp.session.project.selected.v1", "deleted")
+    window.localStorage.setItem("tp.user.project.selected", "deleted")
     render(
       <TooltipProvider>
         <InsightsPage />

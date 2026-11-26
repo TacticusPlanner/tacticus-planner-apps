@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react"
-import { safeStorage } from "../lib"
+import { isLocalStorageEvent, safeStorage, storageKeys } from "../lib"
+import type { StorageKey } from "../lib"
 
 import { applyThemeColor } from "./theme-color"
 
@@ -10,7 +11,7 @@ type ResolvedTheme = "dark" | "light"
 type ThemeProviderProps = {
   children: React.ReactNode
   defaultTheme?: Theme
-  storageKey?: string
+  storageKey?: StorageKey
   disableTransitionOnChange?: boolean
 }
 
@@ -64,7 +65,7 @@ function disableTransitionsTemporarily() {
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  storageKey = "theme",
+  storageKey = storageKeys.theme,
   disableTransitionOnChange = true,
   ...props
 }: ThemeProviderProps) {
@@ -126,7 +127,7 @@ export function ThemeProvider({
 
   React.useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.storageArea !== localStorage) {
+      if (!isLocalStorageEvent(event)) {
         return
       }
 

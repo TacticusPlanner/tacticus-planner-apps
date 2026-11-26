@@ -54,7 +54,7 @@ describe("isStaleBuildError", () => {
 
 describe("reloadOnceForStaleBuild", () => {
   const reload = vi.fn()
-  const key = "tp:stale-reload:/plan?project=1"
+  const key = "tp.staleReload./plan?project=1"
 
   beforeEach(() => {
     window.sessionStorage.clear()

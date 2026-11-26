@@ -4,6 +4,8 @@ import "@testing-library/jest-dom/vitest"
 import { cleanup, configure } from "@testing-library/react"
 import { afterEach, vi } from "vitest"
 
+import { forgetUnsavedPreferences } from "@/shared/lib"
+
 import "./i18n-instance"
 
 // Reads go through a real (fake-)IndexedDB, so `findBy*` waits on async storage; the 1 s default
@@ -60,4 +62,5 @@ jsdomElement.setPointerCapture ??= vi.fn()
 afterEach(() => {
   cleanup()
   window.localStorage.clear()
+  forgetUnsavedPreferences()
 })

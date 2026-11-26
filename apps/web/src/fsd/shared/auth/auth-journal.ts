@@ -1,6 +1,11 @@
 import { AuthError } from "@azure/msal-browser"
 
-import { safeStorage } from "../lib"
+import {
+  safeSessionStorage,
+  safeStorage,
+  sessionStorageKeys,
+  storageKeys,
+} from "../lib"
 
 import type { SignInMethod } from "./account-identity"
 
@@ -67,36 +72,14 @@ export type JournaledAuthStep = AuthStep & {
   method?: SignInMethod | "unknown"
 }
 
-const JOURNAL_KEY = "tp.auth.journal"
+const JOURNAL_KEY = storageKeys.authJournal
 // Which redirect left this tab last, so the page it returns to can tell "the response never
 // arrived" (no_response) apart from an ordinary load. Kept per tab (sessionStorage, which survives
 // the tab's own redirect round trip): in localStorage, a tab opening alongside one that had just
 // left read its marker and reported a no_response that never happened.
-const PENDING_REDIRECT_KEY = "tp.auth.pendingRedirect"
+const PENDING_REDIRECT_KEY = sessionStorageKeys.authPendingRedirect
 
-const tabStorage = {
-  get(key: string): string | null {
-    try {
-      return window.sessionStorage.getItem(key)
-    } catch {
-      return null
-    }
-  },
-  set(key: string, value: string) {
-    try {
-      window.sessionStorage.setItem(key, value)
-    } catch {
-      // Best effort: without it the cooldown tells a quiet renewal's response apart.
-    }
-  },
-  remove(key: string) {
-    try {
-      window.sessionStorage.removeItem(key)
-    } catch {
-      // Best effort, as above.
-    }
-  },
-}
+const tabStorage = safeSessionStorage
 // A loop is a handful of steps per load; this keeps a few days of them and bounds the storage.
 const MAX_ENTRIES = 60
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
@@ -159,15 +142,12 @@ export function markRedirectPending(kind: RedirectKind) {
 export function takePendingRedirect(): RedirectKind | null {
   const kind = tabStorage.get(PENDING_REDIRECT_KEY)
   tabStorage.remove(PENDING_REDIRECT_KEY)
-  // The device-wide marker earlier versions wrote.
-  safeStorage.remove(PENDING_REDIRECT_KEY)
   return kind === "quiet" || kind === "interactive" ? kind : null
 }
 
 /** Signing out drops the journal, so the next account on the device never reports this one's. */
 export function forgetAuthJournal() {
   safeStorage.remove(JOURNAL_KEY)
-  safeStorage.remove(PENDING_REDIRECT_KEY)
   tabStorage.remove(PENDING_REDIRECT_KEY)
 }
 

@@ -4,22 +4,18 @@ import { NO_HSE_MILESTONE_PROGRESS } from "../lib/hse-milestones"
 import type { HseMilestoneProgress } from "../lib/hse-milestones"
 import { HSE_TOKEN_MODES, isHseManualTokenMode } from "../lib/hse-token-supply"
 import type { HseManualTokenMode, HseTokenMode } from "../lib/hse-token-supply"
-import { accountStorageKey, safeStorage } from "@/shared/lib"
+import { safeStorage, storageKeys } from "@/shared/lib"
+import type { StorageKey } from "@/shared/lib"
 
 // Design D5: averages persist per browser by (definition, mode), milestone progress by instance,
 // under the account prefix so sign-out removes them. Both are
 // this tab's own keys (no other Dailies tab reads them) and every storage access is guarded, so a
 // private window or blocked site data degrades to in-memory values.
-export const HSE_AVERAGES_STORAGE_KEY = accountStorageKey(
-  "dailies.hse.averages.v1"
-)
-// v2 holds milestones done and points in the current one (the game restarts at 0 per milestone);
-// v1's cumulative totals are no longer read.
-export const HSE_PROGRESS_STORAGE_KEY = accountStorageKey(
-  "dailies.hse.progress.v2"
-)
+export const HSE_AVERAGES_STORAGE_KEY = storageKeys.userHseAverages
+// Milestones done and points in the current one (the game restarts at 0 per milestone).
+export const HSE_PROGRESS_STORAGE_KEY = storageKeys.userHseProgress
 // Tokens of the modes the API does not sync (Tournament Arena), by instance: each event has its own.
-export const HSE_TOKENS_STORAGE_KEY = accountStorageKey("dailies.hse.tokens.v1")
+export const HSE_TOKENS_STORAGE_KEY = storageKeys.userHseTokens
 
 /** Edited averages of one definition: a number, or null for an input the player cleared. */
 type HseAverages = Partial<Record<HseTokenMode, number | null>>
@@ -38,7 +34,7 @@ const isAverage = (value: unknown): value is number | null =>
   value === null ||
   (typeof value === "number" && Number.isFinite(value) && value >= 0)
 
-function readJson(key: string): Record<string, unknown> {
+function readJson(key: StorageKey): Record<string, unknown> {
   try {
     const raw = safeStorage.get(key)
     const parsed: unknown = raw ? JSON.parse(raw) : {}
@@ -48,7 +44,7 @@ function readJson(key: string): Record<string, unknown> {
   }
 }
 
-function writeJson(key: string, value: unknown) {
+function writeJson(key: StorageKey, value: unknown) {
   // Best-effort — the in-memory value still updates.
   safeStorage.set(key, JSON.stringify(value))
 }

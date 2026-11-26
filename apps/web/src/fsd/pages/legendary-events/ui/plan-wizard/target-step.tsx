@@ -15,8 +15,11 @@ import {
   formatDateRangeParts,
   formatShortDate,
   useDateLocale,
-  safeStorage,
+  readPreference,
+  storedPreference,
+  writePreference,
 } from "@/shared/lib"
+import type { StoredPreference } from "@/shared/lib"
 
 import { legendaryEventRunWindow } from "@/entities/legendary-event"
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
@@ -27,7 +30,10 @@ import { runAssumptions } from "./target-step.model"
 import type { PlanDraft } from "./use-plan-draft"
 import type { PlanSource } from "./use-plan-source"
 
-const ASSUMPTIONS_OPEN_KEY = "legendaryEvents.planWizard.assumptions.open"
+const ASSUMPTIONS_OPEN = storedPreference(
+  "legendaryEvents",
+  "planWizardAssumptionsOpen"
+)
 
 /** Step 1 (spec: target step leads with the choice): the run the target is reached by, with
  *  its announced or guessed end, then one card per step after
@@ -292,7 +298,7 @@ export function TargetStep({
             : t("planWizard.target.noStep")}
       </p>
       <Disclosure
-        storageKey={ASSUMPTIONS_OPEN_KEY}
+        preference={ASSUMPTIONS_OPEN}
         summary={assumptionsSummary}
         testId="plan-wizard-run-inputs"
         title={t("planWizard.assumptions.title")}
@@ -344,27 +350,27 @@ function arrowDelta(key: string): number {
   return 0
 }
 
-/** A collapsible panel; with `storageKey` its open state is remembered per device. */
+/** A collapsible panel; with `preference` its open state is remembered per device. */
 function Disclosure({
   title,
   summary,
-  storageKey,
+  preference,
   testId,
   children,
 }: {
   title: string
   summary?: string
-  storageKey?: string
+  preference?: StoredPreference
   testId: string
   children: ReactNode
 }) {
   const regionId = useId()
   const [open, setOpenState] = useState(
-    () => storageKey !== undefined && safeStorage.get(storageKey) === "true"
+    () => preference !== undefined && readPreference(preference) === true
   )
   const toggle = () => {
     setOpenState(!open)
-    if (storageKey) safeStorage.set(storageKey, String(!open))
+    if (preference) writePreference(preference, !open)
   }
   return (
     <div className="flex flex-col rounded-xl border" data-testid={testId}>

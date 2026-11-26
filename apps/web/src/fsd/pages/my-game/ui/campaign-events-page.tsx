@@ -22,7 +22,7 @@ import type {
 } from "@/entities/player-data-override"
 import { useSavedBattleProgress } from "@/features/daily-raids"
 import { useRevisionedDraft } from "@/shared/api"
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 import {
   FILTER_CHIP_CLASS_NAME,
   PageToolbar,
@@ -50,7 +50,10 @@ type MessageKey =
   | "progress.events.saveError"
 
 // Stored under its old "hide completed" name, so a choice made before the chip still holds.
-const HIDE_COMPLETED_KEY = "progress.campaign-events.hide-completed"
+const HIDE_COMPLETED_KEY = storedPreference(
+  "progress",
+  "campaignEventsHideCompleted"
+)
 const UNFINISHED_ONLY = "unfinishedOnly"
 const isOnOff = (value: unknown): value is "on" | "off" =>
   value === "on" || value === "off"

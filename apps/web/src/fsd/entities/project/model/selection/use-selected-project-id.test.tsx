@@ -73,7 +73,7 @@ describe("stored project selection", () => {
   })
 
   it("is account data, so sign-out removes it", () => {
-    expect(SELECTED_PROJECT_STORAGE_KEY.startsWith("tp.session.")).toBe(true)
+    expect(SELECTED_PROJECT_STORAGE_KEY.startsWith("tp.user.")).toBe(true)
   })
 
   it("notifies subscribers on a write", () => {

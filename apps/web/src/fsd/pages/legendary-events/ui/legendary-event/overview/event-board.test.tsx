@@ -8,7 +8,7 @@ import type {
   LegendaryEventRosterUnit,
   LegendaryEventTeam,
 } from "@/entities/legendary-event"
-import { safeStorage } from "@/shared/lib"
+import { storedPreference, writePreference } from "@/shared/lib"
 import { legendaryEventCharacters } from "@/test/fixtures/legendary-event-characters"
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
@@ -117,7 +117,10 @@ describe("EventBoard", () => {
   })
 
   it("turns Rank shading off for every chip and keeps it off after a remount", () => {
-    safeStorage.remove("legendaryEvents.unitChips.rankShading")
+    writePreference(
+      storedPreference("legendaryEvents", "rankShading"),
+      undefined
+    )
     const shaded = () =>
       screen
         .getAllByTestId("event-board-unit")
@@ -137,7 +140,10 @@ describe("EventBoard", () => {
       screen.getByRole("switch", { name: "Rank shading" })
     ).not.toBeChecked()
     expect(shaded()).toBe(0)
-    safeStorage.remove("legendaryEvents.unitChips.rankShading")
+    writePreference(
+      storedPreference("legendaryEvents", "rankShading"),
+      undefined
+    )
   }, 15_000)
 
   it("shows every given lane with its objectives, figures and Teams section", () => {

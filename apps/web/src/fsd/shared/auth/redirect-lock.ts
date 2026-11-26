@@ -1,4 +1,9 @@
-import { safeStorage } from "../lib"
+import {
+  safeSessionStorage,
+  safeStorage,
+  sessionStorageKeys,
+  storageKeys,
+} from "../lib"
 
 /**
  * One tab at a time leaves for an automatic redirect (spec: redirect-authentication). When the
@@ -8,10 +13,10 @@ import { safeStorage } from "../lib"
  * the tokens it saved to the shared cache. A lock older than the TTL belongs to a tab that never came
  * back and is ignored.
  */
-const LOCK_KEY = "tp.auth.redirectLock"
+const LOCK_KEY = storageKeys.authRedirectLock
 // A tab id that survives this tab's own redirect round trip, so the tab that comes back can release
 // the lock it took before it left.
-const TAB_ID_KEY = "tp.auth.tabId"
+const TAB_ID_KEY = sessionStorageKeys.authTabId
 export const REDIRECT_LOCK_TTL_MS = 60 * 1000
 // Tabs restored together start within milliseconds of each other: a claim is confirmed only once
 // no other tab has overwritten it in this time.
@@ -24,16 +29,12 @@ function newId() {
 }
 
 function tabId(): string {
-  try {
-    const stored = window.sessionStorage.getItem(TAB_ID_KEY)
-    if (stored) return stored
-    const id = newId()
-    window.sessionStorage.setItem(TAB_ID_KEY, id)
-    return id
-  } catch {
-    fallbackTabId ??= newId()
-    return fallbackTabId
-  }
+  const stored = safeSessionStorage.get(TAB_ID_KEY)
+  if (stored) return stored
+  const id = newId()
+  if (safeSessionStorage.trySet(TAB_ID_KEY, id)) return id
+  fallbackTabId ??= id
+  return fallbackTabId
 }
 
 type RedirectLock = { tab: string; at: number }

@@ -273,7 +273,9 @@ describe("RunsStep", () => {
     )
     for (const props of [tokenProps.plan, tokenProps.forecast]) {
       expect(props).toMatchObject({ defaultOpen: true, trackExpand: false })
-      expect(String(props?.openKey)).toContain("planWizard")
+      expect(props?.openPreference).toMatchObject({
+        field: expect.stringContaining("planWizard"),
+      })
     }
     const open = tokenProps.forecast?.onOpenTeams as (lane: string) => void
     open("beta")

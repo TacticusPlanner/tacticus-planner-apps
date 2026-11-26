@@ -15,7 +15,7 @@ import {
 } from "@/shared/auth"
 import {
   installGlobalErrorCapture,
-  migrateLegacyAccountKeys,
+  migrateStorage,
   required,
 } from "@/shared/lib"
 import { ThemeProvider } from "@/shared/theme"
@@ -31,8 +31,8 @@ installForeignDomGuard()
 listenForInstallPrompt()
 
 async function bootstrap() {
-  // Before anything reads localStorage: account data kept under pre-prefix keys moves under it.
-  migrateLegacyAccountKeys()
+  // Before anything reads web storage: values kept under older key names move to the current ones.
+  migrateStorage()
   const msalInstance = await initializeAuthentication()
   // Before anything reads the player data: a copy left by a different account is dropped.
   await claimAccountLocalData(msalInstance.getActiveAccount()?.homeAccountId)

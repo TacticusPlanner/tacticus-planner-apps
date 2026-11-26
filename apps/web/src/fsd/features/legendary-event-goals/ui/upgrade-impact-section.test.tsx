@@ -8,11 +8,9 @@ import { createTestI18n } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 
 import type { UpgradeImpactState } from "../model/upgrade-impact-state"
-import {
-  UPGRADE_IMPACT_OPEN_KEY,
-  UpgradeImpactSection,
-} from "./upgrade-impact-section"
+import { UpgradeImpactSection } from "./upgrade-impact-section"
 import { I18nextProvider } from "react-i18next"
+import { readPreference, storedPreference, writePreference } from "@/shared/lib"
 
 const capture = vi.hoisted(() => vi.fn())
 vi.mock("@/shared/analytics", () => ({
@@ -125,7 +123,9 @@ describe("UpgradeImpactSection", () => {
     expect(
       within(rows[2]!).getByTestId("upgrade-impact-gain")
     ).toHaveTextContent("+191 points")
-    expect(window.localStorage.getItem(UPGRADE_IMPACT_OPEN_KEY)).toBe("open")
+    expect(
+      readPreference(storedPreference("legendaryEvents", "upgradeImpactOpen"))
+    ).toBe("open")
     expect(capture).toHaveBeenCalledWith({
       type: "legendary_event_upgrade_impact_expanded",
       eventId: "votanUthar",
@@ -135,7 +135,10 @@ describe("UpgradeImpactSection", () => {
   })
 
   it("remembers the open state", () => {
-    window.localStorage.setItem(UPGRADE_IMPACT_OPEN_KEY, "open")
+    writePreference(
+      storedPreference("legendaryEvents", "upgradeImpactOpen"),
+      "open"
+    )
     renderSection(WORKED)
     expect(screen.getAllByTestId("upgrade-impact-row")).toHaveLength(4)
   })

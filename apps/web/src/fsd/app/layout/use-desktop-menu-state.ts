@@ -1,9 +1,9 @@
 import { useCallback } from "react"
 
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 
-export const PRIMARY_MENU_STORAGE_KEY = "nav.desktop.primaryMenu.v1"
-export const SECTION_MENU_STORAGE_KEY = "nav.desktop.sectionMenu.v1"
+export const PRIMARY_MENU = storedPreference("nav", "primaryMenu")
+export const SECTION_MENU = storedPreference("nav", "sectionMenu")
 
 type MenuState = "expanded" | "collapsed"
 
@@ -13,18 +13,18 @@ function isMenuState(value: unknown): value is MenuState {
 
 /**
  * Presentation state of the desktop menus, remembered per device: each menu saves expanded or
- * collapsed under its own `localStorage` key and reads it back on load. Without a saved choice (a
+ * collapsed in the `tp.nav` record and reads it back on load. Without a saved choice (a
  * new device, a private window, blocked storage) the main rail starts compact and the section menu
  * expanded. The sidebar's own `sidebar_state` cookie is never a restoration source.
  */
 export function useDesktopMenuState() {
   const [primary, setPrimary] = usePersistedSelection(
-    PRIMARY_MENU_STORAGE_KEY,
+    PRIMARY_MENU,
     isMenuState,
     "collapsed"
   )
   const [section, setSection] = usePersistedSelection(
-    SECTION_MENU_STORAGE_KEY,
+    SECTION_MENU,
     isMenuState,
     "expanded"
   )

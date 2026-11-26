@@ -21,6 +21,7 @@ import {
 import { useTokenPlan } from "../model/use-token-plan"
 import { NextTokenCard } from "./next-token-card"
 import { TokenPlanList } from "./token-plan-list"
+import { readPreference, storedPreference } from "@/shared/lib"
 
 const capture = vi.hoisted(() => vi.fn())
 vi.mock("@/shared/analytics", () => ({
@@ -553,8 +554,8 @@ describe("NextTokenCard", () => {
       const upNext = within(screen.getByTestId("next-token-up-next"))
       expect(upNext.getAllByTestId("token-plan-row")).toHaveLength(4)
       expect(
-        localStorage.getItem("legendaryEvents.tokenPlan.missionsOrder")
-      ).toBe("true")
+        readPreference(storedPreference("legendaryEvents", "missionsOrder"))
+      ).toBe(true)
     })
 
     it("has no switch without a Missions order", () => {

@@ -1,12 +1,20 @@
 import { startTransition, useCallback, useState } from "react"
 
-import { safeStorage } from "@/shared/lib"
+import { safeStorage, storageKeys } from "@/shared/lib"
 
-const STORAGE_KEY = "goals.overview.collapsedGroups"
+// Group ids include project ids, so the set is the account's data (`tp.user.`).
+const STORAGE_KEY = storageKeys.userGoalsCollapsedGroups
+// Ids of groups that no longer exist are never cleaned out one by one; keeping the most recently
+// collapsed ones bounds the set instead.
+const MAX_COLLAPSED_GROUPS = 200
 
-// Best-effort — the in-memory value still updates.
+// Best-effort — the in-memory value still updates. A Set keeps insertion order, so the oldest
+// collapsed ids come first and are the ones dropped.
 const persist = (collapsed: ReadonlySet<string>) =>
-  safeStorage.set(STORAGE_KEY, JSON.stringify([...collapsed]))
+  safeStorage.set(
+    STORAGE_KEY,
+    JSON.stringify([...collapsed].slice(-MAX_COLLAPSED_GROUPS))
+  )
 
 function readCollapsed(): ReadonlySet<string> {
   const raw = safeStorage.get(STORAGE_KEY)
@@ -24,8 +32,8 @@ function readCollapsed(): ReadonlySet<string> {
 }
 
 /**
- * Which Goals sections (by `rowGroupId`) the player has collapsed. Persisted per browser like the
- * Group selection itself, so a long plan stays folded the way the player left it across visits.
+ * Which Goals sections (by `rowGroupId`) the player has collapsed. Persisted per account on this
+ * browser, so a long plan stays folded the way the player left it across visits.
  *
  * A toggle re-renders the whole Goals page (the shown rows and the selection follow it), so it runs
  * in a transition: the section's own chevron flips at once and the list catches up after the paint.

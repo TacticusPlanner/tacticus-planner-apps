@@ -67,11 +67,10 @@ describe("auth journal", () => {
     expect(localStorage.getItem("tp.auth.pendingRedirect")).toBeNull()
   })
 
-  it("clears the device-wide marker earlier versions wrote", () => {
+  it("ignores the device-wide marker earlier versions wrote (the startup migration deletes it)", () => {
     localStorage.setItem("tp.auth.pendingRedirect", "interactive")
 
     expect(takePendingRedirect()).toBeNull()
-    expect(localStorage.getItem("tp.auth.pendingRedirect")).toBeNull()
   })
 
   it("forgets everything on demand", () => {

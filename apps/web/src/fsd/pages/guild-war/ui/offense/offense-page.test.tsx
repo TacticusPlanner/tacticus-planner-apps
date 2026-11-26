@@ -61,6 +61,7 @@ vi.mock("@/shared/api", async (importOriginal) => {
 
 import { GuildWarLayout } from "../guild-war-layout"
 import { OffensePage } from "./offense-page"
+import { storedPreference, writePreference } from "@/shared/lib"
 
 const CHARACTERS = [
   "ultraCalgar",
@@ -173,8 +174,8 @@ function renderOffense() {
 
 /** The level and zone this device picked for the current war. */
 function pickTarget(zoneId = "Armoury") {
-  window.localStorage.setItem("guildWar.zone", zoneId)
-  window.localStorage.setItem("guildWar.levelPicked", "picked")
+  writePreference(storedPreference("guildWar", "zone"), zoneId)
+  writePreference(storedPreference("guildWar", "level"), "picked")
 }
 
 const tiles = () => screen.queryAllByTestId("team-picker-tile")
@@ -277,7 +278,7 @@ describe("OffensePage", () => {
     api.setCurrent.mockResolvedValue(war())
     // The zone and rarity last picked on this device start the toolbar.
     pickTarget()
-    window.localStorage.setItem("guildWar.rarity", "Uncommon")
+    writePreference(storedPreference("guildWar", "rarity"), "Uncommon")
     renderOffense()
 
     const toolbar = await screen.findByRole("group", {

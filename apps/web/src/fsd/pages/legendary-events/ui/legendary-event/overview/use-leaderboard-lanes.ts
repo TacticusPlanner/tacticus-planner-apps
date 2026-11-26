@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react"
 
 import { LEGENDARY_EVENT_LANE_IDS } from "@/entities/legendary-event"
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
-import { usePersistedSelection } from "@/shared/lib"
+import { storedPreference, usePersistedSelection } from "@/shared/lib"
 
 import {
   isVisibleLanesValue,
@@ -10,7 +10,10 @@ import {
   serializeVisibleLanes,
 } from "./event-board.view-model"
 
-const LEADERBOARD_LANES_KEY = "legendaryEvents.leaderboard.lanes"
+const LEADERBOARD_LANES_KEY = storedPreference(
+  "legendaryEvents",
+  "leaderboardLanes"
+)
 const ALL_LANES = serializeVisibleLanes(LEGENDARY_EVENT_LANE_IDS)
 
 /** The Eligibility leaderboard's own lane selection (every lane by default), apart from the page's

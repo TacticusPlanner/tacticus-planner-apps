@@ -9,20 +9,21 @@ import type {
   LegendaryEvent,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
+import { storedPreference, useStoredFlag } from "@/shared/lib"
+import type { StoredPreference } from "@/shared/lib"
 
 import { hasFoldedBattleRuns } from "../lib/token-battle-runs"
 import type { LaneFullClear, TokenPlanView } from "../lib/token-plan-view"
 import { useMissionsOrder } from "../model/token-plan-order"
-import { useStoredOpen } from "../model/use-stored-open"
 import { RunMissionsSummary, TokenPlanOrderSwitch } from "./mission-order-view"
 import { RunSection, RunSectionHeader, TokenGroups } from "./token-plan-rows"
 import type { OpenTeamHandler } from "./token-plan-rows"
 
-const OPEN_KEY = "legendaryEvents.tokenPlan.open"
+const OPEN = storedPreference("legendaryEvents", "tokenPlanOpen")
 const REGION_ID = "legendary-event-token-plan-list"
 /** Whether the folded battle rows start expanded, remembered per device and shared by the event
  *  page and the plan wizard. */
-const EXPAND_RUNS_KEY = "legendaryEvents.tokenPlan.expandBattles"
+const EXPAND_RUNS = storedPreference("legendaryEvents", "expandBattles")
 
 /**
  * The Overview's collapsible Token plan (spec: Token plan list): every planned token in run
@@ -34,7 +35,7 @@ export function TokenPlanList({
   event,
   view,
   isMobile,
-  openKey = OPEN_KEY,
+  openPreference = OPEN,
   defaultOpen = false,
   trackExpand = true,
   onOpenTeam,
@@ -45,7 +46,7 @@ export function TokenPlanList({
   view: TokenPlanView
   isMobile: boolean
   /** Where the open state is remembered; another page keeps its own. */
-  openKey?: string
+  openPreference?: StoredPreference
   defaultOpen?: boolean
   /** Report expanding it to analytics (the event page's sections do). */
   trackExpand?: boolean
@@ -56,10 +57,10 @@ export function TokenPlanList({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const { captureEvent } = useAnalyticsActions()
-  const [open, setOpen] = useStoredOpen(openKey, defaultOpen)
+  const [open, setOpen] = useStoredFlag(openPreference, defaultOpen)
   // Remembered per device, shared by the event page and the plan wizard.
   const [byMissions, setByMissions] = useMissionsOrder()
-  const [expandRuns, setExpandRuns] = useStoredOpen(EXPAND_RUNS_KEY, false)
+  const [expandRuns, setExpandRuns] = useStoredFlag(EXPAND_RUNS, false)
   if (view.kind !== "ready" || view.plan.tokens.length === 0) return null
   const number = new Intl.NumberFormat(i18n.language)
   const missionOrder = byMissions ? view.missionOrder : null

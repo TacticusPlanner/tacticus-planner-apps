@@ -6,6 +6,7 @@ import { render, screen, within } from "@/test/render"
 
 import { dailyRaidResourceKey } from "../model/daily-raids.domain"
 import { RaidSchedule } from "./raid-schedule"
+import { storedPreference, writePreference } from "@/shared/lib"
 
 const b1 = battleIdSchema.parse("B1")
 const b2 = battleIdSchema.parse("B2")
@@ -908,7 +909,7 @@ describe("RaidSchedule raid grouping", () => {
     )
 
   it("shows one card per upgrade, listing its battles, once upgrade grouping is picked", () => {
-    window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+    writePreference(storedPreference("dailies", "raidGrouping"), "upgrade")
     renderSchedule()
 
     const grid = screen.getByTestId("raid-resource-grid-g1")
@@ -924,7 +925,7 @@ describe("RaidSchedule raid grouping", () => {
   })
 
   it("leaves raided-out battles off the upgrade cards, and a fully raided-out upgrade's card out", () => {
-    window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+    writePreference(storedPreference("dailies", "raidGrouping"), "upgrade")
     renderSchedule(
       new Map([
         [b2, 0],
@@ -941,7 +942,7 @@ describe("RaidSchedule raid grouping", () => {
   })
 
   it("lists a battle once on its upgrade card when two goals farm it there", () => {
-    window.localStorage.setItem("dailies.raid-grouping.v1", "upgrade")
+    writePreference(storedPreference("dailies", "raidGrouping"), "upgrade")
     render(
       <RaidSchedule
         attemptsUsedByBattle={new Map()}
