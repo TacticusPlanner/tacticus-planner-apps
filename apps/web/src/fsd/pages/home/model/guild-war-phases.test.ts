@@ -9,15 +9,16 @@ const season29 = {
   endUtc: "2026-12-12T09:00:00Z",
   parameters: { season: 29, seasonConfigId: "guildWarSeasonC" },
 }
+const config = {
+  warsPerSeason: 6,
+  preparationPhaseHours: 24,
+  activeFightingPhaseHours: 36,
+}
 const definition = {
   id: "guild-war-season",
   type: "GuildWarSeason",
   recurrence: null,
-  config: {
-    warsPerSeason: 6,
-    preparationPhaseHours: 24,
-    activeFightingPhaseHours: 36,
-  },
+  config,
 } as unknown as RawEventDefinition
 const at = (iso: string) => Date.parse(iso)
 
@@ -37,6 +38,40 @@ describe("guildWarLiveAndNext", () => {
       season: 29,
       startMs: at("2026-11-27T09:00:00Z"),
       endMs: at("2026-11-28T09:00:00Z"),
+    })
+  })
+
+  it("opens the first war's preparation early by the first-war bonus, before the season starts", () => {
+    const withBonus = {
+      ...definition,
+      config: { ...config, firstWarPreparationBonusHours: 48 },
+    } as unknown as RawEventDefinition
+    const { live, next } = guildWarLiveAndNext(
+      entries,
+      withBonus,
+      at("2026-11-26T12:00:00Z")
+    )
+    // As in the game: War 1 preparation runs 72 hours, Nov 25 09:00 to Nov 28 09:00 UTC.
+    expect(live).toEqual({
+      phase: "preparation",
+      war: 1,
+      season: 29,
+      startMs: at("2026-11-25T09:00:00Z"),
+      endMs: at("2026-11-28T09:00:00Z"),
+    })
+    // Later wars keep their own 24-hour preparation.
+    expect(next).toMatchObject({
+      phase: "war",
+      war: 1,
+      startMs: at("2026-11-28T09:00:00Z"),
+    })
+    expect(
+      guildWarLiveAndNext(entries, withBonus, at("2026-11-29T22:00:00Z")).live
+    ).toMatchObject({
+      phase: "preparation",
+      war: 2,
+      startMs: at("2026-11-29T21:00:00Z"),
+      endMs: at("2026-11-30T21:00:00Z"),
     })
   })
 

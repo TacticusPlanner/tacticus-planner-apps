@@ -52,8 +52,8 @@ interface HomeEventRowBase {
   live: boolean
   startMs: number
   endMs: number
-  /** Where the tile links; null when the event has no page yet (it shows, but opens nothing). */
-  destination: string | null
+  /** Where the tile links. */
+  destination: string
 }
 
 export type HomeEventRow =
@@ -318,8 +318,8 @@ export function selectHomeEvents({
   return { live, upcoming }
 }
 
-/** A Guild War phase's row: a war phase opens Guild War Offense; a preparation phase will open
- *  Guild War Defense once that page exists, and opens nothing until then. */
+/** A Guild War phase's row. Every phase opens Guild War Offense; preparation moves to Guild War
+ *  Defense once that page exists. */
 function guildWarRow(phase: GuildWarPhase, isLive: boolean): HomeEventRow {
   return {
     type: "guildWar",
@@ -329,7 +329,7 @@ function guildWarRow(phase: GuildWarPhase, isLive: boolean): HomeEventRow {
     live: isLive,
     startMs: phase.startMs,
     endMs: phase.endMs,
-    destination: phase.phase === "war" ? "/guild/war/offense" : null,
+    destination: "/guild/war/offense",
   }
 }
 

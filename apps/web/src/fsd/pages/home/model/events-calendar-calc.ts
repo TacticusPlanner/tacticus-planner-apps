@@ -202,7 +202,9 @@ const ONE_HOUR_MS = 60 * 60 * 1000
 /**
  * A Guild War season's wars, each a preparation window then a war window, read from the definition's
  * `warsPerSeason`, `preparationPhaseHours` and `activeFightingPhaseHours` (and `warIntervalHours` when
- * a gap follows each war; it defaults to preparation + war). Clipped to the season's own end.
+ * a gap follows each war; it defaults to preparation + war). The first war's preparation opens
+ * `firstWarPreparationBonusHours` early (the game's longer first preparation), so it can run before
+ * the season's listed start. Clipped to the season's own end.
  */
 export function deriveGuildWarPhases(
   entry: Pick<RawEventsCalendarEntry, "startUtc" | "endUtc">,
@@ -223,6 +225,10 @@ export function deriveGuildWarPhases(
     return []
   const intervalHours =
     configNumber(definition, "warIntervalHours") ?? preparationHours + warHours
+  const firstBonusHours = Math.max(
+    configNumber(definition, "firstWarPreparationBonusHours") ?? 0,
+    0
+  )
 
   const seasonStartMs = Date.parse(entry.startUtc)
   const seasonEndMs = Date.parse(entry.endUtc)
@@ -233,10 +239,14 @@ export function deriveGuildWarPhases(
     const warStartMs = preparationStartMs + preparationHours * ONE_HOUR_MS
     const warEndMs = Math.min(warStartMs + warHours * ONE_HOUR_MS, seasonEndMs)
     if (preparationStartMs >= seasonEndMs) break
+    const opensMs =
+      war === 1
+        ? preparationStartMs - firstBonusHours * ONE_HOUR_MS
+        : preparationStartMs
     phases.push({
       kind: "preparation",
       war,
-      startUtc: new Date(preparationStartMs).toISOString(),
+      startUtc: new Date(opensMs).toISOString(),
       endUtc: new Date(Math.min(warStartMs, seasonEndMs)).toISOString(),
     })
     if (warStartMs < seasonEndMs) {

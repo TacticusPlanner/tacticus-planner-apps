@@ -30,3 +30,8 @@
 - [x] 5.4 Enemy details: no clipping, new enemies at the defenders' rarity, highest rank and Killed, icons on rarity, rank and outcome, buffs explained in the game's words.
 - [x] 5.5 No battlefield level 0, new wars at level 1, plain season and level line, style-guide fixes from the review.
 - [x] 5.6 Home shows the running Guild War phase in Right now and the next one in Upcoming events; a war phase opens Offense, a preparation phase opens nothing until Defense exists.
+
+## 6. Third feedback round
+
+- [x] 6.1 Every Guild War phase on Home opens Offense, preparation too.
+- [x] 6.2 The first war's preparation opens 48 hours early (`firstWarPreparationBonusHours`), so Home shows it live as in the game.
