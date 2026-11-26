@@ -25,6 +25,25 @@ describe("mapJournaledAuthStepToEvent", () => {
       trigger: "auto",
       method: "google",
       freshLogin: true,
+      navigationType: null,
+      recordedAppVersion: null,
+    })
+  })
+
+  it("sends how the returned-to page loaded and the build that recorded the step", () => {
+    expect(
+      mapJournaledAuthStepToEvent({
+        step: "interactive_redirect_returned",
+        outcome: "no_response",
+        navigation: "reload",
+        version: "v2.5.1",
+        at: 1,
+        load: "x",
+      })
+    ).toMatchObject({
+      outcome: "no_response",
+      navigationType: "reload",
+      recordedAppVersion: "v2.5.1",
     })
   })
 

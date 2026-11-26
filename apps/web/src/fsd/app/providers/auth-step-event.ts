@@ -19,5 +19,8 @@ export function mapJournaledAuthStepToEvent(
     trigger: "trigger" in entry ? entry.trigger : null,
     method: entry.method ?? null,
     freshLogin: "freshLogin" in entry ? entry.freshLogin : null,
+    navigationType:
+      ("navigation" in entry ? entry.navigation : undefined) ?? null,
+    recordedAppVersion: entry.version ?? null,
   }
 }

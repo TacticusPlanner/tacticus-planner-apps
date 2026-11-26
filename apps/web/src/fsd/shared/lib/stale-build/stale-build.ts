@@ -47,13 +47,33 @@ export function isStaleBuildError(error: unknown): boolean {
 // in flight", while a marker written by an earlier document means the attempt is used up.
 const documentId = `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
+// Set while a sign-in redirect is leaving the page (spec: app-error-recovery). Firefox and WebKit
+// abort the page's in-flight module loads as soon as that navigation starts, which reads as a stale
+// build; reloading then would cancel the redirect and bring the user straight back without its
+// response (auth_step data, Nov 2026: most `no_response` returns on those browsers came back within
+// half a second of leaving).
+let leavingPage = false
+
+/** Called just before a redirect leaves the page: stale-build failures from here on are the page
+ *  being torn down, not a stale build. */
+export function markPageLeaving() {
+  leavingPage = true
+}
+
+/** Called when a redirect could not start after all, so the page stays. */
+export function clearPageLeaving() {
+  leavingPage = false
+}
+
 /**
- * Reloads the current URL once per browser session. Returns true when a reload is in flight (the
- * caller should render nothing) and false when this URL already used its attempt in an earlier
- * document — or storage is unavailable, so "once" cannot be enforced — in which case the caller
+ * Reloads the current URL once per browser session. Returns true when a reload (or a redirect
+ * leaving the page) is in flight, so the caller should render nothing, and false when this URL
+ * already used its attempt in an earlier document — or storage is unavailable, so "once" cannot be enforced — in which case the caller
  * shows the fallback error page instead of looping on a build that is broken for everyone.
  */
 export function reloadOnceForStaleBuild(): boolean {
+  // The navigation already in flight replaces the page: render nothing and keep the attempt.
+  if (leavingPage) return true
   const key = staleReloadKey(
     `${window.location.pathname}${window.location.search}`
   )

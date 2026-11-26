@@ -4,6 +4,7 @@ import {
   BrowserAuthErrorCodes,
   BrowserCacheLocation,
   CacheLookupPolicy,
+  ClientAuthErrorCodes,
   EventType,
   InteractionRequiredAuthError,
   InteractionType,
@@ -32,11 +33,13 @@ import {
 } from "./redirect-lock"
 import {
   authErrorCode,
+  currentNavigationType,
   markRedirectPending,
   recordAuthStep,
   setAuthJournalMethod,
   takePendingRedirect,
 } from "./auth-journal"
+import type { NavigationType } from "./auth-journal"
 import { safeStorage, storageKeys } from "../lib"
 
 let authentication: PublicClientApplication | undefined
@@ -262,6 +265,16 @@ export function takeSignInRedirectFailure(): SignInRedirectFailure | null {
   return failure
 }
 
+// The return step carries the sign-in method (from the account hint until a result names the
+// account) and how this page was loaded: a `reload` with no response means the page was reloaded
+// before the redirect ever left it.
+function prepareReturnStep(): { navigation?: NavigationType } {
+  const hint = readAccountHint()
+  if (hint) setAuthJournalMethod(hintSignInMethod(hint))
+  const navigation = currentNavigationType()
+  return navigation ? { navigation } : {}
+}
+
 // A sign-in the user abandons at the identity provider (cancelling the Google or username step,
 // backing out of sign-up) comes back as an error response, not a result. It must not stop the app
 // from starting: the user lands signed out and can try again. Entra reports a deliberate cancel as
@@ -275,6 +288,7 @@ async function completeRedirect(instance: PublicClientApplication) {
   const returnStep = quietRenewal
     ? ("quiet_renewal_returned" as const)
     : ("interactive_redirect_returned" as const)
+  const loaded = prepareReturnStep()
   try {
     const result = await instance.handleRedirectPromise().finally(
       // Whatever came back, tabs waiting on this one's redirect can go on.
@@ -282,9 +296,10 @@ async function completeRedirect(instance: PublicClientApplication) {
     )
     if (result) {
       safeStorage.remove(QUIET_RENEWAL_KEY)
-      recordAuthStep({ step: returnStep, outcome: "success" })
+      setAuthJournalMethod(getSignInMethod(result.account))
+      recordAuthStep({ step: returnStep, outcome: "success", ...loaded })
     } else if (pending) {
-      recordAuthStep({ step: returnStep, outcome: "no_response" })
+      recordAuthStep({ step: returnStep, outcome: "no_response", ...loaded })
     }
     return { result, quietRenewal }
   } catch (error) {
@@ -293,6 +308,7 @@ async function completeRedirect(instance: PublicClientApplication) {
         step: "quiet_renewal_returned",
         outcome: "no_session",
         errorCode: authErrorCode(error),
+        ...loaded,
       })
       // No live session to renew from: not a failed sign-in. The cached account and hint stay, the
       // marker stays as the cooldown, and the user lands signed out with no toast. Logged with
@@ -317,11 +333,13 @@ async function completeRedirect(instance: PublicClientApplication) {
             step: returnStep,
             outcome: "failed",
             errorCode: authErrorCode(error),
+            ...loaded,
           }
         : {
             step: returnStep,
             outcome: signInRedirectFailure,
             errorCode: authErrorCode(error),
+            ...loaded,
           }
     )
     // Either way, don't let a stale identity-provider session answer the next attempt: drop the
@@ -428,6 +446,18 @@ export async function acquireAccessToken() {
   })
 
   return result.accessToken
+}
+
+const NETWORK_ERROR_CODES: ReadonlySet<string> = new Set([
+  BrowserAuthErrorCodes.noNetworkConnectivity,
+  BrowserAuthErrorCodes.postRequestFailed,
+  BrowserAuthErrorCodes.getRequestFailed,
+  ClientAuthErrorCodes.endpointResolutionError,
+])
+
+/** The identity provider could not be reached (offline, a failed request, no authority metadata). */
+function isNetworkError(error: unknown): boolean {
+  return error instanceof AuthError && NETWORK_ERROR_CODES.has(error.errorCode)
 }
 
 export function isInteractionRequired(error: unknown) {
@@ -654,26 +684,12 @@ async function restoreSession(
   // Cached tokens first: a valid access token or refresh token restores the session with no
   // hidden frame at all, which is the common case for a returning user within the refresh token's
   // lifetime. Only when neither is usable is the IdP session checked through a frame.
-  try {
-    // Silent calls take the scopes only: the fresh-login prompt is for interactive flows.
-    const result = await instance.acquireTokenSilent({
-      scopes: loginRequest.scopes,
-      account: cachedAccount,
-      cacheLookupPolicy: CacheLookupPolicy.AccessTokenAndRefreshToken,
-    })
-
-    activateAccount(instance, result.account)
-    recordAuthStep({ step: "restore_cache", outcome: "success" })
-
-    return "success"
-  } catch (error) {
-    // Expected once the refresh token has expired; fall through to the IdP session check.
-    recordAuthStep({
-      step: "restore_cache",
-      outcome: "failed",
-      errorCode: authErrorCode(error),
-    })
-  }
+  const cached = await restoreFromCachedTokens(instance, cachedAccount)
+  if (cached === "success") return "success"
+  // The identity provider could not be reached, so nothing says the refresh token is spent: a
+  // hidden frame or a quiet renewal would fail the same way (and a renewal would start its
+  // cooldown). The cached account stays, and the first API call tries the refresh token again.
+  if (cached === "unreachable") return "failed"
 
   if (getSignInMethod(cachedAccount) === "google") {
     return skipSilentChecksForGoogle()
@@ -699,6 +715,34 @@ async function restoreSession(
   return outcome === "failed"
     ? renewQuietly(instance, cachedAccount, readAccountHint())
     : outcome
+}
+
+/** The app-load restore from cached tokens: "failed" when no token is usable (expected once the
+ *  refresh token has expired), "unreachable" when the identity provider could not be asked. */
+async function restoreFromCachedTokens(
+  instance: IPublicClientApplication,
+  account: AccountInfo
+): Promise<"success" | "failed" | "unreachable"> {
+  try {
+    // Silent calls take the scopes only: the fresh-login prompt is for interactive flows.
+    const result = await instance.acquireTokenSilent({
+      scopes: loginRequest.scopes,
+      account,
+      cacheLookupPolicy: CacheLookupPolicy.AccessTokenAndRefreshToken,
+    })
+
+    activateAccount(instance, result.account)
+    recordAuthStep({ step: "restore_cache", outcome: "success" })
+
+    return "success"
+  } catch (error) {
+    recordAuthStep({
+      step: "restore_cache",
+      outcome: "failed",
+      errorCode: authErrorCode(error),
+    })
+    return isNetworkError(error) ? "unreachable" : "failed"
+  }
 }
 
 /** Google accounts skip the hidden frame and the quiet renewal: neither ever finds their session

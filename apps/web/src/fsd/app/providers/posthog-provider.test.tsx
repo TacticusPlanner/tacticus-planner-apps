@@ -423,6 +423,8 @@ describe("PostHogProvider error reporting", () => {
         trigger: null,
         method: null,
         freshLogin: null,
+        navigationType: null,
+        recordedAppVersion: null,
       })
       expect(localStorage.getItem("tp.auth.journal")).toBeNull()
     })
