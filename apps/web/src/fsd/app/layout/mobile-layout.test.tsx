@@ -18,6 +18,14 @@ vi.mock("./navigation-palette-lazy", async () => ({
   preloadNavigationPalette: () => {},
 }))
 
+// The catalog-backed entity index reads IndexedDB through React Query; these tests give it directly.
+const entityIndex = vi.hoisted(() => ({
+  entities: [] as import("./entity-search").SearchEntity[],
+}))
+vi.mock("./use-entity-search-index", () => ({
+  useEntitySearchIndex: () => entityIndex.entities,
+}))
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) =>
@@ -106,7 +114,11 @@ vi.mock("@/features/player-data-sync", async (importOriginal) => ({
 import { MobileShell } from "./mobile-layout"
 import type { NavItem } from "./nav-items"
 import { filterVisibleNavItems, navItems } from "./nav-items"
-import type { QuickAction, QuickActionsController } from "./quick-actions"
+import type {
+  QuickAction,
+  QuickActionsController,
+  QuickSelection,
+} from "./quick-actions"
 import { hasNode, storageKeys } from "@/shared/lib"
 
 const noQuickActions = { actions: [], select: () => false, flush: () => {} }
@@ -523,7 +535,7 @@ describe("MobileBottomNav quick actions in Menu search", () => {
   }
   const controller = (actions: QuickAction[]) => ({
     actions,
-    select: vi.fn((id: QuickAction["id"]) => {
+    select: vi.fn((id: QuickSelection) => {
       const found = actions.find((action) => action.id === id)
       return !!found && !hasNode(found.disabledReason)
     }),

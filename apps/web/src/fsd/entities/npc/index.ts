@@ -48,7 +48,7 @@ export {
   useTraitText as useNpcTraitText,
 } from "@/shared/ability-text"
 export { NpcPortrait } from "./ui/npc-portrait"
-export { portraitVariationOf } from "./lib/portrait-variation"
+export { npcPortraitSrc, portraitVariationOf } from "./lib/portrait-variation"
 export { NpcLevelBadge } from "./ui/npc-level-badge"
 export { NpcStatSummary } from "./ui/npc-stat-summary"
 export { resolveLadderRow } from "./lib/resolve-ladder-row"

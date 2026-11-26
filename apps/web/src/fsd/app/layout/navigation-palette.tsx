@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import type { KeyboardEvent, ReactNode, MouseEvent } from "react"
 import { Link, useLocation, useNavigate } from "react-router"
-import { Search } from "lucide-react"
+import { PlusCircle, Search, SquareLibrary } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -24,11 +24,15 @@ import type { NavItem } from "./nav-items"
 import { NavLiveDot } from "./nav-live-dot"
 import { buildNavigationGroups } from "./navigation-search"
 import type { NavigationEntry, NavigationGroup } from "./navigation-search"
+import type { SearchEntity } from "./entity-search"
+import { isGoalUnit, unitOfPath } from "./entity-search"
 import type {
+  GoalUnit,
   QuickAction,
-  QuickActionId,
   QuickActionsController,
+  QuickSelection,
 } from "./quick-actions"
+import { useEntitySearchIndex } from "./use-entity-search-index"
 import { RECENT_PAGES_SHOWN, readRecentPages } from "./recent-pages"
 
 /** Rows are one line either way, with the description only on the highlighted row. `compact`:
@@ -83,7 +87,7 @@ export function NavigationPalette({
   inputPlacement: "top" | "bottom"
   items: NavItem[]
   /** An enabled action was chosen; the surface closes and dispatches it. */
-  onActionSelect: (id: QuickActionId) => void
+  onActionSelect: (selection: QuickSelection) => void
   /** A page was opened; the surface closes. */
   onNavigate: () => void
   onSearchChange: (search: string) => void
@@ -102,8 +106,24 @@ export function NavigationPalette({
     .slice(0, RECENT_PAGES_SHOWN)
   const isSearching = search.trim() !== ""
   const showChips = actionsAsChips && !isSearching
+  const entities = useEntitySearchIndex({
+    withLegendaryEvents: items.some(
+      (item) => item.path === "/legendary-events"
+    ),
+  })
+  // Creating a goal for a unit follows Create goal (signed in only).
+  const canCreateGoals = quickActions.actions.some(
+    (action) => action.id === "createGoal"
+  )
+  const contextUnit = unitOfPath(entities, pathname)
   const groups = buildNavigationGroups({
     actions: quickActions.actions,
+    canCreateGoals,
+    collectionPath: items
+      .flatMap((item) => item.children ?? [])
+      .find((child) => child.path === "/my-game/collection")?.path,
+    contextUnit,
+    entities,
     getEntryPath,
     items,
     query: search,
@@ -113,6 +133,7 @@ export function NavigationPalette({
   const chipActions = quickActions.actions.filter(
     (action) => !action.searchOnly
   )
+  const contextChip = canCreateGoals ? contextUnit : undefined
   // The phone drawer is tapped, not arrowed through: it shows the highlight only on a search's top
   // hit (what Go/Enter opens), and the pointer never moves it (no flicker while scrolling).
   const isTouchList = density === "comfortable"
@@ -187,7 +208,11 @@ export function NavigationPalette({
     >
       {inputPlacement === "top" ? field : null}
       {showChips && chipActions.length > 0 ? (
-        <ActionChips actions={chipActions} onActionSelect={onActionSelect} />
+        <ActionChips
+          actions={chipActions}
+          contextUnit={contextChip}
+          onActionSelect={onActionSelect}
+        />
       ) : null}
       <CommandList
         className={cn(
@@ -243,15 +268,20 @@ function PaletteGroup({
   density: Density
   group: NavigationGroup
   isSearching: boolean
-  onActionSelect: (id: QuickActionId) => void
+  onActionSelect: (selection: QuickSelection) => void
   onModifiedClick: (modified: boolean) => void
   onOpenPage: (to: string) => void
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation(["common", "library"])
   const heading = {
     recent: t("nav.quickActions.recentHeading"),
     actions: t("nav.quickActions.heading"),
     pages: t("nav.quickActions.pagesHeading"),
+    characters: t("library:collections.characters.label"),
+    mows: t("library:collections.machinesOfWar.label"),
+    npcs: t("library:collections.npcs.label"),
+    raidBosses: t("library:collections.raidBosses.label"),
+    legendaryEvents: t("nav.legendaryEvents"),
   }[group.id]
   // A recent page says where it lives, as search results do; the tree shows that by nesting.
   const showCrumb = isSearching || group.id === "recent"
@@ -286,7 +316,7 @@ function PaletteGroup({
           recent: "recent-pages",
           actions: "quick-actions",
           pages: "pages",
-        }[group.id]
+        }[group.id as string] ?? `entities-${group.id}`
       }
       heading={heading}
     >
@@ -322,7 +352,7 @@ function PaletteRow({
   density: Density
   entry: NavigationEntry
   isSearching: boolean
-  onActionSelect: (id: QuickActionId) => void
+  onActionSelect: (selection: QuickSelection) => void
   onModifiedClick: (modified: boolean) => void
   onOpenPage: (to: string) => void
   showCrumb: boolean
@@ -330,6 +360,27 @@ function PaletteRow({
   // Also declares the `dailies` namespace (see NavigationPalette).
   const { t } = useTranslation(["common", "dailies", "library"])
   const { pathname } = useLocation()
+
+  if (entry.kind === "unitGoal") {
+    return (
+      <UnitGoalRow
+        density={density}
+        entryKey={entry.key}
+        onActionSelect={onActionSelect}
+        unit={entry.unit}
+      />
+    )
+  }
+  if (entry.kind === "entity" || entry.kind === "collectionSearch") {
+    return (
+      <EntityRow
+        density={density}
+        entry={entry}
+        onModifiedClick={onModifiedClick}
+        onOpenPage={onOpenPage}
+      />
+    )
+  }
 
   if (entry.kind === "action") {
     const { action } = entry
@@ -368,14 +419,7 @@ function PaletteRow({
   const isHere =
     isCurrent && (isChild || (entry.item.children?.length ?? 0) === 0)
 
-  const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    const modified =
-      event.metaKey || event.ctrlKey || event.shiftKey || event.altKey
-    onModifiedClick(modified)
-    // A plain click navigates through cmdk's selection (the same path as Enter), so the link's
-    // own navigation is suppressed; a modified click keeps the browser's behavior.
-    if (!modified) event.preventDefault()
-  }
+  const onClick = linkClick(onModifiedClick)
 
   return (
     <CommandItem
@@ -451,10 +495,13 @@ function RowText({
  *  says why in place of its label. */
 function ActionChips({
   actions,
+  contextUnit,
   onActionSelect,
 }: {
   actions: QuickAction[]
-  onActionSelect: (id: QuickActionId) => void
+  /** The unit whose page is open: "Create goal for <unit>" leads the row. */
+  contextUnit?: SearchEntity
+  onActionSelect: (selection: QuickSelection) => void
 }) {
   const { t } = useTranslation()
 
@@ -465,6 +512,20 @@ function ActionChips({
       data-testid="quick-action-chips"
       role="group"
     >
+      {contextUnit ? (
+        <Button
+          className="shrink-0 rounded-full font-normal"
+          data-testid="quick-action-unitGoal"
+          onClick={() =>
+            onActionSelect({ createGoalFor: goalUnitOf(contextUnit) })
+          }
+          type="button"
+          variant="outline"
+        >
+          <PlusCircle aria-hidden="true" />
+          {t("nav.quickActions.createGoalFor", { name: contextUnit.name })}
+        </Button>
+      ) : null}
       {actions.map((action) => {
         const disabled = action.disabledReason !== undefined
         return (
@@ -490,5 +551,132 @@ function ActionChips({
         )
       })}
     </div>
+  )
+}
+
+function goalUnitOf(unit: SearchEntity): GoalUnit {
+  return {
+    entityType: unit.kind === "mows" ? "Mow" : "Character",
+    entityId: unit.id as GoalUnit["entityId"],
+  }
+}
+
+/** A game entity's round portrait, or its initial when it has none. */
+function EntityPortrait({ entity }: { entity: SearchEntity }) {
+  if (entity.iconSrc) {
+    return (
+      <img
+        alt=""
+        aria-hidden="true"
+        className={cn(
+          "-my-0.5 size-icon-md shrink-0 object-cover",
+          isGoalUnit(entity) || entity.kind === "legendaryEvents"
+            ? "rounded-full"
+            : "rounded-md"
+        )}
+        src={entity.iconSrc}
+      />
+    )
+  }
+  return (
+    <span
+      aria-hidden="true"
+      className="-my-0.5 flex size-icon-md shrink-0 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground"
+    >
+      {entity.name.charAt(0)}
+    </span>
+  )
+}
+
+/** A result link's click: a plain click navigates through cmdk's selection (the same path as
+ *  Enter), so the link's own navigation is suppressed; a modified click keeps the browser's. */
+function linkClick(onModifiedClick: (modified: boolean) => void) {
+  return (event: MouseEvent<HTMLAnchorElement>) => {
+    const modified =
+      event.metaKey || event.ctrlKey || event.shiftKey || event.altKey
+    onModifiedClick(modified)
+    if (!modified) event.preventDefault()
+  }
+}
+
+/** "Create goal for <unit>": opens the new goal form with the unit selected. */
+function UnitGoalRow({
+  density,
+  entryKey,
+  onActionSelect,
+  unit,
+}: {
+  density: Density
+  entryKey: string
+  onActionSelect: (selection: QuickSelection) => void
+  unit: SearchEntity
+}) {
+  const { t } = useTranslation()
+  return (
+    <CommandItem
+      className={rowClassName(density, false)}
+      data-testid="quick-action-unitGoal"
+      onSelect={() => onActionSelect({ createGoalFor: goalUnitOf(unit) })}
+      value={entryKey}
+    >
+      <PlusCircle
+        aria-hidden="true"
+        className="size-icon shrink-0 text-muted-foreground"
+      />
+      <RowText
+        description={t("nav.quickActions.createGoalForDescription")}
+        label={t("nav.quickActions.createGoalFor", { name: unit.name })}
+      />
+    </CommandItem>
+  )
+}
+
+/** A game entity's page, or Collection searched for the query. */
+function EntityRow({
+  density,
+  entry,
+  onModifiedClick,
+  onOpenPage,
+}: {
+  density: Density
+  entry: Extract<NavigationEntry, { kind: "entity" | "collectionSearch" }>
+  onModifiedClick: (modified: boolean) => void
+  onOpenPage: (to: string) => void
+}) {
+  const { t } = useTranslation()
+  const { pathname } = useLocation()
+  const to = entry.kind === "entity" ? entry.entity.to : entry.to
+  return (
+    <CommandItem
+      asChild
+      className={rowClassName(density, false)}
+      onSelect={() => onOpenPage(to)}
+      value={entry.key}
+    >
+      <Link
+        aria-current={pathname === to ? "page" : undefined}
+        onClick={linkClick(onModifiedClick)}
+        // As on page rows: the arrow keys move through the list, Tab leaves it.
+        tabIndex={-1}
+        to={to}
+      >
+        {entry.kind === "entity" ? (
+          <EntityPortrait entity={entry.entity} />
+        ) : (
+          <SquareLibrary
+            aria-hidden="true"
+            className="size-icon shrink-0 text-muted-foreground"
+          />
+        )}
+        <RowText
+          description=""
+          label={
+            entry.kind === "entity"
+              ? entry.entity.name
+              : t("nav.quickActions.findInCollection", { query: entry.query })
+          }
+        />
+      </Link>
+    </CommandItem>
   )
 }

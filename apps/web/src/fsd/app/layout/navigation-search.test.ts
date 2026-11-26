@@ -4,6 +4,7 @@ import { navItems } from "./nav-items"
 import type { NavTranslate } from "./nav-items"
 import { buildNavigationGroups, matchTier } from "./navigation-search"
 import type { NavigationEntry } from "./navigation-search"
+import type { SearchEntity } from "./entity-search"
 import type { QuickAction } from "./quick-actions"
 
 // Readable English for the keys the ranking reads, so queries look like what players type.
@@ -59,6 +60,24 @@ const recentBuild = (query: string) =>
     t,
   })
 
+const uthar = (to: string): SearchEntity => ({
+  kind: "legendaryEvents",
+  id: "votanUthar",
+  name: "Ûthar",
+  searchNames: [],
+  to,
+})
+
+const buildForUthar = (to: string) =>
+  buildNavigationGroups({
+    actions: [],
+    entities: [uthar(to)],
+    getEntryPath: (item) => item.path,
+    items: navItems,
+    query: "uthar",
+    t,
+  })
+
 /** The entries of the query's first (best) group, or of the group at `index`. */
 const entriesOf = (query: string, index = 0, actions?: QuickAction[]) =>
   build(query, actions).at(index)?.entries ?? []
@@ -74,6 +93,15 @@ const labelOf = (entry: NavigationEntry | undefined) => {
     }
     case "child": {
       return "labelKey" in entry.item ? t(entry.item.labelKey) : ""
+    }
+    case "entity": {
+      return entry.entity.name
+    }
+    case "unitGoal": {
+      return `Create goal for ${entry.unit.name}`
+    }
+    case "collectionSearch": {
+      return `Find ${entry.query}`
     }
   }
 }
@@ -204,6 +232,73 @@ describe("buildNavigationGroups", () => {
     expect(labelOf(entriesOf("log out", 0, [sync, signOut])[0])).toBe(
       "Sign out"
     )
+  })
+
+  it("adds entity groups, a goal for the best unit and a Collection search", () => {
+    const calgar: SearchEntity = {
+      kind: "characters",
+      id: "ultraCalgar",
+      name: "Marneus Calgar",
+      searchNames: [],
+      to: "/library/characters/ultraCalgar",
+    }
+    const groups = buildNavigationGroups({
+      actions: [sync],
+      canCreateGoals: true,
+      collectionPath: "/my-game/collection",
+      entities: [calgar],
+      getEntryPath: (item) => item.path,
+      items: navItems,
+      query: "Marneus",
+      t,
+    })
+
+    // The unit's page comes first, so Enter opens it; the goal and Collection rows follow it.
+    expect(groups.map((group) => group.id)).toEqual(["characters"])
+    expect(groups[0]?.entries.map((entry) => entry.kind)).toEqual([
+      "entity",
+      "unitGoal",
+      "collectionSearch",
+    ])
+    expect(groups[0]?.entries[2]).toMatchObject({
+      to: "/my-game/collection?q=Marneus",
+    })
+  })
+
+  it("leads the resting actions with a goal for the unit whose page is open", () => {
+    const calgar: SearchEntity = {
+      kind: "characters",
+      id: "ultraCalgar",
+      name: "Marneus Calgar",
+      searchNames: [],
+      to: "/library/characters/ultraCalgar",
+    }
+    const build = (canCreateGoals: boolean) =>
+      buildNavigationGroups({
+        actions: [sync],
+        canCreateGoals,
+        contextUnit: calgar,
+        getEntryPath: (item) => item.path,
+        items: navItems,
+        query: "",
+        t,
+      })
+
+    expect(build(true)[0]?.entries.map((entry) => entry.kind)).toEqual([
+      "unitGoal",
+      "action",
+    ])
+    expect(build(false)[0]?.entries.map((entry) => entry.kind)).toEqual([
+      "action",
+    ])
+  })
+
+  it("ignores accents and leaves out entities the menu already lists", () => {
+    expect(
+      buildForUthar("/legendary-events/votanUthar").map((group) => group.id)
+    ).toEqual(["legendaryEvents"])
+    // A path the menu lists (here an existing child stands in for a running LE's).
+    expect(buildForUthar("/legendary-events/master-table")).toEqual([])
   })
 
   it("returns no groups when nothing matches", () => {

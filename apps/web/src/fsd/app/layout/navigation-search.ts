@@ -5,7 +5,13 @@ import type {
   NavSubItem,
   NavTranslate,
 } from "./nav-items"
+import { foldText, matchTier } from "./match-tier"
+import type { MatchFields } from "./match-tier"
 import type { QuickAction } from "./quick-actions"
+import { isGoalUnit, rankEntities } from "./entity-search"
+import type { EntityKind, SearchEntity } from "./entity-search"
+
+export { matchTier } from "./match-tier"
 
 /** One selectable row of navigation search. `key` is unique across the whole list. */
 export type NavigationEntry =
@@ -28,75 +34,22 @@ export type NavigationEntry =
       /** Muted text after the label in ranked results: the child's group, else its section. */
       crumb: string
     }
+  /** A game entity's page (a unit, NPC, raid boss or Legendary Event). */
+  | { kind: "entity"; key: string; entity: SearchEntity }
+  /** Opens the new goal form with `unit` selected (a character or Machine of War). */
+  | { kind: "unitGoal"; key: string; unit: SearchEntity }
+  /** Opens Collection filtered by the query. */
+  | { kind: "collectionSearch"; key: string; query: string; to: string }
 
-type NavigationGroupId = "recent" | "actions" | "pages"
+type NavigationGroupId = "recent" | "actions" | "pages" | EntityKind
 
 export interface NavigationGroup {
   id: NavigationGroupId
   entries: NavigationEntry[]
 }
 
-/** How well a query matches one row; lower is better, `undefined` is no match. */
-type MatchTier = number
-
-interface MatchFields {
-  label: string
-  description: string
-  keywords: readonly string[]
-  /** Labels of the places the row sits in (its section, its group). */
-  context: readonly string[]
-}
-
-const WORD_SPLIT = /[\s\-–—/·:,.()]+/u
-
-function words(text: string): string[] {
-  return text.toLocaleLowerCase().split(WORD_SPLIT).filter(Boolean)
-}
-
-/**
- * Ranks one row against a trimmed, lowercased query:
- * 0 label starts with it, 1 a label word starts with it, 2 a keyword starts with it,
- * 3 a description word starts with it, 4 a section/group word starts with it (so "dailies" also
- * lists Dailies' pages), 5 every word of a multi-word query starts a word somewhere in the row,
- * 6 a 3+ character query appears anywhere in the label or description.
- */
-export function matchTier(
-  query: string,
-  fields: MatchFields
-): MatchTier | undefined {
-  const label = fields.label.toLocaleLowerCase()
-  if (label.startsWith(query)) return 0
-  const labelWords = words(fields.label)
-  if (labelWords.some((word) => word.startsWith(query))) return 1
-  const keywords = fields.keywords.map((keyword) => keyword.toLocaleLowerCase())
-  if (keywords.some((keyword) => keyword.startsWith(query))) return 2
-  const descriptionWords = words(fields.description)
-  if (descriptionWords.some((word) => word.startsWith(query))) return 3
-  const contextWords = fields.context.flatMap(words)
-  if (contextWords.some((word) => word.startsWith(query))) return 4
-
-  const tokens = words(query)
-  if (tokens.length > 1) {
-    const all = [
-      ...labelWords,
-      ...keywords.flatMap(words),
-      ...descriptionWords,
-      ...contextWords,
-    ]
-    if (tokens.every((token) => all.some((word) => word.startsWith(token))))
-      return 5
-  }
-  if (
-    query.length >= 3 &&
-    (label.includes(query) ||
-      fields.description.toLocaleLowerCase().includes(query))
-  )
-    return 6
-  return undefined
-}
-
 function normalize(query: string): string {
-  return query.trim().toLocaleLowerCase()
+  return foldText(query.trim())
 }
 
 /** Every page row in menu order: each section, then its children (in their groups). */
@@ -154,6 +107,19 @@ function fieldsOf(entry: NavigationEntry, t: NavTranslate): MatchFields {
         context: [],
       }
     }
+    case "entity":
+    case "unitGoal": {
+      const entity = entry.kind === "entity" ? entry.entity : entry.unit
+      return {
+        label: entity.name,
+        description: "",
+        keywords: entity.searchNames,
+        context: [],
+      }
+    }
+    case "collectionSearch": {
+      return { label: entry.query, description: "", keywords: [], context: [] }
+    }
     case "child": {
       return {
         label: subItemLabel(t, entry.item),
@@ -195,21 +161,47 @@ function recentEntries(
 ): NavigationEntry[] {
   return paths.flatMap((path): NavigationEntry[] => {
     const page = pages.find(
-      (entry) => entry.kind !== "action" && entry.item.path === path
+      (entry) =>
+        (entry.kind === "section" || entry.kind === "child") &&
+        entry.item.path === path
     )
     return page ? [{ ...page, key: `recent:${page.key}` }] : []
   })
 }
 
+/** Where navigation search reaches beyond pages and fixed actions (see `buildNavigationGroups`). */
+export interface EntitySearchOptions {
+  /** Game entities to match, from the catalog. */
+  entities?: readonly SearchEntity[]
+  /** The visitor can create goals, so a matched unit also offers "Create goal for <unit>". */
+  canCreateGoals?: boolean
+  /** Collection's path, when the visitor can open it: a matched unit also offers searching it. */
+  collectionPath?: string
+  /** The unit whose page is open: with no query, "Create goal for <unit>" leads the actions. */
+  contextUnit?: SearchEntity
+}
+
+const unitGoalEntry = (unit: SearchEntity): NavigationEntry => ({
+  kind: "unitGoal",
+  key: `unit-goal:${unit.kind}:${unit.id}`,
+  unit,
+})
+
 /**
- * What navigation search lists for a query. With no query: the recent pages, every action that is
- * not search-only, then the page tree in menu order. With one: the matching actions and the
- * matching pages, each ranked, as one flat list per group, and the group holding the better match
- * first (actions first on a tie). Groups with no match are left out, so an empty result is an
- * empty array.
+ * What navigation search lists for a query. With no query: the recent pages, "Create goal for
+ * <unit>" on a unit's page, every action that is not search-only, then the page tree in menu
+ * order. With one: the matching actions, pages and game entities, each group ranked as one flat
+ * list (entities at most 5 per kind), and the group holding the better match first (actions, then
+ * pages, then entities by kind on a tie). The best matching unit's group ends with "Create goal
+ * for <unit>" and "Find '<query>' in Collection". Groups with no match are left
+ * out, so an empty result is an empty array.
  */
 export function buildNavigationGroups({
   actions,
+  canCreateGoals = false,
+  collectionPath,
+  contextUnit,
+  entities = [],
   getEntryPath,
   items,
   query,
@@ -223,7 +215,7 @@ export function buildNavigationGroups({
   /** Recently visited page paths, most recent first, already without the current page. */
   recentPaths?: readonly string[]
   t: NavTranslate
-}): NavigationGroup[] {
+} & EntitySearchOptions): NavigationGroup[] {
   const actionEntries: NavigationEntry[] = actions.map((action) => ({
     kind: "action",
     key: `action:${action.id}`,
@@ -233,13 +225,17 @@ export function buildNavigationGroups({
   const normalized = normalize(query)
 
   if (!normalized) {
+    const restingActions = actionEntries.filter(
+      (entry) => entry.kind === "action" && !entry.action.searchOnly
+    )
     return [
       { id: "recent" as const, entries: recentEntries(pages, recentPaths) },
       {
         id: "actions" as const,
-        entries: actionEntries.filter(
-          (entry) => entry.kind === "action" && !entry.action.searchOnly
-        ),
+        entries:
+          canCreateGoals && contextUnit
+            ? [unitGoalEntry(contextUnit), ...restingActions]
+            : restingActions,
       },
       { id: "pages" as const, entries: pages },
     ].filter((group) => group.entries.length > 0)
@@ -247,9 +243,57 @@ export function buildNavigationGroups({
 
   const rankedActions = rank(actionEntries, normalized, t)
   const rankedPages = rank(pages, normalized, t)
+  // A page the menu already lists (a running LE) is not listed again as an entity.
+  const pagePaths = new Set(
+    pages.flatMap((entry) =>
+      entry.kind === "section" || entry.kind === "child"
+        ? [entry.item.path]
+        : []
+    )
+  )
+  const rankedEntities = rankEntities(
+    entities.filter((entity) => !pagePaths.has(entity.to)),
+    normalized
+  )
+
+  // The best matching unit, characters before Machines of War on equal matches.
+  const bestUnit = rankedEntities
+    .flatMap((group) => group.entries)
+    .filter(({ entity }) => isGoalUnit(entity))
+    .reduce<{ entity: SearchEntity; tier: number } | undefined>(
+      (best, entry) => (best && best.tier <= entry.tier ? best : entry),
+      undefined
+    )
+  const entityGroups = rankedEntities.map(({ kind, entries }) => ({
+    id: kind,
+    entries: entries.map(({ entity }): NavigationEntry => ({
+      kind: "entity",
+      key: `entity:${entity.kind}:${entity.id}`,
+      entity,
+    })),
+    best: entries[0]?.tier ?? Number.POSITIVE_INFINITY,
+  }))
+  // The best unit's group ends with what to do with it: a goal for it, and Collection searched.
+  const bestUnitGroup = bestUnit
+    ? entityGroups.find((group) => group.id === bestUnit.entity.kind)
+    : undefined
+  if (bestUnit && bestUnitGroup) {
+    if (canCreateGoals)
+      bestUnitGroup.entries.push(unitGoalEntry(bestUnit.entity))
+    if (collectionPath !== undefined) {
+      bestUnitGroup.entries.push({
+        kind: "collectionSearch",
+        key: "collection-search",
+        query: query.trim(),
+        to: `${collectionPath}?${new URLSearchParams({ q: query.trim() }).toString()}`,
+      })
+    }
+  }
+
   const groups = [
     { id: "actions" as const, ...rankedActions },
     { id: "pages" as const, ...rankedPages },
+    ...entityGroups,
   ].filter((group) => group.entries.length > 0)
   groups.sort((a, b) => a.best - b.best)
   return groups.map(({ id, entries }) => ({ id, entries }))

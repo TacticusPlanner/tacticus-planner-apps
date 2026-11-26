@@ -26,9 +26,11 @@ import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { requestAccountSettings } from "../providers/account-settings-request"
 import { useUserJot } from "../providers/userjot-provider"
 import type {
+  GoalUnit,
   QuickAction,
   QuickActionId,
   QuickActionsController,
+  QuickSelection,
 } from "./quick-actions"
 
 /**
@@ -39,10 +41,13 @@ import type {
 export function useQuickActions({
   isAuthenticated,
   onCreateGoal,
+  onCreateGoalFor,
   onCreateProject,
 }: {
   isAuthenticated: boolean
   onCreateGoal: () => void
+  /** Opens the new goal form with a unit selected (navigation search's unit results). */
+  onCreateGoalFor: (unit: GoalUnit) => void
   onCreateProject: () => void
 }): QuickActionsController {
   const { t } = useTranslation()
@@ -226,23 +231,34 @@ export function useQuickActions({
   useEffect(() => {
     latest.current = entries
   })
-  const pending = useRef<QuickActionId | null>(null)
+  const pending = useRef<QuickSelection | null>(null)
+  const latestCreateGoalFor = useRef(onCreateGoalFor)
+  useEffect(() => {
+    latestCreateGoalFor.current = onCreateGoalFor
+  })
   const enabledEntry = (id: QuickActionId) => {
     const entry = latest.current.find((candidate) => candidate.action.id === id)
     return entry && entry.action.disabledReason === undefined ? entry : null
   }
+  // "Create goal for <unit>" follows Create goal's eligibility (signed in).
+  const runnable = (selection: QuickSelection): (() => void) | null => {
+    if (typeof selection === "string")
+      return enabledEntry(selection)?.run ?? null
+    if (!enabledEntry("createGoal")) return null
+    return () => latestCreateGoalFor.current(selection.createGoalFor)
+  }
 
   return {
     actions: entries.map((entry) => entry.action),
-    select: (id) => {
-      if (!enabledEntry(id)) return false
-      pending.current = id
+    select: (selection) => {
+      if (!runnable(selection)) return false
+      pending.current = selection
       return true
     },
     flush: () => {
-      const id = pending.current
+      const selection = pending.current
       pending.current = null
-      if (id) enabledEntry(id)?.run()
+      if (selection !== null) runnable(selection)?.()
     },
   }
 }

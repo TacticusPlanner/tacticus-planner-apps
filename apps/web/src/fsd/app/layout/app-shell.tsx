@@ -166,6 +166,10 @@ function ShellContent({
   const quickActions = useQuickActions({
     isAuthenticated,
     onCreateGoal,
+    onCreateGoalFor: (unit) => {
+      const projectId = createGoalScopeProjectId(pathname, search)
+      launchCreateGoal(projectId ? { ...unit, projectIds: [projectId] } : unit)
+    },
     onCreateProject: () => setCreateProjectOpen(true),
   })
   const shellProps = {

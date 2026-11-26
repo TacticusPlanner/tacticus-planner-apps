@@ -336,7 +336,10 @@
       "accountSettingsDescription": "Clé API Tacticus, profil et vos données",
       "signOutDescription": "Se déconnecter sur cet appareil",
       "accountBusy": "Votre compte est occupé. Réessayez dans un instant.",
-      "recentHeading": "Récents"
+      "recentHeading": "Récents",
+      "createGoalFor": "Créer un objectif pour {{name}}",
+      "createGoalForDescription": "Ouvrir le formulaire d’objectif avec cette unité choisie",
+      "findInCollection": "Chercher « {{query}} » dans la collection"
     },
     "breadcrumb": "Fil d'Ariane"
   },
