@@ -238,6 +238,7 @@ describe.each([
         items={items}
         onOpenChange={vi.fn()}
         open
+        openedVia="topBar"
         quickActions={noQuickActions}
       />
     )

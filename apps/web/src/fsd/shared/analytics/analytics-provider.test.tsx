@@ -775,6 +775,53 @@ describe("useAnalyticsActions", () => {
       { platform: "android" }
     )
   })
+
+  it("captures the navigation search events with only the declared properties", async () => {
+    const { result } = await renderReady()
+
+    result.current.captureEvent({
+      type: "navigation_search_opened",
+      source: "shortcut",
+      viewMode: "desktop",
+    })
+    result.current.captureEvent({
+      type: "navigation_search_item_selected",
+      itemKind: "characters",
+      target: "ultraCalgar",
+      group: "characters",
+      position: 1,
+      queryLength: 6,
+      method: "keyboard",
+      viewMode: "desktop",
+    })
+    result.current.captureEvent({
+      type: "navigation_search_dismissed",
+      queryLength: 0,
+      resultCount: 12,
+      viewMode: "mobile",
+    })
+
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "navigation_search_opened",
+      { source: "shortcut", view_mode: "desktop" }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "navigation_search_item_selected",
+      {
+        item_kind: "characters",
+        target: "ultraCalgar",
+        group: "characters",
+        position: 1,
+        query_length: 6,
+        method: "keyboard",
+        view_mode: "desktop",
+      }
+    )
+    expect(sdk.client.capture).toHaveBeenCalledWith(
+      "navigation_search_dismissed",
+      { query_length: 0, result_count: 12, view_mode: "mobile" }
+    )
+  })
 })
 
 // These re-import the provider after vi.resetModules(), which leaves the statically imported

@@ -10,6 +10,7 @@ import { AuthControl } from "../providers/auth-control"
 import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
 import { AppLogo, AppLogoHomeLink, EnvironmentBadge } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
+import type { NavigationSearchSource } from "./navigation-search-analytics"
 import { preloadNavigationPalette } from "./navigation-palette-lazy"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
@@ -28,6 +29,7 @@ export function DesktopTopBar({
 }) {
   const { t } = useTranslation()
   const [navigationOpen, setNavigationOpen] = useState(false)
+  const [openedVia, setOpenedVia] = useState<NavigationSearchSource>("topBar")
   const launcherRef = useRef<HTMLButtonElement>(null)
   const shortcut = isMacPlatform() ? "⌘K" : "Ctrl+K"
 
@@ -36,6 +38,7 @@ export function DesktopTopBar({
       if (event.repeat || (!event.metaKey && !event.ctrlKey)) return
       if (event.key === "k") {
         event.preventDefault()
+        setOpenedVia("shortcut")
         setNavigationOpen((open) => !open)
       }
     }
@@ -64,7 +67,10 @@ export function DesktopTopBar({
           aria-label={t("nav.search")}
           className="flex h-10 w-full max-w-xl min-w-0 items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
           data-testid="desktop-navigation-search"
-          onClick={() => setNavigationOpen(true)}
+          onClick={() => {
+            setOpenedVia("topBar")
+            setNavigationOpen(true)
+          }}
           onFocus={preloadNavigationPalette}
           onPointerEnter={preloadNavigationPalette}
           ref={launcherRef}
@@ -93,6 +99,7 @@ export function DesktopTopBar({
         items={visibleItems}
         onOpenChange={setNavigationOpen}
         open={navigationOpen}
+        openedVia={openedVia}
         quickActions={quickActions}
         returnFocusRef={launcherRef}
       />

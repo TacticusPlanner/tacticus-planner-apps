@@ -21,6 +21,17 @@ vi.mock("./use-entity-search-index", () => ({
   useEntitySearchIndex: () => entityIndex.entities,
 }))
 
+const analytics = vi.hoisted(() => ({ captureEvent: vi.fn() }))
+vi.mock("@/shared/analytics", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/analytics")>()),
+  useAnalyticsActions: () => ({
+    captureEvent: analytics.captureEvent,
+    clearIdentity: () => {},
+    identifyUser: () => {},
+    isReady: true,
+  }),
+}))
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: { section?: string }) =>
@@ -1420,6 +1431,135 @@ describe("DesktopShell game entities in navigation search", () => {
     })
 
     expect(screen.queryByTestId("entities-characters")).not.toBeInTheDocument()
+  })
+})
+
+describe("DesktopShell navigation search usage analytics", () => {
+  const calgar = {
+    kind: "characters" as const,
+    id: "ultraCalgar",
+    name: "Marneus Calgar",
+    searchNames: [],
+    to: "/library/characters/ultraCalgar",
+  }
+
+  beforeEach(() => {
+    analytics.captureEvent.mockClear()
+    entityIndex.entities = [calgar]
+  })
+  afterEach(() => {
+    entityIndex.entities = []
+  })
+
+  const renderShell = () =>
+    render(
+      <MemoryRouter>
+        <TooltipProvider>
+          <DesktopShell
+            activeSection={homeItem}
+            getEntryPath={identityEntryPath}
+            onCreateGoal={vi.fn()}
+            pageDescription="Home description"
+            sectionTitle="Home"
+            visibleItems={navItems}
+          />
+        </TooltipProvider>
+      </MemoryRouter>
+    )
+  const eventTypes = () =>
+    analytics.captureEvent.mock.calls.map(
+      (call: unknown[]) => (call[0] as { type: string }).type
+    )
+
+  it("reports the opening and a keyboard pick with the query's length, never its text", () => {
+    renderShell()
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    const input = screen.getByRole("combobox", { name: "nav.search" })
+
+    fireEvent.change(input, { target: { value: "calgar" } })
+    fireEvent.keyDown(input, { key: "Enter" })
+
+    expect(analytics.captureEvent.mock.calls).toEqual([
+      [
+        {
+          type: "navigation_search_opened",
+          source: "topBar",
+          viewMode: "desktop",
+        },
+      ],
+      [
+        {
+          type: "navigation_search_item_selected",
+          itemKind: "characters",
+          target: "ultraCalgar",
+          group: "characters",
+          position: 1,
+          queryLength: 6,
+          method: "keyboard",
+          viewMode: "desktop",
+        },
+      ],
+    ])
+    expect(
+      screen.queryByTestId("desktop-navigation-dialog")
+    ).not.toBeInTheDocument()
+  })
+
+  it("reports a pointer pick of a page by its nav path", () => {
+    renderShell()
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true })
+
+    const home = screen.getByRole("option", { name: /^nav\.home/ })
+    fireEvent.pointerDown(home)
+    fireEvent.click(home)
+
+    expect(analytics.captureEvent).toHaveBeenCalledWith({
+      type: "navigation_search_opened",
+      source: "shortcut",
+      viewMode: "desktop",
+    })
+    expect(analytics.captureEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "navigation_search_item_selected",
+        itemKind: "page",
+        target: "/home",
+        group: "pages",
+        queryLength: 0,
+        method: "pointer",
+      })
+    )
+    expect(eventTypes()).not.toContain("navigation_search_dismissed")
+  })
+
+  it("reports a close without a pick with the query's length and the rows listed", () => {
+    renderShell()
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    const input = screen.getByRole("combobox", { name: "nav.search" })
+
+    fireEvent.change(input, { target: { value: " zzq " } })
+    fireEvent.keyDown(input, { key: "Escape" })
+
+    expect(analytics.captureEvent).toHaveBeenLastCalledWith({
+      type: "navigation_search_dismissed",
+      queryLength: 3,
+      resultCount: 0,
+      viewMode: "desktop",
+    })
+    expect(eventTypes()).not.toContain("navigation_search_item_selected")
+  })
+
+  it("starts each opening with an empty field", () => {
+    renderShell()
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    fireEvent.change(screen.getByRole("combobox", { name: "nav.search" }), {
+      target: { value: "raids" },
+    })
+    fireEvent.keyDown(screen.getByRole("combobox", { name: "nav.search" }), {
+      key: "Escape",
+    })
+
+    fireEvent.click(screen.getByTestId("desktop-navigation-search"))
+    expect(screen.getByRole("combobox", { name: "nav.search" })).toHaveValue("")
   })
 })
 
