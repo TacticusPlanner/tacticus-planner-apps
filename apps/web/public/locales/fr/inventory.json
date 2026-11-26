@@ -1,0 +1,22 @@
+{
+  "page": {
+    "tabsLabel": "Vues de l'inventaire",
+    "empty": {
+      "title": "Pas encore d'inventaire",
+      "description": "Synchronisez avec Tacticus pour voir ce que vous possédez.",
+      "action": "Synchroniser"
+    }
+  },
+  "tour": {
+    "steps": {
+      "tabs": {
+        "title": "Améliorations et Transcendance",
+        "content": "Améliorations liste tous les matériaux d'amélioration. Transcendance regroupe les livres d'XP, insignes, orbes et autres ressources."
+      },
+      "sync": {
+        "title": "Depuis votre dernière synchronisation",
+        "content": "Les quantités viennent du jeu. Resynchronisez après des raids ou de la fabrication pour les mettre à jour."
+      }
+    }
+  }
+}

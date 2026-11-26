@@ -1,0 +1,22 @@
+{
+  "page": {
+    "tabsLabel": "Vistas del inventario",
+    "empty": {
+      "title": "Aún no hay inventario",
+      "description": "Sincroniza con Tacticus para ver lo que tienes.",
+      "action": "Sincronizar ahora"
+    }
+  },
+  "tour": {
+    "steps": {
+      "tabs": {
+        "title": "Mejoras y Ascensión",
+        "content": "Mejoras muestra todos los materiales de mejora. Ascensión tiene libros de PE, insignias, orbes y los demás recursos."
+      },
+      "sync": {
+        "title": "De tu última sincronización",
+        "content": "Las cantidades vienen del juego. Vuelve a sincronizar tras hacer incursiones o fabricar para actualizarlas."
+      }
+    }
+  }
+}

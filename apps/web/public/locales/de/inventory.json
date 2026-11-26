@@ -1,0 +1,22 @@
+{
+  "page": {
+    "tabsLabel": "Inventaransichten",
+    "empty": {
+      "title": "Noch kein Inventar",
+      "description": "Synchronisiere mit Tacticus, um zu sehen, was du besitzt.",
+      "action": "Jetzt synchronisieren"
+    }
+  },
+  "tour": {
+    "steps": {
+      "tabs": {
+        "title": "Verbesserungen und Aufwertung",
+        "content": "Verbesserungen listet alle Verbesserungsmaterialien. Aufwertung zeigt EP-Bücher, Abzeichen, Kugeln und die übrigen Ressourcen."
+      },
+      "sync": {
+        "title": "Aus deiner letzten Synchronisierung",
+        "content": "Die Zahlen kommen aus dem Spiel. Synchronisiere nach Raids oder Herstellen erneut, um sie zu aktualisieren."
+      }
+    }
+  }
+}

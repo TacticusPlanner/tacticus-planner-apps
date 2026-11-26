@@ -34,8 +34,9 @@ void i18n
     // `dailies` and `library` are preloaded alongside `common` (rather than lazy-loaded on demand like other
     // page-specific namespaces) because `nav-items.ts` references it for Dailies' child labels and
     // descriptions, and those need to resolve correctly in the always-mounted app shell (sidebar,
-    // header, drawer, search) - not just once a Dailies page has been visited.
-    ns: ["common", "dailies", "library"],
+    // header, drawer, search) - not just once a Dailies page has been visited. `gameUi` likewise: it
+    // names My game > Inventory with the game's own term.
+    ns: ["common", "dailies", "library", "gameUi"],
     react: {
       useSuspense: true,
     },

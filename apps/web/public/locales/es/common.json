@@ -387,6 +387,7 @@
     "tabs": {
       "collection": "Colección",
       "collectionDescription": "Todos los personajes y Máquinas de Guerra, y cuánto ha progresado cada uno.",
+      "inventoryDescription": "Lo que tienes en el juego y lo que aún necesitan tus objetivos.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "El sector y el nivel que farmeas en cada alianza.",
       "campaigns": "Campañas",

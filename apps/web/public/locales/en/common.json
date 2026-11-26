@@ -387,6 +387,7 @@
     "tabs": {
       "collection": "Collection",
       "collectionDescription": "Every character and Machine of War, and how far each one has progressed.",
+      "inventoryDescription": "What you hold in the game and what your goals still need.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "The sector and tier you farm in each alliance.",
       "campaigns": "Campaigns",

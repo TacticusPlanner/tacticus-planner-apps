@@ -21,6 +21,8 @@
 //                                                        (the in-game task details minus the objective)
 //   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
 //   public/locales/{en,de,es,fr}/progression.json       ranks and rarities (en also keeps its hand-written short forms)
+//   public/locales/{en,de,es,fr}/gameUi.json            the game's own names for the screens and tabs a page
+//                                                        mirrors (Inventory > Upgrades / Ascension)
 //
 // Source: the pinned data-mines commit (datamine/REF, see scripts/datamine.mjs): the game config names
 // the ids, the game's language files name them. A term missing in one locale falls back to English.
@@ -477,6 +479,42 @@ tables.hreTaskHints = Object.fromEntries(
         .filter(([, hint]) => hint)
     ),
   ])
+)
+
+// ---- game UI terms -----------------------------------------------------------------------------------
+
+// A page that mirrors a game screen takes the screen's and its tabs' names from the game, in every
+// locale (Severyn, 2026-11), rather than a translation of our own. Nested by page; each leaf is the
+// game's language key. A key missing in a locale falls back to English; missing in English fails the run.
+const GAME_UI = {
+  inventory: {
+    title: "UI/HomeScreen_Button_Inventory",
+    tabs: {
+      upgrades: "UI/InventoryScreen_Tabs_Upgrades",
+      ascension: "UI/InventoryScreen_Tabs_Ascension",
+    },
+  },
+}
+
+const gameUiTerm = (locale, key) => {
+  const term = (languages[locale][key] ?? languages.en[key])?.trim()
+  if (!term) {
+    console.log(`  NO TERM   gameUi/${key}`)
+    process.exit(1)
+  }
+  return term
+}
+const gameUiTerms = (locale, node) =>
+  Object.fromEntries(
+    Object.entries(node).map(([name, value]) => [
+      name,
+      typeof value === "string"
+        ? gameUiTerm(locale, value)
+        : gameUiTerms(locale, value),
+    ])
+  )
+tables.gameUi = Object.fromEntries(
+  LOCALES.map((locale) => [locale, gameUiTerms(locale, GAME_UI)])
 )
 
 // ---- write -------------------------------------------------------------------------------------------

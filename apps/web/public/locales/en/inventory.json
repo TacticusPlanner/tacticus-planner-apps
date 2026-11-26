@@ -1,0 +1,22 @@
+{
+  "page": {
+    "tabsLabel": "Inventory views",
+    "empty": {
+      "title": "No inventory yet",
+      "description": "Sync with Tacticus to see what you hold.",
+      "action": "Sync now"
+    }
+  },
+  "tour": {
+    "steps": {
+      "tabs": {
+        "title": "Upgrades and Ascension",
+        "content": "Upgrades lists every upgrade material. Ascension has XP books, badges, orbs and the other resources."
+      },
+      "sync": {
+        "title": "From your last sync",
+        "content": "Counts come from the game. Sync again after raiding or crafting to update them."
+      }
+    }
+  }
+}

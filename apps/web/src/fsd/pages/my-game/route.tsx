@@ -48,6 +48,21 @@ const loadIncursionTierPage = () =>
     default: m.IncursionTierPage,
   }))
 const IncursionTierPage = lazy(loadIncursionTierPage)
+const loadInventoryPage = () =>
+  import("./ui/inventory/inventory-page").then((m) => ({
+    default: m.InventoryPage,
+  }))
+const InventoryPage = lazy(loadInventoryPage)
+const loadInventoryUpgradesTab = () =>
+  import("./ui/inventory/inventory-upgrades-tab").then((m) => ({
+    default: m.InventoryUpgradesTab,
+  }))
+const InventoryUpgradesTab = lazy(loadInventoryUpgradesTab)
+const loadInventoryAscensionTab = () =>
+  import("./ui/inventory/inventory-ascension-tab").then((m) => ({
+    default: m.InventoryAscensionTab,
+  }))
+const InventoryAscensionTab = lazy(loadInventoryAscensionTab)
 const loadTeamsPage = () =>
   import("./ui/teams/teams-page").then((m) => ({ default: m.TeamsPage }))
 const TeamsPage = lazy(loadTeamsPage)
@@ -72,6 +87,29 @@ export const publicRoutes: RouteObject[] = [
 ]
 
 export const protectedRoutes: RouteObject[] = [
+  {
+    path: "inventory",
+    element: <InventoryPage />,
+    loader: preloadOnMatch(loadInventoryPage),
+    // Each tab is its own route, so a tab can be linked and keeps its own query.
+    children: [
+      {
+        index: true,
+        element: <Navigate replace to="/my-game/inventory/upgrades" />,
+        handle: redirectOnlyHandle,
+      },
+      {
+        path: "upgrades",
+        element: <InventoryUpgradesTab />,
+        loader: preloadOnMatch(loadInventoryUpgradesTab),
+      },
+      {
+        path: "ascension",
+        element: <InventoryAscensionTab />,
+        loader: preloadOnMatch(loadInventoryAscensionTab),
+      },
+    ],
+  },
   {
     path: "campaigns",
     element: <CampaignsPage />,

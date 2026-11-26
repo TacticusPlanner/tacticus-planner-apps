@@ -82,7 +82,7 @@ export function PublicLayout({
 }
 
 function PublicTopBar() {
-  const { t } = useTranslation(["common", "library"])
+  const { t } = useTranslation(["common", "library", "gameUi"])
   const isAuthenticated = useIsAuthenticated()
   const { checkingSignIn, disabled, signIn, signUp } = useSignInRedirect()
 

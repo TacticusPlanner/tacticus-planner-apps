@@ -18,6 +18,8 @@ import type enEventShops from "../../../../../public/locales/en/eventShops.json"
 import type enTeams from "../../../../../public/locales/en/teams.json"
 import type enGuildWar from "../../../../../public/locales/en/guildWar.json"
 import type enSurvival from "../../../../../public/locales/en/survival.json"
+import type enGameUi from "../../../../../public/locales/en/gameUi.json"
+import type enInventory from "../../../../../public/locales/en/inventory.json"
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -44,6 +46,10 @@ declare module "i18next" {
       teams: typeof enTeams
       guildWar: typeof enGuildWar
       survival: typeof enSurvival
+      inventory: typeof enInventory
+      // The game's own names for the screens and tabs a page mirrors, generated from the datamine
+      // (`generate-game-names-i18n.mjs`); preloaded for the navigation.
+      gameUi: typeof enGameUi
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       mows: Record<string, string>

@@ -20,7 +20,7 @@ import type { NavItem } from "./nav-items"
 export function SectionTabs({ item }: { item: NavItem }) {
   // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
-  const { t } = useTranslation(["common", "dailies", "library"])
+  const { t } = useTranslation(["common", "dailies", "library", "gameUi"])
   const { pathname } = useLocation()
   const navigate = useNavigate()
   // Radix activates a trigger on mousedown and again on the focus that immediately follows it. While

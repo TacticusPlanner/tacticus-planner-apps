@@ -387,6 +387,7 @@
     "tabs": {
       "collection": "Sammlung",
       "collectionDescription": "Alle Charaktere und Kriegsmaschinen und wie weit jede Einheit ist.",
+      "inventoryDescription": "Was du im Spiel besitzt und was deine Ziele noch brauchen.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Der Sektor und die Stufe, die du in jeder Allianz farmst.",
       "campaigns": "Kampagnen",
