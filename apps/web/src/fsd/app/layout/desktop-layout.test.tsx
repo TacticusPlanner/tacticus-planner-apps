@@ -872,20 +872,22 @@ describe("DesktopShell", () => {
     )
 
     fireEvent.click(screen.getByTestId("desktop-navigation-search"))
-    fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
+    fireEvent.change(screen.getByRole("combobox", { name: "nav.search" }), {
       target: { value: "library:collections.machinesOfWar.label" },
     })
 
-    expect(
-      screen.getByRole("link", { name: /^library:section\.label/ })
-    ).toBeInTheDocument()
-    const mowResult = screen.getByRole("link", {
+    // Ranked results are one flat list: the child stands alone, its section as a breadcrumb.
+    const mowResult = screen.getByRole("option", {
       name: /^library:collections\.machinesOfWar\.label/,
     })
+    expect(mowResult).toHaveTextContent("· library:section.label")
     expect(mowResult).toHaveAttribute("aria-current", "page")
     expect(mowResult).toHaveAttribute("href", "/library/machines-of-war")
     expect(
-      screen.queryByRole("link", {
+      screen.queryByRole("option", { name: /^library:section\.label/ })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("option", {
         name: /^library:collections\.characters\.label/,
       })
     ).not.toBeInTheDocument()
@@ -935,12 +937,12 @@ describe("DesktopShell", () => {
     )
 
     fireEvent.click(screen.getByTestId("desktop-navigation-search"))
-    fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
+    fireEvent.change(screen.getByRole("combobox", { name: "nav.search" }), {
       target: { value: "library:collections.npcs.description" },
     })
 
     expect(
-      screen.getByRole("link", { name: /^library:collections\.npcs\.label/ })
+      screen.getByRole("option", { name: /^library:collections\.npcs\.label/ })
     ).toBeInTheDocument()
   })
 
@@ -996,7 +998,7 @@ describe("DesktopShell", () => {
     const launcher = screen.getByTestId("desktop-navigation-search")
     launcher.focus()
     fireEvent.click(launcher)
-    const input = screen.getByRole("searchbox", { name: "nav.search" })
+    const input = screen.getByRole("combobox", { name: "nav.search" })
     input.focus()
 
     fireEvent.keyDown(input, { key: "k", ctrlKey: true })
@@ -1006,7 +1008,7 @@ describe("DesktopShell", () => {
 
     launcher.focus()
     fireEvent.click(launcher)
-    fireEvent.keyDown(screen.getByRole("searchbox", { name: "nav.search" }), {
+    fireEvent.keyDown(screen.getByRole("combobox", { name: "nav.search" }), {
       key: "Escape",
     })
     expect(
@@ -1139,11 +1141,11 @@ describe("DesktopShell", () => {
     )
 
     fireEvent.click(screen.getByTestId("desktop-navigation-search"))
-    fireEvent.change(screen.getByRole("searchbox", { name: "nav.search" }), {
+    fireEvent.change(screen.getByRole("combobox", { name: "nav.search" }), {
       target: { value: "legendary" },
     })
 
-    const result = screen.getByRole("link", {
+    const result = screen.getByRole("option", {
       name: /^legendaryEvents\.tabs\.allEvents/,
     })
     expect(result).toHaveAttribute("href", "/legendary-events")
@@ -1216,17 +1218,44 @@ describe("DesktopShell quick actions in navigation search", () => {
     return quickActions
   }
 
-  it("lists Quick actions as buttons before the Pages links", () => {
+  it("lists Quick actions before the Pages links, with the first row highlighted", () => {
     renderWithActions([actionOf("createGoal", "Create Goal")])
     const dialog = within(screen.getByTestId("desktop-navigation-dialog"))
 
-    const headings = dialog.getAllByRole("heading", { level: 3 })
-    expect(headings.map((heading) => heading.textContent)).toEqual([
-      "nav.quickActions.heading",
-      "nav.quickActions.pagesHeading",
-    ])
-    expect(dialog.getByRole("button", { name: /Create Goal/ })).toBeVisible()
-    expect(dialog.getAllByRole("link").length).toBeGreaterThan(0)
+    expect(
+      dialog
+        .getAllByRole("group")
+        .map(
+          (group) =>
+            document.getElementById(group.getAttribute("aria-labelledby") ?? "")
+              ?.textContent
+        )
+    ).toEqual(["nav.quickActions.heading", "nav.quickActions.pagesHeading"])
+    const action = dialog.getByRole("option", { name: /Create Goal/ })
+    expect(action).toHaveAttribute("aria-selected", "true")
+    expect(dialog.getByRole("option", { name: /^nav\.home/ })).toHaveAttribute(
+      "href",
+      "/home"
+    )
+  })
+
+  it("moves the highlight with the arrow keys and opens the highlighted page with Enter", async () => {
+    renderWithActions([actionOf("createGoal", "Create Goal")])
+    const input = screen.getByRole("combobox", { name: "nav.search" })
+
+    fireEvent.keyDown(input, { key: "ArrowDown" })
+    const home = screen.getByRole("option", { name: /^nav\.home/ })
+    expect(home).toHaveAttribute("aria-selected", "true")
+    await vi.waitFor(() =>
+      expect(input).toHaveAttribute("aria-activedescendant", home.id)
+    )
+
+    fireEvent.keyDown(input, { key: "Enter" })
+    await vi.waitFor(() =>
+      expect(
+        screen.queryByTestId("desktop-navigation-dialog")
+      ).not.toBeInTheDocument()
+    )
   })
 
   it("selects an action on click, closes search, and dispatches only after the dialog has closed", async () => {
@@ -1234,7 +1263,7 @@ describe("DesktopShell quick actions in navigation search", () => {
       actionOf("createGoal", "Create Goal"),
     ])
 
-    fireEvent.click(screen.getByRole("button", { name: /Create Goal/ }))
+    fireEvent.click(screen.getByRole("option", { name: /Create Goal/ }))
 
     expect(quickActions.select).toHaveBeenCalledWith("createGoal")
     expect(
@@ -1246,24 +1275,28 @@ describe("DesktopShell quick actions in navigation search", () => {
     )
   })
 
-  it("does not run an action when typing or pressing Enter in the search input", () => {
+  it("runs nothing while typing, and runs the highlighted top hit on Enter", () => {
     const quickActions = renderWithActions([actionOf("sync", "Sync", {})])
-    const input = screen.getByRole("searchbox", { name: "nav.search" })
+    const input = screen.getByRole("combobox", { name: "nav.search" })
 
     fireEvent.change(input, { target: { value: "sync" } })
-    fireEvent.keyDown(input, { key: "Enter" })
-
     expect(quickActions.select).not.toHaveBeenCalled()
-    expect(screen.getByTestId("desktop-navigation-dialog")).toBeVisible()
+    expect(screen.getByRole("option", { name: /Sync/ })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    )
+
+    fireEvent.keyDown(input, { key: "Enter" })
+    expect(quickActions.select).toHaveBeenCalledExactlyOnceWith("sync")
   })
 
   it("keeps a disabled action visible with its explanation and leaves search open on click", () => {
     const quickActions = renderWithActions([
       actionOf("sync", "Sync", { disabledReason: "Syncing 1/2" }),
     ])
-    const row = screen.getByRole("button", { name: /Sync/ })
+    const row = screen.getByRole("option", { name: /Sync/ })
 
-    expect(row).toBeDisabled()
+    expect(row).toHaveAttribute("aria-disabled", "true")
     expect(row).toHaveTextContent("Syncing 1/2")
     fireEvent.click(row)
     expect(quickActions.select).not.toHaveBeenCalled()
@@ -1274,11 +1307,11 @@ describe("DesktopShell quick actions in navigation search", () => {
     renderWithActions([
       actionOf("createProject", "New project", { keywords: ["proj"] }),
     ])
-    const input = screen.getByRole("searchbox", { name: "nav.search" })
+    const input = screen.getByRole("combobox", { name: "nav.search" })
     const dialog = within(screen.getByTestId("desktop-navigation-dialog"))
 
     fireEvent.change(input, { target: { value: "new project" } })
-    expect(dialog.getByRole("button", { name: /New project/ })).toBeVisible()
+    expect(dialog.getByRole("option", { name: /New project/ })).toBeVisible()
     expect(
       dialog.queryByText("nav.quickActions.pagesHeading")
     ).not.toBeInTheDocument()
@@ -1286,7 +1319,11 @@ describe("DesktopShell quick actions in navigation search", () => {
 
     fireEvent.change(input, { target: { value: "zzzz-nothing" } })
     expect(dialog.getByText("nav.noResults")).toBeVisible()
-    expect(dialog.queryAllByRole("heading", { level: 3 })).toHaveLength(0)
+    expect(dialog.queryAllByRole("group")).toHaveLength(0)
+
+    fireEvent.click(dialog.getByRole("button", { name: "nav.clearSearch" }))
+    expect(input).toHaveValue("")
+    expect(dialog.getByRole("option", { name: /New project/ })).toBeVisible()
   })
 })
 

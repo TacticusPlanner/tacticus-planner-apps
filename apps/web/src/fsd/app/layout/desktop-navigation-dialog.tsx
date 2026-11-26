@@ -1,27 +1,19 @@
-import { Fragment, useState } from "react"
+import { useState } from "react"
 import type { RefObject } from "react"
-import { Link, useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { Input } from "@workspace/ui/components/input"
-import { cn } from "@workspace/ui/lib/utils"
+import { Kbd } from "@workspace/ui/components/kbd"
 
-import { NavGroupLabel } from "./nav-group-label"
-import { groupNavChildren } from "./nav-groups"
-import { NavItemIcon } from "./nav-child-icon"
-import { NavChildRow } from "./nav-child-row"
-import { filterNavigationItems } from "./navigation-filter"
-import { NavLiveDot } from "./nav-live-dot"
+import { isMacPlatform } from "@/shared/lib"
+
 import type { NavItem } from "./nav-items"
-import { filterQuickActions } from "./quick-actions"
+import { NavigationPalette } from "./navigation-palette"
 import type { QuickActionsController } from "./quick-actions"
-import { QuickActionsGroup } from "./quick-actions-group"
 
 export function DesktopNavigationDialog({
   getEntryPath,
@@ -40,14 +32,9 @@ export function DesktopNavigationDialog({
    *  Radix would otherwise restore focus to the (unmounted) input. */
   returnFocusRef?: RefObject<HTMLElement | null>
 }) {
-  // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
-  // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
-  const { t } = useTranslation(["common", "dailies", "library"])
-  const { pathname } = useLocation()
+  const { t } = useTranslation()
   const [search, setSearch] = useState("")
-  const filteredItems = filterNavigationItems(items, search, t)
-  const filteredActions = filterQuickActions(quickActions.actions, search)
-  const isSearching = search.trim() !== ""
+  const modifier = isMacPlatform() ? "⌘" : "Ctrl"
 
   const handleOpenChange = (nextOpen: boolean) => {
     onOpenChange(nextOpen)
@@ -57,7 +44,9 @@ export function DesktopNavigationDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="flex max-h-[80vh] flex-col sm:max-w-2xl"
+        // A command palette: anchored near the top so its field stays put as results change.
+        aria-describedby={undefined}
+        className="top-[12vh] flex max-h-[76vh] translate-y-0 flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl"
         data-testid="desktop-navigation-dialog"
         onCloseAutoFocus={(event) => {
           if (returnFocusRef?.current) {
@@ -68,107 +57,56 @@ export function DesktopNavigationDialog({
           // and pointer restrictions, so the target form/widget/tour never overlaps this one.
           quickActions.flush()
         }}
+        showCloseButton={false}
       >
-        <DialogHeader>
-          <DialogTitle>{t("nav.navigation")}</DialogTitle>
-          <DialogDescription>{t("nav.navigationHint")}</DialogDescription>
-        </DialogHeader>
-        <Input
-          aria-label={t("nav.search")}
-          // The dialog exists to search; focus belongs in its field on open.
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
-          onChange={(event) => setSearch(event.target.value)}
-          placeholder={t("nav.search")}
-          type="search"
-          value={search}
+        <DialogTitle className="sr-only">{t("nav.navigation")}</DialogTitle>
+        <NavigationPalette
+          focusOnOpen
+          density="compact"
+          footer={
+            <div
+              aria-hidden="true"
+              className="flex shrink-0 items-center gap-4 border-t px-4 py-2 text-xs text-muted-foreground"
+            >
+              <span className="flex items-center gap-1">
+                <Kbd>↑</Kbd>
+                <Kbd>↓</Kbd>
+                {t("nav.palette.move")}
+              </span>
+              <span className="flex items-center gap-1">
+                <Kbd>↵</Kbd>
+                {t("nav.palette.open")}
+              </span>
+              <span className="flex items-center gap-1">
+                <Kbd>Esc</Kbd>
+                {t("nav.palette.close")}
+              </span>
+              <span className="ml-auto flex items-center gap-1">
+                <Kbd>{modifier}</Kbd>
+                <Kbd>K</Kbd>
+                {t("nav.palette.anywhere")}
+              </span>
+            </div>
+          }
+          getEntryPath={getEntryPath}
+          inputEnd={
+            <DialogClose
+              aria-label={t("common.close")}
+              className="shrink-0 rounded-sm outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Kbd className="pointer-events-auto cursor-pointer">Esc</Kbd>
+            </DialogClose>
+          }
+          inputPlacement="top"
+          items={items}
+          onActionSelect={(id) => {
+            if (quickActions.select(id)) handleOpenChange(false)
+          }}
+          onNavigate={() => handleOpenChange(false)}
+          onSearchChange={setSearch}
+          quickActions={quickActions}
+          search={search}
         />
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto py-2">
-          <QuickActionsGroup
-            actions={filteredActions}
-            onSelect={(id) => {
-              if (quickActions.select(id)) handleOpenChange(false)
-            }}
-            rowClassName="group/nav-row flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors"
-          />
-          {filteredItems.length > 0 ? (
-            <section aria-labelledby="pages-heading">
-              <h3
-                className="px-3 pb-1 text-xs font-medium text-muted-foreground"
-                id="pages-heading"
-              >
-                {t("nav.quickActions.pagesHeading")}
-              </h3>
-              <div className="space-y-1">
-                {filteredItems.map((item) => {
-                  const isActive =
-                    pathname === item.path ||
-                    pathname.startsWith(`${item.path}/`)
-
-                  return (
-                    <div key={item.path}>
-                      <Link
-                        aria-current={
-                          pathname === item.path ? "page" : undefined
-                        }
-                        className={cn(
-                          "group/nav-row flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
-                          isActive
-                            ? "bg-accent/15 font-semibold text-foreground shadow-[inset_3px_0_0_0_var(--accent)]"
-                            : "hover:bg-muted"
-                        )}
-                        onClick={() => handleOpenChange(false)}
-                        to={getEntryPath(item)}
-                      >
-                        <NavItemIcon item={item} />
-                        <span className="flex min-w-0 flex-col">
-                          <span className="flex items-center">
-                            <span className="truncate">{t(item.labelKey)}</span>
-                            <NavLiveDot hidden={isSearching} item={item} />
-                          </span>
-                          <span
-                            className={cn(
-                              "truncate text-xs font-normal",
-                              isActive
-                                ? "text-muted-foreground"
-                                : "text-muted-foreground"
-                            )}
-                          >
-                            {t(item.descriptionKey)}
-                          </span>
-                        </span>
-                      </Link>
-                      {item.children && item.children.length > 0 ? (
-                        <div className="mt-1 ml-8 space-y-1 border-l pl-3">
-                          {groupNavChildren(item.children).map((group) => (
-                            <Fragment key={group.labelKey ?? "children"}>
-                              {group.labelKey ? (
-                                <NavGroupLabel labelKey={group.labelKey} />
-                              ) : null}
-                              {group.children.map((child) => (
-                                <NavChildRow
-                                  key={child.path}
-                                  child={child}
-                                  hideLive={isSearching}
-                                  isActive={pathname === child.path}
-                                  onSelect={() => handleOpenChange(false)}
-                                />
-                              ))}
-                            </Fragment>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                  )
-                })}
-              </div>
-            </section>
-          ) : filteredActions.length > 0 ? null : (
-            <p className="py-8 text-center text-muted-foreground">
-              {t("nav.noResults")}
-            </p>
-          )}
-        </div>
       </DialogContent>
     </Dialog>
   )

@@ -103,6 +103,9 @@ interface NavSubItemBase {
   isLandingPage?: boolean
   // Names a live signal this entry shows through `NavLiveDot` (absent means none).
   liveIndicator?: "hse" | "hre" | "quest"
+  // Extra navigation-search terms beyond the label and description: the shorthand players type
+  // (GW, LRE, MoW…). Lowercase; not translated, like the quick actions' keywords.
+  keywords?: readonly string[]
   // Overrides the section's `anonymousAllowed` for this child, so one section can mix public and
   // sign-in-only pages (My Game: Collection is public, the rest are not). Absent means inherit.
   // It can only narrow: `filterVisibleNavItems` drops a sign-in-only section before looking at its
@@ -151,6 +154,8 @@ export interface NavItem {
   /** The game's own art for the section, shown in place of `icon` in the navigation menu. */
   artSrc?: string
   anonymousAllowed: boolean
+  /** See `NavSubItemBase.keywords`. */
+  keywords?: readonly string[]
   children?: NavSubItem[]
   // Names a resolver `use-nav-items.ts` runs to prepend data-driven children (the active Legendary
   // Events) to the static `children` above. A key rather than a function so this module stays a
@@ -168,6 +173,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   {
     path: "/home",
+    keywords: ["dashboard", "overview"],
     labelKey: "nav.home",
     descriptionKey: "nav.homeDescription",
     icon: Home,
@@ -177,6 +183,7 @@ export const navItems: NavItem[] = [
   },
   {
     path: "/my-game",
+    keywords: ["roster"],
     labelKey: "nav.myGame",
     descriptionKey: "nav.myGameDescription",
     icon: Gamepad2,
@@ -188,6 +195,7 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/my-game/collection",
+        keywords: ["roster", "units", "heroes", "characters", "mow"],
         artSrc: gameMenuIcon("heroes"),
         labelKey: "myGame.tabs.collection",
         descriptionKey: "myGame.tabs.collectionDescription",
@@ -201,6 +209,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/my-game/campaigns",
+        keywords: ["campaign", "nodes"],
         artSrc: gameMenuIcon("battle"),
         labelKey: "myGame.tabs.campaigns",
         descriptionKey: "myGame.tabs.campaignsDescription",
@@ -208,6 +217,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/my-game/campaign-events",
+        keywords: ["ce"],
         artSrc: gameMenuIcon("campaignEvent"),
         labelKey: "myGame.tabs.campaign-events",
         descriptionKey: "myGame.tabs.campaign-eventsDescription",
@@ -215,6 +225,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/my-game/incursions",
+        keywords: ["mow", "machines of war"],
         artSrc: eventIcon("incursion", "Incursion"),
         labelKey: "myGame.tabs.incursions",
         descriptionKey: "myGame.tabs.incursionsDescription",
@@ -222,6 +233,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/my-game/teams",
+        keywords: ["lineups", "ta", "tournament arena"],
         artSrc: gameMenuIcon("guildWar"),
         labelKey: "myGame.tabs.teams",
         descriptionKey: "myGame.tabs.teamsDescription",
@@ -231,6 +243,7 @@ export const navItems: NavItem[] = [
   },
   {
     path: "/plan",
+    keywords: ["goals"],
     labelKey: "nav.goals",
     descriptionKey: "nav.goalsDescription",
     icon: ListTodo,
@@ -240,6 +253,7 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/plan/goals",
+        keywords: ["targets"],
         artSrc: gameMenuIcon("achievements"),
         labelKey: "goals.tabs.overview",
         descriptionKey: "goals.tabs.overviewDescription",
@@ -252,18 +266,21 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/plan/insights",
+        keywords: ["materials", "mats", "upgrades"],
         artSrc: gameMenuIcon("forge"),
         labelKey: "goals.tabs.insights",
         descriptionKey: "goals.tabs.insightsDescription",
       },
       {
         path: "/plan/schedule",
+        keywords: ["calendar"],
         icon: CalendarRange,
         labelKey: "goals.tabs.schedule",
         descriptionKey: "goals.tabs.scheduleDescription",
       },
       {
         path: "/plan/event-shop",
+        keywords: ["shop"],
         artSrc: gameMenuIcon("shop"),
         labelKey: "dailies:tabs.eventShop",
         descriptionKey: "dailies:tabs.eventShopDescription",
@@ -282,12 +299,14 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/dailies/raids",
+        keywords: ["energy", "farming"],
         artSrc: gameMenuIcon("raids"),
         labelKey: "dailies:tabs.raids",
         descriptionKey: "dailies:tabs.raidsDescription",
       },
       {
         path: "/dailies/hse",
+        keywords: ["home screen event"],
         artSrc: gameMenuIcon("homeScreenEvent"),
         labelKey: "dailies:tabs.hse",
         descriptionKey: "dailies:tabs.hseDescription",
@@ -295,6 +314,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/dailies/hre",
+        keywords: ["hero release event"],
         artSrc: gameMenuIcon("heroReleaseEvent"),
         labelKey: "dailies:tabs.hre",
         descriptionKey: "dailies:tabs.hreDescription",
@@ -302,6 +322,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/dailies/quest",
+        keywords: ["quests", "mythic"],
         artSrc: gameMenuIcon("quests"),
         labelKey: "dailies:tabs.quest",
         descriptionKey: "dailies:tabs.questDescription",
@@ -309,6 +330,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/dailies/guild-raids",
+        keywords: ["gr", "guild raid", "boss"],
         artSrc: gameMenuIcon("guildRaid"),
         labelKey: "dailies:tabs.guild-raids",
         descriptionKey: "dailies:tabs.guild-raidsDescription",
@@ -317,6 +339,7 @@ export const navItems: NavItem[] = [
   },
   {
     path: "/legendary-events",
+    keywords: ["le", "lre"],
     labelKey: "nav.legendaryEvents",
     descriptionKey: "nav.legendaryEventsDescription",
     icon: CalendarDays,
@@ -328,6 +351,7 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/legendary-events",
+        keywords: ["le", "lre"],
         labelKey: "legendaryEvents.tabs.allEvents",
         artSrc: gameMenuIcon("legendaryEvent"),
         descriptionKey: "legendaryEvents.tabs.allEventsDescription",
@@ -336,12 +360,14 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/legendary-events/master-table",
+        keywords: ["le", "lre"],
         labelKey: "legendaryEvents.tabs.masterTable",
         descriptionKey: "legendaryEvents.tabs.masterTableDescription",
         icon: Table2,
       },
       {
         path: "/legendary-events/tier-list",
+        keywords: ["le", "lre", "tiers"],
         labelKey: "legendaryEvents.tabs.tierList",
         descriptionKey: "legendaryEvents.tabs.tierListDescription",
         icon: ListOrdered,
@@ -359,6 +385,7 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/guild/members",
+        keywords: ["roster"],
         artSrc: gameMenuIcon("guild"),
         labelKey: "guild.tabs.members",
         descriptionKey: "guild.tabs.membersDescription",
@@ -366,6 +393,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/guild/settings",
+        keywords: ["api key"],
         icon: Settings,
         labelKey: "guild.tabs.settings",
         descriptionKey: "guild.tabs.settingsDescription",
@@ -373,6 +401,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/guild/war/offense",
+        keywords: ["gw", "guild war", "attack"],
         artSrc: gameMenuIcon("guildWar"),
         labelKey: "guild.tabs.warOffense",
         descriptionKey: "guild.tabs.warOffenseDescription",
@@ -380,6 +409,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/guild/war/history",
+        keywords: ["gw", "guild war"],
         icon: History,
         labelKey: "guild.tabs.warHistory",
         descriptionKey: "guild.tabs.warHistoryDescription",
@@ -398,24 +428,28 @@ export const navItems: NavItem[] = [
     children: [
       {
         path: "/library/characters",
+        keywords: ["heroes", "units"],
         artSrc: gameMenuIcon("heroes"),
         labelKey: "library:collections.characters.label",
         descriptionKey: "library:collections.characters.description",
       },
       {
         path: "/library/machines-of-war",
+        keywords: ["mow"],
         artSrc: gameMenuIcon("machinesOfWar"),
         labelKey: "library:collections.machinesOfWar.label",
         descriptionKey: "library:collections.machinesOfWar.description",
       },
       {
         path: "/library/npcs",
+        keywords: ["enemies"],
         artSrc: gameMenuIcon("miniboss"),
         labelKey: "library:collections.npcs.label",
         descriptionKey: "library:collections.npcs.description",
       },
       {
         path: "/library/raid-bosses",
+        keywords: ["gr", "guild raid", "boss"],
         artSrc: gameMenuIcon("guildRaid"),
         labelKey: "library:collections.raidBosses.label",
         descriptionKey: "library:collections.raidBosses.description",
@@ -425,6 +459,7 @@ export const navItems: NavItem[] = [
       },
       {
         path: "/library/shops",
+        keywords: ["daily shop"],
         artSrc: gameMenuIcon("shop"),
         labelKey: "library:collections.shops.label",
         descriptionKey: "library:collections.shops.description",

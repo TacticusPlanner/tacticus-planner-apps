@@ -287,8 +287,10 @@ describe("MobileBottomNav actions", () => {
       target: { value: "events" },
     })
 
-    expect(drawer.getByText("nav.myGame")).toBeVisible()
+    // Ranked results are flat: the child stands alone, its section named as a breadcrumb.
+    expect(drawer.queryByText("nav.myGame")).not.toBeInTheDocument()
     expect(drawer.getByText("Campaign Events")).toBeVisible()
+    expect(drawer.getByText("· nav.myGame")).toBeVisible()
     expect(drawer.queryByText("myGame.tabs.campaigns")).not.toBeInTheDocument()
     expect(drawer.queryByText("library:section.label")).not.toBeInTheDocument()
     // Clicking the filtered result links directly to that child page's own route.
@@ -342,7 +344,7 @@ describe("MobileBottomNav actions", () => {
       target: { value: "library:collections.npcs.description" },
     })
 
-    expect(drawer.getByText("library:section.label")).toBeVisible()
+    expect(drawer.queryByText("library:section.label")).not.toBeInTheDocument()
     expect(drawer.getByText("library:collections.npcs.label")).toBeVisible()
     expect(
       drawer.queryByText("library:collections.characters.label")
@@ -528,11 +530,18 @@ describe("MobileBottomNav quick actions in Menu search", () => {
 
     expect(
       drawer
-        .getAllByRole("heading", { level: 3 })
-        .map((heading) => heading.textContent)
+        .getAllByRole("group")
+        .map(
+          (group) =>
+            document.getElementById(group.getAttribute("aria-labelledby") ?? "")
+              ?.textContent
+        )
     ).toEqual(["nav.quickActions.heading", "nav.quickActions.pagesHeading"])
-    expect(drawer.getByRole("button", { name: /Create Goal/ })).toBeVisible()
-    expect(drawer.getAllByRole("link").length).toBeGreaterThan(0)
+    expect(drawer.getByRole("option", { name: /Create Goal/ })).toBeVisible()
+    expect(drawer.getByRole("option", { name: /^nav\.home/ })).toHaveAttribute(
+      "href",
+      "/home"
+    )
   })
 
   it("selects an action, closes the drawer, and resets the query", () => {
@@ -543,7 +552,7 @@ describe("MobileBottomNav quick actions in Menu search", () => {
       target: { value: "goal" },
     })
 
-    fireEvent.click(screen.getByRole("button", { name: /Create Goal/ }))
+    fireEvent.click(screen.getByRole("option", { name: /Create Goal/ }))
 
     expect(quickActions.select).toHaveBeenCalledWith("createGoal")
     expect(screen.getByTestId("mobile-menu-trigger")).toHaveAttribute(
@@ -560,7 +569,7 @@ describe("MobileBottomNav quick actions in Menu search", () => {
       const quickActions = controller([createGoalAction])
       renderShell(vi.fn(), true, "/", undefined, quickActions)
       fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
-      fireEvent.click(screen.getByRole("button", { name: /Create Goal/ }))
+      fireEvent.click(screen.getByRole("option", { name: /Create Goal/ }))
       expect(quickActions.flush).not.toHaveBeenCalled()
 
       act(() => void vi.advanceTimersByTime(600))
@@ -580,8 +589,8 @@ describe("MobileBottomNav quick actions in Menu search", () => {
     renderShell(vi.fn(), true, "/", undefined, quickActions)
     fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
 
-    const row = screen.getByRole("button", { name: /Sync with Tacticus/ })
-    expect(row).toBeDisabled()
+    const row = screen.getByRole("option", { name: /Sync with Tacticus/ })
+    expect(row).toHaveAttribute("aria-disabled", "true")
     expect(row).toHaveTextContent("Syncing 1/2")
     fireEvent.click(row)
     expect(quickActions.select).not.toHaveBeenCalled()
@@ -596,7 +605,7 @@ describe("MobileBottomNav quick actions in Menu search", () => {
     fireEvent.change(screen.getByLabelText("nav.search"), {
       target: { value: "new goal form" },
     })
-    expect(drawer.getByRole("button", { name: /Create Goal/ })).toBeVisible()
+    expect(drawer.getByRole("option", { name: /Create Goal/ })).toBeVisible()
     expect(drawer.queryByText("nav.noResults")).not.toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText("nav.search"), {
@@ -689,7 +698,7 @@ describe("MobileShell landmarks and focus", () => {
     await user.click(screen.getByTestId("mobile-menu-trigger"))
     const menu = await screen.findByTestId("mobile-menu")
     await user.click(
-      within(menu).getAllByRole("link", { name: /nav\.goals/ })[0]!
+      within(menu).getAllByRole("option", { name: /nav\.goals/ })[0]!
     )
 
     await waitFor(() =>

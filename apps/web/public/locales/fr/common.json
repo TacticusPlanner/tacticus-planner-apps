@@ -297,6 +297,14 @@
     "navigation": "Navigation",
     "navigationHint": "Choisissez une page ou une action rapide, ou filtrez la liste.",
     "noResults": "Aucune page ou action correspondante trouvée.",
+    "clearSearch": "Effacer la recherche",
+    "youAreHere": "Vous êtes ici",
+    "palette": {
+      "move": "pour naviguer",
+      "open": "pour ouvrir",
+      "close": "pour fermer",
+      "anywhere": "partout"
+    },
     "search": "Rechercher des pages et des actions",
     "sync": "Synchroniser",
     "syncCooldown": "{{minutes}} min",
