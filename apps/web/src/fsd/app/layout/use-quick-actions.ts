@@ -126,7 +126,7 @@ export function useQuickActions({
           ? t("nav.quickActions.feedbackUnavailable")
           : undefined,
     },
-    run: () => openFeedback(),
+    run: () => openFeedback({ to: "feedback" }),
   })
   entries.push({
     action: {

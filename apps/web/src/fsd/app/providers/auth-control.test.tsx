@@ -364,13 +364,13 @@ describe("AuthControl", () => {
     expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 
-  it("opens the UserJot widget and closes the desktop menu from the Send feedback row", () => {
+  it("opens the widget's Feedback list and closes the desktop menu from the Send feedback row", () => {
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
     fireEvent.click(screen.getByTestId("auth-feedback"))
 
-    expect(openUserJot).toHaveBeenCalledTimes(1)
+    expect(openUserJot).toHaveBeenCalledExactlyOnceWith({ to: "feedback" })
     expect(screen.queryByTestId("auth-feedback")).not.toBeInTheDocument()
   })
 
@@ -580,7 +580,7 @@ describe("AuthControl", () => {
 
     fireEvent.click(screen.getByTestId("auth-feedback"))
 
-    expect(openUserJot).toHaveBeenCalledTimes(1)
+    expect(openUserJot).toHaveBeenCalledExactlyOnceWith({ to: "feedback" })
     expect(screen.queryByTestId("auth-account-drawer")).not.toBeInTheDocument()
   })
 

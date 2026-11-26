@@ -195,7 +195,7 @@ export function AuthControl() {
       onEditName={() => openManageAccount("profile")}
       onFeedback={() => {
         setMenuOpen(false)
-        openUserJot()
+        openUserJot({ to: "feedback" })
       }}
       onChangelog={() => {
         setMenuOpen(false)
