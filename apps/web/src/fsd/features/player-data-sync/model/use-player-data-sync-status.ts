@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { formatRelativeTime } from "@/shared/lib"
+import { formatRelativeTime, useNow } from "@/shared/lib"
 import {
   getAutoSyncProgress,
   usePlayerDataProgress,
@@ -39,7 +38,8 @@ export function usePlayerDataSyncStatus() {
   } = usePlayerDataStatus()
   // Subscribes to every progress tick: call this only from a control that shows the status text.
   const progress = usePlayerDataProgress()
-  const [relativeTimeTick, setRelativeTimeTick] = useState(() => Date.now())
+  // Shared clock for the relative times; pauses while the tab is hidden and catches up when shown.
+  const relativeTimeTick = useNow(relativeTimeRefreshMs)
   const isSyncing = status === "syncing"
   const statusLabel = t(statusLabelKeys[status])
   const relativeLastSync = lastSyncedAt
@@ -99,19 +99,6 @@ export function usePlayerDataSyncStatus() {
                 lastSync: lastSyncText,
               })
             : lastSyncText
-
-  useEffect(() => {
-    if (!lastSyncedAt && !isCoolingDown) {
-      return
-    }
-
-    const interval = window.setInterval(
-      () => setRelativeTimeTick(Date.now()),
-      relativeTimeRefreshMs
-    )
-
-    return () => window.clearInterval(interval)
-  }, [lastSyncedAt, isCoolingDown])
 
   return {
     status,

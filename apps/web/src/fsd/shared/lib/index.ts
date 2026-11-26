@@ -58,6 +58,8 @@ export {
   usePersistedSelection,
   useSearchParamState,
   useCoarsePointer,
+  readNow,
+  useNow,
   useStoredFlag,
   useStoredPreference,
   userStoragePrefix,

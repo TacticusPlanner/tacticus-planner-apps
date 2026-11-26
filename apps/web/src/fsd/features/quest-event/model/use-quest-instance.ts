@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, useReadState } from "@/shared/lib"
+import { combineReadStates, useNow, useReadState } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { selectQuestInstance } from "./quest-instance"
@@ -38,12 +38,9 @@ function entriesAround(
 
 /** The running Quest Event, else the one in its claim window, else the next one (design D2). */
 export function useQuestInstance(): QuestInstanceState {
-  // A coarse tick re-selects from the cached calendar across a phase boundary without a reload.
-  const [nowMs, setNowMs] = useState(() => Date.now())
-  useEffect(() => {
-    const timer = setInterval(() => setNowMs(Date.now()), TICK_MS)
-    return () => clearInterval(timer)
-  }, [])
+  // A coarse tick re-selects from the cached calendar across a phase boundary without a
+  // reload; it pauses while the tab is hidden and catches up when shown.
+  const nowMs = useNow(TICK_MS)
   const synced = useReadState(
     "events-calendar-synced",
     hasEventsCalendarSynced,

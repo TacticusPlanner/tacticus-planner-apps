@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react"
 import { getPlayerDataMetadata } from "@workspace/player-data"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { useGuildRaidStatus } from "@/entities/guild-raid-status"
-import { useReadState } from "@/shared/lib"
+import { useNow, useReadState } from "@/shared/lib"
 import { usePlayerChunk } from "@/shared/local-data"
 
 import {
@@ -14,7 +13,8 @@ import type { GuildRaidsViewModel } from "./guild-raid-status-view-model"
 import { useGuildRaidCatalog } from "./use-guild-raid-catalog"
 
 // Re-renders live "in 2 hours" / "3 hours ago" style copy without polling any data source — matches
-// the sidebar sync button's relative-time refresh cadence (see player-data-sync-button.tsx).
+// the sidebar sync button's relative-time refresh cadence (see player-data-sync-button.tsx). The
+// shared clock pauses while the tab is hidden and catches up when shown.
 const nowTickMs = 30 * 1000
 
 const toGuildRaidTokens = (
@@ -42,11 +42,7 @@ export function useGuildRaidsViewModel(): GuildRaidsViewModel {
   const observedAt =
     observedAtRead.status === "ready" ? observedAtRead.data : null
 
-  const [nowMs, setNowMs] = useState(() => Date.now())
-  useEffect(() => {
-    const interval = window.setInterval(() => setNowMs(Date.now()), nowTickMs)
-    return () => window.clearInterval(interval)
-  }, [])
+  const nowMs = useNow(nowTickMs)
 
   const status = buildGuildRaidStatusView({
     query: query.data,
