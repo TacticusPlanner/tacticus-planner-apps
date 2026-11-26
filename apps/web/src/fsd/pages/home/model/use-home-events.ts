@@ -5,10 +5,16 @@ import {
 } from "@/entities/legendary-event"
 import { useIncursionWindow } from "@/entities/incursion"
 import { useHomeScreenEventCalendar } from "@/features/daily-raids"
-import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import type { ReadState } from "@/shared/lib"
+import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { calendarLiveAndNext, calendarWindowEntry } from "./calendar-window"
 import type { CalendarOccurrence } from "./calendar-window"
+import {
+  GUILD_WAR_DEFINITION_ID,
+  guildWarLiveAndNext,
+} from "./guild-war-phases"
+import type { RawEventDefinition } from "./events-calendar.types"
 import { selectHomeEvents } from "./select-home-events"
 import type {
   EventShopEntry,
@@ -91,6 +97,21 @@ function toEventShopEntries(
   }))
 }
 
+/** The running and next Guild War phases, once the calendar and its definitions are read. */
+function guildWarPhases(
+  calendar: ReadState<readonly CalendarEntry[]>,
+  definitions: ReadState<ReadonlyMap<string, RawEventDefinition>>,
+  nowMs: number
+) {
+  return calendar.status === "ready" && definitions.status === "ready"
+    ? guildWarLiveAndNext(
+        calendar.data,
+        definitions.data.get(GUILD_WAR_DEFINITION_ID),
+        nowMs
+      )
+    : null
+}
+
 export type HomeEventsState =
   | { status: "loading" }
   | { status: "error" }
@@ -115,6 +136,8 @@ export function useHomeEvents(): HomeEventsState {
   const incursion = useIncursionWindow(minuteNowMs)
   const calendar = useCatalogDataset("events-calendar")
   const eventShops = useCatalogDataset("event-shops", toEventShopEntries)
+  // The season definition says how a Guild War season splits into wars.
+  const definitions = useCatalogDataset("event-definitions", toById)
   const activeCampaignEvent = usePlayerChunk(
     "live-progress",
     (chunk) => chunk?.activeCampaignEventId ?? null
@@ -142,6 +165,7 @@ export function useHomeEvents(): HomeEventsState {
     calendar.status === "ready"
       ? featuredLiveAndNext(calendar.data, HRE_DEFINITION_ID, nowMs)
       : null
+  const guildWar = guildWarPhases(calendar, definitions, nowMs)
   const { live, upcoming } = selectHomeEvents({
     homeScreen:
       homeScreen.status === "ready"
@@ -166,6 +190,7 @@ export function useHomeEvents(): HomeEventsState {
     quest,
     hre,
     eventShops: eventShops.status === "ready" ? eventShops.data : null,
+    guildWar,
     nowMs,
   })
 
