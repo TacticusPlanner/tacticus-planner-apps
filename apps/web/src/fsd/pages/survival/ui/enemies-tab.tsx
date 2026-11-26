@@ -276,15 +276,15 @@ function WaveGroupSection({
             <span className="text-lg font-semibold text-foreground">
               {t("survival:enemies.rarityCap", { rarity })}
             </span>
-            <span className="text-sm font-normal text-muted-foreground">
+            <span className="inline-flex items-center gap-2 text-sm font-normal whitespace-nowrap text-muted-foreground">
               {first === last
                 ? t("survival:enemies.wave", { wave: first })
                 : t("survival:enemies.waves", { from: first, to: last })}
+              <ChevronRight
+                aria-hidden
+                className={`size-icon-sm shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+              />
             </span>
-            <ChevronRight
-              aria-hidden
-              className={`size-icon-sm shrink-0 text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`}
-            />
           </button>
         }
         tone="default"
