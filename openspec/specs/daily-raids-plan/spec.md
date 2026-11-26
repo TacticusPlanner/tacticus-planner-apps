@@ -379,44 +379,6 @@ The multi-day plan SHALL be the Plan section's **Schedule** page at `/plan/sched
 - **WHEN** `/plan/schedule` renders
 - **THEN** it shows the same whole-plan summary, day columns, density toggle, and Show all days behavior the page showed under Dailies
 
-### Requirement: Schedule owns its project selection
-
-Schedule SHALL provide its own project selector using the shared project-selector component, right-aligned in its own row with the Planning Settings trigger trailing after it. It SHALL default to "All goals" (the account-wide plan), SHALL NOT be persisted across a full page reload, and SHALL be independent of Today's selection, of every other Dailies page's selection, and of the Goals page's project scope. A failed project-list load SHALL NOT be reported as a plan failure; with no projects the page SHALL derive its state from Active goals.
-
-#### Scenario: Default is all goals
-
-- **WHEN** Schedule loads with no prior selection this session
-- **THEN** the selector reads "All goals" and the account-wide plan renders
-
-#### Scenario: Selecting a project narrows the plan
-
-- **WHEN** the user selects project B on Schedule
-- **THEN** the summary and day columns recompute for project B's Active goals in global order
-
-#### Scenario: Today is unaffected
-
-- **GIVEN** project B is selected on Schedule
-- **WHEN** the user opens Dailies › Raids
-- **THEN** Today shows its own selection (All goals unless changed there), not project B
-
-#### Scenario: Reload resets the selection
-
-- **GIVEN** project B is selected on Schedule
-- **WHEN** the user reloads `/plan/schedule`
-- **THEN** "All goals" is selected again
-
-#### Scenario: Project list fails to load
-
-- **GIVEN** project-list loading fails but global goals load
-- **WHEN** Schedule loads
-- **THEN** it renders the account-wide plan and does not show a project-list error as a plan error
-
-#### Scenario: No projects
-
-- **GIVEN** no projects are available but global goals load
-- **WHEN** Schedule loads
-- **THEN** it derives its empty or populated state from Active goals, not project count
-
 ### Requirement: Raids Plan is not event-optimised
 
 The Raids Plan SHALL NOT show event points or event names on day cards, whether or not an HSE is active or scheduled within the plan horizon; its schedule is event-agnostic (see `daily-raids-home-screen-event` "Event points affect only the HSE tab's farm list").
@@ -517,3 +479,41 @@ Raids Plan's Day 1 SHALL cap each node at the player's real attempts left today 
 - **GIVEN** a goal still needs 4 of a material whose only node has 0 attempts left today
 - **WHEN** Raids Plan renders
 - **THEN** Day 1 has no cell for that material, and Day 2 schedules its 4 raids
+
+### Requirement: Schedule uses the shared project selection
+
+Schedule SHALL provide a project selector using the shared project-selector component, right-aligned in its own row with the Planning Settings trigger trailing after it. Its selection SHALL be the shared, remembered one (see `goals-navigation`), defaulting to "All goals" (the account-wide plan). A failed project-list load SHALL NOT be reported as a plan failure; with no projects the page SHALL derive its state from Active goals.
+
+#### Scenario: Default is all goals
+
+- **WHEN** Schedule loads with no project chosen before
+- **THEN** the selector reads "All goals" and the account-wide plan renders
+
+#### Scenario: Selecting a project narrows the plan
+
+- **WHEN** the user selects project B on Schedule
+- **THEN** the summary and day columns recompute for project B's Active goals in global order
+
+#### Scenario: Today follows the selection
+
+- **GIVEN** project B is selected on Schedule
+- **WHEN** the user opens Dailies › Raids
+- **THEN** Today shows project B selected
+
+#### Scenario: Reload keeps the selection
+
+- **GIVEN** project B is selected on Schedule
+- **WHEN** the user reloads `/plan/schedule`
+- **THEN** project B is still selected
+
+#### Scenario: Project list fails to load
+
+- **GIVEN** project-list loading fails but global goals load
+- **WHEN** Schedule loads
+- **THEN** it renders the account-wide plan and does not show a project-list error as a plan error
+
+#### Scenario: No projects
+
+- **GIVEN** no projects are available but global goals load
+- **WHEN** Schedule loads
+- **THEN** it derives its empty or populated state from Active goals, not project count
