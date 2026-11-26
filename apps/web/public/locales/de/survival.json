@@ -106,8 +106,8 @@
   "rewards": {
     "none": "Keine",
     "milestones": "Event-Meilensteine",
-    "chests_one": "Fortschrittstruhen · {{count}}",
-    "chests_other": "Fortschrittstruhen · {{count}}",
+    "chests": "Fortschrittstruhen",
+    "noChests": "Keine Fortschrittstruhen in diesem Event.",
     "chest": "Truhe {{level}}",
     "cost": "Kostet {{amount}} Eventwährung",
     "rarityMilestones": "Seltenheitsbelohnungen des vorgestellten Helden",

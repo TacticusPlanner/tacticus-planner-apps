@@ -1,22 +1,22 @@
 import { useTranslation } from "react-i18next"
 import { characterIcon, factionIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 
 import type {
   SurvivalEvent,
   SurvivalEventStatus,
 } from "../model/survival-event"
-import { EntityIcon, HowToRead, formatEventWindow } from "@/shared/ui"
+import {
+  EntityIcon,
+  HintTrigger,
+  HowToRead,
+  formatEventWindow,
+} from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 /**
  * One line under the switcher: the featured hero, the dates (or "Dates to be announced"), the allowed
- * factions as icons named in tooltips, and the Machine of War rule.
+ * factions as icons named in hints, and the Machine of War rule.
  */
 export function SurvivalEventLine({
   event,
@@ -58,18 +58,9 @@ export function SurvivalEventLine({
             const name = t(`factions:${faction}`, { defaultValue: faction })
             return (
               <li key={faction}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span aria-label={name} className="flex" role="img">
-                      <EntityIcon
-                        alt=""
-                        size="icon"
-                        src={factionIcon(faction)}
-                      />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>{name}</TooltipContent>
-                </Tooltip>
+                <HintTrigger label={name}>
+                  <EntityIcon alt="" size="icon" src={factionIcon(faction)} />
+                </HintTrigger>
               </li>
             )
           })}

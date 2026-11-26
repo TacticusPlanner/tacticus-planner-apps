@@ -1,15 +1,10 @@
 import { Fragment } from "react"
 import type { ReactNode } from "react"
 import type { GameCatalogEventShopRewardRange } from "@workspace/game-catalog"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { hasNode } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { CountBadge, EntityIcon, HintTrigger } from "@/shared/ui"
 
 import { rewardAmount } from "../lib/reward-amount"
 import type { EventRewardFormat } from "../model/use-event-reward-format"
@@ -19,12 +14,15 @@ type Reward = Pick<GameCatalogEventShopRewardRange, "type" | "min" | "max">
 /** A card with a label and a note on the right ("Daily · 6 a day · 600 Event points a day"). */
 export function RewardPanel({
   label,
+  count,
   note,
   children,
   testId,
   className,
 }: {
   label: string
+  /** How many items the card lists, in a badge beside the label. */
+  count?: number
   note?: ReactNode
   children: ReactNode
   testId?: string
@@ -39,7 +37,10 @@ export function RewardPanel({
       data-testid={testId}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <h3 className="text-xs font-semibold text-muted-foreground">{label}</h3>
+        <h3 className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+          {label}
+          {count === undefined ? null : <CountBadge count={count} />}
+        </h3>
         {hasNode(note) ? (
           <span className="inline-flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
             {note}
@@ -65,27 +66,18 @@ function CompactReward({
   const single = reward.min === 1 && reward.max === 1
   const label = single ? text.label : `${amount} ${text.label}`
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span
-          aria-label={label}
-          className="inline-flex items-center gap-1"
-          role="img"
-        >
-          <EntityIcon size="icon" alt="" src={text.iconUrl} />
-          {single ? null : (
-            <span className="font-semibold text-foreground tabular-nums">
-              {amount}
-            </span>
-          )}
+    <HintTrigger className="gap-1" label={label}>
+      <EntityIcon size="icon" alt="" src={text.iconUrl} />
+      {single ? null : (
+        <span className="font-semibold text-foreground tabular-nums">
+          {amount}
         </span>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
+      )}
+    </HintTrigger>
   )
 }
 
-/** "[icon] 90 Event points + [icon] 50 Event currency"; `compact` drops the names into tooltips. */
+/** "[icon] 90 Event points + [icon] 50 Event currency"; `compact` drops the names into hints. */
 export function RewardText({
   rewards,
   format,

@@ -10,15 +10,10 @@ import {
 import { npcPortrait, powerIcon, rarityIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { NpcPortrait, useNpcLabels, useNpcsById } from "@/entities/npc"
-import { EntityIcon, HintTrigger } from "@/shared/ui"
+import { EntityIcon, HintTrigger, ListDivider } from "@/shared/ui"
 import { EnemyList, buildEnemyTile } from "@/widgets/battle-preview"
 import type { EnemyNpcs } from "@/widgets/battle-preview"
 import { RewardText, useEventRewardFormat } from "@/widgets/event-rewards"
@@ -28,7 +23,7 @@ import type { SurvivalWave } from "../model/survival-event"
 import { killScoreIndex, waveGroups } from "../model/wave-view"
 import type { WaveGroup, WaveRow } from "../model/wave-view"
 
-/** "60.1B" with the full number in a tooltip; exact below 10,000. */
+/** "60.1B" with the full number in a hint; exact below 10,000. */
 function Power({ value }: { value: number }) {
   const { t, i18n } = useTranslation("survival")
   const exact = new Intl.NumberFormat(i18n.language).format(value)
@@ -39,20 +34,15 @@ function Power({ value }: { value: number }) {
           maximumFractionDigits: 1,
         }).format(value)
       : exact
+  const label = t("enemies.power", { power: exact })
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span
-          aria-label={t("enemies.power", { power: exact })}
-          className="inline-flex items-center gap-1 text-sm font-semibold tabular-nums"
-          role="img"
-        >
-          <EntityIcon alt="" size="icon" src={powerIcon()} />
-          {shown}
-        </span>
-      </TooltipTrigger>
-      <TooltipContent>{t("enemies.power", { power: exact })}</TooltipContent>
-    </Tooltip>
+    <HintTrigger
+      className="gap-1 text-sm font-semibold tabular-nums"
+      label={label}
+    >
+      <EntityIcon alt="" size="icon" src={powerIcon()} />
+      {shown}
+    </HintTrigger>
   )
 }
 
@@ -228,25 +218,16 @@ function GroupEnemies({ group }: { group: WaveGroup }) {
         const label = t("enemies.enemyCount", { name, count: enemy.count })
         return (
           <li key={enemy.npcId}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span
-                  aria-label={label}
-                  className="relative inline-flex"
-                  role="img"
-                >
-                  <NpcPortrait
-                    name=""
-                    size="portrait-sm"
-                    variationId={enemy.npcId}
-                  />
-                  <span className="absolute -right-1 -bottom-1 rounded-full border bg-background px-1 text-xs font-semibold tabular-nums">
-                    {enemy.count}
-                  </span>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>{label}</TooltipContent>
-            </Tooltip>
+            <HintTrigger className="relative" label={label}>
+              <NpcPortrait
+                name=""
+                size="portrait-sm"
+                variationId={enemy.npcId}
+              />
+              <span className="absolute -right-1 -bottom-1 rounded-full border bg-background px-1 text-xs font-semibold tabular-nums">
+                {enemy.count}
+              </span>
+            </HintTrigger>
           </li>
         )
       })}
@@ -274,37 +255,40 @@ function WaveGroupSection({
   })
   const id = `survival-group-${first}`
   return (
-    <li
-      className="flex flex-col gap-3 border-t-2 border-primary/40 pt-3"
-      data-testid={id}
-    >
-      <h3>
-        <button
-          aria-controls={`${id}-content`}
-          aria-expanded={open}
-          className="flex min-h-11 w-full items-center gap-2 rounded-md interactive-surface text-left"
-          onClick={onToggle}
-          type="button"
-        >
-          <ChevronRight
-            aria-hidden
-            className={`size-icon-sm shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
-          />
+    <li className="flex flex-col gap-2" data-testid={id}>
+      <ListDivider
+        heading="h3"
+        icon={
           <EntityIcon
             alt=""
-            size="icon-md"
+            size="icon"
             src={rarityIcon(group.rarity as Rarity)}
           />
-          <span className="text-base font-semibold">
-            {t("survival:enemies.rarityCap", { rarity })}
-          </span>
-          <span className="text-sm text-muted-foreground">
-            {first === last
-              ? t("survival:enemies.wave", { wave: first })
-              : t("survival:enemies.waves", { from: first, to: last })}
-          </span>
-        </button>
-      </h3>
+        }
+        label={
+          <button
+            aria-controls={`${id}-content`}
+            aria-expanded={open}
+            className="flex min-h-11 flex-wrap items-center gap-x-2 rounded-md interactive-surface px-1 text-left"
+            onClick={onToggle}
+            type="button"
+          >
+            <span className="text-lg font-semibold text-foreground">
+              {t("survival:enemies.rarityCap", { rarity })}
+            </span>
+            <span className="text-sm font-normal text-muted-foreground">
+              {first === last
+                ? t("survival:enemies.wave", { wave: first })
+                : t("survival:enemies.waves", { from: first, to: last })}
+            </span>
+            <ChevronRight
+              aria-hidden
+              className={`size-icon-sm shrink-0 text-muted-foreground transition-transform ${open ? "rotate-90" : ""}`}
+            />
+          </button>
+        }
+        tone="default"
+      />
       <div id={`${id}-content`}>
         {open ? (
           <ol className="flex flex-col gap-3">{children}</ol>
@@ -377,7 +361,6 @@ export function EnemiesTab() {
         <Button
           data-testid="survival-expand-all"
           onClick={toggleAll}
-          size="sm"
           variant="outline"
         >
           {allOpen ? (

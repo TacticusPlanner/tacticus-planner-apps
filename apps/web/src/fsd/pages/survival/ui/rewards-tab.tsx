@@ -1,7 +1,9 @@
 import { useTranslation } from "react-i18next"
+import { rarityIcon } from "@workspace/game-catalog"
+import type { Rarity } from "@workspace/game-domain"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { EntityIcon, HowToRead } from "@/shared/ui"
+import { EmptyState, EntityIcon, HowToRead } from "@/shared/ui"
 import {
   RewardLadder,
   RewardPanel,
@@ -38,13 +40,12 @@ export function RewardsTab() {
         tiers={event.milestones}
       />
       <RewardPanel
-        label={t("survival:rewards.chests", { count: event.chests.length })}
+        count={event.chests.length}
+        label={t("survival:rewards.chests")}
         testId="survival-chests"
       >
         {event.chests.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {t("survival:rewards.none")}
-          </p>
+          <EmptyState title={t("survival:rewards.noChests")} />
         ) : (
           <ol className="flex flex-col divide-y">
             {event.chests.map((chest) => (
@@ -86,7 +87,12 @@ export function RewardsTab() {
                 className="flex flex-wrap items-center gap-x-3 gap-y-1"
                 key={milestone.rarity}
               >
-                <span className="min-w-28 text-sm font-medium">
+                <span className="inline-flex min-w-28 items-center gap-1 text-sm font-medium">
+                  <EntityIcon
+                    alt=""
+                    size="icon"
+                    src={rarityIcon(milestone.rarity as Rarity)}
+                  />
                   {t(`progression:rarities.${milestone.rarity}` as never, {
                     defaultValue: milestone.rarity,
                   })}

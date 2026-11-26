@@ -61,7 +61,7 @@ export function SurvivalEventPicker({
         <span className="flex min-w-0 items-center gap-2">
           <EntityIcon
             alt=""
-            size="icon-lg"
+            size="portrait-sm"
             src={characterIcon(event.featuredCharacterId as UnitId)}
           />
           <span className="flex min-w-0 flex-col">

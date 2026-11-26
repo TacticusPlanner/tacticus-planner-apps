@@ -106,8 +106,8 @@
   "rewards": {
     "none": "Aucune",
     "milestones": "Paliers de l'événement",
-    "chests_one": "Coffres de progression · {{count}}",
-    "chests_other": "Coffres de progression · {{count}}",
+    "chests": "Coffres de progression",
+    "noChests": "Aucun coffre de progression dans cet événement.",
     "chest": "Coffre {{level}}",
     "cost": "Coûte {{amount}} de monnaie d'événement",
     "rarityMilestones": "Récompenses de rareté du héros vedette",

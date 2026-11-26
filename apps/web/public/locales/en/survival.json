@@ -106,8 +106,8 @@
   "rewards": {
     "none": "None",
     "milestones": "Event milestones",
-    "chests_one": "Progress chests · {{count}}",
-    "chests_other": "Progress chests · {{count}}",
+    "chests": "Progress chests",
+    "noChests": "No progress chests in this event.",
     "chest": "Chest {{level}}",
     "cost": "Costs {{amount}} event currency",
     "rarityMilestones": "Featured hero rarity rewards",

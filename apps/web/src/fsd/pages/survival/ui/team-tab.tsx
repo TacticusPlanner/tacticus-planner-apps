@@ -110,7 +110,7 @@ function TeamGoals({ units }: { units: readonly LineupUnit[] }) {
   const rosterData = roster.status === "ready" ? roster.data : null
   return (
     <section className="flex flex-col gap-2" data-testid="survival-goals">
-      <h2 className="text-base font-semibold">{t("team.goals")}</h2>
+      <h2 className="text-lg font-semibold">{t("team.goals")}</h2>
       {targets.status === "loading" ? (
         <Skeleton className="h-24 w-full" />
       ) : targets.status === "failed" ? (
@@ -229,7 +229,6 @@ export function TeamTab() {
             <Button
               data-testid="survival-edit-team"
               onClick={() => setEditorOpen(true)}
-              size="sm"
               variant="outline"
             >
               <Pencil aria-hidden />

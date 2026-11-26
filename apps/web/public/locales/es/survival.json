@@ -106,8 +106,8 @@
   "rewards": {
     "none": "Ninguna",
     "milestones": "Hitos del evento",
-    "chests_one": "Cofres de progreso · {{count}}",
-    "chests_other": "Cofres de progreso · {{count}}",
+    "chests": "Cofres de progreso",
+    "noChests": "No hay cofres de progreso en este evento.",
     "chest": "Cofre {{level}}",
     "cost": "Cuesta {{amount}} de moneda del evento",
     "rarityMilestones": "Recompensas de rareza del héroe destacado",
