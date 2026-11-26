@@ -1,5 +1,5 @@
 import { useRef } from "react"
-import type { ReactNode, MouseEvent } from "react"
+import type { KeyboardEvent, ReactNode, MouseEvent } from "react"
 import { Link, useLocation, useNavigate } from "react-router"
 import { Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -112,6 +112,12 @@ export function NavigationPalette({
     onNavigate()
   }
 
+  // With no query the phone shows no highlight, so Enter (Go) in the field must not open the
+  // hidden first row. cmdk skips a key event that is already default-prevented.
+  const guardEnter = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && !showHighlight) event.preventDefault()
+  }
+
   const field = (
     <div
       className={cn(
@@ -136,6 +142,7 @@ export function NavigationPalette({
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus={focusOnOpen}
           className="h-full text-base"
+          onKeyDown={guardEnter}
           onValueChange={changeSearch}
           placeholder={t("nav.search")}
           value={search}
@@ -337,6 +344,8 @@ function PaletteRow({
       <Link
         aria-current={isCurrent ? "page" : undefined}
         onClick={onClick}
+        // cmdk moves the highlight with the arrow keys; Tab leaves the list instead of walking it.
+        tabIndex={-1}
         to={entry.to}
       >
         {isChild ? (

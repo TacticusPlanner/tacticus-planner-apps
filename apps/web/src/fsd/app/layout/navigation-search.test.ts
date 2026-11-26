@@ -156,6 +156,8 @@ describe("buildNavigationGroups", () => {
     expect(build("sync").at(0)?.id).toBe("actions")
     // A keyword on both sides (api, api key): a tie.
     expect(build("api").at(0)?.id).toBe("actions")
+    // The query is trimmed and lowercased before ranking.
+    expect(build("  API ").at(0)?.id).toBe("actions")
     // "Raid" is a page title; the sync action does not match at all.
     expect(build("raid").map((group) => group.id)).toEqual(["pages"])
     const goalAction = {

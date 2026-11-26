@@ -570,6 +570,21 @@ describe("MobileBottomNav quick actions in Menu search", () => {
     expect(screen.getByLabelText("nav.search")).toHaveValue("")
   })
 
+  it("ignores Enter in an empty field, where no row is highlighted, and opens the top hit once searching", () => {
+    const quickActions = controller([createGoalAction])
+    renderShell(vi.fn(), true, "/", undefined, quickActions)
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    const field = screen.getByLabelText("nav.search")
+
+    fireEvent.keyDown(field, { key: "Enter" })
+    expect(quickActions.select).not.toHaveBeenCalled()
+    expect(screen.getByTestId("mobile-menu")).toBeVisible()
+
+    fireEvent.change(field, { target: { value: "create" } })
+    fireEvent.keyDown(field, { key: "Enter" })
+    expect(quickActions.select).toHaveBeenCalledWith("createGoal")
+  })
+
   it("dispatches the selected action once after the drawer closes and never on a later close", () => {
     vi.useFakeTimers()
     try {
