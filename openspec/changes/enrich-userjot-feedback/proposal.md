@@ -4,7 +4,7 @@ Feedback reaches UserJot with no context. Players type their device, page and bu
 
 ## What Changes
 
-- **Context on every post.** The widget is initialised with `pageContext: "path"`, so posts record the page they came from. Each identity-token request sends the app version, installed app or browser, and UI language, which the API signs into the token's traits.
+- **Context on every post.** The widget is initialised with `pageContext: "path"`, so posts record the page they came from. Each identity-token request sends the app version, installed app or browser, and UI language, which the API signs into the token's traits together with the browser and OS families it reads from the `User-Agent` header.
 - **Reply notices.** `whispers: true` lets a team reply or vote on the user's own post pop up a short notice. Changelog updates still never pop up (`notifications.updates: "none"`) and keep the unread dot.
 - **Report a bug.** A new search quick action and a button on the fallback error page open the widget directly on its submit form.
 - **Deep links.** `?changelog=<id>` and `?feedback=<id>` open that changelog post or request in the widget, then drop the parameter from the URL. Announcements can link into the signed-in widget.

@@ -24,7 +24,7 @@
     },
     "feedback": {
       "title": "Feedback-Board",
-      "body": "Das Feedback-Board läuft auf UserJot. Wenn du es angemeldet über den Feedback-Button oder das Kontomenü des Planers öffnest, identifiziert dich der Planer gegenüber UserJot mit einem signierten Token für dein Planer-Konto und deinen Planer-Namen, damit deine Beiträge und Stimmen dir zugeordnet werden. Das Token enthält außerdem einige Angaben, die uns helfen, eine Meldung zu bearbeiten: die Planer-Version, ob du die installierte App oder einen Browser nutzt, deine Sprache und ob ein Tacticus-API-Schlüssel verknüpft ist (nie den Schlüssel selbst). Ein Beitrag aus dem Widget speichert die Seite, von der er gesendet wurde. Wenn du den öffentlichen Board-Link öffnest, etwa den in der Fußzeile, sendet der Planer nichts."
+      "body": "Das Feedback-Board läuft auf UserJot. Wenn du es angemeldet über den Feedback-Button oder das Kontomenü des Planers öffnest, identifiziert dich der Planer gegenüber UserJot mit einem signierten Token für dein Planer-Konto und deinen Planer-Namen, damit deine Beiträge und Stimmen dir zugeordnet werden. Das Token enthält außerdem einige Angaben, die uns helfen, eine Meldung zu bearbeiten: die Planer-Version, ob du die installierte App oder einen Browser nutzt, deine Sprache sowie dein Browser und Betriebssystem (zum Beispiel „Chrome 131 auf Android“, nie die vollständige Browserkennung). Ein Beitrag aus dem Widget speichert die Seite, von der er gesendet wurde. Wenn du den öffentlichen Board-Link öffnest, etwa den in der Fußzeile, sendet der Planer nichts."
     },
     "noSale": {
       "title": "Keine Werbung, kein Verkauf",

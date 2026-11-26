@@ -24,7 +24,7 @@
     },
     "feedback": {
       "title": "Tableau de suggestions",
-      "body": "Le tableau de suggestions est hébergé par UserJot. Si vous l'ouvrez depuis le bouton de suggestions ou le menu du compte du planificateur en étant connecté, le planificateur vous identifie auprès d'UserJot par un jeton signé pour votre compte et votre nom de planificateur, afin que vos messages et vos votes vous soient attribués. Le jeton contient aussi quelques informations qui nous aident à traiter un signalement : la version du planificateur, si vous utilisez l'application installée ou un navigateur, votre langue et si une clé d'API Tacticus est liée (jamais la clé). Un message envoyé depuis le widget enregistre la page d'où il a été envoyé. Ouvrir le lien public du tableau, comme celui du pied de page, n'envoie rien depuis le planificateur."
+      "body": "Le tableau de suggestions est hébergé par UserJot. Si vous l'ouvrez depuis le bouton de suggestions ou le menu du compte du planificateur en étant connecté, le planificateur vous identifie auprès d'UserJot par un jeton signé pour votre compte et votre nom de planificateur, afin que vos messages et vos votes vous soient attribués. Le jeton contient aussi quelques informations qui nous aident à traiter un signalement : la version du planificateur, si vous utilisez l'application installée ou un navigateur, votre langue, ainsi que votre navigateur et votre système d'exploitation (par exemple « Chrome 131 sur Android », jamais l'identifiant complet du navigateur). Un message envoyé depuis le widget enregistre la page d'où il a été envoyé. Ouvrir le lien public du tableau, comme celui du pied de page, n'envoie rien depuis le planificateur."
     },
     "noSale": {
       "title": "Ni publicité, ni revente",
