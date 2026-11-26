@@ -7,11 +7,11 @@ import { useUserJot } from "./userjot-provider"
 
 export function UserJotFeedbackButton() {
   const { t } = useTranslation()
-  const { open, unreadCount, status } = useUserJot()
+  const { open, openChangelog, unreadCount, status } = useUserJot()
   const unavailable =
     status === "failed" ? t("nav.quickActions.feedbackUnavailable") : undefined
   // Unread activity is almost always a new changelog post, which only counts as read once opened
-  // from Updates, so the dot leads there; otherwise the button opens the feedback home.
+  // from Updates, so the dot leads to the newest post; otherwise the button opens the feedback home.
   const hasUnread = unreadCount > 0
 
   return (
@@ -21,7 +21,7 @@ export function UserJotFeedbackButton() {
         data-testid="userjot-feedback-button"
         disabledReason={unavailable}
         label={hasUnread ? t("feedback.changelog") : t("feedback.button")}
-        onClick={() => (hasUnread ? open({ to: "updates" }) : open())}
+        onClick={() => (hasUnread ? openChangelog() : open())}
         variant="outline"
       >
         <MessageSquareText />

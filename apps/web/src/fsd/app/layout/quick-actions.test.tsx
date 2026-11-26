@@ -216,7 +216,7 @@ describe("useQuickActions", () => {
 
     expect(onCreateGoal).toHaveBeenCalledTimes(1)
     expect(sync.syncNow).toHaveBeenCalledTimes(1)
-    expect(userJot.open).toHaveBeenCalledTimes(1)
+    expect(userJot.open).toHaveBeenCalledExactlyOnceWith({ to: "feedback" })
     expect(tour.startPageTour).toHaveBeenCalledTimes(1)
   })
 

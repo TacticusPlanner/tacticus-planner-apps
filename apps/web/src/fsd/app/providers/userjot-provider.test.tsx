@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react"
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { CurrentUserState } from "@/entities/account"
@@ -477,6 +477,31 @@ describe("UserJotProvider", () => {
     })
 
     expect(screen.getByTestId("consumer")).toHaveTextContent("3")
+  })
+
+  it("opens Home from the Changelog without unread activity", async () => {
+    const fetchSpy = vi.spyOn(globalThis, "fetch")
+    function ChangelogConsumer() {
+      const { openChangelog } = useUserJot()
+      return (
+        <button data-testid="changelog" onClick={openChangelog}>
+          changelog
+        </button>
+      )
+    }
+    render(
+      <UserJotProvider>
+        <ChangelogConsumer />
+      </UserJotProvider>
+    )
+
+    fireEvent.click(screen.getByTestId("changelog"))
+
+    await vi.waitFor(() => {
+      expect(open).toHaveBeenCalledWith({ to: "home" })
+    })
+    expect(fetchSpy).not.toHaveBeenCalled()
+    fetchSpy.mockRestore()
   })
 
   it("re-reads the unread count from the widget state when it closes", () => {

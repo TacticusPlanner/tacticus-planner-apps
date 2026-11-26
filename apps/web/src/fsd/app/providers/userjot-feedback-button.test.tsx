@@ -29,14 +29,16 @@ describe("UserJotFeedbackButton", () => {
 
   it("opens the Changelog on click while there is unread activity, so it can be read and cleared", () => {
     const open = vi.fn()
-    useUserJotMock.mockReturnValue({ open, unreadCount: 1 })
+    const openChangelog = vi.fn()
+    useUserJotMock.mockReturnValue({ open, openChangelog, unreadCount: 1 })
     render(<UserJotFeedbackButton />, { wrapper: TooltipProvider })
 
     const button = screen.getByTestId("userjot-feedback-button")
     expect(button).toHaveAccessibleName("feedback.changelog")
     fireEvent.click(button)
 
-    expect(open).toHaveBeenCalledWith({ to: "updates" })
+    expect(openChangelog).toHaveBeenCalledTimes(1)
+    expect(open).not.toHaveBeenCalled()
   })
 
   it("shows no unread indicator when there is no unread activity", () => {

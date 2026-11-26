@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_ANALYTICS_ENABLED?: string
   readonly VITE_POSTHOG_PROJECT_TOKEN?: string
   readonly VITE_POSTHOG_HOST?: string
+  readonly VITE_USERJOT_PROJECT_ID?: string
   /** Set for builds by vite.config.ts: the catalog image folder's tree hash. */
   readonly VITE_GAME_ASSETS_VERSION?: string
   /** Any value prints the goal contrast matrix in goal-contrast-audit.test.ts. */
