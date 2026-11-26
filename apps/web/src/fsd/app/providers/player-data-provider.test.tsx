@@ -38,6 +38,19 @@ function wrapper({ children }: { children: ReactNode }) {
   )
 }
 
+async function markSyncedAgo(ms: number) {
+  await replacePlayerDataChunk(
+    "player-details",
+    { name: "Tester" },
+    {
+      key: "__manifest",
+      hash: `manifest-${ms}`,
+      schemaVersion: 1,
+      updatedAt: new Date(Date.now() - ms).toISOString(),
+    }
+  )
+}
+
 beforeEach(async () => {
   setTestAuth({ authenticated: true })
   // This device already saw the account finish setup, so syncing is allowed without GET /account.
@@ -217,6 +230,76 @@ describe("PlayerDataProvider", () => {
     act(() => result.current.syncNow())
     await waitFor(() => expect(result.current.status).toBe("error"))
     expect(sync.refresh).not.toHaveBeenCalled()
+  })
+
+  describe("while the tab is hidden", () => {
+    let hidden: boolean
+
+    function setHidden(next: boolean) {
+      hidden = next
+      act(() => {
+        document.dispatchEvent(new Event("visibilitychange"))
+      })
+    }
+
+    beforeEach(() => {
+      hidden = true
+      vi.spyOn(document, "visibilityState", "get").mockImplementation(() =>
+        hidden ? "hidden" : "visible"
+      )
+      sync.run.mockClear()
+      sync.run.mockResolvedValue({
+        status: "ready",
+        syncedAt: new Date().toISOString(),
+      })
+    })
+
+    afterEach(() => {
+      sync.run.mockReset()
+      vi.useRealTimers()
+    })
+
+    it("does not sync a stale account in a tab opened in the background, and syncs once it is shown", async () => {
+      await markSyncedAgo(2 * 60 * 60 * 1000)
+      const { result } = renderHook(() => usePlayerDataStatus(), { wrapper })
+
+      // The local read still runs, so the controls show the last sync time.
+      await waitFor(() => expect(result.current.status).toBe("ready"))
+      expect(sync.run).not.toHaveBeenCalled()
+
+      setHidden(false)
+
+      await waitFor(() => expect(sync.run).toHaveBeenCalledOnce())
+    })
+
+    it("stops the periodic check while hidden and catches up when shown", async () => {
+      // Only the check interval is faked: the IndexedDB fake runs on the real timer queue, and
+      // vi.waitFor polls on real timers where Testing Library's waitFor would use the faked one.
+      vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] })
+      hidden = false
+      const { result } = renderHook(() => usePlayerDataStatus(), { wrapper })
+      await vi.waitFor(() => expect(result.current.status).toBe("ready"))
+
+      setHidden(true)
+      // The last sync goes stale while the tab is away; several check intervals pass.
+      await markSyncedAgo(2 * 60 * 60 * 1000)
+      await act(() => vi.advanceTimersByTimeAsync(20 * 60 * 1000))
+      expect(sync.run).not.toHaveBeenCalled()
+
+      setHidden(false)
+
+      await vi.waitFor(() => expect(sync.run).toHaveBeenCalledOnce())
+    })
+
+    it("does not sync on showing the tab when the last sync is still fresh", async () => {
+      const { result } = renderHook(() => usePlayerDataStatus(), { wrapper })
+      await waitFor(() => expect(result.current.status).toBe("ready"))
+
+      setHidden(false)
+      await act(async () => {})
+
+      expect(sync.run).not.toHaveBeenCalled()
+    })
   })
 
   describe("when a background check fails outside the sync", () => {

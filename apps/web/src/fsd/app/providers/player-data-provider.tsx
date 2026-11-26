@@ -58,6 +58,8 @@ const defaultRateLimitCooldownSeconds = 60
 
 type SyncBlock = { accountId: string; until: number }
 
+const isPageHidden = () => document.visibilityState === "hidden"
+
 async function runPlayerDataSync(
   baseUrl: string,
   queryClient: QueryClient
@@ -239,6 +241,9 @@ export function PlayerDataProvider({
   // Auto-sync: only fires when the last successful sync is more than an hour old (or there has never
   // been one). Re-checked periodically so a long-lived tab still syncs without a reload. This effect
   // never runs a sync just because it re-ran — staleness is re-evaluated from stored metadata each time.
+  // A hidden tab (another tab in front, the window minimized) never auto-syncs: the periodic check
+  // stops while it is hidden, and showing it again re-checks at once, so a sync that came due while
+  // it was away runs then. A sync another tab ran meanwhile is in the shared metadata, so none runs.
   useEffect(() => {
     let active = true
 
@@ -267,7 +272,8 @@ export function PlayerDataProvider({
         setStatus("ready")
       }
 
-      if (due) {
+      // Checked after the metadata read, so a tab hidden while it ran doesn't start a sync either.
+      if (due && !isPageHidden()) {
         await runSync(syncAccountId)
       }
     }
@@ -278,15 +284,38 @@ export function PlayerDataProvider({
       checkAndSyncIfDue().catch((error: unknown) =>
         reportError(error, "player-data sync")
       )
-    void check()
 
-    const interval = setInterval(() => {
+    let interval: ReturnType<typeof setInterval> | undefined
+    const stopChecking = () => {
+      clearInterval(interval)
+      interval = undefined
+    }
+    const startChecking = () => {
+      interval ??= setInterval(() => {
+        void check()
+      }, autoSyncCheckIntervalMs)
+    }
+    const onVisibilityChange = () => {
+      if (isPageHidden()) {
+        stopChecking()
+        return
+      }
       void check()
-    }, autoSyncCheckIntervalMs)
+      startChecking()
+    }
+
+    // Still runs in a tab opened in the background: it reads the last sync time for the controls,
+    // and only the sync itself waits until the tab is shown.
+    void check()
+    if (!isPageHidden()) {
+      startChecking()
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange)
 
     return () => {
       active = false
-      clearInterval(interval)
+      stopChecking()
+      document.removeEventListener("visibilitychange", onVisibilityChange)
     }
   }, [syncAccountId, runSync])
 
