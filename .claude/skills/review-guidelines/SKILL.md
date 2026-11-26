@@ -14,6 +14,21 @@ Review the diff against `main` (the PR's base). Flag a convention only on
 lines the diff adds or changes. Leaving untouched legacy code as it was is
 fine.
 
+## Two passes
+
+The built-in `/code-review` looks for correctness bugs and doesn't apply the
+convention skills below, so a clean `/code-review` doesn't mean the
+conventions were checked. Review in two passes:
+
+1. Correctness: `/code-review` (or a general review).
+2. Conventions: go through sections 1 to 7 yourself. When the diff touches
+   any `.tsx` under `apps/web/src` or `packages/ui`, or a file in
+   `apps/web/public/locales/en`, load `ui-style-guide` and `ui-sizing` and
+   go through the "Review checklist" line by line for each changed page,
+   dialog and string file. Cite rule numbers.
+
+Report both passes together.
+
 ## Severity
 
 - **Blocking**: data loss, a broken contract or route for users already on
