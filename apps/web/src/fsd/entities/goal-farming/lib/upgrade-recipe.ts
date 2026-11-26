@@ -7,7 +7,12 @@ import { BOOK_ORDER_SLOT_INDICES } from "./rank-additional-target"
 
 type UpgradeAmount = { id: UpgradeId; amount: number }
 
-export type CraftedInventoryPool = Map<UpgradeId, number>
+/** Owned crafted stock, drained in place by the base-need calculations below. A pool made with
+ *  `trackDemand` also counts in `demand` every crafted item those calculations asked for, before its
+ *  stock was spent: what the goals need of it once higher-tier stock is used (Inventory's need). */
+export type CraftedInventoryPool = Map<UpgradeId, number> & {
+  readonly demand?: Map<UpgradeId, number>
+}
 
 const rankUpgradeMap = (character: FarmingCharacter) =>
   new Map(
@@ -82,6 +87,8 @@ function reduceToBaseUpgrades(
     if (expansionPath.has(id)) return
     const upgrade = upgradesById.get(id)
     if (upgrade?.crafted && upgrade.recipe.length > 0) {
+      const demand = craftedInventory?.demand
+      demand?.set(id, (demand.get(id) ?? 0) + multiplier)
       const available = craftedInventory?.get(id) ?? 0
       const consumed = Math.min(available, multiplier)
       if (craftedInventory && consumed > 0) {
@@ -105,9 +112,14 @@ function reduceToBaseUpgrades(
 
 export function createCraftedInventoryPool(
   inventoryUpgrades: readonly { upgradeId: string; amount: number }[],
-  upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>
+  upgradesById: ReadonlyMap<UpgradeId, FarmingUpgrade>,
+  options: { trackDemand?: boolean } = {}
 ): CraftedInventoryPool {
-  const pool: CraftedInventoryPool = new Map()
+  const pool: CraftedInventoryPool = options.trackDemand
+    ? Object.assign(new Map<UpgradeId, number>(), {
+        demand: new Map<UpgradeId, number>(),
+      })
+    : new Map<UpgradeId, number>()
   for (const entry of inventoryUpgrades) {
     const id = entry.upgradeId as UpgradeId
     const upgrade = upgradesById.get(id)

@@ -169,6 +169,7 @@ export function calculateGoalResourceNeed(
       upgradesById,
       coveredRankSlots: params.coveredRankSlots,
       coveredAbilityTransitions: params.coveredAbilityTransitions,
+      craftedInventory: params.craftedInventory,
     })
     return upgrades
       ? {

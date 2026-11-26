@@ -9,6 +9,7 @@ import {
   calculateGoalResourceNeed,
   createUnitCoverage,
 } from "./goal-requirements"
+import { createCraftedInventoryPool } from "./upgrade-recipe"
 
 const armor = upgradeIdSchema.parse("upgArmC002")
 const damage = upgradeIdSchema.parse("upgDmgC002")
@@ -332,5 +333,46 @@ describe("Upgrade goal need", () => {
     )
     const ability = run(abilityGoal(2))
     expect([count(ability, damage), count(ability, other)]).toEqual([0, 1])
+  })
+})
+
+describe("Upgrade goal need for a crafted target", () => {
+  // kit = 2 × upgArmC002
+  const kit = upgradeIdSchema.parse("upgKit")
+  const withKit = new Map(upgradesById).set(kit, {
+    id: kit,
+    label: kit,
+    rarity: "Uncommon",
+    stat: "health",
+    crafted: true,
+    recipe: [{ material: armor, count: 2 }],
+    farmLocations: [],
+  } as FarmingUpgrade)
+
+  it("spends held crafted stock first and records the crafted demand", () => {
+    const pool = createCraftedInventoryPool(
+      [{ upgradeId: kit, amount: 1 }],
+      withKit,
+      { trackDemand: true }
+    )
+    const result = calculateGoalResourceNeed({
+      detail: upgradeGoal("Character", {
+        targets: [{ upgradeId: kit, quantity: 3 }],
+      }),
+      character,
+      characterView: undefined,
+      mow,
+      playerCharacter: undefined,
+      playerMow: undefined,
+      inventoryShard: undefined,
+      upgradesById: withKit,
+      ascensionCostsById: new Map(),
+      unlockShardCostsById: new Map(),
+      craftedInventory: pool,
+    })
+
+    expect(result?.upgrades).toEqual([{ id: armor, count: 4 }])
+    expect(pool.demand?.get(kit)).toBe(3)
+    expect(pool.get(kit)).toBe(0)
   })
 })

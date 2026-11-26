@@ -11,7 +11,12 @@ import type { AbilityCoverage } from "./goal-need"
 import { mowAbilityTrackLevel } from "./mow-ability-calc"
 import type { MowAbilityTrack } from "./mow-ability-calc"
 import { targetUnitsInSlots } from "./slot-components"
-import { aggregateBaseUpgrades, rankUpSlotOccurrences } from "./upgrade-recipe"
+import {
+  aggregateBaseUpgrades,
+  aggregateBaseUpgradesWithCraftedInventory,
+  rankUpSlotOccurrences,
+} from "./upgrade-recipe"
+import type { CraftedInventoryPool } from "./upgrade-recipe"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 type PlayerMow = PlayerDataChunkDto<"mows">[number]
@@ -36,6 +41,9 @@ export function upgradeResourceNeed(params: {
   coveredRankSlots?: Set<string>
   /** Mutated in place: this goal's claimed MoW recipe entries and base pieces go into `mowSlots`. */
   coveredAbilityTransitions?: AbilityCoverage
+  /** The plan's shared crafted stock, drained in priority order like a Rank goal's (and its demand
+   *  recorded, so a targeted crafted item counts as needed). */
+  craftedInventory?: CraftedInventoryPool
 }) {
   const upgrade = params.detail.config.upgrade
   if (!upgrade || upgrade.targets.length === 0) return null
@@ -84,8 +92,13 @@ export function upgradeResourceNeed(params: {
     }
     for (let index = 0; index < quantity - deduction; index++) ids.push(id)
   }
-  return ids.length === 0
-    ? null
+  if (ids.length === 0) return null
+  return params.craftedInventory
+    ? aggregateBaseUpgradesWithCraftedInventory(
+        ids,
+        params.upgradesById,
+        params.craftedInventory
+      )
     : aggregateBaseUpgrades(ids, params.upgradesById)
 }
 

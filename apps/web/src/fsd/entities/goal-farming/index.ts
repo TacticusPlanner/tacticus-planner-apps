@@ -86,7 +86,10 @@ export {
   isHreBlocker,
   relabelHreOutcomes,
 } from "./lib/hre-blockers"
-export { createCraftedInventoryPool } from "./lib/upgrade-recipe"
+export {
+  createCraftedInventoryPool,
+  type CraftedInventoryPool,
+} from "./lib/upgrade-recipe"
 export {
   shardResourceId,
   mythicShardResourceId,

@@ -59,6 +59,7 @@ import { computeCampaignProgression } from "./plan-campaign-progression"
 import { buildFarmingInsights } from "./plan-farming-insights"
 import { createPlanMissingResources } from "./plan-missing-resources"
 import { createPlanNetResources } from "./plan-net-resources"
+import { buildUpgradeNeeds, createCraftedNeedTracker } from "./plan-item-needs"
 import { computePlanUpgradeMaterials } from "./plan-upgrade-materials"
 import { createStandaloneEstimates } from "./plan-standalone-estimates"
 import type {
@@ -180,8 +181,10 @@ export function computePlanInsights(params: {
   const referenceDate = new Date()
   const craftedInventory = createCraftedInventoryPool(
     params.inventoryUpgrades,
-    params.upgradesById
+    params.upgradesById,
+    { trackDemand: true }
   )
+  const craftedNeeds = createCraftedNeedTracker(craftedInventory)
 
   const inScope = (goalId: string) =>
     !params.scopeGoalIds || params.scopeGoalIds.has(goalId)
@@ -235,6 +238,8 @@ export function computePlanInsights(params: {
     const slots =
       detail.goalType === "Rank" ? rankSlotAllocation(needParams) : null
     if (slots) rankSlotsByGoalId.set(detail.goalId, slots)
+    // Only these two calls spend the shared crafted stock for this goal.
+    craftedNeeds.begin()
     const stages = calculateGoalFarmingStages(needParams)
     const need =
       stages !== null
@@ -246,6 +251,7 @@ export function computePlanInsights(params: {
             orbsByType: {},
           }
         : calculateGoalResourceNeed(needParams)
+    craftedNeeds.end(detail.goalId, inScope(detail.goalId))
     if (!need) continue
 
     const {
@@ -413,7 +419,10 @@ export function computePlanInsights(params: {
   for (const detail of orderedDetails) {
     if (!inScope(detail.goalId)) continue
     missing.addOrbAllocation(orbAllocations.get(detail.goalId))
-    missing.addXp(levelPotential.remainingXpByGoalId.get(detail.goalId))
+    missing.addXp(
+      levelPotential.remainingXpByGoalId.get(detail.goalId),
+      levelPotential.chargedXpByGoalId.get(detail.goalId)
+    )
     missing.addGold(levelPotential.goldByGoalId.get(detail.goalId))
     missing.addGold(abilityMaterials.byGoalId.get(detail.goalId)?.gold)
   }
@@ -574,6 +583,10 @@ export function computePlanInsights(params: {
   return {
     totals,
     missing: missing.resolve(params.levelRules, params.xpBookRarity),
+    itemNeeds: {
+      ...missing.needs(),
+      upgrades: buildUpgradeNeeds(upgradeMaterials, craftedNeeds.needs()),
+    },
     energyTotal,
     onslaughtTokens,
     onslaughtDays,

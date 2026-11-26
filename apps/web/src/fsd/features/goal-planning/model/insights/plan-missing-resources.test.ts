@@ -78,4 +78,46 @@ describe("createPlanMissingResources", () => {
     })
     expect(plan.resolve(undefined, "Epic").xpBooks).toBeNull()
   })
+
+  it("keeps each item's gross need beside the same shortfall", () => {
+    const plan = createPlanMissingResources()
+    plan.addAbilityMaterials(
+      {
+        gold: 0,
+        badgesByRarity: { Rare: 2, Epic: 4 },
+        forgeBadgesByRarity: { Epic: 5 },
+        components: 6,
+        available: {
+          badgesByRarity: { Rare: 5, Epic: 1 },
+          forgeBadgesByRarity: { Epic: 2 },
+          components: 10,
+        },
+      },
+      "Imperial"
+    )
+    plan.addOrbAllocation({
+      goalId: "a",
+      stages: [
+        {
+          needs: [{ id: "orb:xenos:Epic", count: 6 }],
+          remaining: [{ id: "orb:xenos:Epic", count: 4 }],
+        },
+      ],
+    } as never)
+    plan.addXp(3000, 10_000)
+    plan.addXp(undefined, 500)
+
+    expect(plan.needs()).toEqual({
+      abilityBadges: {
+        Imperial: {
+          Rare: { need: 2, short: 0 },
+          Epic: { need: 4, short: 3 },
+        },
+      },
+      orbs: { Xenos: { Epic: { need: 6, short: 4 } } },
+      forgeBadges: { Epic: { need: 5, short: 3 } },
+      components: { Imperial: { need: 6, short: 0 } },
+      xp: { need: 10_500, short: 3000 },
+    })
+  })
 })
