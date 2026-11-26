@@ -47,46 +47,9 @@ vi.mock("@/shared/auth", () => ({
   useSignInRedirect: () => signInRedirect,
 }))
 
-import { filterQuickActions } from "./quick-actions"
 import type { QuickAction } from "./quick-actions"
 import { useQuickActions } from "./use-quick-actions"
 import { hasNode } from "@/shared/lib"
-
-const action = (overrides: Partial<QuickAction>): QuickAction => ({
-  id: "sync",
-  icon: (() => null) as unknown as QuickAction["icon"],
-  label: "Sync with Tacticus",
-  description: "Refresh your Planner",
-  keywords: ["api"],
-  ...overrides,
-})
-
-describe("filterQuickActions", () => {
-  const actions = [
-    action({}),
-    action({
-      id: "createProject",
-      label: "New project",
-      description: "Blank form",
-      keywords: [],
-    }),
-  ]
-
-  it("keeps everything for an empty or whitespace-only query", () => {
-    expect(filterQuickActions(actions, "")).toHaveLength(2)
-    expect(filterQuickActions(actions, "   ")).toHaveLength(2)
-  })
-
-  it("matches trimmed, case-insensitive label, description, and keyword text", () => {
-    expect(filterQuickActions(actions, " PROJECT ")).toEqual([actions[1]])
-    expect(filterQuickActions(actions, "refresh")).toEqual([actions[0]])
-    expect(filterQuickActions(actions, "  Api ")).toEqual([actions[0]])
-  })
-
-  it("returns nothing when no action matches", () => {
-    expect(filterQuickActions(actions, "zzz")).toEqual([])
-  })
-})
 
 describe("useQuickActions", () => {
   const onCreateGoal = vi.fn()

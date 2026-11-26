@@ -89,6 +89,23 @@ function CommandInput({
   )
 }
 
+/** The bare cmdk input, for a search field laid out by its caller (its own icon and padding). */
+function CommandInputField({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  return (
+    <CommandPrimitive.Input
+      data-slot="command-input"
+      className={cn(
+        "w-full min-w-0 bg-transparent outline-hidden placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
 function CommandList({
   className,
   ...props
@@ -148,12 +165,15 @@ function CommandSeparator({
 }
 
 function CommandItem({
+  asChild,
   className,
   children,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Item>) {
+  // `asChild` renders the one child (a link) as the item itself, with no check mark.
   return (
     <CommandPrimitive.Item
+      asChild={asChild}
       data-slot="command-item"
       className={cn(
         "group/command-item relative flex min-h-7 cursor-default items-center gap-2 rounded-xl px-2 py-1.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-2xl data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-muted data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-icon data-selected:*:[svg]:text-foreground",
@@ -161,8 +181,14 @@ function CommandItem({
       )}
       {...props}
     >
-      {children}
-      <CheckIcon className="ml-auto size-icon-sm opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {children}
+          <CheckIcon className="ml-auto size-icon-sm opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
+        </>
+      )}
     </CommandPrimitive.Item>
   )
 }
@@ -171,6 +197,7 @@ export {
   Command,
   CommandDialog,
   CommandInput,
+  CommandInputField,
   CommandList,
   CommandEmpty,
   CommandGroup,

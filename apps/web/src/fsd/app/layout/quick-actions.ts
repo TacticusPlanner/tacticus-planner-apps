@@ -32,19 +32,3 @@ export type QuickActionsController = {
   /** Runs the queued action once, after the search modal layer has released focus/pointer locks. */
   flush: () => void
 }
-
-/** Trimmed, case-insensitive substring match over label, description, and keywords. */
-export function filterQuickActions(
-  actions: QuickAction[],
-  query: string
-): QuickAction[] {
-  const normalizedQuery = query.trim().toLocaleLowerCase()
-
-  if (!normalizedQuery) return actions
-
-  return actions.filter((action) =>
-    [action.label, action.description, ...action.keywords].some((text) =>
-      text.toLocaleLowerCase().includes(normalizedQuery)
-    )
-  )
-}

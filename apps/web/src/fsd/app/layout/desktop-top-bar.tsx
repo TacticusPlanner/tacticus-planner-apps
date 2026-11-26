@@ -10,6 +10,7 @@ import { AuthControl } from "../providers/auth-control"
 import { UserJotFeedbackButton } from "../providers/userjot-feedback-button"
 import { AppLogo, AppLogoHomeLink, EnvironmentBadge } from "./app-logo"
 import { DesktopNavigationDialog } from "./desktop-navigation-dialog"
+import { preloadNavigationPalette } from "./navigation-palette-lazy"
 import type { NavItem } from "./nav-items"
 import type { QuickActionsController } from "./quick-actions"
 
@@ -64,6 +65,8 @@ export function DesktopTopBar({
           className="flex h-10 w-full max-w-xl min-w-0 items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
           data-testid="desktop-navigation-search"
           onClick={() => setNavigationOpen(true)}
+          onFocus={preloadNavigationPalette}
+          onPointerEnter={preloadNavigationPalette}
           ref={launcherRef}
           type="button"
         >

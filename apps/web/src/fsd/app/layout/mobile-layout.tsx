@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from "react"
-import { Link, Outlet, useLocation } from "react-router"
+import { Outlet, useLocation } from "react-router"
 import {
   AlertTriangle,
   CheckCircle2,
@@ -23,7 +23,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@workspace/ui/components/drawer"
-import { Input } from "@workspace/ui/components/input"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -31,18 +30,16 @@ import {
   usePlayerDataSyncStatus,
 } from "@/features/player-data-sync"
 import { useSignInRedirect } from "@/shared/auth"
-import { NavItemIcon } from "./nav-child-icon"
 import { matchesNavPath } from "./find-active-child"
-import { MobileDrawerSubItems } from "./mobile-drawer-sub-item"
 import { MobileHeader } from "./mobile-header"
 import "./mobile-layout.css"
 import { MobileNavLink } from "./mobile-nav-link"
-import { filterNavigationItems } from "./navigation-filter"
-import { NavLiveDot } from "./nav-live-dot"
 import type { NavItem } from "./nav-items"
-import { filterQuickActions } from "./quick-actions"
+import {
+  LazyNavigationPalette,
+  preloadNavigationPalette,
+} from "./navigation-palette-lazy"
 import type { QuickActionsController } from "./quick-actions"
-import { QuickActionsGroup } from "./quick-actions-group"
 import { ScrollToTopButton } from "./scroll-to-top-button"
 import { RouteLoadingFill } from "./route-loading-fill"
 import { SkipLink } from "./skip-link"
@@ -258,9 +255,6 @@ function MobileBottomNav({
   const barPaths = isAuthenticated
     ? ["/home", "/plan", "/dailies"]
     : ["/library", "/my-game"]
-  const filteredItems = filterNavigationItems(items, search, t)
-  const filteredActions = filterQuickActions(quickActions.actions, search)
-  const isSearching = search.trim() !== ""
   const isMenuItemActive = items.some(
     (item) =>
       !barPaths.includes(item.path) && matchesNavPath(pathname, item.path)
@@ -314,6 +308,9 @@ function MobileBottomNav({
                 : "text-muted-foreground hover:text-foreground"
             )}
             data-testid="mobile-menu-trigger"
+            onFocus={preloadNavigationPalette}
+            onPointerEnter={preloadNavigationPalette}
+            onTouchStart={preloadNavigationPalette}
           >
             <Menu className="size-icon" />
             <span>{t("nav.menu")}</span>
@@ -335,10 +332,22 @@ function MobileBottomNav({
             <DrawerTitle className="text-xl">{t("nav.navigation")}</DrawerTitle>
             <DrawerDescription>{t("nav.navigationHint")}</DrawerDescription>
           </DrawerHeader>
-          <div className="flex-1 space-y-3 overflow-y-auto p-4">
-            <QuickActionsGroup
-              actions={filteredActions}
-              onSelect={(id) => {
+          <Suspense fallback={null}>
+            <LazyNavigationPalette
+              density="comfortable"
+              footer={
+                <DrawerFooter className="px-6 pt-0 pb-4">
+                  <DrawerClose asChild>
+                    <Button className="w-full" variant="outline">
+                      {t("common.close")}
+                    </Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              }
+              getEntryPath={(item) => item.path}
+              inputPlacement="bottom"
+              items={items}
+              onActionSelect={(id) => {
                 if (!quickActions.select(id)) return
                 // Dismiss the on-screen keyboard before the drawer hands off to the target overlay.
                 if (document.activeElement instanceof HTMLElement) {
@@ -355,89 +364,12 @@ function MobileBottomNav({
                   DRAWER_EXIT_MS
                 )
               }}
-              rowClassName="group/nav-row flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors"
+              onNavigate={closeForNavigation}
+              onSearchChange={setSearch}
+              quickActions={quickActions}
+              search={search}
             />
-            {filteredItems.length > 0 ? (
-              <section aria-labelledby="pages-heading">
-                <h3
-                  className="px-3 pb-1 text-xs font-medium text-muted-foreground"
-                  id="pages-heading"
-                >
-                  {t("nav.quickActions.pagesHeading")}
-                </h3>
-                <div className="space-y-1">
-                  {filteredItems.map((item) => {
-                    const isActive = matchesNavPath(pathname, item.path)
-                    return (
-                      <div key={item.path}>
-                        <Link
-                          aria-current={
-                            pathname === item.path ? "page" : undefined
-                          }
-                          className={cn(
-                            "group/nav-row flex min-h-12 items-center gap-3 rounded-lg px-3 py-2 font-medium transition-colors",
-                            isActive
-                              ? "bg-accent/15 font-semibold text-foreground shadow-[inset_3px_0_0_0_var(--accent)]"
-                              : "hover:bg-muted"
-                          )}
-                          onClick={closeForNavigation}
-                          to={item.path}
-                        >
-                          <NavItemIcon item={item} />
-                          <span className="flex min-w-0 flex-col">
-                            <span className="flex items-center">
-                              <span className="truncate">
-                                {t(item.labelKey)}
-                              </span>
-                              <NavLiveDot hidden={isSearching} item={item} />
-                            </span>
-                            <span
-                              className={cn(
-                                "truncate text-xs font-normal",
-                                isActive
-                                  ? "text-muted-foreground"
-                                  : "text-muted-foreground"
-                              )}
-                            >
-                              {t(item.descriptionKey)}
-                            </span>
-                          </span>
-                        </Link>
-                        {item.children && item.children.length > 0 ? (
-                          <div className="mt-1 ml-8 space-y-1 border-l pl-3">
-                            <MobileDrawerSubItems
-                              hideLive={isSearching}
-                              items={item.children}
-                              onSelect={closeForNavigation}
-                              pathname={pathname}
-                            />
-                          </div>
-                        ) : null}
-                      </div>
-                    )
-                  })}
-                </div>
-              </section>
-            ) : filteredActions.length > 0 ? null : (
-              <p className="px-3 py-8 text-center text-muted-foreground">
-                {t("nav.noResults")}
-              </p>
-            )}
-          </div>
-          <DrawerFooter className="border-t px-6 py-4">
-            <Input
-              aria-label={t("nav.search")}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder={t("nav.search")}
-              type="search"
-              value={search}
-            />
-            <DrawerClose asChild>
-              <Button className="w-full" variant="outline">
-                {t("common.close")}
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
+          </Suspense>
         </DrawerContent>
       </Drawer>
     </nav>
