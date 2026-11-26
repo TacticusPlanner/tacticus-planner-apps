@@ -413,4 +413,4 @@ over the surface, never a fill that replaces it.
 - [ ] Every game entity with an icon shows it; no raw ids reach the screen.
 - [ ] Each overlay is the one rule 8 names for its job, with a title, a rule 8 footer and one of the three widths.
 - [ ] New or changed strings pass the copy rules.
-- [ ] PR has desktop and mobile before/after screenshots.
+- [ ] PR has desktop and mobile before/after screenshots (to host them without adding them to the diff, see "Screenshots in a pull request" in `AGENTS.md`).

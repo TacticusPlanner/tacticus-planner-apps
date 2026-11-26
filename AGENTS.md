@@ -197,6 +197,28 @@ The current Git history uses short imperative subjects such as `Setup project`. 
 
 Pull requests should include a brief summary, validation steps run (`pnpm lint`, `pnpm lint:fsd`, `pnpm typecheck`, `pnpm test:run`, `pnpm build`), linked issues when applicable, and screenshots or recordings for visible UI changes.
 
+### Screenshots in a pull request
+
+A PR description only shows images that are hosted somewhere. When you can't
+drag them into the GitHub editor (an agent, a CLI-only session), host them on
+the PR branch without adding them to the diff:
+
+1. Copy the PNGs into `pr-screenshots/` at the repo root, commit them
+   (`chore: add PR screenshots`) and push. Note the full commit SHA.
+2. In the next commit, delete the folder (`chore: remove PR screenshots`) and
+   push. The images are not in the final diff or the squash merge, but the first
+   commit stays reachable by its SHA: GitHub keeps every PR commit under
+   `refs/pull/<n>/head`, even after the merge or after the branch is deleted.
+3. Link each image in the PR body with the **full** SHA (a short SHA does not
+   resolve in a `blob` URL):
+   `![Enemies, desktop](https://github.com/TacticusPlanner/tacticus-planner-apps/blob/<full-sha>/pr-screenshots/desktop-enemies.png?raw=true)`
+4. Update the body (`gh pr edit <n> --body-file pr-body.md`, or the GitHub
+   API), then open each link once to check it returns the image.
+
+Desktop shots at 1440 px wide and phone shots at 390 px are enough; label each
+one. Screenshots of a signed-in page show that account's data, so take them with
+a test account.
+
 Open short-lived topic branches from `main` and squash-merge reviewed pull
 requests back into `main`. Delete topic branches after merging. For supported
 releases, fix defects on `main` first and backport the squash commit through a
