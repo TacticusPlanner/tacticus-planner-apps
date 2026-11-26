@@ -244,7 +244,15 @@
     "each": "each",
     "step": "{{position}}: {{target}}",
     "rollsUp": "{{reward}} rolls up to +{{percent}}%",
-    "show": "Show"
+    "show": "Show",
+    "survivalToken": "Survival token",
+    "onslaughtToken": "Onslaught token",
+    "salvageRunToken": "Salvage Run token",
+    "crusadePoints": "Crusade points",
+    "crusadeUnit": "Crusade unit",
+    "eventCurrencyBonus": "% event currency bonus",
+    "premiumMissions": "Premium missions unlocked",
+    "statBoost": "Stat Boost"
   },
   "search": {
     "title": "Search the shop",
