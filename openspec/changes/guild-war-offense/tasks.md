@@ -59,3 +59,4 @@
 - [x] 7.8 MoW portraits show the generic MoW icon where characters show their rank beside them.
 - [x] 7.9 Offense team cards show flex units after a divider; Select picks the core, then the flex units not deployed while the attack has room; only a core unit blocks a team.
 - [x] 7.10 All teams on Offense opens the Teams page; the Teams page's War Offense section opens Guild War Offense.
+- [x] 7.11 Log attack and Edit attack change the lineup: Change lineup removes units and adds owned characters and a MoW that no other attack of the war used; logged units keep their logged progression.

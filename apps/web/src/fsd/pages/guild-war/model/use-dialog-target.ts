@@ -1,8 +1,6 @@
 import { useState } from "react"
 import type { Rarity } from "@workspace/game-domain"
 
-import type { TeamRoster } from "@/entities/team"
-
 import { zoneKindId } from "../lib/season"
 import type { GuildWarSeason } from "../lib/season"
 import { editRarities, editTarget } from "./attack-target"
@@ -18,7 +16,6 @@ export type LogAttackSubject =
   | {
       kind: "new"
       selection: Selection
-      roster: TeamRoster | null
       zoneId: string
       rarities: readonly ZoneRarity[]
       target: ZoneRarity | undefined

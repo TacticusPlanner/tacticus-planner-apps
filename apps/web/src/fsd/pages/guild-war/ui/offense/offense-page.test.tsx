@@ -840,6 +840,104 @@ describe("OffensePage", () => {
     )
   })
 
+  it("changes an attack's lineup: removes a character, adds a Machine of War", async () => {
+    const user = userEvent.setup()
+    await seedPlayerData({
+      characters: CHARACTERS.map(rosterUnit),
+      mows: [
+        {
+          unitId: "ultraDreadnought",
+          progressionIndex: "Epic:RedOneStar",
+          xp: 0,
+          xpLevel: 1,
+          shards: 0,
+          mythicShards: 0,
+          abilities: [
+            { abilityId: "raw1", level: 30 },
+            { abilityId: "raw2", level: 28 },
+          ],
+          appliedUpgradeSlots: [],
+        },
+      ],
+    })
+    const titus = attack().characters[0]
+    const logged = attack({
+      characters: [
+        titus as GuildWarAttack["characters"][number],
+        {
+          ...(titus as GuildWarAttack["characters"][number]),
+          unitId: "ultraCalgar",
+        },
+      ],
+      lostUnitIds: ["ultraCalgar"],
+    })
+    const other = attack({
+      id: "attack-2",
+      attackedAt: "2026-11-20T12:00:00Z",
+      characters: [
+        {
+          ...(titus as GuildWarAttack["characters"][number]),
+          unitId: "ultraTigurius",
+        },
+      ],
+      lostUnitIds: [],
+    })
+    api.current.mockResolvedValue({
+      war: war({
+        tokensUsed: 2,
+        deployedUnitIds: ["ultraTitus", "ultraCalgar", "ultraTigurius"],
+        attacks: [other, logged],
+      }),
+    })
+    api.updateAttack.mockResolvedValue(war({ attacks: [other, logged] }))
+    renderOffense()
+
+    const log = await screen.findByTestId("guild-war-attack-log")
+    const [edit] = within(log).getAllByRole("button", { name: "Edit attack" })
+    await user.click(edit as HTMLElement)
+    const dialog = await screen.findByTestId("guild-war-log-dialog")
+    await user.click(
+      within(dialog).getByRole("button", { name: "Change lineup" })
+    )
+    const editor = within(dialog).getByTestId("guild-war-lineup-editor")
+    await user.click(
+      within(editor).getByRole("button", { name: /Remove .*Calgar/ })
+    )
+    // A character another attack used is not offered.
+    await user.click(
+      within(editor).getByRole("combobox", { name: "Add a character" })
+    )
+    // A removed character can come back.
+    expect(
+      await screen.findByRole("option", { name: /Calgar/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole("option", { name: /Tigurius/ })
+    ).not.toBeInTheDocument()
+    await user.keyboard("{Escape}")
+    await user.click(
+      within(editor).getByRole("combobox", { name: "Add a Machine of War" })
+    )
+    await user.click(await screen.findByRole("option", { name: /Galatian/ }))
+    await user.click(within(editor).getByRole("button", { name: "Done" }))
+    await user.click(within(dialog).getByRole("button", { name: "Save" }))
+
+    await waitFor(() =>
+      expect(api.updateAttack).toHaveBeenCalledWith(
+        "attack-1",
+        expect.objectContaining({
+          characters: [titus],
+          mow: expect.objectContaining({
+            unitId: "ultraDreadnought",
+            progression: "Epic:RedOneStar",
+          }),
+          // Calgar left the lineup, so he is no longer lost.
+          lostUnitIds: [],
+        })
+      )
+    )
+  })
+
   it("keeps the edit open while its save runs", async () => {
     const user = userEvent.setup()
     const logged = attack()

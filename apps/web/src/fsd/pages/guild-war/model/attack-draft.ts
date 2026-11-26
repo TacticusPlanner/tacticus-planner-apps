@@ -96,11 +96,16 @@ export function attackFields({
   )
 }
 
-/** An edited attack: its lineup as logged, the (possibly changed) zone and slot, and its details. */
+/** An edited attack: its lineup (as logged unless changed, `editedLineup`), the (possibly changed)
+ *  zone and slot, and its details. */
 export function editedAttackFields(
   attack: GuildWarAttack,
   target: { zoneId: string; slot: number },
-  details: AttackDetails
+  details: AttackDetails,
+  lineup: {
+    characters: readonly GuildWarLineupUnit[]
+    mow: GuildWarLineupUnit | null
+  } = attack
 ): GuildWarAttackFields {
-  return fieldsOf([...attack.characters], attack.mow, target, details)
+  return fieldsOf([...lineup.characters], lineup.mow, target, details)
 }
