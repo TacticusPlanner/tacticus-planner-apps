@@ -5,7 +5,7 @@
 ## What Changes
 
 - The account menu's Send feedback row (desktop and mobile) and the Submit feedback search quick action open the widget on its Feedback list (`open({ to: "feedback" })`) instead of Home.
-- While there is unread activity, the Changelog entry points (the desktop feedback button, the account menu's and guest menu's Changelog rows, and the mobile guest settings) open the newest changelog post directly. The post id comes from the public feed the widget loads its Updates tab from (`GET https://widget.userjot.com/widget/v2/:projectId/updates?limit=1`), because the SDK has no call that names it. The last post opened this way is remembered, so a dot that stays lit for another reason opens the list instead of the same post again. Without unread activity, or when the feed cannot be read, they open the Updates list as before.
+- While there is unread activity, the Changelog entry points (the desktop feedback button, the account menu's and guest menu's Changelog rows, and the mobile guest settings) open the newest changelog post directly. The post id comes from the public feed the widget loads its Updates tab from (`GET https://widget.userjot.com/widget/v2/:projectId/updates?limit=1`), because the SDK has no call that names it. The last post opened this way is remembered, so a dot that stays lit for another reason opens the list instead of the same post again. Without unread activity they open the widget's Home; when the feed cannot be read, they open the Updates list.
 - Without unread activity the desktop feedback button keeps opening Home.
 
 ## Capabilities

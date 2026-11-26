@@ -479,7 +479,7 @@ describe("UserJotProvider", () => {
     expect(screen.getByTestId("consumer")).toHaveTextContent("3")
   })
 
-  it("opens the Updates list from the Changelog without unread activity", async () => {
+  it("opens Home from the Changelog without unread activity", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch")
     function ChangelogConsumer() {
       const { openChangelog } = useUserJot()
@@ -498,7 +498,7 @@ describe("UserJotProvider", () => {
     fireEvent.click(screen.getByTestId("changelog"))
 
     await vi.waitFor(() => {
-      expect(open).toHaveBeenCalledWith({ to: "updates" })
+      expect(open).toHaveBeenCalledWith({ to: "home" })
     })
     expect(fetchSpy).not.toHaveBeenCalled()
     fetchSpy.mockRestore()

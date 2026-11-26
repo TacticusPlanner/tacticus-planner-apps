@@ -123,11 +123,15 @@ export function openUserJotWidget(target?: UserJotOpenTarget) {
   window.uj?.open(target)
 }
 
-/** Opens Updates, or the newest post while there is unread activity. The SDK starts loading now,
+/** Opens Home, or the newest post while there is unread activity. The SDK starts loading now,
  *  so it is ready once the newest post is known; the feed reader is only needed on this click, so
  *  it stays out of the startup bundle (and out of components, which the React Compiler skips when
  *  they hold an `import()`). */
 function openChangelogWidget(hasUnread: boolean) {
+  if (!hasUnread) {
+    openUserJotWidget({ to: "home" })
+    return
+  }
   loadSdk()
   void import("./userjot-latest-update")
     .then(({ resolveChangelogTarget }) =>
@@ -197,7 +201,7 @@ const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
 type UserJotContextValue = {
   /** Loads the SDK if needed; the widget opens once it has loaded. */
   open: (target?: UserJotOpenTarget) => void
-  /** Opens Updates: the newest post directly while there is unread activity, otherwise the list. */
+  /** Opens the newest post directly while there is unread activity, otherwise Home. */
   openChangelog: () => void
   unreadCount: number
   /** `failed` when the SDK could not load: entry points disable with an explanation. */

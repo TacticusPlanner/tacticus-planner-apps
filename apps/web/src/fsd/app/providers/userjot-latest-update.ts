@@ -34,14 +34,15 @@ export async function fetchLatestUpdateId(
     : null
 }
 
-/** Opens the newest post when it is unread and not the one this entry point last opened;
- *  otherwise the Updates list, as without unread activity. */
+/** Home without unread activity. With it, the newest post when it is not the one this entry point
+ *  last opened, otherwise the Updates list. */
 export function changelogTarget(
   hasUnread: boolean,
   latestId: string | null,
   lastOpenedId: string | null
 ): UserJotOpenTarget {
-  return hasUnread && latestId && latestId !== lastOpenedId
+  if (!hasUnread) return { to: "home" }
+  return latestId && latestId !== lastOpenedId
     ? { to: "updates", updateId: latestId }
     : { to: "updates" }
 }
@@ -62,14 +63,15 @@ function rememberOpenedUpdateId(id: string) {
   }
 }
 
-/** Where the Changelog entry point opens: the Updates list without unread activity, otherwise the
- *  newest post (remembered once opened), falling back to the list when the feed cannot be read. */
+/** Where the Changelog entry point opens: Home without unread activity, otherwise the newest post
+ *  (remembered once opened), falling back to the Updates list when the feed cannot be read. */
 export async function resolveChangelogTarget(
   hasUnread: boolean,
   projectId: string | undefined,
   fetchImpl: typeof fetch = fetch
 ): Promise<UserJotOpenTarget> {
-  if (!hasUnread || !projectId) return { to: "updates" }
+  if (!hasUnread) return { to: "home" }
+  if (!projectId) return { to: "updates" }
   const latestId = await fetchLatestUpdateId(projectId, fetchImpl).catch(
     () => null
   )
