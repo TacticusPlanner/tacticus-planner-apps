@@ -129,11 +129,13 @@ vi.mock("@/widgets/account-menu/ui/catalog-sync-status-badge", () => ({
   CatalogSyncStatusBadge: () => <div data-testid="catalog-sync-status-badge" />,
 }))
 const openUserJot = vi.fn()
+const openChangelog = vi.fn()
 const unreadCount = vi.fn(() => 0)
 const userJotStatus = vi.fn<() => "ready" | "failed">(() => "ready")
 vi.mock("./userjot-provider", () => ({
   useUserJot: () => ({
     open: openUserJot,
+    openChangelog,
     unreadCount: unreadCount(),
     status: userJotStatus(),
   }),
@@ -194,6 +196,7 @@ describe("AuthControl", () => {
     useCurrentUser.mockReturnValue({ state: { status: "loading" } })
     silentSignInStatus.mockReturnValue("idle")
     openUserJot.mockClear()
+    openChangelog.mockClear()
     unreadCount.mockReturnValue(0)
     changeLanguage.mockClear()
   })
@@ -317,14 +320,14 @@ describe("AuthControl", () => {
 
   // Reading updates inside the widget is what marks them seen and clears the feedback button's
   // unread dot; the public updates page is another origin and never does.
-  it("opens the widget's Updates and closes the desktop menu from the Changelog row", () => {
+  it("opens the Changelog and closes the desktop menu from the Changelog row", () => {
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
     expect(screen.getByTestId("auth-changelog")).not.toHaveAttribute("href")
     fireEvent.click(screen.getByTestId("auth-changelog"))
 
-    expect(openUserJot).toHaveBeenCalledWith({ to: "updates" })
+    expect(openChangelog).toHaveBeenCalledTimes(1)
     expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 
@@ -353,24 +356,24 @@ describe("AuthControl", () => {
     expect(openUserJot).toHaveBeenCalledWith({ to: "roadmap" })
   })
 
-  it("opens the widget's Updates and closes the guest menu from the Changelog row", () => {
+  it("opens the Changelog and closes the guest menu from the Changelog row", () => {
     useIsAuthenticated.mockReturnValue(false)
     renderAuthControl()
 
     fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
     fireEvent.click(screen.getByTestId("auth-changelog"))
 
-    expect(openUserJot).toHaveBeenCalledWith({ to: "updates" })
+    expect(openChangelog).toHaveBeenCalledTimes(1)
     expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 
-  it("opens the UserJot widget and closes the desktop menu from the Send feedback row", () => {
+  it("opens the widget's Feedback list and closes the desktop menu from the Send feedback row", () => {
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
     fireEvent.click(screen.getByTestId("auth-feedback"))
 
-    expect(openUserJot).toHaveBeenCalledTimes(1)
+    expect(openUserJot).toHaveBeenCalledExactlyOnceWith({ to: "feedback" })
     expect(screen.queryByTestId("auth-feedback")).not.toBeInTheDocument()
   })
 
@@ -580,7 +583,7 @@ describe("AuthControl", () => {
 
     fireEvent.click(screen.getByTestId("auth-feedback"))
 
-    expect(openUserJot).toHaveBeenCalledTimes(1)
+    expect(openUserJot).toHaveBeenCalledExactlyOnceWith({ to: "feedback" })
     expect(screen.queryByTestId("auth-account-drawer")).not.toBeInTheDocument()
   })
 

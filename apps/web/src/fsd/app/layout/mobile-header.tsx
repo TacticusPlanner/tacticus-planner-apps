@@ -106,7 +106,11 @@ function MobileGuestSignIn() {
 function MobileGuestSettings() {
   const { t } = useTranslation()
   const [open, setOpen] = useTourControlledPopoverOpen()
-  const { open: openUserJot, status: feedbackStatus } = useUserJot()
+  const {
+    open: openUserJot,
+    openChangelog,
+    status: feedbackStatus,
+  } = useUserJot()
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -133,7 +137,7 @@ function MobileGuestSettings() {
           }
           onChangelog={() => {
             setOpen(false)
-            openUserJot({ to: "updates" })
+            openChangelog()
           }}
           onRoadmap={() => {
             setOpen(false)

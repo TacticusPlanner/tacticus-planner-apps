@@ -123,6 +123,20 @@ export function openUserJotWidget(target?: UserJotOpenTarget) {
   window.uj?.open(target)
 }
 
+/** Opens Updates, or the newest post while there is unread activity. The SDK starts loading now,
+ *  so it is ready once the newest post is known; the feed reader is only needed on this click, so
+ *  it stays out of the startup bundle (and out of components, which the React Compiler skips when
+ *  they hold an `import()`). */
+function openChangelogWidget(hasUnread: boolean) {
+  loadSdk()
+  void import("./userjot-latest-update")
+    .then(({ resolveChangelogTarget }) =>
+      resolveChangelogTarget(hasUnread, import.meta.env.VITE_USERJOT_PROJECT_ID)
+    )
+    .catch((): UserJotOpenTarget => ({ to: "updates" }))
+    .then(openUserJotWidget)
+}
+
 /**
  * Subscribes to an SDK event for as long as the caller is mounted. Before the SDK loads, `on` is
  * the queueing stub: it returns no unsubscribe and the SDK attaches the handler later, so a cleanup
@@ -183,6 +197,8 @@ const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
 type UserJotContextValue = {
   /** Loads the SDK if needed; the widget opens once it has loaded. */
   open: (target?: UserJotOpenTarget) => void
+  /** Opens Updates: the newest post directly while there is unread activity, otherwise the list. */
+  openChangelog: () => void
   unreadCount: number
   /** `failed` when the SDK could not load: entry points disable with an explanation. */
   status: UserJotStatus
@@ -329,13 +345,19 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     setSearchParams(withoutUserJotDeepLink(searchParams), { replace: true })
   }, [searchParams, setSearchParams])
 
+  const openChangelog = useCallback(
+    () => openChangelogWidget(unreadCount > 0),
+    [unreadCount]
+  )
+
   const value = useMemo<UserJotContextValue>(
     () => ({
       open: openUserJotWidget,
+      openChangelog,
       unreadCount,
       status,
     }),
-    [unreadCount, status]
+    [openChangelog, unreadCount, status]
   )
 
   return (
