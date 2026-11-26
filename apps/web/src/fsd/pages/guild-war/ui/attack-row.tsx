@@ -6,20 +6,17 @@ import {
   guildWarZoneIcon,
   rarityIcon,
 } from "@workspace/game-catalog"
-import {
-  progressionRarity,
-  rankOrder,
-  startingProgression,
-} from "@workspace/game-domain"
+import { rankOrder, startingProgression } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { TeamUnitPortrait, capRosterUnit } from "@/entities/team"
+import { TeamUnitPortrait } from "@/entities/team"
 import { formatShortDate } from "@/shared/lib"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HintTrigger } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { GuildWarSeason } from "../lib/season"
+import { lineupUnitView } from "../model/capped-view"
 import type { GuildWarAttack, GuildWarLineupUnit } from "../model/types"
 import { useGuildWarNames } from "../model/use-guild-war-names"
 
@@ -36,17 +33,6 @@ function LineupPortrait({
 }) {
   const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
-  const capped = capRosterUnit(
-    {
-      progression: unit.progression,
-      // A rank the app does not know yet (Adamantine 3) shows no badge.
-      rank: rankOrder.find((rank) => rank === unit.rank),
-      xpLevel: unit.xpLevel,
-      abilityLevels: [unit.abilityLevels[0] ?? 0, unit.abilityLevels[1] ?? 0],
-    },
-    cap,
-    progressionRarity
-  )
   const name = unitName(kind === "mow" ? "Mow" : "Character", unit.unitId)
   return (
     <li
@@ -56,13 +42,7 @@ function LineupPortrait({
     >
       <TeamUnitPortrait
         className={cn(lost && "opacity-60 grayscale")}
-        unit={{
-          kind,
-          unitId: unit.unitId,
-          owned: true,
-          progression: capped.progression,
-          rank: capped.rank,
-        }}
+        unit={lineupUnitView(kind, unit, cap)}
       />
       {lost ? (
         <Skull
@@ -137,7 +117,7 @@ function AttackTargetText({
       <EntityIcon
         alt=""
         className="object-contain"
-        size="icon-md"
+        size="icon"
         src={visualId ? guildWarZoneIcon(visualId) : undefined}
       />
       {t("attack.target", {
@@ -160,7 +140,7 @@ function AttackEnemy({
 }) {
   const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
-  const { buffName } = useGuildWarNames()
+  const { buffName, buffDescription } = useGuildWarNames()
   const enemy = attack.enemy
   if (!enemy) return null
   const units = [
@@ -170,7 +150,8 @@ function AttackEnemy({
   const mapIndex = season?.maps.findIndex(
     (map) => map.boardId === enemy.boardId
   )
-  if (units.length === 0 && enemy.buffIds.length === 0 && !enemy.boardId) {
+  const knownMap = mapIndex !== undefined && mapIndex >= 0
+  if (units.length === 0 && enemy.buffIds.length === 0 && !knownMap) {
     return null
   }
   return (
@@ -222,16 +203,20 @@ function AttackEnemy({
         </ul>
       ) : null}
       {enemy.buffIds.map((id) => (
-        <span className="flex items-center gap-1 text-xs" key={id}>
-          <EntityIcon alt="" size="icon-sm" src={guildWarBuffIcon(id)} />
+        <HintTrigger
+          className="gap-1 text-xs"
+          hint={buffDescription(season, id, attack.rarityCap)}
+          key={id}
+          label={buffName(id)}
+        >
+          <EntityIcon alt="" size="icon" src={guildWarBuffIcon(id)} />
           {buffName(id)}
-        </span>
+        </HintTrigger>
       ))}
-      {enemy.boardId ? (
+      {/* A map outside the season's pool (an old war) has no number to show. */}
+      {knownMap ? (
         <span className="text-xs text-muted-foreground">
-          {mapIndex !== undefined && mapIndex >= 0
-            ? t("enemy.mapOption", { number: mapIndex + 1 })
-            : enemy.boardId}
+          {t("enemy.mapOption", { number: mapIndex + 1 })}
         </span>
       ) : null}
     </div>

@@ -1,4 +1,6 @@
-import { useTranslation } from "react-i18next"
+import { useEffect, useState } from "react"
+import { Trans, useTranslation } from "react-i18next"
+import { toast } from "sonner"
 import {
   Accordion,
   AccordionContent,
@@ -10,29 +12,45 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { guildWarTokenIcon } from "@workspace/game-catalog"
 
+import { TEAM_EDITOR_NAMESPACES, usePickerUnits } from "@/features/team-editor"
+import type { PickerUnit } from "@/features/team-editor"
 import { formatDateRange } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
 import { EmptyState, EntityIcon } from "@/shared/ui"
 
 import type { GuildWarSeason } from "../../lib/season"
+import { attackSaveError, freshAttack } from "../../model/guild-war-errors"
 import { historyTotals } from "../../model/history-totals"
-import type { GuildWar } from "../../model/types"
-import { usePastGuildWars } from "../../model/use-guild-war"
+import type {
+  GuildWar,
+  GuildWarAttack,
+  GuildWarAttackFields,
+} from "../../model/types"
+import {
+  usePastGuildWars,
+  useUpdateGuildWarAttack,
+} from "../../model/use-guild-war"
 import { useSeasonName } from "../../model/use-season-name"
 import { attackResults } from "../../model/war-stats"
+import { AttackActions } from "../attack-actions"
 import { AttackRow } from "../attack-row"
 import { useGuildWarTutorial } from "../guild-war.tutorial"
+import { LogAttackDialog } from "../offense/log-attack-dialog"
 import { HistoryTotals } from "./history-totals"
 
 const NO_SEASONS: readonly GuildWarSeason[] = []
+const NO_UNITS: readonly PickerUnit[] = []
 
-/** One ended war, expanding in place to its attacks (oldest first, as they were logged). */
+/** One ended war, expanding in place to its attacks (oldest first, as they were logged), each with
+ *  Edit. An ended war's attacks are not deleted, so its token count stays. */
 function PastWar({
   war,
   season,
+  onEdit,
 }: {
   war: GuildWar
   season: GuildWarSeason | undefined
+  onEdit: (attack: GuildWarAttack) => void
 }) {
   const { t, i18n } = useTranslation("guildWar")
   const { seasonName } = useSeasonName()
@@ -49,16 +67,22 @@ function PastWar({
             )}
           </span>
           <span className="flex flex-wrap items-center gap-1 text-xs font-normal text-muted-foreground">
-            {t("history.warSummary", {
-              season: seasonName(war.seasonId, war.startedAt),
-              level: war.battlefieldLevel,
-            })}
-            <EntityIcon alt="" size="icon-sm" src={guildWarTokenIcon()} />
-            {t("history.warResults", {
-              tokens: war.tokensUsed,
-              won,
-              lost,
-            })}
+            <Trans
+              components={{
+                token: (
+                  <EntityIcon alt="" size="icon" src={guildWarTokenIcon()} />
+                ),
+              }}
+              i18nKey="history.warSummary"
+              ns="guildWar"
+              values={{
+                season: seasonName(war.seasonId, war.startedAt),
+                level: war.battlefieldLevel,
+                tokens: war.tokensUsed,
+                won,
+                lost,
+              }}
+            />
           </span>
         </span>
       </AccordionTrigger>
@@ -67,6 +91,7 @@ function PastWar({
           <ol className="flex flex-col gap-2">
             {war.attacks.map((attack) => (
               <AttackRow
+                actions={<AttackActions onEdit={() => onEdit(attack)} />}
                 attack={attack}
                 key={attack.id}
                 locale={i18n.language}
@@ -75,9 +100,7 @@ function PastWar({
             ))}
           </ol>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            {t("history.noAttacks")}
-          </p>
+          <EmptyState title={t("history.noAttacks")} variant="empty" />
         )}
       </AccordionContent>
     </AccordionItem>
@@ -86,15 +109,55 @@ function PastWar({
 
 /**
  * Guild War History: totals across the loaded wars, then the ended wars newest first, each
- * expanding to its attacks, with more on demand.
+ * expanding to its attacks (with Edit), with more on demand.
  */
 export function HistoryPage() {
-  const { t } = useTranslation("guildWar")
+  const { t, i18n } = useTranslation("guildWar")
   const past = usePastGuildWars()
   const seasons = useCatalogDataset("guild-war")
+  const picker = usePickerUnits()
+  const updateAttack = useUpdateGuildWarAttack()
+  const [editing, setEditing] = useState<{
+    war: GuildWar
+    attack: GuildWarAttack
+  } | null>(null)
+  const [editError, setEditError] = useState<string | null>(null)
   useGuildWarTutorial("history")
+  // The enemy pickers' faction names load with the page.
+  useEffect(() => {
+    void i18n.loadNamespaces([...TEAM_EDITOR_NAMESPACES])
+  }, [i18n])
   const seasonList = seasons.status === "ready" ? seasons.data : NO_SEASONS
   const wars = past.wars ?? []
+  const seasonOf = (war: GuildWar) =>
+    seasonList.find((entry) => entry.id === war.seasonId)
+
+  const closeEdit = () => {
+    setEditing(null)
+    setEditError(null)
+  }
+  const saveEdit = (
+    war: GuildWar,
+    attack: GuildWarAttack,
+    fields: GuildWarAttackFields
+  ) => {
+    setEditError(null)
+    updateAttack.mutate(
+      { warId: war.id, attack, fields },
+      {
+        onSuccess: () => {
+          closeEdit()
+          toast.success(t("log.saved"))
+        },
+        onError: (error) => {
+          // The dialog keeps the player's changes; saving again goes over the attack as it is now.
+          const fresh = freshAttack(error, attack.id)
+          if (fresh) setEditing({ war, attack: fresh })
+          setEditError(t(`log.errors.${attackSaveError(error)}`))
+        },
+      }
+    )
+  }
 
   let content
   if (past.isPending) {
@@ -152,7 +215,11 @@ export function HistoryPage() {
             {wars.map((war) => (
               <PastWar
                 key={war.id}
-                season={seasonList.find((entry) => entry.id === war.seasonId)}
+                onEdit={(attack) => {
+                  setEditError(null)
+                  setEditing({ war, attack })
+                }}
+                season={seasonOf(war)}
                 war={war}
               />
             ))}
@@ -175,6 +242,21 @@ export function HistoryPage() {
   return (
     <div className="flex flex-col gap-5" data-testid="guild-war-history">
       {content}
+      {editing ? (
+        <LogAttackDialog
+          battlefieldLevel={editing.war.battlefieldLevel}
+          error={editError}
+          onOpenChange={(open) => {
+            if (!open) closeEdit()
+          }}
+          onSave={(fields) => saveEdit(editing.war, editing.attack, fields)}
+          open
+          pending={updateAttack.isPending}
+          season={seasonOf(editing.war)}
+          subject={{ kind: "edit", attack: editing.attack }}
+          units={picker.status === "ready" ? picker.data.units : NO_UNITS}
+        />
+      ) : null}
     </div>
   )
 }

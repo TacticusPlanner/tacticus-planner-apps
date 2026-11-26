@@ -1,23 +1,24 @@
 import { useTranslation } from "react-i18next"
-import { Undo2 } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
 
 import type { GuildWarSeason } from "../../lib/season"
 import type { GuildWar, GuildWarAttack } from "../../model/types"
+import { AttackActions } from "../attack-actions"
 import { AttackRow } from "../attack-row"
 
-/** The current war's attacks, newest first, each with Undo (no confirm: logging it again undoes
- *  the Undo). Every Undo waits while one is in flight, so two never race. */
+/** The current war's attacks, newest first, each with Edit and Delete (Delete asks first). Every
+ *  Delete waits while one is in flight, so two never race. */
 export function AttackLog({
   war,
   season,
-  undoing,
-  onUndo,
+  deleting,
+  onEdit,
+  onDelete,
 }: {
   war: GuildWar
   season: GuildWarSeason | undefined
-  undoing: boolean
-  onUndo: (attack: GuildWarAttack) => void
+  deleting: boolean
+  onEdit: (attack: GuildWarAttack) => void
+  onDelete: (attack: GuildWarAttack) => void
 }) {
   const { t, i18n } = useTranslation("guildWar")
   return (
@@ -33,15 +34,11 @@ export function AttackLog({
         {war.attacks.toReversed().map((attack) => (
           <AttackRow
             actions={
-              <Button
-                disabled={undoing}
-                onClick={() => onUndo(attack)}
-                size="sm"
-                variant="ghost"
-              >
-                <Undo2 data-icon="inline-start" />
-                {t("attackLog.undo")}
-              </Button>
+              <AttackActions
+                deleting={deleting}
+                onDelete={() => onDelete(attack)}
+                onEdit={() => onEdit(attack)}
+              />
             }
             attack={attack}
             key={attack.id}

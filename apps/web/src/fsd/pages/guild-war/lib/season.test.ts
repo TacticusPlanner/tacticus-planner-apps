@@ -4,7 +4,9 @@ import { guildWarFixture } from "@workspace/game-catalog/testing"
 import { required } from "@/shared/lib"
 
 import {
+  playedLevels,
   seasonLetter,
+  startLevel,
   slotRarityCap,
   tierRarityCaps,
   zoneKindId,
@@ -71,5 +73,12 @@ describe("guild war season rules", () => {
   it("names seasons by letter", () => {
     expect(seasonLetter("guildWarSeasonD")).toBe("D")
     expect(seasonLetter("other")).toBe("other")
+  })
+
+  it("never offers or starts at level 0, the game's not taking part", () => {
+    expect(playedLevels(seasonA)).toEqual([1, 2, 3, 4, 5])
+    expect(startLevel(seasonA)).toBe(1)
+    expect(startLevel(seasonA, 4)).toBe(4)
+    expect(startLevel(seasonA, 0)).toBe(1)
   })
 })

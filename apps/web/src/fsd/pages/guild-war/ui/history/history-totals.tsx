@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { guildWarTokenIcon, guildWarZoneIcon } from "@workspace/game-catalog"
 
 import { TeamUnitPortrait } from "@/entities/team"
-import { EntityIcon, RarityIcon } from "@/shared/ui"
+import { EmptyState, EntityIcon, RarityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { GuildWarSeason } from "../../lib/season"
@@ -57,7 +57,7 @@ function TotalsBlock({
           {children}
         </ul>
       ) : (
-        <p className="text-sm text-muted-foreground">{empty}</p>
+        <EmptyState className="py-4" title={empty} variant="empty" />
       )}
     </div>
   )
@@ -163,7 +163,7 @@ export function HistoryTotals({
                   <EntityIcon
                     alt=""
                     className="object-contain"
-                    size="icon-md"
+                    size="icon"
                     src={visualId ? guildWarZoneIcon(visualId) : undefined}
                   />
                   <span className="truncate">{zoneName(season, rate.key)}</span>

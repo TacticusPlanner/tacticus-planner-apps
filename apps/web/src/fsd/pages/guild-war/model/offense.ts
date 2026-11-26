@@ -61,17 +61,21 @@ export type LogBlock =
   | { reason: "deployed"; unitId: string; kind: UnitKind }
   | { reason: "notOwned"; unitId: string; kind: UnitKind }
   | { reason: "noTokens" }
+  | { reason: "noZone" }
 
 export function logBlock({
   selection,
   deployed,
   roster,
   tokensLeft,
+  hasTarget,
 }: {
   selection: Selection
   deployed: ReadonlySet<string>
   roster: TeamRoster | null
   tokensLeft: number
+  /** Whether the page has a zone and defenders' rarity to log at. */
+  hasTarget: boolean
 }): LogBlock | null {
   const picked = [...selection]
   const characters = picked.filter(([, kind]) => kind === "character").length
@@ -86,7 +90,8 @@ export function logBlock({
   if (missing) {
     return { reason: "notOwned", unitId: missing[0], kind: missing[1] }
   }
-  return tokensLeft > 0 ? null : { reason: "noTokens" }
+  if (tokensLeft <= 0) return { reason: "noTokens" }
+  return hasTarget ? null : { reason: "noZone" }
 }
 
 function rosterUnit(roster: TeamRoster | null, kind: UnitKind, id: string) {

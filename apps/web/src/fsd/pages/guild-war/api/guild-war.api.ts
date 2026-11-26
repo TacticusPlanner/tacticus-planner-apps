@@ -70,7 +70,24 @@ export function createAttack(fields: GuildWarAttackFields): Promise<GuildWar> {
   )
 }
 
-/** Removes an attack (Undo) and answers its war. */
+/** Replaces an attack's fields (an ended war's too) and answers its war. The rarity cap is derived
+ *  again only when the zone or slot changes. 409 `guildWarAttackRevisionStale` with the war as it
+ *  stands when the attack changed since `revision`. */
+export function updateAttack(
+  warId: string,
+  attackId: string,
+  fields: GuildWarAttackFields,
+  revision: number
+): Promise<GuildWar> {
+  return unwrap(
+    apiClient().PUT("/api/v1/guild-wars/{warId}/attacks/{attackId}", {
+      params: { path: { warId, attackId } },
+      body: { ...fields, revision },
+    })
+  )
+}
+
+/** Removes an attack and answers its war, freeing its token and units. */
 export function deleteAttack(
   warId: string,
   attackId: string

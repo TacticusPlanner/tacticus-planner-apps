@@ -2,7 +2,6 @@
   "season": "Saison {{name}}",
   "level": "Niveau {{level}}",
   "settingsSummary": "{{season}} · Niveau du champ de bataille {{level}}",
-  "settingsOpen": "{{summary}}. Ouvrir les paramètres",
   "page": {
     "loading": "Chargement de votre guerre",
     "loadError": "Impossible de charger votre guerre.",
@@ -11,7 +10,11 @@
   },
   "target": {
     "zone": "Zone",
-    "zonePlaceholder": "Choisir une zone"
+    "zonePlaceholder": "Choisir une zone",
+    "rarityPlaceholder": "Choisissez d'abord une zone"
+  },
+  "toolbar": {
+    "label": "Zone et rareté des défenseurs"
   },
   "settings": {
     "title": "Paramètres de Guerre de guilde",
@@ -52,8 +55,7 @@
     "attackCount_other": "{{count}} attaques",
     "lossCount_one": "{{count}} défaite",
     "lossCount_other": "{{count}} défaites",
-    "warSummary": "{{season}} · Niveau {{level}} ·",
-    "warResults": "{{tokens}} · {{won}} gagnées · {{lost}} perdues",
+    "warSummary": "{{season}} · Niveau {{level}} · <token/> {{tokens}} · {{won}} gagnées · {{lost}} perdues",
     "noAttacks": "Aucune attaque n'a été enregistrée dans cette guerre.",
     "loading": "Chargement des guerres passées",
     "loadError": "Impossible de charger vos guerres passées.",
@@ -68,8 +70,12 @@
   },
   "tour": {
     "settings": {
-      "title": "Saison et niveau",
-      "content": "La saison et le niveau du champ de bataille de votre guerre. Modifiez-les avec Paramètres en haut à droite."
+      "title": "Paramètres",
+      "content": "La saison et le niveau du champ de bataille de votre guerre. Modifiez-les ici."
+    },
+    "target": {
+      "title": "Zone et rareté",
+      "content": "Choisissez la zone que vous attaquez et la rareté des défenseurs. Vos unités s'affichent limitées à cette rareté, et les attaques y sont notées."
     },
     "summary": {
       "title": "Votre guerre",
@@ -81,11 +87,11 @@
     },
     "units": {
       "title": "Unités disponibles",
-      "content": "Vos unités qui n'ont pas attaqué dans cette guerre. Touchez des unités ou Sélectionner sur une équipe, puis Noter l'attaque pour choisir la zone et la rareté des défenseurs."
+      "content": "Vos unités qui n'ont pas attaqué dans cette guerre, limitées à la rareté des défenseurs. Touchez des unités ou Sélectionner sur une équipe, puis Gagnée ou Perdue pour noter l'attaque."
     },
     "log": {
       "title": "Journal des attaques",
-      "content": "Toutes les attaques de cette guerre, les plus récentes d'abord. Annuler retire une erreur et libère ses unités."
+      "content": "Toutes les attaques de cette guerre, les plus récentes d'abord. Modifier change ses détails ; Supprimer la retire et libère ses unités."
     },
     "totals": {
       "title": "Totaux",
@@ -109,8 +115,8 @@
   },
   "teams": {
     "heading": "Équipes d'attaque",
-    "newTeam": "Nouvelle équipe",
-    "empty": "Aucune équipe Attaque de guerre pour l'instant. Créez-en une pour sélectionner ses unités en un geste.",
+    "createTeam": "Créer une équipe",
+    "empty": "Aucune équipe Attaque de guerre pour l'instant.",
     "select": "Sélectionner",
     "selectTeam": "Sélectionner {{name}}",
     "core": "Unités principales",
@@ -123,19 +129,23 @@
   "select": {
     "count_one": "{{count}} sélectionnée",
     "count_other": "{{count}} sélectionnées",
-    "clear": "Effacer",
-    "log": "Noter l'attaque",
+    "clear": "Effacer la sélection",
+    "logDetails": "Noter avec détails",
+    "lost": "Perdue",
+    "won": "Gagnée",
     "blocked": {
       "noCharacter": "Choisissez au moins 1 personnage",
       "tooManyCharacters": "Choisissez au plus 5 personnages",
       "tooManyMows": "Choisissez au plus 1 Machine de guerre",
       "deployed": "{{name}} a déjà attaqué dans cette guerre",
       "notOwned": "{{name}} n'est pas dans votre effectif synchronisé",
-      "noTokens": "Plus aucun jeton dans cette guerre"
+      "noTokens": "Plus aucun jeton dans cette guerre",
+      "noZone": "Choisissez une zone à attaquer"
     }
   },
   "log": {
     "title": "Noter l'attaque",
+    "editTitle": "Modifier l'attaque",
     "rarity": "Rareté des défenseurs",
     "result": "Résultat",
     "resultNone": "Non noté",
@@ -149,12 +159,15 @@
     "enemyDetails": "Détails de l'ennemi (facultatif)",
     "cancel": "Annuler",
     "save": "Noter l'attaque",
+    "saveEdit": "Enregistrer",
     "logged": "Attaque notée.",
+    "saved": "Attaque enregistrée.",
     "errors": {
       "guildWarUnknownZone": "Cette zone n'existe pas sur le champ de bataille de cette saison. Choisissez une autre zone.",
       "guildWarUnknownUnit": "Une unité de cette attaque est inconnue. Vérifiez la composition et les détails de l'ennemi.",
       "guildWarUnitDeployed": "Une unité de cette composition a déjà attaqué dans cette guerre.",
       "guildWarTokensSpent": "Cette guerre n'a plus de jetons.",
+      "stale": "Cette attaque a changé sur un autre appareil. Enregistrez à nouveau pour la remplacer par vos modifications.",
       "failed": "Impossible de noter l'attaque. Réessayez."
     }
   },
@@ -176,15 +189,21 @@
       "damaged": "Endommagée"
     },
     "buffs": "Bonus de zone actifs",
+    "buffInfo": "Effet de {{name}}",
     "map": "Carte",
     "mapAny": "Carte non notée",
     "mapOption": "Carte {{number}}"
   },
   "attackLog": {
     "heading": "Journal des attaques",
-    "undo": "Annuler",
-    "undone": "Attaque annulée.",
-    "undoFailed": "Impossible d'annuler l'attaque. Réessayez."
+    "edit": "Modifier l'attaque",
+    "delete": "Supprimer l'attaque",
+    "deleteTitle": "Supprimer cette attaque ?",
+    "deleteDescription": "Son jeton et ses unités sont libérés. Cette action est irréversible.",
+    "deleteConfirm": "Supprimer l'attaque",
+    "deleteCancel": "Annuler",
+    "deleted": "Attaque supprimée.",
+    "deleteFailed": "Impossible de supprimer l'attaque. Réessayez."
   },
   "startWar": {
     "action": "Commencer une nouvelle guerre",

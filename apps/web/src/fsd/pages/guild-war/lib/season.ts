@@ -8,8 +8,31 @@ export type GuildWarZone = GuildWarSeason["zones"][number]
 /** The defender slots of a zone, 0-based as the API stores them (shown as 1 to 5). */
 export const GUILD_WAR_SLOTS = [0, 1, 2, 3, 4] as const
 
-/** The level a war starts at before the player picks one: the highest, as most guilds play. */
-export const DEFAULT_BATTLEFIELD_LEVEL = 5
+/** The level a war starts at before the player picks one: the lowest a guild plays at. */
+const DEFAULT_BATTLEFIELD_LEVEL = 1
+
+/** Battlefield level 0 is the game's "not taking part in the war": no attack is logged at it. */
+const isPlayedLevel = (level: number) => level >= 1
+
+/** The levels a war can be set to: the season's, without level 0. */
+export function playedLevels(season: GuildWarSeason | undefined): number[] {
+  return (season?.levels ?? [])
+    .map((level) => level.battlefieldLevel)
+    .filter(isPlayedLevel)
+}
+
+/** The level a war in this season starts at: `preferred` when the season has it, else the
+ *  default, else the season's lowest played level. */
+export function startLevel(
+  season: GuildWarSeason,
+  preferred: number = DEFAULT_BATTLEFIELD_LEVEL
+): number {
+  const levels = playedLevels(season)
+  if (levels.includes(preferred)) return preferred
+  if (levels.includes(DEFAULT_BATTLEFIELD_LEVEL))
+    return DEFAULT_BATTLEFIELD_LEVEL
+  return levels[0] ?? DEFAULT_BATTLEFIELD_LEVEL
+}
 
 /** The tokens shown for a war whose season is no longer served (it can log no more attacks). */
 const FALLBACK_MAX_ATTEMPTS = 10

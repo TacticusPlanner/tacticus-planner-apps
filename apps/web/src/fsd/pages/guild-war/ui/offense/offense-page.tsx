@@ -2,6 +2,7 @@ import { Suspense, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Flag, RefreshCw } from "lucide-react"
+import type { Rarity } from "@workspace/game-domain"
 import {
   Alert,
   AlertDescription,
@@ -21,11 +22,17 @@ import {
 import type { PickerFilters, PickerUnit } from "@/features/team-editor"
 import { DEFAULT_RARITY_CAP, useTeams } from "@/entities/team"
 import type { TeamMode, TeamRoster } from "@/entities/team"
-import { ConfirmationDialog, LocalReadFailure, RarityIcon } from "@/shared/ui"
+import {
+  ConfirmationDialog,
+  LocalReadFailure,
+  PageToolbar,
+  RarityIcon,
+} from "@/shared/ui"
 
 import { maxAttempts } from "../../lib/season"
+import { attackFields, NO_DETAILS } from "../../model/attack-draft"
 import { useGuildWarContext } from "../../model/guild-war-context"
-import { guildWarAttackRule } from "../../model/guild-war-errors"
+import { attackSaveError, freshAttack } from "../../model/guild-war-errors"
 import {
   charactersLeftByRarity,
   logBlock,
@@ -33,17 +40,21 @@ import {
 } from "../../model/offense"
 import type { Selection, UnitKind } from "../../model/offense"
 import type { GuildWarAttack, GuildWarAttackFields } from "../../model/types"
+import { usePageTarget } from "../../model/page-target"
 import {
+  useDeleteGuildWarAttack,
   useLogGuildWarAttack,
   useStartGuildWar,
-  useUndoGuildWarAttack,
+  useUpdateGuildWarAttack,
 } from "../../model/use-guild-war"
 import { tokensLeft } from "../../model/war-stats"
 import { useGuildWarTutorial } from "../guild-war.tutorial"
 import { AttackLog } from "./attack-log"
 import { LogAttackDialog } from "./log-attack-dialog"
+import type { LogAttackSubject } from "./log-attack-dialog"
 import { OffenseTeams } from "./offense-teams"
 import { SelectionBar } from "./selection-bar"
+import { PageTargetFields } from "./target-fields"
 import { WarSummary } from "./war-summary"
 
 const NO_UNITS: readonly PickerUnit[] = []
@@ -111,11 +122,12 @@ function UnitsLeft({
   )
 }
 
-/** The units that have not attacked, in the team editor's picker, at their own progression (the
- *  defenders' cap is picked when the attack is logged). */
+/** The units that have not attacked, in the team editor's picker, capped at the defenders' rarity
+ *  picked in the toolbar. */
 function AvailableUnits({
   picker,
   units,
+  cap,
   filters,
   onFiltersChange,
   selectedIds,
@@ -123,6 +135,7 @@ function AvailableUnits({
 }: {
   picker: ReturnType<typeof usePickerUnits>
   units: readonly PickerUnit[]
+  cap: Rarity | undefined
   filters: PickerFilters
   onFiltersChange: (patch: Partial<PickerFilters>) => void
   selectedIds: ReadonlySet<string>
@@ -142,7 +155,7 @@ function AvailableUnits({
         mows
         onFiltersChange={onFiltersChange}
         onToggle={onToggle}
-        rarityCap={DEFAULT_RARITY_CAP}
+        rarityCap={cap ?? DEFAULT_RARITY_CAP}
         roster={picker.data.roster}
         selectedIds={selectedIds}
         units={units}
@@ -153,9 +166,10 @@ function AvailableUnits({
 }
 
 /**
- * Guild War Offense: the current war's summary, the offense teams ready then blocked, the units
- * that have not attacked, the selection bar with Log attack (where the zone and rarity are picked),
- * and the attack log with Undo. With no current war the first logged attack starts one.
+ * Guild War Offense: the toolbar with the zone and defenders' rarity (they cap every unit shown) and
+ * Start new war; the war's summary; the offense teams ready then blocked; the units that have not
+ * attacked; the selection bar, where Won or Lost logs an attack in one tap; and the attack log with
+ * Edit and Delete. With no current war the first logged attack starts one.
  */
 export function OffensePage() {
   const { t, i18n } = useTranslation("guildWar")
@@ -163,13 +177,18 @@ export function OffensePage() {
   const picker = usePickerUnits()
   const teamsQuery = useTeams()
   const logAttack = useLogGuildWarAttack()
-  const undo = useUndoGuildWarAttack()
+  const updateAttack = useUpdateGuildWarAttack()
+  const deleteAttack = useDeleteGuildWarAttack()
   const startWar = useStartGuildWar()
+  const pageTarget = usePageTarget(season, settings.battlefieldLevel)
   const [selection, setSelection] = useState<Selection>(() => new Map())
   const [filters, setFilters] = useState<PickerFilters>(OWNED_ONLY)
-  const [logOpen, setLogOpen] = useState(false)
-  const [logError, setLogError] = useState<string | null>(null)
+  const [dialog, setDialog] = useState<LogAttackSubject | null>(null)
+  const [dialogError, setDialogError] = useState<string | null>(null)
   const [confirmStart, setConfirmStart] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState<GuildWarAttack | null>(
+    null
+  )
   const [newTeamOpen, setNewTeamOpen] = useState(false)
   useGuildWarTutorial("offense")
   // The picker's copy (filters, factions, traits) loads with the page.
@@ -183,11 +202,14 @@ export function OffensePage() {
   const available = units.filter((unit) => !deployed.has(unit.id))
   const teams = offenseTeams(teamsQuery.data?.teams ?? [], deployed)
   const left = tokensLeft(war, maxAttempts(season))
+  const { zoneId, target } = pageTarget
+  const cap = target?.rarity
   const block = logBlock({
     selection,
     deployed,
     roster,
     tokensLeft: left,
+    hasTarget: zoneId !== null && target !== undefined,
   })
 
   const toggle = (unit: PickerUnit) =>
@@ -200,30 +222,70 @@ export function OffensePage() {
   const selectTeam = (core: { id: string; kind: UnitKind }[]) =>
     setSelection(new Map(core.map((unit) => [unit.id, unit.kind])))
 
-  const save = (fields: GuildWarAttackFields) => {
-    setLogError(null)
+  const saveError = (error: unknown) =>
+    t(`log.errors.${attackSaveError(error)}`)
+  const closeDialog = () => {
+    setDialog(null)
+    setDialogError(null)
+  }
+  const log = (fields: GuildWarAttackFields, quick: boolean) => {
+    setDialogError(null)
     logAttack.mutate(
       { fields, settings },
       {
         onSuccess: () => {
-          setLogOpen(false)
+          closeDialog()
           setSelection(new Map())
           toast.success(t("log.logged"))
         },
         onError: (error) => {
-          const rule = guildWarAttackRule(error)
-          setLogError(t(rule ? `log.errors.${rule}` : "log.errors.failed"))
+          if (quick) toast.error(saveError(error))
+          else setDialogError(saveError(error))
         },
       }
     )
   }
-  const undoAttack = (attack: GuildWarAttack) => {
+  const quickLog = (result: "won" | "lost") => {
+    if (zoneId === null || !target) return
+    log(
+      attackFields({
+        selection,
+        roster,
+        zoneId,
+        slot: target.slot,
+        details: { ...NO_DETAILS, result },
+      }),
+      true
+    )
+  }
+  const saveEdit = (attack: GuildWarAttack, fields: GuildWarAttackFields) => {
     if (!war) return
-    undo.mutate(
+    setDialogError(null)
+    updateAttack.mutate(
+      { warId: war.id, attack, fields },
+      {
+        onSuccess: () => {
+          closeDialog()
+          toast.success(t("log.saved"))
+        },
+        onError: (error) => {
+          // The dialog keeps the player's changes; saving again goes over the attack as it is now.
+          const fresh = freshAttack(error, attack.id)
+          if (fresh) setDialog({ kind: "edit", attack: fresh })
+          setDialogError(saveError(error))
+        },
+      }
+    )
+  }
+  const removeAttack = () => {
+    const attack = confirmDelete
+    setConfirmDelete(null)
+    if (!war || !attack) return
+    deleteAttack.mutate(
       { warId: war.id, attackId: attack.id },
       {
-        onSuccess: () => toast.success(t("attackLog.undone")),
-        onError: () => toast.error(t("attackLog.undoFailed")),
+        onSuccess: () => toast.success(t("attackLog.deleted")),
+        onError: () => toast.error(t("attackLog.deleteFailed")),
       }
     )
   }
@@ -243,21 +305,35 @@ export function OffensePage() {
 
   return (
     <div className="flex flex-col gap-5" data-testid="guild-war-offense">
-      <WarSummary>
-        <UnitsLeft roster={roster} deployed={deployed} />
-        <div className="ml-auto self-center">
+      <PageToolbar
+        actions={
           <Button
             disabled={!war || startWar.isPending}
             onClick={() => setConfirmStart(true)}
-            variant="outline"
           >
             <Flag data-icon="inline-start" />
             {t("startWar.action")}
           </Button>
-        </div>
+        }
+        find={
+          <PageTargetFields
+            battlefieldLevel={settings.battlefieldLevel}
+            onRarityChange={pageTarget.setRarity}
+            onZoneChange={pageTarget.setZoneId}
+            rarities={pageTarget.rarities}
+            rarity={cap}
+            season={season}
+            zoneId={zoneId}
+          />
+        }
+        label={t("toolbar.label")}
+      />
+      <WarSummary>
+        <UnitsLeft roster={roster} deployed={deployed} />
       </WarSummary>
       {picker.status === "ready" && roster === null ? <SyncPrompt /> : null}
       <OffenseTeams
+        cap={cap}
         onNewTeam={() => setNewTeamOpen(true)}
         onSelect={selectTeam}
         roster={roster}
@@ -283,6 +359,7 @@ export function OffensePage() {
           {t("units.heading")}
         </h2>
         <AvailableUnits
+          cap={cap}
           filters={filters}
           onFiltersChange={(patch) =>
             setFilters((current) => ({ ...current, ...patch }))
@@ -295,9 +372,13 @@ export function OffensePage() {
       </section>
       {war && war.attacks.length > 0 ? (
         <AttackLog
-          onUndo={undoAttack}
+          deleting={deleteAttack.isPending}
+          onDelete={setConfirmDelete}
+          onEdit={(attack) => {
+            setDialogError(null)
+            setDialog({ kind: "edit", attack })
+          }}
           season={season}
-          undoing={undo.isPending}
           war={war}
         />
       ) : null}
@@ -306,23 +387,30 @@ export function OffensePage() {
           block={block}
           count={selection.size}
           onClear={() => setSelection(new Map())}
-          onLog={() => {
-            setLogError(null)
-            setLogOpen(true)
+          onLogDetails={() => {
+            if (zoneId === null || !target) return
+            setDialogError(null)
+            setDialog({ kind: "new", selection, roster, zoneId, target })
           }}
+          onQuickLog={quickLog}
+          pending={logAttack.isPending}
         />
       ) : null}
-      {logOpen ? (
+      {dialog ? (
         <LogAttackDialog
           battlefieldLevel={settings.battlefieldLevel}
-          error={logError}
-          onOpenChange={setLogOpen}
-          onSave={save}
+          error={dialogError}
+          onOpenChange={(open) => {
+            if (!open) closeDialog()
+          }}
+          onSave={(fields) => {
+            if (dialog.kind === "edit") saveEdit(dialog.attack, fields)
+            else log(fields, false)
+          }}
           open
-          pending={logAttack.isPending}
-          roster={roster}
+          pending={logAttack.isPending || updateAttack.isPending}
           season={season}
-          selection={selection}
+          subject={dialog}
           units={units}
         />
       ) : null}
@@ -336,6 +424,15 @@ export function OffensePage() {
         onConfirm={start}
         open={confirmStart}
         title={t("startWar.title")}
+      />
+      <ConfirmationDialog
+        cancelLabel={t("attackLog.deleteCancel")}
+        confirmLabel={t("attackLog.deleteConfirm")}
+        description={t("attackLog.deleteDescription")}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={removeAttack}
+        open={confirmDelete !== null}
+        title={t("attackLog.deleteTitle")}
       />
     </div>
   )

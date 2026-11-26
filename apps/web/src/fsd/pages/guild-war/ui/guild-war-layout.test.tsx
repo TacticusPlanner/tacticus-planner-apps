@@ -68,14 +68,35 @@ describe("GuildWarLayout", () => {
     await resetTestDatabases()
   })
 
-  it("shows the first season at level 5 and no tokens used with no war", async () => {
+  it("shows the first season at level 1 and no tokens used with no war", async () => {
     api.current.mockResolvedValue({ war: null })
     renderAt("/guild/war/offense")
 
-    expect(
-      await screen.findByTestId("guild-war-settings-summary")
-    ).toHaveTextContent("Season A · Battlefield level 5")
+    // Plain text: Settings in the header is the only way into Settings.
+    const summary = await screen.findByTestId("guild-war-settings-summary")
+    expect(summary).toHaveTextContent("Season A · Battlefield level 1")
+    expect(summary.tagName).toBe("P")
     expect(screen.getByTestId("guild-war-summary")).toHaveTextContent("0 / 10")
+  })
+
+  it("offers no battlefield level 0, the game's not taking part", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({ war: war() })
+    renderAt("/guild/war/offense")
+
+    await user.click(await screen.findByRole("button", { name: "Settings" }))
+    const dialog = await screen.findByTestId("guild-war-settings")
+    await user.click(
+      within(dialog).getByRole("combobox", { name: "Battlefield level" })
+    )
+    const levels = await screen.findAllByRole("option")
+    expect(levels.map((option) => option.textContent)).toEqual([
+      "Level 1",
+      "Level 2",
+      "Level 3",
+      "Level 4",
+      "Level 5",
+    ])
   })
 
   it("defaults to the season the calendar says is running", async () => {
@@ -99,8 +120,8 @@ describe("GuildWarLayout", () => {
 
     // Players know the season by its number, not the config letter it runs.
     const summary = await screen.findByTestId("guild-war-settings-summary")
-    expect(summary).toHaveTextContent("Season 29 · Battlefield level 5")
-    await user.click(summary)
+    expect(summary).toHaveTextContent("Season 29 · Battlefield level 1")
+    await user.click(screen.getByRole("button", { name: "Settings" }))
     const dialog = await screen.findByTestId("guild-war-settings")
     expect(within(dialog).getByTestId("guild-war-season")).toHaveTextContent(
       "Season 29"
@@ -117,8 +138,7 @@ describe("GuildWarLayout", () => {
     })
     renderAt("/guild/war/history")
 
-    // The summary line opens Settings too.
-    await user.click(await screen.findByTestId("guild-war-settings-summary"))
+    await user.click(await screen.findByRole("button", { name: "Settings" }))
     const dialog = await screen.findByTestId("guild-war-settings")
     expect(
       within(dialog).getByRole("combobox", { name: "Season" })

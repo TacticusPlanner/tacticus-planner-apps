@@ -1,12 +1,15 @@
 import { useTranslation } from "react-i18next"
-import { X } from "lucide-react"
+import { Info, ShieldHalf, Skull, X } from "lucide-react"
+import type { ReactNode } from "react"
 import {
   characterIcon,
   guildWarBuffIcon,
   mowIcon,
+  rankIcon,
+  rarityIcon,
 } from "@workspace/game-catalog"
 import { groupByFaction, rankOrder, rarityOrder } from "@workspace/game-domain"
-import type { FactionId, UnitId } from "@workspace/game-domain"
+import type { FactionId, Rarity, UnitId } from "@workspace/game-domain"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { IconButton } from "@workspace/ui/components/icon-button"
 import { Label } from "@workspace/ui/components/label"
@@ -19,7 +22,7 @@ import {
 } from "@workspace/ui/components/select"
 
 import type { PickerUnit } from "@/features/team-editor"
-import { EntityIcon, UnitCombobox } from "@/shared/ui"
+import { EntityIcon, HintTrigger, UnitCombobox } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
 import type { GuildWarSeason } from "../../lib/season"
@@ -41,7 +44,7 @@ function OptionalSelect<T extends string>({
 }: {
   label: string
   value: T | null
-  options: readonly { value: T; label: string; icon?: string }[]
+  options: readonly { value: T; label: string; icon?: ReactNode }[]
   onChange: (value: T | null) => void
   noneLabel: string
   testId: string
@@ -60,9 +63,7 @@ function OptionalSelect<T extends string>({
         <SelectItem value={ANY}>{noneLabel}</SelectItem>
         {options.map((option) => (
           <SelectItem key={option.value} value={option.value}>
-            {option.icon ? (
-              <EntityIcon alt="" size="icon" src={option.icon} />
-            ) : null}
+            {option.icon}
             {option.label}
           </SelectItem>
         ))}
@@ -71,8 +72,14 @@ function OptionalSelect<T extends string>({
   )
 }
 
-/** One enemy unit: who, its rarity and rank when noted, and whether it was killed or left
- *  damaged. */
+/** How an enemy character ended the fight, each with its icon. */
+const STATE_ICONS = {
+  killed: <Skull aria-hidden="true" className="text-destructive" />,
+  damaged: <ShieldHalf aria-hidden="true" />,
+} as const
+
+/** One enemy unit: who, its rarity and rank when noted, and (a character only: a Machine of War is
+ *  never killed) whether it was killed or left damaged. */
 function EnemyUnitRow({
   unit,
   kind,
@@ -117,6 +124,7 @@ function EnemyUnitRow({
           options={rarityOrder.map((rarity) => ({
             value: rarity,
             label: t(`progression:rarities.${rarity}`),
+            icon: <EntityIcon alt="" size="icon" src={rarityIcon(rarity)} />,
           }))}
           testId="guild-war-enemy-rarity"
           value={unit.rarity}
@@ -129,24 +137,26 @@ function EnemyUnitRow({
             options={rankOrder.map((rank) => ({
               value: rank,
               label: t(`progression:ranks.${rank}`),
+              icon: <EntityIcon alt="" size="icon" src={rankIcon(rank)} />,
             }))}
             testId="guild-war-enemy-rank"
             value={unit.rank}
           />
-        ) : (
-          <span />
-        )}
-        <OptionalSelect
-          label={t("enemy.state", { name })}
-          noneLabel={t("enemy.stateAny")}
-          onChange={(state) => onChange({ ...unit, state })}
-          options={(["killed", "damaged"] as const).map((state) => ({
-            value: state,
-            label: t(`enemy.states.${state}`),
-          }))}
-          testId="guild-war-enemy-state"
-          value={unit.state}
-        />
+        ) : null}
+        {kind === "character" ? (
+          <OptionalSelect
+            label={t("enemy.state", { name })}
+            noneLabel={t("enemy.stateAny")}
+            onChange={(state) => onChange({ ...unit, state })}
+            options={(["killed", "damaged"] as const).map((state) => ({
+              value: state,
+              label: t(`enemy.states.${state}`),
+              icon: STATE_ICONS[state],
+            }))}
+            testId="guild-war-enemy-state"
+            value={unit.state}
+          />
+        ) : null}
       </div>
     </li>
   )
@@ -162,14 +172,17 @@ export function EnemyDetails({
   onChange,
   units,
   season,
+  defenderRarity,
 }: {
   value: EnemyDraft
   onChange: (value: EnemyDraft) => void
   units: readonly PickerUnit[]
   season: GuildWarSeason | undefined
+  /** The rarity the defenders were capped at: what an added enemy starts at. */
+  defenderRarity: Rarity | undefined
 }) {
   const { t } = useTranslation(["guildWar", "factions"])
-  const { buffName } = useGuildWarNames()
+  const { buffName, buffDescription } = useGuildWarNames()
   const factionName = (id: string) => t(`factions:${id}`, { defaultValue: id })
   const groupsOf = (kind: PickerUnit["kind"], taken: readonly string[]) =>
     groupByFaction(
@@ -227,7 +240,10 @@ export function EnemyDetails({
             onChange={(id) =>
               onChange({
                 ...value,
-                characters: [...value.characters, enemyUnit(id)],
+                characters: [
+                  ...value.characters,
+                  enemyUnit(id, "character", defenderRarity),
+                ],
               })
             }
             placeholder={t("enemy.addCharacter")}
@@ -252,7 +268,9 @@ export function EnemyDetails({
             emptyText={t("enemy.noUnit")}
             groups={mowGroups}
             icon={mowIcon}
-            onChange={(id) => onChange({ ...value, mow: enemyUnit(id) })}
+            onChange={(id) =>
+              onChange({ ...value, mow: enemyUnit(id, "mow", defenderRarity) })
+            }
             placeholder={t("enemy.addMow")}
           />
         )}
@@ -265,31 +283,45 @@ export function EnemyDetails({
           <div className="grid gap-2 @md:grid-cols-2">
             {season.buffs.map((buff) => {
               const checked = value.buffIds.includes(buff.id)
+              const description = buffDescription(
+                season,
+                buff.id,
+                defenderRarity
+              )
               return (
-                <Label
-                  className="flex items-center gap-2 text-sm font-normal"
-                  key={buff.id}
-                >
-                  <Checkbox
-                    checked={checked}
-                    data-testid={`guild-war-buff-${buff.id}`}
-                    onCheckedChange={(next) =>
-                      onChange({
-                        ...value,
-                        buffIds:
-                          next === true
-                            ? [...value.buffIds, buff.id]
-                            : value.buffIds.filter((id) => id !== buff.id),
-                      })
-                    }
-                  />
-                  <EntityIcon
-                    alt=""
-                    size="icon"
-                    src={guildWarBuffIcon(buff.id)}
-                  />
-                  {buffName(buff.id)}
-                </Label>
+                <div className="flex items-center gap-2" key={buff.id}>
+                  <Label className="flex min-w-0 items-center gap-2 text-sm font-normal">
+                    <Checkbox
+                      checked={checked}
+                      data-testid={`guild-war-buff-${buff.id}`}
+                      onCheckedChange={(next) =>
+                        onChange({
+                          ...value,
+                          buffIds:
+                            next === true
+                              ? [...value.buffIds, buff.id]
+                              : value.buffIds.filter((id) => id !== buff.id),
+                        })
+                      }
+                    />
+                    <EntityIcon
+                      alt=""
+                      size="icon"
+                      src={guildWarBuffIcon(buff.id)}
+                    />
+                    {buffName(buff.id)}
+                  </Label>
+                  {/* Outside the label, so tapping it shows the text instead of ticking the box. */}
+                  {description ? (
+                    <HintTrigger
+                      className="text-muted-foreground"
+                      hint={description}
+                      label={t("enemy.buffInfo", { name: buffName(buff.id) })}
+                    >
+                      <Info aria-hidden="true" className="size-icon-sm" />
+                    </HintTrigger>
+                  ) : null}
+                </div>
               )
             })}
           </div>

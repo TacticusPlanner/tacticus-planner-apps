@@ -1,8 +1,7 @@
 import { useCallback } from "react"
-import { progressionRarity, rarityOrder } from "@workspace/game-domain"
+import { rarityOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 
-import type { TeamRoster } from "@/entities/team"
 import { usePersistedSelection } from "@/shared/lib"
 
 import {
@@ -12,7 +11,7 @@ import {
   zoneTierId,
 } from "../lib/season"
 import type { GuildWarSeason } from "../lib/season"
-import type { Selection } from "./offense"
+import type { GuildWarAttack } from "./types"
 
 /** The zone last attacked, per device like the app's other quick picks (plan row 5). */
 const LAST_ZONE_STORAGE_KEY = "guildWar.zone"
@@ -74,26 +73,32 @@ export function zoneRarities(
     )
 }
 
-/** The rarity an attack most likely went at: the lowest cap the lineup's highest rarity fits under,
- *  else the zone's highest cap. Undefined when the zone has no caps. */
-export function likelyRarity(
-  rarities: readonly ZoneRarity[],
-  selection: Selection,
-  roster: TeamRoster | null
-): Rarity | undefined {
-  const highest = Math.max(
-    -1,
-    ...[...selection].flatMap(([id, kind]) => {
-      const unit = (
-        kind === "character" ? roster?.characters : roster?.mows
-      )?.get(id)
-      return unit
-        ? [rarityOrder.indexOf(progressionRarity(unit.progression))]
-        : []
-    })
-  )
-  const fitting = rarities.filter(
-    (entry) => rarityOrder.indexOf(entry.rarity) >= highest
-  )
-  return (fitting.at(-1) ?? rarities[0])?.rarity
+/** The rarities an edited attack can be moved to in a zone: the zone's caps at the war's level,
+ *  and, in the attack's own zone, its cap even when a changed level no longer has it. */
+export function editRarities(
+  season: GuildWarSeason | undefined,
+  battlefieldLevel: number,
+  attack: GuildWarAttack,
+  zoneId: string
+): ZoneRarity[] {
+  const rarities = zoneRarities(season, battlefieldLevel, zoneId)
+  const ownZone = zoneId === zoneKindId(season, attack.zoneId)
+  return ownZone && rarities.every((entry) => entry.rarity !== attack.rarityCap)
+    ? [{ rarity: attack.rarityCap, slot: attack.slot }, ...rarities]
+    : rarities
+}
+
+/** The zone and slot an edited attack is saved at: its own while neither the zone nor the rarity
+ *  changed (the slot keeps its cap), else the picked zone and the picked rarity's first slot. */
+export function editTarget(
+  attack: GuildWarAttack,
+  season: GuildWarSeason | undefined,
+  zoneId: string,
+  rarity: ZoneRarity | undefined
+): { zoneId: string; slot: number } | undefined {
+  const unchanged =
+    zoneId === zoneKindId(season, attack.zoneId) &&
+    (rarity === undefined || rarity.rarity === attack.rarityCap)
+  if (unchanged) return { zoneId: attack.zoneId, slot: attack.slot }
+  return rarity ? { zoneId, slot: rarity.slot } : undefined
 }

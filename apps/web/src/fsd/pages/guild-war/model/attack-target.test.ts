@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest"
 import { guildWarFixture } from "@workspace/game-catalog/testing"
 
-import type { TeamRoster } from "@/entities/team"
-
-import { likelyRarity, resolveZone, zoneRarities } from "./attack-target"
+import {
+  editRarities,
+  editTarget,
+  resolveZone,
+  zoneRarities,
+} from "./attack-target"
+import { pickRarity } from "./page-target"
+import type { GuildWarAttack } from "./types"
 
 const [seasonA, seasonD] = guildWarFixture
 
@@ -33,30 +38,42 @@ describe("zoneRarities", () => {
   })
 })
 
-const roster = (progression: string): TeamRoster =>
-  ({
-    characters: new Map([["a", { progression }]]),
-    mows: new Map(),
-  }) as unknown as TeamRoster
+const attack = {
+  zoneId: "Armoury",
+  slot: 2,
+  rarityCap: "Epic",
+} as GuildWarAttack
 
-describe("likelyRarity", () => {
-  const rarities = zoneRarities(seasonA, 5, "Armoury")
-
-  it("takes the lowest cap the lineup fits under", () => {
-    const selection = new Map([["a", "character" as const]])
-    expect(likelyRarity(rarities, selection, roster("Epic:RedTwoStars"))).toBe(
-      "Epic"
-    )
+describe("editing an attack's target", () => {
+  it("keeps the attack's own zone and slot while nothing changed", () => {
+    const rarities = editRarities(seasonA, 5, attack, "Armoury")
     expect(
-      likelyRarity(rarities, selection, roster("Legendary:RedFiveStars"))
-    ).toBe("Legendary")
+      editTarget(attack, seasonA, "Armoury", pickRarity(rarities, "Epic"))
+    ).toEqual({ zoneId: "Armoury", slot: 2 })
   })
 
-  it("takes the highest cap when the lineup is above them all", () => {
-    const selection = new Map([["a", "character" as const]])
+  it("moves to the first slot of a newly picked rarity or zone", () => {
+    const rarities = editRarities(seasonA, 5, attack, "Armoury")
     expect(
-      likelyRarity(rarities, selection, roster("Mythic:OneBlueStar"))
-    ).toBe("Legendary")
-    expect(likelyRarity([], selection, null)).toBeUndefined()
+      editTarget(attack, seasonA, "Armoury", pickRarity(rarities, "Legendary"))
+    ).toEqual({ zoneId: "Armoury", slot: 0 })
+  })
+
+  it("keeps the attack's cap pickable when the level no longer has it", () => {
+    const mythic = { ...attack, rarityCap: "Mythic", slot: 4 } as GuildWarAttack
+    expect(editRarities(seasonA, 5, mythic, "Armoury")[0]).toEqual({
+      rarity: "Mythic",
+      slot: 4,
+    })
+  })
+})
+
+describe("pickRarity", () => {
+  it("takes the picked rarity when the zone has it, else the highest", () => {
+    const rarities = zoneRarities(seasonA, 5, "Armoury")
+    expect(pickRarity(rarities, "Epic")?.rarity).toBe("Epic")
+    expect(pickRarity(rarities, "Mythic")?.rarity).toBe("Legendary")
+    expect(pickRarity(rarities, undefined)?.rarity).toBe("Legendary")
+    expect(pickRarity([], "Epic")).toBeUndefined()
   })
 })

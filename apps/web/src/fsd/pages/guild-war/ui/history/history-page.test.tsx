@@ -5,21 +5,25 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { render, screen, waitFor, within } from "@/test/render"
 import { resetTestDatabases, seedGameCatalog } from "@/test/seed"
+import { setViewportWidth } from "@/test/viewport"
 
 import type { GuildWar, GuildWarAttack } from "../../model/types"
 
-const api = vi.hoisted(() => ({ past: vi.fn() }))
+const api = vi.hoisted(() => ({ past: vi.fn(), updateAttack: vi.fn() }))
 
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
+vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
 vi.mock("@/shared/api", async (importOriginal) => {
   const { fakeApiClient } = await import("@/test/fake-api-client")
   return {
     ...(await importOriginal<typeof import("@/shared/api")>()),
-    apiClient: fakeApiClient((call) =>
-      call.path === "/api/v1/guild-wars"
-        ? api.past(call.params?.query?.after ?? null)
-        : undefined
-    ),
+    apiClient: fakeApiClient((call) => {
+      if (call.path === "/api/v1/guild-wars")
+        return api.past(call.params?.query?.after ?? null)
+      if (call.method === "PUT")
+        return api.updateAttack(call.params?.path?.attackId, call.body)
+      return undefined
+    }),
   }
 })
 
@@ -76,6 +80,7 @@ function renderHistory() {
 describe("HistoryPage", () => {
   beforeEach(async () => {
     vi.resetAllMocks()
+    setViewportWidth(1440)
     await seedGameCatalog({ "guild-war": guildWarFixture })
   })
   afterEach(async () => {
@@ -145,7 +150,7 @@ describe("HistoryPage", () => {
     )
 
     const [newest] = screen.getAllByTestId("guild-war-past-war")
-    expect(newest).toHaveTextContent("2 · 1 won · 1 lost")
+    expect(newest).toHaveTextContent("Level 5 · 2 · 1 won · 1 lost")
     expect(screen.queryByTestId("guild-war-attack")).toBeNull()
     await user.click(within(newest as HTMLElement).getByRole("button"))
     const rows = screen.getAllByTestId("guild-war-attack")
@@ -154,9 +159,22 @@ describe("HistoryPage", () => {
     expect(
       within(rows[1] as HTMLElement).getByTestId("attack-notes")
     ).toHaveTextContent("Ran out of time.")
+    const enemy = within(rows[1] as HTMLElement).getByTestId("attack-enemy")
+    // A buff names itself and says what it does in the game's words.
     expect(
-      within(rows[1] as HTMLElement).getByTestId("attack-enemy")
+      within(enemy).getByRole("button", { name: "Fortified" })
     ).toBeInTheDocument()
+    // An ended war's attacks can be edited but not deleted.
+    expect(
+      within(rows[1] as HTMLElement).getByRole("button", {
+        name: "Edit attack",
+      })
+    ).toBeInTheDocument()
+    expect(
+      within(rows[1] as HTMLElement).queryByRole("button", {
+        name: "Delete attack",
+      })
+    ).toBeNull()
     expect(screen.queryByRole("button", { name: "Load more wars" })).toBeNull()
   })
 
@@ -180,5 +198,34 @@ describe("HistoryPage", () => {
     )
     expect(api.past).toHaveBeenLastCalledWith("cursor-1")
     expect(screen.queryByRole("button", { name: "Load more wars" })).toBeNull()
+  })
+
+  it("edits an attack of an ended war", async () => {
+    const user = userEvent.setup()
+    const logged = attack("a1", ["ultraCalgar"], { notes: "Close one." })
+    const ended = war("war-1", [logged])
+    api.past.mockResolvedValue({ items: [ended], nextAfter: null })
+    api.updateAttack.mockResolvedValue(ended)
+    renderHistory()
+
+    const [past] = await screen.findAllByTestId("guild-war-past-war")
+    await user.click(within(past as HTMLElement).getByRole("button"))
+    await user.click(screen.getByRole("button", { name: "Edit attack" }))
+    const dialog = await screen.findByTestId("guild-war-log-dialog")
+    await user.click(within(dialog).getByRole("radio", { name: "Lost" }))
+    await user.click(within(dialog).getByRole("button", { name: "Save" }))
+
+    await waitFor(() =>
+      expect(api.updateAttack).toHaveBeenCalledWith(
+        "a1",
+        expect.objectContaining({
+          zoneId: "Armoury",
+          slot: 2,
+          result: "lost",
+          notes: "Close one.",
+          revision: 1,
+        })
+      )
+    )
   })
 })
