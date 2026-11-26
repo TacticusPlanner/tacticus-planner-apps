@@ -16,7 +16,11 @@ import { createReconnectingRunner } from "./reconnect"
 
 // Exported so tests can delete/reset the exact database the app uses (see player-data-sync.test.ts).
 export const playerDataDbName = "tacticus-planner-player-data"
-const playerDataDbVersion = 1
+// v1 keyed `inventory-items` by `itemId` alone, so a stack of an item at a second level overwrote the
+// first (the game keeps one stack per item and level). v2 drops that store and its chunk metadata (so
+// the next sync downloads the chunk again); v3 recreates it keyed by `[itemId+level]`. Dexie can't
+// change a primary key in place, hence the two steps.
+const playerDataDbVersion = 3
 // Shared by every "merged" chunk (see chunk-keys.ts) — holds several small records per chunk instead
 // of giving each chunk its own single-row store.
 const profileStore = "profile"
@@ -30,7 +34,7 @@ const splitChunkKeyPath: Record<SplitPlayerDataChunkKey, string | string[]> = {
   characters: "unitId",
   mows: "unitId",
   "inventory-upgrades": "upgradeId",
-  "inventory-items": "itemId",
+  "inventory-items": ["itemId", "level"],
   "inventory-shards": "unitId",
   "campaign-progress": ["tacticusCampaignId", "type"],
   "campaign-events-progress": ["tacticusCampaignId", "type"],
@@ -81,8 +85,8 @@ function reassembleMergedChunk(
 /**
  * Single long-lived Dexie instance for the whole app's lifetime — idiomatic Dexie usage (repeatedly
  * closing/reopening a connection defeats its internal optimizations and is explicitly discouraged).
- * One complete `.version().stores()` block: this is greenfield (nothing has shipped), so there's no
- * historical version chain to replay. Dexie's own version-upgrade cascade — each version declares its
+ * Version 1 is the complete store list; versions 2 and 3 only re-key `inventory-items` (see
+ * `playerDataDbVersion`). Dexie's own version-upgrade cascade — each version declares its
  * *complete* store list, and Dexie walks any older client through every version up to the latest — is
  * what future chunk additions should rely on (bump `playerDataDbVersion`, add a new
  * `.version(N+1).stores({...})` block here), not a custom self-heal workaround: this replaces the
@@ -94,15 +98,23 @@ class PlayerDataDb extends Dexie {
   constructor() {
     super(playerDataDbName)
 
-    this.version(playerDataDbVersion).stores({
+    this.version(1).stores({
       metadata: "key",
       profile: "id",
       ...Object.fromEntries(
         splitPlayerDataChunkKeys.map((key) => [
           key,
-          toDexieKeyPath(splitChunkKeyPath[key]),
+          toDexieKeyPath(
+            key === "inventory-items" ? "itemId" : splitChunkKeyPath[key]
+          ),
         ])
       ),
+    })
+    this.version(2)
+      .stores({ "inventory-items": null })
+      .upgrade((tx) => tx.table("metadata").delete("inventory-items"))
+    this.version(playerDataDbVersion).stores({
+      "inventory-items": toDexieKeyPath(splitChunkKeyPath["inventory-items"]),
     })
   }
 }

@@ -5,5 +5,21 @@
       "upgrades": "Améliorations",
       "ascension": "Transcendance"
     }
+  },
+  "items": {
+    "title": "Objets",
+    "slots": {
+      "I_Crit": "Objet de coups critiques",
+      "I_Block": "Objet de blocage",
+      "I_Booster_Crit": "Objet de booster de coups critiques",
+      "I_Booster_Block": "Objet de booster de blocage",
+      "I_Defensive": "Objet défensif"
+    },
+    "relic": "Relique",
+    "relicItems": "Objets sacrés",
+    "reclaim": "Recycler les objets",
+    "salvage": "Rebut",
+    "mythicSalvage": "Rebuts Mythiques",
+    "gold": "Pièces"
   }
 }

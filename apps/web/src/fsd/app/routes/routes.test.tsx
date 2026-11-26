@@ -76,9 +76,9 @@ describe("app routes", () => {
         isValidElement(route.element) && route.element.type === Navigate
     )
 
-    // The bare /dailies, /library, /plan, /guild, /guild/war and /my-game/inventory, and the old
-    // /dailies/shops.
-    expect(redirectOnly).toHaveLength(7)
+    // The bare /dailies, /library, /plan, /guild, /guild/war, /my-game/inventory and /my-game/items,
+    // and the old /dailies/shops.
+    expect(redirectOnly).toHaveLength(8)
     for (const route of redirectOnly) {
       expect(route.handle).toBe(redirectOnlyHandle)
     }
@@ -146,6 +146,7 @@ describe("app routes", () => {
       "index",
       "collection",
       "inventory",
+      "items",
       "campaigns",
       "campaign-events",
       "incursions",
@@ -172,7 +173,14 @@ describe("app routes", () => {
     return entry
   }
 
-  it.each(["onslaught", "inventory", "campaigns", "campaign-events", "teams"])(
+  it.each([
+    "onslaught",
+    "inventory",
+    "items",
+    "campaigns",
+    "campaign-events",
+    "teams",
+  ])(
     "bounces an anonymous visitor from /my-game/%s to sign-in",
     (childPath) => {
       const entry = renderMyGameChild(childPath)

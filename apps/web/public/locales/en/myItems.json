@@ -1,0 +1,51 @@
+{
+  "tabs": {
+    "pieces": "Pieces",
+    "suggestions": "Suggestions",
+    "reclaim": "Reclaim"
+  },
+  "page": {
+    "tabsLabel": "Items views",
+    "synced": "Synced {{time}}",
+    "notSynced": "Not synced yet"
+  },
+  "empty": {
+    "title": "No equipment yet",
+    "description": "Sync with Tacticus to see the items you hold and the ones your characters wear.",
+    "sync": "Sync now"
+  },
+  "tour": {
+    "tabs": {
+      "title": "Three views",
+      "content": "Pieces lists every item you hold or wear. Suggestions shows what to equip with items you already have. Reclaim shows the spares you can turn into salvage without losing anything you'd use."
+    },
+    "piecesFind": {
+      "title": "Find an item",
+      "content": "Search by name, narrow by rarity, slot, faction or character, or show only spares or relics."
+    },
+    "piecesView": {
+      "title": "Cards or table",
+      "content": "Switch between cards and a table, and group by slot or rarity."
+    },
+    "piece": {
+      "title": "One item",
+      "content": "Each level you own, with how many are spare and who wears one. Open it for its stats and what the next level costs."
+    },
+    "suggestion": {
+      "title": "What to equip",
+      "content": "Each character with an empty slot or a better spare you hold, and why it's better."
+    },
+    "relics": {
+      "title": "Relics nobody wears",
+      "content": "Spare relics and the characters who can wear them once they reach Mythic."
+    },
+    "reclaimSummary": {
+      "title": "What you'd get back",
+      "content": "The salvage and coins your safe spares return, next to what every spare would return."
+    },
+    "reclaimStack": {
+      "title": "One stack",
+      "content": "How many copies are safe to reclaim, and why. You reclaim them in the game."
+    }
+  }
+}
