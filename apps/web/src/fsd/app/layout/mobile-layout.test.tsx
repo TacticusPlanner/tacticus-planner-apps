@@ -54,8 +54,14 @@ vi.mock("@/widgets/account-menu", async (importOriginal) => ({
   ),
 }))
 const openUserJot = vi.hoisted(() => vi.fn())
+const openChangelog = vi.hoisted(() => vi.fn())
 vi.mock("../providers/userjot-provider", () => ({
-  useUserJot: () => ({ open: openUserJot, status: "ready", unreadCount: 0 }),
+  useUserJot: () => ({
+    open: openUserJot,
+    openChangelog,
+    status: "ready",
+    unreadCount: 0,
+  }),
 }))
 vi.mock("@/widgets/account-menu/ui/theme-switcher", () => ({
   ThemeSwitcher: () => null,
@@ -139,14 +145,15 @@ describe("MobileHeader", () => {
     })
   })
 
-  it("opens the widget's Updates and closes guest settings from the Changelog row", () => {
+  it("opens the Changelog and closes guest settings from the Changelog row", () => {
     openUserJot.mockClear()
+    openChangelog.mockClear()
     renderShell()
 
     fireEvent.click(screen.getByTestId("mobile-guest-settings"))
     fireEvent.click(screen.getByTestId("auth-changelog"))
 
-    expect(openUserJot).toHaveBeenCalledWith({ to: "updates" })
+    expect(openChangelog).toHaveBeenCalledTimes(1)
     expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 

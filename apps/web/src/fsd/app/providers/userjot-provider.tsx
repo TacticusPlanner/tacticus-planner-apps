@@ -22,6 +22,7 @@ import { useTheme } from "@/shared/theme"
 import type { Theme } from "@/shared/theme"
 
 import { findWidgetBackButton } from "./userjot-back"
+import { resolveChangelogTarget } from "./userjot-latest-update"
 import {
   readUserJotDeepLink,
   userJotTokenContext,
@@ -183,6 +184,8 @@ const themeToUserJot: Record<Theme, "auto" | "light" | "dark"> = {
 type UserJotContextValue = {
   /** Loads the SDK if needed; the widget opens once it has loaded. */
   open: (target?: UserJotOpenTarget) => void
+  /** Opens Updates: the newest post directly while there is unread activity, otherwise the list. */
+  openChangelog: () => void
   unreadCount: number
   /** `failed` when the SDK could not load: entry points disable with an explanation. */
   status: UserJotStatus
@@ -329,13 +332,23 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     setSearchParams(withoutUserJotDeepLink(searchParams), { replace: true })
   }, [searchParams, setSearchParams])
 
+  const openChangelog = useCallback(() => {
+    // Start loading now, so the SDK is ready by the time the newest post is known.
+    loadSdk()
+    void resolveChangelogTarget(
+      unreadCount > 0,
+      import.meta.env.VITE_USERJOT_PROJECT_ID
+    ).then(openUserJotWidget)
+  }, [unreadCount])
+
   const value = useMemo<UserJotContextValue>(
     () => ({
       open: openUserJotWidget,
+      openChangelog,
       unreadCount,
       status,
     }),
-    [unreadCount, status]
+    [openChangelog, unreadCount, status]
   )
 
   return (

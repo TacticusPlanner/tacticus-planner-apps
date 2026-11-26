@@ -91,6 +91,7 @@ export function AuthControl() {
   const { state: accountState } = useCurrentUser()
   const {
     open: openUserJot,
+    openChangelog,
     status: feedbackStatus,
     unreadCount,
   } = useUserJot()
@@ -135,7 +136,7 @@ export function AuthControl() {
       <div className="flex min-w-0 items-center gap-2">
         <GuestAccountMenu
           changelogUnavailable={feedbackUnavailable}
-          onChangelog={() => openUserJot({ to: "updates" })}
+          onChangelog={openChangelog}
           onRoadmap={() => openUserJot({ to: "roadmap" })}
           onOpenChange={setMenuOpen}
           open={menuOpen}
@@ -199,7 +200,7 @@ export function AuthControl() {
       }}
       onChangelog={() => {
         setMenuOpen(false)
-        openUserJot({ to: "updates" })
+        openChangelog()
       }}
       onRoadmap={() => {
         setMenuOpen(false)
