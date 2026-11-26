@@ -5,6 +5,7 @@ import { isTransientApiError, SERVER_DATA_STALE_TIME } from "@/shared/api"
 import { isAccountSetupComplete } from "../model/current-user"
 
 import { getCurrentUser, getUserJotToken } from "./account.api"
+import type { UserJotTokenContext } from "./account.api"
 
 const CURRENT_USER_RETRY_LIMIT = 3
 
@@ -29,10 +30,10 @@ export const accountQueries = {
     }),
   // Never served from cache: the backend mints a fresh, short-lived token on every call, so a
   // stale one here would just hand the widget a token closer to expiry for no benefit.
-  userJotToken: () =>
+  userJotToken: (context: UserJotTokenContext) =>
     queryOptions({
-      queryKey: ["userjot-token"] as const,
-      queryFn: ({ signal }) => getUserJotToken(signal),
+      queryKey: ["userjot-token", context] as const,
+      queryFn: ({ signal }) => getUserJotToken(context, signal),
       staleTime: 0,
       gcTime: 0,
     }),

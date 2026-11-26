@@ -164,7 +164,8 @@
     "description": "This page hit an unexpected error. Reloading usually fixes it, especially right after an update.",
     "reload": "Reload",
     "goHome": "Go to Home",
-    "feedbackHint": "If it keeps happening, tell us with the Feedback button."
+    "feedbackHint": "If it keeps happening, let us know.",
+    "report": "Report a bug"
   },
   "onboarding": {
     "genericError": "Something went wrong. Please try again.",
@@ -314,6 +315,8 @@
       "feedbackLabel": "Submit feedback",
       "feedbackDescription": "Open the feedback, roadmap, and updates widget",
       "feedbackUnavailable": "Feedback is unavailable right now",
+      "reportBugLabel": "Report a bug",
+      "reportBugDescription": "Open the feedback form to describe a problem",
       "tourDescription": "Walk through this page's features",
       "tourRunning": "A tour is already running",
       "signInDescription": "Plan goals, dailies, Legendary Events and guild raids with your own roster",

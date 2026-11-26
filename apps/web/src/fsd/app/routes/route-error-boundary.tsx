@@ -9,6 +9,8 @@ import {
   reportError,
 } from "@/shared/lib"
 
+import { openUserJotWidget } from "../providers/userjot-provider"
+
 /**
  * `errorElement` for the root route set and the AppShell route. A stale-build failure (chunk deleted
  * by a newer deploy, local DB moved on by a newer tab) reloads the URL once and renders nothing in
@@ -68,6 +70,15 @@ export function RouteErrorBoundary() {
         <p className="text-sm text-muted-foreground">
           {t("appError.feedbackHint")}
         </p>
+        {/* The shell (and its feedback button) is gone here, so the report opens the widget's
+            submit form directly; the widget is the SDK's own overlay and works without the shell. */}
+        <Button
+          onClick={() => openUserJotWidget({ to: "feedback", compose: true })}
+          size="sm"
+          variant="ghost"
+        >
+          {t("appError.report")}
+        </Button>
       </div>
     </div>
   )

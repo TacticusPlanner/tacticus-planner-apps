@@ -11,6 +11,7 @@ import {
 } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
+import { useSearchParams } from "react-router"
 import { useQueryClient } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 
@@ -21,10 +22,12 @@ import { useTheme } from "@/shared/theme"
 import type { Theme } from "@/shared/theme"
 
 import { findWidgetBackButton } from "./userjot-back"
-
-type UserJotOpenTarget = {
-  to?: "home" | "feedback" | "roadmap" | "updates"
-}
+import {
+  readUserJotDeepLink,
+  userJotTokenContext,
+  withoutUserJotDeepLink,
+} from "./userjot-targets"
+import type { UserJotOpenTarget } from "./userjot-targets"
 
 type UserJotSdk = {
   open: (target?: UserJotOpenTarget) => void
@@ -65,9 +68,13 @@ if (!window.uj) {
   ;(window.uj as unknown as { init: (...args: unknown[]) => void }).init(
     import.meta.env.VITE_USERJOT_PROJECT_ID,
     {
+      // Feedback posted from the widget records the page path it came from (the default is the
+      // origin only), so a report says which page it is about. Never the query string.
+      pageContext: "path",
       widget: {
         launcher: false,
-        whispers: false,
+        // A team reply or vote on the user's own post pops up a short notice.
+        whispers: true,
         // Never pop updates open: an unread newest update instead shows a dot that leads to the
         // Changelog (desktop feedback button, mobile avatar and Changelog row).
         notifications: { updates: "none" },
@@ -107,6 +114,13 @@ function loadSdk() {
     setSdkStatus("failed")
   })
   document.head.append(script)
+}
+
+/** Loads the SDK if needed and opens the widget once it has loaded. For the app error page, which
+ *  replaces the shell (and with it the provider); everywhere else use `useUserJot().open`. */
+export function openUserJotWidget(target?: UserJotOpenTarget) {
+  loadSdk()
+  window.uj?.open(target)
 }
 
 /**
@@ -180,9 +194,9 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = useIsAuthenticated()
   const { state } = useCurrentUser()
   const { theme } = useTheme()
-  const {
-    i18n: { language },
-  } = useTranslation()
+  const { i18n } = useTranslation()
+  const { language } = i18n
+  const [searchParams, setSearchParams] = useSearchParams()
   const queryClient = useQueryClient()
   const [unreadCount, setUnreadCount] = useState(0)
   const status = useSyncExternalStore(subscribeSdkStatus, () => sdkStatus)
@@ -218,7 +232,11 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     // Until this call succeeds there is no fresh identity, so a failure is retried on the next open.
     identifiedAtRef.current = null
     try {
-      const { token } = await queryClient.query(accountQueries.userJotToken())
+      // Read at call time, not a dependency: a language switch alone must not re-identify (each
+      // identify() aborts what the widget is loading); the next token carries the new language.
+      const { token } = await queryClient.query(
+        accountQueries.userJotToken(userJotTokenContext(i18n.language))
+      )
       if (identifyGenerationRef.current !== generation) {
         return
       }
@@ -233,7 +251,7 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
         sdk.logout()
       }
     }
-  }, [isAuthenticated, applicationUserId, queryClient])
+  }, [isAuthenticated, applicationUserId, queryClient, i18n])
 
   useEffect(() => {
     void identify()
@@ -302,12 +320,18 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     if (isAuthenticated) loadSdk()
   }, [isAuthenticated])
 
+  // A deep link (`?changelog=` / `?feedback=`) opens that post in the widget once, then leaves the
+  // URL so a reload or Back does not reopen it.
+  useEffect(() => {
+    const target = readUserJotDeepLink(searchParams)
+    if (!target) return
+    openUserJotWidget(target)
+    setSearchParams(withoutUserJotDeepLink(searchParams), { replace: true })
+  }, [searchParams, setSearchParams])
+
   const value = useMemo<UserJotContextValue>(
     () => ({
-      open: (target) => {
-        loadSdk()
-        window.uj?.open(target)
-      },
+      open: openUserJotWidget,
       unreadCount,
       status,
     }),

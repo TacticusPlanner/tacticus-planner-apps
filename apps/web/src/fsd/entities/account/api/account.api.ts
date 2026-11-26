@@ -27,8 +27,24 @@ export function updateDisplayName(displayName: string) {
   )
 }
 
-export function getUserJotToken(signal?: AbortSignal) {
-  return unwrap(apiClient().GET("/api/v1/userjot-token", { signal }))
+/** Non-identifying feedback context the API signs into the identity token's traits
+ *  (spec: userjot-identity-token); a value the API finds malformed is dropped, not rejected. */
+export type UserJotTokenContext = {
+  appVersion?: string
+  appMode: "installed" | "browser"
+  language: string
+}
+
+export function getUserJotToken(
+  context: UserJotTokenContext,
+  signal?: AbortSignal
+) {
+  return unwrap(
+    apiClient().GET("/api/v1/userjot-token", {
+      params: { query: context },
+      signal,
+    })
+  )
 }
 
 export function updateTacticusIntegration(

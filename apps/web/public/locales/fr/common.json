@@ -164,7 +164,8 @@
     "description": "Cette page a rencontré une erreur inattendue. Recharger règle généralement le problème, surtout juste après une mise à jour.",
     "reload": "Recharger",
     "goHome": "Aller à l'accueil",
-    "feedbackHint": "Si cela se reproduit, signalez-le-nous via le bouton Feedback."
+    "feedbackHint": "Si cela se reproduit, prévenez-nous.",
+    "report": "Signaler un bug"
   },
   "onboarding": {
     "genericError": "Une erreur s’est produite. Veuillez réessayer.",
@@ -314,6 +315,8 @@
       "feedbackLabel": "Envoyer un avis",
       "feedbackDescription": "Ouvrir le widget d'avis, de feuille de route et de nouveautés",
       "feedbackUnavailable": "Les avis sont indisponibles pour le moment",
+      "reportBugLabel": "Signaler un bug",
+      "reportBugDescription": "Ouvrir le formulaire pour décrire un problème",
       "tourDescription": "Découvrir les fonctionnalités de cette page",
       "tourRunning": "Une visite est déjà en cours",
       "signInDescription": "Planifiez objectifs, quotidiennes, Événements légendaires et raids de guilde avec votre propre roster",

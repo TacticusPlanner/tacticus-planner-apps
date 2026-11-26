@@ -1,5 +1,6 @@
 import { createElement, useEffect, useRef } from "react"
 import {
+  Bug,
   HelpCircle,
   LogIn,
   MessageSquareText,
@@ -126,6 +127,21 @@ export function useQuickActions({
           : undefined,
     },
     run: () => openFeedback(),
+  })
+  entries.push({
+    action: {
+      id: "reportBug",
+      icon: Bug,
+      label: t("nav.quickActions.reportBugLabel"),
+      description: t("nav.quickActions.reportBugDescription"),
+      keywords: ["bug", "problem", "issue", "broken", "error"],
+      disabledReason:
+        feedbackStatus === "failed"
+          ? t("nav.quickActions.feedbackUnavailable")
+          : undefined,
+    },
+    // Straight to the submit form, not the widget's home.
+    run: () => openFeedback({ to: "feedback", compose: true }),
   })
   if (hasPageTour) {
     entries.push({

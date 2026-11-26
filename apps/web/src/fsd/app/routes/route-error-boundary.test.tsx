@@ -7,6 +7,11 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }))
 
+const openUserJotWidget = vi.fn()
+vi.mock("../providers/userjot-provider", () => ({
+  openUserJotWidget: (...args: unknown[]) => openUserJotWidget(...args),
+}))
+
 import { setErrorReporter } from "@/shared/lib"
 
 import { RouteErrorBoundary } from "./route-error-boundary"
@@ -159,5 +164,19 @@ describe("RouteErrorBoundary", () => {
     await user.click(screen.getByTestId("app-error-home"))
     expect(await screen.findByTestId("home-page")).toBeVisible()
     expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  it("Report a bug opens the feedback widget's submit form", async () => {
+    const user = userEvent.setup()
+    renderRouter("/dailies", new Error("boom"))
+
+    await user.click(
+      await screen.findByRole("button", { name: "appError.report" })
+    )
+
+    expect(openUserJotWidget).toHaveBeenCalledWith({
+      to: "feedback",
+      compose: true,
+    })
   })
 })

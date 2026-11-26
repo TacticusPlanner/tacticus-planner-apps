@@ -136,6 +136,7 @@ export function AuthControl() {
         <GuestAccountMenu
           changelogUnavailable={feedbackUnavailable}
           onChangelog={() => openUserJot({ to: "updates" })}
+          onRoadmap={() => openUserJot({ to: "roadmap" })}
           onOpenChange={setMenuOpen}
           open={menuOpen}
         />
@@ -199,6 +200,10 @@ export function AuthControl() {
       onChangelog={() => {
         setMenuOpen(false)
         openUserJot({ to: "updates" })
+      }}
+      onRoadmap={() => {
+        setMenuOpen(false)
+        openUserJot({ to: "roadmap" })
       }}
       changelogUnread={hasUnread}
       feedbackUnavailable={feedbackUnavailable}

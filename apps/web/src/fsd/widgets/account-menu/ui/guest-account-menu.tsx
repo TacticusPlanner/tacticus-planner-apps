@@ -29,6 +29,7 @@ export function GuestPreferencesCard({
   children,
   changelogUnavailable,
   onChangelog,
+  onRoadmap,
   tourRow,
 }: {
   children?: ReactNode
@@ -37,6 +38,9 @@ export function GuestPreferencesCard({
   /** Opens the widget's Updates (and closes the surrounding menu), so reading there clears the unread dot.
    *  Omitted outside the app shell (public pages), where the UserJot widget is not mounted: no Changelog row. */
   onChangelog?: () => void
+  /** Opens the widget's Roadmap (and closes the surrounding menu). Omitted outside the app shell, and ignored
+   *  while the widget is unavailable: the row is then a link to the public board in a new tab. */
+  onRoadmap?: () => void
   /** First Help & feedback row (the mobile header has no rail, so it adds the tour here). */
   tourRow?: ReactNode
 }) {
@@ -52,12 +56,21 @@ export function GuestPreferencesCard({
       <PreferencesSection onOpenLanguage={() => setView("language")} />
       <MenuSection data-testid="account-help" label={t("feedback.section")}>
         {tourRow}
-        <MenuLinkRow
-          data-testid="auth-roadmap"
-          href={USERJOT_ROADMAP_URL}
-          icon={MapIcon}
-          label={t("feedback.roadmap")}
-        />
+        {onRoadmap && !changelogUnavailable ? (
+          <MenuRow
+            data-testid="auth-roadmap"
+            icon={MapIcon}
+            label={t("feedback.roadmap")}
+            onClick={onRoadmap}
+          />
+        ) : (
+          <MenuLinkRow
+            data-testid="auth-roadmap"
+            href={USERJOT_ROADMAP_URL}
+            icon={MapIcon}
+            label={t("feedback.roadmap")}
+          />
+        )}
         {onChangelog ? (
           <MenuRow
             data-testid="auth-changelog"
@@ -81,11 +94,13 @@ export function GuestPreferencesCard({
 export function GuestAccountMenu({
   changelogUnavailable,
   onChangelog,
+  onRoadmap,
   onOpenChange,
   open,
 }: {
   changelogUnavailable?: string
   onChangelog: () => void
+  onRoadmap: () => void
   onOpenChange: (open: boolean) => void
   open: boolean
 }) {
@@ -117,6 +132,10 @@ export function GuestAccountMenu({
             onChangelog={() => {
               onOpenChange(false)
               onChangelog()
+            }}
+            onRoadmap={() => {
+              onOpenChange(false)
+              onRoadmap()
             }}
           />
         </PopoverContent>

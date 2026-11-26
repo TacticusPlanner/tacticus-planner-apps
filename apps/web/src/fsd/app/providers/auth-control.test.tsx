@@ -130,8 +130,13 @@ vi.mock("@/widgets/account-menu/ui/catalog-sync-status-badge", () => ({
 }))
 const openUserJot = vi.fn()
 const unreadCount = vi.fn(() => 0)
+const userJotStatus = vi.fn<() => "ready" | "failed">(() => "ready")
 vi.mock("./userjot-provider", () => ({
-  useUserJot: () => ({ open: openUserJot, unreadCount: unreadCount() }),
+  useUserJot: () => ({
+    open: openUserJot,
+    unreadCount: unreadCount(),
+    status: userJotStatus(),
+  }),
 }))
 vi.mock("@/shared/tour", () => ({
   TourButton: () => <div data-testid="tour-button" />,
@@ -177,6 +182,7 @@ function renderAuthControl() {
 
 describe("AuthControl", () => {
   beforeEach(() => {
+    userJotStatus.mockReturnValue("ready")
     isMobile.mockReturnValue(false)
     useIsAuthenticated.mockReturnValue(true)
     inProgress.mockReturnValue(InteractionStatus.None)
@@ -262,19 +268,16 @@ describe("AuthControl", () => {
     expect(screen.queryByText(/export backup|restore|delete/i)).toBeNull()
   })
 
-  it("links Roadmap to the public roadmap in a new tab from the desktop menu", () => {
+  it("opens the widget's Roadmap and closes the desktop menu", () => {
     renderAuthControl()
 
     fireEvent.click(screen.getByTestId("auth-account-trigger"))
+    const roadmap = screen.getByRole("button", { name: "feedback.roadmap" })
+    expect(roadmap).toHaveAttribute("data-testid", "auth-roadmap")
+    fireEvent.click(roadmap)
 
-    const roadmap = screen.getByTestId("auth-roadmap")
-    expect(roadmap).toHaveAttribute(
-      "href",
-      "https://tacticusplanner.userjot.com/roadmap"
-    )
-    expect(roadmap).toHaveAttribute("target", "_blank")
-    expect(roadmap).toHaveAttribute("rel", "noopener noreferrer")
-    expect(roadmap).toHaveTextContent("feedback.roadmap")
+    expect(openUserJot).toHaveBeenCalledWith({ to: "roadmap" })
+    expect(screen.queryByTestId("auth-roadmap")).not.toBeInTheDocument()
   })
 
   it("links Discord and Buy Me a Coffee in new tabs and closes the desktop menu", () => {
@@ -325,16 +328,29 @@ describe("AuthControl", () => {
     expect(screen.queryByTestId("auth-changelog")).not.toBeInTheDocument()
   })
 
-  it("also offers Roadmap in the guest preferences menu", () => {
+  it("falls back to the public roadmap in a new tab when the widget failed to load", () => {
+    userJotStatus.mockReturnValue("failed")
+    renderAuthControl()
+
+    fireEvent.click(screen.getByTestId("auth-account-trigger"))
+
+    const roadmap = screen.getByRole("link", { name: "feedback.roadmap" })
+    expect(roadmap).toHaveAttribute(
+      "href",
+      "https://tacticusplanner.userjot.com/roadmap"
+    )
+    expect(roadmap).toHaveAttribute("target", "_blank")
+    expect(roadmap).toHaveAttribute("rel", "noopener noreferrer")
+  })
+
+  it("also opens the widget's Roadmap from the guest preferences menu", () => {
     useIsAuthenticated.mockReturnValue(false)
     renderAuthControl()
 
     fireEvent.click(screen.getByRole("button", { name: "settings.label" }))
+    fireEvent.click(screen.getByRole("button", { name: "feedback.roadmap" }))
 
-    expect(screen.getByTestId("auth-roadmap")).toHaveAttribute(
-      "href",
-      "https://tacticusplanner.userjot.com/roadmap"
-    )
+    expect(openUserJot).toHaveBeenCalledWith({ to: "roadmap" })
   })
 
   it("opens the widget's Updates and closes the guest menu from the Changelog row", () => {
@@ -538,14 +554,9 @@ describe("AuthControl", () => {
     })
     expect(screen.getByTestId("theme-switcher")).toBeVisible()
     expect(screen.getByTestId("account-language-row")).toBeVisible()
-    expect(screen.getByTestId("auth-roadmap")).toHaveAttribute(
-      "href",
-      "https://tacticusplanner.userjot.com/roadmap"
-    )
-    expect(screen.getByTestId("auth-roadmap")).toHaveAttribute(
-      "target",
-      "_blank"
-    )
+    expect(
+      screen.getByRole("button", { name: "feedback.roadmap" })
+    ).toBeVisible()
   })
 
   it("opens the language picker in the mobile drawer and switches language", () => {
