@@ -29,7 +29,7 @@ export type NavigationEntry =
       crumb: string
     }
 
-export type NavigationGroupId = "actions" | "pages"
+type NavigationGroupId = "actions" | "pages"
 
 export interface NavigationGroup {
   id: NavigationGroupId

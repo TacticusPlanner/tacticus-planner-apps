@@ -35,7 +35,10 @@ import { MobileHeader } from "./mobile-header"
 import "./mobile-layout.css"
 import { MobileNavLink } from "./mobile-nav-link"
 import type { NavItem } from "./nav-items"
-import { NavigationPalette } from "./navigation-palette"
+import {
+  LazyNavigationPalette,
+  preloadNavigationPalette,
+} from "./navigation-palette-lazy"
 import type { QuickActionsController } from "./quick-actions"
 import { ScrollToTopButton } from "./scroll-to-top-button"
 import { RouteLoadingFill } from "./route-loading-fill"
@@ -305,6 +308,9 @@ function MobileBottomNav({
                 : "text-muted-foreground hover:text-foreground"
             )}
             data-testid="mobile-menu-trigger"
+            onFocus={preloadNavigationPalette}
+            onPointerEnter={preloadNavigationPalette}
+            onTouchStart={preloadNavigationPalette}
           >
             <Menu className="size-icon" />
             <span>{t("nav.menu")}</span>
@@ -326,42 +332,44 @@ function MobileBottomNav({
             <DrawerTitle className="text-xl">{t("nav.navigation")}</DrawerTitle>
             <DrawerDescription>{t("nav.navigationHint")}</DrawerDescription>
           </DrawerHeader>
-          <NavigationPalette
-            density="comfortable"
-            footer={
-              <DrawerFooter className="px-6 pt-0 pb-4">
-                <DrawerClose asChild>
-                  <Button className="w-full" variant="outline">
-                    {t("common.close")}
-                  </Button>
-                </DrawerClose>
-              </DrawerFooter>
-            }
-            getEntryPath={(item) => item.path}
-            inputPlacement="bottom"
-            items={items}
-            onActionSelect={(id) => {
-              if (!quickActions.select(id)) return
-              // Dismiss the on-screen keyboard before the drawer hands off to the target overlay.
-              if (document.activeElement instanceof HTMLElement) {
-                document.activeElement.blur()
+          <Suspense fallback={null}>
+            <LazyNavigationPalette
+              density="comfortable"
+              footer={
+                <DrawerFooter className="px-6 pt-0 pb-4">
+                  <DrawerClose asChild>
+                    <Button className="w-full" variant="outline">
+                      {t("common.close")}
+                    </Button>
+                  </DrawerClose>
+                </DrawerFooter>
               }
-              setMenuOpen(false)
-              setSearch("")
-              // Dispatch once the drawer's exit transition is done so its modal layer no longer
-              // holds focus/pointer locks. vaul's onAnimationEnd does not fire for a parent-driven
-              // close, so use its own exit duration as a bounded timer (works in hidden tabs).
-              clearTimeout(flushTimer.current)
-              flushTimer.current = setTimeout(
-                quickActions.flush,
-                DRAWER_EXIT_MS
-              )
-            }}
-            onNavigate={closeForNavigation}
-            onSearchChange={setSearch}
-            quickActions={quickActions}
-            search={search}
-          />
+              getEntryPath={(item) => item.path}
+              inputPlacement="bottom"
+              items={items}
+              onActionSelect={(id) => {
+                if (!quickActions.select(id)) return
+                // Dismiss the on-screen keyboard before the drawer hands off to the target overlay.
+                if (document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur()
+                }
+                setMenuOpen(false)
+                setSearch("")
+                // Dispatch once the drawer's exit transition is done so its modal layer no longer
+                // holds focus/pointer locks. vaul's onAnimationEnd does not fire for a parent-driven
+                // close, so use its own exit duration as a bounded timer (works in hidden tabs).
+                clearTimeout(flushTimer.current)
+                flushTimer.current = setTimeout(
+                  quickActions.flush,
+                  DRAWER_EXIT_MS
+                )
+              }}
+              onNavigate={closeForNavigation}
+              onSearchChange={setSearch}
+              quickActions={quickActions}
+              search={search}
+            />
+          </Suspense>
         </DrawerContent>
       </Drawer>
     </nav>

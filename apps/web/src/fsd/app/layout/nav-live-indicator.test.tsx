@@ -10,6 +10,13 @@ const { hseState, hreLive, questLive, signalReads } = vi.hoisted(() => ({
   signalReads: { count: 0 },
 }))
 // Pass-through that counts the renders of every live-signal reader (NavLiveDot).
+// The list loads lazily in the app; tests render it directly so they can query it synchronously.
+vi.mock("./navigation-palette-lazy", async () => ({
+  LazyNavigationPalette: (await import("./navigation-palette"))
+    .NavigationPalette,
+  preloadNavigationPalette: () => {},
+}))
+
 vi.mock("./hse-live-context", async (importOriginal) => {
   const actual = await importOriginal<typeof import("./hse-live-context")>()
   return {

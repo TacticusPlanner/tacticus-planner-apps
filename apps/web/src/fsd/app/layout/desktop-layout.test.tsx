@@ -6,6 +6,13 @@ import { Link, MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
+// The list loads lazily in the app; tests render it directly so they can query it synchronously.
+vi.mock("./navigation-palette-lazy", async () => ({
+  LazyNavigationPalette: (await import("./navigation-palette"))
+    .NavigationPalette,
+  preloadNavigationPalette: () => {},
+}))
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: { section?: string }) =>

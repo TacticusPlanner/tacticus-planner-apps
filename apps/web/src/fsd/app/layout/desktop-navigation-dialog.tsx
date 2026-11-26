@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import type { RefObject } from "react"
 import { useTranslation } from "react-i18next"
 import {
@@ -12,7 +12,7 @@ import { Kbd } from "@workspace/ui/components/kbd"
 import { isMacPlatform } from "@/shared/lib"
 
 import type { NavItem } from "./nav-items"
-import { NavigationPalette } from "./navigation-palette"
+import { LazyNavigationPalette } from "./navigation-palette-lazy"
 import type { QuickActionsController } from "./quick-actions"
 
 export function DesktopNavigationDialog({
@@ -60,53 +60,55 @@ export function DesktopNavigationDialog({
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">{t("nav.navigation")}</DialogTitle>
-        <NavigationPalette
-          focusOnOpen
-          density="compact"
-          footer={
-            <div
-              aria-hidden="true"
-              className="flex shrink-0 items-center gap-4 border-t px-4 py-2 text-xs text-muted-foreground"
-            >
-              <span className="flex items-center gap-1">
-                <Kbd>↑</Kbd>
-                <Kbd>↓</Kbd>
-                {t("nav.palette.move")}
-              </span>
-              <span className="flex items-center gap-1">
-                <Kbd>↵</Kbd>
-                {t("nav.palette.open")}
-              </span>
-              <span className="flex items-center gap-1">
-                <Kbd>Esc</Kbd>
-                {t("nav.palette.close")}
-              </span>
-              <span className="ml-auto flex items-center gap-1">
-                <Kbd>{modifier}</Kbd>
-                <Kbd>K</Kbd>
-                {t("nav.palette.anywhere")}
-              </span>
-            </div>
-          }
-          getEntryPath={getEntryPath}
-          inputEnd={
-            <DialogClose
-              aria-label={t("common.close")}
-              className="shrink-0 rounded-sm outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <Kbd className="pointer-events-auto cursor-pointer">Esc</Kbd>
-            </DialogClose>
-          }
-          inputPlacement="top"
-          items={items}
-          onActionSelect={(id) => {
-            if (quickActions.select(id)) handleOpenChange(false)
-          }}
-          onNavigate={() => handleOpenChange(false)}
-          onSearchChange={setSearch}
-          quickActions={quickActions}
-          search={search}
-        />
+        <Suspense fallback={<div className="h-14" />}>
+          <LazyNavigationPalette
+            focusOnOpen
+            density="compact"
+            footer={
+              <div
+                aria-hidden="true"
+                className="flex shrink-0 items-center gap-4 border-t px-4 py-2 text-xs text-muted-foreground"
+              >
+                <span className="flex items-center gap-1">
+                  <Kbd>↑</Kbd>
+                  <Kbd>↓</Kbd>
+                  {t("nav.palette.move")}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Kbd>↵</Kbd>
+                  {t("nav.palette.open")}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Kbd>Esc</Kbd>
+                  {t("nav.palette.close")}
+                </span>
+                <span className="ml-auto flex items-center gap-1">
+                  <Kbd>{modifier}</Kbd>
+                  <Kbd>K</Kbd>
+                  {t("nav.palette.anywhere")}
+                </span>
+              </div>
+            }
+            getEntryPath={getEntryPath}
+            inputEnd={
+              <DialogClose
+                aria-label={t("common.close")}
+                className="shrink-0 rounded-sm outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Kbd className="pointer-events-auto cursor-pointer">Esc</Kbd>
+              </DialogClose>
+            }
+            inputPlacement="top"
+            items={items}
+            onActionSelect={(id) => {
+              if (quickActions.select(id)) handleOpenChange(false)
+            }}
+            onNavigate={() => handleOpenChange(false)}
+            onSearchChange={setSearch}
+            quickActions={quickActions}
+            search={search}
+          />
+        </Suspense>
       </DialogContent>
     </Dialog>
   )
