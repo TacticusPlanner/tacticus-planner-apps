@@ -251,7 +251,9 @@ export function HistoryPage() {
           }}
           onSave={(fields) => saveEdit(editing.war, editing.attack, fields)}
           open
+          deployed={new Set(editing.war.deployedUnitIds)}
           pending={updateAttack.isPending}
+          roster={picker.status === "ready" ? picker.data.roster : null}
           season={seasonOf(editing.war)}
           subject={{ kind: "edit", attack: editing.attack }}
           units={picker.status === "ready" ? picker.data.units : NO_UNITS}

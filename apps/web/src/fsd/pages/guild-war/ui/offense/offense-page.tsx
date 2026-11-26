@@ -71,7 +71,7 @@ import { WarSummary } from "./war-summary"
  *  page's, read when it renders. */
 type NewAttackDialog = Pick<
   Extract<LogAttackSubject, { kind: "new" }>,
-  "kind" | "selection" | "roster"
+  "kind" | "selection"
 >
 
 const NO_UNITS: readonly PickerUnit[] = []
@@ -434,7 +434,7 @@ export function OffensePage() {
           onLogDetails={() => {
             if (zoneId === null || !target) return
             setDialogError(null)
-            setDialog({ kind: "new", selection, roster })
+            setDialog({ kind: "new", selection })
           }}
           onQuickLog={quickLog}
           pending={logAttack.isPending}
@@ -452,7 +452,9 @@ export function OffensePage() {
             else log(fields, false)
           }}
           open
+          deployed={deployed}
           pending={logAttack.isPending || updateAttack.isPending}
+          roster={roster}
           season={season}
           subject={
             dialog.kind === "new"

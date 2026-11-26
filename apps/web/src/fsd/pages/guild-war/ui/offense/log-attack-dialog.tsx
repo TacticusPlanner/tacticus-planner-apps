@@ -1,6 +1,6 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { ChevronDown, Skull, Trophy } from "lucide-react"
+import { ChevronDown, Pencil, Skull, Trophy } from "lucide-react"
 import { rarityIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -18,7 +18,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { TeamUnitPortrait } from "@/entities/team"
-import type { TeamUnitView } from "@/entities/team"
+import type { TeamRoster, TeamUnitView } from "@/entities/team"
 import type { PickerUnit } from "@/features/team-editor"
 import {
   EntityIcon,
@@ -42,42 +42,24 @@ import {
 } from "../../model/attack-draft"
 import type { AttackDetails } from "../../model/attack-draft"
 import { capEnemy } from "../../model/enemy-draft"
+import {
+  attackPicks,
+  editedLineup,
+  lineupHasCharacter,
+  loggedUnit,
+  takenByOtherAttacks,
+} from "../../model/lineup-edit"
 import { useDialogTarget } from "../../model/use-dialog-target"
 import type { LogAttackSubject } from "../../model/use-dialog-target"
 import { zoneOwnBuff } from "../../model/zone-buffs"
 import type { ZoneRarity } from "../../model/attack-target"
 import { cappedView, lineupUnitView } from "../../model/capped-view"
-import type { UnitKind } from "../../model/offense"
+import type { Selection, UnitKind } from "../../model/offense"
 import type { GuildWarAttackFields } from "../../model/types"
 import { useOverlayContainer } from "../use-overlay-container"
 import { EnemyDetails } from "./enemy-details"
+import { LineupEditor } from "./lineup-editor"
 import { ZoneOptions } from "./target-fields"
-
-/** One lineup unit as the dialog shows it, at a cap. */
-interface LineupEntry {
-  id: string
-  kind: UnitKind
-  view: (cap: Rarity | undefined) => TeamUnitView
-}
-
-function lineupOf(subject: LogAttackSubject): LineupEntry[] {
-  if (subject.kind === "new") {
-    return [...subject.selection].map(([id, kind]) => ({
-      id,
-      kind,
-      view: (cap) => cappedView(kind, id, subject.roster, cap),
-    }))
-  }
-  const { attack } = subject
-  return [
-    ...attack.characters.map((unit) => ({ unit, kind: "character" as const })),
-    ...(attack.mow ? [{ unit: attack.mow, kind: "mow" as const }] : []),
-  ].map(({ unit, kind }) => ({
-    id: unit.unitId,
-    kind,
-    view: (cap) => lineupUnitView(kind, unit, cap ?? attack.rarityCap),
-  }))
-}
 
 /** The attack's zone and defenders' rarity. */
 function TargetEditor({
@@ -150,32 +132,43 @@ function TargetEditor({
 }
 
 /** The lineup at the defenders' cap, where a tap marks a unit lost. With no result recorded the
- *  same rows show disabled, so switching the result never changes the dialog's height. */
+ *  same rows show disabled, so switching the result never changes the dialog's height. Change
+ *  lineup opens the `LineupEditor`. */
 function LineupPicker({
-  lineup,
+  picks,
+  view,
   rarity,
   lostIds,
   disabled,
   onLostChange,
+  onEdit,
 }: {
-  lineup: readonly LineupEntry[]
+  picks: Selection
+  view: (id: string, kind: UnitKind, cap: Rarity | undefined) => TeamUnitView
   rarity: Rarity | undefined
   lostIds: ReadonlySet<string>
   disabled: boolean
   onLostChange: (unitIds: ReadonlySet<string>) => void
+  onEdit: () => void
 }) {
   const { t } = useTranslation("guildWar")
   const unitName = useUnitName()
   return (
     <div className="flex flex-col gap-2" data-testid="guild-war-log-lineup">
-      <p
-        className={cn(
-          "text-sm text-muted-foreground",
-          disabled && "opacity-50"
-        )}
-      >
-        {t("log.tapLost")}
-      </p>
+      <div className="flex items-center justify-between gap-2">
+        <p
+          className={cn(
+            "text-sm text-muted-foreground",
+            disabled && "opacity-50"
+          )}
+        >
+          {t("log.tapLost")}
+        </p>
+        <Button onClick={onEdit} size="sm" variant="ghost">
+          <Pencil data-icon="inline-start" />
+          {t("log.changeLineup")}
+        </Button>
+      </div>
       <ToggleGroup
         aria-label={t("log.tapLost")}
         className="flex-wrap"
@@ -185,23 +178,20 @@ function LineupPicker({
         type="multiple"
         value={disabled ? [] : [...lostIds]}
       >
-        {lineup.map((entry) => {
-          const name = unitName(
-            entry.kind === "mow" ? "Mow" : "Character",
-            entry.id
-          )
-          const lost = !disabled && lostIds.has(entry.id)
+        {[...picks].map(([id, kind]) => {
+          const name = unitName(kind === "mow" ? "Mow" : "Character", id)
+          const lost = !disabled && lostIds.has(id)
           return (
             <ToggleGroupItem
               aria-label={t("log.markLost", { name })}
               className="relative h-auto p-0.5"
-              key={entry.id}
-              value={entry.id}
+              key={id}
+              value={id}
             >
               <TeamUnitPortrait
                 className={cn(lost && "opacity-60 grayscale")}
                 size="portrait-md"
-                unit={entry.view(rarity)}
+                unit={view(id, kind, rarity)}
               />
               {lost ? (
                 <Skull
@@ -219,8 +209,8 @@ function LineupPicker({
 
 /**
  * Log attack with details, or Edit attack (a bottom sheet on phones). A new attack starts at the
- * page's zone and rarity and changes them for the page; an edited one changes only its own, never
- * its lineup. Both note the result
+ * page's zone and rarity and changes them for the page; an edited one changes only its own. Both
+ * can change the lineup (units another attack of the war used cannot join it) and note the result
  * with the units lost, a short note, and the optional Enemy details.
  */
 export function LogAttackDialog({
@@ -228,6 +218,8 @@ export function LogAttackDialog({
   onOpenChange,
   subject,
   units,
+  roster,
+  deployed,
   season,
   battlefieldLevel,
   pending,
@@ -238,6 +230,9 @@ export function LogAttackDialog({
   onOpenChange: (open: boolean) => void
   subject: LogAttackSubject
   units: readonly PickerUnit[]
+  roster: TeamRoster | null
+  /** Every unit that attacked in the war. */
+  deployed: ReadonlySet<string>
   season: GuildWarSeason | undefined
   battlefieldLevel: number
   pending: boolean
@@ -258,7 +253,17 @@ export function LogAttackDialog({
   const dialogTarget = useDialogTarget(subject, season, battlefieldLevel)
   const { target, saveTarget } = dialogTarget
 
-  const lineup = lineupOf(subject)
+  const [picks, setPicks] = useState<Selection>(() =>
+    subject.kind === "edit" ? attackPicks(subject.attack) : subject.selection
+  )
+  const [lineupOpen, setLineupOpen] = useState(false)
+  // A unit the attack logged shows as logged; one added here, from the roster.
+  const unitView = (id: string, kind: UnitKind, cap: Rarity | undefined) => {
+    const logged = loggedUnit(editing, id)
+    return logged && editing
+      ? lineupUnitView(kind, logged, cap ?? editing.rarityCap)
+      : cappedView(kind, id, roster, cap)
+  }
   // A new attack's Enemy details start with the zone's own buff ticked, following the zone until
   // a buff is changed by hand; an edited attack keeps what it logged.
   const ownBuff = zoneOwnBuff(season, dialogTarget.zoneId)
@@ -276,13 +281,18 @@ export function LogAttackDialog({
     onSave(
       subject.kind === "new"
         ? attackFields({
-            selection: subject.selection,
-            roster: subject.roster,
+            selection: picks,
+            roster,
             zoneId: saveTarget.zoneId,
             slot: saveTarget.slot,
             details: capped,
           })
-        : editedAttackFields(subject.attack, saveTarget, capped)
+        : editedAttackFields(
+            subject.attack,
+            saveTarget,
+            capped,
+            editedLineup(subject.attack, picks, roster)
+          )
     )
   }
 
@@ -314,13 +324,27 @@ export function LogAttackDialog({
           season={season}
           zoneId={dialogTarget.zoneId}
         />
-        <LineupPicker
-          disabled={details.result === "none"}
-          lineup={lineup}
-          lostIds={details.lostIds}
-          onLostChange={(lostIds) => set({ lostIds })}
-          rarity={target?.rarity}
-        />
+        {lineupOpen ? (
+          <LineupEditor
+            onDone={() => setLineupOpen(false)}
+            onPicksChange={setPicks}
+            picks={picks}
+            rarity={target?.rarity}
+            taken={takenByOtherAttacks(deployed, editing)}
+            units={units}
+            view={unitView}
+          />
+        ) : (
+          <LineupPicker
+            disabled={details.result === "none"}
+            lostIds={details.lostIds}
+            onEdit={() => setLineupOpen(true)}
+            onLostChange={(lostIds) => set({ lostIds })}
+            picks={picks}
+            rarity={target?.rarity}
+            view={unitView}
+          />
+        )}
         <SegmentedControl
           label={t("log.result")}
           onValueChange={(result) => set({ result })}
@@ -407,7 +431,10 @@ export function LogAttackDialog({
         >
           {t("log.cancel")}
         </Button>
-        <Button disabled={pending || !saveTarget} onClick={save}>
+        <Button
+          disabled={pending || !saveTarget || !lineupHasCharacter(picks)}
+          onClick={save}
+        >
           {editing ? t("log.saveEdit") : t("log.save")}
         </Button>
       </ResponsiveDialogFooter>
