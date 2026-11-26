@@ -34,6 +34,13 @@ import type {
 } from "./quick-actions"
 import { useEntitySearchIndex } from "./use-entity-search-index"
 import { RECENT_PAGES_SHOWN, readRecentPages } from "./recent-pages"
+import {
+  chipPick,
+  listPick,
+  listRowCount,
+  useNavigationSearchTracking,
+} from "./navigation-search-analytics"
+import type { NavigationSearchSource } from "./navigation-search-analytics"
 
 /** Rows are one line either way, with the description only on the highlighted row. `compact`:
  *  mouse-sized rows (desktop). `comfortable`: touch-sized rows (the phone drawer). */
@@ -71,9 +78,8 @@ export function NavigationPalette({
   items,
   onActionSelect,
   onNavigate,
-  onSearchChange,
+  openedVia,
   quickActions,
-  search,
 }: {
   /** With no query, shows the quick actions as a row of chips above the list (the phone). */
   actionsAsChips?: boolean
@@ -90,15 +96,18 @@ export function NavigationPalette({
   onActionSelect: (selection: QuickSelection) => void
   /** A page was opened; the surface closes. */
   onNavigate: () => void
-  onSearchChange: (search: string) => void
+  /** How the surface was opened, for usage analytics. */
+  openedVia: NavigationSearchSource
   quickActions: QuickActionsController
-  search: string
 }) {
   // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
   const { t } = useTranslation(["common", "dailies", "library"])
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  // The surface mounts this on each opening, so every opening starts with an empty field, and the
+  // query stays in view while the surface animates closed.
+  const [search, setSearch] = useState("")
   // Read once per opening (the surface mounts this on open): visits made while open don't move it.
   const [storedRecent] = useState(readRecentPages)
   const recentPaths = storedRecent
@@ -142,8 +151,15 @@ export function NavigationPalette({
   // cmdk still reports it as a selection, which must then not also navigate this tab.
   const modifiedClick = useRef(false)
 
+  const tracking = useNavigationSearchTracking({
+    openedVia,
+    queryLength: search.trim().length,
+    resultCount: listRowCount(groups),
+    viewMode: density === "compact" ? "desktop" : "mobile",
+  })
+
   // cmdk highlights the first enabled row on open and again after every query change.
-  const changeSearch = (next: string) => onSearchChange(next)
+  const changeSearch = (next: string) => setSearch(next)
 
   const openPage = (to: string) => {
     if (modifiedClick.current) {
@@ -204,6 +220,11 @@ export function NavigationPalette({
       // cmdk names its input by this label (aria-labelledby), so it is the field's name.
       label={t("nav.search")}
       loop
+      // Runs before cmdk's own key handling, so a pick by Enter is known as one.
+      onKeyDown={(event) => {
+        if (event.key === "Enter") tracking.selectMethod("keyboard")
+      }}
+      onPointerDown={() => tracking.selectMethod("pointer")}
       shouldFilter={false}
     >
       {inputPlacement === "top" ? field : null}
@@ -211,7 +232,16 @@ export function NavigationPalette({
         <ActionChips
           actions={chipActions}
           contextUnit={contextChip}
-          onActionSelect={onActionSelect}
+          onActionSelect={(selection) => {
+            tracking.reportPick(
+              chipPick(
+                selection,
+                chipActions.map((action) => action.id),
+                contextChip !== undefined
+              )
+            )
+            onActionSelect(selection)
+          }}
         />
       ) : null}
       <CommandList
@@ -247,6 +277,7 @@ export function NavigationPalette({
                 modifiedClick.current = modified
               }}
               onOpenPage={openPage}
+              onPick={(entry) => tracking.reportPick(listPick(groups, entry))}
             />
           ))
         )}
@@ -264,6 +295,7 @@ function PaletteGroup({
   onActionSelect,
   onModifiedClick,
   onOpenPage,
+  onPick,
 }: {
   density: Density
   group: NavigationGroup
@@ -271,6 +303,8 @@ function PaletteGroup({
   onActionSelect: (selection: QuickSelection) => void
   onModifiedClick: (modified: boolean) => void
   onOpenPage: (to: string) => void
+  /** A row was chosen (reported before it runs). */
+  onPick: (entry: NavigationEntry) => void
 }) {
   const { t } = useTranslation(["common", "library"])
   const heading = {
@@ -301,10 +335,16 @@ function PaletteGroup({
       entry={entry}
       isSearching={isSearching}
       key={entry.key}
-      onActionSelect={onActionSelect}
+      onActionSelect={(selection) => {
+        onPick(entry)
+        onActionSelect(selection)
+      }}
       showCrumb={showCrumb}
       onModifiedClick={onModifiedClick}
-      onOpenPage={onOpenPage}
+      onOpenPage={(to) => {
+        onPick(entry)
+        onOpenPage(to)
+      }}
     />
   )
 

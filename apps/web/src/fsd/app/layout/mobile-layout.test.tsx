@@ -26,6 +26,17 @@ vi.mock("./use-entity-search-index", () => ({
   useEntitySearchIndex: () => entityIndex.entities,
 }))
 
+const analytics = vi.hoisted(() => ({ captureEvent: vi.fn() }))
+vi.mock("@/shared/analytics", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/shared/analytics")>()),
+  useAnalyticsActions: () => ({
+    captureEvent: analytics.captureEvent,
+    clearIdentity: () => {},
+    identifyUser: () => {},
+    isReady: true,
+  }),
+}))
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) =>
@@ -580,6 +591,62 @@ describe("MobileBottomNav quick actions in Menu search", () => {
     })
     expect(drawer.queryByTestId("quick-action-chips")).not.toBeInTheDocument()
     expect(drawer.getByRole("option", { name: /Sign out/ })).toBeVisible()
+  })
+
+  it("reports the Menu's opening and a chip pick by its place in the chip row", () => {
+    analytics.captureEvent.mockClear()
+    renderShell(vi.fn(), true, "/", undefined, controller([createGoalAction]))
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+
+    const chip = screen.getByTestId("quick-action-createGoal")
+    fireEvent.pointerDown(chip)
+    fireEvent.click(chip)
+
+    expect(analytics.captureEvent.mock.calls).toEqual([
+      [
+        {
+          type: "navigation_search_opened",
+          source: "mobileMenu",
+          viewMode: "mobile",
+        },
+      ],
+      [
+        {
+          type: "navigation_search_item_selected",
+          itemKind: "action",
+          target: "createGoal",
+          group: "chips",
+          position: 1,
+          queryLength: 0,
+          method: "pointer",
+          viewMode: "mobile",
+        },
+      ],
+    ])
+  })
+
+  it("reports closing the Menu without a pick", async () => {
+    analytics.captureEvent.mockClear()
+    renderShell(vi.fn(), true, "/", undefined, controller([createGoalAction]))
+    fireEvent.click(screen.getByTestId("mobile-menu-trigger"))
+    fireEvent.change(screen.getByLabelText("nav.search"), {
+      target: { value: "raids" },
+    })
+
+    fireEvent.click(
+      within(screen.getByTestId("mobile-menu")).getByRole("button", {
+        name: "common.close",
+      })
+    )
+
+    await waitFor(() =>
+      expect(analytics.captureEvent).toHaveBeenLastCalledWith({
+        type: "navigation_search_dismissed",
+        queryLength: 5,
+        resultCount: expect.any(Number) as number,
+        viewMode: "mobile",
+      })
+    )
   })
 
   it("titles the drawer Menu on one line and closes it from the header's X", () => {

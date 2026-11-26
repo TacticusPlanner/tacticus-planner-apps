@@ -469,6 +469,30 @@ export function useAnalyticsActions() {
         case "daily_raids_grouping_changed":
           client.capture(event.type, { grouping: event.grouping })
           break
+        case "navigation_search_opened":
+          client.capture(event.type, {
+            source: event.source,
+            view_mode: event.viewMode,
+          })
+          break
+        case "navigation_search_item_selected":
+          client.capture(event.type, {
+            item_kind: event.itemKind,
+            target: event.target,
+            group: event.group,
+            position: event.position,
+            query_length: event.queryLength,
+            method: event.method,
+            view_mode: event.viewMode,
+          })
+          break
+        case "navigation_search_dismissed":
+          client.capture(event.type, {
+            query_length: event.queryLength,
+            result_count: event.resultCount,
+            view_mode: event.viewMode,
+          })
+          break
         case "roster_snapshot_renamed":
         case "roster_snapshot_deleted":
         case "roster_snapshot_kept":

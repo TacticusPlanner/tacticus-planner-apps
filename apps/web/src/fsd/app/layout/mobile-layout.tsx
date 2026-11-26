@@ -236,7 +236,6 @@ function MobileBottomNav({
   const { t } = useTranslation(["common", "dailies", "library"])
   const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [search, setSearch] = useState("")
   const flushTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   // Set when a drawer link closes the drawer: its close then hands focus to the page h1 (which
   // `useFocusPageHeadingOnNavigate` skips while the drawer holds focus), not back to the trigger.
@@ -289,14 +288,7 @@ function MobileBottomNav({
           ) : null}
         </>
       )}
-      <Drawer
-        direction="bottom"
-        onOpenChange={(open) => {
-          setMenuOpen(open)
-          if (!open) setSearch("")
-        }}
-        open={menuOpen}
-      >
+      <Drawer direction="bottom" onOpenChange={setMenuOpen} open={menuOpen}>
         <DrawerTrigger asChild>
           <button
             type="button"
@@ -358,7 +350,6 @@ function MobileBottomNav({
                   document.activeElement.blur()
                 }
                 setMenuOpen(false)
-                setSearch("")
                 // Dispatch once the drawer's exit transition is done so its modal layer no longer
                 // holds focus/pointer locks. vaul's onAnimationEnd does not fire for a parent-driven
                 // close, so use its own exit duration as a bounded timer (works in hidden tabs).
@@ -369,9 +360,8 @@ function MobileBottomNav({
                 )
               }}
               onNavigate={closeForNavigation}
-              onSearchChange={setSearch}
+              openedVia="mobileMenu"
               quickActions={quickActions}
-              search={search}
             />
           </Suspense>
         </DrawerContent>

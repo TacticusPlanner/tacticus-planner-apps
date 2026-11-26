@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react"
+import { Suspense } from "react"
 import type { RefObject } from "react"
 import { useTranslation } from "react-i18next"
 import {
@@ -14,12 +14,14 @@ import { isMacPlatform } from "@/shared/lib"
 import type { NavItem } from "./nav-items"
 import { LazyNavigationPalette } from "./navigation-palette-lazy"
 import type { QuickActionsController } from "./quick-actions"
+import type { NavigationSearchSource } from "./navigation-search-analytics"
 
 export function DesktopNavigationDialog({
   getEntryPath,
   items,
   open,
   onOpenChange,
+  openedVia,
   quickActions,
   returnFocusRef,
 }: {
@@ -27,22 +29,18 @@ export function DesktopNavigationDialog({
   items: NavItem[]
   open: boolean
   onOpenChange: (open: boolean) => void
+  /** How it was last opened (the shortcut or the top bar's search button). */
+  openedVia: NavigationSearchSource
   quickActions: QuickActionsController
   /** Where focus goes on close. The dialog has no Radix trigger and its input autofocuses, so
    *  Radix would otherwise restore focus to the (unmounted) input. */
   returnFocusRef?: RefObject<HTMLElement | null>
 }) {
   const { t } = useTranslation()
-  const [search, setSearch] = useState("")
   const modifier = isMacPlatform() ? "⌘" : "Ctrl"
 
-  const handleOpenChange = (nextOpen: boolean) => {
-    onOpenChange(nextOpen)
-    if (!nextOpen) setSearch("")
-  }
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         // A command palette: anchored near the top so its field stays put as results change.
         aria-describedby={undefined}
@@ -101,12 +99,11 @@ export function DesktopNavigationDialog({
             inputPlacement="top"
             items={items}
             onActionSelect={(id) => {
-              if (quickActions.select(id)) handleOpenChange(false)
+              if (quickActions.select(id)) onOpenChange(false)
             }}
-            onNavigate={() => handleOpenChange(false)}
-            onSearchChange={setSearch}
+            onNavigate={() => onOpenChange(false)}
+            openedVia={openedVia}
             quickActions={quickActions}
-            search={search}
           />
         </Suspense>
       </DialogContent>

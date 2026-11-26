@@ -427,6 +427,52 @@ type DailyRaidsGroupingChangedEvent = {
   grouping: "upgrade" | "campaign"
 }
 
+/** How navigation search was opened: the Ctrl/⌘ K shortcut, the desktop top bar's search button,
+ *  or the phone's Menu. */
+type NavigationSearchSource = "shortcut" | "topBar" | "mobileMenu"
+
+/** Navigation search was opened. */
+type NavigationSearchOpenedEvent = {
+  type: "navigation_search_opened"
+  source: NavigationSearchSource
+  viewMode: ViewMode
+}
+
+/**
+ * A navigation search row or Menu chip was picked. `itemKind` is a page, a recent page, a quick
+ * action, a unit's Create goal or Find in Collection, or an entity kind; `target` is the page's nav
+ * path, the action id or the entity's game id, never what was typed. Only the query's length is
+ * reported. `position` is 1-based within the list (or the chip row, `group` "chips").
+ */
+type NavigationSearchItemSelectedEvent = {
+  type: "navigation_search_item_selected"
+  itemKind:
+    | "page"
+    | "recentPage"
+    | "action"
+    | "unitGoal"
+    | "collectionSearch"
+    | "characters"
+    | "mows"
+    | "npcs"
+    | "raidBosses"
+    | "legendaryEvents"
+  target: string
+  group: string
+  position: number
+  queryLength: number
+  method: "keyboard" | "pointer"
+  viewMode: ViewMode
+}
+
+/** Navigation search closed without a pick: the query's length and the rows it listed. */
+type NavigationSearchDismissedEvent = {
+  type: "navigation_search_dismissed"
+  queryLength: number
+  resultCount: number
+  viewMode: ViewMode
+}
+
 /** An error nothing else handled (spec: client-error-reporting), sent as PostHog's `$exception` so
  *  it lands in Error Tracking. Message and stack have URL query strings removed; the route is
  *  reported as its nav section, never the URL. */
@@ -510,5 +556,8 @@ export type AnalyticsEvent =
   | RosterCompareMetricSelectedEvent
   | RosterSnapshotManagedEvent
   | DailyRaidsGroupingChangedEvent
+  | NavigationSearchOpenedEvent
+  | NavigationSearchItemSelectedEvent
+  | NavigationSearchDismissedEvent
   | AuthStepEvent
   | ClientErrorEvent
