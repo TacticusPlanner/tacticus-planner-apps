@@ -123,6 +123,20 @@ export function openUserJotWidget(target?: UserJotOpenTarget) {
   window.uj?.open(target)
 }
 
+/** Opens Updates, or the newest post while there is unread activity. The SDK starts loading now,
+ *  so it is ready once the newest post is known; the feed reader is only needed on this click, so
+ *  it stays out of the startup bundle (and out of components, which the React Compiler skips when
+ *  they hold an `import()`). */
+function openChangelogWidget(hasUnread: boolean) {
+  loadSdk()
+  void import("./userjot-latest-update")
+    .then(({ resolveChangelogTarget }) =>
+      resolveChangelogTarget(hasUnread, import.meta.env.VITE_USERJOT_PROJECT_ID)
+    )
+    .catch((): UserJotOpenTarget => ({ to: "updates" }))
+    .then(openUserJotWidget)
+}
+
 /**
  * Subscribes to an SDK event for as long as the caller is mounted. Before the SDK loads, `on` is
  * the queueing stub: it returns no unsubscribe and the SDK attaches the handler later, so a cleanup
@@ -331,21 +345,10 @@ export function UserJotProvider({ children }: { children: ReactNode }) {
     setSearchParams(withoutUserJotDeepLink(searchParams), { replace: true })
   }, [searchParams, setSearchParams])
 
-  const openChangelog = useCallback(() => {
-    // Start loading now, so the SDK is ready by the time the newest post is known. The feed reader
-    // is only needed on this click, so it stays out of the startup bundle.
-    loadSdk()
-    const hasUnread = unreadCount > 0
-    void import("./userjot-latest-update")
-      .then(({ resolveChangelogTarget }) =>
-        resolveChangelogTarget(
-          hasUnread,
-          import.meta.env.VITE_USERJOT_PROJECT_ID
-        )
-      )
-      .catch(() => ({ to: "updates" }) as const)
-      .then(openUserJotWidget)
-  }, [unreadCount])
+  const openChangelog = useCallback(
+    () => openChangelogWidget(unreadCount > 0),
+    [unreadCount]
+  )
 
   const value = useMemo<UserJotContextValue>(
     () => ({
