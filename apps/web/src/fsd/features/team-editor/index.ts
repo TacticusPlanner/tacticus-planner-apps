@@ -28,3 +28,8 @@ export const TEAM_EDITOR_NAMESPACES = [
   "unitSearchNames",
   "survival",
 ] as const
+export {
+  useOpenTeamEditor,
+  useTeamEditorLauncher,
+  type TeamEditorLauncher,
+} from "./model/team-editor-launcher"
