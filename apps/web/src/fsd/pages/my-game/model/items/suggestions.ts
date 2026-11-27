@@ -55,7 +55,7 @@ export type UnwornRelic<Item extends CatalogItem = CatalogItem> = {
   wearers: RelicWearer[]
 }
 
-export type RelicWearer = {
+type RelicWearer = {
   characterId: string
   /** ready: owned, Mythic and wearing no relic. needsMythic: owned below Mythic. hasRelic: owned and
    *  already wearing a relic (one per character). notOwned: not in the roster yet. */
@@ -126,7 +126,7 @@ export function compareCopies(
 
 /** Why `next` beats `current`, or undefined when it doesn't. A Defensive item has no chance, so two
  *  Defensive items at the same rarity and level never swap. */
-export function improvement(
+function improvement(
   next: ItemCopy,
   current: ItemCopy | undefined,
   itemOf: (id: string) => CatalogItem | undefined

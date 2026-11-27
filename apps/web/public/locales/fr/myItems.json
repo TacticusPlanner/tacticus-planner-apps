@@ -1,0 +1,207 @@
+{
+  "tabs": {
+    "pieces": "Pièces",
+    "suggestions": "Suggestions",
+    "reclaim": "Recycler"
+  },
+  "page": {
+    "tabsLabel": "Vues des objets",
+    "synced": "Synchronisé {{time}}",
+    "notSynced": "Pas encore synchronisé"
+  },
+  "empty": {
+    "title": "Pas encore d'équipement",
+    "description": "Synchronisez avec Tacticus pour voir les objets que vous possédez et ceux que portent vos personnages.",
+    "sync": "Synchroniser"
+  },
+  "tour": {
+    "tabs": {
+      "title": "Trois vues",
+      "content": "Pièces liste chaque objet que vous possédez ou portez. Suggestions montre quoi équiper avec vos objets. Recycler montre les doublons à transformer en rebut sans rien perdre d'utile."
+    },
+    "piecesFind": {
+      "title": "Trouver un objet",
+      "content": "Cherchez par nom, filtrez par rareté, emplacement, faction ou personnage, ou affichez seulement les doublons ou les reliques."
+    },
+    "piecesView": {
+      "title": "Cartes ou tableau",
+      "content": "Passez des cartes au tableau, et regroupez par emplacement ou rareté."
+    },
+    "piece": {
+      "title": "Un objet",
+      "content": "Chaque niveau possédé, avec les doublons et qui le porte. Ouvrez-le pour ses statistiques et le coût du niveau suivant."
+    },
+    "suggestion": {
+      "title": "Quoi équiper",
+      "content": "Chaque personnage avec un emplacement vide ou un meilleur doublon, et pourquoi c'est mieux."
+    },
+    "relics": {
+      "title": "Reliques que personne ne porte",
+      "content": "Les reliques en double et les personnages qui pourront les porter une fois Mythiques."
+    },
+    "reclaimSummary": {
+      "title": "Ce que vous récupérez",
+      "content": "Le rebut et les pièces que rendent vos doublons sûrs, à côté de ce que rendraient tous les doublons."
+    },
+    "reclaimStack": {
+      "title": "Une pile",
+      "content": "Combien d'exemplaires recycler sans risque, et pourquoi. Le recyclage se fait dans le jeu."
+    }
+  },
+  "pieces": {
+    "toolbar": {
+      "label": "Trouver des objets",
+      "search": "Chercher des objets",
+      "rarity": "Rareté",
+      "allRarities": "Toutes les raretés",
+      "clearRarities": "Effacer les raretés",
+      "slot": "Emplacement",
+      "allSlots": "Tous les emplacements",
+      "clearSlots": "Effacer les emplacements",
+      "faction": "Faction",
+      "allFactions": "Toutes les factions",
+      "clearFactions": "Effacer les factions",
+      "character": "Personnage",
+      "allCharacters": "Tous les personnages",
+      "clearCharacters": "Effacer les personnages",
+      "searchCharacters": "Chercher des personnages",
+      "chipsLabel": "Afficher",
+      "spares": "Doublons seulement",
+      "relics": "Reliques seulement",
+      "clearFilters": "Effacer les filtres",
+      "layouts": {
+        "cards": "Cartes",
+        "table": "Tableau"
+      },
+      "groups": {
+        "slot": "Emplacement",
+        "rarity": "Rareté",
+        "none": "Aucun"
+      }
+    },
+    "level": "Niv. {{level}}",
+    "spare_one": "{{count}} en double",
+    "spare_other": "{{count}} en double",
+    "worn_one": "{{count}} porté",
+    "worn_other": "{{count}} portés",
+    "more": "+{{count}}",
+    "cardLabel": "{{name}} : {{spare}}, {{worn}}",
+    "table": {
+      "label": "Objets",
+      "item": "Objet",
+      "slot": "Emplacement",
+      "rarity": "Rareté",
+      "levels": "Niveaux",
+      "spare": "En double",
+      "worn": "Portés"
+    },
+    "noMatch": {
+      "title": "Aucun objet ne correspond",
+      "description": "Essayez une autre recherche ou effacez les filtres.",
+      "clearSearch": "Effacer la recherche"
+    },
+    "unknown_one": "{{count}} exemplaire d'un objet que le planificateur ne connaît pas encore n'est pas affiché.",
+    "unknown_other": "{{count}} exemplaires d'objets que le planificateur ne connaît pas encore ne sont pas affichés.",
+    "details": {
+      "description": "{{rarity}} · {{slot}}",
+      "relicDescription": "{{rarity}} · {{slot}} · Relique",
+      "for": "Qui peut le porter",
+      "owned": "Vos exemplaires",
+      "stats": "Statistiques",
+      "statLevel": "Niveau",
+      "max": "Max",
+      "upgrade": "Coûts d'amélioration",
+      "upgradeFrom": "Depuis votre meilleur exemplaire, niv. {{level}}",
+      "toNext": "Jusqu'au niv. {{level}}",
+      "toMax": "Jusqu'au niv. {{level}} (max)",
+      "maxed": "Votre meilleur exemplaire est déjà au niveau maximum.",
+      "close": "Fermer",
+      "everyone": "Toutes les factions",
+      "ownedSummary": "{{spare}}, {{worn}}",
+      "openInLibrary": "Ouvrir dans la Bibliothèque"
+    },
+    "none": {
+      "title": "Pas encore d'objets",
+      "description": "Les objets trouvés ou gagnés apparaîtront ici après la prochaine synchronisation."
+    }
+  },
+  "suggestions": {
+    "toolbar": {
+      "label": "Trouver des personnages",
+      "search": "Chercher des personnages",
+      "faction": "Faction",
+      "allFactions": "Toutes les factions",
+      "clearFactions": "Effacer les factions",
+      "chipsLabel": "Afficher",
+      "unlocked": "Emplacements débloqués seulement",
+      "clearFilters": "Effacer les filtres"
+    },
+    "slot": "Emplacement : {{slot}}",
+    "equip": "Équiper {{item}} niv. {{level}}",
+    "swap": "Remplacer {{current}} niv. {{currentLevel}} par {{item}} niv. {{level}}",
+    "reasons": {
+      "empty": "Emplacement vide",
+      "rarity": "{{to}} bat {{from}}",
+      "level": "Niv. {{to}} bat niv. {{from}}",
+      "chance": "{{to}} % de chance bat {{from}} %"
+    },
+    "locked": "Quand le troisième emplacement s'ouvre à Rare 4 étoiles",
+    "none": {
+      "title": "Rien à équiper pour l'instant",
+      "description": "Chaque personnage porte déjà les meilleurs doublons que vous avez."
+    },
+    "noMatch": {
+      "title": "Aucun personnage ne correspond",
+      "description": "Essayez une autre recherche ou effacez les filtres.",
+      "clearSearch": "Effacer la recherche"
+    },
+    "relics": {
+      "title": "Reliques que personne ne porte",
+      "copies": "Niv. {{level}} · {{count}} en double",
+      "status": {
+        "ready": "Peut la porter",
+        "needsMythic": "Doit être Mythique",
+        "hasRelic": "Porte une relique",
+        "notOwned": "Non possédé"
+      }
+    }
+  },
+  "reclaim": {
+    "toolbar": {
+      "label": "Trouver des objets",
+      "search": "Chercher des objets",
+      "chipsLabel": "Afficher",
+      "safe": "Sûrs seulement",
+      "upgraded": "Objets améliorés",
+      "clearFilters": "Effacer les filtres"
+    },
+    "summary": {
+      "title": "Recyclables sans risque",
+      "all": "Tous les doublons",
+      "items_one": "{{count}} objet",
+      "items_other": "{{count}} objets",
+      "note": "Le recyclage se fait dans le jeu. Cette page ne fait que conseiller."
+    },
+    "reclaim": "Recycler {{safe}} sur {{spare}}",
+    "keep": "Garder les {{count}}",
+    "reserved_one": "{{count}} gardé pour les Suggestions",
+    "reserved_other": "{{count}} gardés pour les Suggestions",
+    "reasons": {
+      "covered": "Tous ceux qui peuvent l'utiliser portent {{rarity}} ou mieux",
+      "surplus_one": "Vous en avez {{held}} ; {{count}} personnage pourrait encore en utiliser un",
+      "surplus_other": "Vous en avez {{held}} ; {{count}} personnages pourraient encore en utiliser un",
+      "relic": "Les reliques ne sont jamais marquées sûres",
+      "mythic": "Les objets Mythiques ne sont jamais marqués sûrs"
+    },
+    "none": {
+      "title": "Rien à recycler sans risque",
+      "description": "Chaque doublon pourrait encore servir à un personnage.",
+      "showAll": "Afficher tous les doublons"
+    },
+    "noMatch": {
+      "title": "Aucun objet ne correspond",
+      "description": "Essayez une autre recherche ou effacez les filtres.",
+      "clearSearch": "Effacer la recherche"
+    }
+  }
+}

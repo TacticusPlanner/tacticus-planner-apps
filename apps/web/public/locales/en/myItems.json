@@ -85,7 +85,6 @@
     "worn_one": "{{count}} worn",
     "worn_other": "{{count}} worn",
     "more": "+{{count}}",
-    "for": "For",
     "cardLabel": "{{name}}: {{spare}}, {{worn}}",
     "table": {
       "label": "Items",
@@ -108,8 +107,6 @@
       "relicDescription": "{{rarity}} · {{slot}} · Relic",
       "for": "Who can wear it",
       "owned": "Your copies",
-      "spareAt": "Spare",
-      "wornBy": "Worn by",
       "stats": "Stats",
       "statLevel": "Level",
       "max": "Max",

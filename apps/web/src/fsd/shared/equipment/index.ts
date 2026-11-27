@@ -1,15 +1,12 @@
 export {
   ITEM_SLOT_TYPES,
   boosterBaseSlot,
-  isItemSlotType,
   itemSlotRank,
   slotIndexOf,
-  type ItemSlotType,
 } from "./item-slots"
 export {
   NO_COST,
   addCosts,
-  clampItemLevel,
   compareByRarityThenLevel,
   isPercentStat,
   itemChanceAt,
@@ -19,7 +16,6 @@ export {
   scaleCost,
   upgradeCost,
   type ItemCost,
-  type ItemLadderStep,
   type LadderItem,
 } from "./item-levels"
 export { itemLibraryPath } from "./item-path"

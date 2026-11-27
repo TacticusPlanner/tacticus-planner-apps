@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Library",
-    "description": "Characters, Machines of War, NPCs, Guild Raid Bosses and Daily Shops."
+    "description": "Characters, Machines of War, Items, NPCs, Guild Raid Bosses and Daily Shops."
   },
   "collections": {
     "characters": {
@@ -729,8 +729,7 @@
       "ladder": "Upgrade costs",
       "step": "To reach it",
       "total": "Reclaim value",
-      "totalHint": "What one copy at this level returns when reclaimed: the game refunds the salvage and coins spent on it.",
-      "notFound": "This item isn't in the game data."
+      "totalHint": "What one copy at this level returns when reclaimed: the game refunds the salvage and coins spent on it."
     },
     "tour": {
       "find": {

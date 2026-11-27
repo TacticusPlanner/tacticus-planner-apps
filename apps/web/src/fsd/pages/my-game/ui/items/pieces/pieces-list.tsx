@@ -138,7 +138,7 @@ function More({ count }: { count: number }) {
 }
 
 /** Who an item is for, when it isn't for everyone: a relic's characters, or its factions. */
-export function ItemFor({
+function ItemFor({
   item,
   context,
   limit = MAX_FOR_ICONS,

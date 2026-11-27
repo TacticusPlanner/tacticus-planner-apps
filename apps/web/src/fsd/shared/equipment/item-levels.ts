@@ -5,7 +5,7 @@ import { firstDifference } from "../lib"
 
 /** One level's price on an item's upgrade ladder (the catalog's `upgradeLevels[]`). Level 1's entry
  *  carries no gold: its salvage is what the item is worth when found. */
-export type ItemLadderStep = {
+type ItemLadderStep = {
   goldCost: number
   salvageCost: number
   mythicSalvageCost: number

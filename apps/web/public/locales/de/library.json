@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Bibliothek",
-    "description": "Charaktere, Kriegsmaschinen, NPCs, Gildenraid-Bosse und Tages-Shops."
+    "description": "Charaktere, Kriegsmaschinen, Gegenstände, NPCs, Gildenraid-Bosse und Tages-Shops."
   },
   "collections": {
     "characters": {
@@ -24,6 +24,9 @@
     "shops": {
       "label": "Tages-Shops",
       "description": "Was jeder Tages-Shop an jedem Wochentag anbieten kann."
+    },
+    "items": {
+      "description": "Jeder Gegenstand: Werte pro Stufe und Verbesserungskosten."
     }
   },
   "loading": "Bibliotheksdaten werden geladen…",
@@ -686,5 +689,58 @@
     "power": {
       "label": "Stärke"
     }
+  },
+  "items": {
+    "list": {
+      "label": "Gegenstände finden",
+      "search": "Gegenstände suchen",
+      "rarity": "Seltenheit",
+      "allRarities": "Alle Seltenheiten",
+      "clearRarities": "Seltenheiten löschen",
+      "slot": "Platz",
+      "allSlots": "Alle Plätze",
+      "clearSlots": "Plätze löschen",
+      "faction": "Fraktion",
+      "allFactions": "Alle Fraktionen",
+      "clearFactions": "Fraktionen löschen",
+      "searchFactions": "Fraktionen suchen",
+      "relic": "Nur Relikte",
+      "clearFilters": "Filter löschen",
+      "groups": {
+        "none": "Keine",
+        "slot": "Platz",
+        "rarity": "Seltenheit"
+      },
+      "maxLevel": "Max. St. {{level}}",
+      "noMatch": {
+        "title": "Keine passenden Gegenstände",
+        "description": "Versuche eine andere Suche oder lösche die Filter.",
+        "clearSearch": "Suche löschen"
+      }
+    },
+    "detail": {
+      "back": "Alle Gegenstände",
+      "relic": "Relikt",
+      "uniqueRelic": "Einzigartiges Relikt",
+      "for": "Wer ihn nutzen kann",
+      "everyone": "Jede Fraktion",
+      "stats": "Werte pro Stufe",
+      "level": "Stufe",
+      "ladder": "Verbesserungskosten",
+      "step": "Bis zu dieser Stufe",
+      "total": "Wiederverwertungswert",
+      "totalHint": "Was ein Exemplar dieser Stufe beim Wiederverwerten zurückgibt: Das Spiel erstattet das dafür ausgegebene Bergungsgut und die Münzen."
+    },
+    "tour": {
+      "find": {
+        "title": "Gegenstand finden",
+        "content": "Suche nach Namen oder filtere nach Seltenheit, Platz, Fraktion oder Relikten."
+      },
+      "item": {
+        "title": "Gegenstand öffnen",
+        "content": "Seine Werte auf jeder Stufe, wer ihn nutzen kann und was jede Stufe kostet."
+      }
+    },
+    "openInLibrary": "In der Bibliothek öffnen"
   }
 }

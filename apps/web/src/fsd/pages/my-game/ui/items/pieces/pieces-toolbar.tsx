@@ -51,7 +51,7 @@ const LAYOUT_ICONS: Record<PiecesLayout, LucideIcon> = {
 const GROUP_ORDER: readonly PiecesGroup[] = ["none", "slot", "rarity"]
 
 /** One filter option: a name and the game art for it. */
-export type PiecesFilterOption = { id: string; name: string }
+type PiecesFilterOption = { id: string; name: string }
 
 export type PiecesFilterOptions = {
   factions: readonly PiecesFilterOption[]

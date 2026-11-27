@@ -1,0 +1,207 @@
+{
+  "tabs": {
+    "pieces": "Piezas",
+    "suggestions": "Sugerencias",
+    "reclaim": "Reclamar"
+  },
+  "page": {
+    "tabsLabel": "Vistas de objetos",
+    "synced": "Sincronizado {{time}}",
+    "notSynced": "Aún sin sincronizar"
+  },
+  "empty": {
+    "title": "Aún no hay equipo",
+    "description": "Sincroniza con Tacticus para ver los objetos que tienes y los que llevan tus personajes.",
+    "sync": "Sincronizar ahora"
+  },
+  "tour": {
+    "tabs": {
+      "title": "Tres vistas",
+      "content": "Piezas muestra cada objeto que tienes o llevas. Sugerencias muestra qué equipar con los objetos que ya tienes. Reclamar muestra los repuestos que puedes convertir en objetos recuperables sin perder nada que vayas a usar."
+    },
+    "piecesFind": {
+      "title": "Buscar un objeto",
+      "content": "Busca por nombre, filtra por rareza, ranura, facción o personaje, o muestra solo repuestos o reliquias."
+    },
+    "piecesView": {
+      "title": "Tarjetas o tabla",
+      "content": "Cambia entre tarjetas y tabla, y agrupa por ranura o rareza."
+    },
+    "piece": {
+      "title": "Un objeto",
+      "content": "Cada nivel que tienes, con cuántos son repuestos y quién lo lleva. Ábrelo para ver sus estadísticas y lo que cuesta el siguiente nivel."
+    },
+    "suggestion": {
+      "title": "Qué equipar",
+      "content": "Cada personaje con una ranura vacía o un repuesto mejor que tienes, y por qué es mejor."
+    },
+    "relics": {
+      "title": "Reliquias que nadie lleva",
+      "content": "Reliquias de repuesto y los personajes que pueden llevarlas cuando sean Míticos."
+    },
+    "reclaimSummary": {
+      "title": "Lo que recuperarías",
+      "content": "Los objetos recuperables y monedas que devuelven tus repuestos seguros, junto a lo que devolverían todos."
+    },
+    "reclaimStack": {
+      "title": "Una pila",
+      "content": "Cuántas copias puedes reclamar con seguridad, y por qué. Las reclamas en el juego."
+    }
+  },
+  "pieces": {
+    "toolbar": {
+      "label": "Buscar objetos",
+      "search": "Buscar objetos",
+      "rarity": "Rareza",
+      "allRarities": "Todas las rarezas",
+      "clearRarities": "Borrar rarezas",
+      "slot": "Ranura",
+      "allSlots": "Todas las ranuras",
+      "clearSlots": "Borrar ranuras",
+      "faction": "Facción",
+      "allFactions": "Todas las facciones",
+      "clearFactions": "Borrar facciones",
+      "character": "Personaje",
+      "allCharacters": "Todos los personajes",
+      "clearCharacters": "Borrar personajes",
+      "searchCharacters": "Buscar personajes",
+      "chipsLabel": "Mostrar",
+      "spares": "Solo repuestos",
+      "relics": "Solo reliquias",
+      "clearFilters": "Borrar filtros",
+      "layouts": {
+        "cards": "Tarjetas",
+        "table": "Tabla"
+      },
+      "groups": {
+        "slot": "Ranura",
+        "rarity": "Rareza",
+        "none": "Ninguno"
+      }
+    },
+    "level": "Nv. {{level}}",
+    "spare_one": "{{count}} de repuesto",
+    "spare_other": "{{count}} de repuesto",
+    "worn_one": "{{count}} equipado",
+    "worn_other": "{{count}} equipados",
+    "more": "+{{count}}",
+    "cardLabel": "{{name}}: {{spare}}, {{worn}}",
+    "table": {
+      "label": "Objetos",
+      "item": "Objeto",
+      "slot": "Ranura",
+      "rarity": "Rareza",
+      "levels": "Niveles",
+      "spare": "Repuesto",
+      "worn": "Equipados"
+    },
+    "noMatch": {
+      "title": "Ningún objeto coincide",
+      "description": "Prueba otra búsqueda o borra los filtros.",
+      "clearSearch": "Borrar búsqueda"
+    },
+    "unknown_one": "No se muestra {{count}} copia de un objeto que el planificador aún no conoce.",
+    "unknown_other": "No se muestran {{count}} copias de objetos que el planificador aún no conoce.",
+    "details": {
+      "description": "{{rarity}} · {{slot}}",
+      "relicDescription": "{{rarity}} · {{slot}} · Reliquia",
+      "for": "Quién puede llevarlo",
+      "owned": "Tus copias",
+      "stats": "Estadísticas",
+      "statLevel": "Nivel",
+      "max": "Máx.",
+      "upgrade": "Costes de mejora",
+      "upgradeFrom": "Desde tu copia más alta, Nv. {{level}}",
+      "toNext": "Hasta Nv. {{level}}",
+      "toMax": "Hasta Nv. {{level}} (máx.)",
+      "maxed": "Tu copia más alta ya está al nivel máximo.",
+      "close": "Cerrar",
+      "everyone": "Todas las facciones",
+      "ownedSummary": "{{spare}}, {{worn}}",
+      "openInLibrary": "Abrir en la Biblioteca"
+    },
+    "none": {
+      "title": "Aún no hay objetos",
+      "description": "Los objetos que encuentres o ganes aparecerán aquí tras la próxima sincronización."
+    }
+  },
+  "suggestions": {
+    "toolbar": {
+      "label": "Buscar personajes",
+      "search": "Buscar personajes",
+      "faction": "Facción",
+      "allFactions": "Todas las facciones",
+      "clearFactions": "Borrar facciones",
+      "chipsLabel": "Mostrar",
+      "unlocked": "Solo ranuras desbloqueadas",
+      "clearFilters": "Borrar filtros"
+    },
+    "slot": "Ranura: {{slot}}",
+    "equip": "Equipar {{item}} Nv. {{level}}",
+    "swap": "Cambiar {{current}} Nv. {{currentLevel}} por {{item}} Nv. {{level}}",
+    "reasons": {
+      "empty": "Ranura vacía",
+      "rarity": "{{to}} supera a {{from}}",
+      "level": "Nv. {{to}} supera a Nv. {{from}}",
+      "chance": "{{to}} % de probabilidad supera a {{from}} %"
+    },
+    "locked": "Cuando se abra la tercera ranura con Raro 4 estrellas",
+    "none": {
+      "title": "Nada que equipar ahora",
+      "description": "Cada personaje ya lleva los mejores repuestos que tienes."
+    },
+    "noMatch": {
+      "title": "Ningún personaje coincide",
+      "description": "Prueba otra búsqueda o borra los filtros.",
+      "clearSearch": "Borrar búsqueda"
+    },
+    "relics": {
+      "title": "Reliquias que nadie lleva",
+      "copies": "Nv. {{level}} · {{count}} de repuesto",
+      "status": {
+        "ready": "Puede llevarla ya",
+        "needsMythic": "Necesita Mítico",
+        "hasRelic": "Lleva una reliquia",
+        "notOwned": "No lo tienes"
+      }
+    }
+  },
+  "reclaim": {
+    "toolbar": {
+      "label": "Buscar objetos",
+      "search": "Buscar objetos",
+      "chipsLabel": "Mostrar",
+      "safe": "Solo seguros",
+      "upgraded": "Objetos mejorados",
+      "clearFilters": "Borrar filtros"
+    },
+    "summary": {
+      "title": "Seguro reclamar",
+      "all": "Todos los repuestos",
+      "items_one": "{{count}} objeto",
+      "items_other": "{{count}} objetos",
+      "note": "Los objetos se reclaman en el juego. Esta página solo aconseja."
+    },
+    "reclaim": "Reclamar {{safe}} de {{spare}}",
+    "keep": "Conservar los {{count}}",
+    "reserved_one": "{{count}} reservado para Sugerencias",
+    "reserved_other": "{{count}} reservados para Sugerencias",
+    "reasons": {
+      "covered": "Todos los que pueden usarlo llevan {{rarity}} o mejor",
+      "surplus_one": "Tienes {{held}}; {{count}} personaje aún podría usar uno",
+      "surplus_other": "Tienes {{held}}; {{count}} personajes aún podrían usar uno",
+      "relic": "Las reliquias nunca se marcan como seguras",
+      "mythic": "Los objetos Míticos nunca se marcan como seguros"
+    },
+    "none": {
+      "title": "Nada seguro para reclamar",
+      "description": "Cada repuesto aún podría ir a un personaje.",
+      "showAll": "Mostrar todos los repuestos"
+    },
+    "noMatch": {
+      "title": "Ningún objeto coincide",
+      "description": "Prueba otra búsqueda o borra los filtros.",
+      "clearSearch": "Borrar búsqueda"
+    }
+  }
+}

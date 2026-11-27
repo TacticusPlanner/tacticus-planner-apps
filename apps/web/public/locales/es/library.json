@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Biblioteca",
-    "description": "Personajes, Máquinas de Guerra, PNJ, jefes de incursión de gremio y tiendas diarias."
+    "description": "Personajes, Máquinas de Guerra, objetos, PNJ, jefes de incursión de gremio y tiendas diarias."
   },
   "collections": {
     "characters": {
@@ -24,6 +24,9 @@
     "shops": {
       "label": "Tiendas diarias",
       "description": "Lo que cada tienda diaria puede ofrecer cada día de la semana."
+    },
+    "items": {
+      "description": "Cada objeto: estadísticas por nivel y costes de mejora."
     }
   },
   "loading": "Cargando registros de la biblioteca…",
@@ -686,5 +689,58 @@
     "power": {
       "label": "Poder"
     }
+  },
+  "items": {
+    "list": {
+      "label": "Buscar objetos",
+      "search": "Buscar objetos",
+      "rarity": "Rareza",
+      "allRarities": "Todas las rarezas",
+      "clearRarities": "Borrar rarezas",
+      "slot": "Ranura",
+      "allSlots": "Todas las ranuras",
+      "clearSlots": "Borrar ranuras",
+      "faction": "Facción",
+      "allFactions": "Todas las facciones",
+      "clearFactions": "Borrar facciones",
+      "searchFactions": "Buscar facciones",
+      "relic": "Solo reliquias",
+      "clearFilters": "Borrar filtros",
+      "groups": {
+        "none": "Ninguno",
+        "slot": "Ranura",
+        "rarity": "Rareza"
+      },
+      "maxLevel": "Nv. máx. {{level}}",
+      "noMatch": {
+        "title": "Ningún objeto coincide",
+        "description": "Prueba otra búsqueda o borra los filtros.",
+        "clearSearch": "Borrar búsqueda"
+      }
+    },
+    "detail": {
+      "back": "Todos los objetos",
+      "relic": "Reliquia",
+      "uniqueRelic": "Reliquia única",
+      "for": "Quién puede usarlo",
+      "everyone": "Todas las facciones",
+      "stats": "Estadísticas por nivel",
+      "level": "Nivel",
+      "ladder": "Costes de mejora",
+      "step": "Para alcanzarlo",
+      "total": "Valor al reclamar",
+      "totalHint": "Lo que devuelve una copia de este nivel al reclamarla: el juego reembolsa los objetos recuperables y monedas gastados en ella."
+    },
+    "tour": {
+      "find": {
+        "title": "Buscar un objeto",
+        "content": "Busca por nombre o filtra por rareza, ranura, facción o reliquias."
+      },
+      "item": {
+        "title": "Abrir un objeto",
+        "content": "Sus estadísticas en cada nivel, quién puede usarlo y lo que cuesta cada nivel."
+      }
+    },
+    "openInLibrary": "Abrir en la Biblioteca"
   }
 }

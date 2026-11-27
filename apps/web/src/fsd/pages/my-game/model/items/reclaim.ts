@@ -45,7 +45,7 @@ export type ReclaimStack<Item extends CatalogItem = CatalogItem> = {
   value: ItemCost
 }
 
-export type ReclaimTotal = { copies: number; value: ItemCost }
+type ReclaimTotal = { copies: number; value: ItemCost }
 
 export type ReclaimPlan<Item extends CatalogItem = CatalogItem> = {
   /** By slot type, then highest rarity, then highest level. */

@@ -9,7 +9,7 @@ import { readFlag, readList, readOneOf, writeUrlQuery } from "@/shared/lib"
 export const PIECES_LAYOUTS = ["cards", "table"] as const
 export type PiecesLayout = (typeof PIECES_LAYOUTS)[number]
 
-export const PIECES_GROUPS = ["slot", "rarity", "none"] as const
+const PIECES_GROUPS = ["slot", "rarity", "none"] as const
 export type PiecesGroup = (typeof PIECES_GROUPS)[number]
 
 /** The Pieces tab's search, filters, chips and view, all carried in the URL. */

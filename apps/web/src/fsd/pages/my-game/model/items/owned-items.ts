@@ -62,7 +62,7 @@ export type OwnedCharacter = {
 }
 
 /** The copies of one item at one level: spares in the inventory, and who wears one. */
-export type OwnedLevel = { level: number; spare: number; wearers: string[] }
+type OwnedLevel = { level: number; spare: number; wearers: string[] }
 
 /** One item the player holds or a character wears. */
 export type OwnedPiece<Item extends CatalogItem = CatalogItem> = {

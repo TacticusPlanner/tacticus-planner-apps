@@ -86,7 +86,7 @@ export const libraryItemsQueryNarrows = (query: LibraryItemsQuery) =>
   activeLibraryItemFilterCount(query) > 0
 
 /** The factions an item is for: its own list, or the factions of the characters it is unique to. */
-export function libraryItemFactions(
+function libraryItemFactions(
   item: LibraryItem,
   factionOf: (characterId: string) => string | undefined
 ): string[] {

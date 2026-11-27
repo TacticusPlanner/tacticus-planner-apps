@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Bibliothèque",
-    "description": "Personnages, Machines de guerre, PNJ, boss de raid de guilde et boutiques quotidiennes."
+    "description": "Personnages, Machines de guerre, objets, PNJ, boss de raid de guilde et boutiques quotidiennes."
   },
   "collections": {
     "characters": {
@@ -24,6 +24,9 @@
     "shops": {
       "label": "Boutiques quotidiennes",
       "description": "Ce que chaque boutique quotidienne peut proposer chaque jour de la semaine."
+    },
+    "items": {
+      "description": "Chaque objet : statistiques par niveau et coûts d'amélioration."
     }
   },
   "loading": "Chargement des données de la bibliothèque…",
@@ -688,5 +691,58 @@
     "power": {
       "label": "Puissance"
     }
+  },
+  "items": {
+    "list": {
+      "label": "Trouver des objets",
+      "search": "Chercher des objets",
+      "rarity": "Rareté",
+      "allRarities": "Toutes les raretés",
+      "clearRarities": "Effacer les raretés",
+      "slot": "Emplacement",
+      "allSlots": "Tous les emplacements",
+      "clearSlots": "Effacer les emplacements",
+      "faction": "Faction",
+      "allFactions": "Toutes les factions",
+      "clearFactions": "Effacer les factions",
+      "searchFactions": "Chercher des factions",
+      "relic": "Reliques seulement",
+      "clearFilters": "Effacer les filtres",
+      "groups": {
+        "none": "Aucun",
+        "slot": "Emplacement",
+        "rarity": "Rareté"
+      },
+      "maxLevel": "Niv. max {{level}}",
+      "noMatch": {
+        "title": "Aucun objet ne correspond",
+        "description": "Essayez une autre recherche ou effacez les filtres.",
+        "clearSearch": "Effacer la recherche"
+      }
+    },
+    "detail": {
+      "back": "Tous les objets",
+      "relic": "Relique",
+      "uniqueRelic": "Relique unique",
+      "for": "Qui peut l'utiliser",
+      "everyone": "Toutes les factions",
+      "stats": "Statistiques par niveau",
+      "level": "Niveau",
+      "ladder": "Coûts d'amélioration",
+      "step": "Pour l'atteindre",
+      "total": "Valeur de recyclage",
+      "totalHint": "Ce que rend un exemplaire de ce niveau une fois recyclé : le jeu rembourse le rebut et les pièces dépensés pour lui."
+    },
+    "tour": {
+      "find": {
+        "title": "Trouver un objet",
+        "content": "Cherchez par nom ou filtrez par rareté, emplacement, faction ou reliques."
+      },
+      "item": {
+        "title": "Ouvrir un objet",
+        "content": "Ses statistiques à chaque niveau, qui peut l'utiliser et le coût de chaque niveau."
+      }
+    },
+    "openInLibrary": "Ouvrir dans la Bibliothèque"
   }
 }

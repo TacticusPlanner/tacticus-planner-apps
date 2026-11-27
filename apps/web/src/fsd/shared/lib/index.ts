@@ -82,7 +82,6 @@ export {
   readOneOf,
   useUrlQuery,
   writeUrlQuery,
-  type UrlQueryValue,
 } from "./browser"
 export { runCatching, runWithCleanup } from "./async"
 export { useStableByKey } from "./use-stable-by-key"
