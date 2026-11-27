@@ -1,3 +1,4 @@
+import { useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { factionIcon } from "@workspace/game-catalog"
@@ -51,9 +52,17 @@ type DetailsProps = {
  */
 export function PieceDetailsDialog(props: DetailsProps) {
   const { piece, onOpenChange } = props
+  const contentRef = useRef<HTMLDivElement>(null)
   return (
     <ResponsiveDialog
+      contentRef={contentRef}
       data-testid="items-piece-details"
+      // The first focusable control is a currency hint deep in the body: focusing it would open
+      // its tooltip, so the dialog itself takes focus and Tab starts from the top.
+      onOpenAutoFocus={(event) => {
+        event.preventDefault()
+        contentRef.current?.focus()
+      }}
       onOpenChange={onOpenChange}
       open={piece !== undefined}
       width="form"
