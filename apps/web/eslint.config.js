@@ -16,7 +16,10 @@ import sonarjs from "eslint-plugin-sonarjs"
 import eslintReact from "@eslint-react/eslint-plugin"
 import noUseEffect from "eslint-plugin-react-you-might-not-need-an-effect"
 import { defineConfig, globalIgnores } from "eslint/config"
-import { tailwindSizingConfig } from "../../packages/ui/eslint.tailwind-sizing.js"
+import {
+  sizingRestrictions,
+  tailwindSizingConfig,
+} from "../../packages/ui/eslint.tailwind-sizing.js"
 
 // ui-style-guide rule 3. Radix `Toggle`/`ToggleGroupItem` set aria-pressed themselves, so only a
 // hand-written attribute matches.
@@ -44,6 +47,61 @@ const NATIVE_TITLE = {
     "JSXOpeningElement:matches([name.name=/^(?!iframe$)[a-z]/], [name.name=/^(Button|Badge|ToggleGroupItem|Link|DropdownMenuItem|TableHead)$/]) > JSXAttribute[name.name='title']",
   message:
     "Native `title` tooltip (ui-style-guide: tooltips). Use `IconButton` for an icon-only button, `TruncatedText` for text that may be cut off, or `Tooltip` for anything else.",
+}
+
+// ui-style-guide rule 14: a raw `<button>` carries its own hover, focus and press styles. Use
+// `Button` (`variant="link"` for a text action), `IconButton`, or `Pressable` for a card, tile, row
+// or portrait that acts.
+const RAW_BUTTON = {
+  selector: "JSXOpeningElement[name.name='button']",
+  message:
+    'Raw `<button>` (ui-style-guide rule 14). Use `Button` (`variant="link"` for a text action), `IconButton` for an icon-only action, or `Pressable` for a card, tile, row or portrait.',
+}
+
+// ui-style-guide rule 11: the shared `Spinner` is the one spinner.
+const HOME_MADE_SPINNER_ICON = {
+  selector:
+    "ImportDeclaration[source.value='lucide-react'] > ImportSpecifier[imported.name=/^Loader/]",
+  message:
+    "Home-made spinner (ui-style-guide rule 11). Use `Spinner` from `@workspace/ui/components/spinner`, or a `Skeleton` for content with a known shape.",
+}
+
+// ui-style-guide copy rule 11: numbers are formatted in the app language through one helper.
+const RAW_NUMBER_FORMAT = {
+  selector:
+    "NewExpression[callee.object.name='Intl'][callee.property.name='NumberFormat']",
+  message:
+    "Build number formats with `useNumberFormat()` (or `numberFormat(locale)`) from `@/shared/lib` (ui-style-guide copy rule 11), so they follow the app language and are cached.",
+}
+const BARE_TO_LOCALE_STRING = {
+  selector:
+    "CallExpression[callee.property.name='toLocaleString'][arguments.length=0]",
+  message:
+    "`toLocaleString()` with no locale uses the browser's language, not the app's (ui-style-guide copy rule 11). Use `useNumberFormat().format(value)` from `@/shared/lib` for a number, or a shared date helper (`formatShortDate`…) for a date.",
+}
+
+// Selectors that apply to logic files too, not only components.
+const STYLE_GUIDE_LOGIC = [
+  HOME_MADE_SPINNER_ICON,
+  RAW_NUMBER_FORMAT,
+  BARE_TO_LOCALE_STRING,
+]
+
+// Prefix for a Tailwind class: any variants (`md:`, `dark:`, `[&_svg]:`) and a leading `!`.
+const classPrefix = String.raw`^(?:[^\s]*:)?!?`
+
+// ui-style-guide rule 12: status meaning comes from tokens, not raw palette colours.
+const RAW_STATUS_COLOUR = {
+  pattern: String.raw`${classPrefix}(?:text|bg|border(?:-[xytblrse])?|ring|fill|stroke|outline|decoration|divide|from|via|to)-(?:red|orange|amber|yellow|lime|green|emerald|teal|rose)-\d{2,3}(?:\/\d+)?!?$`,
+  message:
+    "Raw status colour (ui-style-guide rule 12). Use the tokens: `text-destructive` for errors, `bg-warning`/`text-warning-foreground` for warnings, `bg-success`/`text-success-foreground` for success, `bg-info-bg` for info.",
+}
+
+// ui-style-guide rule 11: `animate-spin` outside the shared `Spinner` is a home-made spinner.
+const HOME_MADE_SPINNER_CLASS = {
+  pattern: String.raw`${classPrefix}animate-spin!?$`,
+  message:
+    "Home-made spinner (ui-style-guide rule 11). Use `Spinner` from `@workspace/ui/components/spinner`.",
 }
 
 export default defineConfig([
@@ -333,7 +391,17 @@ export default defineConfig([
         HAND_ROLLED_TOGGLE,
         PAGE_H1,
         NATIVE_TITLE,
+        RAW_BUTTON,
+        ...STYLE_GUIDE_LOGIC,
       ],
+    },
+  },
+  {
+    // The same guard rails for logic files: spinners and number formats only.
+    files: ["src/fsd/**/*.ts"],
+    ignores: ["**/*.test.ts"],
+    rules: {
+      "no-restricted-syntax": ["error", ...STYLE_GUIDE_LOGIC],
     },
   },
   {
@@ -341,8 +409,36 @@ export default defineConfig([
     files: ["src/fsd/app/layout/**/*.tsx"],
     ignores: ["**/*.test.tsx"],
     rules: {
-      "no-restricted-syntax": ["error", HAND_ROLLED_TOGGLE, NATIVE_TITLE],
+      "no-restricted-syntax": [
+        "error",
+        HAND_ROLLED_TOGGLE,
+        NATIVE_TITLE,
+        RAW_BUTTON,
+        ...STYLE_GUIDE_LOGIC,
+      ],
     },
   },
+  {
+    // The shared number formatter is the one place that builds `Intl.NumberFormat`.
+    files: ["src/fsd/shared/lib/format/format-number.ts"],
+    rules: { "no-restricted-syntax": "off" },
+  },
   tailwindSizingConfig,
+  {
+    // ui-style-guide rules 11 and 12 on top of the sizing restrictions (one list per file wins).
+    files: ["src/fsd/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}"],
+    rules: {
+      "better-tailwindcss/no-restricted-classes": [
+        "error",
+        {
+          restrict: [
+            ...sizingRestrictions,
+            RAW_STATUS_COLOUR,
+            HOME_MADE_SPINNER_CLASS,
+          ],
+        },
+      ],
+    },
+  },
 ])

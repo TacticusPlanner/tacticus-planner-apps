@@ -1,3 +1,5 @@
+import { numberFormat } from "../lib"
+
 /** One x position: a single value, or `[min, max]` for a range drawn as a band. */
 export type ChartPoint = readonly number[]
 
@@ -52,14 +54,14 @@ export function chartY(value: number, scale: ChartScale): number {
 }
 
 export function formatCompact(value: number, locale?: string): string {
-  return new Intl.NumberFormat(locale, {
+  return numberFormat(locale, {
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(value)
 }
 
 export function formatPoint(point: ChartPoint, locale?: string): string {
-  const format = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 })
+  const format = numberFormat(locale, { maximumFractionDigits: 2 })
   return point.map((value) => format.format(value)).join("–")
 }
 

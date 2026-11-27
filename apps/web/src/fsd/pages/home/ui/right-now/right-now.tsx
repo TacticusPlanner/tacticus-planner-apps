@@ -11,7 +11,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useEffect, useState } from "react"
 
 import { useMinuteNow } from "@/entities/legendary-event"
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, useNumberFormat } from "@/shared/lib"
 import { CountdownChip } from "@/shared/ui"
 
 import {
@@ -113,6 +113,7 @@ function LiveEvents({ events }: { events: HomeEventsState }) {
  *  action, and spans the grid's two columns to fit them. */
 function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
   const { t, i18n } = useTranslation("common")
+  const numbers = useNumberFormat()
   const countdown = (narrow: boolean) =>
     formatEventCountdown(row.endMs, nowMs, i18n.language, {
       withHours: true,
@@ -157,9 +158,7 @@ function LiveEventTile({ row, nowMs }: { row: HomeEventRow; nowMs: number }) {
               )}
               <span>
                 {t("home.events.points", {
-                  points: new Intl.NumberFormat(i18n.language).format(
-                    row.points
-                  ),
+                  points: numbers.format(row.points),
                 })}
               </span>
             </span>

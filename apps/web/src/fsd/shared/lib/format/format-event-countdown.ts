@@ -1,4 +1,5 @@
 import { DAY_MS, HOUR_MS, MINUTE_MS } from "./durations"
+import { numberFormat } from "./format-number"
 
 const unitText = (
   value: number,
@@ -6,7 +7,7 @@ const unitText = (
   locale: string,
   narrow: boolean
 ) =>
-  new Intl.NumberFormat(locale, {
+  numberFormat(locale, {
     style: "unit",
     unit,
     unitDisplay: narrow ? "narrow" : unit === "day" ? "long" : "short",
