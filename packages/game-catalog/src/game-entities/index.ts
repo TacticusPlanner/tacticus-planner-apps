@@ -21,6 +21,7 @@ export {
   onslaughtTokenIcon,
   goldIcon,
   guildXpIcon,
+  mythicSalvageIcon,
   salvageIcon,
   raidTicketIcon,
   mowAmmoIcon,

@@ -22,7 +22,8 @@
 //   public/locales/{en,de,es,fr}/unitSearchNames.json   character/MoW id    -> other names to search by
 //   public/locales/{en,de,es,fr}/progression.json       ranks and rarities (en also keeps its hand-written short forms)
 //   public/locales/{en,de,es,fr}/gameUi.json            the game's own names for the screens and tabs a page
-//                                                        mirrors (Inventory > Upgrades / Ascension)
+//                                                        mirrors (Inventory > Upgrades / Ascension; Inventory > Items, item
+//                                                        slots, Reclaim)
 //
 // Source: the pinned data-mines commit (datamine/REF, see scripts/datamine.mjs): the game config names
 // the ids, the game's language files name them. A term missing in one locale falls back to English.
@@ -493,6 +494,24 @@ const GAME_UI = {
       upgrades: "UI/InventoryScreen_Tabs_Upgrades",
       ascension: "UI/InventoryScreen_Tabs_Ascension",
     },
+  },
+  items: {
+    // Inventory > Items, the game's tab the My game Items page mirrors.
+    title: "UI/InventoryScreen_Tabs_Items",
+    // The slot types (`itemType`), as the game's equip screen names them ("Crit Item").
+    slots: {
+      I_Crit: "UI/ItemSlot_I_Crit",
+      I_Block: "UI/ItemSlot_I_Block",
+      I_Booster_Crit: "UI/ItemSlot_I_Booster_Crit",
+      I_Booster_Block: "UI/ItemSlot_I_Booster_Block",
+      I_Defensive: "UI/ItemSlot_I_Defensive",
+    },
+    relic: "UI/ItemEquipmentPopup_Relics_Headline",
+    relicItems: "UI/ItemEquipment_List_Header_Relic",
+    reclaim: "UI/ItemEquipmentPopup_BurnPanel_Title",
+    salvage: "Resources/dust_One",
+    mythicSalvage: "Resources/mythicDust_One",
+    gold: "Resources/gold_Plural",
   },
 }
 

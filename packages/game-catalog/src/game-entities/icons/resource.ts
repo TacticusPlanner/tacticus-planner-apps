@@ -152,6 +152,11 @@ export function salvageIcon(): string {
   return datamineAssetUrl(`atlases/ui_icon_resource_salvage.webp`)
 }
 
+/** Mythic salvage: what Mythic items cost to upgrade and return when reclaimed. */
+export function mythicSalvageIcon(): string {
+  return datamineAssetUrl(`atlases/ui_icon_resource_mythic_salvage.webp`)
+}
+
 const XP_BOOK_INDEX: Record<Rarity, number> = {
   Common: 0,
   Uncommon: 1,

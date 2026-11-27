@@ -5,5 +5,21 @@
       "upgrades": "Upgrades",
       "ascension": "Ascension"
     }
+  },
+  "items": {
+    "title": "Items",
+    "slots": {
+      "I_Crit": "Crit Item",
+      "I_Block": "Block Item",
+      "I_Booster_Crit": "Crit Booster Item",
+      "I_Booster_Block": "Block Booster Item",
+      "I_Defensive": "Defensive Item"
+    },
+    "relic": "Relic",
+    "relicItems": "Relic Items",
+    "reclaim": "Reclaim Items",
+    "salvage": "Salvage",
+    "mythicSalvage": "Mythic Salvage",
+    "gold": "Coins"
   }
 }

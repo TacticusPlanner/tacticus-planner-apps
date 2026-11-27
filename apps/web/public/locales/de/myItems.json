@@ -1,0 +1,211 @@
+{
+  "tabs": {
+    "pieces": "Stücke",
+    "suggestions": "Vorschläge",
+    "reclaim": "Wiederverwerten"
+  },
+  "page": {
+    "tabsLabel": "Ansichten für Gegenstände",
+    "synced": "Synchronisiert {{time}}",
+    "notSynced": "Noch nicht synchronisiert"
+  },
+  "empty": {
+    "title": "Noch keine Ausrüstung",
+    "description": "Synchronisiere mit Tacticus, um deine Gegenstände und die deiner Charaktere zu sehen.",
+    "sync": "Jetzt synchronisieren"
+  },
+  "tour": {
+    "tabs": {
+      "title": "Drei Ansichten",
+      "content": "Stücke zeigt jeden Gegenstand, den du hast oder trägst. Vorschläge zeigt, was du mit deinen Gegenständen ausrüsten kannst. Wiederverwerten zeigt die Ersatzstücke, die du zu Bergungsgut machen kannst, ohne etwas zu verlieren, das du brauchst."
+    },
+    "piecesFind": {
+      "title": "Gegenstand finden",
+      "content": "Suche nach Namen, filtere nach Seltenheit, Platz, Fraktion oder Charakter oder zeige nur Ersatzstücke oder Relikte."
+    },
+    "piecesView": {
+      "title": "Karten oder Tabelle",
+      "content": "Wechsle zwischen Karten und Tabelle und gruppiere nach Platz oder Seltenheit."
+    },
+    "piece": {
+      "title": "Ein Gegenstand",
+      "content": "Jede Stufe, die du besitzt, mit Ersatzstücken und Trägern. Öffne ihn für Werte und die Kosten der nächsten Stufe."
+    },
+    "suggestion": {
+      "title": "Was ausrüsten",
+      "content": "Jeder Charakter mit einem leeren Platz oder einem besseren Ersatzstück, und warum es besser ist."
+    },
+    "relics": {
+      "title": "Relikte, die niemand trägt",
+      "content": "Ersatz-Relikte und die Charaktere, die sie tragen können, sobald sie Mythisch sind."
+    },
+    "reclaimSummary": {
+      "title": "Was du zurückbekommst",
+      "content": "Bergungsgut und Münzen für deine sicheren Ersatzstücke, neben dem Wert aller Ersatzstücke."
+    },
+    "reclaimStack": {
+      "title": "Ein Stapel",
+      "content": "Wie viele Exemplare du sicher wiederverwerten kannst, und warum. Das Wiederverwerten machst du im Spiel."
+    }
+  },
+  "pieces": {
+    "toolbar": {
+      "label": "Gegenstände finden",
+      "search": "Gegenstände suchen",
+      "rarity": "Seltenheit",
+      "allRarities": "Alle Seltenheiten",
+      "clearRarities": "Seltenheiten löschen",
+      "slot": "Platz",
+      "allSlots": "Alle Plätze",
+      "clearSlots": "Plätze löschen",
+      "faction": "Fraktion",
+      "allFactions": "Alle Fraktionen",
+      "clearFactions": "Fraktionen löschen",
+      "character": "Charakter",
+      "allCharacters": "Alle Charaktere",
+      "clearCharacters": "Charaktere löschen",
+      "searchCharacters": "Charaktere suchen",
+      "spares": "Nur Ersatzstücke",
+      "relics": "Nur Relikte",
+      "clearFilters": "Filter löschen",
+      "layouts": {
+        "cards": "Karten",
+        "table": "Tabelle"
+      },
+      "groups": {
+        "slot": "Platz",
+        "rarity": "Seltenheit",
+        "none": "Keine"
+      }
+    },
+    "level": "St. {{level}}",
+    "spare_one": "{{count}} Ersatz",
+    "spare_other": "{{count}} Ersatz",
+    "worn_one": "{{count}} getragen",
+    "worn_other": "{{count}} getragen",
+    "more": "+{{count}}",
+    "cardLabel": "{{name}}: {{spare}}, {{worn}}",
+    "cardFor": "Für {{names}}",
+    "table": {
+      "label": "Gegenstände",
+      "item": "Gegenstand",
+      "slot": "Platz",
+      "rarity": "Seltenheit",
+      "levels": "Stufen",
+      "spare": "Ersatz",
+      "worn": "Getragen"
+    },
+    "noMatch": {
+      "title": "Keine passenden Gegenstände",
+      "description": "Versuche eine andere Suche oder lösche die Filter.",
+      "clearSearch": "Suche löschen"
+    },
+    "unknown_one": "{{count}} Exemplar eines Gegenstands, den der Planer noch nicht kennt, wird nicht angezeigt.",
+    "unknown_other": "{{count}} Exemplare von Gegenständen, die der Planer noch nicht kennt, werden nicht angezeigt.",
+    "details": {
+      "description": "{{rarity}} · {{slot}}",
+      "relicDescription": "{{rarity}} · {{slot}} · Relikt",
+      "for": "Wer ihn tragen kann",
+      "owned": "Deine Exemplare",
+      "stats": "Werte",
+      "statLevel": "Stufe",
+      "max": "Max.",
+      "upgrade": "Verbesserungskosten",
+      "upgradeFrom": "Ab deinem höchsten Exemplar, St. {{level}}",
+      "toNext": "Bis St. {{level}}",
+      "toMax": "Bis St. {{level}} (max.)",
+      "maxed": "Dein höchstes Exemplar hat schon die höchste Stufe.",
+      "close": "Schließen",
+      "everyone": "Jede Fraktion",
+      "nobody": "Noch kann kein Charakter ihn tragen",
+      "ownedSummary": "{{spare}}, {{worn}}",
+      "openInLibrary": "In der Bibliothek öffnen"
+    },
+    "none": {
+      "title": "Noch keine Gegenstände",
+      "description": "Gegenstände, die du findest oder gewinnst, erscheinen nach der nächsten Synchronisierung hier."
+    }
+  },
+  "suggestions": {
+    "toolbar": {
+      "label": "Charaktere finden",
+      "search": "Charaktere suchen",
+      "faction": "Fraktion",
+      "allFactions": "Alle Fraktionen",
+      "clearFactions": "Fraktionen löschen",
+      "locked": "Gesperrte Plätze zeigen",
+      "clearFilters": "Filter löschen"
+    },
+    "slot": "Platz: {{slot}}",
+    "equip": "{{item}} St. {{level}} ausrüsten",
+    "swap": "{{current}} St. {{currentLevel}} gegen {{item}} St. {{level}} tauschen",
+    "reasons": {
+      "empty": "Leerer Platz",
+      "rarity": "{{to}} schlägt {{from}}",
+      "level": "St. {{to}} schlägt St. {{from}}",
+      "chance": "{{to}} % Chance schlägt {{from}} %"
+    },
+    "locked": "Sobald der dritte Platz bei Selten 4 Sternen frei wird",
+    "none": {
+      "title": "Gerade nichts auszurüsten",
+      "description": "Jeder Charakter trägt schon die besten Ersatzstücke, die du hast."
+    },
+    "noMatch": {
+      "title": "Keine passenden Charaktere",
+      "description": "Versuche eine andere Suche oder lösche die Filter.",
+      "clearSearch": "Suche löschen"
+    },
+    "relics": {
+      "title": "Relikte, die niemand trägt",
+      "copies": "St. {{level}} · {{count}} Ersatz",
+      "status": {
+        "ready": "Kann es jetzt tragen",
+        "needsMythic": "Braucht Mythisch",
+        "hasRelic": "Trägt ein Relikt",
+        "notOwned": "Nicht im Besitz"
+      }
+    }
+  },
+  "reclaim": {
+    "toolbar": {
+      "label": "Gegenstände finden",
+      "search": "Gegenstände suchen",
+      "chipsLabel": "Schnellfilter",
+      "safe": "Nur sichere",
+      "upgraded": "Nur verbesserte",
+      "clearFilters": "Filter löschen"
+    },
+    "summary": {
+      "title": "Sicher wiederverwertbar",
+      "all": "Alle Ersatzstücke",
+      "items_one": "{{count}} Gegenstand",
+      "items_other": "{{count}} Gegenstände",
+      "note": "Das Wiederverwerten machst du im Spiel. Diese Seite berät nur."
+    },
+    "reclaim": "{{safe}} von {{spare}} wiederverwerten",
+    "keep": "Alle {{count}} behalten",
+    "reserved_one": "{{count}} für Vorschläge behalten",
+    "reserved_other": "{{count}} für Vorschläge behalten",
+    "reasons": {
+      "covered": "Alle, die ihn nutzen können, tragen {{rarity}} oder besser",
+      "surplus_one": "Du hast {{held}}; {{count}} Charakter könnte noch einen nutzen",
+      "surplus_other": "Du hast {{held}}; {{count}} Charaktere könnten noch einen nutzen",
+      "relic": "Relikte gelten nie als sicher",
+      "mythic": "Mythische Gegenstände gelten nie als sicher"
+    },
+    "none": {
+      "title": "Nichts sicher wiederverwertbar",
+      "description": "Jedes Ersatzstück könnte noch an einen Charakter gehen.",
+      "showAll": "Alle Ersatzstücke zeigen"
+    },
+    "empty": {
+      "title": "Noch keine Ersatzstücke",
+      "description": "Weitere Exemplare eines Gegenstands erscheinen hier nach deiner nächsten Synchronisierung."
+    },
+    "noMatch": {
+      "title": "Keine passenden Gegenstände",
+      "description": "Versuche eine andere Suche oder lösche die Filter.",
+      "clearSearch": "Suche löschen"
+    }
+  }
+}

@@ -63,6 +63,24 @@ const loadInventoryAscensionTab = () =>
     default: m.InventoryAscensionTab,
   }))
 const InventoryAscensionTab = lazy(loadInventoryAscensionTab)
+const loadItemsPage = () =>
+  import("./ui/items/items-page").then((m) => ({ default: m.ItemsPage }))
+const ItemsPage = lazy(loadItemsPage)
+const loadItemsPiecesTab = () =>
+  import("./ui/items/items-pieces-tab").then((m) => ({
+    default: m.ItemsPiecesTab,
+  }))
+const ItemsPiecesTab = lazy(loadItemsPiecesTab)
+const loadItemsSuggestionsTab = () =>
+  import("./ui/items/items-suggestions-tab").then((m) => ({
+    default: m.ItemsSuggestionsTab,
+  }))
+const ItemsSuggestionsTab = lazy(loadItemsSuggestionsTab)
+const loadItemsReclaimTab = () =>
+  import("./ui/items/items-reclaim-tab").then((m) => ({
+    default: m.ItemsReclaimTab,
+  }))
+const ItemsReclaimTab = lazy(loadItemsReclaimTab)
 const loadTeamsPage = () =>
   import("./ui/teams/teams-page").then((m) => ({ default: m.TeamsPage }))
 const TeamsPage = lazy(loadTeamsPage)
@@ -107,6 +125,34 @@ export const protectedRoutes: RouteObject[] = [
         path: "ascension",
         element: <InventoryAscensionTab />,
         loader: preloadOnMatch(loadInventoryAscensionTab),
+      },
+    ],
+  },
+  {
+    path: "items",
+    element: <ItemsPage />,
+    loader: preloadOnMatch(loadItemsPage),
+    // The page reads and joins the synced items once; its tabs share them through the outlet.
+    children: [
+      {
+        index: true,
+        element: <Navigate replace to="/my-game/items/pieces" />,
+        handle: redirectOnlyHandle,
+      },
+      {
+        path: "pieces",
+        element: <ItemsPiecesTab />,
+        loader: preloadOnMatch(loadItemsPiecesTab),
+      },
+      {
+        path: "suggestions",
+        element: <ItemsSuggestionsTab />,
+        loader: preloadOnMatch(loadItemsSuggestionsTab),
+      },
+      {
+        path: "reclaim",
+        element: <ItemsReclaimTab />,
+        loader: preloadOnMatch(loadItemsReclaimTab),
       },
     ],
   },

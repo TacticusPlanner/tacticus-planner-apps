@@ -1,5 +1,6 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import { EquipmentIcons, equipmentSlotIcon } from "@workspace/game-catalog"
 import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import { rarityOrder } from "@workspace/game-domain"
@@ -10,6 +11,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { itemLibraryPath } from "@/shared/equipment"
 import { EntityIcon } from "@/shared/ui"
 
 import { itemStatLines } from "./character-unit.view-model"
@@ -36,7 +38,8 @@ function ItemIcon({ item }: { item: EquipmentStorageModel }) {
   )
 }
 
-/** One item: icon and name, with its stats (level 1 → last level) on hover or focus. */
+/** One item: icon and name, linking to its Library page, with its stats (level 1 → last level) on
+ *  hover or focus. */
 function ItemEntry({ item }: { item: EquipmentStorageModel }) {
   const { t, i18n } = useTranslation([
     "library",
@@ -51,14 +54,14 @@ function ItemEntry({ item }: { item: EquipmentStorageModel }) {
     <li>
       <Tooltip>
         <TooltipTrigger asChild>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-sm"
+          <Link
+            className="inline-flex items-center gap-1.5 rounded-sm underline-offset-2 hover:underline"
             data-testid={`unit-item-${item.id}`}
+            to={itemLibraryPath(item.id)}
           >
             <ItemIcon item={item} />
             {name}
-          </button>
+          </Link>
         </TooltipTrigger>
         <TooltipContent>
           <p className="font-semibold">

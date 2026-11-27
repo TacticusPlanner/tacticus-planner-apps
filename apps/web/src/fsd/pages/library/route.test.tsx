@@ -10,6 +10,8 @@ describe("Library routes", () => {
       "characters/:entityId",
       "machines-of-war",
       "machines-of-war/:entityId",
+      "items",
+      "items/:entityId",
       "npcs/:entityId?",
       "raid-bosses",
       "raid-bosses/:entityId",

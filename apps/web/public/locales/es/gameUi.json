@@ -5,5 +5,21 @@
       "upgrades": "Mejoras",
       "ascension": "Ascensión"
     }
+  },
+  "items": {
+    "title": "Objetos",
+    "slots": {
+      "I_Crit": "Objeto de crítico",
+      "I_Block": "Objeto de bloqueo",
+      "I_Booster_Crit": "Objeto potenciador de Crítico",
+      "I_Booster_Block": "Objeto potenciador de Bloqueo",
+      "I_Defensive": "Objeto defensivo"
+    },
+    "relic": "Reliquia",
+    "relicItems": "Objetos de reliquia",
+    "reclaim": "Reclamar Objetos",
+    "salvage": "Objeto recuperable",
+    "mythicSalvage": "Objetos recuperables Míticos",
+    "gold": "Monedas"
   }
 }
