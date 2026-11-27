@@ -6,7 +6,9 @@
     "loadError": "Impossible de charger votre guerre.",
     "retry": "Réessayer",
     "noSeasons": "Les données de Guerre de guilde ne sont pas encore disponibles.",
-    "seasonNotListed": "Le calendrier des événements n'indique pas la saison de Guerre de guilde en cours, cette guerre utilise donc {{season}}."
+    "seasonNotListed": "Le calendrier des événements n'indique pas la saison de Guerre de guilde en cours, cette guerre utilise donc {{season}}.",
+    "apiNotice": "L'API de Tacticus ne renvoie pas les données de la Guerre de guilde : les attaques sont donc saisies à la main ici.",
+    "apiNoticeDismiss": "Masquer"
   },
   "target": {
     "zone": "Zone",

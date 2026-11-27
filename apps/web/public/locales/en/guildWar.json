@@ -6,7 +6,9 @@
     "loadError": "Couldn't load your war.",
     "retry": "Retry",
     "noSeasons": "Guild War data isn't available yet.",
-    "seasonNotListed": "The events calendar doesn't list the running Guild War season, so this war uses {{season}}."
+    "seasonNotListed": "The events calendar doesn't list the running Guild War season, so this war uses {{season}}.",
+    "apiNotice": "The Tacticus API doesn't return Guild War data, so attacks are logged by hand here.",
+    "apiNoticeDismiss": "Dismiss"
   },
   "target": {
     "zone": "Zone",
