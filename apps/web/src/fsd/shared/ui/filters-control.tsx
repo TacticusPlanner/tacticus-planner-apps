@@ -149,7 +149,9 @@ export function FiltersControl({
         onOpenChange={setOpen}
         open={open}
       >
-        <ResponsiveDialogHeader>
+        {/* No description under the title, so the header keeps the close button's height itself:
+            a switch at the top of the panel would otherwise run under it. */}
+        <ResponsiveDialogHeader className="min-h-14">
           <ResponsiveDialogTitle>{heading}</ResponsiveDialogTitle>
         </ResponsiveDialogHeader>
         <ResponsiveDialogBody>

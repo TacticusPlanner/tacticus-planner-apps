@@ -1,0 +1,211 @@
+{
+  "tabs": {
+    "pieces": "Pieces",
+    "suggestions": "Suggestions",
+    "reclaim": "Reclaim"
+  },
+  "page": {
+    "tabsLabel": "Items views",
+    "synced": "Synced {{time}}",
+    "notSynced": "Not synced yet"
+  },
+  "empty": {
+    "title": "No equipment yet",
+    "description": "Sync with Tacticus to see the items you hold and the ones your characters wear.",
+    "sync": "Sync now"
+  },
+  "tour": {
+    "tabs": {
+      "title": "Three views",
+      "content": "Pieces lists every item you hold or wear. Suggestions shows what to equip with items you already have. Reclaim shows the spares you can turn into salvage without losing anything you'd use."
+    },
+    "piecesFind": {
+      "title": "Find an item",
+      "content": "Search by name, narrow by rarity, slot, faction or character, or show only spares or relics."
+    },
+    "piecesView": {
+      "title": "Cards or table",
+      "content": "Switch between cards and a table, and group by slot or rarity."
+    },
+    "piece": {
+      "title": "One item",
+      "content": "Each level you own, with how many are spare and who wears one. Open it for its stats and what the next level costs."
+    },
+    "suggestion": {
+      "title": "What to equip",
+      "content": "Each character with an empty slot or a better spare you hold, and why it's better."
+    },
+    "relics": {
+      "title": "Relics nobody wears",
+      "content": "Spare relics and the characters who can wear them once they reach Mythic."
+    },
+    "reclaimSummary": {
+      "title": "What you'd get back",
+      "content": "The salvage and coins your safe spares return, next to what every spare would return."
+    },
+    "reclaimStack": {
+      "title": "One stack",
+      "content": "How many copies are safe to reclaim, and why. You reclaim them in the game."
+    }
+  },
+  "pieces": {
+    "toolbar": {
+      "label": "Find items",
+      "search": "Search items",
+      "rarity": "Rarity",
+      "allRarities": "All rarities",
+      "clearRarities": "Clear rarities",
+      "slot": "Slot",
+      "allSlots": "All slots",
+      "clearSlots": "Clear slots",
+      "faction": "Faction",
+      "allFactions": "All factions",
+      "clearFactions": "Clear factions",
+      "character": "Character",
+      "allCharacters": "All characters",
+      "clearCharacters": "Clear characters",
+      "searchCharacters": "Search characters",
+      "spares": "Spares only",
+      "relics": "Relics only",
+      "clearFilters": "Clear filters",
+      "layouts": {
+        "cards": "Cards",
+        "table": "Table"
+      },
+      "groups": {
+        "slot": "Slot",
+        "rarity": "Rarity",
+        "none": "None"
+      }
+    },
+    "level": "Lv {{level}}",
+    "spare_one": "{{count}} spare",
+    "spare_other": "{{count}} spare",
+    "worn_one": "{{count}} worn",
+    "worn_other": "{{count}} worn",
+    "more": "+{{count}}",
+    "cardLabel": "{{name}}: {{spare}}, {{worn}}",
+    "cardFor": "For {{names}}",
+    "table": {
+      "label": "Items",
+      "item": "Item",
+      "slot": "Slot",
+      "rarity": "Rarity",
+      "levels": "Levels",
+      "spare": "Spare",
+      "worn": "Worn"
+    },
+    "noMatch": {
+      "title": "No items match",
+      "description": "Try another search, or clear the filters.",
+      "clearSearch": "Clear search"
+    },
+    "unknown_one": "{{count}} copy of an item the planner doesn't know yet isn't shown.",
+    "unknown_other": "{{count}} copies of items the planner doesn't know yet aren't shown.",
+    "details": {
+      "description": "{{rarity}} · {{slot}}",
+      "relicDescription": "{{rarity}} · {{slot}} · Relic",
+      "for": "Who can wear it",
+      "owned": "Your copies",
+      "stats": "Stats",
+      "statLevel": "Level",
+      "max": "Max",
+      "upgrade": "Upgrade costs",
+      "upgradeFrom": "From your highest copy, Lv {{level}}",
+      "toNext": "To Lv {{level}}",
+      "toMax": "To Lv {{level}} (max)",
+      "maxed": "Your highest copy is already at the top level.",
+      "close": "Close",
+      "everyone": "Every faction",
+      "nobody": "No character can wear it yet",
+      "ownedSummary": "{{spare}}, {{worn}}",
+      "openInLibrary": "Open in Library"
+    },
+    "none": {
+      "title": "No items yet",
+      "description": "Items you find or win show up here after your next sync."
+    }
+  },
+  "suggestions": {
+    "toolbar": {
+      "label": "Find characters",
+      "search": "Search characters",
+      "faction": "Faction",
+      "allFactions": "All factions",
+      "clearFactions": "Clear factions",
+      "locked": "Show locked slots",
+      "clearFilters": "Clear filters"
+    },
+    "slot": "{{slot}} slot",
+    "equip": "Equip {{item}} Lv {{level}}",
+    "swap": "Swap {{current}} Lv {{currentLevel}} for {{item}} Lv {{level}}",
+    "reasons": {
+      "empty": "Empty slot",
+      "rarity": "{{to}} beats {{from}}",
+      "level": "Lv {{to}} beats Lv {{from}}",
+      "chance": "{{to}}% chance beats {{from}}%"
+    },
+    "locked": "Once the third slot opens at Rare 4 stars",
+    "none": {
+      "title": "Nothing to equip right now",
+      "description": "Every character already wears the best spares you hold."
+    },
+    "noMatch": {
+      "title": "No characters match",
+      "description": "Try another search, or clear the filters.",
+      "clearSearch": "Clear search"
+    },
+    "relics": {
+      "title": "Relics nobody wears",
+      "copies": "Lv {{level}} · {{count}} spare",
+      "status": {
+        "ready": "Can wear it now",
+        "needsMythic": "Needs Mythic",
+        "hasRelic": "Wears a relic",
+        "notOwned": "Not owned"
+      }
+    }
+  },
+  "reclaim": {
+    "toolbar": {
+      "label": "Find items",
+      "search": "Search items",
+      "chipsLabel": "Quick filters",
+      "safe": "Safe only",
+      "upgraded": "Upgraded only",
+      "clearFilters": "Clear filters"
+    },
+    "summary": {
+      "title": "Safe to reclaim",
+      "all": "All spares",
+      "items_one": "{{count}} item",
+      "items_other": "{{count}} items",
+      "note": "You reclaim items in the game. This page only advises."
+    },
+    "reclaim": "Reclaim {{safe}} of {{spare}}",
+    "keep": "Keep all {{count}}",
+    "reserved_one": "{{count}} kept for Suggestions",
+    "reserved_other": "{{count}} kept for Suggestions",
+    "reasons": {
+      "covered": "Everyone who can use it wears {{rarity}} or better",
+      "surplus_one": "You hold {{held}}; {{count}} character could still use one",
+      "surplus_other": "You hold {{held}}; {{count}} characters could still use one",
+      "relic": "Relics are never marked safe",
+      "mythic": "Mythic items are never marked safe"
+    },
+    "none": {
+      "title": "Nothing safe to reclaim",
+      "description": "Every spare could still go to a character.",
+      "showAll": "Show all spares"
+    },
+    "empty": {
+      "title": "No spares yet",
+      "description": "Extra copies of an item show up here after your next sync."
+    },
+    "noMatch": {
+      "title": "No items match",
+      "description": "Try another search, or clear the filters.",
+      "clearSearch": "Clear search"
+    }
+  }
+}

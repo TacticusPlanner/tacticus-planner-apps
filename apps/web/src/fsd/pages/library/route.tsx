@@ -35,6 +35,14 @@ const loadMowUnitPage = () =>
     default: m.MowUnitPage,
   }))
 const MowUnitPage = lazy(loadMowUnitPage)
+const loadItemsListPage = () =>
+  import("./ui/items/items-list-page").then((m) => ({
+    default: m.ItemsListPage,
+  }))
+const ItemsListPage = lazy(loadItemsListPage)
+const loadItemPage = () =>
+  import("./ui/items/item-page").then((m) => ({ default: m.ItemPage }))
+const ItemPage = lazy(loadItemPage)
 const loadNpcsPage = () =>
   import("./ui/npcs/npcs-page").then((m) => ({ default: m.NpcsPage }))
 const NpcsPage = lazy(loadNpcsPage)
@@ -76,6 +84,16 @@ export const routes: RouteObject[] = [
     path: "machines-of-war/:entityId",
     element: <MowUnitPage />,
     loader: preloadOnMatch(loadMowUnitPage),
+  },
+  {
+    path: "items",
+    element: <ItemsListPage />,
+    loader: preloadOnMatch(loadItemsListPage),
+  },
+  {
+    path: "items/:entityId",
+    element: <ItemPage />,
+    loader: preloadOnMatch(loadItemPage),
   },
   // One route for the list and an NPC's page, so the list's filters survive opening an NPC and
   // coming back.

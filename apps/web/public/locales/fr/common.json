@@ -388,6 +388,7 @@
       "collection": "Collection",
       "collectionDescription": "Tous les personnages et Machines de guerre, et la progression de chacun.",
       "inventoryDescription": "Ce que vous possédez dans le jeu et ce dont vos objectifs ont encore besoin.",
+      "itemsDescription": "Votre équipement et ce qu'il faut équiper ensuite.",
       "onslaught": "Onslaught",
       "onslaughtDescription": "Le secteur et le palier que vous farmez dans chaque alliance.",
       "campaigns": "Campagnes",

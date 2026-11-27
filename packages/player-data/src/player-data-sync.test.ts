@@ -257,12 +257,45 @@ describe("syncPlayerData", () => {
     expect(await getChunkData("characters")).toBeUndefined()
   })
 
-  // No "client is behind on a store added later" regression test here (unlike
-  // game-catalog-sync.test.ts's equivalent): `playerDataDbVersion` is still 1, the lowest valid
-  // IndexedDB version, so there's no lower version to seed a raw pre-existing client at. The
-  // underlying mechanism being proven — Dexie's version-upgrade cascade creating a store the
-  // declared schema requires but the client's stored version predates — is exactly the same code
-  // path exercised by the game-catalog package's test, and isn't package-specific.
+  it("keeps an item's stacks at different levels apart", async () => {
+    const stacks = [
+      { itemId: "I_Crit_E002", level: 1, amount: 3 },
+      { itemId: "I_Crit_E002", level: 5, amount: 1 },
+    ]
+    await syncPlayerData(
+      new FakePlayerDataClient(createManifest(), { "inventory-items": stacks })
+    )
+
+    expect(await getChunkData("inventory-items")).toEqual(stacks)
+  })
+
+  it("drops a v1 client's inventory items, keyed by item alone, so the next sync downloads them again", async () => {
+    // A client still on v1 of the schema, with characters and inventory items synced.
+    const v1 = new Dexie(playerDataDbName)
+    v1.version(1).stores({
+      metadata: "key",
+      profile: "id",
+      characters: "unitId",
+      "inventory-items": "itemId",
+    })
+    await v1.table("metadata").bulkPut([
+      { key: "characters", hash: "characters-h1" },
+      { key: "inventory-items", hash: "inventory-items-h1" },
+    ])
+    await v1.table("inventory-items").put({ itemId: "i1", level: 1, amount: 2 })
+    v1.close()
+
+    expect([...(await getPlayerDataMetadata()).keys()]).toEqual(["characters"])
+    expect(await getChunkData("inventory-items")).toBeUndefined()
+
+    const client = new FakePlayerDataClient(createManifest())
+    await syncPlayerData(client)
+    expect(client.downloaded).toContain("inventory-items")
+    expect(client.downloaded).not.toContain("characters")
+    expect(await getChunkData("inventory-items")).toEqual(
+      chunkData["inventory-items"]
+    )
+  })
 
   it("reads a single record from a split chunk by its natural id, without loading the whole chunk", async () => {
     await syncPlayerData(new FakePlayerDataClient(createManifest()))

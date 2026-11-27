@@ -47,6 +47,8 @@ type NavLabelKey =
   | "myGame.tabs.collection"
   // The game's own name for its Inventory screen (generated `gameUi` namespace, preloaded).
   | "gameUi:inventory.title"
+  // The game's own name for its Items screen (generated `gameUi` namespace, preloaded).
+  | "gameUi:items.title"
   | "myGame.tabs.onslaught"
   | "myGame.tabs.campaigns"
   | "myGame.tabs.campaign-events"
@@ -85,13 +87,16 @@ type NavDescriptionKey =
       | "library:collections.raidBosses.label"
       | "library:collections.shops.label"
       | "gameUi:inventory.title"
+      | "gameUi:items.title"
     >}Description`
   | "myGame.tabs.inventoryDescription"
+  | "myGame.tabs.itemsDescription"
   | "library:section.description"
   | "library:collections.characters.description"
   | "library:collections.machinesOfWar.description"
   | "library:collections.npcs.description"
   | "library:collections.raidBosses.description"
+  | "library:collections.items.description"
   | "library:collections.shops.description"
 
 /** The label of a group of a section's children (see `NavSubItemBase.groupLabelKey`). */
@@ -215,6 +220,14 @@ export const navItems: NavItem[] = [
         artSrc: gameMenuIcon("inventory"),
         labelKey: "gameUi:inventory.title",
         descriptionKey: "myGame.tabs.inventoryDescription",
+        anonymousAllowed: false,
+      },
+      {
+        path: "/my-game/items",
+        keywords: ["equipment", "gear", "relics", "salvage", "reclaim"],
+        artSrc: gameMenuIcon("forge"),
+        labelKey: "gameUi:items.title",
+        descriptionKey: "myGame.tabs.itemsDescription",
         anonymousAllowed: false,
       },
       {
@@ -462,6 +475,13 @@ export const navItems: NavItem[] = [
         artSrc: gameMenuIcon("machinesOfWar"),
         labelKey: "library:collections.machinesOfWar.label",
         descriptionKey: "library:collections.machinesOfWar.description",
+      },
+      {
+        path: "/library/items",
+        keywords: ["equipment", "gear", "relics"],
+        artSrc: gameMenuIcon("forge"),
+        labelKey: "gameUi:items.title",
+        descriptionKey: "library:collections.items.description",
       },
       {
         path: "/library/npcs",

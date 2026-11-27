@@ -129,6 +129,10 @@ describe("Library translations", () => {
       expect(leafKeys(locale.shops).toSorted(compareCodeUnits)).toEqual(
         leafKeys(en.shops).toSorted(compareCodeUnits)
       )
+      // Some Items words are spelled the same in English and French ("Faction"), so only the keys are compared.
+      expect(leafKeys(locale.items).toSorted(compareCodeUnits)).toEqual(
+        leafKeys(en.items).toSorted(compareCodeUnits)
+      )
     }
   })
 })

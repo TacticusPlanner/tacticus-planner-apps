@@ -7,6 +7,7 @@ import {
   gameModeTokenIcon,
   goldIcon,
   guildXpIcon,
+  mythicSalvageIcon,
   salvageIcon,
   energyIcon,
   onslaughtTokenIcon,
@@ -52,6 +53,9 @@ describe("goal resource icons", () => {
     )
     expect(salvageIcon()).toBe(
       "/game_catalog/datamines/atlases/ui_icon_resource_salvage.webp"
+    )
+    expect(mythicSalvageIcon()).toBe(
+      "/game_catalog/datamines/atlases/ui_icon_resource_mythic_salvage.webp"
     )
     expect(mowComponentIcon("Imperial")).toBe(
       "/game_catalog/datamines/atlases/ui_machines_of_war_tokens_imperial.webp"

@@ -5,5 +5,21 @@
       "upgrades": "Verbesserungen",
       "ascension": "Aufwertung"
     }
+  },
+  "items": {
+    "title": "Gegenstände",
+    "slots": {
+      "I_Crit": "Kritischer-Treffer-Gegenstand",
+      "I_Block": "Block-Gegenstand",
+      "I_Booster_Crit": "Kritischer-Booster-Gegenstand",
+      "I_Booster_Block": "Block-Booster-Gegenstand",
+      "I_Defensive": "Defensiver Gegenstand"
+    },
+    "relic": "Relikt",
+    "relicItems": "Relikt-Gegenstände",
+    "reclaim": "Gegenstände wiederverwerten",
+    "salvage": "Bergungsgut",
+    "mythicSalvage": "Mythisches Bergungsgut",
+    "gold": "Münzen"
   }
 }

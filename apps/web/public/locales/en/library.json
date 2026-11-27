@@ -1,7 +1,7 @@
 {
   "section": {
     "label": "Library",
-    "description": "Characters, Machines of War, NPCs, Guild Raid Bosses and Daily Shops."
+    "description": "Characters, Machines of War, Items, NPCs, Guild Raid Bosses and Daily Shops."
   },
   "collections": {
     "characters": {
@@ -24,6 +24,9 @@
     "shops": {
       "label": "Daily Shops",
       "description": "What each daily shop can offer on each day of the week."
+    },
+    "items": {
+      "description": "Every item: stats by level and upgrade costs."
     }
   },
   "loading": "Loading Library records…",
@@ -686,5 +689,59 @@
     "power": {
       "label": "Power"
     }
+  },
+  "items": {
+    "list": {
+      "label": "Find items",
+      "search": "Search items",
+      "rarity": "Rarity",
+      "allRarities": "All rarities",
+      "clearRarities": "Clear rarities",
+      "slot": "Slot",
+      "allSlots": "All slots",
+      "clearSlots": "Clear slots",
+      "faction": "Faction",
+      "allFactions": "All factions",
+      "clearFactions": "Clear factions",
+      "searchFactions": "Search factions",
+      "relic": "Relics only",
+      "clearFilters": "Clear filters",
+      "groups": {
+        "none": "None",
+        "slot": "Slot",
+        "rarity": "Rarity"
+      },
+      "maxLevel": "Max Lv {{level}}",
+      "noMatch": {
+        "title": "No items match",
+        "description": "Try another search, or clear the filters.",
+        "clearSearch": "Clear search"
+      }
+    },
+    "detail": {
+      "back": "All items",
+      "relic": "Relic",
+      "uniqueRelic": "Unique relic",
+      "for": "Who can wear it",
+      "everyone": "Every faction",
+      "nobody": "No character can wear it yet",
+      "stats": "Stats by level",
+      "level": "Level",
+      "ladder": "Upgrade costs",
+      "step": "To reach it",
+      "total": "Reclaim value",
+      "totalHint": "What one copy at this level returns when reclaimed: the game refunds the salvage and coins spent on it."
+    },
+    "tour": {
+      "find": {
+        "title": "Find an item",
+        "content": "Search by name, or narrow by rarity, slot, faction or relics."
+      },
+      "item": {
+        "title": "Open an item",
+        "content": "Its stats at every level, who can wear it and what each level costs."
+      }
+    },
+    "openInLibrary": "Open in Library"
   }
 }
