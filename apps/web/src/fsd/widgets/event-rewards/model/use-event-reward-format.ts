@@ -9,6 +9,7 @@ import type { GameIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon, shopRewardDisplay } from "@/entities/shops/reward"
 import { toById, useCatalogDataset } from "@/shared/local-data"
+import { numberFormat } from "@/shared/lib"
 
 const NO_NAMES = new Map<string, { name: string }>()
 
@@ -89,7 +90,7 @@ export function useEventRewardFormat(): EventRewardFormat {
   const language = i18n.language
 
   return useMemo(() => {
-    const numberFormat = new Intl.NumberFormat(language)
+    const numbers = numberFormat(language)
     const context = { t, charactersById, mowsById, equipmentById }
 
     const reward = (rewardType: string, unitId?: string): RewardDisplay => {
@@ -141,7 +142,7 @@ export function useEventRewardFormat(): EventRewardFormat {
     return {
       reward,
       currencyIcon: shopCurrencyIcon,
-      number: (value) => numberFormat.format(value),
+      number: (value) => numbers.format(value),
     }
   }, [language, t, tShop, tFactions, charactersById, mowsById, equipmentById])
 }

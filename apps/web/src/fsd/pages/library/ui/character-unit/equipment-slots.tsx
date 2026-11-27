@@ -13,6 +13,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { itemLibraryPath } from "@/shared/equipment"
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { itemStatLines } from "./character-unit.view-model"
 
@@ -46,7 +47,7 @@ function ItemEntry({ item }: { item: EquipmentStorageModel }) {
     "equipmentItems",
     "progression",
   ])
-  const format = new Intl.NumberFormat(i18n.language)
+  const format = numberFormat(i18n.language)
   const value = (amount: number, percent: boolean) =>
     `+${format.format(amount)}${percent ? "%" : ""}`
   const name = t(`equipmentItems:${item.id}`, { defaultValue: item.name })

@@ -4,6 +4,7 @@ import { chanceIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { DetailsOverlay, EntityIcon } from "@/shared/ui"
+import { useNumberFormat } from "@/shared/lib"
 import type {
   LibraryShopRewardView,
   LibraryShopSlotView,
@@ -27,6 +28,7 @@ function CurrencyAmount({
   amount: number
   label: string
 }) {
+  const numbers = useNumberFormat()
   return (
     <span className="inline-flex items-center gap-1 align-middle">
       <EntityIcon
@@ -35,7 +37,7 @@ function CurrencyAmount({
         className="inline shrink-0"
         src={shopCurrencyIcon(currencyId)}
       />
-      <span className="tabular-nums">{amount.toLocaleString()}</span>
+      <span className="tabular-nums">{numbers.format(amount)}</span>
     </span>
   )
 }

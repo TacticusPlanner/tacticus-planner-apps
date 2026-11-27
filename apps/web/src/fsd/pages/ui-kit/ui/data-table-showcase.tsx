@@ -49,6 +49,7 @@ import {
 
 import { payments } from "../model/ui-kit"
 import type { Payment } from "../model/ui-kit"
+import { numberFormat } from "@/shared/lib"
 
 const features = tableFeatures({
   columnFilteringFeature,
@@ -68,7 +69,7 @@ const features = tableFeatures({
 })
 
 function formatAmount(amount: number) {
-  return new Intl.NumberFormat("en-US", {
+  return numberFormat("en-US", {
     currency: "USD",
     style: "currency",
   }).format(amount)

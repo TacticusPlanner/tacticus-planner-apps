@@ -42,7 +42,7 @@ import {
   editStartsFromEstimate,
 } from "@/features/legendary-event-plan"
 import type { DepthEstimateContext } from "@/features/legendary-event-plan"
-import { useDebouncedCommit } from "@/shared/lib"
+import { useDebouncedCommit, numberFormat } from "@/shared/lib"
 import {
   DragGrip,
   SORTABLE_ITEM_GROUP,
@@ -99,7 +99,7 @@ export function TeamCard({
   sortable?: SortableRenderProps
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const style: CSSProperties | undefined = sortable?.style
   // The settled write: clearing the manual depth while an estimate exists is Use estimate.
   const commitDepth = (next: number | null) => {

@@ -8,6 +8,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import type { ClearEstimate } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 import { clearDepthDisplay, hasRange } from "../model/clear-depth-display"
 import { ClearDepthStepper } from "./clear-depth-stepper"
@@ -42,7 +43,7 @@ export function ClearDepthField({
   "data-testid"?: string
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const display = clearDepthDisplay(value, estimate)
   const start = align === "start"
 

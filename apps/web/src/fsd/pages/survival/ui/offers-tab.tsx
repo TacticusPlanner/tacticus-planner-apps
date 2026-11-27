@@ -8,6 +8,7 @@ import {
   sumRewards,
   useEventRewardFormat,
 } from "@/widgets/event-rewards"
+import { numberFormat } from "@/shared/lib"
 
 import { useSurvivalContext } from "../model/survival-context"
 import type { SurvivalOffer } from "../model/survival-event"
@@ -16,7 +17,7 @@ import { survivalTabHref } from "../model/survival-tabs"
 /** "$9.99": the US store price. */
 function usePrice() {
   const { i18n } = useTranslation()
-  const price = new Intl.NumberFormat(i18n.language, {
+  const price = numberFormat(i18n.language, {
     style: "currency",
     currency: "USD",
   })

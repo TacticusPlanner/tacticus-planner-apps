@@ -28,7 +28,11 @@ import type { GameIcon } from "@workspace/game-catalog"
 import { rarityOrder } from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 
-import { storedPreference, usePersistedSelection } from "@/shared/lib"
+import {
+  storedPreference,
+  usePersistedSelection,
+  numberFormat,
+} from "@/shared/lib"
 import { EntityIcon, SegmentedControl } from "@/shared/ui"
 
 import type {
@@ -98,7 +102,7 @@ export function InsightsMissing({
   )
   const upgradeGroups = upgradeRowsByRarity(show, upgrades, spareUpgrades)
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
   const rarityName = (rarity: Rarity) => t(`progression:rarities.${rarity}`)
 
   const byRarity = (

@@ -35,6 +35,7 @@ import type {
 } from "@/entities/legendary-event"
 import { laneTeams } from "@/features/legendary-event-plan"
 import { useUnitName } from "@/shared/unit-name"
+import { numberFormat } from "@/shared/lib"
 
 import type {
   ProgressGridViewModel,
@@ -616,7 +617,7 @@ function ObjectiveHeading({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const merged = entries.length > 1
   return (
     <div

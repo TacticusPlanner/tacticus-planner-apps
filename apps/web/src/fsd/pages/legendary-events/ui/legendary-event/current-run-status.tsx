@@ -8,7 +8,7 @@ import type { ReactNode } from "react"
 import { MilestoneGapSection } from "@/features/legendary-event-tokens"
 import type { TokenPlanView } from "@/features/legendary-event-tokens"
 import type { AscensionStep } from "@/entities/legendary-event"
-import { formatEventCountdown } from "@/shared/lib"
+import { formatEventCountdown, numberFormat } from "@/shared/lib"
 import { EntityIcon, IconLine } from "@/shared/ui"
 
 import { buildCurrentRunStatusModel } from "./current-run-status.view-model"
@@ -40,7 +40,7 @@ export function CurrentRunStatus({
   nowMs: number
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const model = buildCurrentRunStatusModel(runStatus, view)
   const { tokens } = model
   const tokensText = tokens
@@ -208,7 +208,7 @@ function RowIcon({ resource }: { resource: LegendaryEventResource | null }) {
 
 function GoalLine({ goal }: { goal: RunStatusGoal }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const step = (value: AscensionStep) => t(`outlook.steps.${value}`)
   if (goal.kind === "allSteps") {
     return (

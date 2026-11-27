@@ -35,6 +35,7 @@ import {
   RankBadge,
   RarityIcon,
 } from "@/shared/ui"
+import { useNumberFormat } from "@/shared/lib"
 
 import { buildProgressionStepLabels, toRarity } from "./progression-step-labels"
 import { RaidBossAbilityPanel } from "./raid-boss-ability-panel"
@@ -140,6 +141,7 @@ export function RaidBossDetail({
   compact = false,
 }: RaidBossDetailProps) {
   const { t } = useTranslation("library")
+  const numbers = useNumberFormat()
 
   const ladder = unit.statProgression
   const clamped = Math.min(
@@ -194,7 +196,7 @@ export function RaidBossDetail({
                       <CompactStarLevel starLevel={entry.starLevel} />
                       <span aria-hidden>·</span>
                       {t("raidBosses.stepHealth", {
-                        health: label.health.toLocaleString(),
+                        health: numbers.format(label.health),
                       })}
                     </span>
                   </SelectItem>
@@ -217,15 +219,15 @@ export function RaidBossDetail({
             <TableBody>
               <StatRow
                 label={t("raidBosses.health")}
-                value={step.health.toLocaleString()}
+                value={numbers.format(step.health)}
               />
               <StatRow
                 label={t("raidBosses.damage")}
-                value={step.damage.toLocaleString()}
+                value={numbers.format(step.damage)}
               />
               <StatRow
                 label={t("raidBosses.armor")}
-                value={step.fixedArmor.toLocaleString()}
+                value={numbers.format(step.fixedArmor)}
               />
               <StatRow
                 label={t("raidBosses.rank")}

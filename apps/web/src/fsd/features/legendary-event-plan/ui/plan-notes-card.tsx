@@ -13,6 +13,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 
 import { MAX_PLAN_NOTES_LENGTH, planNotesChanged } from "../model/plan-notes"
 import { usePlanNotes } from "../model/use-plan-notes"
+import { numberFormat } from "@/shared/lib"
 
 /**
  * The event's personal notes (signed in): a text box saved with the plan, shown on the event
@@ -32,7 +33,7 @@ export function PlanNotesCard({ eventId }: { eventId: string }) {
 
   const value = draft ?? notes
   const dirty = draft !== null && planNotesChanged(notes, draft)
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
 
   const onSave = async () => {
     if (draft === null) return

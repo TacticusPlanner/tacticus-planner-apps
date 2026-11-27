@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import type { ResourceNeed } from "@/entities/goal-farming"
+import { numberFormat } from "@/shared/lib"
 import { StackedProgressBar } from "./stacked-progress-bar"
 
 /** An Ascension goal's shard progress as V1's card showed it: one labelled bar per shard kind the goal
@@ -17,7 +18,7 @@ export function ShardProgressBars({
   const isMobile = useIsMobile()
   if (!shardProgress) return null
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
   const bars = [
     { key: "shards" as const, ...shardProgress.shards },
     { key: "mythicShards" as const, ...shardProgress.mythicShards },

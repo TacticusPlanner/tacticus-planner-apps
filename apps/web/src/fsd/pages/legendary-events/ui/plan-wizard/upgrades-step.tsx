@@ -13,7 +13,7 @@ import { EntityIcon } from "@/shared/ui"
 
 import { upgradeGroups } from "../../model/plan-wizard/upgrades-step.model"
 import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
-import { formatShortDate, useDateLocale } from "@/shared/lib"
+import { formatShortDate, useDateLocale, numberFormat } from "@/shared/lib"
 
 /**
  * Step 2 (spec: upgrades step groups by run with quick actions): the recommendations grouped by the
@@ -25,7 +25,7 @@ import { formatShortDate, useDateLocale } from "@/shared/lib"
 export function UpgradesStep({ draft }: { draft: PlanDraft }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const dateLocale = useDateLocale()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const labels = useGoalLabels()
   const { recommendations, chosenTarget, evaluation, syncedCeiling } = draft
 

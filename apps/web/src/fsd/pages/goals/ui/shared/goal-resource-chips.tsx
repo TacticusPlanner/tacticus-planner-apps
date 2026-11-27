@@ -9,6 +9,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, HintLines, HintTrigger } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 import { useGoalResourceChips } from "./use-goal-resource-chips"
 import type {
   GoalResourceChip,
@@ -36,7 +37,7 @@ export function GoalResourceChipList({
   const { t, i18n } = useTranslation(["common", "shops"])
   if (chips.length === 0) return null
 
-  const format = new Intl.NumberFormat(i18n.resolvedLanguage)
+  const format = numberFormat(i18n.resolvedLanguage)
   const label = (chip: GoalResourceChip) =>
     chip.pool
       ? t("goals.resourceChips.poolLabel", {

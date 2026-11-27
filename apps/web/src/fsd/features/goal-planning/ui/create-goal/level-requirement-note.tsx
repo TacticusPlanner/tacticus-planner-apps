@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 
 import type { LevelRequirementPreview } from "../../model/goal-creation-form/use-level-requirement-preview"
 import { InfoHint } from "../shared/info-hint"
+import { numberFormat } from "@/shared/lib"
 
 /** The level a Rank/Ability target needs, on that goal's own creation card — required level, current
  * level, the raw XP gap, and (after owned XP books) the books and gold still to apply. Ordinary
@@ -20,7 +21,7 @@ export function LevelRequirementNote({
   const { t, i18n } = useTranslation(["common", "progression"])
   if (!preview) return null
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
 
   return (
     <div

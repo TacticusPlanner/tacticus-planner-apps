@@ -13,7 +13,7 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { formatRelativeTime } from "@/shared/lib"
+import { formatRelativeTime, numberFormat } from "@/shared/lib"
 import { EntityIcon, HowToRead } from "@/shared/ui"
 
 import type {
@@ -105,7 +105,7 @@ function ReadyProjectionBody({
   const isMobile = useIsMobile()
   const modeName = useModeName()
   const { projection, inputs } = view
-  const numbers = new Intl.NumberFormat(i18n.language)
+  const numbers = numberFormat(i18n.language)
   const listFormat = new Intl.ListFormat(i18n.language, { type: "conjunction" })
   const lockedList = listFormat.format(projection.lockedModes.map(modeName))
 
@@ -454,7 +454,7 @@ function Total({
 
 function ModePoints({ mode }: { mode: HseProjectionMode }) {
   const { t, i18n } = useTranslation("dailies")
-  const numbers = new Intl.NumberFormat(i18n.language)
+  const numbers = numberFormat(i18n.language)
   return (
     <span data-testid={`hse-projection-points-${mode.mode}`}>
       {mode.points === null

@@ -16,6 +16,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { questPickedPower, toggleQuestPick } from "../model/quest-team"
 import type { QuestTeam } from "../model/quest-team"
@@ -38,7 +39,7 @@ export function QuestTeamOptionsDialog({
   nameOf: (unitId: string) => string
 }) {
   const { t, i18n } = useTranslation("quest")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const featured = team.members.find((member) => member.featured)
   const suggested = team.members
     .filter((member) => !member.featured)
@@ -150,7 +151,7 @@ function OptionRow({
   onPress?: () => void
 }) {
   const { t, i18n } = useTranslation("quest")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const body = (
     <>
       <span className="flex w-6 shrink-0 justify-end text-xs text-muted-foreground tabular-nums">

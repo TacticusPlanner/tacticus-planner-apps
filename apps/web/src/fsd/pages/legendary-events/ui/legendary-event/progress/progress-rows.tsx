@@ -18,6 +18,7 @@ import type { LaneMarks } from "./progress-marks"
 import { splitClearedBattles } from "./progress-order"
 import { ProgressCell, ProgressColumnIcon } from "./progress-parts"
 import { ListDivider } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 // One grid for the header and every row (rows are subgrids), so the auto-sized points column is
 // as wide as its widest entry and the six cell columns line up from row to row.
@@ -40,7 +41,7 @@ export function ProgressRows({
   marks?: LaneMarks
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const { open, cleared } = splitClearedBattles(progress.battles)
   const renderRow = (battle: BattleProgressView) => (
     <li

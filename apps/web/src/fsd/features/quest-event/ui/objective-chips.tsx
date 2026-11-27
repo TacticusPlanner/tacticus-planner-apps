@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { ObjectiveIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import {
   isRestrictingObjective,
@@ -30,7 +31,7 @@ export function ObjectiveChips({
 }) {
   const { t, i18n } = useTranslation("quest")
   const word = useObjectiveWording()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   if (objectives.length === 0) return null
   return (
     <ul

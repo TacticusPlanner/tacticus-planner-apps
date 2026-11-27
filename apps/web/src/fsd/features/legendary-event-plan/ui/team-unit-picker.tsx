@@ -46,6 +46,7 @@ import { TeamPickerSort } from "./team-picker-sort"
 import { TeamPickerTileMarkers } from "./team-picker-tile-markers"
 import { TeamPickerUnitState } from "./team-picker-unit-state"
 import { ListDivider, ObjectiveIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 /**
  * The editor's unit picker (design D7): the lane's allowed units as tiles (portrait, name, an owned
@@ -122,7 +123,7 @@ export function TeamUnitPicker({
       new Map((shownRoster ?? []).map((unit) => [unit.unitId as string, unit])),
     [shownRoster]
   )
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const nameOf = (unit: { id: string }) => unitName("Character", unit.id)
   const powerConfig =
     estimates !== "pending" && estimates?.config?.unitPower

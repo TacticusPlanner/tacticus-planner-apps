@@ -21,7 +21,11 @@ import type {
   UpgradeImpactRow,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { storedPreference, usePersistedSelection } from "@/shared/lib"
+import {
+  storedPreference,
+  usePersistedSelection,
+  numberFormat,
+} from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
 import {
@@ -67,7 +71,7 @@ export function UpgradeImpactSection({
   goalTargets: ReadonlyMap<string, LegendaryEventGoalTarget> | undefined
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const labels = useGoalLabels()
   const launch = useCreateGoalLauncher()
   const { captureEvent } = useAnalyticsActions()

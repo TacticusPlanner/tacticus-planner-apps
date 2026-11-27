@@ -6,6 +6,7 @@ import type {
   LegendaryEventLaneId,
 } from "@/entities/legendary-event"
 import { HowToRead } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { LanePotentialViewModel } from "./lane-potential.view-model"
 import { RosterPotentialMap } from "./roster-potential-map"
@@ -28,7 +29,7 @@ export function LaneOverviewFigures({
   onViewBattles?: () => void
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <div
       className="flex min-w-0 flex-col gap-2"

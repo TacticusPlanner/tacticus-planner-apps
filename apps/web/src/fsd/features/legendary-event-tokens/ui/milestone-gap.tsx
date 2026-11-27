@@ -12,6 +12,7 @@ import { legendaryEventResourceIcon } from "@workspace/game-catalog"
 
 import { AnnotationMarkIcon } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type {
   MilestoneGap,
@@ -85,7 +86,7 @@ function IconText({
  */
 export function MilestoneGapSection({ gap }: { gap: MilestoneGap }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const where = useWhere()
   if (gap.pushes.length === 0) return null
   const retries = new Set(
@@ -183,7 +184,7 @@ function PushRow({
   showRetry: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const where = useWhere()
   const small = "size-icon-sm shrink-0"
   return (

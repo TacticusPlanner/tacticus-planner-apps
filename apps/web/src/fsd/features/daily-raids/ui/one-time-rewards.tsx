@@ -9,6 +9,7 @@ import {
 import { shopRewardDisplay } from "@/entities/shops/reward"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { OneTimeReward } from "../model/battle-progress"
 
@@ -42,7 +43,7 @@ export function OneTimeRewards({
     mowsById: mows.status === "ready" ? mows.data : NO_UNITS,
     equipmentById: NO_UNITS,
   }
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <ul
       className={cn("flex flex-wrap gap-x-2 gap-y-1", className)}

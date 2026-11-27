@@ -12,6 +12,7 @@ import { shopRewardDisplay } from "@/entities/shops/reward"
 import type { ShopRewardKind } from "@/entities/shops/reward"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { sumRewards } from "../../model/incursions.model"
 
@@ -98,7 +99,7 @@ export function IncursionRewards({
     mowsById: mows.status === "ready" ? mows.data : NO_UNITS,
     equipmentById: NO_UNITS,
   }
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <ul
       className={cn("flex flex-wrap gap-x-2.5 gap-y-1", className)}

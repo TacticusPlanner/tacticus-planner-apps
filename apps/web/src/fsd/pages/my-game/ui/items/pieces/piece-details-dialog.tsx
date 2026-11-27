@@ -31,6 +31,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { OwnedPiece } from "../../../model/items/owned-items"
 import { CostRow } from "../item-cost"
@@ -246,7 +247,7 @@ function StatsTable({ piece }: { piece: OwnedPiece<Item> }) {
   ]
   const stats = Object.keys(itemStatsAt(item, max))
   if (stats.length === 0) return null
-  const format = new Intl.NumberFormat(i18n.language)
+  const format = numberFormat(i18n.language)
   const value = (stat: string, level: number) => {
     const amount = itemStatsAt(item, level)[stat] ?? 0
     return `${format.format(amount)}${isPercentStat(stat) ? "%" : ""}`

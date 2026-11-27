@@ -21,6 +21,7 @@ import {
   AnnotationMenu,
   BattleAnnotationMenu,
 } from "@/features/legendary-event-plan"
+import { numberFormat } from "@/shared/lib"
 
 import type { ProgressColumn } from "./progress-columns"
 import { progressHeadingId } from "./progress-heading"
@@ -189,7 +190,7 @@ export function LaneProgressHeader({
   progress: LaneProgressView
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const earned = number.format(progress.pointsEarned)
   const max = number.format(progress.maxPoints)
   const percent =

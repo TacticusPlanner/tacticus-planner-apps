@@ -32,7 +32,7 @@ import { RulesTextNote } from "../unit/rules-text-note"
 import { ladderRanks } from "./character-unit.view-model"
 import type { StatsFigure } from "./character-unit.view-model"
 import { EquipmentSlots } from "./equipment-slots"
-import { hasNode } from "@/shared/lib"
+import { hasNode, numberFormat } from "@/shared/lib"
 
 /** The cards every Details section sits in on desktop. */
 export function DetailsCard({
@@ -157,7 +157,7 @@ export function AtAGlance({
   compact: boolean
 }) {
   const { t, i18n } = useTranslation("library")
-  const format = new Intl.NumberFormat(i18n.language)
+  const format = numberFormat(i18n.language)
   // No percentile lines: the radar's percentiles are at its fixed reference, not at these values.
   const shown = stats.status === "ready" ? stats.stats : undefined
   const boxes: {
@@ -317,7 +317,7 @@ export function StatsByRank({
     .map((rank, index) => ({ rank, index }))
     .filter(({ rank }) => rank.endsWith("1"))
     .map(({ index }) => index)
-  const format = new Intl.NumberFormat(locale)
+  const format = numberFormat(locale)
 
   if (stats.status === "loading") {
     return <Skeleton className="h-32 w-full rounded-lg" />

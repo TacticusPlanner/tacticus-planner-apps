@@ -27,6 +27,7 @@ import type { EntityIconSize } from "@/shared/ui"
 
 import type { ResourceNeed } from "@/entities/goal-farming"
 import type { GoalProgress, GoalTargetPreview } from "@/features/goal-planning"
+import { numberFormat } from "@/shared/lib"
 import { reachableCeilingLabel } from "./ceiling-marker"
 import type { GoalAbilityIds } from "./goal-ability-ids"
 import {
@@ -41,7 +42,7 @@ import { UpgradeTargetMaterials } from "./upgrade-target-materials"
  *  popover's per-line remaining-count clauses) — mirrors `goal-remaining-text.ts`'s own formatting so
  *  the same figure never reads "1,674" in one place and "1674" in another. */
 function formatNumber(language: string | undefined, value: number): string {
-  return new Intl.NumberFormat(language).format(value)
+  return numberFormat(language).format(value)
 }
 
 /** Rounds a 0–1 ratio to a whole percent for display without ever showing "100%" unless the ratio has

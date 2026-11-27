@@ -24,6 +24,7 @@ import type {
   RaidBoss,
   RaidBossStatStep,
 } from "@/entities/raid-boss"
+import { useNumberFormat } from "@/shared/lib"
 
 export type RaidBossAdjustedProps = {
   view: AdjustedStatsView
@@ -108,6 +109,7 @@ export function RaidBossAdjustedStats({
   compact?: boolean
 }) {
   const { t } = useTranslation("library")
+  const numbers = useNumberFormat()
   const [showAdjusted, setShowAdjusted] = useState(!compact)
 
   const rows = allRows(unit, step, {
@@ -124,7 +126,7 @@ export function RaidBossAdjustedStats({
     view.activeModifiers.length === 0 && removed.length === 0
 
   const fmt = (value: number, percent?: boolean) =>
-    percent ? `${value}%` : value.toLocaleString()
+    percent ? `${value}%` : numbers.format(value)
 
   return (
     <div data-testid="raid-boss-adjusted-stats" className="flex flex-col gap-3">

@@ -20,6 +20,7 @@ import {
   ProgressColumnIcon,
 } from "./progress-parts"
 import { ListDivider } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 /** Desktop: one lane's battles (rows, open battles first, then the fully cleared ones struck
  *  through below a divider) by defeat-all and the five objectives, each
@@ -36,7 +37,7 @@ export function ProgressGrid({
   marks?: LaneMarks
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const { open, cleared } = splitClearedBattles(progress.battles)
   const renderRow = (battle: BattleProgressView) => (
     <tr

@@ -22,6 +22,7 @@ import type {
   LegendaryEventLaneId,
   LegendaryEventObjective,
 } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 import type { LanePotentialsViewModel } from "../lane-potential.view-model"
 import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
@@ -101,7 +102,7 @@ function LaneSummaryRow({
   onJumpToLane: (lane: LegendaryEventLaneId) => void
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const figuresId = useId()
   const lane = t(`lanes.${laneId}`)
   const percent =
@@ -195,7 +196,7 @@ function LaneObjectivesLine({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const ordered = objectives.toSorted((a, b) => a.index - b.index)
   const counts = objectiveClearedCounts(progress, ordered.length)
   const total = progress.battles.length

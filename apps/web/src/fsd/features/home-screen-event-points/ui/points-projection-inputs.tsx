@@ -8,6 +8,7 @@ import type {
   HseTokenMode,
 } from "@/entities/home-screen-event"
 import { isHseManualTokenMode } from "@/entities/home-screen-event"
+import { numberFormat } from "@/shared/lib"
 import { useModeName } from "./use-mode-name"
 
 /** An input's text as an average: empty clears it (null), anything else a non-negative number. */
@@ -78,7 +79,7 @@ export function TokensCell({
   const { t, i18n } = useTranslation("dailies")
   const modeName = useModeName()
   if (!isHseManualTokenMode(mode.mode))
-    return <>{new Intl.NumberFormat(i18n.language).format(mode.tokens)}</>
+    return <>{numberFormat(i18n.language).format(mode.tokens)}</>
   const manual = mode.mode
   // Inline, so the table's right-aligned tokens column lines it up with the synced counts.
   return (

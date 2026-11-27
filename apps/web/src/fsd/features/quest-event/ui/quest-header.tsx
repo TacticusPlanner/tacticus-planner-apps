@@ -10,6 +10,7 @@ import {
   formatDateRangeParts,
   formatEventCountdown,
   useDateLocale,
+  numberFormat,
 } from "@/shared/lib"
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
@@ -102,7 +103,7 @@ export function QuestHeader({
     ? t(`characters:${heroId}`, { defaultValue: heroName })
     : heroId
   const icon = heroName ? characterIcon(heroId as UnitId) : undefined
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const nowMs = state.status === "ready" ? state.nowMs : 0
 
   return (

@@ -6,6 +6,7 @@ import type {
 } from "../model/quest-estimates"
 import { useObjectiveWording } from "./use-objective-wording"
 import type { Objective } from "./use-objective-wording"
+import { numberFormat } from "@/shared/lib"
 
 /**
  * One battle's clear estimates (spec: quest-event-clear-estimates): the objective team against the
@@ -23,8 +24,8 @@ export function QuestEstimateBlock({
 }) {
   const { t, i18n } = useTranslation("quest")
   const word = useObjectiveWording()
-  const number = new Intl.NumberFormat(i18n.language)
-  const percent = new Intl.NumberFormat(i18n.language, {
+  const number = numberFormat(i18n.language)
+  const percent = numberFormat(i18n.language, {
     style: "percent",
     maximumFractionDigits: 0,
   })

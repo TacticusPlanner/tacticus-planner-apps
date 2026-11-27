@@ -7,6 +7,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { EntityIcon } from "@/shared/ui"
 
 import type { NpcStatRow } from "@/entities/npc"
+import { numberFormat, useNumberFormat } from "@/shared/lib"
 
 import type { PowerFigure } from "../unit/unit-power.model"
 
@@ -24,12 +25,13 @@ function StatCard({
   label: string
   value: number
 }) {
+  const numbers = useNumberFormat()
   return (
     <div className={cardClass} data-testid={`npc-stat-${kind}`}>
       <span className={labelClass}>{label}</span>
       <span className="flex items-center gap-2">
         <EntityIcon size="icon" src={statIcon(kind)} alt="" />
-        <span className={valueClass}>{value.toLocaleString()}</span>
+        <span className={valueClass}>{numbers.format(value)}</span>
       </span>
     </div>
   )
@@ -44,7 +46,7 @@ function PowerCard({
   className?: string
 }) {
   const { t, i18n } = useTranslation("library")
-  const format = new Intl.NumberFormat(i18n.language)
+  const format = numberFormat(i18n.language)
   return (
     <div
       className={cn(cardClass, className)}

@@ -18,6 +18,7 @@ import { CampaignInsightList } from "@/entities/campaign-insight"
 import type { CampaignInsight } from "@/entities/campaign-insight"
 
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { GoalLink } from "./insights-goal-link"
 import { useGoalLabel } from "./insights-view"
@@ -54,10 +55,10 @@ export function InsightsEvents({
 }) {
   const { t, i18n } = useTranslation()
   const { upgradesById } = useGoalCatalog()
-  const number = new Intl.NumberFormat(i18n.resolvedLanguage, {
+  const number = numberFormat(i18n.resolvedLanguage, {
     maximumFractionDigits: 0,
   })
-  const percent = new Intl.NumberFormat(i18n.resolvedLanguage, {
+  const percent = numberFormat(i18n.resolvedLanguage, {
     style: "percent",
     maximumFractionDigits: 0,
   })

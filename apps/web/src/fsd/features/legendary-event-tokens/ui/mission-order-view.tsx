@@ -8,6 +8,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { useMissionLabel } from "@/entities/legendary-event"
 import type { LegendaryEventMissionRef } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 import type { RunMissionSummary, TokenMissionStep } from "../lib/mission-order"
 
@@ -110,7 +111,7 @@ function TrackMissions({
   completed: readonly LegendaryEventMissionRef[]
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const missionLabel = useMissionLabel()
   const total = missions.length + untracked.length + completed.length
   const headingId = `token-plan-missions-${track}`
@@ -196,7 +197,7 @@ export function TokenMissionSteps({
   steps: readonly TokenMissionStep[]
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const label = useRefLabel()
   if (steps.length === 0) return null
   const progressing = steps.filter((step) => !step.completes)

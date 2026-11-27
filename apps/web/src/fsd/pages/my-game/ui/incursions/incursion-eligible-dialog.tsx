@@ -23,6 +23,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import {
   hasSustain,
@@ -60,7 +61,7 @@ export function IncursionEligibleDialog({
   const [picked, setPicked] = useState<string[]>(() =>
     suggested.map((member) => member.id)
   )
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const team = eligible.filter((unit) => picked.includes(unit.id))
   const mowName = t(`mows:${incursion.mowId}`, {
     defaultValue: incursion.mowId,

@@ -6,6 +6,7 @@ import type { UpgradeId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { QuestGoalDrops as QuestGoalDropsModel } from "../../model/quest-goal-drops"
 
@@ -27,8 +28,8 @@ export function QuestGoalDrops({
   onSelect: (battle: number) => void
 }) {
   const { t, i18n } = useTranslation(["quest", "upgrades"])
-  const number = new Intl.NumberFormat(i18n.language)
-  const percent = new Intl.NumberFormat(i18n.language, {
+  const number = numberFormat(i18n.language)
+  const percent = numberFormat(i18n.language, {
     style: "percent",
     maximumFractionDigits: 0,
   })

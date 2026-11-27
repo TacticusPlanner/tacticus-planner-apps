@@ -7,6 +7,7 @@ import type {
   RosterDiffMetric,
   RosterDiffSummary,
 } from "@/entities/roster-snapshot"
+import { numberFormat } from "@/shared/lib"
 
 import { formatSigned } from "../../../model/compare-labels"
 
@@ -36,7 +37,7 @@ export function CompareSummary({
   const value = (metric: RosterDiffMetric) =>
     metric === "power"
       ? formatSigned(summary.power, i18n.language)
-      : new Intl.NumberFormat(i18n.language).format(summary[metric])
+      : numberFormat(i18n.language).format(summary[metric])
 
   const chips = rosterDiffMetrics.map((metric) => {
     // A Power selection lists only gains, so a loss leaves nothing to show.

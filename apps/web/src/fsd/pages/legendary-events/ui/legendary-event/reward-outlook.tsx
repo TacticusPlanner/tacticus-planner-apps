@@ -5,6 +5,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { RewardProjection } from "@/entities/legendary-event"
 import { HowToRead, IconLine } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { RewardOutlookViewModel } from "./legendary-event-page.view-model"
 
@@ -61,8 +62,8 @@ function OutlookBody({
   compact: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
-  const decimal = new Intl.NumberFormat(i18n.language, {
+  const number = numberFormat(i18n.language)
+  const decimal = numberFormat(i18n.language, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   })
@@ -172,7 +173,7 @@ function OutlookBody({
 
 function ExplanationLines({ projection }: { projection: RewardProjection }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const { base } = projection
   const lines: string[] = [
     projection.synced

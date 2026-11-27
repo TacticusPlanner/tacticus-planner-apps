@@ -6,6 +6,7 @@ import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { battlesByTier } from "../model/quest-battles"
 import type { QuestBattle } from "../model/quest-battles"
@@ -42,7 +43,7 @@ export function BattleList({
   verdicts?: ReadonlyMap<number, QuestVerdict>
 }) {
   const { t, i18n } = useTranslation(["quest", "progression", "upgrades"])
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const scoreOf = (battle: number) =>
     score?.battles.find((entry) => entry.number === battle)
   return (

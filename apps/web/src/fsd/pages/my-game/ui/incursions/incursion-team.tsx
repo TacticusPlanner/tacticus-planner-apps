@@ -16,6 +16,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import { EntityIcon, HowToRead, TruncatedText } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { IncursionPlans } from "../../model/use-incursion-plans"
 import type { Incursion } from "../../model/incursions.model"
@@ -89,7 +90,7 @@ export function IncursionTeam({
     )
   }
 
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <section className="space-y-2" data-testid={testId}>
       <div className="flex flex-wrap items-center gap-2">

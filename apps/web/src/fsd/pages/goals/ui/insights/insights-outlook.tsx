@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 
-import { formatEstimateDate, useDateLocale } from "@/shared/lib"
+import { formatEstimateDate, useDateLocale, numberFormat } from "@/shared/lib"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
 
 import type {
@@ -42,7 +42,7 @@ export function InsightsOutlook({
   const dateLocale = useDateLocale()
   const locale = dateLocale
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
   const goalLabel = useGoalLabel(goalInfoById)
   const date = formatEstimateDate(completionDate, locale)
   const critical = criticalGoals(goalOutlook)

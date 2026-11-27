@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 
 import type { HseText, HseTextValue } from "@/entities/home-screen-event"
+import { numberFormat } from "@/shared/lib"
 
 /** Every namespace a description line can reach into. */
 const NAMESPACES = [
@@ -26,7 +27,7 @@ export function renderHseText(
   root: HseText,
   leaf: (text: HseText, label: string) => string = keepLabel
 ): string {
-  const numbers = new Intl.NumberFormat(language)
+  const numbers = numberFormat(language)
   const lists = {
     and: new Intl.ListFormat(language, { type: "conjunction" }),
     or: new Intl.ListFormat(language, { type: "disjunction" }),
