@@ -491,16 +491,20 @@ Every pressable element is one of four shared components; a raw `<button>`
 brings its own hover, focus and press styles, and lint rejects it in
 `apps/web`.
 
-| It looks like                                         | Use                                                    |
-| ----------------------------------------------------- | ------------------------------------------------------ |
-| A button: a label, maybe an icon                      | `Button` (never `size="sm"` in a toolbar: rule 5)      |
-| A text link that runs an action ("Show all", "Retry") | `Button variant="link"`                                |
-| Only an icon                                          | `IconButton` (its `label` is the name and the tooltip) |
-| A card, tile, list row, chip or portrait              | `Pressable` (`@workspace/ui/components/pressable`)     |
+| It looks like                                         | Use                                                      |
+| ----------------------------------------------------- | -------------------------------------------------------- |
+| A button: a label, maybe an icon                      | `Button` (never `size="sm"` in a toolbar: rule 5)        |
+| A text link that runs an action ("Show all", "Retry") | `Button variant="link"`                                  |
+| Only an icon                                          | `IconButton` (its `label` is the name and the tooltip)   |
+| A card, tile, list row, chip or portrait              | `Pressable` (`@workspace/ui/components/pressable`)       |
+| A card, tile or row that opens another route          | A link stretched over the card (`after:inset-0`, rule 9) |
 
 - `Pressable` is a `type="button"` with no look of its own: layout, padding
   and radius come from `className`. `variant="surface"` (the default) adds the
   rule 9 hover; `variant="art"` is for a target that is all art.
+- A card that navigates is a link, not a button, so it keeps open in a new
+  tab and the link's role. Put the stretched link inside the card and the
+  `interactive-surface` hover on the card (rule 9).
 
 ## Review checklist
 

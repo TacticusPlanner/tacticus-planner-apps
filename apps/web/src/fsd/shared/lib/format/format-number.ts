@@ -9,7 +9,8 @@ export function numberFormat(
   locale: string | undefined,
   options?: Intl.NumberFormatOptions
 ): Intl.NumberFormat {
-  const key = `${locale ?? ""}|${options ? JSON.stringify(options) : ""}`
+  // JSON keeps an undefined locale apart from "", which the runtime rejects.
+  const key = JSON.stringify([locale, options])
   let format = formats.get(key)
   if (!format) {
     format = new Intl.NumberFormat(locale, options)

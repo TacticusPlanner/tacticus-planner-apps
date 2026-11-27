@@ -25,4 +25,18 @@ describe("numberFormat", () => {
       numberFormat("en", { style: "percent" })
     )
   })
+
+  it("keeps the runtime default apart from an empty locale", () => {
+    expect(numberFormat(undefined)).toBe(numberFormat(undefined))
+    expect(() => numberFormat("")).toThrow(RangeError)
+  })
+
+  it("rejects an invalid locale or option, then still serves valid ones", () => {
+    expect(() => numberFormat("en-")).toThrow(RangeError)
+    expect(numberFormat("en").format(1000)).toBe("1,000")
+
+    const style = "nope" as Intl.NumberFormatOptions["style"]
+    expect(() => numberFormat("en", { style })).toThrow(RangeError)
+    expect(numberFormat("en", { style: "percent" }).format(0.5)).toBe("50%")
+  })
 })

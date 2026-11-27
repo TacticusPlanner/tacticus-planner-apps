@@ -24,7 +24,8 @@ const pressableVariants = cva(
  * A `<button>` that is not shaped like a button: a card, tile, row, chip or portrait the user
  * presses (ui-style-guide rule 14). Layout, padding and radius come from `className`; the hover,
  * press and focus styles come from the variant. Text actions use `Button variant="link"` and
- * icon-only actions use `IconButton` instead.
+ * icon-only actions use `IconButton` instead, and a card that opens another route is a stretched
+ * link, not a `Pressable`.
  */
 function Pressable({
   className,

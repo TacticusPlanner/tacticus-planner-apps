@@ -29,4 +29,27 @@ describe("Pressable", () => {
     expect(button).not.toHaveClass("interactive-surface")
     expect(button).toHaveClass("hover:brightness-110")
   })
+
+  it("does not fire when disabled", () => {
+    const onClick = vi.fn()
+    render(
+      <Pressable disabled onClick={onClick}>
+        Open goal
+      </Pressable>
+    )
+
+    const button = screen.getByRole("button", { name: "Open goal" })
+    expect(button).toBeDisabled()
+    fireEvent.click(button)
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it("lets an explicit type override the default", () => {
+    render(<Pressable type="submit">Save</Pressable>)
+
+    expect(screen.getByRole("button", { name: "Save" })).toHaveAttribute(
+      "type",
+      "submit"
+    )
+  })
 })
