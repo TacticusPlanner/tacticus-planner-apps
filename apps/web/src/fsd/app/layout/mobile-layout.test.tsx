@@ -455,7 +455,7 @@ describe("MobileBottomNav actions", () => {
     expect(syncNow).toHaveBeenCalledTimes(1)
   })
 
-  it("spins the icon and disables the sync button while a sync is in progress", () => {
+  it("shows a spinner and disables the sync button while a sync is in progress", () => {
     usePlayerDataSyncStatusMock.mockReturnValue({
       status: "syncing",
       isSyncing: true,
@@ -468,9 +468,9 @@ describe("MobileBottomNav actions", () => {
 
     const syncButton = screen.getByTestId("mobile-sync-button")
     expect(syncButton).toBeDisabled()
-    expect(syncButton.querySelector("svg")).toHaveClass(
-      "motion-safe:animate-spin"
-    )
+    expect(
+      syncButton.querySelector('[data-slot="spinner"]')
+    ).toBeInTheDocument()
   })
 
   it("disables the sync button and shows the minutes left while rate limited", () => {

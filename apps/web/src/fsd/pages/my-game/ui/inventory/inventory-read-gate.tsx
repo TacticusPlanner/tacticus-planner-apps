@@ -3,6 +3,7 @@ import { RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import type { ReadState } from "@/shared/lib"
@@ -43,10 +44,7 @@ function NoInventory() {
           onClick={() => syncNow()}
           variant="outline"
         >
-          <RefreshCw
-            aria-hidden
-            className={isSyncing ? "motion-safe:animate-spin" : undefined}
-          />
+          {isSyncing ? <Spinner aria-hidden /> : <RefreshCw aria-hidden />}
           {t("page.empty.action")}
         </Button>
       }

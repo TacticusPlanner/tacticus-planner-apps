@@ -12,6 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import { useGameCatalogStatus } from "@/shared/game-catalog-status"
 import { HintTrigger } from "@/shared/ui"
@@ -55,12 +56,11 @@ export function CatalogSyncStatusBadge({
             data-testid="catalog-sync-status-compact"
             role="status"
           >
-            <Icon
-              aria-hidden="true"
-              className={
-                status === "syncing" ? "size-icon animate-spin" : "size-icon"
-              }
-            />
+            {status === "syncing" ? (
+              <Spinner aria-hidden="true" />
+            ) : (
+              <Icon aria-hidden="true" className="size-icon" />
+            )}
             {progressLabel ? (
               <span className="text-xs tabular-nums">{progressLabel}</span>
             ) : null}

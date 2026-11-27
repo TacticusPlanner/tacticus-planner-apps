@@ -2,7 +2,6 @@ import { useState } from "react"
 import type { ReactNode } from "react"
 import {
   Download,
-  LoaderCircle,
   LogOut,
   MapIcon,
   MessageSquareText,
@@ -14,6 +13,7 @@ import { useTranslation } from "react-i18next"
 import { Separator } from "@workspace/ui/components/separator"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import type { SignInMethod } from "@/shared/auth"
 import { TruncatedText } from "@/shared/ui"
@@ -117,10 +117,7 @@ export function AccountCard({
           >
             <Skeleton className="h-4 w-28 rounded-md" />
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <LoaderCircle
-                className="size-icon-sm animate-spin"
-                aria-hidden="true"
-              />
+              <Spinner aria-hidden="true" className="size-icon-sm" />
               {t("auth.accountLoading")}
             </div>
           </div>

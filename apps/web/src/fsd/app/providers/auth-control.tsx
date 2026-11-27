@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react"
 import type { ReactNode } from "react"
 import { useNavigate } from "react-router"
-import { LoaderCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -20,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { Spinner } from "@workspace/ui/components/spinner"
 import { toast } from "sonner"
 
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
@@ -321,10 +321,7 @@ export function AuthControl() {
                   data-testid="auth-account-loading"
                   role="status"
                 >
-                  <LoaderCircle
-                    className="size-icon-sm animate-spin"
-                    aria-hidden="true"
-                  />
+                  <Spinner aria-hidden="true" className="size-icon-sm" />
                   {t("auth.accountLoading")}
                 </div>
               ) : (

@@ -20,6 +20,7 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import { unitLibraryPath, unitOriginState, UnitTile } from "@/entities/unit"
 import type { UnitKind, UnitTileUnit } from "@/entities/unit"
@@ -651,10 +652,11 @@ function SyncButton() {
         disabled={syncDisabled}
         data-testid="collection-sync"
       >
-        <RefreshCw
-          aria-hidden="true"
-          className={isSyncing ? "motion-safe:animate-spin" : undefined}
-        />
+        {isSyncing ? (
+          <Spinner aria-hidden="true" />
+        ) : (
+          <RefreshCw aria-hidden="true" />
+        )}
         {t("nav.syncWithTacticus")}
       </Button>
       <span className="text-xs text-muted-foreground" role="status">
