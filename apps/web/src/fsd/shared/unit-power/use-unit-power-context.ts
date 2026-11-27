@@ -11,14 +11,10 @@ import { hasGameCatalogSynced } from "@workspace/game-catalog/queries"
 
 import { combineReadStates, useReadState } from "../lib"
 import type { ReadState } from "../lib"
-import { useCatalogDataset } from "../local-data"
+import { useCatalogDataset, firstRecord } from "../local-data"
 
 import { buildUnitPowerContext } from "./unit-power-context"
 import type { UnitPowerContext } from "./unit-power-context"
-
-function firstRecord<T>(records: T[]): T | null {
-  return records[0] ?? null
-}
 
 /** The power context, rebuilt when one of its datasets changes; `data` is null when the
  *  `unit-power` dataset is absent (not served by a catalog that has synced). Before the catalog's

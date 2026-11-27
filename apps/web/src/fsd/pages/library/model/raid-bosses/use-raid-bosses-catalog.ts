@@ -11,7 +11,7 @@ import type {
   RaidBossesPayload,
   RaidBossListItem,
 } from "@/entities/raid-boss"
-import { toById, useCatalogDataset } from "@/shared/local-data"
+import { toById, useCatalogDataset, firstRecord } from "@/shared/local-data"
 
 type RaidBossesCatalogStatus = "loading" | "absent" | "failed" | "ready"
 
@@ -30,9 +30,6 @@ export type RaidBossesCatalog = {
 }
 
 // raid-bosses is stored as a single row; `null` means the dataset has never synced into this client.
-function firstRecord<T>(records: T[]): T | null {
-  return records[0] ?? null
-}
 
 const EMPTY: Omit<RaidBossesCatalog, "status" | "retry"> = {
   payload: undefined,

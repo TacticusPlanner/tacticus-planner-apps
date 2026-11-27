@@ -2,9 +2,7 @@ import { apiIssue } from "@/shared/api"
 
 import { GUILD_WAR_ATTACK_RULES, guildWarIssues } from "./types"
 import type { GuildWar, GuildWarAttack, GuildWarAttackRule } from "./types"
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null
+import { isRecord } from "@/shared/lib"
 
 /** Whether a 409's `current` is a whole war, so the cache can take it as one. */
 function isGuildWar(value: unknown): value is GuildWar {

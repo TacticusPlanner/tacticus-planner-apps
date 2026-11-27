@@ -1,9 +1,9 @@
+import { isPlayableAlliance, progressionRarity } from "@workspace/game-domain"
 import { hseRestrictionPasses } from "@workspace/game-catalog"
 import type {
   GameCatalogHseTracker,
   GameCatalogHseUnitFilter,
 } from "@workspace/game-catalog"
-import { progressionRarity } from "@workspace/game-domain"
 import type { UnitId } from "@workspace/game-domain"
 
 import {
@@ -51,7 +51,6 @@ const LINE_UP_KINDS = new Set([
   "FullLineUpOfFaction",
 ])
 
-const ALLIANCES = new Set(["Imperial", "Chaos", "Xenos"])
 const MACHINE_OF_WAR = "MachineOfWar"
 /** Enemy tags that only leave Summons out; alone they make no hint. */
 const SUMMON_TAGS = new Set(["Summon", "Steppable"])
@@ -155,7 +154,7 @@ function modeTrackers(
 }
 
 function tagLabel(tag: string): HseEnemyLabel {
-  return { via: ALLIANCES.has(tag) ? "alliance" : "trait", id: tag }
+  return { via: isPlayableAlliance(tag) ? "alliance" : "trait", id: tag }
 }
 
 /** The enemy-side rule of a tracker, or null when it counts every enemy but Summons. */

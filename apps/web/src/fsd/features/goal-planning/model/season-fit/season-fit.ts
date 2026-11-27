@@ -2,8 +2,7 @@ import type { EstimateOutcome } from "@/entities/goal-farming"
 
 import type { GoalRow } from "../shared/types"
 import type { SeasonFitSeason, SeasonWindows } from "./season-windows"
-
-const DAY_MS = 86_400_000
+import { DAY_MS } from "@/shared/lib"
 
 /** The Season fit select's value: off, or the season type goals are measured against. */
 export type SeasonFitMode = "off" | SeasonFitSeason

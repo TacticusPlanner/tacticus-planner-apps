@@ -1,6 +1,4 @@
-import { readNow, useNow } from "@/shared/lib"
-
-const MINUTE_MS = 60_000
+import { readNow, useNow, MINUTE_MS } from "@/shared/lib"
 
 /** The minute clock's current instant (see `readNow`): stopped, it catches up with the time. */
 export function readMinuteNow(): number {

@@ -1,9 +1,7 @@
 import { HRE_DAILY_PAYOUTS, HRE_OH_SO_CLOSE_SHARDS } from "./hre-reward-tables"
 import type { HreRarityStepId } from "./hre-reward-tables"
 import type { HreBracket, HreRewardRules, HreStep } from "./hre-rules"
-import { required } from "@/shared/lib"
-
-const DAY_MS = 86_400_000
+import { required, DAY_MS } from "@/shared/lib"
 
 /** The bracket of a leaderboard position; no rank uses the lowest bracket. */
 export function bracketForRank(

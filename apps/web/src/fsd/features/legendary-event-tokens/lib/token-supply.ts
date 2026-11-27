@@ -10,11 +10,11 @@ import type {
   LegendaryEventRunInputs,
   LegendaryEventRunResolution,
 } from "@/entities/legendary-event"
+import { DAY_MS } from "@/shared/lib"
 
 // Ported from V1 `LeTokenService` and `LeRoundOutcomeForecastService` token counts (design D6),
 // with V2's lifecycle for the run window and the synced bucket's observation instant for timing.
 
-const DAY_MS = 24 * 60 * 60 * 1000
 /** One ad token a day. */
 const FULL_RUN_AD_TOKENS = 7
 /** Buying the premium track (bonus delivery) for a run grants 6 tokens in that run. */

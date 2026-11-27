@@ -2,6 +2,7 @@ import { HRE_REORDERED_MISSIONS, hreAllDone, hreMission } from "./hre-missions"
 import type { HreMission } from "./hre-missions"
 import type { HreOwnedInput } from "./hre-pace"
 import { HRE_RARITY_STEP_IDS } from "./hre-reward-tables"
+import { isRecord } from "@/shared/lib"
 
 /** The player's own record of one HRE instance, kept in this browser only. */
 export type HreProgress = {
@@ -44,9 +45,6 @@ export const DEFAULT_HRE_PROGRESS: HreProgress = {
   byMission: {},
   owned: EMPTY_HRE_OWNED,
 }
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value)
 
 const wholeAtLeast = (value: unknown, min: number): number | null =>
   typeof value === "number" && Number.isFinite(value) && value >= min

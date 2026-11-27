@@ -1,6 +1,7 @@
 import type { QuestTokens } from "./quest-token-plan"
 import { MAX_MEDALS } from "./quest-score"
 import type { QuestBattleEntry } from "./quest-score"
+import { isRecord } from "@/shared/lib"
 
 /** The player's own record of one quest occurrence, kept in this browser only (design D4). */
 export type QuestProgress = {
@@ -13,9 +14,6 @@ export type QuestProgress = {
 }
 
 export const EMPTY_QUEST_PROGRESS: QuestProgress = { battles: {} }
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value)
 
 const clampWhole = (value: unknown, max: number): number | null =>
   typeof value === "number" && Number.isFinite(value)

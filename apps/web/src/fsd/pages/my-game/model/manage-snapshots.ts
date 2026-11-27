@@ -2,6 +2,7 @@ import type {
   PersonalRosterSnapshot,
   PersonalRosterSnapshotList,
 } from "@/entities/roster-snapshot"
+import { DAY_MS } from "@/shared/lib"
 
 /** The manage sheet's sections (design D3): manual snapshots with V1 imports, then automatic ones,
  *  each newest first as the list serves them. */
@@ -24,7 +25,6 @@ export function canKeep(list: PersonalRosterSnapshotList | undefined): boolean {
 /** The automatic-snapshot window (the API's `AutoWindowDays`): a sync takes one only when no
  *  roster snapshot of any kind, Legendary Event rosters included, is newer than this. */
 const AUTO_SNAPSHOT_WINDOW_DAYS = 30
-const DAY_MS = 86_400_000
 
 /** When the next automatic snapshot can be taken: with the next sync, or after a date. */
 export type NextAutoSnapshot =

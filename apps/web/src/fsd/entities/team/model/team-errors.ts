@@ -3,6 +3,7 @@ import { apiIssue } from "@/shared/api"
 import { isTeamMode, TEAM_RULE_CODES, withKnownIssues } from "./team-modes"
 import { teamIssues } from "./types"
 import type { Team, TeamList, TeamRuleCode } from "./types"
+import { isRecord } from "@/shared/lib"
 
 /** The rule codes of a refused save (400 `teamRulesBroken`, codes under `rules`), else null. */
 export function teamRulesBroken(error: unknown): TeamRuleCode[] | null {
@@ -22,9 +23,6 @@ export function isTeamNameTaken(error: unknown) {
 export function isTeamLimitReached(error: unknown) {
   return apiIssue(error, teamIssues.limitReached) !== null
 }
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null
 
 const isStringList = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((item) => typeof item === "string")

@@ -3,7 +3,13 @@ import type { Alliance } from "@workspace/game-domain"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, useNow, useReadState } from "@/shared/lib"
+import {
+  combineReadStates,
+  useNow,
+  useReadState,
+  DAY_MS,
+  MINUTE_MS,
+} from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import {
@@ -14,11 +20,9 @@ import {
 } from "@/entities/hre-mission"
 import type { HreInstance, HreRules } from "@/entities/hre-mission"
 
-const DAY_MS = 86_400_000
 /** How far back the calendar is read: past events stay reachable from the HRE switcher. */
 const LOOKBACK_DAYS = 400
 const LOOKAHEAD_DAYS = 400
-const TICK_MS = 60_000
 
 /** The featured hero, when `featuredCharacterId` resolves to a catalog character. */
 export type HreFeaturedHero = {
@@ -84,7 +88,7 @@ export function useHreInstance(
 ): HreInstanceState {
   // A coarse tick re-selects from the cached calendar across an event boundary without a
   // reload; it pauses while the tab is hidden and catches up when shown.
-  const nowMs = useNow(TICK_MS)
+  const nowMs = useNow(MINUTE_MS)
   const synced = useReadState(
     "events-calendar-synced",
     hasEventsCalendarSynced,

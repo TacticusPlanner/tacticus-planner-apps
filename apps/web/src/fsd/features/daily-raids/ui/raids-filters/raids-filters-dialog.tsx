@@ -9,7 +9,11 @@ import {
   rarityIcon,
   traitIcon,
 } from "@workspace/game-catalog"
-import { campaignIdSchema, factionOrder } from "@workspace/game-domain"
+import {
+  campaignIdSchema,
+  factionOrder,
+  playableAlliances,
+} from "@workspace/game-domain"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
@@ -45,8 +49,6 @@ import {
 } from "../../model/raids-filters/prune-factions"
 import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import { LabeledField, Section } from "./raids-filters-fields"
-
-const ALLIANCES = ["Imperial", "Chaos", "Xenos"] as const
 
 // Each campaign type by its game icon: storyline tiers by Indomitus' (where Normal and Early
 // nodes live), an event's Standard tier by the campaign event mode, Extremis by the first event's.
@@ -98,7 +100,7 @@ export function RaidsFiltersDialog({
 
   const allianceOptions = useMemo<SelectOption<string>[]>(
     () =>
-      ALLIANCES.map((alliance) => ({
+      playableAlliances.map((alliance) => ({
         value: alliance,
         label: t(`common:alliances.${alliance}`),
         icon: (

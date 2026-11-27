@@ -34,6 +34,7 @@ import { EventShopUndated } from "./event-shop-undated"
 import { EventShopView } from "./event-shop-view"
 import { useEventShopController } from "./use-event-shop-controller"
 import { useEventShopForm } from "./use-event-shop-form"
+import { DAY_MS } from "@/shared/lib"
 
 const BASE = "/plan/event-shop"
 
@@ -48,7 +49,6 @@ type RedirectState = { notFound?: boolean } | null
  * redirect to the default event; the event shows in its desktop, tablet or phone form with `?day=`
  * and `?tab=` in the URL. An event with no start date yet shows as "Start date TBA".
  */
-const DAY_MS = 86_400_000
 
 export function EventShopPage() {
   const { t } = useTranslation("eventShops")

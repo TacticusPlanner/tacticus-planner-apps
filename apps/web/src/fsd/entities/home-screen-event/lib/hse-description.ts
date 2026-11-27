@@ -1,3 +1,4 @@
+import { isPlayableAlliance } from "@workspace/game-domain"
 import type {
   GameCatalogHseModifier,
   GameCatalogHseRestriction,
@@ -56,7 +57,6 @@ const RARITY_ORDER = [
   "Mythic",
 ]
 
-const ALLIANCES = new Set(["Imperial", "Chaos", "Xenos"])
 /** Enemy tags the copy folds into "excluding Summons". */
 const SUMMON_TAGS = new Set(["Summon", "Steppable"])
 const MACHINE_OF_WAR = "MachineOfWar"
@@ -80,7 +80,7 @@ function modeLabel(mode: string): HseText {
 
 /** A trait, alliance or event tag, from the namespace that names it. */
 function tagLabel(tag: string): HseText {
-  if (ALLIANCES.has(tag))
+  if (isPlayableAlliance(tag))
     return { key: `common:alliances.${tag}`, fallback: tag }
   if (tag === MACHINE_OF_WAR || SUMMON_TAGS.has(tag))
     return { key: `${NS}.tags.${tag}`, fallback: humanize(tag) }

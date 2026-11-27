@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 
-import { useNow, useReadState } from "@/shared/lib"
+import { useNow, useReadState, DAY_MS, MINUTE_MS } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import type { HseRaidRule } from "./home-screen-event-rules"
@@ -17,8 +17,6 @@ import type {
 
 /** How far back and ahead the calendar is read: past instances stay reachable from the HSE switcher. */
 const HORIZON_DAYS = 400
-const DAY_MS = 86_400_000
-const TICK_MS = 60_000
 
 type Ready = {
   status: "ready"
@@ -61,7 +59,7 @@ export function useHomeScreenEventCalendar(
 ): ActiveHomeScreenEventState {
   // A coarse tick re-selects from the cached calendar across an event boundary without a
   // reload; it pauses while the tab is hidden and catches up when shown.
-  const nowMs = useNow(TICK_MS)
+  const nowMs = useNow(MINUTE_MS)
   const synced = useReadState(
     "events-calendar-synced",
     hasEventsCalendarSynced,

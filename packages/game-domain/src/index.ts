@@ -15,7 +15,14 @@ export {
   type UpgradeId,
 } from "./game-ids"
 
-export { Alliance, allianceOrder, allianceRank } from "./alliance"
+export {
+  Alliance,
+  allianceOrder,
+  allianceRank,
+  isPlayableAlliance,
+  playableAlliances,
+  type PlayableAlliance,
+} from "./alliance"
 export { Rarity, rarityOrder, rarityRank } from "./rarity"
 export {
   Rank,
