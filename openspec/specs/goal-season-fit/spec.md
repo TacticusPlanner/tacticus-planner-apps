@@ -8,9 +8,11 @@ Lets the Goals page show, for a chosen season type (Battle Pass, Guild Raid or G
 
 ### Requirement: Season fit is a Goals view option
 
-The Goals page SHALL offer a **Season fit** select with the options Off, Battle Pass, Guild Raid and Guild War, defaulting to Off. The choice SHALL be persisted per browser and SHALL survive navigating away and a reload. The same choice SHALL apply on the unscoped Goals page and when Goals is scoped to a project without a target (`?project=`); changing scope SHALL NOT reset it. When Goals is scoped to a project with a target, the select SHALL be replaced by a read-only "Using project deadline" chip, the project's deadline fit (`project-deadline-fit`) SHALL apply instead, and the stored choice SHALL be kept and apply again when the scope changes. It SHALL NOT be URL state and SHALL NOT affect Dailies, Schedule or Insights.
+The Goals page SHALL offer a **Season fit** select with the options Off, Battle Pass, Guild Raid and Guild War, defaulting to Off. The choice SHALL be persisted per browser, SHALL survive navigating away and a reload, and SHALL apply on the unscoped Goals page and in a project scope without a target (`?project=`). It SHALL NOT be URL state and SHALL NOT affect Dailies, Schedule or Insights.
 
-The select (or the chip) SHALL sit in the page toolbar's View slot after Group by, with the visible label "Season fit" outside the trigger (before it in the bar, above it in the View sheet) and its current value always shown. On mobile the View slot is behind the toolbar's View button; in that sheet the select SHALL be full width and show its current value.
+In a project scope with a target, the select SHALL add a first option, **Project deadline**, chosen by default, which applies the project's deadline fit (`project-deadline-fit`). Choosing another option SHALL apply that mode instead and hide the deadline fit. This targeted choice SHALL be persisted per browser apart from the unscoped choice; changing either SHALL NOT change the other.
+
+On desktop the select SHALL sit in the filters row after the Type and Group filters. On mobile it SHALL sit in the second control row as an icon-only trigger with an accessible name, like the other compressed filters.
 
 #### Scenario: Choice survives reload and scope change
 
@@ -22,7 +24,13 @@ The select (or the chip) SHALL sit in the page toolbar's View slot after Group b
 
 - **GIVEN** Season fit is Battle Pass
 - **WHEN** the user opens the goals of a project targeting Guild War season 29
-- **THEN** the select is replaced by "Using project deadline", the goals show project deadline fits, and returning to `/plan/goals` shows Battle Pass again
+- **THEN** the select reads Project deadline, the goals show project deadline fits, and returning to `/plan/goals` shows Battle Pass again
+
+#### Scenario: A targeted project switches the deadline off
+
+- **GIVEN** a targeted project's goals with Project deadline chosen
+- **WHEN** the user picks Off in the Season fit select
+- **THEN** no deadline header, fit label or divider is rendered, a reload keeps Off for targeted scopes, and the unscoped choice is unchanged
 
 #### Scenario: Off shows nothing
 
@@ -32,7 +40,7 @@ The select (or the chip) SHALL sit in the page toolbar's View slot after Group b
 #### Scenario: Mobile control
 
 - **WHEN** the Goals page renders below 768px
-- **THEN** the Season fit select is in the toolbar's View sheet, full width with its current value, and choosing a mode from it updates the cards
+- **THEN** the Season fit trigger is an icon button named "Season fit" in the second control row, and choosing a mode from it updates the cards
 
 ### Requirement: Season windows come from the events catalog
 

@@ -391,23 +391,12 @@ Each list of suggested nodes (raids, battles fought by hand, the no-drop nodes) 
 
 ### Requirement: The HRE tab has raid list controls
 
-The HRE tab's toolbar SHALL show the Dailies project selector (with "All projects") and the Raids Filters action while the event is running or previewed, and SHALL NOT show the Planning Settings action. The project selection SHALL be the one Dailies-wide, session-only selection shared with Today and the HSE tab. The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (the campaign-type filter included) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. Today's quick filters SHALL apply too, except "Fewer raids", which the tab hides because its raids count battles. "CE nodes first" SHALL be offered, as on Today, only while a campaign event with reached nodes is running or while it is on, and SHALL rank the running campaign event's nodes first (Severyn, 2026-11). A past event SHALL NOT show the controls, the suggestions or the Campaign battles section.
+The HRE tab's toolbar SHALL show the Dailies project selector (with "All projects") and the Raids Filters action while the event is running or previewed, and SHALL NOT show the Planning Settings action. The project selection SHALL be the shared, remembered one (see `goals-navigation`). The suggestions SHALL serve the selected project's Active goals first (every Active goal without one), SHALL use the persisted Raids Filters (except the campaign-type filter, as before) and the Planning Settings daily energy set on Today, and the empty-list action to reset the filters SHALL remain. A past event SHALL NOT show the controls, the folds or the Campaign battles section.
 
 #### Scenario: Controls in the toolbar
 
 - **GIVEN** an HRE is running
 - **THEN** the toolbar shows the project selector and the Raids Filters action, and no Planning Settings action
-
-#### Scenario: CE nodes first
-
-- **GIVEN** an HRE and a campaign event are running, and the player has reached nodes of the campaign event
-- **WHEN** the player turns on "CE nodes first"
-- **THEN** the raids for the campaign objective list the campaign event's nodes first, after any node feeding a goal
-
-#### Scenario: Epic upgrade on a Mirror node
-
-- **GIVEN** a goal still needs a Legendary upgrade that drops on Saim-Hann Mirror 74 and Saim-Hann Elite 30
-- **THEN** only Saim-Hann Elite 30 counts as a goal node, and Saim-Hann Mirror 74 is ranked as a node that feeds no goal
 
 #### Scenario: Project picked on Today
 
