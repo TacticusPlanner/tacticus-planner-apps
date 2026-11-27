@@ -568,7 +568,7 @@ describe("TeamEditorDialog", () => {
           "number-stepper-input"
         )
       ).toHaveValue(null)
-      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
+      expect(chip("Melee")).toHaveAttribute("aria-checked", "true")
       expect(screen.getByTestId("team-picker-search")).toHaveValue("e")
       expect(screen.getByTestId("team-picker-only-unlocked")).toBeChecked()
       expect(screen.getByTestId("team-picker-search")).toHaveFocus()
@@ -647,25 +647,25 @@ describe("TeamEditorDialog", () => {
         initialMemberUnitIds: [teamUnits.a.id],
         initialObjectives: [0],
       })
-      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
-      expect(chip("Min 5 hits")).toHaveAttribute("aria-pressed", "false")
+      expect(chip("Melee")).toHaveAttribute("aria-checked", "true")
+      expect(chip("Min 5 hits")).toHaveAttribute("aria-checked", "false")
     })
 
     it("starts from an edited team's objectives", () => {
       renderEditor({ team: saved })
-      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
-      expect(chip("Min 5 hits")).toHaveAttribute("aria-pressed", "false")
+      expect(chip("Melee")).toHaveAttribute("aria-checked", "true")
+      expect(chip("Min 5 hits")).toHaveAttribute("aria-checked", "false")
     })
 
     it("resets the selection when the editor is closed and reopened", () => {
       const { reopen } = renderEditor()
       fireEvent.click(chip("Melee"))
-      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
+      expect(chip("Melee")).toHaveAttribute("aria-checked", "true")
       reopen()
       expect(
         screen
           .getAllByTestId("team-picker-objective-chip")
-          .every((element) => element.getAttribute("aria-pressed") === "false")
+          .every((element) => element.getAttribute("aria-checked") === "false")
       ).toBe(true)
     })
   })

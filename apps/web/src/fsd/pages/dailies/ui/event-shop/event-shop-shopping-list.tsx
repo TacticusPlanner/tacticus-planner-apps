@@ -26,7 +26,7 @@ import type {
   DayGroup,
   EventShopBudget,
 } from "@/features/shops/event-planner"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, SegmentedControl } from "@/shared/ui"
 
 import { DESTRUCTIVE_TEXT, TOUCH_ICON, TOUCH_SM } from "./day-state-style"
 import { Cost } from "./event-shop-slots"
@@ -145,25 +145,16 @@ export function ShoppingList({
         </p>
       ) : (
         <>
-          <div
-            aria-label={t("list.view.label")}
-            className="flex gap-1"
-            role="group"
-          >
-            {(["upcoming", "all"] as const).map((option) => (
-              <Button
-                key={option}
-                aria-pressed={view === option}
-                className={TOUCH_SM}
-                data-testid={`event-shop-view-${option}`}
-                onClick={() => setView(option)}
-                size="sm"
-                variant={view === option ? "secondary" : "ghost"}
-              >
-                {t(`list.view.${option}`)}
-              </Button>
-            ))}
-          </div>
+          <SegmentedControl
+            label={t("list.view.label")}
+            onValueChange={setView}
+            options={(["upcoming", "all"] as const).map((option) => ({
+              value: option,
+              label: t(`list.view.${option}`),
+              testId: `event-shop-view-${option}`,
+            }))}
+            value={view}
+          />
           {view === "upcoming" ? (
             <div className="flex flex-col gap-4">
               {list.needsReview.length > 0 ? (

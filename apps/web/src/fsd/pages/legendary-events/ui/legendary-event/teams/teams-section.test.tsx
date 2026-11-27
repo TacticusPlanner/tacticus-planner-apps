@@ -505,7 +505,7 @@ describe("TeamsSection", () => {
     // The picker's chips start from the proposal's objective subset (one or two objectives).
     const pressed = within(editor)
       .getAllByTestId("team-picker-objective-chip")
-      .filter((chip) => chip.getAttribute("aria-pressed") === "true")
+      .filter((chip) => chip.getAttribute("aria-checked") === "true")
     expect(pressed.length).toBeGreaterThanOrEqual(1)
     expect(pressed.length).toBeLessThanOrEqual(2)
     expect(screen.queryByTestId("team-suggestions")).toBeNull()

@@ -353,7 +353,6 @@ export function TeamUnitPicker({
                       { name }
                     )}
                     aria-describedby={dimmed ? missingId : undefined}
-                    aria-pressed={isMember}
                     className="flex min-w-0 flex-col items-center gap-1 p-1 text-center md:p-1.5"
                     data-testid="team-picker-toggle"
                     onClick={() => onToggleMember(id)}
@@ -424,8 +423,9 @@ export function TeamUnitPicker({
                     tier={hordeTiers?.get(id) ?? null}
                     traits={tile.unit.traits}
                   />
+                  {/* Both labels say the state ("Add"/"Remove", "Set"/"Unset reserve"), so
+                      neither control also carries aria-pressed. */}
                   <IconButton
-                    aria-pressed={isReserve}
                     className="absolute top-0.5 right-0.5"
                     data-testid="team-picker-reserve"
                     label={t(

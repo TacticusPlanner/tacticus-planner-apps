@@ -107,6 +107,15 @@ One row directly under the header, three fixed slots, left to right:
   keys).
 - Do not hand-roll toggle buttons with `aria-pressed` or `rounded-full border`
   pills; use `ToggleGroup` or the filter chip.
+- Items that keep their own look (day cards, colour swatches, unit portraits,
+  map nodes) are not options in a toggle:
+  - Picking one: `SelectionGroup` (`@workspace/ui/components/selection-group`),
+    each `SelectionItem` `asChild` around its `Pressable`. It makes them radios
+    with one tab stop and arrow keys, and adds no styling.
+  - Picking several: each item gets `role="checkbox"` and `aria-checked`
+    (`UnitTile`, the objective chips).
+  - A button whose label already says the state ("Lock" / "Unlock",
+    "Reorder" / "Done") carries no pressed state at all.
 - Icon-only segmented buttons are allowed only with a tooltip and an
   `aria-label`, and only where the label would not fit (mobile).
 - A `Select` is never icon-only: it shows its value on every viewport.

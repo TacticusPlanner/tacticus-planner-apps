@@ -299,7 +299,7 @@ describe("TeamUnitPicker", () => {
       ])
       expect(
         chips.every(
-          (element) => element.getAttribute("aria-pressed") === "false"
+          (element) => element.getAttribute("aria-checked") === "false"
         )
       ).toBe(true)
       // Melee: every allowed unit but Resh (ranged).
@@ -344,7 +344,7 @@ describe("TeamUnitPicker", () => {
       expect(chip("Melee")).toHaveAttribute("data-count", "3")
 
       fireEvent.click(chip("Melee"))
-      expect(chip("Melee")).toHaveAttribute("aria-pressed", "true")
+      expect(chip("Melee")).toHaveAttribute("aria-checked", "true")
       expect(listed()).toEqual([
         teamUnits.a.id,
         teamUnits.e.id,

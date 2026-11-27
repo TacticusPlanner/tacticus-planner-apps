@@ -9,13 +9,13 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
-import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   DailyMissions,
   MissionChainCard,
   RewardLadder,
 } from "@/widgets/event-rewards"
+import { SegmentedControl } from "@/shared/ui"
 
 import type { EventShopController } from "./use-event-shop-controller"
 import type { EventShopFormat } from "./use-event-shop-format"
@@ -197,26 +197,16 @@ export function EventShopRewardsPhone({
   const [view, setView] = useState<"milestones" | "missions">("milestones")
   return (
     <div className="flex flex-col gap-3">
-      <div
-        aria-label={t("rewards.show")}
-        className="flex gap-1 rounded-xl bg-muted p-1"
-        role="group"
-      >
-        {(["milestones", "missions"] as const).map((option) => (
-          <Pressable
-            key={option}
-            aria-pressed={view === option}
-            className={cn(
-              "h-10 flex-1 rounded-lg text-sm font-medium text-muted-foreground",
-              view === option && "bg-card text-foreground shadow-sm"
-            )}
-            data-testid={`event-shop-rewards-${option}`}
-            onClick={() => setView(option)}
-          >
-            {t(`tabs.${option}`)}
-          </Pressable>
-        ))}
-      </div>
+      <SegmentedControl
+        label={t("rewards.show")}
+        onValueChange={setView}
+        options={(["milestones", "missions"] as const).map((option) => ({
+          value: option,
+          label: t(`tabs.${option}`),
+          testId: `event-shop-rewards-${option}`,
+        }))}
+        value={view}
+      />
       {view === "milestones" ? (
         <EventShopMilestones
           controller={controller}

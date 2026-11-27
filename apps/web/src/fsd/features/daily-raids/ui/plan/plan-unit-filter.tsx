@@ -2,6 +2,10 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { Pressable } from "@workspace/ui/components/pressable"
+import {
+  SelectionGroup,
+  SelectionItem,
+} from "@workspace/ui/components/selection-group"
 
 import type { PlanUnitRange } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
@@ -24,29 +28,31 @@ export function PlanUnitFilter({
   return (
     <div className="space-y-1.5" data-testid="plan-unit-filter">
       <p className="text-sm text-muted-foreground">{t("plan.filter.hint")}</p>
-      <div
-        aria-label={t("plan.filter.label")}
-        className="flex flex-wrap items-center gap-2"
-        role="group"
-      >
-        {ranges.map(({ unit }) => {
-          const pressed = unit.unitId === selectedUnitId
-          return (
-            <Pressable
-              key={unit.unitId}
-              aria-label={unit.unitLabel}
-              aria-pressed={pressed}
-              className={cn(
-                "rounded-full p-0.5",
-                pressed && "ring-2 ring-primary"
-              )}
-              data-testid={`plan-filter-${unit.unitId}`}
-              onClick={() => onSelect(pressed ? undefined : unit.unitId)}
-            >
-              <UnitIcon className="rounded-full" goal={unit} />
-            </Pressable>
-          )
-        })}
+      <div className="flex flex-wrap items-center gap-2">
+        <SelectionGroup
+          aria-label={t("plan.filter.label")}
+          className="flex flex-wrap items-center gap-2"
+          // Pressing the picked unit again clears the filter ("").
+          onValueChange={(unitId) =>
+            onSelect(unitId === "" ? undefined : unitId)
+          }
+          value={selectedUnitId ?? ""}
+        >
+          {ranges.map(({ unit }) => (
+            <SelectionItem asChild key={unit.unitId} value={unit.unitId}>
+              <Pressable
+                aria-label={unit.unitLabel}
+                className={cn(
+                  "rounded-full p-0.5",
+                  unit.unitId === selectedUnitId && "ring-2 ring-primary"
+                )}
+                data-testid={`plan-filter-${unit.unitId}`}
+              >
+                <UnitIcon className="rounded-full" goal={unit} />
+              </Pressable>
+            </SelectionItem>
+          ))}
+        </SelectionGroup>
         {selected ? (
           <div className="flex items-center gap-1">
             <Button

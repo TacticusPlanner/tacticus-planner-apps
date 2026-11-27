@@ -1632,13 +1632,13 @@ describe("CollectionPage select mode", () => {
 
     fireEvent.click(screen.getByTestId("collection-select-toggle"))
     expect(screen.getByTestId("collection-select-create")).toBeDisabled()
-    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Titus" }))
     fireEvent.click(
-      screen.getByRole("button", { name: "Select Marneus Calgar" })
+      screen.getByRole("checkbox", { name: "Select Marneus Calgar" })
     )
     expect(
-      screen.getByRole("button", { name: "Select Titus" })
-    ).toHaveAttribute("aria-pressed", "true")
+      screen.getByRole("checkbox", { name: "Select Titus" })
+    ).toHaveAttribute("aria-checked", "true")
     expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
       "2 selected"
     )
@@ -1679,7 +1679,7 @@ describe("CollectionPage select mode", () => {
     renderPage(1280)
 
     fireEvent.click(screen.getByTestId("collection-select-toggle"))
-    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Titus" }))
     fireEvent.click(screen.getByTestId("collection-select-create"))
     fireEvent.click(screen.getByRole("button", { name: "created" }))
     expect(
@@ -1732,10 +1732,10 @@ describe("CollectionPage select mode", () => {
     ).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId("collection-select-toggle"))
-    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Titus" }))
     expect(
-      screen.getByRole("button", { name: "Select Titus" })
-    ).toHaveAttribute("aria-pressed", "true")
+      screen.getByRole("checkbox", { name: "Select Titus" })
+    ).toHaveAttribute("aria-checked", "true")
     expect(screen.getByTestId("collection-select-count")).toHaveTextContent(
       "1 selected"
     )
@@ -1777,7 +1777,7 @@ describe("CollectionPage select mode", () => {
     const view = render(tree())
 
     fireEvent.click(screen.getByTestId("collection-select-toggle"))
-    fireEvent.click(screen.getByRole("button", { name: "Select Titus" }))
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Titus" }))
     compareState.current = { mode: "loading" }
     view.rerender(tree())
     compareState.current = { mode: "off" }

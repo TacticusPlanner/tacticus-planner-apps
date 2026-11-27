@@ -138,10 +138,11 @@ export function AbilityLevelStepper({
           role="group"
         >
           {picks.map((pick) => {
+            // A quick pick fills the level field, which carries the value; the tint only marks
+            // the pick that matches it.
             const pressed = pick.toggle && value === pick.level
             return (
               <Button
-                aria-pressed={pick.toggle ? pressed : undefined}
                 className="h-7 px-2 text-xs max-md:h-11"
                 key={pick.key}
                 onClick={() => onChange(pick.level)}

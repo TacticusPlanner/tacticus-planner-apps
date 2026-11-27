@@ -1416,6 +1416,7 @@
       "description": "Description",
       "color": "Couleur",
       "customColor": "Couleur personnalisée",
+      "presetColors": "Couleurs prédéfinies",
       "archive": "Archiver le projet",
       "restore": "Restaurer le projet",
       "delete": "Supprimer le projet",

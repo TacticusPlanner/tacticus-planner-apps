@@ -45,7 +45,9 @@ export function TeamPickerObjectiveChips({
               objective: label,
               count,
             })}
-            aria-pressed={isSelected}
+            // Picking several, so each item is a checkbox (ui-style-guide rule 3).
+            role="checkbox"
+            aria-checked={isSelected}
             className={cn(
               "flex min-h-8 items-center gap-1.5 rounded-full border py-1 pr-2.5 pl-1.5 text-xs",
               isSelected

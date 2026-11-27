@@ -6,6 +6,10 @@ import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
 import {
@@ -147,30 +151,34 @@ export function TeamsStep({
     <section className="flex flex-col gap-4" data-testid="plan-wizard-teams">
       <h2 className="text-lg font-semibold">{t("planWizard.steps.teams")}</h2>
       {storedCount > 0 ? (
-        <div
+        <ToggleGroup
           aria-label={t("planWizard.teams.modeLabel")}
-          className="inline-flex w-fit max-w-full rounded-lg border p-0.5"
-          role="group"
+          className="max-w-full"
+          onValueChange={(next) => {
+            // Radix emits "" when the pressed option is pressed again; one is always picked.
+            if (next !== "")
+              draft.adjustTeams((current) => ({
+                ...current,
+                replace: next === "replace",
+              }))
+          }}
+          type="single"
+          value={adjustments.replace ? "replace" : "keep"}
         >
-          {([false, true] as const).map((replace) => (
-            <Button
-              aria-pressed={adjustments.replace === replace}
+          {(["keep", "replace"] as const).map((mode) => (
+            <ToggleGroupItem
               // Wraps instead of overflowing a phone-width page (longer in de/es/fr).
-              className="h-auto min-h-8 min-w-0 shrink whitespace-normal"
-              data-testid={`plan-wizard-teams-${replace ? "replace" : "keep"}`}
-              key={String(replace)}
-              onClick={() =>
-                draft.adjustTeams((current) => ({ ...current, replace }))
-              }
-              size="sm"
-              variant={adjustments.replace === replace ? "default" : "ghost"}
+              className="h-auto min-h-8 min-w-0 shrink px-3 whitespace-normal"
+              data-testid={`plan-wizard-teams-${mode}`}
+              key={mode}
+              value={mode}
             >
-              {replace
+              {mode === "replace"
                 ? t("planWizard.teams.replaceCount", { count: generatedCount })
                 : t("planWizard.teams.keepCount", { count: storedCount })}
-            </Button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       ) : null}
       {removed.length > 0 ? (
         <p className="flex items-center gap-2 text-sm text-muted-foreground">

@@ -520,7 +520,7 @@ describe("PlanWizard", () => {
     await screen.findByTestId("team-editor-name")
     const chips = screen.getAllByTestId("team-picker-objective-chip")
     expect(
-      chips.map((chip) => chip.getAttribute("aria-pressed") === "true")
+      chips.map((chip) => chip.getAttribute("aria-checked") === "true")
     ).toEqual(chips.map((_, index) => index === 0))
     expect(screen.getByTestId("team-picker-sort-power")).toBeEnabled()
     expect(screen.getByTestId("team-picker-sort-power")).toHaveAttribute(

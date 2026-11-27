@@ -17,8 +17,8 @@ export function GoalsMobileReorderToggle({
 }) {
   const { t } = useTranslation()
   return (
+    // The label says the mode ("Reorder" / "Done"), so no aria-pressed as well.
     <Button
-      aria-pressed={active}
       disabled={disabled}
       data-testid="goals-mobile-reorder-toggle"
       onClick={onToggle}
