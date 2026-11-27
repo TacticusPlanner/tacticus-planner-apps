@@ -131,6 +131,28 @@ Data that crosses a boundary (network, IndexedDB, UI) follows the
 Dto / StorageModel / domain / ViewModel naming tiers — see the
 `naming-conventions` skill before naming a new boundary type or mapper.
 
+### Where logic lives in a slice
+
+In a slice (`entities`, `features`, `widgets`, `pages`), `ui/` holds the
+components (`.tsx`) and only the `.ts` files that serve rendering:
+
+- React contexts and route outlet contexts for its components
+  (`*-context.ts`, `*-outlet.ts`).
+- DOM and interaction hooks: focus, scrolling, portals, keyboard and drag
+  (`use-roving-grid.ts`, `use-drag-scroll.ts`, `use-lane-jump.ts`).
+- Class-name, icon and test-id maps (`day-state-style.ts`,
+  `rationale-icon.ts`, `hse-team-test-id.ts`).
+- Tour steps (`*.tutorial.ts`) and test fixtures.
+
+Everything that works out what to show goes in the slice's `model/`:
+view-models (`*.view-model.ts`), `*.model.ts`, data hooks (`use-*.ts` that
+read stores, query or compute), copy and label builders, sorting, filtering
+and analytics payloads. Keep the `ui/` sub-folder:
+`ui/legendary-event/teams/teams.view-model.ts` lives at
+`model/legendary-event/teams/teams.view-model.ts`, beside its test. The
+`shared` layer has no slices, so `shared/ui` keeps a component's own helpers
+next to it.
+
 ## UI & Styling
 
 This workspace uses shadcn/ui-style components, Radix primitives, lucide icons, and Tailwind CSS. Add shadcn components with:

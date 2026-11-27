@@ -50,7 +50,7 @@ import type { LanePotentialsViewModel } from "./lane-potential.view-model"
 import type { LastRunViewModel } from "./overview/last-run.view-model"
 import type { ProgressMarksViewModel } from "./progress/progress-marks"
 import type { TeamEditorLauncher } from "./teams/team-editor-launcher"
-import type { TeamsViewModel } from "./teams/teams-section"
+import type { TeamsViewModel } from "../../ui/legendary-event/teams/teams-section"
 import type { LaneSelection } from "./use-lane-selection"
 
 /** When the next token arrives: at `targetMs`, or already due (the timer ran out since the sync). */

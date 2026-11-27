@@ -7,8 +7,8 @@ import { shopRewardDisplay } from "@/entities/shops/reward"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
-import { buildLibraryShopSlots } from "../../ui/shops/library-shops.view-model"
-import type { LibraryShopSlotView } from "../../ui/shops/library-shops.view-model"
+import { buildLibraryShopSlots } from "./library-shops.view-model"
+import type { LibraryShopSlotView } from "./library-shops.view-model"
 
 export const LIBRARY_SHOP_IDS = [
   "guild",

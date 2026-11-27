@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 
 import { EventTimingLines } from "../shared/event-timing-lines"
-import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
+import type { LegendaryEventPageViewModel } from "../../model/legendary-event/legendary-event-page.view-model"
 
 /** The row above the event tabs: the run countdown ("Starts in 3 days") on every tab, and
  *  `actions` (the plan entry) at the end, wrapping below on narrow screens. The event's name,

@@ -9,7 +9,7 @@ import {
 } from "@/features/goal-planning"
 import type { GoalMenuMoves } from "@/features/goal-planning"
 import { GoalDragHandle } from "./goal-drag-handle"
-import { GoalRowActions } from ".//goal-row-actions"
+import { GoalRowActions } from "./goal-row-actions"
 import { GoalResourceChips } from "../shared/goal-resource-chips"
 import {
   GoalProgressDisplay,

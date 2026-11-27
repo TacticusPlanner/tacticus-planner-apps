@@ -3,10 +3,10 @@ import { useLocation, useNavigate, useParams } from "react-router"
 
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 
-import { LEGENDARY_EVENT_TABS } from "./legendary-event-page.view-model"
-import type { LegendaryEventTab } from "./legendary-event-page.view-model"
-import { progressHeadingId } from "./progress/progress-heading"
-import type { LaneSelection } from "./use-lane-selection"
+import { LEGENDARY_EVENT_TABS } from "../../model/legendary-event/legendary-event-page.view-model"
+import type { LegendaryEventTab } from "../../model/legendary-event/legendary-event-page.view-model"
+import { progressHeadingId } from "../../model/legendary-event/progress/progress-heading"
+import type { LaneSelection } from "../../model/legendary-event/use-lane-selection"
 
 /** How long a jump waits for its section to render (a tab's reads can still be loading). */
 const JUMP_TIMEOUT_MS = 8000

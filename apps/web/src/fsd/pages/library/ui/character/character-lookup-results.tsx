@@ -22,7 +22,7 @@ import { RankGroupBody, RankGroupHeader } from "./character-lookup-rank-groups"
 import type {
   BaseUpgradeViewModel,
   RankGroupViewModel,
-} from "./character-lookup-results.view-model"
+} from "../../model/character/character-lookup-results.view-model"
 
 export function CharacterLookupResults({
   baseUpgrades,

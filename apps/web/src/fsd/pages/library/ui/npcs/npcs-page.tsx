@@ -46,13 +46,16 @@ import { numberRepeatedLabels } from "../../model/npcs/number-repeated-labels"
 import { NpcDetailPage } from "./npc-detail-page"
 import { NpcsListPage } from "./npcs-list-page"
 import { useNpcsTutorial } from "./npcs.tutorial"
-import { npcListSections, npcPowerFigure } from "./npcs-page.view-model"
+import {
+  npcListSections,
+  npcPowerFigure,
+} from "../../model/npcs/npcs-page.view-model"
 import type {
   NpcFilterOptions,
   NpcListItem,
   NpcsPageViewProps,
   NpcVariationOption,
-} from "./npcs-page.view-model"
+} from "../../model/npcs/npcs-page.view-model"
 
 const COLLECTION_PATH = "/library/npcs"
 

@@ -33,26 +33,26 @@ import type {
 import { ConfirmationDialog, SortableList } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
-import { laneEstimateInputs } from "../legendary-event-page.view-model"
-import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
-import { teamLastRunClearedBattle } from "../overview/last-run.view-model"
-import type { LastRunClears } from "../overview/last-run.view-model"
+import { laneEstimateInputs } from "../../../model/legendary-event/legendary-event-page.view-model"
+import type { ClearEstimatesViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
+import { teamLastRunClearedBattle } from "../../../model/legendary-event/overview/last-run.view-model"
+import type { LastRunClears } from "../../../model/legendary-event/overview/last-run.view-model"
 
 import { TeamCard } from "./team-card"
 import type { TeamCardActions } from "./team-card"
-import { useTeamEditorSuggestionOpen } from "./team-editor-launcher"
-import type { TeamEditorLauncher } from "./team-editor-launcher"
+import { useTeamEditorSuggestionOpen } from "../../../model/legendary-event/teams/team-editor-launcher"
+import type { TeamEditorLauncher } from "../../../model/legendary-event/teams/team-editor-launcher"
 import { TeamsEmptyState } from "./teams-empty-state"
 import {
   buildTeamCardViewModel,
   moveTargets,
   rosterMap,
-} from "./teams.view-model"
+} from "../../../model/legendary-event/teams/teams.view-model"
 import type {
   TeamCardViewModel,
   TeamPowerSource,
   TeamsSectionState,
-} from "./teams.view-model"
+} from "../../../model/legendary-event/teams/teams.view-model"
 
 const NO_UNITS: readonly LegendaryEventUnit[] = []
 

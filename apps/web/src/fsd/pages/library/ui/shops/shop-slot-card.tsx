@@ -9,7 +9,7 @@ import { useNumberFormat } from "@/shared/lib"
 import type {
   LibraryShopRewardView,
   LibraryShopSlotView,
-} from "./library-shops.view-model"
+} from "../../model/shops/library-shops.view-model"
 
 const PREVIEW_LIMIT = 3
 

@@ -5,7 +5,7 @@ import type { NpcGroup } from "@/entities/npc"
 import { combineReadStates } from "@/shared/lib"
 import { useCatalogDataset } from "@/shared/local-data"
 
-import { useDatasetSynced } from "../../ui/unit/use-catalog-dataset"
+import { useDatasetSynced } from "../unit/use-catalog-dataset"
 
 type NpcsCatalogStatus = "loading" | "failed" | "ready"
 

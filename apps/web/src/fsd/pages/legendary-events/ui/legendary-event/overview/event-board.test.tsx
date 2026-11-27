@@ -14,7 +14,7 @@ import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 
-import type { TeamsSectionState } from "../teams/teams.view-model"
+import type { TeamsSectionState } from "../../../model/legendary-event/teams/teams.view-model"
 import { EventBoard } from "./event-board"
 
 // Every member derives objective 0 only, so a team covers objective 0 when it stores it.

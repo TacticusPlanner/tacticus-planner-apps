@@ -8,7 +8,7 @@ import { setViewportWidth } from "@/test/viewport"
 
 import { BattleInfoDialog } from "./battle-info-dialog"
 import { lysanderLane } from "./battles.test-utils"
-import type { BattlesViewModel } from "./battles.view-model"
+import type { BattlesViewModel } from "../../../model/legendary-event/battles/battles.view-model"
 
 let i18n: I18n
 const button = (name: string) => screen.getByRole("button", { name })

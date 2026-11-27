@@ -4,8 +4,8 @@ import type { Rarity, UpgradeId } from "@workspace/game-domain"
 import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 
 import fixture from "./v1-mow-lookup.fixture.json"
-import { calculateMowUpgrades } from "./mow-upgrades.model"
-import type { MowCostRung } from "./mow-upgrades.model"
+import { calculateMowUpgrades } from "../../model/mow-unit/mow-upgrades.model"
+import type { MowCostRung } from "../../model/mow-unit/mow-upgrades.model"
 
 // Expected numbers come from V1's MoW Lookup (MowsService.getMaterialsList + MowLookupService) run over
 // V1's own data; its cost ladder and these three MoWs' recipes equal V2's catalog.

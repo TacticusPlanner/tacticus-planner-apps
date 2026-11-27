@@ -23,9 +23,9 @@ import {
 } from "@/features/legendary-event-plan"
 import { numberFormat } from "@/shared/lib"
 
-import type { ProgressColumn } from "./progress-columns"
-import { progressHeadingId } from "./progress-heading"
-import type { LaneMarks } from "./progress-marks"
+import type { ProgressColumn } from "../../../model/legendary-event/progress/progress-columns"
+import { progressHeadingId } from "../../../model/legendary-event/progress/progress-heading"
+import type { LaneMarks } from "../../../model/legendary-event/progress/progress-marks"
 
 export function ProgressColumnIcon({ column }: { column: ProgressColumn }) {
   if (!column.icon) return <Circle aria-hidden="true" className="size-icon" />

@@ -6,7 +6,7 @@ import { EntityIcon } from "@/shared/ui"
 import { EnemyList } from "@/widgets/battle-preview"
 import { numberFormat } from "@/shared/lib"
 
-import type { BattlePreviewViewModel } from "./battles.view-model"
+import type { BattlePreviewViewModel } from "../../../model/legendary-event/battles/battles.view-model"
 
 /** The selected battle's header: number, enemy power and total enemy count, formatted for the UI
  *  language. */

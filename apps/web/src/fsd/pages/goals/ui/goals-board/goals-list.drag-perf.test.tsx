@@ -64,7 +64,7 @@ vi.mock(
 )
 
 import type { GoalRow, useGoalActions } from "@/features/goal-planning"
-import { GoalsList } from ".//goals-list"
+import { GoalsList } from "./goals-list"
 
 const ROWS = 30
 const rows: GoalRow[] = Array.from({ length: ROWS }, (_, i) => ({

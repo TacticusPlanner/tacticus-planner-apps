@@ -182,7 +182,7 @@ vi.mock("@/entities/goal", async (importOriginal) => ({
 
 vi.mock("@/shared/api", () => ({ ApiError: class ApiError extends Error {} }))
 
-import { InsightsPage } from ".//insights-page"
+import { InsightsPage } from "./insights-page"
 
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
 

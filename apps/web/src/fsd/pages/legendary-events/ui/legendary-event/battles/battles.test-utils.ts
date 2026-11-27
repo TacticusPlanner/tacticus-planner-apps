@@ -4,8 +4,8 @@ import {
   lysanderBattles,
 } from "@/test/fixtures/lysander-battles"
 
-import { buildBattlesSection } from "./battles.view-model"
-import type { BattlePreviewViewModel } from "./battles.view-model"
+import { buildBattlesSection } from "../../../model/legendary-event/battles/battles.view-model"
+import type { BattlePreviewViewModel } from "../../../model/legendary-event/battles/battles.view-model"
 
 /** Lysander's lane battles as the section builds them, with every NPC resolved. */
 export function lysanderLane(

@@ -42,12 +42,12 @@ import {
   nextMasterTableParams,
   parseMasterTableQuery,
   resolveMasterTableState,
-} from "./master-table.view-model"
+} from "../../model/master-table/master-table.view-model"
 import type {
   MasterTablePickerEvent,
   MasterTableState,
   UnitSetAvailability,
-} from "./master-table.view-model"
+} from "../../model/master-table/master-table.view-model"
 
 /** How long the search box waits after a keystroke before writing `q` to the URL. */
 const SEARCH_COMMIT_MS = 200

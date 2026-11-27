@@ -31,7 +31,7 @@ import {
   ObjectiveIcon,
 } from "@/shared/ui"
 
-import type { LeaderboardBody } from "./leaderboard.view-model"
+import type { LeaderboardBody } from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
 
 /** The traits a leaderboard marks after the unit's name (spec: trait markers). */
 const LEADERBOARD_TRAIT_MARKERS = ["Healer", "Mechanic"] as const

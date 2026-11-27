@@ -19,12 +19,12 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 import {
   buildLeaderboardRows,
   buildProgressGridViewModel,
-} from "../legendary-event-page.view-model"
+} from "../../../model/legendary-event/legendary-event-page.view-model"
 import type {
   LeaderboardGoalsViewModel,
   LeaderboardRowsViewModel,
   ProgressGridViewModel,
-} from "../legendary-event-page.view-model"
+} from "../../../model/legendary-event/legendary-event-page.view-model"
 import { CrossLaneLeaderboard } from "./cross-lane-leaderboard"
 
 let i18n: I18n

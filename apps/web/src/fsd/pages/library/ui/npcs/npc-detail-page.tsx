@@ -3,7 +3,7 @@ import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { NpcDetail } from "./npc-detail"
-import type { NpcsPageViewProps } from "./npcs-page.view-model"
+import type { NpcsPageViewProps } from "../../model/npcs/npcs-page.view-model"
 import { NpcsToolbar } from "./npcs-toolbar"
 
 const NPCS_PATH = "/library/npcs"

@@ -37,7 +37,10 @@ import {
 } from "@/shared/ui"
 import { useNumberFormat } from "@/shared/lib"
 
-import { buildProgressionStepLabels, toRarity } from "./progression-step-labels"
+import {
+  buildProgressionStepLabels,
+  toRarity,
+} from "../../model/raid-bosses/progression-step-labels"
 import { RaidBossAbilityPanel } from "./raid-boss-ability-panel"
 import { RaidBossAdjustedStats } from "./raid-boss-adjusted-stats"
 import type { RaidBossAdjustedProps } from "./raid-boss-adjusted-stats"

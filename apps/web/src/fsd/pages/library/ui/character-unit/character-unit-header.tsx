@@ -14,7 +14,10 @@ import { ProgressionSelect, ProgressionSummary, RankSelect } from "@/shared/ui"
 
 import { UnitHeader } from "../unit/unit-header"
 import type { ValuesMode } from "../unit/unit-header"
-import type { ShownValues, UnitOwnership } from "./character-unit.view-model"
+import type {
+  ShownValues,
+  UnitOwnership,
+} from "../../model/character-unit/character-unit.view-model"
 import { hasNode } from "@/shared/lib"
 
 export type { ValuesMode }

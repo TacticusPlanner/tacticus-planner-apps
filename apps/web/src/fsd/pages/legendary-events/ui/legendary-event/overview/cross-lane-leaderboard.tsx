@@ -41,18 +41,24 @@ import {
   shownTeamUnitIds,
   useLeaderboardUnitName,
   useObjectiveChips,
-} from "../leaderboard/leaderboard.view-model"
-import type { ObjectiveChipGroup } from "../leaderboard/leaderboard.view-model"
+} from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
+import type { ObjectiveChipGroup } from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
 import type {
   LeaderboardGoalsViewModel,
   LeaderboardViewModel,
   ProgressGridViewModel,
-} from "../legendary-event-page.view-model"
-import { nextCrossLaneSort, sortCrossLaneRows } from "./cross-lane-sort"
-import type { CrossLaneSort, CrossLaneSortKey } from "./cross-lane-sort"
+} from "../../../model/legendary-event/legendary-event-page.view-model"
+import {
+  nextCrossLaneSort,
+  sortCrossLaneRows,
+} from "../../../model/legendary-event/overview/cross-lane-sort"
+import type {
+  CrossLaneSort,
+  CrossLaneSortKey,
+} from "../../../model/legendary-event/overview/cross-lane-sort"
 import { LeaderboardLanePicker } from "./leaderboard-lane-picker"
-import { useLeaderboardLanes } from "./use-leaderboard-lanes"
-import { clearLeaderboardFilters } from "../leaderboard/leaderboard-filters"
+import { useLeaderboardLanes } from "../../../model/legendary-event/overview/use-leaderboard-lanes"
+import { clearLeaderboardFilters } from "../../../model/legendary-event/leaderboard/leaderboard-filters"
 
 /**
  * The cross-lane Eligibility leaderboard (spec: one eligibility leaderboard on Teams): one row per

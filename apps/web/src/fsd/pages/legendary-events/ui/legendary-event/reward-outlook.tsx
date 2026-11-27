@@ -7,7 +7,7 @@ import type { RewardProjection } from "@/entities/legendary-event"
 import { HowToRead, IconLine } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
 
-import type { RewardOutlookViewModel } from "./legendary-event-page.view-model"
+import type { RewardOutlookViewModel } from "../../model/legendary-event/legendary-event-page.view-model"
 
 /**
  * The Run status card's Reward outlook (design D6): the next ascension step, the chests and

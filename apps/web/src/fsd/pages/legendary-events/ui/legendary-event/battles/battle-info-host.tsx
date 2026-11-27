@@ -10,10 +10,10 @@ import type {
 import { BattleInfoContext } from "@/features/legendary-event-tokens"
 import type { OpenBattleInfo } from "@/features/legendary-event-tokens"
 
-import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
+import type { ProgressGridViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
 import { BattleInfoDialog } from "./battle-info-dialog"
-import type { BattleInfoTarget } from "./battle-info-target"
-import { useBattlesSection } from "./use-battles-section"
+import type { BattleInfoTarget } from "../../../model/legendary-event/battles/battle-info-target"
+import { useBattlesSection } from "../../../model/legendary-event/battles/use-battles-section"
 
 const NO_LANES: readonly LegendaryEventLaneId[] = []
 

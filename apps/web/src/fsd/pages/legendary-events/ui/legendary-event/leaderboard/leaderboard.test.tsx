@@ -20,13 +20,13 @@ import {
   within,
 } from "@/test/render"
 
-import { buildLeaderboardRows } from "../legendary-event-page.view-model"
+import { buildLeaderboardRows } from "../../../model/legendary-event/legendary-event-page.view-model"
 import type {
   ClearEstimatesViewModel,
   LeaderboardGoalsViewModel,
   LeaderboardRowsViewModel,
   ProgressGridViewModel,
-} from "../legendary-event-page.view-model"
+} from "../../../model/legendary-event/legendary-event-page.view-model"
 import { LeaderboardSection } from "./leaderboard-section"
 import { firstDifference } from "@/shared/lib"
 

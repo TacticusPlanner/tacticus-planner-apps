@@ -9,7 +9,7 @@ import {
   useEventProjects,
 } from "@/features/project-management"
 
-import { hasEventPlan } from "./legendary-event-plan-entry.model"
+import { hasEventPlan } from "../../model/legendary-event/legendary-event-plan-entry.model"
 
 /**
  * The event's plan entry beside the header (spec: plan wizard entry points): the linked projects,

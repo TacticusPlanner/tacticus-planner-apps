@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { powerNote } from "./unit-power.model"
-import type { PowerFigure } from "./unit-power.model"
+import { powerNote } from "../../model/unit/unit-power.model"
+import type { PowerFigure } from "../../model/unit/unit-power.model"
 import { numberFormat } from "@/shared/lib"
 
 /**

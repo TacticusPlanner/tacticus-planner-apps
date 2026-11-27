@@ -21,7 +21,7 @@ import {
 } from "@/shared/ui"
 import { useEventTargetOptions } from "../model/event-target-options"
 import type { useProjectActions } from "../model/use-project-actions"
-import { ProjectColorPicker } from ".//project-color-picker"
+import { ProjectColorPicker } from "./project-color-picker"
 import { ProjectTargetField } from "./project-target-field"
 
 /**

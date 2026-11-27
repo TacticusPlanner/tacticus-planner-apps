@@ -70,6 +70,9 @@ for users and their saved data:
   Pages don't import pages. Entities don't import features or pages.
   Features don't import sibling features. Code that several pages share
   moves down to an entity or feature and is used through its public API.
+- Logic in a slice's `ui/` segment: AGENTS.md "Where logic lives in a
+  slice". Flag a new view-model, data hook, `*.model.ts` or calculation added
+  under `ui/`; it goes in `model/`.
 - Types and mappers at a boundary (network, IndexedDB, UI): the
   `naming-conventions` skill, "Quick-reference checklist".
 - Server state and fetching: the `tanstack-query` skill. Flag server data

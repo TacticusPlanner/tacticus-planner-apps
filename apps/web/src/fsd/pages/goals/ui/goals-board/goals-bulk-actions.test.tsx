@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { render, screen } from "@/test/render"
 
 import type { GoalRow } from "@/features/goal-planning"
-import { GoalsBulkActions } from ".//goals-bulk-actions"
+import { GoalsBulkActions } from "./goals-bulk-actions"
 
 const row = (goalId: string, status: GoalRow["status"]): GoalRow => ({
   goalId,

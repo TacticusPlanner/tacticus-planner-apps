@@ -37,7 +37,7 @@ import {
   LIBRARY_ITEMS_PATH,
   libraryItemPath,
   useLibraryItems,
-} from "./use-library-items"
+} from "../../model/items/use-library-items"
 
 /**
  * `/library/items/:entityId`: one item's page. The unit top bar (back to the list, Previous / Next

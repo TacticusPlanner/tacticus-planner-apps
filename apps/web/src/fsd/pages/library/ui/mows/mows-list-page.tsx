@@ -10,7 +10,7 @@ import {
   useFilterableMows,
   useMowListItems,
   useMowsCatalog,
-} from "./use-mows-catalog"
+} from "../../model/mows/use-mows-catalog"
 
 export const MOWS_PATH = "/library/machines-of-war"
 

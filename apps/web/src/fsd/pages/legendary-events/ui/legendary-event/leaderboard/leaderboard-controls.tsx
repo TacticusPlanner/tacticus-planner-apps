@@ -19,12 +19,12 @@ import { numberFormat } from "@/shared/lib"
 import type {
   LeaderboardControlsState,
   LeaderboardGoalsViewModel,
-} from "../legendary-event-page.view-model"
-import type { ObjectiveChipGroup } from "./leaderboard.view-model"
+} from "../../../model/legendary-event/legendary-event-page.view-model"
+import type { ObjectiveChipGroup } from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
 import {
   clearLeaderboardFilters,
   leaderboardActiveFilterCount,
-} from "./leaderboard-filters"
+} from "../../../model/legendary-event/leaderboard/leaderboard-filters"
 
 /**
  * The one controls bar shared by the lane and Overview leaderboards (design D7): "Only unlocked"

@@ -1,5 +1,5 @@
 import { NpcList } from "./npc-list"
-import type { NpcsPageViewProps } from "./npcs-page.view-model"
+import type { NpcsPageViewProps } from "../../model/npcs/npcs-page.view-model"
 import { NpcsToolbar } from "./npcs-toolbar"
 
 /** `/library/npcs`: the toolbar and a grid of NPC tiles, each opening that NPC's page (the same

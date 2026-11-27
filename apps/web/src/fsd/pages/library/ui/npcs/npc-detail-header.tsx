@@ -15,7 +15,7 @@ import { NpcLevelBadge, NpcPortrait } from "@/entities/npc"
 import type { NpcLevelOption } from "@/entities/npc"
 import { EntityIcon } from "@/shared/ui"
 
-import type { NpcVariationOption } from "./npcs-page.view-model"
+import type { NpcVariationOption } from "../../model/npcs/npcs-page.view-model"
 
 // Both selectors share one height, tall enough for the Variation value (mode label over the variation id),
 // so the two fields line up; the value may span two lines and each line truncates instead of overflowing.

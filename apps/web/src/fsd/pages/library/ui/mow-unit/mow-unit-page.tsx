@@ -21,7 +21,10 @@ import { ProgressionSelect, ProgressionSummary } from "@/shared/ui"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
 import { MOWS_PATH } from "../mows/mows-list-page"
-import { useMowListItems, useMowsCatalog } from "../mows/use-mows-catalog"
+import {
+  useMowListItems,
+  useMowsCatalog,
+} from "../../model/mows/use-mows-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
 import { UnitHeader } from "../unit/unit-header"
 import type { ValuesMode } from "../unit/unit-header"
@@ -29,8 +32,8 @@ import { UnitCreateGoalButton } from "../unit/unit-create-goal-button"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
 import { UnitTabs } from "../unit/unit-tabs"
-import { useSyncedCatalogDataset } from "../unit/use-catalog-dataset"
-import { useUnitTab } from "../unit/use-unit-tab"
+import { useSyncedCatalogDataset } from "../../model/unit/use-catalog-dataset"
+import { useUnitTab } from "../../model/unit/use-unit-tab"
 import { MowMythicPanel } from "./mow-mythic-panel"
 import { MowUnitDetails } from "./mow-unit-details"
 import { useMowUnitTutorial } from "./mow-unit.tutorial"
@@ -43,13 +46,19 @@ import {
   mowPowerFigure,
   mythicLevel,
   toMythicLevels,
-} from "./mow-unit.view-model"
-import type { MythicLevels } from "./mow-unit.view-model"
-import { calculateMowUpgrades, ownedMowStock } from "./mow-upgrades.model"
-import type { MowAbility, MowCostRung } from "./mow-upgrades.model"
+} from "../../model/mow-unit/mow-unit.view-model"
+import type { MythicLevels } from "../../model/mow-unit/mow-unit.view-model"
+import {
+  calculateMowUpgrades,
+  ownedMowStock,
+} from "../../model/mow-unit/mow-upgrades.model"
+import type {
+  MowAbility,
+  MowCostRung,
+} from "../../model/mow-unit/mow-upgrades.model"
 import { MowUpgradesTab } from "./mow-upgrades-tab"
-import { useMowPlayerData } from "./use-mow-player-data"
-import { useMowUpgradeRanges } from "./use-mow-upgrade-ranges"
+import { useMowPlayerData } from "../../model/mow-unit/use-mow-player-data"
+import { useMowUpgradeRanges } from "../../model/mow-unit/use-mow-upgrade-ranges"
 
 const TABS = ["details", "upgrades"] as const
 

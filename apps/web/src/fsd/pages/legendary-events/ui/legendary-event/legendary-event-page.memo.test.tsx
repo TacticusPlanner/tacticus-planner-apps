@@ -17,7 +17,7 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, render, waitFor } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-import type { LegendaryEventPageViewModel } from "./legendary-event-page.view-model"
+import type { LegendaryEventPageViewModel } from "../../model/legendary-event/legendary-event-page.view-model"
 import { LegendaryEventPage } from "./legendary-event-page"
 
 // Captures the view model the page hands its view, render by render.

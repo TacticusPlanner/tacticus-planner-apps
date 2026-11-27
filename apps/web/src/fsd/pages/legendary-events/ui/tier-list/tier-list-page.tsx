@@ -26,7 +26,7 @@ import {
   TIER_LIST_KINDS,
   parseTierListKind,
   tierListKindSearchParams,
-} from "./npc-tier-list.view-model"
+} from "../../model/tier-list/npc-tier-list.view-model"
 import { TierListFilters } from "./tier-list-filters"
 import { useTierListTutorial } from "./tier-list.tutorial"
 import {
@@ -40,8 +40,8 @@ import {
   tierListSearchParams,
   tierListFiltersKey,
   tierTileDetails,
-} from "./tier-list.view-model"
-import type { TierListUrlFilters } from "./tier-list.view-model"
+} from "../../model/tier-list/tier-list.view-model"
+import type { TierListUrlFilters } from "../../model/tier-list/tier-list.view-model"
 import { TierRow, UntieredRow } from "./tier-row"
 import { TierTile } from "./tier-tile"
 import type { TierTileView } from "./tier-tile"

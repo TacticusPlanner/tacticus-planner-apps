@@ -25,8 +25,8 @@ import type {
 } from "@/entities/legendary-event"
 import { numberFormat } from "@/shared/lib"
 
-import type { LanePotentialsViewModel } from "../lane-potential.view-model"
-import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
+import type { LanePotentialsViewModel } from "../../../model/legendary-event/lane-potential.view-model"
+import type { ProgressGridViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
 
 /**
  * The Overview lane summary (spec: the Overview tab summarises the event): one activatable row

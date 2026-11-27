@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 
-import type { TeamCardViewModel } from "./teams.view-model"
+import type { TeamCardViewModel } from "../../../model/legendary-event/teams/teams.view-model"
 
 /** The points the team has left over its depth (spec: a team card shows the points it has left
  *  within its depth): plain "—" for an incomplete team (the card already warns about it), "Can't

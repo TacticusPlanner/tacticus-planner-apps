@@ -23,7 +23,10 @@ import type {
 import { EntityIcon } from "@/shared/ui"
 
 import { TierTileDetailsBody } from "./tier-tile-details"
-import { formatMultiplier, tierTileDetails } from "./tier-list.view-model"
+import {
+  formatMultiplier,
+  tierTileDetails,
+} from "../../model/tier-list/tier-list.view-model"
 
 /** One tile as the page renders it; untiered tiles carry the 1.0 multiplier, never an override.
  *  `relics` (its relic ratings) adds the relic mark; the multiplier stays the base one. */

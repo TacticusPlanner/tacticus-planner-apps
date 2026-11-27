@@ -1,6 +1,6 @@
 import type { TokenPlanView } from "@/features/legendary-event-tokens"
 
-import type { RunStatusViewModel } from "./legendary-event-page.view-model"
+import type { RunStatusViewModel } from "../../model/legendary-event/legendary-event-page.view-model"
 
 /** The reported Fabius Bile account: one token left this run, 87 points to milestone 27. */
 export const syncedRunStatus: Extract<RunStatusViewModel, { kind: "synced" }> =

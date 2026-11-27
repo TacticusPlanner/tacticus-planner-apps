@@ -16,7 +16,7 @@ import { itemLibraryPath } from "@/shared/equipment"
 import { EntityIcon } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
 
-import { itemStatLines } from "./character-unit.view-model"
+import { itemStatLines } from "../../model/character-unit/character-unit.view-model"
 
 /** Highest rarity first, as the game lists equipment. */
 const RARITIES_HIGH_TO_LOW = [...rarityOrder].reverse()

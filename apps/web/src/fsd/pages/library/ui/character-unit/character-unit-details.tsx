@@ -23,7 +23,7 @@ import {
   StatsByRank,
   TraitsList,
 } from "./character-details-sections"
-import type { StatsFigure } from "./character-unit.view-model"
+import type { StatsFigure } from "../../model/character-unit/character-unit.view-model"
 import { StatRadarCard } from "./stat-radar-card"
 import { hasNode } from "@/shared/lib"
 

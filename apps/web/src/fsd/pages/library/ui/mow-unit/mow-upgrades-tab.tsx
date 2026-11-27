@@ -20,12 +20,12 @@ import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
 
 import { LevelSelect, RecipeIcons } from "./mow-upgrades-controls"
-import { MOW_ABILITIES } from "./mow-upgrades.model"
+import { MOW_ABILITIES } from "../../model/mow-unit/mow-upgrades.model"
 import type {
   MowAbility,
   MowLevelRanges,
   MowUpgradesResult,
-} from "./mow-upgrades.model"
+} from "../../model/mow-unit/mow-upgrades.model"
 
 /**
  * The Ability upgrades tab (V1's MoW Lookup): From/To levels per ability, Include owned materials,

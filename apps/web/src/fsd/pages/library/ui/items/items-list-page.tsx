@@ -58,7 +58,10 @@ import type {
 } from "../../model/items/library-items"
 import { ItemFor } from "./item-for"
 import { useLibraryItemsTutorial } from "./library-items.tutorial"
-import { libraryItemPath, useLibraryItems } from "./use-library-items"
+import {
+  libraryItemPath,
+  useLibraryItems,
+} from "../../model/items/use-library-items"
 
 /** The search writes the URL, so it waits for a pause in typing. */
 const SEARCH_DELAY_MS = 200

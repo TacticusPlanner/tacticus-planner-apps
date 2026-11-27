@@ -5,7 +5,7 @@ import { unitNeighbours } from "@/entities/unit"
 
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { RaidBossDetail } from "./raid-boss-detail"
-import type { RaidBossesPageViewProps } from "./raid-bosses-page.view-model"
+import type { RaidBossesPageViewProps } from "../../model/raid-bosses/raid-bosses-page.view-model"
 
 /** A boss or prime's page: the shared unit top bar (back to the season reference, Previous / Next
  *  through the bosses then the primes, with the position), then the detail at full width. */

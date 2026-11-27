@@ -22,9 +22,9 @@ import { useRaidBossesCatalog } from "../../model/raid-bosses/use-raid-bosses-ca
 import { GuildRaidMetaView, GuildRaidSeasonsView } from "./guild-raid-views"
 import { RaidBossDetailPage } from "./raid-boss-detail-page"
 import { useRaidBossesTutorial } from "./raid-bosses.tutorial"
-import type { RaidBossesPageViewProps } from "./raid-bosses-page.view-model"
+import type { RaidBossesPageViewProps } from "../../model/raid-bosses/raid-bosses-page.view-model"
 import { RaidBossSeasonReference } from "./raid-boss-season-reference"
-import { buildRaidBossSeasonReferenceViewModel } from "./raid-boss-season-reference.view-model"
+import { buildRaidBossSeasonReferenceViewModel } from "../../model/raid-bosses/raid-boss-season-reference.view-model"
 import {
   encounterSearch,
   entitySearch,
@@ -32,7 +32,7 @@ import {
   repairRaidBossesSearch,
   seasonReferenceSearch,
   updateSearch,
-} from "./raid-bosses-search"
+} from "../../model/raid-bosses/raid-bosses-search"
 
 function withSearch(pathname: string, search: URLSearchParams) {
   const query = search.toString()

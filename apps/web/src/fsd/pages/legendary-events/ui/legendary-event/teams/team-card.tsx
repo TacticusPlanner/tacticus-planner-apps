@@ -52,9 +52,15 @@ import {
 import type { SortableRenderProps } from "@/shared/ui"
 
 import { PointsLeft, TeamPower } from "./team-card-figures"
-import { depthBandClauses, teamDepthBar } from "./team-depth-bar"
-import type { DepthBar, DepthTone } from "./team-depth-bar"
-import type { TeamCardViewModel } from "./teams.view-model"
+import {
+  depthBandClauses,
+  teamDepthBar,
+} from "../../../model/legendary-event/teams/team-depth-bar"
+import type {
+  DepthBar,
+  DepthTone,
+} from "../../../model/legendary-event/teams/team-depth-bar"
+import type { TeamCardViewModel } from "../../../model/legendary-event/teams/teams.view-model"
 
 const FULL_TEAM = 5
 

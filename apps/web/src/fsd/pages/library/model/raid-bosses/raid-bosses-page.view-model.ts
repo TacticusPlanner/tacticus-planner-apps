@@ -4,7 +4,7 @@ import type {
   RaidBossListItem,
 } from "@/entities/raid-boss"
 
-import type { RaidBossAdjustedProps } from "./raid-boss-adjusted-stats"
+import type { RaidBossAdjustedProps } from "../../ui/raid-bosses/raid-boss-adjusted-stats"
 
 /** Props of a boss or prime's page (the Bosses and primes tab with an entity in the path). */
 export type RaidBossesPageViewProps = {

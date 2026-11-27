@@ -5,7 +5,7 @@ import { indexEncounterPlaces, indexEncounters } from "@/entities/npc"
 import type { EncounterPlaceIndex, NpcEncounterIndex } from "@/entities/npc"
 import { useCatalogDataset } from "@/shared/local-data"
 
-import { useDatasetSynced } from "../../ui/unit/use-catalog-dataset"
+import { useDatasetSynced } from "../unit/use-catalog-dataset"
 
 /**
  * The `npc-encounters` data as the NPC Library reads it. `absent` covers a dataset that has never synced —

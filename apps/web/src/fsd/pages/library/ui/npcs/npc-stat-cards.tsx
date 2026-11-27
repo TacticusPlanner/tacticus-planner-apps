@@ -9,7 +9,7 @@ import { EntityIcon } from "@/shared/ui"
 import type { NpcStatRow } from "@/entities/npc"
 import { numberFormat, useNumberFormat } from "@/shared/lib"
 
-import type { PowerFigure } from "../unit/unit-power.model"
+import type { PowerFigure } from "../../model/unit/unit-power.model"
 
 const cardClass =
   "flex flex-col items-center justify-center gap-1 rounded-lg border bg-card p-3"

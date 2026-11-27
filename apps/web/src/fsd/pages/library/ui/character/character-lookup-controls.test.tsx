@@ -12,7 +12,7 @@ vi.mock("@workspace/ui/lib/toast", () => ({
 }))
 
 const shareCurrentLookupUrl = vi.fn()
-vi.mock("./character-lookup-share", () => ({
+vi.mock("../../model/character/character-lookup-share", () => ({
   shareCurrentLookupUrl: (...args: unknown[]) => shareCurrentLookupUrl(...args),
 }))
 

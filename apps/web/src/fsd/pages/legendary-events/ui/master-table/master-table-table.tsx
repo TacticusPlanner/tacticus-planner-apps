@@ -13,8 +13,8 @@ import { EntityIcon } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
 
 import { MasterTableUnit } from "./master-table-parts"
-import { useCellLanes } from "./use-cell-lanes"
-import { rowDetailTotal } from "./master-table.view-model"
+import { useCellLanes } from "../../model/master-table/use-cell-lanes"
+import { rowDetailTotal } from "../../model/master-table/master-table.view-model"
 
 /** What an event without teams shows in In teams instead of zeros. */
 const NO_TEAMS = "—"

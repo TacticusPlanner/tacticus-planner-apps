@@ -18,7 +18,7 @@ import {
   ToggleGroupItem,
 } from "@workspace/ui/components/toggle-group"
 
-import type { BattlePreviewViewModel } from "./battles.view-model"
+import type { BattlePreviewViewModel } from "../../../model/legendary-event/battles/battles.view-model"
 
 /**
  * Picks the lane's battle (design D4). Desktop: Previous / one toggle per battle number, complete

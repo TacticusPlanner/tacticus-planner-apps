@@ -36,7 +36,7 @@ import { EntityIcon, TruncatedText } from "@/shared/ui"
 import { useEncounterGroupName } from "../../model/npcs/use-encounter-group-name"
 import { encounterGroupIcon } from "../../model/npcs/encounter-group-icon"
 import { useIncursionTierNames } from "../../model/npcs/use-incursion-tier-names"
-import type { NpcsPageViewProps } from "./npcs-page.view-model"
+import type { NpcsPageViewProps } from "../../model/npcs/npcs-page.view-model"
 import { encounterTiming } from "../../model/encounter-timing"
 import type { EncounterTiming } from "../../model/encounter-timing"
 

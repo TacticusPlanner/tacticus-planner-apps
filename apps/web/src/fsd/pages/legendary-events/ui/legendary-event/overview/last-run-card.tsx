@@ -11,11 +11,11 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 
 import type { RunHistory } from "../../../lib/run-history"
 
-import type { LastRunSectionViewModel } from "../legendary-event-page.view-model"
-import { RUN_COUNT } from "./last-run.view-model"
-import type { LastRunViewModel } from "./last-run.view-model"
+import type { LastRunSectionViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
+import { RUN_COUNT } from "../../../model/legendary-event/overview/last-run.view-model"
+import type { LastRunViewModel } from "../../../model/legendary-event/overview/last-run.view-model"
 import { RunHistoryBody, ToggleButton } from "./run-history-body"
-import { useRunDate } from "./use-run-date"
+import { useRunDate } from "../../../model/legendary-event/overview/use-run-date"
 
 /**
  * The Overview's Last run card (spec: legendary-event-run-history): the previous run's number,

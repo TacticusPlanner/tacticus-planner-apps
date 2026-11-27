@@ -8,8 +8,8 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { DetailsSheet, EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 
-import { formatMultiplier } from "./tier-list.view-model"
-import type { TierTileDetails } from "./tier-list.view-model"
+import { formatMultiplier } from "../../model/tier-list/tier-list.view-model"
+import type { TierTileDetails } from "../../model/tier-list/tier-list.view-model"
 import { TierTileStrategy } from "./tier-tile-strategy"
 
 function DetailRow({

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { render, screen } from "@/test/render"
 import { MemoryRouter, Route, Routes } from "react-router"
 
-import { GoalsLayout } from ".//goals-layout"
+import { GoalsLayout } from "./goals-layout"
 import { storedPreference, writePreference } from "@/shared/lib"
 
 beforeEach(() => {

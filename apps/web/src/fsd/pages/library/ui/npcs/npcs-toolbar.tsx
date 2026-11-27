@@ -4,7 +4,7 @@ import type { NpcFilters } from "@/entities/npc"
 import { FiltersControl, PageToolbar, SearchField } from "@/shared/ui"
 
 import { NpcsFilterBar } from "./npcs-filter-bar"
-import type { NpcFilterOptions } from "./npcs-page.view-model"
+import type { NpcFilterOptions } from "../../model/npcs/npcs-page.view-model"
 
 /**
  * The NPCs page toolbar (ui-style-guide rule 2). Find: name search, always visible on the list (it

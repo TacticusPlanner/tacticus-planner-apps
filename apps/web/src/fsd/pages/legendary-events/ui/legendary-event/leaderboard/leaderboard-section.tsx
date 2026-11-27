@@ -10,7 +10,7 @@ import type {
 import type {
   LeaderboardViewModel,
   ProgressGridViewModel,
-} from "../legendary-event-page.view-model"
+} from "../../../model/legendary-event/legendary-event-page.view-model"
 import { LeaderboardControls } from "./leaderboard-controls"
 import { LeaderboardList } from "./leaderboard-list"
 import { LeaderboardEmptyBody } from "./leaderboard-parts"
@@ -22,8 +22,8 @@ import {
   shownTeamUnitIds,
   useLeaderboardUnitName,
   useObjectiveChips,
-} from "./leaderboard.view-model"
-import { clearLeaderboardFilters } from "./leaderboard-filters"
+} from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
+import { clearLeaderboardFilters } from "../../../model/legendary-event/leaderboard/leaderboard-filters"
 
 /**
  * The Eligibility leaderboard of one lane tab, after the Synced progress grid: every unit the lane

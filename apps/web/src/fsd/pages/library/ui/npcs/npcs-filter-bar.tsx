@@ -20,7 +20,7 @@ import type { NpcAttackFilter, NpcFilters } from "@/entities/npc"
 import { EntityIcon, FilterField, MultiSelect } from "@/shared/ui"
 import type { SelectOption } from "@/shared/ui"
 
-import type { NpcFilterOptions } from "./npcs-page.view-model"
+import type { NpcFilterOptions } from "../../model/npcs/npcs-page.view-model"
 
 const ANY = "__any__"
 

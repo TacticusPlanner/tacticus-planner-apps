@@ -33,13 +33,16 @@ import {
   useViewPlacement,
 } from "@/shared/ui"
 
-import { POINTS_MODES, UNIT_SETS } from "./master-table.view-model"
+import {
+  POINTS_MODES,
+  UNIT_SETS,
+} from "../../model/master-table/master-table.view-model"
 import type {
   EstimatedAvailability,
   MasterTablePickerEvent,
   MasterTableState,
   UnitSetAvailability,
-} from "./master-table.view-model"
+} from "../../model/master-table/master-table.view-model"
 
 const SORT_TOTAL = "__total"
 

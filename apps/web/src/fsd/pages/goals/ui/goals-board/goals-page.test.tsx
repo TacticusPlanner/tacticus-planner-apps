@@ -273,7 +273,7 @@ vi.mock("@workspace/ui/hooks/use-mobile", () => ({
 
 import { MemoryRouter, useLocation, useNavigate } from "react-router"
 
-import { GoalsPage } from ".//goals-page"
+import { GoalsPage } from "./goals-page"
 import { CreateGoalLauncherProvider } from "@/features/goal-planning"
 import {
   compareCodeUnits,

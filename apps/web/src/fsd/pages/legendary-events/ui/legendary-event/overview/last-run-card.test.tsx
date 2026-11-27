@@ -24,10 +24,10 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { act, fireEvent, render, screen, within } from "@/test/render"
 import { setViewportWidth } from "@/test/viewport"
 
-import type { LastRunSectionViewModel } from "../legendary-event-page.view-model"
+import type { LastRunSectionViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
 import { LastRunCard } from "./last-run-card"
-import { buildLastRunViewModel } from "./last-run.view-model"
-import type { LastRunViewModel } from "./last-run.view-model"
+import { buildLastRunViewModel } from "../../../model/legendary-event/overview/last-run.view-model"
+import type { LastRunViewModel } from "../../../model/legendary-event/overview/last-run.view-model"
 
 let i18n: I18n
 

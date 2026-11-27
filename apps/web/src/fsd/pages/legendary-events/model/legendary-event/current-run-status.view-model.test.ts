@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest"
 
 import { buildCurrentRunStatusModel } from "./current-run-status.view-model"
-import { currentRunView, syncedRunStatus } from "./current-run-status.fixtures"
+import {
+  currentRunView,
+  syncedRunStatus,
+} from "../../ui/legendary-event/current-run-status.fixtures"
 
 describe("buildCurrentRunStatusModel", () => {
   it("puts each resource's now and end-of-run values on one row", () => {

@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 
 import { LegendaryEventPlanEntry } from "./legendary-event-plan-entry"
-import { hasEventPlan } from "./legendary-event-plan-entry.model"
+import { hasEventPlan } from "../../model/legendary-event/legendary-event-plan-entry.model"
 
 const projectsState = vi.hoisted(() => ({ value: { status: "loading" } }))
 
