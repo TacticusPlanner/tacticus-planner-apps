@@ -11,8 +11,8 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useGoalLabels } from "@/features/legendary-event-goals"
 import { EntityIcon } from "@/shared/ui"
 
-import { upgradeGroups } from "./upgrades-step.model"
-import type { PlanDraft } from "./use-plan-draft"
+import { upgradeGroups } from "../../model/plan-wizard/upgrades-step.model"
+import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
 import { formatShortDate, useDateLocale } from "@/shared/lib"
 
 /**

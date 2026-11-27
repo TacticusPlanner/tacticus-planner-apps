@@ -23,12 +23,12 @@ import type { StoredPreference } from "@/shared/lib"
 
 import { legendaryEventRunWindow } from "@/entities/legendary-event"
 import { RosterPotentialMap } from "../legendary-event/roster-potential-map"
-import { planPotentials } from "./plan-potential"
+import { planPotentials } from "../../model/plan-wizard/plan-potential"
 import { TargetCard } from "./target-card"
 import { SearchProgressBar } from "./search-progress-bar"
-import { runAssumptions } from "./target-step.model"
-import type { PlanDraft } from "./use-plan-draft"
-import type { PlanSource } from "./use-plan-source"
+import { runAssumptions } from "../../model/plan-wizard/target-step.model"
+import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
+import type { PlanSource } from "../../model/plan-wizard/use-plan-source"
 
 const ASSUMPTIONS_OPEN = storedPreference(
   "legendaryEvents",

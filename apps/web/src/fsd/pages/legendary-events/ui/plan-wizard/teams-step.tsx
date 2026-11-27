@@ -22,12 +22,15 @@ import { TeamEditorDialog } from "@/features/legendary-event-plan"
 import type { PickerEstimates } from "@/features/legendary-event-plan"
 import { EntityIcon } from "@/shared/ui"
 
-import { objectivesAddedBySameUnits, teamSwaps } from "./plan-evaluator"
-import type { TeamSwap } from "./plan-evaluator"
-import { PLAN_LANE_IDS } from "./plan-inputs"
-import { memberKey } from "./plan-teams"
-import type { DraftTeam } from "./plan-teams"
-import type { PlanDraft } from "./use-plan-draft"
+import {
+  objectivesAddedBySameUnits,
+  teamSwaps,
+} from "../../model/plan-wizard/plan-evaluator"
+import type { TeamSwap } from "../../model/plan-wizard/plan-evaluator"
+import { PLAN_LANE_IDS } from "../../model/plan-wizard/plan-inputs"
+import { memberKey } from "../../model/plan-wizard/plan-teams"
+import type { DraftTeam } from "../../model/plan-wizard/plan-teams"
+import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
 
 /** The team editor's view of a draft team: the depth the user set shows as the run's manual depth. */
 const asStoredTeam = (

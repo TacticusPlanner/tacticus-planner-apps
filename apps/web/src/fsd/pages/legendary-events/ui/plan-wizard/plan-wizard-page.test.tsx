@@ -7,10 +7,12 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render, screen } from "@/test/render"
 
 import { PlanWizardPage } from "./plan-wizard-page"
-import type { PlanSource } from "./use-plan-source"
+import type { PlanSource } from "../../model/plan-wizard/use-plan-source"
 
 let source: PlanSource = { status: "loading" }
-vi.mock("./use-plan-source", () => ({ usePlanSource: () => source }))
+vi.mock("../../model/plan-wizard/use-plan-source", () => ({
+  usePlanSource: () => source,
+}))
 vi.mock("@/shared/unit-name", () => ({
   useUnitName: () => () => "Uthar",
 }))

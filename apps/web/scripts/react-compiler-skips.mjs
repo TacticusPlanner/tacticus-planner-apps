@@ -24,7 +24,7 @@ const allowed = new Map([
     "manual memo kept: compiling it would cache reads of i18next's mutable store",
   ],
   [
-    "src/fsd/pages/legendary-events/ui/plan-wizard/use-plan-draft.ts",
+    "src/fsd/pages/legendary-events/model/plan-wizard/use-plan-draft.ts",
     "manual memo over a dependency that is mutated later",
   ],
 ])

@@ -4,10 +4,10 @@ import { ChevronDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { writeCounts } from "./plan-create"
-import type { PlanWrites } from "./plan-create"
-import { planSummaryFacts } from "./plan-summary.model"
-import type { PlanDraft } from "./use-plan-draft"
+import { writeCounts } from "../../model/plan-wizard/plan-create"
+import type { PlanWrites } from "../../model/plan-wizard/plan-create"
+import { planSummaryFacts } from "../../model/plan-wizard/plan-summary.model"
+import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
 
 /**
  * The plan summary on every step (spec: plan summary on every step): the target and its verdict,
