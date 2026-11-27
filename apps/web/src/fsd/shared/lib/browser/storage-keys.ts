@@ -45,7 +45,7 @@ export const preferenceRecords = {
     "planWizardTokenPlanOpen",
     "planWizardRunForecastOpen",
   ],
-  dismissed: ["appInstallCard", "tourAutoStarted"],
+  dismissed: ["appInstallCard", "tourAutoStarted", "guildWarApiNotice"],
 } as const
 
 export type PreferenceRecord = keyof typeof preferenceRecords

@@ -15,10 +15,11 @@ import { PageContainer } from "@/widgets/page-container"
 import { newWarSettings, warSettings } from "../model/default-settings"
 import type { GuildWarContext } from "../model/guild-war-context"
 import { useSeasonName } from "../model/use-season-name"
+import { GuildWarApiNotice } from "./guild-war-api-notice"
 
 /**
  * The Guild War group's layout (Offense, History): the war's season above the tabs, and the war the
- * tabs read. The season is the war's own, else the one the events calendar says is running; when
+ * tabs read, under a dismissable note that attacks are logged by hand. The season is the war's own, else the one the events calendar says is running; when
  * the calendar names none, a banner says which season the war uses. The battlefield level is picked
  * on Offense. Sign-in only: no registered guild needed.
  */
@@ -125,7 +126,10 @@ export function GuildWarLayout() {
 
   return (
     <PageContainer data-testid="guild-war-page">
-      <div className="flex flex-col gap-5">{content}</div>
+      <div className="flex flex-col gap-5">
+        <GuildWarApiNotice />
+        {content}
+      </div>
     </PageContainer>
   )
 }

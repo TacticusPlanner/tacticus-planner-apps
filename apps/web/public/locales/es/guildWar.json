@@ -6,7 +6,9 @@
     "loadError": "No se pudo cargar tu guerra.",
     "retry": "Reintentar",
     "noSeasons": "Los datos de la Guerra de gremios aún no están disponibles.",
-    "seasonNotListed": "El calendario de eventos no incluye la temporada de Guerra de Gremios en curso, así que esta guerra usa {{season}}."
+    "seasonNotListed": "El calendario de eventos no incluye la temporada de Guerra de Gremios en curso, así que esta guerra usa {{season}}.",
+    "apiNotice": "La API de Tacticus no devuelve datos de la Guerra de Gremios, así que los ataques se registran a mano aquí.",
+    "apiNoticeDismiss": "Descartar"
   },
   "target": {
     "zone": "Zona",
