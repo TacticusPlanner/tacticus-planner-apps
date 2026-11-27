@@ -1,7 +1,11 @@
-import { firstDifference } from "@/shared/lib"
+import {
+  firstDifference,
+  readFlag,
+  readList,
+  writeUrlQuery,
+} from "@/shared/lib"
 
 import type { CharacterSuggestions } from "./suggestions"
-import { readFlag, readList, writeUrlQuery } from "./url-query"
 
 /** The Suggestions tab's search, filter and chip, carried in the URL. */
 export type SuggestionsQuery = {

@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 import { factionIcon } from "@workspace/game-catalog"
 import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
@@ -14,6 +15,7 @@ import {
 import {
   ItemIcon,
   isPercentStat,
+  itemLibraryPath,
   itemStatsAt,
   maxItemLevel,
   upgradeCost,
@@ -100,6 +102,11 @@ function DetailsContent({
         <UpgradeCosts piece={piece} />
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
+        <Button asChild variant="outline">
+          <Link data-testid="items-piece-library" to={itemLibraryPath(item.id)}>
+            {t("pieces.details.openInLibrary")}
+          </Link>
+        </Button>
         <Button onClick={() => onOpenChange(false)} variant="outline">
           {t("pieces.details.close")}
         </Button>

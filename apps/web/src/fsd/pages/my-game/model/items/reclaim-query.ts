@@ -1,6 +1,6 @@
 import type { CatalogItem } from "./owned-items"
 import type { ReclaimStack } from "./reclaim"
-import { readFlag, writeUrlQuery } from "./url-query"
+import { readFlag, writeUrlQuery } from "@/shared/lib"
 
 /** The Reclaim tab's search and chips, carried in the URL. */
 export type ReclaimQuery = {

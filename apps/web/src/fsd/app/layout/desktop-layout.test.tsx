@@ -462,7 +462,7 @@ describe("DesktopShell", () => {
         name: "library:collections.characters.label",
       })
     ).toHaveAttribute("aria-current", "page")
-    expect(within(menu).getAllByRole("link")).toHaveLength(5)
+    expect(within(menu).getAllByRole("link")).toHaveLength(6)
     expect(screen.getByTestId("desktop-nav-library")).toHaveAttribute(
       "data-active",
       "true"
@@ -574,7 +574,7 @@ describe("DesktopShell", () => {
     fireEvent.click(reopen)
 
     const menu = screen.getByTestId("desktop-section-navigation")
-    expect(within(menu).getAllByRole("link")).toHaveLength(5)
+    expect(within(menu).getAllByRole("link")).toHaveLength(6)
     expect(screen.getByTestId("desktop-section-toggle")).toHaveAttribute(
       "aria-expanded",
       "true"

@@ -4,7 +4,7 @@ import { rarityOrder, rarityRank } from "@workspace/game-domain"
 import { ITEM_SLOT_TYPES, itemSlotRank } from "@/shared/equipment"
 
 import type { CatalogItem, OwnedPiece } from "./owned-items"
-import { readFlag, readList, readOneOf, writeUrlQuery } from "./url-query"
+import { readFlag, readList, readOneOf, writeUrlQuery } from "@/shared/lib"
 
 export const PIECES_LAYOUTS = ["cards", "table"] as const
 export type PiecesLayout = (typeof PIECES_LAYOUTS)[number]

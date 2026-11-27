@@ -17,6 +17,7 @@ import { progressionRarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { itemLibraryPath } from "@/shared/equipment"
 import { CompactStars, EntityIcon, TruncatedText } from "@/shared/ui"
 
 import type {
@@ -284,15 +285,22 @@ function LevelCell({
 
 function EquipmentCells({
   equipment,
+  linked = false,
 }: {
   equipment: UnitTileEquipment[] | undefined
+  /** Each item links to its Library page (only where the row itself isn't a link). */
+  linked?: boolean
 }) {
   return (
     <span className="grid grid-cols-3 gap-0.5" data-testid="unit-row-equipment">
       {[0, 1, 2].map((index) => {
         const item = equipment?.[index]
         return item ? (
-          <EquipmentSlot key={index} item={item} />
+          linked ? (
+            <ItemLink item={item} key={index} />
+          ) : (
+            <EquipmentSlot key={index} item={item} />
+          )
         ) : (
           <span
             key={index}
@@ -302,6 +310,21 @@ function EquipmentCells({
         )
       })}
     </span>
+  )
+}
+
+/** An equipped item that opens its Library page. */
+function ItemLink({ item }: { item: UnitTileEquipment }) {
+  const { t } = useTranslation(["equipmentItems", "library"])
+  return (
+    <Link
+      aria-label={`${t(`equipmentItems:${item.equipmentId}`, { defaultValue: item.equipmentId })}: ${t("library:items.openInLibrary")}`}
+      className="grid rounded-sm hover:brightness-110"
+      data-testid="unit-row-item-link"
+      to={itemLibraryPath(item.equipmentId)}
+    >
+      <EquipmentSlot item={item} />
+    </Link>
   )
 }
 
@@ -334,7 +357,7 @@ function ExpandedPanel({
           {character ? (
             <PanelEntry term={t("unitRow.equipment")}>
               <span className="block w-17.5">
-                <EquipmentCells equipment={owned.equipment} />
+                <EquipmentCells equipment={owned.equipment} linked />
               </span>
             </PanelEntry>
           ) : null}

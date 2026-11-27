@@ -22,5 +22,6 @@ export {
   type ItemLadderStep,
   type LadderItem,
 } from "./item-levels"
+export { itemLibraryPath } from "./item-path"
 export { useItemName, useItemSlotName } from "./use-item-names"
 export { ItemIcon } from "./item-icon"

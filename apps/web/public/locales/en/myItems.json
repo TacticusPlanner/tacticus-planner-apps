@@ -120,7 +120,8 @@
       "maxed": "Your highest copy is already at the top level.",
       "close": "Close",
       "everyone": "Every faction",
-      "ownedSummary": "{{spare}}, {{worn}}"
+      "ownedSummary": "{{spare}}, {{worn}}",
+      "openInLibrary": "Open in Library"
     },
     "none": {
       "title": "No items yet",
