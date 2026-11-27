@@ -1,6 +1,7 @@
 import { RefreshCw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 export function GuildRaidRefreshButton({
   refresh,
@@ -19,10 +20,11 @@ export function GuildRaidRefreshButton({
       size="sm"
       variant="outline"
     >
-      <RefreshCw
-        aria-hidden="true"
-        className={isRefreshing ? "motion-safe:animate-spin" : undefined}
-      />
+      {isRefreshing ? (
+        <Spinner aria-hidden="true" />
+      ) : (
+        <RefreshCw aria-hidden="true" />
+      )}
       {isRefreshing
         ? t("guildRaids.status.refreshing")
         : t("guildRaids.status.refresh")}

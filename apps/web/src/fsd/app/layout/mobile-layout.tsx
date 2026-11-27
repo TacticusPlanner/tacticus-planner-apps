@@ -24,6 +24,7 @@ import {
   DrawerTrigger,
 } from "@workspace/ui/components/drawer"
 import { cn } from "@workspace/ui/lib/utils"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   AutoSyncFill,
@@ -172,15 +173,18 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
           {autoSyncProgress ? (
             <AutoSyncFill fraction={autoSyncProgress.fraction} />
           ) : null}
-          <SyncIcon
-            aria-hidden="true"
-            className={cn(
-              "relative size-icon-md",
-              // A solid disc behind the icon keeps it legible over the dimmed, partly filled track.
-              autoSyncProgress && "rounded-full bg-accent",
-              isSyncing && "motion-safe:animate-spin"
-            )}
-          />
+          {isSyncing ? (
+            <Spinner aria-hidden="true" className="relative size-icon-md" />
+          ) : (
+            <SyncIcon
+              aria-hidden="true"
+              className={cn(
+                "relative size-icon-md",
+                // A solid disc behind the icon keeps it legible over the dimmed, partly filled track.
+                autoSyncProgress && "rounded-full bg-accent"
+              )}
+            />
+          )}
           {status === "stale" ? (
             <span
               aria-hidden="true"

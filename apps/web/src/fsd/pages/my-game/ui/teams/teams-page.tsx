@@ -19,6 +19,7 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import {
@@ -93,10 +94,11 @@ function SyncPrompt() {
       <AlertDescription>
         <div className="flex flex-wrap items-center gap-3">
           <Button disabled={syncDisabled} onClick={() => syncNow()} size="sm">
-            <RefreshCw
-              aria-hidden="true"
-              className={isSyncing ? "motion-safe:animate-spin" : undefined}
-            />
+            {isSyncing ? (
+              <Spinner aria-hidden="true" />
+            ) : (
+              <RefreshCw aria-hidden="true" />
+            )}
             {t("common:nav.syncWithTacticus")}
           </Button>
           <span className="text-xs text-muted-foreground" role="status">

@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next"
 import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
 import { SidebarMenuButton } from "@workspace/ui/components/sidebar"
 import { cn } from "@workspace/ui/lib/utils"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import { isMacPlatform } from "@/shared/lib"
 
@@ -108,15 +109,19 @@ export function PlayerDataSyncButton() {
         {autoSyncProgress ? (
           <AutoSyncFill fraction={autoSyncProgress.fraction} />
         ) : null}
-        <Icon
-          aria-hidden="true"
-          className={cn(
-            "relative",
-            // A solid disc behind the icon keeps it legible over the partly filled track.
-            autoSyncProgress && "rounded-full bg-accent text-accent-foreground",
-            isSyncing && "motion-safe:animate-spin"
-          )}
-        />
+        {isSyncing ? (
+          <Spinner aria-hidden="true" className="relative" />
+        ) : (
+          <Icon
+            aria-hidden="true"
+            className={cn(
+              "relative",
+              // A solid disc behind the icon keeps it legible over the partly filled track.
+              autoSyncProgress &&
+                "rounded-full bg-accent text-accent-foreground"
+            )}
+          />
+        )}
         {status === "stale" ? (
           <span
             aria-hidden="true"

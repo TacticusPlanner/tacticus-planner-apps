@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
-import { Check, Loader2 } from "lucide-react"
+import { Check } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
+import { Spinner } from "@workspace/ui/components/spinner"
 
 import { FloatingBar } from "@/shared/ui"
 
@@ -30,7 +31,7 @@ export function MobileReorderBar({
       >
         {pending ? (
           <>
-            <Loader2 aria-hidden className="size-icon animate-spin" />
+            <Spinner aria-hidden />
             {t("goals.order.saving")}
           </>
         ) : (

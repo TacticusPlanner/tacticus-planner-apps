@@ -74,24 +74,24 @@ describe("PlayerDataSyncButton", () => {
     expect(syncNow).toHaveBeenCalledTimes(1)
   })
 
-  it("spins the icon and disables the button while a sync is in progress", () => {
+  it("shows a spinner and disables the button while a sync is in progress", () => {
     mockStatus("syncing", { progress: { downloaded: 2, total: 5 } })
     renderButton()
 
     const button = screen.getByTestId("player-data-sync-button")
     expect(button).toBeDisabled()
-    expect(button.querySelector("svg")).toHaveClass("motion-safe:animate-spin")
+    expect(button.querySelector('[data-slot="spinner"]')).toBeInTheDocument()
   })
 
-  it("does not spin or disable the button once a sync has completed", () => {
+  it("shows no spinner and enables the button once a sync has completed", () => {
     mockStatus("ready")
     renderButton()
 
     const button = screen.getByTestId("player-data-sync-button")
     expect(button).not.toBeDisabled()
-    expect(button.querySelector("svg")).not.toHaveClass(
-      "motion-safe:animate-spin"
-    )
+    expect(
+      button.querySelector('[data-slot="spinner"]')
+    ).not.toBeInTheDocument()
   })
 
   it("fills its icon badge with the elapsed share of the auto-sync interval", () => {
