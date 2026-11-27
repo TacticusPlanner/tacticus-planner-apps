@@ -203,7 +203,7 @@ function BattleGroup({
             ) : null}
           </span>
           {alternative.notes.length > 0 ? (
-            <ul className="ps-5 text-xs text-amber-800 dark:text-amber-400">
+            <ul className="ps-5 text-xs text-warning-foreground">
               {alternative.notes.map((note) => (
                 <li key={note}>{note}</li>
               ))}

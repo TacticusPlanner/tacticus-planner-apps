@@ -109,7 +109,7 @@ export function PlanDayCard({
               "h-full rounded-full",
               ratio >= FULL_ENERGY_RATIO
                 ? "bg-success-foreground"
-                : "bg-amber-500"
+                : "bg-warning-foreground"
             )}
             data-testid={`plan-day-${day.day}-energy-bar`}
             style={{ width: `${Math.min(1, ratio) * 100}%` }}

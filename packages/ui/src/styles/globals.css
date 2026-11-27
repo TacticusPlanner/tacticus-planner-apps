@@ -62,6 +62,8 @@
   --color-progress: var(--progress);
   --color-energy-over: var(--energy-over);
   --color-info-bg: var(--info-bg);
+  --color-gold: var(--gold);
+  --color-challenge: var(--challenge);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -134,6 +136,10 @@
   --section-menu-foreground: oklch(0.243 0.015 261.655);
   --page-header: var(--background);
   --page-header-foreground: var(--foreground);
+
+  /* Domain colours (ui-style-guide rule 12): stars and premium rewards, and a challenge node. */
+  --gold: oklch(0.8 0.16 86);
+  --challenge: oklch(0.7 0.19 48);
 
   --rarity-common: #cdb3a0;
   --rarity-uncommon: #f9cb9c;
@@ -282,6 +288,9 @@
   --section-menu-foreground: oklch(0.866 0.013 266.689);
   --page-header: var(--background);
   --page-header-foreground: var(--foreground);
+
+  --gold: oklch(0.8 0.16 86);
+  --challenge: oklch(0.7 0.19 48);
 
   --rarity-common: #8a705d;
   --rarity-uncommon: #b3845f;

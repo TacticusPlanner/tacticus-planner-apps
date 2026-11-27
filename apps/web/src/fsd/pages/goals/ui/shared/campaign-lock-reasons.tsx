@@ -34,7 +34,7 @@ export function CampaignLockReasons({
   return (
     <ul
       className={cn(
-        "flex flex-col gap-1 text-xs text-amber-800 dark:text-amber-400",
+        "flex flex-col gap-1 text-xs text-warning-foreground",
         className
       )}
     >

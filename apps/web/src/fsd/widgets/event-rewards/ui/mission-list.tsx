@@ -97,7 +97,7 @@ export function MissionChainCard({
                     <span
                       className={cn(
                         "min-h-1.5 flex-1 rounded-t-sm",
-                        kind === "premium" ? "bg-amber-500" : "bg-primary"
+                        kind === "premium" ? "bg-gold" : "bg-primary"
                       )}
                       style={{
                         height: `${Math.round((target / highest) * 100)}%`,

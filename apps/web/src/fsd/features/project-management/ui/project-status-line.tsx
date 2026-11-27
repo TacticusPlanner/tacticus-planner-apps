@@ -69,7 +69,7 @@ export function ProjectStatusLine({
             count: ready.blocked,
             name: project.name,
           })}
-          className="text-amber-700 underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none dark:text-amber-400"
+          className="text-warning-foreground underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           data-testid="project-status-blocked"
           to={`/plan/goals?project=${project.projectId}&status=blocked`}
         >

@@ -92,7 +92,7 @@ export function SelectionBar({
       <CapChips cap={cap} roster={roster} selection={selection} />
       {mowsAvailable > 0 ? (
         <Button
-          className="border-amber-500/60 bg-amber-500/10 text-amber-800 hover:bg-amber-500/20 dark:text-amber-300"
+          className="border-warning-foreground/60 bg-warning text-warning-foreground hover:bg-warning/80"
           data-testid="guild-war-mow-reminder"
           onClick={onShowMows}
           size="sm"

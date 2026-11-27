@@ -31,7 +31,7 @@ export function UnitAbilities({
           className={cn(
             "grid h-5 min-w-7 place-items-center rounded-sm border px-1 font-semibold",
             under?.[index] &&
-              "border-amber-600 text-amber-800 dark:border-amber-400 dark:text-amber-400"
+              "border-warning-foreground text-warning-foreground"
           )}
           data-under={under?.[index] ? "true" : undefined}
           key={index}

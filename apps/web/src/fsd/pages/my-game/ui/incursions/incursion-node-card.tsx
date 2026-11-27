@@ -277,7 +277,7 @@ export function IncursionNodeCard({
     <div
       className={cn(
         "space-y-2 rounded-lg border p-3",
-        battle?.challenge && "border-amber-500/60",
+        battle?.challenge && "border-challenge/60",
         node.kind !== "battle" && "bg-muted/40"
       )}
       data-testid={`incursion-node-${node.index}`}

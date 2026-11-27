@@ -33,7 +33,7 @@ export function ManualBattleBadge({
       <TooltipTrigger asChild disableTouchToggle>
         <span
           className={cn(
-            "inline-flex shrink-0 items-center gap-1 text-xs text-amber-700 dark:text-amber-400",
+            "inline-flex shrink-0 items-center gap-1 text-xs text-warning-foreground",
             className
           )}
           data-testid="manual-battle-badge"

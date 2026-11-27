@@ -128,7 +128,7 @@ export function TeamEditorLineup({
           ) : null}
           {under?.any ? (
             <span
-              className="text-xs text-amber-800 dark:text-amber-400"
+              className="text-xs text-warning-foreground"
               data-testid="team-lineup-under-cap"
             >
               {underCapText(under, rarityCap)}

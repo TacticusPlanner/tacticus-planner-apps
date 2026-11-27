@@ -65,14 +65,6 @@ function contrastRatio(a: Rgb, b: Rgb): number {
 const over = (top: Rgb, alpha: number, bottom: Rgb): Rgb =>
   top.map((v, i) => v * alpha + bottom[i]! * (1 - alpha)) as Rgb
 
-// Tailwind v4 default palette (tailwindcss/theme.css) for the amber classes the goal badges use.
-const AMBER: Record<number, [number, number, number]> = {
-  400: [0.828, 0.189, 84.429],
-  700: [0.555, 0.163, 48.998],
-  800: [0.473, 0.137, 46.201],
-  950: [0.279, 0.077, 45.635],
-}
-
 function palette(theme: Theme) {
   const tokens = tokensOf(theme === "light" ? ":root" : "\\.dark")
   const tok = (name: string): Rgb => {
@@ -80,11 +72,9 @@ function palette(theme: Theme) {
     if (!value) throw new Error(`missing token --${name} in ${theme}`)
     return oklchToSrgb(value)
   }
-  const amber = (shade: number): Rgb => oklchToSrgb(AMBER[shade]!)
   const background = tok("background")
   return {
     tok,
-    amber,
     background,
     card: tok("card"),
     // `hover:bg-muted/50` on a table row (and a hovered ghost/handle button is `bg-muted`).
@@ -247,23 +237,23 @@ const CASES: Case[] = [
     (c) => c.background
   ),
   text(
-    "Restricted badge: amber-950 on amber-400",
-    (c) => c.amber(950),
-    (c) => c.amber(400)
+    "Restricted badge: background on warning-foreground",
+    (c) => c.tok("background"),
+    (c) => c.tok("warning-foreground")
   ),
   text(
-    "Blocked text (amber-800 | dark amber-400) on row",
-    (c) => (c.theme === "light" ? c.amber(800) : c.amber(400)),
+    "Blocked text (warning-foreground) on row",
+    (c) => c.tok("warning-foreground"),
     (c) => c.background
   ),
   text(
     "Blocked text on hovered row",
-    (c) => (c.theme === "light" ? c.amber(800) : c.amber(400)),
+    (c) => c.tok("warning-foreground"),
     (c) => c.rowHover
   ),
   text(
     "Blocked text on card",
-    (c) => (c.theme === "light" ? c.amber(800) : c.amber(400)),
+    (c) => c.tok("warning-foreground"),
     (c) => c.card
   ),
   // --- Other goal text ---
@@ -376,18 +366,18 @@ const CASES: Case[] = [
     (c) => c.tok("muted")
   ),
   graphic(
-    "ceiling marker (amber-700 | dark amber-400) vs track (muted)",
-    (c) => (c.theme === "light" ? c.amber(700) : c.amber(400)),
+    "ceiling marker (warning-foreground) vs track (muted)",
+    (c) => c.tok("warning-foreground"),
     (c) => c.tok("muted")
   ),
   graphic(
     "ceiling marker vs row (background)",
-    (c) => (c.theme === "light" ? c.amber(700) : c.amber(400)),
+    (c) => c.tok("warning-foreground"),
     (c) => c.background
   ),
   graphic(
     "ceiling marker vs card",
-    (c) => (c.theme === "light" ? c.amber(700) : c.amber(400)),
+    (c) => c.tok("warning-foreground"),
     (c) => c.card
   ),
   graphic(

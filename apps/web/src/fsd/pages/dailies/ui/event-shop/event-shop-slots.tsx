@@ -30,10 +30,9 @@ const PURCHASE_FRAME: Record<Purchase, string> = {
   none: "",
   planned: "border-primary ring-1 ring-primary",
   partial: "border-primary ring-1 ring-primary",
-  bought:
-    "border-emerald-600 bg-emerald-600/10 ring-1 ring-emerald-600 dark:border-emerald-400 dark:bg-emerald-400/10 dark:ring-emerald-400",
+  bought: "border-success-foreground bg-success ring-1 ring-success-foreground",
 }
-const BOUGHT_TEXT = "text-emerald-700 dark:text-emerald-400"
+const BOUGHT_TEXT = "text-success-foreground"
 
 /** `[currency] 45`. */
 export function Cost({
@@ -184,7 +183,7 @@ function BoughtTick({
       className={cn(
         "flex size-7 shrink-0 items-center justify-center rounded-md border border-input bg-transparent text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground disabled:pointer-events-none disabled:opacity-50",
         bought &&
-          "border-emerald-600 bg-emerald-600 text-background hover:border-emerald-600 hover:text-background dark:border-emerald-400 dark:bg-emerald-400"
+          "border-success-foreground bg-success-foreground text-background hover:border-success-foreground hover:text-background"
       )}
       disabled={disabled}
       onClick={onToggle}
@@ -489,7 +488,7 @@ function SlotCard({
           {view.freebie && !unsyncedOptions ? (
             // The daily freebie costs nothing: no price, just "Free every day".
             <p
-              className="mt-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+              className="mt-1 text-xs font-semibold text-success-foreground"
               data-testid={`event-shop-freebie-${view.ref.slotIndex}`}
             >
               {t("slot.freebieShort")}
@@ -543,7 +542,7 @@ function SlotCard({
                   offer={option}
                 />
                 {view.freebieOf(option.rewardType) ? (
-                  <span className="shrink-0 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                  <span className="shrink-0 text-xs font-medium text-success-foreground">
                     {t("slot.freebieShort")}
                   </span>
                 ) : planned ? (
@@ -683,7 +682,7 @@ function SlotTile({
           />
           {allBought ? (
             <span className="absolute inset-0 flex items-center justify-center">
-              <span className="flex size-7 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm dark:bg-emerald-500">
+              <span className="flex size-7 items-center justify-center rounded-full bg-success-foreground text-background shadow-sm">
                 <Check
                   aria-hidden="true"
                   className="size-icon"
@@ -698,7 +697,7 @@ function SlotTile({
         </span>
         <span className="line-clamp-2 text-xs/tight">{reward.label}</span>
         {view.freebie ? (
-          <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+          <span className="text-xs font-semibold text-success-foreground">
             {t("slot.freebieShort")}
           </span>
         ) : (
@@ -750,7 +749,7 @@ function SlotTile({
             className={cn(
               "flex size-5 items-center justify-center rounded-sm border-2 border-primary bg-background",
               allBought &&
-                "border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500"
+                "border-success-foreground bg-success-foreground text-background"
             )}
           >
             {allBought ? (

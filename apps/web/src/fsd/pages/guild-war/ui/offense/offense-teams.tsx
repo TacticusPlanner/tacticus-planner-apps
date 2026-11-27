@@ -178,7 +178,7 @@ export function OffenseTeams({
               </div>
               {blocked ? (
                 <p
-                  className="text-xs text-amber-800 dark:text-amber-400"
+                  className="text-xs text-warning-foreground"
                   data-testid="guild-war-team-blocked"
                 >
                   {t("teams.blocked", {

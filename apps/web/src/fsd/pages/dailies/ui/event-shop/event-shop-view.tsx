@@ -97,7 +97,7 @@ export function EventShopView(props: EventShopViewProps) {
         {t("tabs.plan")}
         <Badge
           aria-label={t("list.toReview", { count: reviewCount })}
-          className="h-5 min-w-5 border-transparent bg-amber-500 px-1.5 text-amber-950"
+          className="h-5 min-w-5 border-transparent bg-warning-foreground px-1.5 text-background"
           data-testid="event-shop-review-badge"
         >
           {reviewCount}

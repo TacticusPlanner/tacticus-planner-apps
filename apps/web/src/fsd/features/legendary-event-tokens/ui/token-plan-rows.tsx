@@ -515,7 +515,7 @@ function MaybeFlag() {
   const { t } = useTranslation("legendaryEvents")
   return (
     <span
-      className="text-xs text-amber-700 dark:text-amber-400"
+      className="text-xs text-warning-foreground"
       data-testid="token-plan-maybe"
     >
       {t("tokenPlan.plan.maybe")}

@@ -113,7 +113,7 @@ function BandSlot({
       ) : null}
       {under?.any ? (
         <TruncatedText
-          className="w-full text-xs text-amber-800 dark:text-amber-400"
+          className="w-full text-xs text-warning-foreground"
           data-testid="team-lineup-under-cap"
           lines={2}
         >

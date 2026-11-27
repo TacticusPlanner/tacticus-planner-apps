@@ -229,8 +229,8 @@ export function BattleList({
 }
 
 const VERDICT_STYLES: Record<QuestVerdict, string> = {
-  clears: "bg-green-600/15 text-green-800 dark:text-green-300",
-  close: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
+  clears: "bg-success text-success-foreground",
+  close: "bg-warning text-warning-foreground",
   fails: "bg-destructive/15 text-destructive",
   unknown: "bg-muted text-muted-foreground",
   pending: "text-muted-foreground",

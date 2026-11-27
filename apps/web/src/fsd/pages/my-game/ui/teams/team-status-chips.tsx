@@ -11,9 +11,8 @@ const KIND_CLASS: Record<TeamStatusItem["kind"], string> = {
   cap: "text-muted-foreground",
   // Amber on its tint passes AA; a rule error uses darker or lighter red text than the
   // destructive token, which on its own tint falls under 4.5:1 at this size.
-  warn: "border-amber-600/45 bg-amber-500/12 text-amber-800 dark:text-amber-400",
-  error:
-    "border-destructive/60 bg-destructive/14 text-red-700 dark:text-red-300",
+  warn: "border-warning-foreground/45 bg-warning text-warning-foreground",
+  error: "border-destructive/60 bg-destructive/14 text-destructive",
 }
 
 /** One status fact as a small chip (handoff 5.7): text only, no role. */

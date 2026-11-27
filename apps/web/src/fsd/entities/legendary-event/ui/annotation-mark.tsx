@@ -19,7 +19,7 @@ export function AnnotationMarkIcon({
       className={cn(
         "size-icon",
         status === "maybeClear"
-          ? "text-amber-600 dark:text-amber-400"
+          ? "text-warning-foreground"
           : "text-destructive",
         className
       )}

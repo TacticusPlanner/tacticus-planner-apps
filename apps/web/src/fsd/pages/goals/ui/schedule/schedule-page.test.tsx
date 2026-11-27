@@ -334,8 +334,8 @@ describe("Schedule page", () => {
           (700 / 738) * 100,
           3
         )
-        expect(bar(2)).toHaveClass("bg-amber-500")
-        expect(bar(3)).toHaveClass("bg-amber-500")
+        expect(bar(2)).toHaveClass("bg-warning-foreground")
+        expect(bar(3)).toHaveClass("bg-warning-foreground")
       } finally {
         vi.useRealTimers()
       }

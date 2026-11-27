@@ -108,7 +108,7 @@ export const UnitTile = memo(function UnitTile({
       {note}
       {usedIn ? (
         <TruncatedText
-          className="w-full text-xs wrap-break-word text-amber-800 dark:text-amber-400"
+          className="w-full text-xs wrap-break-word text-warning-foreground"
           data-testid="team-picker-used"
           id={usedId}
           lines={2}
