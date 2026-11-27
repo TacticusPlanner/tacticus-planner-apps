@@ -91,7 +91,7 @@ export function TokenPlanCard({
           </p>
           {plan.bankFullMs !== null ? (
             <p
-              className="text-sm text-amber-700 dark:text-amber-400"
+              className="text-sm text-warning-foreground"
               data-testid="quest-tokens-bank-full"
             >
               {t("tokens.bankFull", { time: time(plan.bankFullMs) })}

@@ -203,7 +203,7 @@ function PushRow({
           {push.closesGap ? (
             <CircleCheck
               aria-label={t("tokenPlan.closeGap.closes")}
-              className="size-icon shrink-0 text-emerald-700 dark:text-emerald-400"
+              className="size-icon shrink-0 text-success-foreground"
               role="img"
             />
           ) : null}

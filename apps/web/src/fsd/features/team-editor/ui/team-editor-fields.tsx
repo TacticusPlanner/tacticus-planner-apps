@@ -301,7 +301,7 @@ export function TeamModesField({
       {sizeReason ? (
         // The lineup itself keeps these modes out: a warning, with how to fix it.
         <p
-          className="flex items-start gap-1.5 text-xs text-amber-800 dark:text-amber-400"
+          className="flex items-start gap-1.5 text-xs text-warning-foreground"
           data-testid="team-modes-size-reason"
           id={sizeReasonId}
         >

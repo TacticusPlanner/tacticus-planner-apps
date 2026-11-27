@@ -86,7 +86,7 @@ export function TeamsModeSection({
         {first ? (
           <SharedHint names={shared.length > 1 ? names : undefined}>
             <span
-              className="flex items-center gap-1 text-xs text-amber-800 dark:text-amber-400"
+              className="flex items-center gap-1 text-xs text-warning-foreground"
               data-testid="teams-section-shared"
             >
               <AlertTriangle aria-hidden="true" className="size-icon-sm" />

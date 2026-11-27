@@ -48,7 +48,7 @@ export function IncursionStarsBar({
             aria-valuenow={earned}
           >
             <div
-              className="h-full rounded-full bg-linear-to-r from-amber-300 to-yellow-500"
+              className="h-full rounded-full bg-linear-to-r from-gold/60 to-gold"
               style={{ width: `${percent}%` }}
             />
           </div>

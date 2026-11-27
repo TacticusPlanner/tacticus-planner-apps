@@ -29,11 +29,6 @@
       "count": 1
     }
   },
-  "src/fsd/entities/legendary-event/ui/annotation-mark.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    }
-  },
   "src/fsd/entities/legendary-event/ui/event-unit-chip.tsx": {
     "no-restricted-syntax": {
       "count": 2
@@ -64,26 +59,13 @@
       "count": 1
     }
   },
-  "src/fsd/features/daily-raids/ui/manual-battle.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    }
-  },
   "src/fsd/features/daily-raids/ui/material-details.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    },
     "no-restricted-syntax": {
       "count": 1
     }
   },
   "src/fsd/features/daily-raids/ui/one-time-rewards.tsx": {
     "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/features/daily-raids/ui/plan/plan-day-card.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
       "count": 1
     }
   },
@@ -243,9 +225,6 @@
     }
   },
   "src/fsd/features/legendary-event-tokens/ui/milestone-gap.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    },
     "no-restricted-syntax": {
       "count": 2
     }
@@ -271,9 +250,6 @@
     }
   },
   "src/fsd/features/legendary-event-tokens/ui/token-plan-rows.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    },
     "no-restricted-syntax": {
       "count": 6
     }
@@ -293,11 +269,6 @@
       "count": 2
     }
   },
-  "src/fsd/features/project-management/ui/project-status-line.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    }
-  },
   "src/fsd/features/project-management/ui/project-summary-row.tsx": {
     "no-restricted-syntax": {
       "count": 1
@@ -309,9 +280,6 @@
     }
   },
   "src/fsd/features/quest-event/ui/objective-chips.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 5
-    },
     "no-restricted-syntax": {
       "count": 1
     }
@@ -342,9 +310,6 @@
     }
   },
   "src/fsd/features/quest-event/ui/rewards-card.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    },
     "no-restricted-syntax": {
       "count": 5
     }
@@ -355,47 +320,18 @@
     }
   },
   "src/fsd/features/quest-event/ui/token-plan-card.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    },
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/features/team-editor/ui/team-editor-fields.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    }
-  },
-  "src/fsd/features/team-editor/ui/team-editor-lineup.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
     }
   },
   "src/fsd/features/team-editor/ui/team-lineup-band.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    },
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/features/team-editor/ui/unit-abilities.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 4
     }
   },
   "src/fsd/features/team-editor/ui/unit-tile.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    },
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/pages/dailies/ui/event-shop/day-state-style.ts": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 5
     }
   },
   "src/fsd/pages/dailies/ui/event-shop/event-shop-day-picker.tsx": {
@@ -414,37 +350,18 @@
     }
   },
   "src/fsd/pages/dailies/ui/event-shop/event-shop-shopping-list.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 11
-    },
     "no-restricted-syntax": {
       "count": 1
     }
   },
-  "src/fsd/pages/dailies/ui/event-shop/event-shop-slot-sheet.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 4
-    }
-  },
   "src/fsd/pages/dailies/ui/event-shop/event-shop-slots.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 19
-    },
     "no-restricted-syntax": {
       "count": 5
     }
   },
   "src/fsd/pages/dailies/ui/event-shop/event-shop-totals-bar.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    },
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/pages/dailies/ui/event-shop/event-shop-view.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
     }
   },
   "src/fsd/pages/dailies/ui/guild-raids/exact-meta/guild-raid-exact-meta-card.tsx": {
@@ -532,11 +449,6 @@
       "count": 1
     }
   },
-  "src/fsd/pages/goals/ui/shared/campaign-lock-reasons.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    }
-  },
   "src/fsd/pages/goals/ui/shared/covered-by-note.tsx": {
     "no-restricted-syntax": {
       "count": 1
@@ -577,15 +489,7 @@
       "count": 1
     }
   },
-  "src/fsd/pages/goals/ui/shared/stacked-progress-bar.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    }
-  },
   "src/fsd/pages/goals/ui/shared/status-badge.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 4
-    },
     "no-restricted-syntax": {
       "count": 3
     }
@@ -593,16 +497,6 @@
   "src/fsd/pages/goals/ui/shared/use-goal-resource-chips.ts": {
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/pages/guild-war/ui/offense/offense-teams.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
-    }
-  },
-  "src/fsd/pages/guild-war/ui/offense/selection-bar.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 5
     }
   },
   "src/fsd/pages/home/ui/events-calendar/event-entry-card.tsx": {
@@ -906,21 +800,8 @@
     }
   },
   "src/fsd/pages/my-game/ui/incursions/incursion-estimate.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 9
-    },
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/pages/my-game/ui/incursions/incursion-node-card.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/my-game/ui/incursions/incursion-node-marker.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
     }
   },
   "src/fsd/pages/my-game/ui/incursions/incursion-power.tsx": {
@@ -935,11 +816,6 @@
   },
   "src/fsd/pages/my-game/ui/incursions/incursion-run-map.tsx": {
     "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/pages/my-game/ui/incursions/incursion-stars-bar.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
       "count": 2
     }
   },
@@ -966,11 +842,6 @@
   "src/fsd/pages/my-game/ui/progress-summary.tsx": {
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/pages/my-game/ui/teams/teams-sections.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 2
     }
   },
   "src/fsd/pages/survival/ui/enemies-tab.tsx": {
@@ -1035,11 +906,6 @@
   },
   "src/fsd/widgets/event-rewards/model/use-event-reward-format.ts": {
     "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/widgets/event-rewards/ui/mission-list.tsx": {
-    "better-tailwindcss/no-restricted-classes": {
       "count": 1
     }
   },

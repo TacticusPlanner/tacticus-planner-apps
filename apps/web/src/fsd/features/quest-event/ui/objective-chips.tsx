@@ -64,7 +64,7 @@ export function ObjectiveChips({
             className={cn(
               "inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5",
               compact ? "text-xs" : "text-sm",
-              restriction && "border-amber-500/50 bg-amber-500/10"
+              restriction && "border-warning-foreground/50 bg-warning"
             )}
             data-restriction={restriction ? "true" : undefined}
             data-testid="quest-objective-chip"
@@ -83,7 +83,7 @@ export function ObjectiveChips({
                 className={cn(
                   "min-w-0 rounded-full px-1.5 text-xs font-medium",
                   badge?.kind === "met"
-                    ? "bg-green-600/15 text-green-800 dark:text-green-300"
+                    ? "bg-success text-success-foreground"
                     : "bg-muted text-muted-foreground"
                 )}
                 data-badge={badge?.kind}

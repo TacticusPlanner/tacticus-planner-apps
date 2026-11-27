@@ -70,7 +70,7 @@ export function EventShopShoppingListTotalsBar({
               : t("list.stillToBuyBar", { amount })}
         </span>
         {review > 0 ? (
-          <span className="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-semibold text-amber-950">
+          <span className="rounded-full bg-warning-foreground px-2 py-0.5 text-xs font-semibold text-background">
             {t("list.toReview", { count: review })}
           </span>
         ) : null}

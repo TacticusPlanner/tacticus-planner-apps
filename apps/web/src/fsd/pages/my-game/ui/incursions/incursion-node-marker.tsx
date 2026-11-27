@@ -58,7 +58,7 @@ export function IncursionNodeMarker({
           className={cn(
             "flex items-center justify-center rounded-full border-2 bg-zinc-900 text-sm font-bold text-zinc-50 tabular-nums",
             box,
-            challenge ? "border-orange-500" : "border-amber-700/70"
+            challenge ? "border-challenge" : "border-gold/60"
           )}
         >
           {nodeName(node)}

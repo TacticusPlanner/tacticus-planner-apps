@@ -37,10 +37,10 @@ export function IncursionEstimate({
           className={cn(
             "tabular-nums",
             estimate.status === "stuck"
-              ? "border-red-600/50 text-red-700 dark:text-red-400"
+              ? "border-destructive/50 text-destructive"
               : estimate.runs === 1
-                ? "border-emerald-600/50 text-emerald-700 dark:text-emerald-400"
-                : "border-amber-600/50 text-amber-700 dark:text-amber-400"
+                ? "border-success-foreground/50 text-success-foreground"
+                : "border-warning-foreground/50 text-warning-foreground"
           )}
           data-testid={testId}
           data-status={estimate.status}

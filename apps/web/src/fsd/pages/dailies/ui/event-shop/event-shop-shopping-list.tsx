@@ -107,7 +107,7 @@ export function ShoppingList({
                 "font-semibold",
                 key === "missed" &&
                   list.totals.missed > 0 &&
-                  "text-amber-700 dark:text-amber-400"
+                  "text-warning-foreground"
               )}
               data-testid={`event-shop-total-${key}`}
             >
@@ -345,7 +345,7 @@ function Budget({
         <dd
           className={cn(
             "inline-flex items-center gap-1 font-semibold",
-            left < 0 && "text-amber-700 dark:text-amber-400"
+            left < 0 && "text-warning-foreground"
           )}
         >
           {cost(Math.abs(left))}
@@ -394,7 +394,8 @@ function Group({
     <div
       className={cn(
         "flex flex-col gap-1",
-        tone === "review" && "rounded-md border border-amber-500/40 p-2"
+        tone === "review" &&
+          "rounded-md border border-warning-foreground/40 p-2"
       )}
       data-past={past || undefined}
       data-testid={testId}
@@ -403,7 +404,7 @@ function Group({
         <h3
           className={cn(
             "flex items-center gap-1.5 text-sm font-semibold",
-            tone === "review" && "text-amber-700 dark:text-amber-400",
+            tone === "review" && "text-warning-foreground",
             past && "text-muted-foreground"
           )}
         >
@@ -482,7 +483,7 @@ function ListRow({
           {entry.state === "needsReview" && entry.missedPacks > 0 ? (
             <>
               <span>·</span>
-              <span className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400">
+              <span className="inline-flex items-center gap-1 text-warning-foreground">
                 <Cost
                   amount={entry.missedPacks * entry.costPerPack}
                   currency={controller.event.currency}
@@ -505,7 +506,7 @@ function ListRow({
         </p>
         {entry.boughtAhead ? (
           <p
-            className="flex flex-wrap items-center gap-x-1.5 text-xs text-amber-700 dark:text-amber-400"
+            className="flex flex-wrap items-center gap-x-1.5 text-xs text-warning-foreground"
             data-testid={`event-shop-bought-ahead-${entry.dayIndex}-${ref.slotIndex}`}
           >
             {t("list.notOnSale", { date })}

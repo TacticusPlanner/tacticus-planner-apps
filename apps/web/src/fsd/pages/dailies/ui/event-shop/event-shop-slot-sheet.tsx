@@ -193,7 +193,7 @@ export function SlotSheet({
                         </span>
                       </span>
                       {view.freebieOf(option.rewardType) ? (
-                        <span className="shrink-0 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                        <span className="shrink-0 text-xs font-medium text-success-foreground">
                           {t("slot.freebieShort")}
                         </span>
                       ) : planned ? null : (
@@ -211,7 +211,7 @@ export function SlotSheet({
                 })}
               </ul>
             ) : view.freebie ? (
-              <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+              <p className="text-sm font-semibold text-success-foreground">
                 {t("slot.pack", { qty: format.number(view.shown.qty) })} ·{" "}
                 {t("slot.freebieShort")}
               </p>

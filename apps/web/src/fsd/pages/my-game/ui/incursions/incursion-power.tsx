@@ -12,9 +12,9 @@ import { EntityIcon } from "@/shared/ui"
 import { powerStanding } from "../../model/incursion-plan.model"
 
 const STANDING_CLASS = {
-  even: "text-emerald-700 dark:text-emerald-400",
-  harder: "text-amber-700 dark:text-amber-400",
-  hard: "text-red-700 dark:text-red-400",
+  even: "text-success-foreground",
+  harder: "text-warning-foreground",
+  hard: "text-destructive",
 } as const
 
 /**

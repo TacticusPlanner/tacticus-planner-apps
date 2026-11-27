@@ -364,7 +364,7 @@ export function RewardsCard({
                     })}
                   </span>
                   {opened ? (
-                    <span className="inline-flex items-center gap-0.5 text-green-700 dark:text-green-400">
+                    <span className="inline-flex items-center gap-0.5 text-success-foreground">
                       <CheckIcon aria-hidden className="size-icon" />
                       {t("rewards.opened")}
                     </span>

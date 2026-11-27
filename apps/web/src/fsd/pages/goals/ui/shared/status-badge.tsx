@@ -211,7 +211,7 @@ export function BlockedIndicator({
           >
             <Badge
               className={cn(
-                "gap-1 border-transparent bg-amber-400 text-amber-950",
+                "gap-1 border-transparent bg-warning-foreground text-background",
                 className
               )}
               variant="outline"
@@ -241,10 +241,7 @@ export function BlockedIndicator({
           type="button"
         >
           <Badge
-            className={cn(
-              "gap-1 text-amber-800 dark:text-amber-400",
-              className
-            )}
+            className={cn("gap-1 text-warning-foreground", className)}
             variant="outline"
           >
             <LockKeyhole className="size-icon-xs" />

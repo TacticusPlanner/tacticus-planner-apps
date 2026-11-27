@@ -12,8 +12,7 @@ import type { Selection } from "../../model/offense"
 
 const FIT_CLASS = {
   // Amber on its tint passes AA, as on the Teams page's status chips.
-  under:
-    "border-amber-600/45 bg-amber-500/12 text-amber-800 dark:text-amber-400",
+  under: "border-warning-foreground/45 bg-warning text-warning-foreground",
   over: "text-muted-foreground",
 } as const
 
