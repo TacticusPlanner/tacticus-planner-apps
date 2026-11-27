@@ -1,12 +1,13 @@
 ---
 name: ui-style-guide
-description: Style guide for the V2 web app — page header, page toolbar slots, which control to use for which option, tabs, density and touch sizes, game icon sizes, UI copy, and overlays (dialogs, sheets, popovers, tooltips, confirms). Use when adding or changing a page, a toolbar, a filter, a group-by/sort/view control, a game icon (unit portrait, upgrade, equipment, faction, trait…), a dialog, sheet, popover or confirm, a table (Table vs DataTable), or any user-facing string in apps/web or packages/ui.
+description: Style guide for the V2 web app — page header, page toolbar slots, which control to use for which option, tabs, density and touch sizes, game icon sizes, UI copy, and overlays (dialogs, sheets, popovers, tooltips, confirms). Use when adding or changing a page, a toolbar, a filter, a group-by/sort/view control, a game icon (unit portrait, upgrade, equipment, faction, trait…), a dialog, sheet, popover or confirm, a table (Table vs DataTable), a loading state, a status colour, a toast or alert, a button, a number format, or any user-facing string in apps/web or packages/ui.
 ---
 
 # UI style guide
 
 The same job looks the same and sits in the same place on every page. This
-guide covers layout, controls, game icons, copy, overlays, hover and tables; the `ui-sizing` skill is
+guide covers layout, controls, game icons, copy, overlays, hover, tables, loading states,
+status colours, messages and buttons; the `ui-sizing` skill is
 its sizing chapter (type, icon, control and spacing scale, and the lint rule
 that bans hardcoded px) and still applies in full.
 
@@ -22,8 +23,10 @@ The icon sizes in rule 6 are the `size` prop of the game icon components
 confirm follows rule 8 (overlays). Nothing adds a new page-specific variant of
 anything below.
 
-Lint enforces two rules in `apps/web` (`no-restricted-syntax`): a hand-written
-`aria-pressed` (rule 3) and an `<h1>` outside the app shell's layout (rule 1).
+Lint enforces these rules in `apps/web`: a hand-written `aria-pressed` (rule 3),
+an `<h1>` outside the app shell's layout (rule 1), a native `title` (rule 8), a
+home-made spinner (rule 11), a raw status colour (rule 12), a raw `<button>`
+(rule 14) and a hand-built number format (copy rule 11).
 Hits that predate the rule are counted in `apps/web/eslint-suppressions.json`.
 When you fix one, run `pnpm --filter web lint:eslint --prune-suppressions` so
 it can't come back. A screen outside the app shell (landing, account setup,
@@ -243,6 +246,11 @@ Short, true right now, written for players — not developers.
 | 12  | "Create" makes a new record; "Add" puts a thing into another      | "Add goal", "Add team", "New project"                                                  | "Create goal", "Create team"; "Add to project"                       |
 | 13  | A count beside a label is a `CountBadge`, not parentheses         | "Resume (2)"                                                                           | "Resume" with a 2 badge                                              |
 
+Copy rule 11 in code: numbers use `useNumberFormat()` (or `numberFormat(locale)` outside a
+component) from `@/shared/lib`, which formats in the app language and caches the format; dates,
+durations and countdowns use the `@/shared/lib` date helpers (`formatShortDate`, `formatDateRange`, `formatEventCountdown`, `formatRelativeTime`). Lint rejects `new Intl.NumberFormat` and a
+bare `toLocaleString()` in `apps/web`.
+
 Game terms follow the repo glossary (shards, orbs, promote, ascend, D3, A2…).
 Strings live in `apps/web/public/locales/en`; see the `react-i18next` skill.
 
@@ -430,6 +438,74 @@ row count alone.
   sideways inside its container; the page never does.
 - Hover follows rule 9: `TableRow` brings its own; add nothing.
 
+## 11. Loading states
+
+One way to show each kind of wait.
+
+| Waiting for                                                       | Show                                                                    |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Content whose shape is known (a list, cards, a table, a stat row) | `Skeleton` blocks in that shape, so nothing jumps when it arrives       |
+| The result of a press (Save, Sync, Refresh)                       | `Spinner` inside that button or control, which stays in place, disabled |
+| A whole page or panel whose shape is not known yet                | One centred `Spinner` with a short label beside it ("Loading goals")    |
+
+- `Spinner` (`@workspace/ui/components/spinner`) is the one spinner. Never
+  `animate-spin` on another icon, never a lucide `Loader*` icon: lint rejects
+  both outside the shared component.
+- Never "Loading…" text on its own: pair it with a `Skeleton` or a `Spinner`.
+- A read that failed is not a loading state: show `LocalReadFailure` (rule 13).
+
+## 12. Status colours
+
+Status meaning comes from tokens, which flip with the theme. Never a raw
+palette colour (`text-amber-700`, `bg-emerald-600`, `text-red-400`): lint
+rejects them in `apps/web`.
+
+| Meaning                              | Text and icon             | Tint behind it | Alert                         |
+| ------------------------------------ | ------------------------- | -------------- | ----------------------------- |
+| Error, something failed, destructive | `text-destructive`        | none           | `Alert variant="destructive"` |
+| Warning, needs attention, at risk    | `text-warning-foreground` | `bg-warning`   | `Alert variant="warning"`     |
+| Success, done, on track              | `text-success-foreground` | `bg-success`   | none: a toast (rule 13)       |
+| Info, a neutral note                 | `text-foreground`         | `bg-info-bg`   | `Alert variant="info"`        |
+
+- Colour is never the only signal: an icon or a word carries the meaning too.
+- A domain colour (rarity, faction, event family, season fit) uses its own
+  token, never a status token borrowed for its hue.
+
+## 13. Messages: toast, alert or read failure
+
+| What happened                                                      | Use                                        |
+| ------------------------------------------------------------------ | ------------------------------------------ |
+| The result of the user's own action (saved, copied, deleted, undo) | `toast.success` / `toast.error` (`sonner`) |
+| A state that stays until something changes (offline, not synced)   | An inline `Alert` where it applies         |
+| A local read failed                                                | `LocalReadFailure` with its Retry button   |
+
+- A toast never carries the only copy of something the user must act on: it
+  disappears. Errors from a user's action are a toast; a page that cannot work
+  shows an `Alert`.
+- One toast per action; the copy rules apply ("Goal created", not "Success!").
+- `Alert` colours follow rule 12.
+
+## 14. Buttons
+
+Every pressable element is one of four shared components; a raw `<button>`
+brings its own hover, focus and press styles, and lint rejects it in
+`apps/web`.
+
+| It looks like                                         | Use                                                      |
+| ----------------------------------------------------- | -------------------------------------------------------- |
+| A button: a label, maybe an icon                      | `Button` (never `size="sm"` in a toolbar: rule 5)        |
+| A text link that runs an action ("Show all", "Retry") | `Button variant="link"`                                  |
+| Only an icon                                          | `IconButton` (its `label` is the name and the tooltip)   |
+| A card, tile, list row, chip or portrait              | `Pressable` (`@workspace/ui/components/pressable`)       |
+| A card, tile or row that opens another route          | A link stretched over the card (`after:inset-0`, rule 9) |
+
+- `Pressable` is a `type="button"` with no look of its own: layout, padding
+  and radius come from `className`. `variant="surface"` (the default) adds the
+  rule 9 hover; `variant="art"` is for a target that is all art.
+- A card that navigates is a link, not a button, so it keeps open in a new
+  tab and the link's role. Put the stretched link inside the card and the
+  `interactive-surface` hover on the card (rule 9).
+
 ## Review checklist
 
 - [ ] Page has the standard header; settings (if any) is the labelled button at its right.
@@ -443,6 +519,10 @@ row count alone.
 - [ ] Clickable cards, tiles and rows use `interactive-surface` (rule 9); no solid or page-specific hover.
 - [ ] Other icons are 20px (`size-icon`) unless they fall under an exception in `ui-sizing`.
 - [ ] Every game entity with an icon shows it; no raw ids reach the screen.
+- [ ] Loading states follow rule 11: a `Skeleton` in the content's shape, `Spinner` in the pressed control, no home-made spinner and no bare "Loading…".
+- [ ] Status colours are tokens (rule 12); messages pick toast, `Alert` or `LocalReadFailure` by rule 13.
+- [ ] No raw `<button>`: `Button`, `Button variant="link"`, `IconButton` or `Pressable` (rule 14).
+- [ ] Numbers go through `useNumberFormat()` and dates through the shared date helpers (copy rule 11).
 - [ ] Tables follow rule 10: `Table` primitives for fixed-order or small tables, the shared `DataTable` for column sort, filter or paging; sortable headers set `aria-sort`.
 - [ ] Each overlay is the one rule 8 names for its job, with a title, a rule 8 footer and one of the three widths.
 - [ ] New or changed strings pass the copy rules.

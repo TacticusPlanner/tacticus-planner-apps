@@ -38,6 +38,29 @@ const sizeUtilities = [
   String.raw`(?:border|ring|outline)(?:-[a-z]+)?`,
 ].join("|")
 
+/**
+ * The sizing restrictions, exported so apps/web can extend the list with its own style-guide rules
+ * (one `no-restricted-classes` setting per file wins, so the lists have to be merged).
+ * @public
+ */
+export const sizingRestrictions = [
+  {
+    pattern: `${prefix}text-${length}!?$`,
+    message:
+      "Hardcoded text size. Use text-2xs (badge numerals only) or text-xs … text-4xl — see the ui-sizing skill.",
+  },
+  {
+    pattern: String.raw`^(?:[^\s]*:)?(?:grid-(?:cols|rows)-\[|\[grid-template-[a-z-]+:).*\dpx`,
+    message:
+      "Hardcoded px in a grid template. Use rem tracks (28px → 1.75rem) so they follow the root size.",
+  },
+  {
+    pattern: `${prefix}(?:${sizeUtilities})-${length}!?$`,
+    message:
+      "Hardcoded length. Use the spacing/radius scale (e.g. size-3.5, h-6, w-105, rounded-lg) — see the ui-sizing skill.",
+  },
+]
+
 // Class strings kept in constants (`const ROW_GRID = "grid …"`, `outlinedText`, `rowClasses`).
 const classVariableNames = String.raw`^(?:[A-Z][A-Z0-9_]*|.*(?:[Cc]lass(?:Name)?(?:es|s)?|[Ss]tyles?|Grid|Layout|Text|Variants?))$|^layout$`
 
@@ -77,23 +100,7 @@ export const tailwindSizingConfig = {
     "better-tailwindcss/no-restricted-classes": [
       "error",
       {
-        restrict: [
-          {
-            pattern: `${prefix}text-${length}!?$`,
-            message:
-              "Hardcoded text size. Use text-2xs (badge numerals only) or text-xs … text-4xl — see the ui-sizing skill.",
-          },
-          {
-            pattern: String.raw`^(?:[^\s]*:)?(?:grid-(?:cols|rows)-\[|\[grid-template-[a-z-]+:).*\dpx`,
-            message:
-              "Hardcoded px in a grid template. Use rem tracks (28px → 1.75rem) so they follow the root size.",
-          },
-          {
-            pattern: `${prefix}(?:${sizeUtilities})-${length}!?$`,
-            message:
-              "Hardcoded length. Use the spacing/radius scale (e.g. size-3.5, h-6, w-105, rounded-lg) — see the ui-sizing skill.",
-          },
-        ],
+        restrict: sizingRestrictions,
       },
     ],
   },

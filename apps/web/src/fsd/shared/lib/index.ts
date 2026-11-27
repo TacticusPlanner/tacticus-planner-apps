@@ -18,8 +18,10 @@ export {
   formatEventCountdown,
   formatRelativeTime,
   getDeviceFirstDayOfWeek,
+  numberFormat,
   useDateLocale,
-} from "./format-time"
+  useNumberFormat,
+} from "./format"
 export {
   combineReadStates,
   hasNode,
