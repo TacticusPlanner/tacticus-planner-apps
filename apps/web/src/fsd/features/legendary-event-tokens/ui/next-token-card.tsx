@@ -157,7 +157,7 @@ export function NextTokenCard({
           <Note testId="next-token-plan-error">{t("teams.loadError")}</Note>
         ) : null}
         {view.kind === "ready" && view.empty ? (
-          <EmptyState empty={view.empty} onOpenTeams={onOpenTeams} />
+          <NextTokenEmptyNote empty={view.empty} onOpenTeams={onOpenTeams} />
         ) : null}
         {view.kind === "ready" && view.next && ordered ? (
           <div className="flex flex-col gap-3" data-order="missions">
@@ -457,7 +457,7 @@ function nextTokenReason(
       })
 }
 
-function EmptyState({
+function NextTokenEmptyNote({
   empty,
   onOpenTeams,
 }: {

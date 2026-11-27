@@ -2,15 +2,10 @@ import { useId, useMemo, useState } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import type { Rarity } from "@workspace/game-domain"
-import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { TeamRoster } from "@/entities/team"
-import {
-  FILTER_CHIP_CLASS_NAME,
-  HintedToggleGroupItem,
-  SearchField,
-} from "@/shared/ui"
+import { SearchField, OwnedOnlyChip } from "@/shared/ui"
 
 import { filterPickerUnits, pickerFilterOptions } from "../model/unit-picker"
 import type { PickerFilters, PickerUnit } from "../model/unit-picker"
@@ -89,49 +84,6 @@ export function TeamPickerGrid({
         )
       })}
     </ul>
-  )
-}
-
-/**
- * "Owned only", as on Collection: lists only the units the player owns. Without a synced roster
- * nothing can be owned, so it is off and disabled and says why on hover and to screen readers.
- */
-function OwnedOnlyChip({
-  on,
-  onChange,
-  rosterAvailable,
-}: {
-  on: boolean
-  onChange: (on: boolean) => void
-  rosterAvailable: boolean
-}) {
-  const { t } = useTranslation("teams")
-  const hintId = useId()
-  const hint = rosterAvailable ? undefined : t("picker.ownedOnlyNeedsRoster")
-  return (
-    <>
-      <ToggleGroup
-        onValueChange={(values) => onChange(values.includes("owned"))}
-        type="multiple"
-        value={rosterAvailable && on ? ["owned"] : []}
-        variant="outline"
-      >
-        <HintedToggleGroupItem
-          aria-describedby={hint ? hintId : undefined}
-          className={FILTER_CHIP_CLASS_NAME}
-          data-testid="team-picker-owned-only"
-          disabledReason={hint}
-          value="owned"
-        >
-          {t("picker.ownedOnly")}
-        </HintedToggleGroupItem>
-      </ToggleGroup>
-      {hint ? (
-        <span className="sr-only" id={hintId}>
-          {hint}
-        </span>
-      ) : null}
-    </>
   )
 }
 
@@ -236,9 +188,11 @@ export function TeamUnitPicker({
           panelId={filtersPanelId}
         />
         <OwnedOnlyChip
-          on={filters.ownedOnly}
+          disabledReason={roster ? undefined : t("picker.ownedOnlyNeedsRoster")}
+          label={t("picker.ownedOnly")}
+          on={roster !== null && filters.ownedOnly}
           onChange={(ownedOnly) => onFiltersChange({ ownedOnly })}
-          rosterAvailable={roster !== null}
+          testId="team-picker-owned-only"
         />
       </div>
       {roster ? null : (

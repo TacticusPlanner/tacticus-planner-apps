@@ -1,7 +1,6 @@
 import { memo } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
 import { energyIcon } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
@@ -13,14 +12,13 @@ import type {
   EventFarmOrder,
 } from "../../model/home-screen-event-farm"
 import type { HseRaidRule } from "../../model/home-screen-event-rules"
-import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
-import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
 import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
 import { useDailyRaids } from "../../model/use-daily-raids"
 import { useListPaging } from "../../model/use-list-paging"
 import { ListPagingControls } from "../list-paging-controls"
 import { CampaignGroupedList } from "../campaign-group"
 import type { RaidLocationTarget } from "../raid-location-name"
+import { RaidsEmptyNote } from "../raids-empty-note"
 import { RaidState } from "../raid-state"
 import { ResourceIconWithTooltip } from "../resource-icon"
 import { ResourceStock } from "../resource-stock"
@@ -173,31 +171,13 @@ export const EventFarmSection = memo(function EventFarmSection({
           <ListPagingControls paging={paging} testId="hse-raids-paging" />
         </>
       ) : emptyReason ? (
-        <EmptyState reason={emptyReason} />
+        <RaidsEmptyNote
+          filtered={emptyReason === "filtered"}
+          message={t(EMPTY_KEYS[emptyReason])}
+          resetTestId="hse-raids-reset"
+          testId={`hse-raids-empty-${emptyReason}`}
+        />
       ) : null}
     </section>
   )
 })
-
-function EmptyState({ reason }: { reason: EventFarmEmptyReason }) {
-  const { t } = useTranslation("dailies")
-  const [, setFilters] = useRaidsFilters()
-  return (
-    <div
-      className="space-y-2 text-sm text-muted-foreground"
-      data-testid={`hse-raids-empty-${reason}`}
-    >
-      <p>{t(EMPTY_KEYS[reason])}</p>
-      {reason === "filtered" ? (
-        <Button
-          data-testid="hse-raids-reset"
-          onClick={() => setFilters(emptyRaidsFilters)}
-          size="sm"
-          variant="outline"
-        >
-          {t("raidsFilters.filteredOut.reset")}
-        </Button>
-      ) : null}
-    </div>
-  )
-}

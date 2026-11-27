@@ -14,6 +14,7 @@ import type {
 import type { UnlockShardCostStorageModel } from "@workspace/game-catalog"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
+import { clampRatio } from "@/shared/lib"
 import { rankTargetSlots } from "@/entities/goal"
 import type { GoalKind } from "@/entities/goal"
 import { reachableRankProgress } from "@/entities/goal-farming"
@@ -190,11 +191,6 @@ function goalTargetPreview(
 function unknownProgress(detail: GoalProgressParams["detail"]): GoalProgress {
   const preview = goalTargetPreview(detail)
   return preview ? { kind: "Unknown", preview } : UNKNOWN_PROGRESS
-}
-
-function clampRatio(done: number, total: number): number {
-  if (total <= 0) return 1
-  return Math.min(1, Math.max(0, done / total))
 }
 
 export type GoalProgressParams = GoalAttainmentParams & {

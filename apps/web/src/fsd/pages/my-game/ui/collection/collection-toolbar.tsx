@@ -1,4 +1,4 @@
-import { useCallback, useId } from "react"
+import { useCallback } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { LayoutGrid, List, X } from "lucide-react"
@@ -11,18 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
-import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
 import {
-  FILTER_CHIP_CLASS_NAME,
   FiltersControl,
   GroupByControl,
-  HintedToggleGroupItem,
   PageToolbar,
   SearchField,
   SegmentedControl,
   useViewPlacement,
+  OwnedOnlyChip,
 } from "@/shared/ui"
 
 import {
@@ -101,9 +99,16 @@ export function CollectionToolbar(props: CollectionToolbarProps) {
           onRetry={onRetry}
           leading={
             <OwnedOnlyChip
-              query={query}
-              update={update}
-              rosterAvailable={rosterAvailable}
+              disabledReason={
+                rosterAvailable
+                  ? undefined
+                  : t("myGame.collection.toolbar.hideUnownedNeedsRoster")
+              }
+              label={t("myGame.collection.toolbar.ownedOnly")}
+              on={query.hideUnowned}
+              onChange={(hideUnowned) => update({ hideUnowned })}
+              size="sm"
+              testId="owned-only-chip"
             />
           }
         />
@@ -246,51 +251,5 @@ function GroupControl({
       testId="collection-group-by"
       value={query.group}
     />
-  )
-}
-
-/**
- * Lists only the units the player owns: a filter chip kept in `?owned=owned`. Without a roster
- * nothing can be owned, so it is disabled and says why on hover and to screen readers.
- */
-function OwnedOnlyChip({
-  query,
-  update,
-  rosterAvailable,
-}: Pick<CollectionToolbarProps, "query" | "update" | "rosterAvailable">) {
-  const { t } = useTranslation("common")
-  const hintId = useId()
-  const hint = rosterAvailable
-    ? undefined
-    : t("myGame.collection.toolbar.hideUnownedNeedsRoster")
-  return (
-    <>
-      <ToggleGroup
-        type="multiple"
-        variant="outline"
-        size="sm"
-        spacing={1}
-        className="shrink-0"
-        value={query.hideUnowned ? ["owned"] : []}
-        onValueChange={(values) =>
-          update({ hideUnowned: values.includes("owned") })
-        }
-      >
-        <HintedToggleGroupItem
-          value="owned"
-          className={FILTER_CHIP_CLASS_NAME}
-          aria-describedby={hint ? hintId : undefined}
-          data-testid="owned-only-chip"
-          disabledReason={hint}
-        >
-          {t("myGame.collection.toolbar.ownedOnly")}
-        </HintedToggleGroupItem>
-      </ToggleGroup>
-      {hint ? (
-        <span id={hintId} className="sr-only">
-          {hint}
-        </span>
-      ) : null}
-    </>
   )
 }

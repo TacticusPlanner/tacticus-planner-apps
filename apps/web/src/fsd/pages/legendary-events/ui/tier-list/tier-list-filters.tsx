@@ -1,4 +1,3 @@
-import { useId } from "react"
 import { useTranslation } from "react-i18next"
 import { onslaughtAllianceIcon } from "@workspace/game-catalog"
 import {
@@ -8,7 +7,12 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { HordeTierAlliance } from "@/entities/legendary-event"
-import { EntityIcon, FILTER_CHIP_CLASS_NAME, PageToolbar } from "@/shared/ui"
+import {
+  EntityIcon,
+  FILTER_CHIP_CLASS_NAME,
+  PageToolbar,
+  OwnedOnlyChip,
+} from "@/shared/ui"
 
 import { TierListSearchField } from "./tier-list-search-field"
 import { TIER_LIST_ALLIANCES } from "./tier-list.view-model"
@@ -42,7 +46,21 @@ export function TierListFilters(props: TierListFiltersProps) {
             isMobile ? "overflow-x-auto pb-1" : "flex-wrap"
           )}
         >
-          <OwnedOnlyChip {...props} />
+          <OwnedOnlyChip
+            disabled={!props.rosterKnown}
+            disabledReason={
+              props.rosterKnown || props.rosterLoading
+                ? undefined
+                : t("tierList.syncRoster")
+            }
+            label={t("tierList.onlyOwned")}
+            on={(props.rosterKnown || props.rosterLoading) && filters.onlyOwned}
+            onChange={(onlyOwned) => onChange({ onlyOwned })}
+            reasonTestId="tier-list-roster-unknown"
+            reasonVisible
+            size="sm"
+            testId="tier-list-only-owned"
+          />
           <AllianceChips
             alliance={filters.alliance}
             onChange={(alliance) => onChange({ alliance })}
@@ -59,52 +77,6 @@ export function TierListFilters(props: TierListFiltersProps) {
       }
       testId="tier-list-filters"
     />
-  )
-}
-
-function OwnedOnlyChip({
-  filters,
-  rosterKnown,
-  rosterLoading,
-  onChange,
-}: TierListFiltersProps) {
-  const { t } = useTranslation("legendaryEvents")
-  const hintId = useId()
-  const showHint = !rosterKnown && !rosterLoading
-  const on = (rosterKnown || rosterLoading) && filters.onlyOwned
-  return (
-    <>
-      <ToggleGroup
-        className="shrink-0"
-        disabled={!rosterKnown}
-        onValueChange={(values) =>
-          onChange({ onlyOwned: values.includes("owned") })
-        }
-        size="sm"
-        spacing={1}
-        type="multiple"
-        value={on ? ["owned"] : []}
-        variant="outline"
-      >
-        <ToggleGroupItem
-          aria-describedby={showHint ? hintId : undefined}
-          className={FILTER_CHIP_CLASS_NAME}
-          data-testid="tier-list-only-owned"
-          value="owned"
-        >
-          {t("tierList.onlyOwned")}
-        </ToggleGroupItem>
-      </ToggleGroup>
-      {showHint ? (
-        <span
-          className="shrink-0 text-sm text-muted-foreground"
-          data-testid="tier-list-roster-unknown"
-          id={hintId}
-        >
-          {t("tierList.syncRoster")}
-        </span>
-      ) : null}
-    </>
   )
 }
 

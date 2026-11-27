@@ -5,15 +5,12 @@ import type {
 import type { UpgradeId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
+import { clamp01 } from "@/shared/lib"
 import type { GoalDetail } from "@/entities/goal"
 
 import { computeGoalProgress } from "../attainment/goal-progress"
 import type { GoalProgress } from "../attainment/goal-progress"
 import type { GoalInventoryAllocation } from "@/entities/goal-farming"
-
-function clampRatio(value: number): number {
-  return Math.min(1, Math.max(0, value))
-}
 
 function actualRatio(progress: GoalProgress): number | null {
   return progress.kind === "Unknown" || progress.ratio === null
@@ -34,7 +31,7 @@ function stageBoundary(detail: GoalDetail, target: string): number {
     )
     const totalSlots = (end - start) * 6 + requiredApplied
     if (totalSlots <= 0 || targetIndex >= end) return 1
-    return clampRatio(((targetIndex - start) * 6) / totalSlots)
+    return clamp01(((targetIndex - start) * 6) / totalSlots)
   }
 
   if (detail.goalType === "Ability" && detail.config.ability) {
@@ -44,7 +41,7 @@ function stageBoundary(detail: GoalDetail, target: string): number {
     const end = usesActive ? ability.activeEnd : ability.passiveEnd
     const targetLevel = Number(target)
     if (!Number.isFinite(targetLevel) || end <= start) return 1
-    return clampRatio((targetLevel - start) / (end - start))
+    return clamp01((targetLevel - start) / (end - start))
   }
 
   return 1
@@ -69,7 +66,7 @@ export function computePotentialProgressRatio(
     const required = stage.needs.reduce((sum, need) => sum + need.count, 0)
     const remaining = stage.remaining.reduce((sum, need) => sum + need.count, 0)
     const allocatedFraction =
-      required <= 0 ? 1 : clampRatio((required - remaining) / required)
+      required <= 0 ? 1 : clamp01((required - remaining) / required)
 
     potential = Math.max(
       potential,
@@ -79,7 +76,7 @@ export function computePotentialProgressRatio(
     previousBoundary = boundary
   }
 
-  return clampRatio(Math.max(current, potential))
+  return clamp01(Math.max(current, potential))
 }
 
 /** Each Ascension/Rank/Ability goal's Potential-progress ratio from its plan allocation (orb allocation

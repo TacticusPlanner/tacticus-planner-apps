@@ -1,3 +1,4 @@
+import { sumRanges } from "@/shared/lib"
 import type { BattleProgressOverride } from "@/entities/player-data-override"
 
 /** One reached battle of a standing campaign, as the battle progress dialog lists it. */
@@ -263,21 +264,10 @@ export function unclaimedRewardsOf(
 
 /** Sums rewards by id, keeping the first-seen order. */
 export function sumRewards(rewards: readonly OneTimeReward[]): OneTimeReward[] {
-  const byId = new Map<string, OneTimeReward>()
-  for (const reward of rewards) {
-    const current = byId.get(reward.id)
-    byId.set(
-      reward.id,
-      current
-        ? {
-            id: reward.id,
-            min: current.min + reward.min,
-            max: current.max + reward.max,
-          }
-        : { id: reward.id, min: reward.min, max: reward.max }
-    )
-  }
-  return [...byId.values()]
+  return sumRanges(
+    rewards.map(({ id, min, max }) => ({ id, min, max })),
+    (reward) => reward.id
+  )
 }
 
 type EventTrackProgress = Parameters<typeof beatenEventBattleRows>[3]

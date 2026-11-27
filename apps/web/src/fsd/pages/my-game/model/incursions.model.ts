@@ -1,5 +1,5 @@
 import type { IncursionStorageModel } from "@workspace/game-catalog"
-import { firstDifference } from "@/shared/lib"
+import { firstDifference, sumRanges } from "@/shared/lib"
 
 export type Incursion = IncursionStorageModel
 export type IncursionTier = Incursion["tiers"][number]
@@ -32,21 +32,7 @@ export function parseReward(reward: string): ParsedReward {
 
 /** Parses and sums rewards by id, keeping the order each id first appears in. */
 export function sumRewards(rewards: readonly string[]): ParsedReward[] {
-  const byId = new Map<string, ParsedReward>()
-  for (const reward of rewards.map(parseReward)) {
-    const existing = byId.get(reward.id)
-    byId.set(
-      reward.id,
-      existing
-        ? {
-            id: reward.id,
-            min: existing.min + reward.min,
-            max: existing.max + reward.max,
-          }
-        : reward
-    )
-  }
-  return [...byId.values()]
+  return sumRanges(rewards.map(parseReward), (reward) => reward.id)
 }
 
 export type ShardYield = { shards: number; mythicShards: number }

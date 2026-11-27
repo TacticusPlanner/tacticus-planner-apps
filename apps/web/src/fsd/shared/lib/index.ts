@@ -31,6 +31,7 @@ export {
   useCampaignDisplay,
   useDebouncedCommit,
   useReadState,
+  useStableByKey,
   withReadTimeout,
   useQueryReadState,
   type ReadState,
@@ -87,5 +88,5 @@ export {
   writeUrlQuery,
 } from "./browser"
 export { runCatching, runWithCleanup } from "./async"
-export { useStableByKey } from "./use-stable-by-key"
 export { isRecord, required } from "./assert"
+export { clamp01, clampRatio, sumRanges } from "./math"

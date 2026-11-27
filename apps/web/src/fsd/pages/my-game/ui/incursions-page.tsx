@@ -5,7 +5,6 @@ import { toast } from "sonner"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   incursionProgressQueries,
@@ -13,7 +12,11 @@ import {
   updateIncursionProgressOverrides,
 } from "@/entities/player-data-override"
 import { useRevisionedDraft } from "@/shared/api"
-import { UnsavedChangesBar, UnsavedChangesGuard } from "@/shared/ui"
+import {
+  UnsavedChangesBar,
+  UnsavedChangesGuard,
+  PageLoading,
+} from "@/shared/ui"
 
 import {
   battleKey,
@@ -31,12 +34,6 @@ import type {
   IncursionProgress,
   IncursionsOutlet,
 } from "./incursions/incursions-outlet"
-
-const Loading = () => (
-  <div className="flex min-h-64 items-center justify-center">
-    <Spinner className="size-icon-lg" />
-  </div>
-)
 
 /** What a save that didn't go through needs the player to know; a successful save is a toast. */
 type Message = {
@@ -101,7 +98,7 @@ export function IncursionsPage() {
       </Alert>
     )
   }
-  if (!data) return <Loading />
+  if (!data) return <PageLoading />
   const save = async () => {
     setMessage(null)
     const outcome = await progressDraft.save()
@@ -131,7 +128,7 @@ export function IncursionsPage() {
           <AlertDescription>{t("progress.loadError")}</AlertDescription>
         </Alert>
       ) : null}
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<PageLoading />}>
         <Outlet
           context={
             {
