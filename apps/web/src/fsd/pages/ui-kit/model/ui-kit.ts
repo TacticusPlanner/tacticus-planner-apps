@@ -156,3 +156,49 @@ export const tableRows = [
   { component: "Table", status: "Installed", owner: "Shared UI" },
   { component: "Tooltip", status: "Installed", owner: "Shared UI" },
 ] as const
+
+export type Payment = {
+  id: string
+  amount: number
+  status: "failed" | "pending" | "processing" | "success"
+  email: string
+}
+
+export const payments: Payment[] = [
+  {
+    id: "728ed52f",
+    amount: 316,
+    status: "success",
+    email: "ken99@example.com",
+  },
+  {
+    id: "489e1d42",
+    amount: 242,
+    status: "success",
+    email: "abe45@example.com",
+  },
+  {
+    id: "3f94c8f1",
+    amount: 837,
+    status: "processing",
+    email: "monserrat44@example.com",
+  },
+  {
+    id: "6a12b83c",
+    amount: 874,
+    status: "success",
+    email: "silas22@example.com",
+  },
+  {
+    id: "9d43e917",
+    amount: 721,
+    status: "failed",
+    email: "carmella@example.com",
+  },
+  {
+    id: "2f71a65e",
+    amount: 128,
+    status: "pending",
+    email: "noelia@example.com",
+  },
+]

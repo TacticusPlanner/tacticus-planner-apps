@@ -9,6 +9,7 @@ import {
 } from "@workspace/ui/components/table"
 
 import { tableRows } from "../model/ui-kit"
+import { DataTableShowcase } from "./data-table-showcase"
 import { UiKitShowcaseCard } from "./ui-kit-showcase-card"
 
 export function DataDisplayShowcase() {
@@ -38,6 +39,13 @@ export function DataDisplayShowcase() {
             ))}
           </TableBody>
         </Table>
+      </UiKitShowcaseCard>
+
+      <UiKitShowcaseCard
+        description="TanStack Table composition with shadcn controls."
+        title="Data table"
+      >
+        <DataTableShowcase />
       </UiKitShowcaseCard>
     </div>
   )
