@@ -16,6 +16,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { useCampaignBattleTarget } from "../model/campaign-battle-dialog-store"
 import type {
@@ -142,7 +143,7 @@ function CampaignBattleContent({
   const { t, i18n } = useTranslation("dailies")
   const battlesRead = useCatalogDataset("campaign-battles")
   const npcsRead = useCatalogDataset("npcs", toById)
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const battle =
     battlesRead.status === "ready"
       ? battlesRead.data.find((entry) => entry.id === target.battleId)

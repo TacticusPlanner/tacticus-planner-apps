@@ -21,6 +21,7 @@ import type {
 import { TeamEditorDialog } from "@/features/legendary-event-plan"
 import type { PickerEstimates } from "@/features/legendary-event-plan"
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import {
   objectivesAddedBySameUnits,
@@ -363,7 +364,7 @@ function TeamRow({
   const objectiveLabel = useObjectiveLabel()
   const name = draft.teamName(team.key)
   const points = swap
-    ? new Intl.NumberFormat(i18n.language).format(Math.round(swap.gain))
+    ? numberFormat(i18n.language).format(Math.round(swap.gain))
     : ""
   const addedObjectives = swap
     ? objectivesAddedBySameUnits(team, swap.replacements).flatMap((index) => {

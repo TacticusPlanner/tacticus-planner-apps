@@ -34,16 +34,6 @@
       "count": 2
     }
   },
-  "src/fsd/entities/npc/ui/npc-level-badge.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/entities/npc/ui/npc-stat-summary.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/entities/unit/ui/unit-roster-row.tsx": {
     "no-restricted-syntax": {
       "count": 1
@@ -59,22 +49,7 @@
       "count": 1
     }
   },
-  "src/fsd/features/daily-raids/ui/material-details.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/features/daily-raids/ui/one-time-rewards.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/features/daily-raids/ui/plan/plan-material-cell.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/features/daily-raids/ui/plan/plan-shop-purchases.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -105,11 +80,6 @@
     }
   },
   "src/fsd/features/goal-planning/ui/create-goal/goal-form-issues.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/features/goal-planning/ui/create-goal/level-requirement-note.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -151,21 +121,6 @@
   },
   "src/fsd/features/home-screen-event-points/ui/milestone-grid.tsx": {
     "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/features/home-screen-event-points/ui/points-projection-inputs.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/features/home-screen-event-points/ui/points-projection.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/features/home-screen-event-points/ui/use-hse-text.ts": {
-    "no-restricted-syntax": {
       "count": 1
     }
   },
@@ -176,15 +131,10 @@
   },
   "src/fsd/features/legendary-event-goals/ui/upgrade-impact-section.tsx": {
     "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/features/legendary-event-plan/ui/annotation-menu.tsx": {
-    "no-restricted-syntax": {
       "count": 1
     }
   },
-  "src/fsd/features/legendary-event-plan/ui/clear-depth-field.tsx": {
+  "src/fsd/features/legendary-event-plan/ui/annotation-menu.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -194,29 +144,14 @@
       "count": 2
     }
   },
-  "src/fsd/features/legendary-event-plan/ui/plan-notes-card.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/features/legendary-event-plan/ui/team-editor-summary.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/features/legendary-event-plan/ui/team-picker-objective-chips.tsx": {
     "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/features/legendary-event-plan/ui/team-suggestions-dialog.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
+      "count": 2
     }
   },
   "src/fsd/features/legendary-event-plan/ui/team-unit-picker.tsx": {
     "no-restricted-syntax": {
-      "count": 4
+      "count": 3
     }
   },
   "src/fsd/features/legendary-event-tokens/ui/battle-info.tsx": {
@@ -224,39 +159,9 @@
       "count": 1
     }
   },
-  "src/fsd/features/legendary-event-tokens/ui/milestone-gap.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/features/legendary-event-tokens/ui/mission-order-view.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/features/legendary-event-tokens/ui/next-token-card.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/features/legendary-event-tokens/ui/run-forecast.tsx": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/features/legendary-event-tokens/ui/token-plan-list.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/features/legendary-event-tokens/ui/token-plan-rows.tsx": {
     "no-restricted-syntax": {
-      "count": 6
-    }
-  },
-  "src/fsd/features/legendary-event-tokens/ui/token-popovers.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
+      "count": 2
     }
   },
   "src/fsd/features/project-management/ui/project-color-picker.tsx": {
@@ -276,50 +181,20 @@
   },
   "src/fsd/features/quest-event/ui/battle-list.tsx": {
     "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/features/quest-event/ui/objective-chips.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/features/quest-event/ui/quest-estimate-block.tsx": {
-    "no-restricted-syntax": {
       "count": 2
-    }
-  },
-  "src/fsd/features/quest-event/ui/quest-header.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
     }
   },
   "src/fsd/features/quest-event/ui/quest-summary.tsx": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/fsd/features/quest-event/ui/quest-team-options-dialog.tsx": {
     "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/fsd/features/quest-event/ui/quest-team-section.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
+      "count": 2
     }
   },
   "src/fsd/features/quest-event/ui/rewards-card.tsx": {
-    "no-restricted-syntax": {
-      "count": 5
-    }
-  },
-  "src/fsd/features/quest-event/ui/score-entry.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/features/quest-event/ui/token-plan-card.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -374,24 +249,14 @@
       "count": 1
     }
   },
-  "src/fsd/pages/dailies/ui/quest/quest-battle-detail.tsx": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
   "src/fsd/pages/dailies/ui/quest/quest-goal-drops.tsx": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/pages/dailies/ui/shops/shop-recommendation-card.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
   },
   "src/fsd/pages/dailies/ui/team-recs/team-list.tsx": {
     "no-restricted-syntax": {
-      "count": 4
+      "count": 2
     }
   },
   "src/fsd/pages/goals/ui/goals-board/goal-group-section.tsx": {
@@ -419,36 +284,6 @@
       "count": 1
     }
   },
-  "src/fsd/pages/goals/ui/insights/insights-campaign-progression.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/goals/ui/insights/insights-events.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/pages/goals/ui/insights/insights-holding-back.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/goals/ui/insights/insights-missing.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/goals/ui/insights/insights-outlook.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/goals/ui/insights/insights-upgrade-list.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/goals/ui/shared/covered-by-note.tsx": {
     "no-restricted-syntax": {
       "count": 1
@@ -456,35 +291,20 @@
   },
   "src/fsd/pages/goals/ui/shared/goal-checkpoints.tsx": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/fsd/pages/goals/ui/shared/goal-progress-visuals.tsx": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/pages/goals/ui/shared/goal-remaining-text.ts": {
     "no-restricted-syntax": {
       "count": 2
     }
   },
   "src/fsd/pages/goals/ui/shared/goal-resource-chips.tsx": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/fsd/pages/goals/ui/shared/hre-source-indicator.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/goals/ui/shared/level-requirement-display.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/goals/ui/shared/shard-progress-bars.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -494,124 +314,44 @@
       "count": 3
     }
   },
-  "src/fsd/pages/goals/ui/shared/use-goal-resource-chips.ts": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/home/ui/events-calendar/event-entry-card.tsx": {
     "no-restricted-syntax": {
       "count": 3
     }
   },
-  "src/fsd/pages/legendary-events/ui/legendary-event/battles/battle-waves.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/current-run-status.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/lane-overview.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/leaderboard/leaderboard-controls.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/leaderboard/leaderboard-list.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/leaderboard/leaderboard-table.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/legendary-events/ui/legendary-event/overview/cross-lane-leaderboard.tsx": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/fsd/pages/legendary-events/ui/legendary-event/overview/event-board.tsx": {
     "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/overview/lane-summary.tsx": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/overview/run-history-body.tsx": {
-    "no-restricted-syntax": {
       "count": 2
     }
   },
-  "src/fsd/pages/legendary-events/ui/legendary-event/progress/progress-columns.ts": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/progress/progress-grid.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/progress/progress-parts.tsx": {
+  "src/fsd/pages/legendary-events/ui/legendary-event/overview/lane-summary.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
   },
   "src/fsd/pages/legendary-events/ui/legendary-event/progress/progress-rows.tsx": {
     "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/reward-outlook.tsx": {
-    "no-restricted-syntax": {
-      "count": 3
+      "count": 1
     }
   },
   "src/fsd/pages/legendary-events/ui/legendary-event/roster-potential-map.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/run-status-card.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-event/teams/team-card.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/legendary-events-hub/legendary-event-card.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/master-table/master-table-list.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
   },
   "src/fsd/pages/legendary-events/ui/master-table/master-table-table.tsx": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/fsd/pages/legendary-events/ui/plan-wizard/plan-summary.tsx": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/fsd/pages/legendary-events/ui/plan-wizard/plan-wizard.tsx": {
@@ -619,32 +359,17 @@
       "count": 2
     }
   },
-  "src/fsd/pages/legendary-events/ui/plan-wizard/review-step.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/plan-wizard/search-progress-bar.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/legendary-events/ui/plan-wizard/target-card.tsx": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/fsd/pages/legendary-events/ui/plan-wizard/target-step.tsx": {
     "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/pages/legendary-events/ui/plan-wizard/teams-step.tsx": {
-    "no-restricted-syntax": {
       "count": 2
     }
   },
-  "src/fsd/pages/legendary-events/ui/plan-wizard/upgrades-step.tsx": {
+  "src/fsd/pages/legendary-events/ui/plan-wizard/teams-step.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -654,14 +379,9 @@
       "count": 1
     }
   },
-  "src/fsd/pages/legendary-events/ui/tier-list/tier-list.view-model.ts": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/legendary-events/ui/tier-list/tier-row.tsx": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/fsd/pages/legendary-events/ui/tier-list/tier-tile-strategy.tsx": {
@@ -676,17 +396,12 @@
   },
   "src/fsd/pages/library/ui/character-unit/character-details-sections.tsx": {
     "no-restricted-syntax": {
-      "count": 3
+      "count": 1
     }
   },
   "src/fsd/pages/library/ui/character-unit/equipment-slots.tsx": {
     "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/pages/library/ui/character-unit/mythic-quests-card.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
+      "count": 2
     }
   },
   "src/fsd/pages/library/ui/character-unit/stat-radar-card.tsx": {
@@ -704,16 +419,6 @@
       "count": 1
     }
   },
-  "src/fsd/pages/library/ui/items/item-page.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/library/ui/mow-unit/mow-upgrades-tab.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/library/ui/npcs/npc-abilities.tsx": {
     "no-restricted-syntax": {
       "count": 1
@@ -724,24 +429,9 @@
       "count": 2
     }
   },
-  "src/fsd/pages/library/ui/npcs/npc-stat-cards.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
   "src/fsd/pages/library/ui/npcs/npc-traits.tsx": {
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/pages/library/ui/raid-bosses/raid-boss-adjusted-stats.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/library/ui/raid-bosses/raid-boss-detail.tsx": {
-    "no-restricted-syntax": {
-      "count": 4
     }
   },
   "src/fsd/pages/library/ui/raid-bosses/raid-boss-season-reference.tsx": {
@@ -751,16 +441,6 @@
   },
   "src/fsd/pages/library/ui/shops/shop-slot-card.tsx": {
     "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/fsd/pages/library/ui/unit/ability-panel.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/library/ui/unit/unit-power-value.tsx": {
-    "no-restricted-syntax": {
       "count": 1
     }
   },
@@ -769,19 +449,14 @@
       "count": 1
     }
   },
-  "src/fsd/pages/my-game/model/compare-labels.ts": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/my-game/ui/collection/compare/compare-list.tsx": {
     "no-restricted-syntax": {
-      "count": 3
+      "count": 2
     }
   },
   "src/fsd/pages/my-game/ui/collection/compare/compare-summary.tsx": {
     "no-restricted-syntax": {
-      "count": 3
+      "count": 2
     }
   },
   "src/fsd/pages/my-game/ui/collection/selectable-unit.tsx": {
@@ -796,22 +471,7 @@
   },
   "src/fsd/pages/my-game/ui/incursions/incursion-eligible-dialog.tsx": {
     "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/pages/my-game/ui/incursions/incursion-estimate.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/my-game/ui/incursions/incursion-power.tsx": {
-    "no-restricted-syntax": {
       "count": 2
-    }
-  },
-  "src/fsd/pages/my-game/ui/incursions/incursion-rewards.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
     }
   },
   "src/fsd/pages/my-game/ui/incursions/incursion-run-map.tsx": {
@@ -819,19 +479,9 @@
       "count": 2
     }
   },
-  "src/fsd/pages/my-game/ui/incursions/incursion-team.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/my-game/ui/inventory/upgrades/upgrades-list.tsx": {
     "no-restricted-syntax": {
       "count": 2
-    }
-  },
-  "src/fsd/pages/my-game/ui/items/pieces/piece-details-dialog.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
     }
   },
   "src/fsd/pages/my-game/ui/items/pieces/pieces-list.tsx": {
@@ -839,22 +489,7 @@
       "count": 2
     }
   },
-  "src/fsd/pages/my-game/ui/progress-summary.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/pages/survival/ui/enemies-tab.tsx": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/fsd/pages/survival/ui/offers-tab.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/pages/ui-kit/ui/data-table-showcase.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -894,24 +529,9 @@
       "count": 1
     }
   },
-  "src/fsd/widgets/battle-preview/ui/campaign-battle-dialog.tsx": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/fsd/widgets/battle-preview/ui/enemy-tile.tsx": {
     "no-restricted-syntax": {
       "count": 1
-    }
-  },
-  "src/fsd/widgets/event-rewards/model/use-event-reward-format.ts": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/fsd/widgets/event-rewards/ui/reward-ladder.tsx": {
-    "no-restricted-syntax": {
-      "count": 2
     }
   }
 }

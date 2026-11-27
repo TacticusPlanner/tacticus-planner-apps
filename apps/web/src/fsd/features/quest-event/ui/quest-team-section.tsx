@@ -6,6 +6,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Button } from "@workspace/ui/components/button"
 
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { QuestTeam } from "../model/quest-team"
 import type { QuestTeamViewModel } from "../model/use-quest-plan"
@@ -73,7 +74,7 @@ function TeamBody({
 }) {
   const { t, i18n } = useTranslation("quest")
   const [optionsOpen, setOptionsOpen] = useState(false)
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const members = unsynced
     ? team.members.filter((member) => member.featured)
     : team.members

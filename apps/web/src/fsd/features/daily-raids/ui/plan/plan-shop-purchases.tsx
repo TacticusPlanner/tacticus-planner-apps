@@ -11,6 +11,7 @@ import { shopIcon } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 
 import { EntityIcon, ListDivider, UpgradeIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 import type { PlanShopPurchase } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
 
@@ -33,7 +34,7 @@ export function PlanShopPurchases({
 }) {
   const { t, i18n } = useTranslation(["dailies", "shops", "upgrades"])
   if (purchases.length === 0) return null
-  const number = new Intl.NumberFormat(i18n.language, {
+  const number = numberFormat(i18n.language, {
     maximumFractionDigits: 1,
   })
 

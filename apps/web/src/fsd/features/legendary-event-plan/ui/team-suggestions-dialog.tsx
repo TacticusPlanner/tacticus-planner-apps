@@ -38,6 +38,7 @@ import {
   ObjectiveIcon,
 } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
+import { numberFormat } from "@/shared/lib"
 
 import { suggestionReason } from "../model/suggestion-reason"
 import type { TeamSuggestionsSource } from "../model/team-suggestions-state"
@@ -87,7 +88,7 @@ export function TeamSuggestionsDialog({
   const unlockedId = useId()
   const goalsId = useId()
   const reasonIdPrefix = useId()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const list = new Intl.ListFormat(i18n.language, { type: "conjunction" })
   const objectives = new Map(
     source.lane.unitsRestrictions.map((objective) => [

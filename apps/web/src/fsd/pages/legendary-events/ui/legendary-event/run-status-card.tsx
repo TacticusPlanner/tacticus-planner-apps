@@ -18,7 +18,11 @@ import type {
   LegendaryEventLifecycle,
 } from "@/entities/legendary-event"
 import { RunInputsDrawer } from "@/features/legendary-event-plan"
-import { formatEventCountdown, formatRelativeTime } from "@/shared/lib"
+import {
+  formatEventCountdown,
+  formatRelativeTime,
+  numberFormat,
+} from "@/shared/lib"
 import { IconLine } from "@/shared/ui"
 
 import type {
@@ -61,7 +65,7 @@ export function RunStatusCard({
   ) => ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
 
   const body = (() => {
     if (runStatus.kind === "loading") {

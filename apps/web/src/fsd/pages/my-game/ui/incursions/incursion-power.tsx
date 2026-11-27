@@ -8,6 +8,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { powerStanding } from "../../model/incursion-plan.model"
 
@@ -33,7 +34,7 @@ export function IncursionPower({
   "data-testid"?: string
 }) {
   const { t, i18n } = useTranslation("incursions")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const standing =
     teamPower !== undefined && teamPower > 0
       ? powerStanding(power, teamPower)
@@ -62,7 +63,7 @@ export function IncursionPower({
       <TooltipContent>
         {standing && teamPower !== undefined
           ? t("power.vsTeam", {
-              ratio: new Intl.NumberFormat(i18n.language, {
+              ratio: numberFormat(i18n.language, {
                 maximumFractionDigits: 1,
               }).format(power / teamPower),
             })

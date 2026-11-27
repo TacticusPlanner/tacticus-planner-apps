@@ -17,6 +17,7 @@ import { EntityIcon, HintTrigger, ListDivider } from "@/shared/ui"
 import { EnemyList, buildEnemyTile } from "@/widgets/battle-preview"
 import type { EnemyNpcs } from "@/widgets/battle-preview"
 import { RewardText, useEventRewardFormat } from "@/widgets/event-rewards"
+import { numberFormat } from "@/shared/lib"
 
 import { useSurvivalContext } from "../model/survival-context"
 import type { SurvivalWave } from "../model/survival-event"
@@ -26,10 +27,10 @@ import type { WaveGroup, WaveRow } from "../model/wave-view"
 /** "60.1B" with the full number in a hint; exact below 10,000. */
 function Power({ value }: { value: number }) {
   const { t, i18n } = useTranslation("survival")
-  const exact = new Intl.NumberFormat(i18n.language).format(value)
+  const exact = numberFormat(i18n.language).format(value)
   const shown =
     value >= 10_000
-      ? new Intl.NumberFormat(i18n.language, {
+      ? numberFormat(i18n.language, {
           notation: "compact",
           maximumFractionDigits: 1,
         }).format(value)

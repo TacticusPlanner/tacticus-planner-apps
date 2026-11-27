@@ -8,6 +8,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import type { CappedTierTeam } from "../../model/use-incursion-plans"
+import { numberFormat } from "@/shared/lib"
 
 /**
  * How many runs the suggested team, capped to the tier's rarity, needs to clear the tier, or the
@@ -25,9 +26,7 @@ export function IncursionEstimate({
 }) {
   const { t, i18n } = useTranslation("incursions")
   const { estimate } = team
-  const power = new Intl.NumberFormat(i18n.language).format(
-    Math.round(team.power)
-  )
+  const power = numberFormat(i18n.language).format(Math.round(team.power))
   const hint = t("estimate.hint", { power })
   const badge = (
     <Tooltip>

@@ -26,6 +26,7 @@ import {
 
 import { unitLibraryPath, UnitTile } from "@/entities/unit"
 import { DetailsSheet, EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import {
   compareChips,
@@ -385,8 +386,7 @@ function UnitDiffDetails({
     "equipmentItems",
   ])
   const { diff, unit } = item
-  const number = (value: number) =>
-    new Intl.NumberFormat(i18n.language).format(value)
+  const number = (value: number) => numberFormat(i18n.language).format(value)
   const labels = useMarkLabels()
   const fromTo = labels.fromTo
   const rows = detailRows(diff, fields).map((row): DetailView => {

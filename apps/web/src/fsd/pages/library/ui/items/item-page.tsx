@@ -23,6 +23,7 @@ import {
   useItemSlotName,
 } from "@/shared/equipment"
 import { HintTrigger, LocalReadFailure } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import {
   allFactionCount,
@@ -163,7 +164,7 @@ function ItemDetail({
 function StatsTable({ item }: { item: EquipmentStorageModel }) {
   const { t, i18n } = useTranslation("library")
   const stats = Object.keys(itemStatsAt(item, item.levels.length))
-  const format = new Intl.NumberFormat(i18n.language)
+  const format = numberFormat(i18n.language)
   if (stats.length === 0) return null
   return (
     <section className="flex flex-col gap-2" data-testid="library-item-stats">

@@ -23,6 +23,7 @@ import type {
   TeamMemberPreferenceMatch,
   TeamMemberRationale,
 } from "@/features/team-recommendations"
+import { useNumberFormat } from "@/shared/lib"
 
 /** One recommended team — one character per row: portrait, name + why-chosen line, current rarity
  * and rank, and (Random Team only) a lock toggle that keeps the character across Regenerate. */
@@ -47,6 +48,7 @@ export function TeamList({
   ])
 
   // What an event unit matched: a trait, an alliance or a faction, from the namespace naming it.
+  const numbers = useNumberFormat()
   const eventUnitMatchName = (match: EventUnitMatch): string => {
     switch (match.via) {
       case "trait":
@@ -104,7 +106,7 @@ export function TeamList({
           : t("rationale.eventUnitAny")
       case "strength":
         return t("rationale.strength", {
-          power: rationale.combatPower.toLocaleString(),
+          power: numbers.format(rationale.combatPower),
         })
       case "minimum-size":
         return t("rationale.minimumSize")
@@ -123,7 +125,7 @@ export function TeamList({
       })
     }
     if (rationale.kind === "strength") {
-      return rationale.combatPower.toLocaleString()
+      return numbers.format(rationale.combatPower)
     }
     return undefined
   }

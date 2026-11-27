@@ -12,6 +12,7 @@ import { campaignIcon } from "@workspace/game-catalog"
 import { useCampaignTrackLabel } from "@/features/goal-planning"
 import type { PlanCampaignProgression } from "@/features/goal-planning"
 import { energyIconUrl, EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { CampaignLockReasons } from "../shared/campaign-lock-reasons"
 import { GoalResourceIcon } from "../shared/goal-resource-icon"
@@ -28,7 +29,7 @@ export function InsightsCampaignProgression({
   const { t, i18n } = useTranslation()
   const label = useCampaignTrackLabel()
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
 
   if (campaigns.length === 0) return null
 

@@ -12,6 +12,7 @@ import {
 import { EntityIcon } from "@/shared/ui"
 
 import { hseMilestoneCells } from "@/entities/home-screen-event"
+import { numberFormat } from "@/shared/lib"
 import { hseRewardDisplay } from "../lib/hse-reward"
 
 const NO_UNITS = new Map<string, { name: string }>()
@@ -38,7 +39,7 @@ export function MilestoneGrid({
     "equipmentItems",
   ])
   const { t: td } = useTranslation("dailies")
-  const numbers = new Intl.NumberFormat(i18n.language)
+  const numbers = numberFormat(i18n.language)
 
   const cells = useMemo(() => {
     const context = {

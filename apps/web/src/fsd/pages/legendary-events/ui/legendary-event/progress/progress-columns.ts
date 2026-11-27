@@ -5,6 +5,7 @@ import type {
   LegendaryEventLane,
   ObjectiveIconModel,
 } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 /** One grid column: defeat-all, then the five objectives in catalog order. */
 export interface ProgressColumn {
@@ -18,7 +19,7 @@ export interface ProgressColumn {
 export function useProgressColumns(lane: LegendaryEventLane): ProgressColumn[] {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const defeatAll = lane.defeatAll.length > 0 ? lane.defeatAll : [0]
   const low = Math.min(...defeatAll)
   const high = Math.max(...defeatAll)

@@ -4,6 +4,7 @@ import { Progress } from "@workspace/ui/components/progress"
 
 import { remainingTime } from "../../model/plan-wizard/search-progress"
 import type { SearchProgressStore } from "../../model/plan-wizard/search-progress"
+import { numberFormat } from "@/shared/lib"
 
 /** The upgrade search's progress (spec: the search shows its progress): a bar, the upgrade being
  *  looked for and, once there is enough to go on, at most how long is left. Before the search
@@ -33,7 +34,7 @@ export function SearchProgressBar({ store }: { store: SearchProgressStore }) {
           : t("planWizard.target.estimating")}
         {started && time
           ? ` · ${t("planWizard.target.searchTimeLeft", {
-              time: new Intl.NumberFormat(i18n.language, {
+              time: numberFormat(i18n.language, {
                 style: "unit",
                 unit: time.unit,
                 unitDisplay: "long",

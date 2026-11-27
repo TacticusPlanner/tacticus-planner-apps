@@ -9,6 +9,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { shopCurrencyIcon } from "@/entities/shops/reward"
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type {
   DailyRaidLocationViewModel,
@@ -224,7 +225,7 @@ function ShopGroup({
   testId: string
 }) {
   const { t, i18n } = useTranslation(["dailies", "shops"])
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <DetailsGroup
       items={shops}

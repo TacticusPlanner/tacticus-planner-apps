@@ -29,7 +29,7 @@ import { BattleInfoButton } from "./battle-info"
 import { TokenMissionSteps } from "./mission-order-view"
 import { TokenObjectives } from "./token-objectives"
 import { TokenMissionsPopover, TokenTeamPopover } from "./token-popovers"
-import { hasNode } from "@/shared/lib"
+import { hasNode, numberFormat } from "@/shared/lib"
 
 type ReadyView = Extract<TokenPlanView, { kind: "ready" }>
 type PlannedTokenRow = ReadyView["plan"]["tokens"][number]
@@ -73,7 +73,7 @@ export function RunSectionHeader({
   plan: ReadyView["plan"]
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const state = t(`tokenPlan.forecast.states.${section.state}`)
   const title = section.unknownRun
     ? t("tokenPlan.plan.byRun.titleUnknown", { state })
@@ -368,7 +368,7 @@ function TokenBattleRunRow({
   const first = tokens[0]
   const last = tokens.at(-1)
   if (!first || !last) return null
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const end = start + tokens.length - 1
   const regionId = `token-plan-run-${start}`
   const lane = t(`lanes.${first.laneId}`)
@@ -534,7 +534,7 @@ function TokenMarkerList({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   if (milestones.length === 0 && steps.length === 0) return null
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const milestoneItem = (key: string, text: string) => (
     <li
       className="inline-flex items-center gap-1 text-muted-foreground"
@@ -608,7 +608,7 @@ export function TokenRow({
   teamHeader?: ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const lane = t(`lanes.${token.laneId}`)
   const battle = (
     <BattleInfoButton battleIndex={token.battleIndex} laneId={token.laneId}>

@@ -13,6 +13,7 @@ import type {
   PlanInsightsBlocker,
   PlanInsightsBottleneck,
 } from "@/features/goal-planning"
+import { numberFormat } from "@/shared/lib"
 
 import { FarmUnlockPaths } from "../shared/farm-unlock-paths"
 import { GoalResourceIcon } from "../shared/goal-resource-icon"
@@ -34,7 +35,7 @@ export function InsightsHoldingBack({
 }) {
   const { t, i18n } = useTranslation()
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
   const goalLabel = useGoalLabel(goalInfoById)
   // "No node drops it" is the usual reason: said once for the section, not on every row.
   const allNoFarmLocation = blockers.every(

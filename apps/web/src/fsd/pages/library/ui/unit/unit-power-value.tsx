@@ -4,6 +4,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import { powerNote } from "./unit-power.model"
 import type { PowerFigure } from "./unit-power.model"
+import { numberFormat } from "@/shared/lib"
 
 /**
  * The unit's power in the header's values area (character and MoW pages, desktop and mobile alike):
@@ -24,7 +25,7 @@ export function UnitPowerValue({
   isMobile: boolean
 }) {
   const { i18n } = useTranslation()
-  const format = new Intl.NumberFormat(i18n.language)
+  const format = numberFormat(i18n.language)
   if (figure.status === "unavailable") return null
   const noteText = powerNote(figure, note)
 

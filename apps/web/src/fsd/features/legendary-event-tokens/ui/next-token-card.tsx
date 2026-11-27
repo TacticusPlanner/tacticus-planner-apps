@@ -39,7 +39,7 @@ import { TokenMarkButtons } from "./token-mark-buttons"
 import { TokenRow } from "./token-plan-rows"
 import { TokenObjectives } from "./token-objectives"
 import { TokenMissionsPopover, TokenTeamPopover } from "./token-popovers"
-import { hasNode } from "@/shared/lib"
+import { hasNode, numberFormat } from "@/shared/lib"
 
 export type MarkTokenHandler = (
   laneId: LegendaryEventLaneId,
@@ -254,7 +254,7 @@ function TokenView({
   chipOf: (unitId: string) => EventUnitChipData
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const lane = t(`lanes.${token.laneId}`)
   const battle = token.battleIndex + 1
   const members = view.membersByTeam.get(token.teamId) ?? []
@@ -479,7 +479,7 @@ function EmptyState({
       : empty.kind === "noDepth"
         ? t("tokenPlan.nextToken.noDepth", { team: empty.teamName })
         : t("tokenPlan.nextToken.nothingLeft", {
-            points: new Intl.NumberFormat(i18n.language).format(empty.points),
+            points: numberFormat(i18n.language).format(empty.points),
             lane,
           })
   return (

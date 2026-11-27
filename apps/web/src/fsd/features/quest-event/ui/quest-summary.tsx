@@ -4,6 +4,7 @@ import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Progress } from "@workspace/ui/components/progress"
 
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { QuestScore } from "../model/quest-score"
 
@@ -30,7 +31,7 @@ export function QuestSummary({
   projected?: QuestScore | null
 }) {
   const { t, i18n } = useTranslation("quest")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <section
       aria-labelledby="quest-summary-title"

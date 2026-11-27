@@ -9,7 +9,7 @@ import type {
   LegendaryEvent,
 } from "@/entities/legendary-event"
 import { useAnalyticsActions } from "@/shared/analytics"
-import { storedPreference, useStoredFlag } from "@/shared/lib"
+import { storedPreference, useStoredFlag, numberFormat } from "@/shared/lib"
 import type { StoredPreference } from "@/shared/lib"
 
 import { hasFoldedBattleRuns } from "../lib/token-battle-runs"
@@ -62,7 +62,7 @@ export function TokenPlanList({
   const [byMissions, setByMissions] = useMissionsOrder()
   const [expandRuns, setExpandRuns] = useStoredFlag(EXPAND_RUNS, false)
   if (view.kind !== "ready" || view.plan.tokens.length === 0) return null
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const missionOrder = byMissions ? view.missionOrder : null
   const plan = missionOrder
     ? { ...view.plan, tokens: missionOrder.tokens }

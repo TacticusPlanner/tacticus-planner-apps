@@ -19,6 +19,7 @@ import {
 import { EventUnitChip, useMissionLabel } from "@/entities/legendary-event"
 import type { EventUnitChipData } from "@/entities/legendary-event"
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { MissionGain } from "../lib/mission-gains"
 import type { TeamClearDepth } from "../lib/token-plan-view"
@@ -36,7 +37,7 @@ export function TokenMissionsPopover({
   testId: string
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const missionLabel = useMissionLabel()
   if (gains.length === 0) return null
   const label = t("tokenPlan.nextToken.missions.button", {

@@ -20,7 +20,12 @@ import type { RunForecast } from "../lib/run-forecast"
 import type { TokenPlanView } from "../lib/token-plan-view"
 import { MilestoneGapSection } from "./milestone-gap"
 import type { OpenTeamsHandler } from "./next-token-card"
-import { hasNode, storedPreference, useStoredFlag } from "@/shared/lib"
+import {
+  hasNode,
+  storedPreference,
+  useStoredFlag,
+  numberFormat,
+} from "@/shared/lib"
 import type { StoredPreference } from "@/shared/lib"
 
 const tokensIcon = legendaryEventResourceIcon("tokens")
@@ -146,7 +151,7 @@ export function RunForecastSection({
 /** "By the end of run N: …", or "By the end of the next run: …" when the run is unknown. */
 function ForecastHeader({ last }: { last: RunForecast }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const unknown = last.supply.unknownRun
   const points = number.format(last.endingPoints)
   if (last.next.step === "fullyAscended") {
@@ -186,7 +191,7 @@ function GlyphLine({
  *  glyph (the collapsed run on mobile, and the head of every run block). */
 function RunSummary({ run }: { run: RunForecast }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const items = [
     {
       key: "tokens",
@@ -246,7 +251,7 @@ function RunSummary({ run }: { run: RunForecast }) {
  *  steps it reaches with the next one. */
 function RunDetails({ run }: { run: RunForecast }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const { supply } = run
   const tokenParts = [
     supply.ad > 0 || supply.bonusDelivery > 0

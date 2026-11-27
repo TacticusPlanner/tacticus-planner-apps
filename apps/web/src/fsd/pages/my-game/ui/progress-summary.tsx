@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { MedalStats } from "@/features/daily-raids"
 import type { TrackMedalStats } from "@/features/daily-raids"
 import { HintTrigger } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 /** A headline progress block: percent, battles done, tracks cleared and medal stats. With
  *  `completion`, the percent names what it counts (medals and Lightning Victories, or battles). */
@@ -27,7 +28,7 @@ export function ProgressSummary({
 }) {
   const { t, i18n } = useTranslation()
   const number = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
   const percentText = `${percent}%`
   return (
     <div data-testid={testId}>

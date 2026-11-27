@@ -4,6 +4,7 @@ import { powerIcon } from "@workspace/game-catalog"
 import { EntityIcon } from "@/shared/ui"
 
 import { EnemyList } from "@/widgets/battle-preview"
+import { numberFormat } from "@/shared/lib"
 
 import type { BattlePreviewViewModel } from "./battles.view-model"
 
@@ -11,7 +12,7 @@ import type { BattlePreviewViewModel } from "./battles.view-model"
  *  language. */
 export function BattleHeader({ battle }: { battle: BattlePreviewViewModel }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <div
       className="flex flex-wrap items-baseline gap-x-4 gap-y-1"
@@ -52,7 +53,7 @@ export function BattleWaves({
   isMobile: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <ol className="flex min-w-0 flex-col gap-3" data-testid="battle-waves">
       {battle.waves.map((wave) => (

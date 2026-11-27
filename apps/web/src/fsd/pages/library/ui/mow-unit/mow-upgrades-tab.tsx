@@ -17,6 +17,7 @@ import { cn } from "@workspace/ui/lib/utils"
 
 import type { UpgradeWithFarmLocations } from "@/entities/rank-lookup"
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { LevelSelect, RecipeIcons } from "./mow-upgrades-controls"
 import { MOW_ABILITIES } from "./mow-upgrades.model"
@@ -59,7 +60,7 @@ export function MowUpgradesTab({
 }) {
   const { t, i18n } = useTranslation(["library", "progression", "upgrades"])
   const includeOwnedId = useId()
-  const format = new Intl.NumberFormat(i18n.language)
+  const format = numberFormat(i18n.language)
   const allianceName = t(`npcs.alliances.${alliance}`, {
     defaultValue: alliance,
   })

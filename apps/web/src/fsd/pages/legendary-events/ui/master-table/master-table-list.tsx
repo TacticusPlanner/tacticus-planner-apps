@@ -4,6 +4,7 @@ import type {
   MasterTableRow,
   MasterTableUnitSet,
 } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 import { MasterTableUnit } from "./master-table-parts"
 import { useCellLanes } from "./use-cell-lanes"
@@ -29,7 +30,7 @@ export function MasterTableList({
   eventName: (eventId: string) => string
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const lanesOf = useCellLanes()
   return (
     <ul className="flex min-w-0 flex-col gap-2" data-testid="master-table-list">

@@ -4,6 +4,7 @@ import { Check } from "lucide-react"
 import { MIN_TEAM_MEMBERS, useObjectiveLabel } from "@/entities/legendary-event"
 import { ObjectiveIcon } from "@/shared/ui"
 import type { LegendaryEventLane } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 import type { ClearDepthSummary } from "../model/clear-depth-display"
 
@@ -35,7 +36,7 @@ export function TeamEditorSummary({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const needsMembers = memberCount < MIN_TEAM_MEMBERS
   return (
     <div

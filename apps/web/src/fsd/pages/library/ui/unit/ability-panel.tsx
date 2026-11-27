@@ -15,7 +15,7 @@ import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
 import { LevelStepper } from "./level-stepper"
 import { RulesTextNote } from "./rules-text-note"
-import { hasNode } from "@/shared/lib"
+import { hasNode, numberFormat } from "@/shared/lib"
 
 /** Labelled x ticks: levels 1, 10, 20 … for abilities; 1, 5, 10 for a 10-level relic. */
 function levelTicks(maxLevel: number): number[] {
@@ -96,7 +96,7 @@ export function AbilityPanel({
   const changing = series.filter((entry) => !entry.constant)
   const constant = series.filter((entry) => entry.constant)
   const format = useMemo(
-    () => new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }),
+    () => numberFormat(locale, { maximumFractionDigits: 2 }),
     [locale]
   )
   const formatAt = (values: number[][], index: number) =>

@@ -9,6 +9,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useTeamDisplayName } from "@/entities/legendary-event"
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import { useGoalLabels } from "@/features/legendary-event-goals"
+import { numberFormat } from "@/shared/lib"
 
 import type { PlanWrites } from "../../model/plan-wizard/plan-create"
 import { runAssumptions } from "../../model/plan-wizard/target-step.model"
@@ -46,7 +47,7 @@ export function ReviewStep({
   create: ReturnType<typeof usePlanCreate>
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const labels = useGoalLabels()
   const selectId = useId()
   const nameId = useId()

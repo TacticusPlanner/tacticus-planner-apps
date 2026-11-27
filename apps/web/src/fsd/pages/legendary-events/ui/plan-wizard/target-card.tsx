@@ -8,6 +8,7 @@ import type {
   StepVerdict,
 } from "../../model/plan-wizard/plan-ceiling"
 import { targetBar } from "../../model/plan-wizard/target-step.model"
+import { numberFormat } from "@/shared/lib"
 
 const VERDICT_CLASS: Record<StepVerdict["kind"], string> = {
   reachableNow: "border-transparent bg-success text-success-foreground",
@@ -50,7 +51,7 @@ export function TargetCard({
   buttonRef: Ref<HTMLButtonElement>
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const bar = targetBar(target, syncedCeiling, upgradedCeiling)
   const details: string[] = []
   if (target.kind === "points") {

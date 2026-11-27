@@ -18,6 +18,7 @@ import type {
   LegendaryEventLane,
   PotentialCellState,
 } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 import type { LanePotentialViewModel } from "./lane-potential.view-model"
 import { useProgressColumns } from "./progress/progress-columns"
@@ -167,7 +168,7 @@ function PotentialSummary({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   if (view.kind === "unavailable") {
     return (
       <p

@@ -20,6 +20,7 @@ import type {
   LegendaryEventLaneId,
   LegendaryEventUnit,
 } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 import { LeaderboardControls } from "../leaderboard/leaderboard-controls"
 import {
@@ -249,7 +250,7 @@ function LaneObjectives({
 /** A lane figure cell's text and accessible name. */
 function useLaneFigure(figure: LeaderboardFigure) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (row: CrossLaneLeaderboardRow, laneId: LegendaryEventLaneId) => {
     const value = crossLaneFigure(row, laneId, figure)
     const lane = t(`lanes.${laneId}`)

@@ -4,6 +4,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { useObjectiveLabel } from "@/entities/legendary-event"
 import { ObjectiveIcon } from "@/shared/ui"
 import type { LegendaryEventLane } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 /**
  * The picker's objective chips (design D1): the lane's objectives as multi-select toggles with
@@ -25,7 +26,7 @@ export function TeamPickerObjectiveChips({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const objectiveLabel = useObjectiveLabel()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   return (
     <div
       aria-label={t("teams.picker.objectives")}

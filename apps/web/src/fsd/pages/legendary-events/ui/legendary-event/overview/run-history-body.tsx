@@ -18,6 +18,7 @@ import type {
 } from "../../../lib/run-history"
 import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
+import { numberFormat } from "@/shared/lib"
 
 import { RUN_COUNT } from "./last-run.view-model"
 import { RunHistoryDeltas } from "./run-history-deltas"
@@ -35,7 +36,7 @@ export function RunHistoryBody({
   since: "last" | "then"
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const date = useRunDate(history.progressAt)
   return (
     <div className="flex min-w-0 flex-col gap-4" data-testid="last-run-body">
@@ -93,7 +94,7 @@ function LaneHistory({
   showTeams: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const [open, setOpen] = useState(false)
   const teamsId = useId()
   const laneName = t(`lanes.${lane.laneId}`)

@@ -7,6 +7,7 @@ import {
 } from "@workspace/game-catalog"
 
 import { EntityIcon } from "@/shared/ui"
+import { useNumberFormat } from "@/shared/lib"
 
 import { useNpcLabels } from "../lib/use-npc-labels"
 import type { NpcRecord, NpcStatRow } from "../model/types"
@@ -28,7 +29,8 @@ export function NpcStatSummary({
   const { t } = useTranslation(["library", "damageTypes", "traits"])
   const { variationName, factionName } = useNpcLabels()
   const name = variationName(npc.id, npc.name)
-  const number = (value: number) => value.toLocaleString()
+  const numbers = useNumberFormat()
+  const number = (value: number) => numbers.format(value)
 
   return (
     <div className="flex min-w-0 flex-col gap-3" data-testid="npc-stat-summary">

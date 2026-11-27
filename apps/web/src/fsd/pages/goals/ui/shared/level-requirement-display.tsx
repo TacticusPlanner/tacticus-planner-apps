@@ -8,7 +8,7 @@ import { EntityIcon, HintTrigger } from "@/shared/ui"
 
 import type { LevelRequirementProgress } from "@/features/goal-planning"
 import { GoalProgressDisplay, GoalTargetDisplay } from "./goal-progress-visuals"
-import { hasNode } from "@/shared/lib"
+import { hasNode, numberFormat } from "@/shared/lib"
 
 export type XpBookFigure = {
   needed: number
@@ -42,7 +42,7 @@ export function LevelRequirementLine({
   const { t, i18n } = useTranslation(["common", "progression"])
   if (!levelRequirement) return null
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
   const book = xpBooks && xpBooks.needed > 0 ? xpBooks : undefined
   const bookText = book
     ? t("goals.resourceChips.xpBooksValue", {

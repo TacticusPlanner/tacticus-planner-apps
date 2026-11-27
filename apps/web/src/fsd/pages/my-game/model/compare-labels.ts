@@ -3,12 +3,13 @@ import {
   hasDefaultName,
   snapshotLabel,
 } from "@/entities/roster-snapshot"
+import { numberFormat } from "@/shared/lib"
 
 import type { CompareSource } from "./use-compare-data"
 
 /** A compact signed number for chips: "+260", "−240", "+4.6k". */
 export function formatSigned(value: number, locale: string): string {
-  const formatted = new Intl.NumberFormat(locale, {
+  const formatted = numberFormat(locale, {
     notation: Math.abs(value) >= 10_000 ? "compact" : "standard",
     maximumFractionDigits: 1,
     signDisplay: "exceptZero",

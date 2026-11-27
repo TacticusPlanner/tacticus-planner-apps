@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { tierToneClass } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 /** "S · 1.85×": the tier name stands out, the separator is read but not shown. */
 function TierLabel({
@@ -234,7 +235,7 @@ export function UntieredRow({
               {t("tierList.untieredCount", { count })}
             </span>
             <span aria-hidden="true">
-              {new Intl.NumberFormat(i18n.language).format(count)}
+              {numberFormat(i18n.language).format(count)}
             </span>
           </span>
           <ChevronDown

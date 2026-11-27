@@ -20,6 +20,7 @@ import type {
   LegendaryEventLaneId,
   LegendaryEventUnit,
 } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 import type { LeaderboardGoalsViewModel } from "../legendary-event-page.view-model"
 import {
@@ -56,7 +57,7 @@ export function LeaderboardTable({
   onAddToTeam?: (unitId: string, laneId: LegendaryEventLaneId) => void
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const clearsText = useClearsText()
 
   return (

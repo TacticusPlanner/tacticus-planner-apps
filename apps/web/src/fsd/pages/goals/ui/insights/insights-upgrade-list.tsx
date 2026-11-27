@@ -7,6 +7,7 @@ import { Button } from "@workspace/ui/components/button"
 import { PlannedMaterialDetails } from "@/features/daily-raids"
 import { LockedNodesOf } from "@/features/goal-planning"
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { UpgradeRow } from "./insights-materials-view"
 import type { InsightsGoalInfo } from "./insights-view"
@@ -114,7 +115,7 @@ function UpgradeRowItem({
 }) {
   const { t, i18n } = useTranslation()
   const fmt = (value: number) =>
-    new Intl.NumberFormat(i18n.resolvedLanguage).format(value)
+    numberFormat(i18n.resolvedLanguage).format(value)
   const units = [
     ...new Map(
       row.goalIds.flatMap((goalId) => {

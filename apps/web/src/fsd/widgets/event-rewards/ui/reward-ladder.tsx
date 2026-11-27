@@ -11,6 +11,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import { EntityIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import { ladderView } from "../lib/event-mission-text"
 import type { LadderTile } from "../lib/event-mission-text"
@@ -23,11 +24,11 @@ type Reward = Pick<GameCatalogEventShopRewardRange, "type" | "min" | "max">
 /** "10k", "22.5k" from 10,000 up (as the tiles have room for); exact below. */
 function useCompactNumber() {
   const { i18n } = useTranslation()
-  const compact = new Intl.NumberFormat(i18n.language, {
+  const compact = numberFormat(i18n.language, {
     notation: "compact",
     maximumFractionDigits: 1,
   })
-  const exact = new Intl.NumberFormat(i18n.language)
+  const exact = numberFormat(i18n.language)
   return (value: number) =>
     value >= 10_000 ? compact.format(value) : exact.format(value)
 }

@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 
-import { formatEstimateDate, useDateLocale } from "@/shared/lib"
+import { formatEstimateDate, useDateLocale, numberFormat } from "@/shared/lib"
 import { RankBadge } from "@/shared/ui"
 
 import type { EstimateOutcome } from "@/entities/goal-farming"
@@ -41,7 +41,7 @@ export function GoalCheckpoints({
   const dateLocale = useDateLocale()
   const view = goalCheckpointsView(estimate, goalType)
   if (!view) return null
-  const number = new Intl.NumberFormat(i18n.resolvedLanguage)
+  const number = numberFormat(i18n.resolvedLanguage)
 
   return (
     <Popover>

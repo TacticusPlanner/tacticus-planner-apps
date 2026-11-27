@@ -7,6 +7,7 @@ import type {
   HordeTierList,
   LegendaryEventRosterUnit,
 } from "@/entities/legendary-event"
+import { numberFormat } from "@/shared/lib"
 
 /** The Tier List's own filters, kept in the URL query (`q`, `owned`, `alliance`). */
 export interface TierListUrlFilters {
@@ -121,7 +122,7 @@ export function isAwaitingOwnedRoster(
 
 /** A multiplier as "2.0×" / "1.95×": one to two decimals in the reader's locale. */
 export function formatMultiplier(value: number, locale?: string): string {
-  return `${new Intl.NumberFormat(locale, {
+  return `${numberFormat(locale, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 2,
   }).format(value)}×`

@@ -26,6 +26,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 
 import { EntityIcon, progressionText } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type {
   QuestCrateView,
@@ -63,7 +64,7 @@ function CrateRewards({
   alliance: string | null
 }) {
   const { t, i18n } = useTranslation(["quest", "progression"])
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const rarity = (value: string | null | undefined) =>
     value ? t(`progression:rarities.${value as Rarity}`) : ""
   return (
@@ -120,7 +121,7 @@ function RewardsLeftStrip({
   alliance: string | null
 }) {
   const { t, i18n } = useTranslation("quest")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   if (left.medals === 0 && left.crates === 0) {
     return (
       <p
@@ -185,7 +186,7 @@ function ShardsMeaningLine({
   hero: string
 }) {
   const { t, i18n } = useTranslation(["quest", "progression"])
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   if (meaning.kind === "unknown") {
     return (
       <p className="text-sm text-muted-foreground">
@@ -285,7 +286,7 @@ export function RewardsCard({
   left?: QuestRewardsLeft<CrateReward> | null
 }) {
   const { t, i18n } = useTranslation("quest")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const [allCrates, setAllCrates] = useState(false)
   const shownCrates = crates
     ? allCrates

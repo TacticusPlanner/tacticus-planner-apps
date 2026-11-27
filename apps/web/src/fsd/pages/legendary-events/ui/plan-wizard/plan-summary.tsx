@@ -8,6 +8,7 @@ import { writeCounts } from "../../model/plan-wizard/plan-create"
 import type { PlanWrites } from "../../model/plan-wizard/plan-create"
 import { planSummaryFacts } from "../../model/plan-wizard/plan-summary.model"
 import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
+import { numberFormat } from "@/shared/lib"
 
 /**
  * The plan summary on every step (spec: plan summary on every step): the target and its verdict,
@@ -32,7 +33,7 @@ export function PlanSummary({
   mobile: boolean
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const [expanded, setExpanded] = useState(false)
   const facts = planSummaryFacts(draft)
   const counts = writeCounts(writes)

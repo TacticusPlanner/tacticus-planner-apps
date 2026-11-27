@@ -4,6 +4,7 @@ import { rankAt } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { CompactStarLevel, EntityIcon } from "@/shared/ui"
+import { useNumberFormat } from "@/shared/lib"
 
 import { useRarityFromStars } from "../lib/rarity-from-stars"
 import type { NpcStatRow } from "../model/types"
@@ -25,6 +26,7 @@ export function NpcLevelBadge({
   className?: string
 }) {
   const { t } = useTranslation(["progression", "library"])
+  const numbers = useNumberFormat()
   const rank = rankAt(row.rank)
   const rankLabel = t(`progression:ranks.${rank}`, { defaultValue: rank })
   const rarity = useRarityFromStars(row.stars)
@@ -47,7 +49,7 @@ export function NpcLevelBadge({
       {health !== undefined ? (
         <span className="text-xs text-muted-foreground tabular-nums">
           {t("library:npcs.healthAtLevel", {
-            health: health.toLocaleString(),
+            health: numbers.format(health),
           })}
         </span>
       ) : null}

@@ -14,6 +14,7 @@ import {
   FiltersControl,
   ObjectiveIcon,
 } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type {
   LeaderboardControlsState,
@@ -52,7 +53,7 @@ export function LeaderboardControls({
   leading?: ReactNode
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const unlockedId = useId()
   const inTeamsId = useId()
   const teamsAvailable = state.teamUnitIds !== undefined

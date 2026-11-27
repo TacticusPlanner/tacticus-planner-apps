@@ -18,6 +18,7 @@ import {
   readPreference,
   storedPreference,
   writePreference,
+  numberFormat,
 } from "@/shared/lib"
 import type { StoredPreference } from "@/shared/lib"
 
@@ -50,7 +51,7 @@ export function TargetStep({
 }) {
   const { t, i18n } = useTranslation("legendaryEvents")
   const dateLocale = useDateLocale()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const month = new Intl.DateTimeFormat(dateLocale, {
     month: "short",
     year: "numeric",

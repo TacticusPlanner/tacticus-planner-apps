@@ -9,6 +9,7 @@ import {
 } from "@workspace/ui/components/toggle-group"
 
 import { EntityIcon, NumberStepper, ObjectiveIcon } from "@/shared/ui"
+import { numberFormat } from "@/shared/lib"
 
 import type { QuestBattle } from "../model/quest-battles"
 import type { QuestProgressActions } from "../model/use-quest-progress"
@@ -39,7 +40,7 @@ export function ScoreEntry({
   const maxLightning = scoring.maxPointsForLightningVictory
   const { t, i18n } = useTranslation("quest")
   const word = useObjectiveWording()
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   const readOnly = actions === null
   const won = entry.medals > 0
   const idBase = `quest-battle-${battle.number}`

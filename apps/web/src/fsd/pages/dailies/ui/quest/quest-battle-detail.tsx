@@ -32,6 +32,7 @@ import {
 } from "@/shared/ui"
 import { BoardMap, buildEnemyTile, EnemyList } from "@/widgets/battle-preview"
 import type { EnemyNpcs } from "@/widgets/battle-preview"
+import { numberFormat } from "@/shared/lib"
 
 import type { QuestDropNeed } from "../../model/quest-drop-need"
 
@@ -71,8 +72,8 @@ export function QuestBattleDetail({
   scoring: QuestScoring
 }) {
   const { t, i18n } = useTranslation(["quest", "progression", "upgrades"])
-  const number = new Intl.NumberFormat(i18n.language)
-  const percent = new Intl.NumberFormat(i18n.language, {
+  const number = numberFormat(i18n.language)
+  const percent = numberFormat(i18n.language, {
     style: "percent",
     maximumFractionDigits: 0,
   })
@@ -294,7 +295,7 @@ function IconLine({
 
 function DropNeed({ need }: { need: QuestDropNeed }) {
   const { t, i18n } = useTranslation("quest")
-  const number = new Intl.NumberFormat(i18n.language)
+  const number = numberFormat(i18n.language)
   if (need.status === "loading") return null
   if (need.status === "error") {
     return (

@@ -2,6 +2,7 @@ import type { TFunction } from "i18next"
 
 import type { ResourceNeed } from "@/entities/goal-farming"
 import type { GoalProgress } from "@/features/goal-planning"
+import { numberFormat } from "@/shared/lib"
 
 /** The generic material/shard/orb/energy breakdown `formatGoalRemainingText` falls back to for a
  *  goal kind with no dedicated formatter (Ascension, Ability, Upgrade) — unchanged from the
@@ -68,7 +69,7 @@ export function formatGoalRemainingText(
   remaining: ResourceNeed | null,
   energy: number | undefined
 ): string | null {
-  const fmt = (value: number) => new Intl.NumberFormat(language).format(value)
+  const fmt = (value: number) => numberFormat(language).format(value)
 
   if (progress.kind === "LevelRequirement") {
     const count = progress.target - progress.current
@@ -104,7 +105,7 @@ export function formatProgressTooltipText(
   remaining: ResourceNeed | null,
   energy: number | undefined
 ): string | null {
-  const fmt = (value: number) => new Intl.NumberFormat(language).format(value)
+  const fmt = (value: number) => numberFormat(language).format(value)
   const base = formatGoalRemainingText(t, language, progress, remaining, energy)
   const slots = remaining?.coveredByEarlierGoal
     ? 0
