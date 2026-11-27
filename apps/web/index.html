@@ -34,6 +34,9 @@
     <!-- Applies the stored theme before first paint (ThemeProvider takes over after). A file, not
          an inline script, so the Content-Security-Policy needs no hash for it. -->
     <script src="/theme-init.js"></script>
+    <!-- Turns off Zod's eval-based JIT before the bundle builds any schema, so the policy needs no
+         'unsafe-eval'. -->
+    <script src="/zod-config.js"></script>
   </head>
   <body>
     <!-- Static copy of app/boot-screen.tsx, shown until React renders over it, so the installed
