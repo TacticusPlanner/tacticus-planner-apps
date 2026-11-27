@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { useObjectiveLabel } from "@/entities/legendary-event"
 import { ObjectiveIcon } from "@/shared/ui"
@@ -96,11 +97,10 @@ export function RosterPotentialMap({
               ),
             ].join(" · ")
             const column = (
-              <button
+              <Pressable
                 aria-label={label}
-                className="flex w-full min-w-0 flex-col gap-px rounded-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                className="flex w-full min-w-0 flex-col gap-px rounded-sm"
                 data-testid="roster-potential-column"
-                type="button"
               >
                 {cells.map((state, row) => (
                   <span
@@ -116,7 +116,7 @@ export function RosterPotentialMap({
                 >
                   {!isMobile || battle % 3 === 0 ? battle + 1 : " "}
                 </span>
-              </button>
+              </Pressable>
             )
             return (
               <li className="min-w-0 flex-1" key={battle}>

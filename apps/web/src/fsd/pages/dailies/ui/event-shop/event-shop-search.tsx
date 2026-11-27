@@ -7,6 +7,7 @@ import {
   PopoverContent,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { eventOfferGroups } from "@/features/shops/event-planner"
 import type { EventOfferGroup } from "@/features/shops/event-planner"
@@ -103,14 +104,14 @@ function SearchInput({
         value={query}
       />
       {query ? (
-        <button
+        <Pressable
+          variant="art"
           aria-label={t("search.clear")}
           className="text-muted-foreground hover:text-foreground"
           onClick={() => onQueryChange("")}
-          type="button"
         >
           <X aria-hidden="true" className="size-icon" />
-        </button>
+        </Pressable>
       ) : null}
     </label>
   )
@@ -164,23 +165,20 @@ function SearchResults({
                 cost: format.number(day.cost),
               })
               return (
-                <button
+                <Pressable
                   key={`${day.index}-${day.slotIndex}`}
-                  aria-label={`${format.date(day.date)}, ${offer}${
-                    day.past ? `, ${t("search.past")}` : ""
-                  }`}
+                  aria-label={`${format.date(day.date)}, ${offer}${day.past ? `, ${t("search.past")}` : ""}`}
                   className={cn(
-                    "flex flex-col items-start rounded-md border interactive-surface px-2 py-1 text-left text-xs",
+                    "flex flex-col items-start rounded-md border px-2 py-1 text-left text-xs",
                     day.past && "opacity-50",
                     day.index === controller.todayIndex && "border-primary"
                   )}
                   data-testid={`event-shop-search-day-${group.rewardType}-${day.index}`}
                   onClick={() => onOpenDay(day.index)}
-                  type="button"
                 >
                   <span className="font-medium">{format.date(day.date)}</span>
                   <span className="text-muted-foreground">{offer}</span>
-                </button>
+                </Pressable>
               )
             })}
           </span>

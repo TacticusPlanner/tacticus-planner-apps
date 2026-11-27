@@ -4,6 +4,7 @@ import { heroStarIcon, rarityIcon } from "@workspace/game-catalog"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
@@ -96,13 +97,12 @@ export function BattleList({
           >
             <h3 id={headingId}>
               {isMobile ? (
-                <button
+                <Pressable
                   aria-controls={`${headingId}-battles`}
                   aria-expanded={open}
                   className="flex min-h-11 w-full items-center gap-2 rounded-xl border px-3 text-left"
                   data-testid="quest-tier-toggle"
                   onClick={() => onToggleTier(group.tier)}
-                  type="button"
                 >
                   {heading}
                   <ChevronDownIcon
@@ -112,7 +112,7 @@ export function BattleList({
                       open && "rotate-180"
                     )}
                   />
-                </button>
+                </Pressable>
               ) : (
                 <span className="flex">{heading}</span>
               )}
@@ -133,7 +133,7 @@ export function BattleList({
                     })
                     return (
                       <li key={battle.number}>
-                        <button
+                        <Pressable
                           aria-current={
                             selected === battle.number ? "true" : undefined
                           }
@@ -141,14 +141,13 @@ export function BattleList({
                             number: battle.number,
                           })}
                           className={cn(
-                            "flex w-full min-w-0 items-center gap-2.5 rounded-xl border interactive-surface px-2.5 py-2 text-left",
+                            "flex w-full min-w-0 items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left",
                             selected === battle.number &&
                               "border-primary bg-muted"
                           )}
                           data-battle={battle.number}
                           data-testid="quest-battle-row"
                           onClick={() => onSelect(battle.number)}
-                          type="button"
                         >
                           <span
                             aria-hidden
@@ -216,7 +215,7 @@ export function BattleList({
                             aria-hidden
                             className="size-icon-sm shrink-0 self-center text-muted-foreground"
                           />
-                        </button>
+                        </Pressable>
                       </li>
                     )
                   })

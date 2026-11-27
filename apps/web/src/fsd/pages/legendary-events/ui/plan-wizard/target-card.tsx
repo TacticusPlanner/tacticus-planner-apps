@@ -2,6 +2,7 @@ import type { KeyboardEvent, Ref } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type {
   StepTarget,
@@ -87,10 +88,10 @@ export function TargetCard({
     : t(`planWizard.target.verdicts.${verdict.kind}`)
 
   return (
-    <button
+    <Pressable
       aria-checked={checked}
       className={cn(
-        "flex min-h-11 w-full flex-col gap-2 rounded-xl border p-3 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        "flex min-h-11 w-full flex-col gap-2 rounded-xl border p-3 text-left",
         checked && "border-primary ring-1 ring-primary"
       )}
       data-step={target.step}
@@ -101,7 +102,6 @@ export function TargetCard({
       ref={buttonRef}
       role="radio"
       tabIndex={focusable ? 0 : -1}
-      type="button"
     >
       <span className="flex w-full items-center gap-3">
         <span className="flex min-w-0 flex-1 flex-col">
@@ -154,6 +154,6 @@ export function TargetCard({
       >
         {[verdictLabel, ...details].join(" · ")}
       </span>
-    </button>
+    </Pressable>
   )
 }

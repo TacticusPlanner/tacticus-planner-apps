@@ -13,6 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { AnnotationMarkIcon } from "@/entities/legendary-event"
 import type { LegendaryEventAnnotationStatus } from "@/entities/legendary-event"
@@ -54,9 +55,9 @@ export function AnnotationMenu({
       <Tooltip>
         <DropdownMenuTrigger asChild>
           <TooltipTrigger asChild disableTouchToggle>
-            <button
+            <Pressable
               className={cn(
-                "inline-flex items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                "inline-flex items-center justify-center rounded-full",
                 touch ? "size-10" : "size-6",
                 status === null &&
                   "border border-dashed border-muted-foreground/40 hover:border-muted-foreground"
@@ -64,13 +65,12 @@ export function AnnotationMenu({
               data-cleared="false"
               data-mark={status ?? "none"}
               data-testid="progress-cell"
-              type="button"
             >
               {status === null ? null : (
                 <AnnotationMarkIcon className="size-icon" status={status} />
               )}
               <span className="sr-only">{text}</span>
-            </button>
+            </Pressable>
           </TooltipTrigger>
         </DropdownMenuTrigger>
         <TooltipContent>{text}</TooltipContent>

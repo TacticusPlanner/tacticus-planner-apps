@@ -24,6 +24,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, progressionText } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
@@ -409,13 +410,12 @@ export function RewardsCard({
     >
       {isMobile ? (
         <h3 id="quest-rewards-title">
-          <button
+          <Pressable
             aria-controls="quest-rewards-body"
             aria-expanded={open}
             className="flex min-h-11 w-full items-center justify-between font-semibold"
             data-testid="quest-rewards-toggle"
             onClick={() => onOpenChange(!open)}
-            type="button"
           >
             {t("rewards.toggle")}
             <ChevronDownIcon
@@ -425,7 +425,7 @@ export function RewardsCard({
                 open && "rotate-180"
               )}
             />
-          </button>
+          </Pressable>
         </h3>
       ) : (
         <h3 className="font-semibold" id="quest-rewards-title">

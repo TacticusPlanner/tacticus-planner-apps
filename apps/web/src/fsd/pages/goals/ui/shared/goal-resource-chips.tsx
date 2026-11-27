@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, HintLines, HintTrigger } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
@@ -64,20 +65,19 @@ ${chip.hint}`
           {chip.parts ? (
             <Popover>
               <PopoverTrigger asChild>
-                <button
+                <Pressable
                   aria-label={t("goals.resourceChips.byRarityLabel", {
                     label: tooltip(chip),
                   })}
-                  className="-mx-1 flex items-center gap-0.5 rounded-md interactive-surface px-1"
+                  className="-mx-1 flex items-center gap-0.5 rounded-md px-1"
                   data-testid="goal-resource-chip-group"
-                  type="button"
                 >
                   <ChipFace chip={chip} />
                   <ChevronDown
                     aria-hidden="true"
                     className="size-icon-sm text-muted-foreground"
                   />
-                </button>
+                </Pressable>
               </PopoverTrigger>
               <PopoverContent
                 align="start"

@@ -3,6 +3,7 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Check, ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { doneMissionCount, useMissionLabel } from "@/entities/legendary-event"
 import type {
@@ -52,16 +53,15 @@ export function MissionChecklist({
   const doneField = t("runInputs.doneCount", { field })
   return (
     <div className="flex flex-col gap-2" data-testid={testId}>
-      <button
+      <Pressable
         aria-controls={listId}
         aria-expanded={open}
         className={cn(
-          "flex items-center justify-between gap-2 rounded-md text-left text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+          "flex items-center justify-between gap-2 rounded-md text-left text-sm",
           touch && "min-h-11"
         )}
         data-testid={`${testId}-toggle`}
         onClick={() => setOpen((value) => !value)}
-        type="button"
       >
         <span>
           {field}{" "}
@@ -79,7 +79,7 @@ export function MissionChecklist({
             open && "rotate-180"
           )}
         />
-      </button>
+      </Pressable>
       {open ? (
         <ol
           aria-label={t("runInputs.fieldLabel", { field, run })}
@@ -176,19 +176,18 @@ function MissionRow({
   const { t } = useTranslation("legendaryEvents")
   return (
     <li data-state={state} data-testid={testId}>
-      <button
+      <Pressable
         aria-label={t(`runInputs.missionState.${state}`, {
           number,
           mission: label,
         })}
         className={cn(
-          "flex w-full items-center gap-3 rounded-md px-1.5 py-1 text-left text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+          "flex w-full items-center gap-3 rounded-md px-1.5 py-1 text-left text-sm",
           touch && "min-h-11",
           state === "current" && "bg-primary/10 font-medium",
           state === "done" && "text-muted-foreground"
         )}
         onClick={onPick}
-        type="button"
       >
         <span
           aria-hidden="true"
@@ -214,7 +213,7 @@ function MissionRow({
             {t("runInputs.now")}
           </span>
         ) : null}
-      </button>
+      </Pressable>
     </li>
   )
 }

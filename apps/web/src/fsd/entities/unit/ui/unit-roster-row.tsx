@@ -16,6 +16,7 @@ import {
 import { progressionRarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { itemLibraryPath } from "@/shared/equipment"
 import { CompactStars, EntityIcon, TruncatedText } from "@/shared/ui"
@@ -86,14 +87,13 @@ export function UnitRosterRow({
   if (form === "expandable") {
     return (
       <div {...rootData} className={cn("min-w-0", className)}>
-        <button
-          type="button"
+        <Pressable
           aria-label={label}
           aria-expanded={expanded}
           aria-controls={panelId}
           onClick={onToggle}
           className={cn(
-            "grid h-12 w-full items-center gap-x-1.5 rounded-md interactive-surface px-2 text-left",
+            "grid h-12 w-full items-center gap-x-1.5 rounded-md px-2 text-left",
             faction ? expandableColumnsWithFaction : expandableColumns
           )}
         >
@@ -116,7 +116,7 @@ export function UnitRosterRow({
               expanded && "rotate-180"
             )}
           />
-        </button>
+        </Pressable>
         <div
           id={panelId}
           hidden={!expanded}

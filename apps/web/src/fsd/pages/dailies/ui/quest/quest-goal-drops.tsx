@@ -4,6 +4,7 @@ import { chanceIcon } from "@workspace/game-catalog"
 import type { UpgradeStorageModel } from "@workspace/game-catalog"
 import type { UpgradeId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, UpgradeIcon } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
@@ -89,11 +90,10 @@ export function QuestGoalDrops({
                 >
                   {drop.battles.map((battle) => (
                     <li key={battle.number}>
-                      <button
-                        className="inline-flex min-h-8 items-center gap-1 rounded-full border interactive-surface px-2 text-xs"
+                      <Pressable
+                        className="inline-flex min-h-8 items-center gap-1 rounded-full border px-2 text-xs"
                         data-testid="quest-goal-drop-battle"
                         onClick={() => onSelect(battle.number)}
-                        type="button"
                       >
                         <span className="font-semibold">
                           {t("quest:battles.battle", { number: battle.number })}
@@ -109,7 +109,7 @@ export function QuestGoalDrops({
                             battle.numerator / battle.denominator
                           )}
                         </span>
-                      </button>
+                      </Pressable>
                     </li>
                   ))}
                 </ul>

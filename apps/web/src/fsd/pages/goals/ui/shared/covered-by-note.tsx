@@ -3,6 +3,7 @@ import { CornerLeftUp } from "lucide-react"
 
 import { goalTargetLabel } from "@/entities/goal"
 import type { GoalDetail } from "@/entities/goal"
+import { Button } from "@workspace/ui/components/button"
 
 /** "Covered by #3 · Rank → Adamantine I": a higher-priority goal of the same unit and type already
  *  reaches this milestone's target, so it adds no work of its own (goal-milestone-planning). With
@@ -38,18 +39,18 @@ export function CoveredByNote({
     )
   }
   return (
-    <button
-      className="flex items-center gap-1 rounded-sm text-left text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+    <Button
+      variant="link"
+      className="flex h-auto items-center gap-1 rounded-sm p-0 text-left text-xs font-normal whitespace-normal text-muted-foreground underline-offset-2 hover:text-foreground"
       data-testid="goal-covered-by"
       onClick={(event) => {
         // The row itself navigates on click; this link goes to the other goal instead.
         event.stopPropagation()
         onJump(coveredBy.goalId)
       }}
-      type="button"
     >
       <CornerLeftUp aria-hidden="true" className="size-icon-sm shrink-0" />
       {text}
-    </button>
+    </Button>
   )
 }

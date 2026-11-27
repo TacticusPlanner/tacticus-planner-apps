@@ -25,6 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { useCommandListId } from "./command-list-id"
 import { closestOverlayContent } from "./overlay-content"
@@ -125,9 +126,8 @@ function SelectShell({
       <div className="relative min-w-0">
         <PopoverTrigger asChild>
           {/* Styled as a select trigger so it matches the plain selects beside it in a panel. */}
-          <button
+          <Pressable
             ref={triggerRef}
-            type="button"
             role="combobox"
             aria-expanded={open}
             aria-controls={listId}
@@ -147,7 +147,7 @@ function SelectShell({
               {summary}
             </span>
             <ChevronDown className="size-icon-sm shrink-0 text-muted-foreground" />
-          </button>
+          </Pressable>
         </PopoverTrigger>
         {trailing}
       </div>

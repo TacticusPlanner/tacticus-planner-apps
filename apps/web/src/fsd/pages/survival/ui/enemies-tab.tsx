@@ -11,6 +11,7 @@ import { npcPortrait, powerIcon, rarityIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { NpcPortrait, useNpcLabels, useNpcsById } from "@/entities/npc"
 import { EntityIcon, HintTrigger, ListDivider } from "@/shared/ui"
@@ -370,12 +371,11 @@ function WaveGroupSection({
           />
         }
         label={
-          <button
+          <Pressable
             aria-controls={`${id}-content`}
             aria-expanded={open}
-            className="flex min-h-11 flex-wrap items-center gap-x-2 rounded-md interactive-surface px-1 text-left"
+            className="flex min-h-11 flex-wrap items-center gap-x-2 rounded-md px-1 text-left"
             onClick={onToggle}
-            type="button"
           >
             <span className="text-lg font-semibold text-foreground">
               {t("survival:enemies.rarityCap", { rarity })}
@@ -389,7 +389,7 @@ function WaveGroupSection({
                 className={`size-icon-sm shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
               />
             </span>
-          </button>
+          </Pressable>
         }
         tone="default"
       />

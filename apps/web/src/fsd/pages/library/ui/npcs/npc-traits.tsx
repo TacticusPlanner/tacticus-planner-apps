@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { useNpcTraitText } from "@/entities/npc"
 import { AbilityText, rulesTextPending } from "@/shared/ability-text"
@@ -55,13 +56,9 @@ function TraitChip({
     <li data-testid={`npc-trait-${trait}`}>
       <Popover>
         <PopoverTrigger asChild>
-          <button
-            type="button"
-            aria-label={label}
-            className={`${chipClass} interactive-surface`}
-          >
+          <Pressable aria-label={label} className={chipClass}>
             {chip}
-          </button>
+          </Pressable>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-72">
           <p className="mb-1 text-sm font-medium">{label}</p>

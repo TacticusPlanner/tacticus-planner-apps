@@ -8,6 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -75,12 +76,11 @@ export function MilestoneGrid({
             <li key={index}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
+                  <Pressable
                     aria-label={tooltip}
                     className="relative flex w-full flex-col items-center gap-1 rounded-lg border bg-card p-2 text-card-foreground"
                     data-endless={cell.endless || undefined}
                     data-testid="hse-milestone"
-                    type="button"
                   >
                     {cell.endless ? (
                       <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
@@ -124,7 +124,7 @@ export function MilestoneGrid({
                         {td("hse.details.endlessCap", { count: cell.cap })}
                       </span>
                     ) : null}
-                  </button>
+                  </Pressable>
                 </TooltipTrigger>
                 <TooltipContent>{tooltip}</TooltipContent>
               </Tooltip>

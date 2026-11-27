@@ -18,6 +18,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   AbilityText,
@@ -108,15 +109,14 @@ function AttackRow({
           {pierce !== undefined ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  type="button"
+                <Pressable
                   className="relative ml-0.5 border-l pl-1.5 text-muted-foreground underline decoration-dotted underline-offset-2 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-3"
                   data-testid={`unit-attack-${kind}-pierce`}
                 >
                   {t("characterUnit.glance.pierce", {
                     value: Math.round(pierce * 100),
                   })}
-                </button>
+                </Pressable>
               </TooltipTrigger>
               <TooltipContent>
                 {t("characterUnit.glance.pierceHint", {

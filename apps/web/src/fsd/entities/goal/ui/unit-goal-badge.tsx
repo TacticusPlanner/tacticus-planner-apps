@@ -5,6 +5,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 /**
  * A small mark beside a unit's name that it has goals, listing each one ("Rank to Gold II") in the
@@ -37,14 +38,13 @@ export function UnitGoalBadge({
       {tooltip ? (
         // A real button so the tooltip is reachable by keyboard.
         <TooltipTrigger asChild>
-          <button
+          <Pressable
             aria-label={name}
             className={badgeClass}
             data-testid="unit-goal-badge"
-            type="button"
           >
             {icon}
-          </button>
+          </Pressable>
         </TooltipTrigger>
       ) : (
         // Inside another control: hover only, so a tap keeps that control's job.

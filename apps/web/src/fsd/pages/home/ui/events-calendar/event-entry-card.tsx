@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 import { eventIcon } from "@workspace/game-catalog"
 
 import {
@@ -297,7 +298,7 @@ export function EventBar({
     <Tooltip>
       <EventDetailsPopover entry={entry}>
         <TooltipTrigger asChild disableTouchToggle>
-          <button
+          <Pressable
             className={cn(
               "isolate flex size-full min-w-0 items-center gap-1.5 overflow-hidden rounded-md pr-2 pl-0.5 text-left text-xs font-medium",
               showIconOnly && "justify-center px-0",
@@ -307,7 +308,6 @@ export function EventBar({
             data-active={entry.isActiveNow}
             data-confirmed={entry.confirmed}
             data-testid="event-entry-card"
-            type="button"
           >
             {entry.phases.length > 0 ? <PhaseOverlay entry={entry} /> : null}
             <EventIcon
@@ -333,7 +333,7 @@ export function EventBar({
               </>
             )}
             <EntryStateText entry={entry} />
-          </button>
+          </Pressable>
         </TooltipTrigger>
       </EventDetailsPopover>
       <TooltipContent>{displayName}</TooltipContent>
@@ -356,7 +356,7 @@ export function EventAgendaRow({
 
   return (
     <EventDetailsPopover entry={entry}>
-      <button
+      <Pressable
         className={cn(
           "flex w-full min-w-0 items-center gap-2 rounded-lg py-1 pr-2 pl-1 text-left text-sm pointer-coarse:min-h-11",
           entrySurfaceClass(entry)
@@ -364,7 +364,6 @@ export function EventAgendaRow({
         data-active={entry.isActiveNow}
         data-confirmed={entry.confirmed}
         data-testid="event-entry-card"
-        type="button"
       >
         <EventIcon
           size="icon-lg"
@@ -394,7 +393,7 @@ export function EventAgendaRow({
           </span>
         ) : null}
         <EntryStateText entry={entry} />
-      </button>
+      </Pressable>
     </EventDetailsPopover>
   )
 }
@@ -411,7 +410,7 @@ export function OngoingEventTile({
 
   return (
     <EventDetailsPopover entry={entry}>
-      <button
+      <Pressable
         className={cn(
           "flex w-28 shrink-0 flex-col items-center gap-1 rounded-lg px-1.5 py-2 text-center text-xs/tight",
           entrySurfaceClass(entry)
@@ -419,7 +418,6 @@ export function OngoingEventTile({
         data-active={entry.isActiveNow}
         data-confirmed={entry.confirmed}
         data-testid="event-entry-card"
-        type="button"
       >
         <EventIcon
           size="icon-2xl"
@@ -430,7 +428,7 @@ export function OngoingEventTile({
         <span className="line-clamp-2 font-medium">{displayName}</span>
         <span className="text-muted-foreground tabular-nums">{endsInText}</span>
         <EntryStateText entry={entry} />
-      </button>
+      </Pressable>
     </EventDetailsPopover>
   )
 }

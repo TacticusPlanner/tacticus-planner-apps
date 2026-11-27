@@ -8,6 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { TEAM_LIMITS, TeamUnitPortrait } from "@/entities/team"
 import type { TeamUnitView } from "@/entities/team"
@@ -88,13 +89,13 @@ function BandSlot({
       ref={nodeRef}
       style={style}
     >
-      <button
+      <Pressable
+        variant="art"
         {...attributes}
         {...listeners}
         aria-label={t("lineup.drag", { name })}
-        className="group relative cursor-grab touch-none rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring active:cursor-grabbing"
+        className="group relative cursor-grab touch-none rounded-full active:cursor-grabbing"
         ref={ref}
-        type="button"
       >
         <TeamUnitPortrait
           size="portrait-sm"
@@ -104,7 +105,7 @@ function BandSlot({
           aria-hidden="true"
           className="absolute top-0 -left-2 size-icon text-muted-foreground opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
         />
-      </button>
+      </Pressable>
       <TruncatedText className="w-full text-xs font-medium">
         {name}
       </TruncatedText>

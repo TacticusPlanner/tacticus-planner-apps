@@ -15,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { ProjectSummary } from "@/entities/project"
 import {
@@ -153,16 +154,15 @@ export function GoalProjectsField({
                 {project.status === "Archived" ? (
                   <span>{t("goals.status.Archived")}</span>
                 ) : null}
-                <button
+                <Pressable
                   aria-label={t("goals.project.removeMembership", {
                     project: project.name,
                   })}
-                  className="relative rounded-full interactive-surface p-0.5 after:absolute after:-inset-1"
+                  className="relative rounded-full p-0.5 after:absolute after:-inset-1"
                   onClick={() => remove(project.projectId)}
-                  type="button"
                 >
                   <X className="size-icon-xs" />
-                </button>
+                </Pressable>
               </Badge>
             </div>
           )

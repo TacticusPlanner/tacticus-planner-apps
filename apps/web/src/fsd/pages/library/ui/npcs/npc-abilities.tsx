@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { abilityIcon } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { Rarity } from "@workspace/game-domain"
 
@@ -70,11 +71,10 @@ function AbilityChip({
 
   return (
     <li className={cardClass} data-testid={`npc-ability-${id}`}>
-      <button
-        type="button"
+      <Pressable
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className={cn(rowClass, "interactive-surface")}
+        className={rowClass}
       >
         {chip}
         <ChevronDown
@@ -84,7 +84,7 @@ function AbilityChip({
             open && "rotate-180"
           )}
         />
-      </button>
+      </Pressable>
       {open ? (
         <div className="border-t px-2 py-1.5">
           {text ? (

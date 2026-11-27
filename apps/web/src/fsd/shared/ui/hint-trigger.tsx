@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { useCoarsePointer } from "../lib"
 
@@ -34,17 +35,16 @@ export function HintTrigger({
 }) {
   const coarse = useCoarsePointer()
   const trigger = (
-    <button
+    <Pressable
       aria-label={label}
       className={cn(
-        "inline-flex cursor-default items-center rounded-sm text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        "inline-flex cursor-default items-center rounded-sm text-left",
         className
       )}
       data-testid={testId}
-      type="button"
     >
       {children}
-    </button>
+    </Pressable>
   )
   const content = hint ?? label
   if (coarse) {

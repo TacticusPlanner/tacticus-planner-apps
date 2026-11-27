@@ -9,6 +9,7 @@ import {
 } from "@workspace/ui/components/card"
 import { Badge } from "@workspace/ui/components/badge"
 import { Progress } from "@workspace/ui/components/progress"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { RaidBossPortrait } from "@/entities/raid-boss"
 import { DetailsOverlay } from "@/shared/ui"
@@ -102,10 +103,9 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
           name: prime.name,
         })}
         trigger={
-          <button
-            className="flex w-full items-center justify-between gap-2 rounded-lg border bg-muted/40 interactive-surface px-3 py-2 text-left"
+          <Pressable
+            className="flex w-full items-center justify-between gap-2 rounded-lg border bg-muted/40 px-3 py-2 text-left"
             data-testid="guild-raid-next-modifier-trigger"
-            type="button"
           >
             {next ? (
               <ModifierRow modifier={next} />
@@ -118,7 +118,7 @@ function ModifiersSection({ prime }: { prime: GuildRaidPrimeView }) {
               aria-hidden="true"
               className="size-icon-sm shrink-0 text-muted-foreground"
             />
-          </button>
+          </Pressable>
         }
       >
         <div className="flex flex-col gap-2">

@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { UnitGoalBadge, useCreateGoalLauncher } from "@/entities/goal"
 import type {
@@ -324,13 +325,12 @@ export function UpgradeImpactSection({
           className="text-lg font-semibold"
           id={`legendary-event-upgrade-impact-title-${laneId}`}
         >
-          <button
+          <Pressable
             aria-controls={bodyId}
             aria-expanded={open}
-            className="flex w-full min-w-0 items-center justify-between gap-3 rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex w-full min-w-0 items-center justify-between gap-3 rounded-lg text-left"
             data-testid="upgrade-impact-toggle"
             onClick={toggle}
-            type="button"
           >
             {showLane
               ? t("upgradeImpact.titleLane", {
@@ -344,7 +344,7 @@ export function UpgradeImpactSection({
                 open && "rotate-180"
               )}
             />
-          </button>
+          </Pressable>
         </h2>
         {/* An open empty state reads its copy in the body instead. */}
         {open && emptyState ? null : (

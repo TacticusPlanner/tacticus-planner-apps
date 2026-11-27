@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { crossLaneFigure } from "@/entities/legendary-event"
 import type {
@@ -301,19 +302,18 @@ function SortHead({
       }
       className={className}
     >
-      <button
-        className="inline-flex items-center gap-1 rounded-sm hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      <Pressable
+        className="inline-flex items-center gap-1 rounded-sm hover:text-foreground"
         data-sort={sortKey}
         data-testid="leaderboard-sort"
         onClick={() => onSort(sortKey)}
-        type="button"
       >
         {label}
         <Icon
           aria-hidden
           className={direction ? "size-icon-sm" : "size-icon-sm opacity-40"}
         />
-      </button>
+      </Pressable>
     </TableHead>
   )
 }

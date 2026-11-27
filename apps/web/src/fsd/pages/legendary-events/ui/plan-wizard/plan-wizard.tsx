@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type {
   AscensionStep,
@@ -287,7 +288,7 @@ export function PlanWizard({
         >
           {PLAN_WIZARD_STEPS.map((entry, position) => (
             <li key={entry}>
-              <button
+              <Pressable
                 aria-current={entry === step ? "step" : undefined}
                 className={cn(
                   "min-h-8 rounded-full border px-2.5 text-xs",
@@ -299,10 +300,9 @@ export function PlanWizard({
                 data-testid={`plan-wizard-chip-${entry}`}
                 disabled={locked || position > visited}
                 onClick={() => setStep(entry)}
-                type="button"
               >
                 {t(`planWizard.steps.${entry}`)}
-              </button>
+              </Pressable>
             </li>
           ))}
         </ol>
@@ -325,25 +325,24 @@ export function PlanWizard({
           <ol className="flex flex-col gap-1">
             {PLAN_WIZARD_STEPS.map((entry, position) => (
               <li key={entry}>
-                <button
+                <Pressable
                   aria-current={entry === step ? "step" : undefined}
                   className={cn(
                     "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm",
                     entry === step
                       ? "bg-muted font-medium"
-                      : "interactive-surface text-muted-foreground",
+                      : "text-muted-foreground",
                     position > visited && "opacity-60"
                   )}
                   data-testid={`plan-wizard-step-${entry}`}
                   disabled={locked || position > visited}
                   onClick={() => setStep(entry)}
-                  type="button"
                 >
                   <span className="flex size-5 items-center justify-center rounded-full border text-xs">
                     {position + 1}
                   </span>
                   {t(`planWizard.steps.${entry}`)}
-                </button>
+                </Pressable>
               </li>
             ))}
           </ol>

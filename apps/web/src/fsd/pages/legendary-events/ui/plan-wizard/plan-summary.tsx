@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { writeCounts } from "../../model/plan-wizard/plan-create"
 import type { PlanWrites } from "../../model/plan-wizard/plan-create"
@@ -120,11 +121,10 @@ export function PlanSummary({
         className="sticky top-0 z-10 -mx-4 flex flex-col gap-1 border-b bg-background px-4 py-2 text-sm"
         data-testid="plan-wizard-summary"
       >
-        <button
+        <Pressable
           aria-expanded={expanded}
           className="flex min-h-11 w-full items-center gap-2 text-left"
           onClick={() => setExpanded((open) => !open)}
-          type="button"
         >
           <span className="min-w-0 flex-1 truncate">
             <span className="font-medium">{headline}</span>
@@ -138,7 +138,7 @@ export function PlanSummary({
               expanded && "rotate-180"
             )}
           />
-        </button>
+        </Pressable>
         {expanded || facts.tooAmbitious ? (
           <div className="flex flex-col gap-1 pb-1 text-muted-foreground">
             {details}

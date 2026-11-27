@@ -9,6 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { TierStars } from "../../model/incursion-progress.model"
 import { enhancementSubject, nodeName } from "../../model/incursions.model"
@@ -136,13 +137,12 @@ export function IncursionRunMap({
                       ) : null}
                       <Tooltip>
                         <TooltipTrigger asChild disableTouchToggle>
-                          <button
-                            type="button"
+                          <Pressable
                             aria-pressed={node === selected}
                             aria-label={nodeLabel(node)}
                             onClick={() => onSelect(node)}
                             className={cn(
-                              "rounded-md interactive-surface p-0.5",
+                              "rounded-md p-0.5",
                               node === selected &&
                                 "bg-primary/10 ring-2 ring-primary"
                             )}
@@ -155,7 +155,7 @@ export function IncursionRunMap({
                               stars={starsOf(node)}
                               size="sm"
                             />
-                          </button>
+                          </Pressable>
                         </TooltipTrigger>
                         <TooltipContent>{nodeLabel(node)}</TooltipContent>
                       </Tooltip>

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { DetailsOverlay } from "@/shared/ui"
 
@@ -32,13 +33,12 @@ export function PlannedMaterialDetails({
       title={label}
       tooltip={label}
       trigger={
-        <button
+        <Pressable
           aria-label={label}
-          className="shrink-0 rounded-sm border-0 bg-transparent p-0 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-          type="button"
+          className="shrink-0 rounded-sm border-0 bg-transparent p-0"
         >
           <ResourceIcon label={label} size="icon-lg" visual={visual} />
-        </button>
+        </Pressable>
       }
     >
       <PlannedMaterialDetailsBody

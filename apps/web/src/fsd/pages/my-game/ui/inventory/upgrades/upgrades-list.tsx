@@ -9,6 +9,8 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
+import { Button } from "@workspace/ui/components/button"
 
 import {
   CountBadge,
@@ -137,15 +139,14 @@ function UpgradesGrid({
     <ul className="grid grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))] gap-2">
       {rows.map((row) => (
         <li key={row.id}>
-          <button
+          <Pressable
             aria-haspopup="dialog"
             aria-label={counts.label(row, needsReady)}
             className={cn(
-              "flex size-full flex-col items-center gap-1 rounded-lg border bg-card interactive-surface p-2 text-center",
+              "flex size-full flex-col items-center gap-1 rounded-lg border bg-card p-2 text-center",
               row.have === 0 && "text-muted-foreground"
             )}
             onClick={(event) => onOpen(row, event.currentTarget)}
-            type="button"
           >
             <UpgradeIcon
               className={row.have === 0 ? "opacity-60" : undefined}
@@ -165,7 +166,7 @@ function UpgradesGrid({
                 {counts.short(row.short)}
               </span>
             ) : null}
-          </button>
+          </Pressable>
         </li>
       ))}
     </ul>
@@ -217,11 +218,11 @@ function UpgradesTable({
                 key={row.id}
               >
                 <TableCell>
-                  <button
+                  <Button
+                    variant="link"
                     aria-haspopup="dialog"
-                    className="flex items-center gap-2 rounded-sm text-left underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    className="flex h-auto items-center gap-2 rounded-sm p-0 text-left text-[length:inherit] font-normal whitespace-normal text-current underline-offset-2 hover:underline"
                     onClick={(event) => onOpen(row, event.currentTarget)}
-                    type="button"
                   >
                     <UpgradeIcon
                       crafted={row.crafted}
@@ -229,7 +230,7 @@ function UpgradesTable({
                       rarity={row.rarity}
                     />
                     <span className="font-medium">{row.name}</span>
-                  </button>
+                  </Button>
                 </TableCell>
                 <TableCell>
                   <RarityIcon rarity={row.rarity} size="icon-md" />

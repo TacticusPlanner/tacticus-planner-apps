@@ -14,6 +14,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type {
   HordeRelicRating,
@@ -93,10 +94,10 @@ function TierTileButton({
     }
   )
   return (
-    <button
+    <Pressable
       aria-label={hasRelics ? `${label}, ${t("tierList.relicMark")}` : label}
       className={cn(
-        "rounded-lg border bg-card interactive-surface text-left",
+        "rounded-lg border bg-card text-left",
         isMobile
           ? "flex min-h-11 w-full min-w-0 flex-col items-center gap-0.5 p-1"
           : "flex min-w-0 items-center gap-2 py-1 pr-3 pl-1",
@@ -108,7 +109,6 @@ function TierTileButton({
       data-owned={tile.owned === undefined ? "unknown" : tile.owned}
       data-testid="tier-list-tile"
       data-unit-id={tile.unitId}
-      type="button"
       {...props}
     >
       <EntityIcon
@@ -141,7 +141,7 @@ function TierTileButton({
           {multiplier}
         </span>
       )}
-    </button>
+    </Pressable>
   )
 }
 

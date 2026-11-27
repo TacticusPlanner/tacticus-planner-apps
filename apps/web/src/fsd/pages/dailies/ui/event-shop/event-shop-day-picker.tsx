@@ -4,6 +4,7 @@ import { eventDays } from "@workspace/game-catalog"
 import type { EventShopDay } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -151,22 +152,17 @@ function CalendarDay({
   const past = day.index < controller.todayIndex
 
   return (
-    <button
+    <Pressable
       aria-current={today ? "date" : undefined}
-      aria-label={`${format.date(day.date)}${today ? ` · ${t("days.today")}` : ""}, ${
-        items.length > 0
-          ? t("days.planned", { count: items.length })
-          : t("days.nothingPlanned")
-      }`}
+      aria-label={`${format.date(day.date)}${today ? ` · ${t("days.today")}` : ""}, ${items.length > 0 ? t("days.planned", { count: items.length }) : t("days.nothingPlanned")}`}
       aria-pressed={selected}
       className={cn(
-        "flex min-h-24 flex-col items-stretch gap-1 rounded-md border interactive-surface p-1.5 text-left",
+        "flex min-h-24 flex-col items-stretch gap-1 rounded-md border p-1.5 text-left",
         selected && "border-primary bg-muted",
         past && !selected && "opacity-60"
       )}
       data-testid={`event-shop-day-${day.index}`}
       onClick={onSelect}
-      type="button"
     >
       <span className="flex items-baseline justify-between gap-1 text-xs">
         <span className="font-medium">{format.weekday(day.date)}</span>
@@ -193,7 +189,7 @@ function CalendarDay({
           )
         })}
       </span>
-    </button>
+    </Pressable>
   )
 }
 
@@ -229,7 +225,7 @@ export function DayChips({
           const selected = day.index === selectedDay.index
           const dot = controller.dayStates[day.index]?.dot ?? "none"
           return (
-            <button
+            <Pressable
               key={day.index}
               aria-current={day.index === todayIndex ? "date" : undefined}
               aria-label={format.date(day.date)}
@@ -241,7 +237,6 @@ export function DayChips({
               )}
               data-testid={`event-shop-chip-${day.index}`}
               onClick={() => onSelectDay(day.index)}
-              type="button"
             >
               <span>{format.weekday(day.date)}</span>
               <span>{format.dayOfMonth(day.date)}</span>
@@ -250,7 +245,7 @@ export function DayChips({
                 className={cn("size-1.5 rounded-full", STATE_DOT[dot])}
                 data-state={dot}
               />
-            </button>
+            </Pressable>
           )
         })}
       </div>

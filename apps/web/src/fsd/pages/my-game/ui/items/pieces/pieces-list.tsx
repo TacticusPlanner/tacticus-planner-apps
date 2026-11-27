@@ -16,6 +16,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
+import { Button } from "@workspace/ui/components/button"
 
 import { ItemIcon } from "@/shared/equipment"
 import { UnitPortrait } from "@/entities/unit"
@@ -257,20 +259,17 @@ function PieceCard({
     worn: t("pieces.worn", { count: piece.worn }),
   })
   return (
-    <button
+    <Pressable
       aria-haspopup="dialog"
       aria-label={
         forNames.length > 0
-          ? `${label}. ${t("pieces.cardFor", {
-              names: new Intl.ListFormat(i18n.language).format(forNames),
-            })}`
+          ? `${label}. ${t("pieces.cardFor", { names: new Intl.ListFormat(i18n.language).format(forNames) })}`
           : label
       }
-      className="flex size-full flex-col gap-3 rounded-lg border bg-card interactive-surface p-3 text-left"
+      className="flex size-full flex-col gap-3 rounded-lg border bg-card p-3 text-left"
       data-item-id={item.id}
       data-testid="item-piece"
       onClick={() => onOpen(piece)}
-      type="button"
     >
       <span className="flex items-start gap-3">
         <ItemIcon item={item} size="icon-2xl" />
@@ -306,7 +305,7 @@ function PieceCard({
           </li>
         ))}
       </ul>
-    </button>
+    </Pressable>
   )
 }
 
@@ -346,19 +345,19 @@ function PiecesTable({
               key={piece.item.id}
             >
               <TableCell>
-                <button
+                <Button
+                  variant="link"
                   aria-haspopup="dialog"
-                  className="flex min-w-48 items-center gap-2 rounded-sm text-left underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                  className="flex h-auto min-w-48 items-center gap-2 rounded-sm p-0 text-left text-[length:inherit] font-normal whitespace-normal text-current underline-offset-2 hover:underline"
                   data-item-id={piece.item.id}
                   data-testid="item-piece"
                   onClick={() => onOpen(piece)}
-                  type="button"
                 >
                   <ItemIcon item={piece.item} size="icon-lg" />
                   <span className="font-medium">
                     {context.itemName(piece.item)}
                   </span>
-                </button>
+                </Button>
               </TableCell>
               <TableCell>
                 <span className="flex items-center gap-1.5">

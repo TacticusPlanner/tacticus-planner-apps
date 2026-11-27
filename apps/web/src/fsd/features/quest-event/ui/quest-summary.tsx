@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import { questEventPointsIcon } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Progress } from "@workspace/ui/components/progress"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
@@ -103,11 +104,10 @@ export function QuestSummary({
           >
             {score.pointsLeft.slice(0, POINTS_LEFT_SHOWN).map((battle) => (
               <li key={battle.number}>
-                <button
-                  className="relative inline-flex min-h-8 items-center gap-1 rounded-full border interactive-surface px-2.5 text-xs pointer-coarse:min-h-10 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1"
+                <Pressable
+                  className="relative inline-flex min-h-8 items-center gap-1 rounded-full border px-2.5 text-xs pointer-coarse:min-h-10 pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1"
                   data-battle={battle.number}
                   onClick={() => onSelect(battle.number)}
-                  type="button"
                 >
                   <span className="font-medium">
                     {t("battles.battle", { number: battle.number })}
@@ -117,7 +117,7 @@ export function QuestSummary({
                       left: number.format(battle.left),
                     })}
                   </span>
-                </button>
+                </Pressable>
               </li>
             ))}
             {score.pointsLeft.length > POINTS_LEFT_SHOWN ? (

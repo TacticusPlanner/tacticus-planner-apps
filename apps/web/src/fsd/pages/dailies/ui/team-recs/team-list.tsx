@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, RankBadge, RarityIcon } from "@/shared/ui"
 import { rationaleIcon } from "./rationale-icon"
@@ -230,9 +231,8 @@ function RationaleLine({
     <Tooltip>
       <TooltipTrigger asChild>
         {/* A button, so a keyboard user can open the tooltip with the full reason. */}
-        <button
-          type="button"
-          className="flex max-w-full min-w-0 items-center gap-1 rounded-sm text-left text-xs text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        <Pressable
+          className="flex max-w-full min-w-0 items-center gap-1 rounded-sm text-left text-xs text-muted-foreground"
           data-testid="team-member-rationale"
         >
           <span className="sr-only">{text}</span>
@@ -240,7 +240,7 @@ function RationaleLine({
           <span aria-hidden="true" className="truncate tabular-nums">
             {short}
           </span>
-        </button>
+        </Pressable>
       </TooltipTrigger>
       <TooltipContent>{text}</TooltipContent>
     </Tooltip>

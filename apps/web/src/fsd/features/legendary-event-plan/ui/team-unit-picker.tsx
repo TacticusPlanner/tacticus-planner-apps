@@ -11,6 +11,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { UnitGoalBadge } from "@/entities/goal"
 import {
@@ -346,17 +347,16 @@ export function TeamUnitPicker({
                   data-testid="team-picker-tile"
                   data-unit={id}
                 >
-                  <button
+                  <Pressable
                     aria-label={t(
                       isMember ? "teams.picker.remove" : "teams.picker.add",
                       { name }
                     )}
                     aria-describedby={dimmed ? missingId : undefined}
                     aria-pressed={isMember}
-                    className="flex min-w-0 flex-col items-center gap-1 p-1 text-center outline-none focus-visible:ring-2 focus-visible:ring-ring md:p-1.5"
+                    className="flex min-w-0 flex-col items-center gap-1 p-1 text-center md:p-1.5"
                     data-testid="team-picker-toggle"
                     onClick={() => onToggleMember(id)}
-                    type="button"
                   >
                     {dimmed ? (
                       <span className="sr-only" id={missingId}>
@@ -419,7 +419,7 @@ export function TeamUnitPicker({
                         {t("teams.picker.pointsScope")}
                       </TooltipContent>
                     </Tooltip>
-                  </button>
+                  </Pressable>
                   <TeamPickerTileMarkers
                     tier={hordeTiers?.get(id) ?? null}
                     traits={tile.unit.traits}

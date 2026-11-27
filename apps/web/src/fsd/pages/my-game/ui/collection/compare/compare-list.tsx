@@ -23,6 +23,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { unitLibraryPath, UnitTile } from "@/entities/unit"
 import { DetailsSheet, EntityIcon } from "@/shared/ui"
@@ -108,9 +109,8 @@ function DiffTile({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="flex w-full min-w-0 flex-col items-center rounded-lg interactive-surface"
+        <Pressable
+          className="flex w-full min-w-0 flex-col items-center rounded-lg"
           data-testid="compare-tile"
           data-unit={item.unit.unitId}
           data-changed={item.diff.changed}
@@ -122,7 +122,7 @@ function DiffTile({
             focus={focus}
             className="justify-center px-0.5"
           />
-        </button>
+        </Pressable>
       </PopoverTrigger>
       <PopoverContent className="w-80" data-testid="compare-details">
         <UnitDiffDetails item={item} fields={fields} />
@@ -149,8 +149,7 @@ function MobileList({
       <ul className="flex flex-col divide-y" data-testid="compare-list">
         {items.map(({ item, dimmed }) => (
           <li key={item.unit.unitId} className={cn(dimmed && "opacity-50")}>
-            <button
-              type="button"
+            <Pressable
               className="flex w-full min-w-0 items-center gap-3 py-2 text-left"
               onClick={() => setOpenId(item.unit.unitId)}
               data-testid="compare-row"
@@ -173,7 +172,7 @@ function MobileList({
                   focus={focus}
                 />
               </span>
-            </button>
+            </Pressable>
           </li>
         ))}
       </ul>

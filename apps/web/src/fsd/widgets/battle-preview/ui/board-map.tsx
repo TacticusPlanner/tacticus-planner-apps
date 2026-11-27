@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDownIcon, ImageOffIcon } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 /** The board image, or "Map not available" when no image ships for the id or it fails to load. */
 function MapImage({
@@ -77,13 +78,12 @@ export function BoardMap({
   }
   return (
     <div className="flex flex-col gap-2" data-testid="battle-map">
-      <button
+      <Pressable
         aria-controls={disclosureId}
         aria-expanded={open}
         className="flex min-h-11 items-center justify-between rounded-xl border px-3 text-sm font-medium"
         data-testid="battle-map-toggle"
         onClick={() => onOpenChange(!open)}
-        type="button"
       >
         {toggleLabel ?? t("battles.map.toggle")}
         <ChevronDownIcon
@@ -93,7 +93,7 @@ export function BoardMap({
             open && "rotate-180"
           )}
         />
-      </button>
+      </Pressable>
       <div hidden={!open} id={disclosureId}>
         {open ? <MapImage alt={alt} mapId={mapId} src={src} /> : null}
       </div>

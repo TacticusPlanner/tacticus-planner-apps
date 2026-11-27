@@ -6,6 +6,7 @@ import {
   PopoverTitle,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { formatEstimateDate, useDateLocale, numberFormat } from "@/shared/lib"
 import { RankBadge } from "@/shared/ui"
@@ -46,10 +47,9 @@ export function GoalCheckpoints({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
-          className="mt-1 flex items-center gap-1 rounded-md text-xs text-muted-foreground outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring"
+        <Pressable
+          className="mt-1 flex items-center gap-1 rounded-md text-xs text-muted-foreground hover:text-foreground"
           data-testid="goal-checkpoints-trigger"
-          type="button"
         >
           <Flag aria-hidden="true" className="size-icon-sm shrink-0" />
           <span>
@@ -64,7 +64,7 @@ export function GoalCheckpoints({
               {formatEstimateDate(view.next.date, dateLocale)}
             </span>
           ) : null}
-        </button>
+        </Pressable>
       </PopoverTrigger>
       <PopoverContent
         align="start"

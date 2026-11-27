@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { RaidBossPortrait } from "@/entities/raid-boss"
 import { EntityIcon } from "@/shared/ui"
@@ -128,11 +129,10 @@ function SeasonTile({
   const { t } = useTranslation("library")
   const isBoss = located.item.kind === "boss"
   return (
-    <button
-      type="button"
+    <Pressable
       aria-label={located.item.name}
       onClick={() => onSelect(located)}
-      className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-lg border interactive-surface p-2 text-center lg:w-32"
+      className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-lg border p-2 text-center lg:w-32"
       data-testid={`raid-boss-season-tile-${located.encounterIndex}`}
     >
       <RaidBossPortrait
@@ -151,6 +151,6 @@ function SeasonTile({
           <Badge variant="outline">{t("raidBosses.primarch")}</Badge>
         ) : null}
       </span>
-    </button>
+    </Pressable>
   )
 }

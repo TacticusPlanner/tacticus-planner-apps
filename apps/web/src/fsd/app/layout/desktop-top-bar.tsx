@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Search } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { CommandShortcut } from "@workspace/ui/components/command-shortcut"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { isMacPlatform } from "@/shared/lib"
 import { CommunityHeaderLinks } from "@/widgets/account-menu"
@@ -63,9 +64,9 @@ export function DesktopTopBar({
         <EnvironmentBadge />
       </AppLogoHomeLink>
       <div className="flex min-w-0 flex-1 justify-center">
-        <button
+        <Pressable
           aria-label={t("nav.search")}
-          className="flex h-10 w-full max-w-xl min-w-0 items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-10 w-full max-w-xl min-w-0 items-center gap-2 rounded-md border bg-background px-3 text-sm text-muted-foreground hover:text-accent-foreground"
           data-testid="desktop-navigation-search"
           onClick={() => {
             setOpenedVia("topBar")
@@ -74,7 +75,6 @@ export function DesktopTopBar({
           onFocus={preloadNavigationPalette}
           onPointerEnter={preloadNavigationPalette}
           ref={launcherRef}
-          type="button"
         >
           <Search className="size-icon shrink-0" />
           <span className="min-w-0 flex-1 truncate text-left">
@@ -83,7 +83,7 @@ export function DesktopTopBar({
           <CommandShortcut className="hidden lg:inline">
             {shortcut}
           </CommandShortcut>
-        </button>
+        </Pressable>
       </div>
       <div className="flex shrink-0 items-center gap-2">
         <CommunityHeaderLinks />

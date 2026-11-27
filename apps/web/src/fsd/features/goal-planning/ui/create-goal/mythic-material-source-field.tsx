@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { Pressable } from "@workspace/ui/components/pressable"
 import type { UpgradeId } from "@workspace/game-domain"
 
 import { shopCurrencyIcon } from "@/entities/shops/reward"
@@ -123,12 +124,11 @@ function MaterialSection({
       className="grid gap-1.5"
       data-testid={`goal-mythic-material-${materialId}`}
     >
-      <button
+      <Pressable
         aria-expanded={expanded}
         className="flex items-center gap-2 text-left font-medium"
         data-testid={`goal-mythic-material-${materialId}-header`}
         onClick={() => setExpanded((current) => !current)}
-        type="button"
       >
         <UpgradeIcon
           size="icon"
@@ -140,7 +140,7 @@ function MaterialSection({
           {t(materialId, { defaultValue: materialId })}
         </span>
         <Chevron className="size-icon-sm shrink-0 text-muted-foreground" />
-      </button>
+      </Pressable>
       {expanded ? <div className="grid gap-2">{children}</div> : null}
     </div>
   )

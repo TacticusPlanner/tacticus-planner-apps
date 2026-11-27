@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { Button } from "@workspace/ui/components/button"
 
 import { useGoalCatalog } from "@/features/goal-planning"
 import { SORTABLE_ITEM_GROUP, SortableList } from "@/shared/ui"
@@ -162,13 +163,13 @@ function GoalsTable({
             {/* Not obvious from the word alone how it differs from Done by: the tooltip says. */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  className="cursor-default rounded-sm underline decoration-dotted underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                <Button
+                  variant="link"
+                  className="h-auto cursor-default rounded-sm p-0 text-[length:inherit] font-normal whitespace-normal text-current underline decoration-dotted underline-offset-4"
                   data-testid="goals-duration-header"
-                  type="button"
                 >
                   {t("goals.columns.duration")}
-                </button>
+                </Button>
               </TooltipTrigger>
               <TooltipContent>{t("goals.columns.durationHelp")}</TooltipContent>
             </Tooltip>

@@ -3,6 +3,7 @@ import type { KeyboardEvent, ReactNode } from "react"
 import { ChevronsLeftRight } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 export type LadderStep = {
   key: string
@@ -143,19 +144,18 @@ export function TargetLadder({
     >
       {collapsed > 0 && firstHidden && lastHidden ? (
         <div className="grid content-end gap-1">
-          <button
+          <Pressable
             aria-expanded={false}
             aria-label={t("goals.card.ladder.showBelow", {
               from: firstHidden.name,
               to: lastHidden.name,
             })}
             className={cn(
-              "flex h-12 min-w-14 items-center justify-center gap-1 rounded-xl border border-dashed interactive-surface px-1.5 py-1 text-xs text-muted-foreground",
+              "flex h-12 min-w-14 items-center justify-center gap-1 rounded-xl border border-dashed px-1.5 py-1 text-xs text-muted-foreground",
               stepClassName
             )}
             data-testid={`${testId}-collapsed`}
             onClick={() => setExpanded(true)}
-            type="button"
           >
             <ChevronsLeftRight className="size-icon-sm shrink-0" />
             <span className="truncate">
@@ -164,7 +164,7 @@ export function TargetLadder({
                 to: lastHidden.name,
               })}
             </span>
-          </button>
+          </Pressable>
         </div>
       ) : null}
       {tiers.map((tier) => (
@@ -185,20 +185,20 @@ export function TargetLadder({
                     ? t("goals.card.ladder.taken")
                     : null
               return (
-                <button
+                <Pressable
                   aria-checked={state.selected}
                   aria-disabled={state.disabled || undefined}
                   aria-label={note ? `${step.name}, ${note}` : step.name}
                   className={cn(
-                    "grid h-12 min-w-14 content-center justify-items-center gap-0.5 rounded-xl border px-1.5 py-1 text-xs transition-colors outline-none",
+                    "grid h-12 min-w-14 content-center justify-items-center gap-0.5 rounded-xl border px-1.5 py-1 text-xs",
                     stepClassName,
-                    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    "",
                     state.inRange && "border-primary/40 bg-primary/10",
                     state.selected &&
                       "border-primary bg-primary text-primary-foreground",
                     state.disabled && !state.selected
                       ? "cursor-not-allowed opacity-60"
-                      : "interactive-surface",
+                      : "",
                     state.current && "border-dashed opacity-100"
                   )}
                   data-state={
@@ -222,7 +222,6 @@ export function TargetLadder({
                   }}
                   role="radio"
                   tabIndex={state.index === tabStop ? 0 : -1}
-                  type="button"
                 >
                   {step.label}
                   {note ? (
@@ -236,7 +235,7 @@ export function TargetLadder({
                       {note}
                     </span>
                   ) : null}
-                </button>
+                </Pressable>
               )
             })}
           </div>

@@ -2,6 +2,7 @@ import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDownIcon } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { shardIcon } from "@workspace/game-catalog"
 import type { Progression, Rank } from "@workspace/game-domain"
@@ -121,14 +122,13 @@ export function UnitStatusSummary(props: Parameters<typeof UnitInfoCard>[0]) {
 
   return (
     <div className="grid gap-2" data-testid="create-goal-unit-status-summary">
-      <button
+      <Pressable
         aria-controls={bodyId}
         aria-expanded={expanded}
         aria-label={t("goals.create.info.expand")}
         className="flex min-h-11 items-center gap-2 rounded-2xl border px-3 text-left text-sm"
         data-testid="create-goal-unit-status-summary-toggle"
         onClick={() => setExpanded((current) => !current)}
-        type="button"
       >
         <span className="font-medium">{t("goals.create.info.title")}</span>
         <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 text-muted-foreground">
@@ -154,7 +154,7 @@ export function UnitStatusSummary(props: Parameters<typeof UnitInfoCard>[0]) {
             expanded && "rotate-180"
           )}
         />
-      </button>
+      </Pressable>
       <div hidden={!expanded} id={bodyId}>
         <UnitInfoCard {...props} />
       </div>

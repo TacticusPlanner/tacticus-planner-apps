@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { ProjectColorDot } from "@/entities/project"
 import type { ProjectSummary } from "@/entities/project"
@@ -35,11 +36,10 @@ export function ProjectSummaryRow({
 
   return (
     <li>
-      <button
-        className="flex w-full min-w-0 cursor-pointer flex-col rounded-xl border p-3 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      <Pressable
+        className="flex w-full min-w-0 cursor-pointer flex-col rounded-xl border p-3 text-left"
         data-testid={`home-project-row-${project.projectId}`}
         onClick={onSelect}
-        type="button"
       >
         <span className="flex h-6 w-full min-w-0 items-center gap-2">
           <ProjectColorDot color={project.color} />
@@ -70,7 +70,7 @@ export function ProjectSummaryRow({
             summary={summary}
           />
         </span>
-      </button>
+      </Pressable>
     </li>
   )
 }

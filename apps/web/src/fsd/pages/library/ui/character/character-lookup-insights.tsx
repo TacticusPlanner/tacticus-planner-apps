@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@workspace/ui/components/card"
+import { Pressable } from "@workspace/ui/components/pressable"
 import type { UpgradeId } from "@workspace/game-domain"
 
 import { RarityIcon, UpgradeIcon } from "@/shared/ui"
@@ -52,10 +53,9 @@ export function TopRarityChip({
   }
 
   return (
-    <button
-      type="button"
+    <Pressable
       onClick={onClick}
-      className="flex items-center gap-2 rounded-xl border interactive-surface px-2 py-1.5 text-left"
+      className="flex items-center gap-2 rounded-xl border px-2 py-1.5 text-left"
     >
       <UpgradeIcon
         id={upgrade.id}
@@ -73,7 +73,7 @@ export function TopRarityChip({
           ×{upgrade.count}
         </span>
       </div>
-    </button>
+    </Pressable>
   )
 }
 

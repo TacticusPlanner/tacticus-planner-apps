@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, FLOATING_BAR_SURFACE } from "@/shared/ui"
 
@@ -47,11 +48,11 @@ export function EventShopShoppingListTotalsBar({
           : "bottom-4"
       )}
     >
-      <button
+      <Pressable
         // The shared floating bar surface, readable over any page content in both themes.
         className={cn(
           FLOATING_BAR_SURFACE,
-          "flex min-h-12 flex-wrap items-center gap-x-2 interactive-surface px-4 py-2 text-sm font-semibold"
+          "flex min-h-12 flex-wrap items-center gap-x-2 px-4 py-2 text-sm font-semibold"
         )}
         data-testid={
           kind === "button"
@@ -59,7 +60,6 @@ export function EventShopShoppingListTotalsBar({
             : "event-shop-still-to-buy-bar"
         }
         onClick={onActivate}
-        type="button"
       >
         {ended ? null : icon}
         <span>
@@ -74,7 +74,7 @@ export function EventShopShoppingListTotalsBar({
             {t("list.toReview", { count: review })}
           </span>
         ) : null}
-      </button>
+      </Pressable>
     </div>
   )
 }

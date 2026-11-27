@@ -9,6 +9,7 @@ import { locationNodeNumber } from "../model/campaign-groups"
 import type { DailyRaidLocationViewModel } from "../model/daily-raids.domain"
 import { inDigitSlot } from "../model/digit-slot"
 import { useIsLoneCampaignRow } from "./campaign-group-context"
+import { Button } from "@workspace/ui/components/button"
 
 /** The battle a raid location's name opens, with the name it shows (Today, Home). */
 export interface RaidLocationTarget {
@@ -82,12 +83,12 @@ export function RaidLocationName({
   }
   return withIcon(
     <div className="text-sm/tight font-medium wrap-break-word">
-      <button
+      <Button
+        variant="link"
         aria-haspopup="dialog"
-        className="cursor-pointer rounded-sm text-left underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        className="h-auto cursor-pointer rounded-sm p-0 text-left text-[length:inherit] font-normal whitespace-normal text-current underline-offset-2 hover:underline"
         data-testid={`raid-location-details-${battleId}`}
         onClick={() => onShow({ battleId, title })}
-        type="button"
       >
         {name}
         {/* Named by the icon, so the line's text stays the location's name alone. */}
@@ -96,7 +97,7 @@ export function RaidLocationName({
           className="ms-1 inline size-icon-sm align-[-0.125em] text-muted-foreground"
           role="img"
         />
-      </button>
+      </Button>
     </div>
   )
 }

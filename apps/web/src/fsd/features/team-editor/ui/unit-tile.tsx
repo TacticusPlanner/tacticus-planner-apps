@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { TeamUnitPortrait, capRosterUnit } from "@/entities/team"
 import type { TeamRoster } from "@/entities/team"
@@ -66,13 +67,13 @@ export const UnitTile = memo(function UnitTile({
     ? capRosterUnit(unit.roster, rarityCap, progressionRarity)
     : undefined
   const button = (
-    <button
+    <Pressable
       aria-checked={selected}
       aria-describedby={usedIn ? usedId : undefined}
       aria-disabled={blockedReason === undefined ? undefined : true}
       aria-label={unit.name}
       className={cn(
-        "relative flex w-full min-w-0 flex-col items-center justify-start gap-1 rounded-xl border bg-card interactive-surface p-1.5 text-center disabled:opacity-50",
+        "relative flex w-full min-w-0 flex-col items-center justify-start gap-1 rounded-xl border bg-card p-1.5 text-center disabled:opacity-50",
         selected && "border-primary bg-primary/25",
         dimmed && "opacity-60",
         blockedReason !== undefined && "cursor-not-allowed opacity-50"
@@ -88,7 +89,6 @@ export const UnitTile = memo(function UnitTile({
       // hand-written aria-pressed).
       role="checkbox"
       tabIndex={tabIndex}
-      type="button"
     >
       {selected ? (
         <span
@@ -116,7 +116,7 @@ export const UnitTile = memo(function UnitTile({
           {t("picker.usedIn", { teams: usedIn.join(", ") })}
         </TruncatedText>
       ) : null}
-    </button>
+    </Pressable>
   )
   return (
     <li

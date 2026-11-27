@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { ColorPicker } from "@workspace/ui/components/color-picker"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { PROJECT_PRESET_COLORS as PRESET_COLORS } from "@/entities/project"
 
@@ -22,7 +23,8 @@ export function ProjectColorPicker({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {PRESET_COLORS.map((preset) => (
-        <button
+        <Pressable
+          variant="art"
           aria-label={preset}
           aria-pressed={normalized === preset}
           className={cn(
@@ -32,7 +34,6 @@ export function ProjectColorPicker({
           key={preset}
           onClick={() => onChange(preset)}
           style={{ backgroundColor: preset }}
-          type="button"
         />
       ))}
       <ColorPicker

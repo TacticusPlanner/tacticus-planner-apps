@@ -10,6 +10,7 @@ import { RankBadge, UpgradeIcon } from "@/shared/ui"
 import { PreviewSection } from "../shared/preview-section"
 import type { PreviewState } from "../shared/preview-section"
 import { hasNode } from "@/shared/lib"
+import { Button } from "@workspace/ui/components/button"
 
 type MissingUpgrade = { id: string; label: string; missing: number }
 
@@ -48,16 +49,16 @@ function ResourcesNeededList({
         ))}
       </ul>
       {missingUpgrades.length > RESOURCES_NEEDED_VISIBLE_COUNT ? (
-        <button
-          className="justify-self-start text-xs font-medium text-primary underline-offset-2 hover:underline"
+        <Button
+          variant="link"
+          className="h-auto justify-self-start rounded-sm p-0 text-xs font-medium whitespace-normal text-primary underline-offset-2"
           data-testid="create-goal-resources-needed-toggle"
           onClick={() => setExpanded((current) => !current)}
-          type="button"
         >
           {expanded
             ? t("goals.create.showLess")
             : t("goals.create.showAll", { count: missingUpgrades.length })}
-        </button>
+        </Button>
       ) : null}
     </>
   )

@@ -20,6 +20,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { Pressable } from "@workspace/ui/components/pressable"
 import { toast } from "sonner"
 
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
@@ -236,11 +237,10 @@ export function AuthControl() {
       <div className="flex items-center" data-testid="auth-account">
         <Drawer direction="bottom" onOpenChange={setMenuOpen} open={menuOpen}>
           <DrawerTrigger asChild>
-            <button
-              type="button"
+            <Pressable
               aria-busy={identityPending || undefined}
               aria-label={t("auth.userMenu")}
-              className="relative rounded-full outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+              className="relative rounded-full"
               data-testid="auth-account-trigger"
             >
               <AccountAvatar
@@ -257,7 +257,7 @@ export function AuthControl() {
                   data-testid="auth-account-unread-indicator"
                 />
               ) : null}
-            </button>
+            </Pressable>
           </DrawerTrigger>
           <DrawerContent
             className="h-dvh max-h-dvh p-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] before:inset-0 before:rounded-none"
@@ -298,11 +298,10 @@ export function AuthControl() {
     <div className="flex items-center gap-1" data-testid="auth-account">
       <Popover onOpenChange={setMenuOpen} open={menuOpen}>
         <PopoverTrigger asChild>
-          <button
-            type="button"
+          <Pressable
             aria-busy={identityPending || undefined}
             aria-label={t("auth.userMenu")}
-            className="flex max-w-56 min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm text-muted-foreground outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
+            className="flex max-w-56 min-w-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm text-muted-foreground hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground"
             data-testid="auth-account-trigger"
           >
             <AccountAvatar
@@ -330,7 +329,7 @@ export function AuthControl() {
                 </TruncatedText>
               )}
             </div>
-          </button>
+          </Pressable>
         </PopoverTrigger>
         <PopoverContent
           align="end"

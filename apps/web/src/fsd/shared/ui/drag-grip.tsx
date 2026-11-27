@@ -1,5 +1,6 @@
 import { GripVertical } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { SortableRenderProps } from "./sortable-list"
 
@@ -34,12 +35,13 @@ export function DragGrip({
 }) {
   const { ref, attributes, listeners } = dragHandle
   return (
-    <button
+    <Pressable
+      variant="art"
       {...attributes}
       {...listeners}
       aria-label={label}
       className={cn(
-        "inline-flex shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex shrink-0 cursor-grab touch-none items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50",
         size === "touch" ? "size-11" : "size-8 pointer-coarse:size-11",
         reveal === "hover" &&
           "pointer-fine:opacity-0 pointer-fine:group-hover/sortable:opacity-100 pointer-fine:group-has-focus-visible/sortable:opacity-100 pointer-fine:group-data-dragging/sortable:opacity-100 pointer-fine:focus-visible:opacity-100",
@@ -48,11 +50,10 @@ export function DragGrip({
       data-testid={testId}
       disabled={disabled}
       ref={ref}
-      type="button"
     >
       <GripVertical
         className={size === "touch" ? "size-icon-md" : "size-icon"}
       />
-    </button>
+    </Pressable>
   )
 }
