@@ -816,7 +816,7 @@
   },
   "src/fsd/pages/library/ui/character-unit/equipment-slots.tsx": {
     "no-restricted-syntax": {
-      "count": 4
+      "count": 3
     }
   },
   "src/fsd/pages/library/ui/character-unit/mythic-quests-card.tsx": {
@@ -835,6 +835,11 @@
     }
   },
   "src/fsd/pages/library/ui/character/character-lookup-rank-groups.tsx": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/fsd/pages/library/ui/items/item-page.tsx": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -985,6 +990,21 @@
   "src/fsd/pages/my-game/ui/inventory/upgrades/upgrades-list.tsx": {
     "no-restricted-syntax": {
       "count": 2
+    }
+  },
+  "src/fsd/pages/my-game/ui/items/pieces/piece-details-dialog.tsx": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/fsd/pages/my-game/ui/items/pieces/pieces-list.tsx": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/fsd/pages/my-game/ui/items/sync-now-button.tsx": {
+    "better-tailwindcss/no-restricted-classes": {
+      "count": 1
     }
   },
   "src/fsd/pages/my-game/ui/progress-summary.tsx": {
