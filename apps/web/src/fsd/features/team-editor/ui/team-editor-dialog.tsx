@@ -118,7 +118,18 @@ function EditorBody({
   const fields = draftToFields(draft)
   const concerned = charactersConcerned(fields, facts)
   const allowed = allowedFactions(fields, facts)
-  const mows = takesMows(draft)
+  const mows = takesMows(draft, facts)
+  // A Survival event's featured hero always fights and is never stored, so the picker leaves it out.
+  const featuredId = draft.survivalEventKey
+    ? facts.survivalEvents.get(draft.survivalEventKey)?.featuredCharacterId
+    : undefined
+  const pickerUnits = useMemo(
+    () =>
+      featuredId
+        ? data.units.filter((unit) => unit.id !== featuredId)
+        : data.units,
+    [data.units, featuredId]
+  )
   const campaignCore = useMemo(
     () =>
       new Set(
@@ -199,7 +210,8 @@ function EditorBody({
     onMakeMowCore: (unitId: string) =>
       setDraft((current) => makeMowCore(current, unitId)),
   }
-  const modes = (
+  // A Survival team is a Horde team for its event: its mode is fixed, so the modes are not offered.
+  const modes = draft.survivalEventKey ? null : (
     <TeamModesField
       draft={draft}
       onToggleMode={(mode: TeamMode) =>
@@ -241,7 +253,7 @@ function EditorBody({
       roster={data.roster}
       selectedIds={selectedIds}
       show={show}
-      units={data.units}
+      units={pickerUnits}
       usage={usage}
     />
   )
@@ -372,7 +384,9 @@ function EditorBody({
         </div>
       ) : null}
       {modes}
-      {draft.modes.includes("campaign") || draft.modes.includes("incursion") ? (
+      {draft.modes.includes("campaign") ||
+      draft.modes.includes("incursion") ||
+      draft.survivalEventKey ? (
         <div className="max-w-xl">{context}</div>
       ) : null}
       <TeamLineupBand
@@ -497,11 +511,17 @@ export function TeamEditorDialog({
   onClose,
   deleted = false,
   newTeamModes = [],
+  newTeamName,
+  newTeamSurvivalEventKey,
 }: {
   /** The team to edit, or null to create one. */
   team: Team | null
   /** The modes a new team starts with, for a page that creates teams for its own mode. */
   newTeamModes?: readonly TeamMode[]
+  /** The name a new team starts with. */
+  newTeamName?: string
+  /** The Survival event a new team is for (with the Horde mode), for the Survival page. */
+  newTeamSurvivalEventKey?: string
   /** The team was deleted elsewhere while open: the editor keeps showing it, and Save is off. */
   deleted?: boolean
   /** Every saved team, for the same-mode flags. */
@@ -512,7 +532,12 @@ export function TeamEditorDialog({
   const isMobile = useIsMobile()
   const editorData = useTeamEditorData()
   const [draft, setDraftState] = useState<TeamDraft>(() =>
-    team ? draftFromTeam(team) : emptyDraft(newTeamModes)
+    team
+      ? draftFromTeam(team)
+      : emptyDraft(newTeamModes, {
+          name: newTeamName,
+          survivalEventKey: newTeamSurvivalEventKey ?? null,
+        })
   )
   // What the draft started as, so closing can tell whether anything would be lost.
   const [initialFields] = useState(() => JSON.stringify(draftToFields(draft)))
@@ -535,7 +560,9 @@ export function TeamEditorDialog({
 
   const data = editorData.status === "ready" ? editorData.data : undefined
   const fields = draftToFields(draft)
-  const broken = data ? evaluateTeamRules(fields, data.facts) : []
+  const broken = data
+    ? evaluateTeamRules(fields, data.facts, team?.survivalEventKey)
+    : []
   const canTrySave = data !== undefined && !saving && !deleted
 
   const save = async () => {

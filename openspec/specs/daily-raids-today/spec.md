@@ -743,18 +743,24 @@ Assumptions this requirement depends on:
 
 ### Requirement: Today's project selector defaults to all goals
 
-Today SHALL provide its own project selector that defaults to all goals; it is not shared with Schedule (see `daily-raids-plan` "Schedule owns its project selection"). With no project selected Today SHALL NOT derive its scope from Default; the scope with and without a selection is defined by "Today's schedule scope". The selection SHALL NOT be persisted across a full page reload. A failed goal load SHALL show retry; a successful empty set SHALL show a no-active-goals state.
+Today SHALL provide a project selector that defaults to all goals, using the shared, remembered selection (see `goals-navigation`). With no project selected Today SHALL NOT derive its scope from Default; the scope with and without a selection is defined by "Today's schedule scope". A failed goal load SHALL show retry; a successful empty set SHALL show a no-active-goals state.
 
 #### Scenario: Default selection is all goals
 
 - **GIVEN** Active goals in several projects
-- **WHEN** Today loads with no prior selection made this session
+- **WHEN** Today loads with no project chosen before
 - **THEN** the selector shows all goals and Today shows the global schedule, including every project's Active goals
 
 #### Scenario: Selecting a project narrows the schedule
 
 - **WHEN** the user selects a project in Today's project selector
 - **THEN** the schedule, Bonus Raids section and empty states are recomputed for that project's Active goals only, in global order
+
+#### Scenario: The selection is remembered
+
+- **GIVEN** the user selected project B on Today
+- **WHEN** they reload the page, or open Insights or Schedule
+- **THEN** project B is selected there
 
 #### Scenario: Returning to all goals
 
@@ -1172,3 +1178,21 @@ Every page that shows daily raids (Dailies › Raids, HSE, HRE and Quests, Home'
 - **GIVEN** the player's data and the game catalog are already loaded
 - **WHEN** the player taps Dailies
 - **THEN** the Raids page is painted in its loading state first, and Today's plan appears once it has been calculated
+
+### Requirement: CE nodes first quick filter
+
+Today's quick filters SHALL include a **CE nodes first** chip. It SHALL be offered only while live progress names an active campaign event and the player has reached at least one of its nodes (per "Only the active campaign event is farmable"), and also while it is on so it can be turned off. Like the other chips it SHALL be remembered per device, carry a tooltip and show a note line while on.
+
+While it is on and the active event has reached nodes, when choosing the nodes for a material Today SHALL first keep only the active event's reached nodes that pass the Raids Filters (and "Raidable only"). If any remain, the usual pick (least energy per item, then Fewer raids, then expected gold) SHALL run among those only, even when a standing node costs less energy per item. If none remain, the usual pick SHALL run over every node. A goal's pinned farm locations SHALL be used as chosen. It SHALL change only Today's plan and Bonus Raids, like the other chips. The HSE and HRE tabs SHALL hide it and compute as if it were off.
+
+#### Scenario: A material that drops in the running event is farmed there
+
+- **GIVEN** a campaign event is running and the player has reached a node of it that drops a needed material at 10 energy per item, while a standing node drops it at 6
+- **WHEN** CE nodes first is on
+- **THEN** Today raids the event node for that material, and materials the event does not drop are raided at their usual nodes
+
+#### Scenario: No running event
+
+- **GIVEN** live progress names no active campaign event
+- **WHEN** Today loads with CE nodes first off
+- **THEN** the chip is not offered

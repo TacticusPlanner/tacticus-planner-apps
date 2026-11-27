@@ -2,17 +2,21 @@ import { useMemo } from "react"
 import type { EventsCalendarStorageModel } from "@workspace/game-catalog"
 import { hasEventsCalendarSynced } from "@workspace/game-catalog/queries"
 
-import { combineReadStates, useNow, useReadState } from "@/shared/lib"
+import {
+  combineReadStates,
+  useNow,
+  useReadState,
+  DAY_MS,
+  MINUTE_MS,
+} from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 import { selectQuestInstance } from "./quest-instance"
 import type { QuestInstance } from "./quest-instance"
 
-const DAY_MS = 86_400_000
 /** A quest lasts 3 days plus a 1-day claim window; reading a week back finds one still claimable. */
 const LOOKBACK_DAYS = 7
 const LOOKAHEAD_DAYS = 120
-const TICK_MS = 60_000
 
 export type QuestInstanceState =
   | { status: "loading" }
@@ -40,7 +44,7 @@ function entriesAround(
 export function useQuestInstance(): QuestInstanceState {
   // A coarse tick re-selects from the cached calendar across a phase boundary without a
   // reload; it pauses while the tab is hidden and catches up when shown.
-  const nowMs = useNow(TICK_MS)
+  const nowMs = useNow(MINUTE_MS)
   const synced = useReadState(
     "events-calendar-synced",
     hasEventsCalendarSynced,

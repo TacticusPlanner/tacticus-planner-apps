@@ -7,18 +7,21 @@ import { utharEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render, screen } from "@/test/render"
 
-import type { StepTarget } from "./plan-ceiling"
-import { writeCounts } from "./plan-create"
-import type { PlanWrites } from "./plan-create"
+import type { StepTarget } from "../../model/plan-wizard/plan-ceiling"
+import { writeCounts } from "../../model/plan-wizard/plan-create"
+import type { PlanWrites } from "../../model/plan-wizard/plan-create"
 import { PlanSummary } from "./plan-summary"
-import { planSummaryFacts } from "./plan-summary.model"
-import type { DraftTeam } from "./plan-teams"
+import { planSummaryFacts } from "../../model/plan-wizard/plan-summary.model"
+import type { DraftTeam } from "../../model/plan-wizard/plan-teams"
 import { TargetCard } from "./target-card"
-import { runAssumptions, targetBar } from "./target-step.model"
-import { upgradeGroups } from "./upgrades-step.model"
+import {
+  runAssumptions,
+  targetBar,
+} from "../../model/plan-wizard/target-step.model"
+import { upgradeGroups } from "../../model/plan-wizard/upgrades-step.model"
 import { RunsStep } from "./runs-step"
-import type { PlanDraft } from "./use-plan-draft"
-import type { PlanSource } from "./use-plan-source"
+import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
+import type { PlanSource } from "../../model/plan-wizard/use-plan-source"
 
 const tokenProps = vi.hoisted(() => ({
   plan: null as Record<string, unknown> | null,

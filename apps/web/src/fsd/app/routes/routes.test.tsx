@@ -81,6 +81,16 @@ describe("app routes", () => {
     for (const route of redirectOnly) {
       expect(route.handle).toBe(redirectOnlyHandle)
     }
+    // The bare /plan/survival and an unknown Survival tab redirect through a component that keeps
+    // `?event=`.
+    const survival = findRoute(routes, "/plan/survival")?.children ?? []
+    const survivalRedirects = survival.filter(
+      (route) => route.index === true || route.path === "*"
+    )
+    expect(survivalRedirects).toHaveLength(2)
+    for (const route of survivalRedirects) {
+      expect(route.handle).toBe(redirectOnlyHandle)
+    }
     // The bare /my-game too, whose redirect is wrapped in the public-page guard.
     const myGameIndex = findRoute(routes, "/my-game")?.children?.find(
       (route) => route.index

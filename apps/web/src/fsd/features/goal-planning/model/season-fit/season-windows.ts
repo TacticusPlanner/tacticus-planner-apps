@@ -2,8 +2,8 @@ import type {
   EventDefinitionStorageModel,
   EventsCalendarStorageModel,
 } from "@workspace/game-catalog"
+import { DAY_MS } from "@/shared/lib"
 
-const DAY_MS = 86_400_000
 /** Boundaries past the current deadline that a fit offset can reach: "In 2 seasons" needs the third. */
 const BOUNDARY_COUNT = 3
 

@@ -22,17 +22,32 @@ The mobile bottom navigation's "Menu" drawer SHALL list every top-level navigati
 
 ### Requirement: Navigation search indexes every route and matches on label or description
 
-Desktop navigation search and the mobile menu drawer's search field SHALL continue to index every route, including a section's child pages, matching a typed query against each item's label and its short description (see the description requirement below), so that child pages remain directly reachable by search even though they are not listed in the desktop sidebar.
+Desktop navigation search and the mobile menu drawer's search field SHALL continue to index every route, including a section's child pages, so that child pages remain directly reachable by search even though they are not listed in the desktop sidebar. A trimmed, case-insensitive query SHALL match an item's label, its search keywords, its short description, or the labels of the section and group it sits in. Results SHALL be one flat list ranked by match quality, in this order: the label starts with the query; a word of the label starts with it; a keyword starts with it; a word of the description starts with it; a word of its section or group starts with it; every word of a multi-word query starts some word of the row; the query (three characters or more) appears anywhere in the label or description. Equal matches SHALL keep menu order. Each child page in the results SHALL show its group, else its section, as a muted breadcrumb. With an empty query the grouped route tree SHALL be shown in menu order.
 
 #### Scenario: Searching for a child page's label finds it
 
 - **WHEN** a user types a child page's label (e.g. "Machines of War") into desktop navigation search or the mobile drawer search field
-- **THEN** that child page appears in the filtered results and navigating to it goes directly to that child page's route
+- **THEN** that child page appears in the results and navigating to it goes directly to that child page's route
 
 #### Scenario: Searching for text that only appears in an item's description finds it
 
 - **WHEN** a user types a phrase that matches an item's description but not its label, into desktop navigation search or the mobile drawer search field
-- **THEN** that item still appears in the filtered results
+- **THEN** that item still appears in the results
+
+#### Scenario: Title matches rank above description matches
+
+- **WHEN** a user searches for "raid"
+- **THEN** Raids, Guild Raids and Guild Raid Bosses are listed before pages that mention raids only in their description, such as Teams and Schedule
+
+#### Scenario: Shorthand finds pages
+
+- **WHEN** a user searches for "gw" or "lre"
+- **THEN** Guild War Offense, respectively Legendary Events, is the first result
+
+#### Scenario: A section name lists its pages
+
+- **WHEN** a user searches for a section's name (e.g. "Dailies")
+- **THEN** the section is the first result and its child pages follow
 
 ### Requirement: A desktop keyboard shortcut toggles navigation search
 
@@ -88,17 +103,12 @@ On desktop, for a signed-in user, pressing Ctrl+Shift+S (or Cmd+Shift+S on macOS
 
 ### Requirement: Menu drawer and navigation search show each item's description
 
-The mobile menu drawer and the desktop navigation search dialog SHALL display a short description alongside every listed item's label — both top-level sections and their child pages. The desktop sidebar and the mobile bottom navigation bar are unaffected and continue to show icon and label only, with no description.
+The mobile menu drawer and the desktop navigation search dialog SHALL show each row on one line and SHALL show the short description of the highlighted row after its label. The desktop sidebar and the mobile bottom navigation bar are unaffected and continue to show icon and label only, with no description.
 
-#### Scenario: Drawer shows descriptions for top-level and child items
+#### Scenario: The highlighted row shows its description
 
-- **WHEN** the mobile menu drawer opens
-- **THEN** every listed top-level section, and every child page shown nested beneath a section, displays its short description beneath its label
-
-#### Scenario: Desktop search results show descriptions
-
-- **WHEN** the desktop navigation search dialog lists results (top-level sections and/or child pages)
-- **THEN** every result displays its short description beneath its label
+- **WHEN** navigation search lists results and one row is highlighted (the top hit of a query on the phone)
+- **THEN** that row shows its short description after its label, and the other rows show their label only
 
 ### Requirement: Page header shows a description matching the active section or child page, and (on mobile) a matching title
 
@@ -272,22 +282,27 @@ On desktop, the header does not host a child-page picker at all — a section's 
 
 ### Requirement: Navigation search includes quick actions on desktop and mobile
 
-Desktop navigation search and mobile Menu search SHALL include a Quick actions group before Pages. The action order SHALL be Create Goal, Create Project, Sync with Tacticus, Submit Feedback, and Tour this page, subject to eligibility. Each action SHALL show an icon, localized label, and short description, with button semantics distinct from page links. An empty query SHALL show all eligible actions and the existing route hierarchy. Queries SHALL match trimmed case-insensitive substrings of localized action labels/descriptions and supported keywords; API SHALL match sync. Page search SHALL retain its existing label/description matching, hierarchy, and route behavior. Empty groups SHALL be omitted, and no-results feedback SHALL appear only when both groups have no matches.
+Desktop navigation search and mobile Menu search SHALL include a Quick actions group. The action order SHALL be Create Goal, Create Project, Sync with Tacticus, Send feedback, Report a bug, Tour this page, Switch theme, Account settings and Sign out, subject to eligibility; a guest gets Sign in and Sign up instead of the account actions. Report a bug, Switch theme, Account settings and Sign out SHALL be listed only when a query matches them. Each action SHALL show an icon, localized label, and short description; Sync SHALL show when the last sync happened in place of its description. An empty query SHALL show the eligible actions that are not search-only, before the route hierarchy: as rows on desktop, and as one scrolling row of chips above the list on the phone. Queries SHALL match actions with the same ranking as pages (label, keywords, description); API SHALL match sync. Actions and pages SHALL be ranked separately, and the group holding the better match SHALL come first, Quick actions first on a tie; on the phone, matching actions show as rows and the chips are hidden. Empty groups SHALL be omitted, and no-results feedback SHALL appear only when both groups have no matches.
 
 #### Scenario: Desktop search includes actions
 
 - **WHEN** a signed-in desktop user opens top-bar search or presses Ctrl/Cmd+K on a page with a tour
-- **THEN** all five actions appear before Pages with the search input focused
+- **THEN** Create Goal, Create Project, Sync with Tacticus, Send feedback and Tour this page appear before Pages with the search input focused
 
-#### Scenario: Mobile Menu includes actions
+#### Scenario: Mobile Menu shows actions as chips
 
 - **WHEN** a signed-in mobile user opens Menu on a page with a tour
-- **THEN** the same five actions appear before the existing route tree and are searchable in the drawer's search field
+- **THEN** the same actions appear as a row of chips above the list, and a disabled chip says why in place of its label
 
-#### Scenario: Query matches actions and pages independently
+#### Scenario: Search-only actions appear when searched for
 
-- **WHEN** a user searches for project
-- **THEN** matching Create Project and project-related page results appear in separate labeled groups
+- **WHEN** a signed-in user searches for "bug", "dark" or "log out"
+- **THEN** Report a bug, Switch theme or Sign out, respectively, is listed, and none of them is listed with an empty query
+
+#### Scenario: Sync says when it last ran
+
+- **WHEN** a signed-in user's planner last synced 15 minutes ago
+- **THEN** the Sync with Tacticus row reads "Last synced 15 minutes ago" in place of its description
 
 #### Scenario: Sync is discoverable by API
 
@@ -297,7 +312,7 @@ Desktop navigation search and mobile Menu search SHALL include a Quick actions g
 #### Scenario: No matching results
 
 - **WHEN** no eligible action or page matches a query
-- **THEN** one localized no-results message appears without empty group headings
+- **THEN** one localized no-results message appears without empty group headings, with a Clear search button that empties the field
 
 #### Scenario: Localized search
 
@@ -380,22 +395,22 @@ Activating an enabled action SHALL close and reset search before launching its t
 
 ### Requirement: Search action handoff is accessible on both platforms
 
-Action buttons SHALL support keyboard focus and Enter/Space activation, and mobile touch. Typing or pressing Enter while only the search input is focused SHALL NOT automatically run an action. The search modal SHALL release focus/pointer restrictions before another form/widget/tour opens. Search cancellation SHALL restore focus to its launcher; launched forms SHALL receive focus and return it to the originating search launcher on close when still present. Sync SHALL return focus to the launcher while existing status reports progress. Reopening search SHALL start with an empty query.
+Navigation search SHALL keep one highlighted row, which ↑/↓ (wrapping), Home/End and the pointer move, while focus stays in the search field. Enter in the field SHALL open the highlighted page or run the highlighted action; a disabled action SHALL NOT be highlighted or run. Actions SHALL also support mobile touch. The search modal SHALL release focus/pointer restrictions before another form/widget/tour opens. Search cancellation SHALL restore focus to its launcher; launched forms SHALL receive focus and return it to the originating search launcher on close when still present. Sync SHALL return focus to the launcher while existing status reports progress. Reopening search SHALL start with an empty query.
 
 #### Scenario: Desktop keyboard activation
 
-- **WHEN** a user opens search with Ctrl/Cmd+K, tabs to Create Project, and presses Enter
+- **WHEN** a user opens search with Ctrl/Cmd+K, moves the highlight to Create Project with the arrow keys, and presses Enter
 - **THEN** search closes and focus enters one project form with no remaining search focus trap
+
+#### Scenario: Enter opens the top result
+
+- **WHEN** a user types "raids" and presses Enter without moving the highlight
+- **THEN** the Raids page opens and search closes
 
 #### Scenario: Mobile action with keyboard visible
 
 - **WHEN** a mobile user filters Menu results with the on-screen keyboard and taps Create Goal
 - **THEN** the drawer and keyboard dismiss before the creation surface becomes interactive, and its controls respond to the first tap
-
-#### Scenario: Search is passive until selection
-
-- **WHEN** a user types sync and presses Enter while focus stays in the search input
-- **THEN** no sync starts until the action button is explicitly activated
 
 #### Scenario: Repeated activation is not replayed
 
@@ -844,3 +859,117 @@ An address the app does not serve SHALL render a not-found page inside the shell
 
 - **WHEN** a signed-out visitor opens `/does-not-exist`
 - **THEN** the not-found page shows with links to the Library and the start page
+
+### Requirement: Section children can be grouped
+
+A section's children MAY name a group with its own label key. The desktop section menu and the phone drawer SHALL show a group's label (sentence case, small muted text) above its first child. The page tabs under the header SHALL list only the children of the active child's group. A section with no groups is unchanged.
+
+The Guild section SHALL have two groups: **Guild** (Members, Settings), which needs a registered guild, and **Guild War** (Offense at `/guild/war/offense`, History at `/guild/war/history`), which needs only sign-in. The guild access boundary SHALL wrap only the Guild group's routes.
+
+#### Scenario: Tabs show one group
+
+- **WHEN** a user opens `/guild/war/offense`
+- **THEN** the page tabs are Offense and History, and the section menu shows the Guild and Guild War labels above their items
+
+### Requirement: Navigation search highlights one row the same way for keyboard and pointer
+
+The highlighted row SHALL use one style, a tint with an accent edge, whether the keyboard or the pointer moved it. The first row SHALL be highlighted when search opens and after every query change. The current page SHALL show a "You're here" tag instead of an active tint. On the phone, with an empty query, no row SHALL be highlighted and touch SHALL NOT move the highlight. A page row SHALL remain a link, so a modified click (Ctrl/Cmd/Shift/middle) keeps the browser's own behavior.
+
+#### Scenario: The current page is not mistaken for the top result
+
+- **WHEN** a user on Raids opens search and types "guild"
+- **THEN** only the first result is highlighted, and Raids, if listed, shows "You're here" without a tint
+
+#### Scenario: Pointer and keyboard share the highlight
+
+- **WHEN** a desktop user hovers a row and then presses ↓
+- **THEN** the highlight moves from the hovered row to the next one, with the same style
+
+### Requirement: The desktop navigation search dialog keeps its field in place
+
+The desktop dialog SHALL be anchored near the top of the window, so its search field does not move as the results change. Its title SHALL be for screen readers only. The field SHALL show a search icon and an Esc control that closes the dialog. A footer SHALL show the ↑ ↓ (move), ↵ (open), Esc (close) and Ctrl/⌘ K hints.
+
+#### Scenario: The field stays put while typing
+
+- **WHEN** a desktop user types a query that shrinks the result list
+- **THEN** the search field stays at the same position on screen
+
+### Requirement: Navigation search finds game entities
+
+Desktop navigation search and mobile Menu search SHALL also match game entities from the synced game catalog: characters, Machines of War, NPCs (one per name, as the NPC Library lists them), guild raid bosses and primes, and, for a visitor who can open Legendary Events, Legendary Events. Entities SHALL match from two typed characters, by their localized name and the other names players use for them, with the page ranking. Each kind SHALL be its own group, headed by its Library collection's name, listing at most 5 entities with their portrait, best match first. Groups SHALL be ordered with the action and page groups by their best match, actions then pages then entities on a tie. Opening an entity SHALL open its page. An entity whose page the menu already lists (a running Legendary Event) SHALL NOT be listed again. A catalog dataset that has not synced SHALL add nothing.
+
+#### Scenario: A unit name finds the unit
+
+- **WHEN** a user searches for "ragnar"
+- **THEN** a Characters group lists Ragnar, and choosing it opens `/library/characters/<id>`
+
+#### Scenario: Raid bosses and NPCs
+
+- **WHEN** a user searches for "belis"
+- **THEN** an NPCs group lists Belisarius Cawl and a Guild Raid Bosses group lists Belisarius
+
+#### Scenario: One letter lists no entities
+
+- **WHEN** a user types one letter
+- **THEN** no entity group is listed
+
+### Requirement: A unit result leads to a goal or Collection
+
+When a character or Machine of War matches, the group of the best matching unit SHALL end with "Create goal for <unit>", for a visitor who can create goals, and "Find '<query>' in Collection", for a visitor who can open Collection. The unit's page SHALL stay above them, so Enter opens it. "Create goal for <unit>" SHALL open the new goal form with that unit selected, after search closes, as Create goal does. "Find '<query>' in Collection" SHALL open Collection filtered by the query.
+
+#### Scenario: Create a goal for the unit found
+
+- **WHEN** a signed-in user searches for "calgar" and chooses "Create goal for Calgar"
+- **THEN** search closes and the new goal form opens with Calgar selected
+
+#### Scenario: Hand off to Collection
+
+- **WHEN** a user searches for "calgar" and chooses "Find “calgar” in Collection"
+- **THEN** Collection opens with its search set to "calgar"
+
+### Requirement: The open unit's page puts its goal first
+
+On a character's or Machine of War's Library page, with an empty query, navigation search SHALL list "Create goal for <unit>" first among the quick actions (first among the phone's chips), for a visitor who can create goals.
+
+#### Scenario: Goal for the unit on its page
+
+- **WHEN** a signed-in user opens navigation search on Bellator's Library page
+- **THEN** the first quick action is "Create goal for Bellator"
+
+### Requirement: Navigation search ignores accents
+
+Navigation search SHALL match pages, actions and entities without regard to accents.
+
+#### Scenario: Accent-free query
+
+- **WHEN** a user searches for "uthar"
+- **THEN** Ûthar is found
+
+### Requirement: The phone Menu drawer gives the list the height
+
+The Menu drawer SHALL have a one-line header with the title "Menu" and a close button, and no Close button below the list; the handle, a swipe and Escape also close it. The search field SHALL stay at the bottom and SHALL NOT take focus when the drawer opens. While a query is typed, results that fit SHALL sit right above the field, and the keyboard's Go/Enter key SHALL open the highlighted top hit.
+
+#### Scenario: One-line header
+
+- **WHEN** a mobile user opens Menu
+- **THEN** the title "Menu" and a close button share one line, and the close button closes the drawer
+
+#### Scenario: Go opens the top hit
+
+- **WHEN** a mobile user types "raids" and presses Go on the keyboard
+- **THEN** the Raids page opens and the drawer closes
+
+### Requirement: Navigation search lists recent pages
+
+With an empty query, navigation search on desktop and phone SHALL list the last 3 pages visited, most recent first, before Quick actions, not counting the page being viewed and leaving out pages the visitor can no longer see. Each recent page SHALL show where it sits (its group, else its section). The list SHALL be kept on the device as account data, so sign-out removes it. When the browser refuses storage, the list SHALL still work for the rest of the visit (`browser-storage-resilience`).
+
+#### Scenario: Recent pages at rest
+
+- **GIVEN** a user visited Machines of War, then Raids, then Home
+- **WHEN** they open navigation search on Home
+- **THEN** Raids and Machines of War are listed under "Recent", in that order, before Quick actions
+
+#### Scenario: Recent pages leave a query alone
+
+- **WHEN** the user types a query
+- **THEN** the Recent group is not shown, and matching pages appear only in the ranked results

@@ -222,7 +222,7 @@ The applied filter SHALL persist per browser and survive reload, SHALL be shared
 
 #### Scenario: Stored filter from before Enemy traits existed
 
-- **GIVEN** a stored `raids-filters.v1` value that has no enemy-traits field
+- **GIVEN** a stored filter value that has no enemy-traits field
 - **THEN** it parses, every other stored group is kept, and no trait filter is set
 
 #### Scenario: Corrupt storage

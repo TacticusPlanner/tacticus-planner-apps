@@ -244,7 +244,15 @@
     "each": "cada una",
     "step": "{{position}}: {{target}}",
     "rollsUp": "{{reward}} hasta +{{percent}} %",
-    "show": "Mostrar"
+    "show": "Mostrar",
+    "survivalToken": "Ficha de Supervivencia",
+    "onslaughtToken": "Ficha de Embestida",
+    "salvageRunToken": "Ficha de Expedición de rescate",
+    "crusadePoints": "Puntos de cruzada",
+    "crusadeUnit": "Unidad de cruzada",
+    "eventCurrencyBonus": "% de bonificación de moneda del evento",
+    "premiumMissions": "Misiones prémium desbloqueadas",
+    "statBoost": "Mejora de atributos"
   },
   "search": {
     "title": "Buscar en la tienda",

@@ -1,3 +1,4 @@
+export { DAY_MS, HOUR_MS, MINUTE_MS } from "./durations"
 export { getDeviceFirstDayOfWeek, useDateLocale } from "./date-locale"
 export {
   formatDateRange,

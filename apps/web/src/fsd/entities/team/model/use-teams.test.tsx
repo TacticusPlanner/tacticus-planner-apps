@@ -34,6 +34,7 @@ const fields: TeamFields = {
   incursionMowIds: [],
   notes: null,
   rarityCap: null,
+  survivalEventKey: null,
 }
 
 const team = (id: string, position: number, revision = 1): Team => ({
@@ -43,6 +44,7 @@ const team = (id: string, position: number, revision = 1): Team => ({
   position,
   revision,
   issues: [],
+  survivalEventKey: null,
 })
 
 const list = (...ids: string[]): TeamList => ({

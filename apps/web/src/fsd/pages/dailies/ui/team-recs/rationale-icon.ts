@@ -1,21 +1,15 @@
+import { isPlayableAlliance } from "@workspace/game-domain"
 import {
   factionIcon,
   onslaughtAllianceIcon,
   powerIcon,
   traitIcon,
 } from "@workspace/game-catalog"
-import type { OnslaughtAllianceIcon } from "@workspace/game-catalog"
 
 import type {
   EventUnitMatch,
   TeamMemberRationale,
 } from "@/features/team-recommendations"
-
-const ALLIANCES: ReadonlySet<string> = new Set(["Imperial", "Chaos", "Xenos"])
-
-function isAlliance(id: string): id is OnslaughtAllianceIcon {
-  return ALLIANCES.has(id)
-}
 
 /** The icon of what an event unit matched: the trait, alliance or faction the event names. */
 function eventUnitMatchIcon(match: EventUnitMatch): string | undefined {
@@ -23,7 +17,9 @@ function eventUnitMatchIcon(match: EventUnitMatch): string | undefined {
     case "trait":
       return traitIcon(match.id)
     case "alliance":
-      return isAlliance(match.id) ? onslaughtAllianceIcon(match.id) : undefined
+      return isPlayableAlliance(match.id)
+        ? onslaughtAllianceIcon(match.id)
+        : undefined
     case "faction":
       return factionIcon(match.id)
   }

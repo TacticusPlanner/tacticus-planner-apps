@@ -13,8 +13,8 @@ import { storedPreference } from "@/shared/lib"
 
 import { rosterMap } from "../legendary-event/teams/teams.view-model"
 
-import type { PlanDraft } from "./use-plan-draft"
-import type { PlanSource } from "./use-plan-source"
+import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
+import type { PlanSource } from "../../model/plan-wizard/use-plan-source"
 
 // The wizard remembers its own open state, apart from the event page's sections.
 const TOKEN_PLAN_OPEN_KEY = storedPreference(

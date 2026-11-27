@@ -51,6 +51,7 @@
     "mows": "Machines of War",
     "campaign": "Campaign: {{name}}",
     "incursions": "Incursions: {{names}}",
+    "survival": "Survival: {{name}}",
     "locked": "{{name}} (locked)",
     "editTeam": "Edit {{name}}",
     "drag": "Drag {{name}} to reorder",
@@ -149,6 +150,14 @@
     "noShared": "These Incursions have no faction in common.",
     "clears": "Changing the Incursions clears the lineup."
   },
+  "survival": {
+    "label": "Survival event",
+    "featured": "{{hero}} always fights and isn't part of the team.",
+    "caps": "Up to {{characters}} characters, Machines of War allowed.",
+    "capsNoMows": "Up to {{characters}} characters, no Machines of War.",
+    "allowed": "Allowed factions",
+    "unknown": "This Survival event isn't in the game data."
+  },
   "picker": {
     "label": "Add units",
     "search": "Search units",
@@ -226,7 +235,7 @@
       "fix_other": "Make {{count}} Machines of War flex."
     },
     "mowsNotAllowed": {
-      "reason": "Campaign and Incursion teams have no Machine of War.",
+      "reason": "This team can't have Machines of War.",
       "fix": "Remove the Machines of War."
     },
     "campaignRequired": {
@@ -256,6 +265,24 @@
     "noSharedIncursionFaction": {
       "reason": "These Incursions have no faction in common.",
       "fix": "Remove an Incursion."
+    },
+    "survivalModeRequired": {
+      "reason": "A Survival team plays Horde mode only.",
+      "fix": "Keep only the Horde mode."
+    },
+    "unknownSurvivalEvent": {
+      "reason": "This Survival event isn't in the game data.",
+      "fix": "Create the team again from the Survival page."
+    },
+    "survivalFeaturedCharacter": {
+      "reason": "The event's featured hero always fights, so it isn't part of the team.",
+      "fix": "Remove the featured hero."
+    },
+    "survivalTooManyCharacters": {
+      "reason": "A Survival team can have at most {{max}} characters besides the featured hero.",
+      "reason_unknown": "This Survival team has more characters than its event allows.",
+      "fix": "Remove characters until {{max}} are left.",
+      "fix_unknown": "Remove characters."
     }
   },
   "tour": {
@@ -314,6 +341,11 @@
       "incursionRequired": "Incursion missing",
       "unknownIncursion": "Unknown Incursion",
       "noSharedIncursionFaction": "No shared faction",
+      "survivalModeRequired": "Horde only",
+      "unknownSurvivalEvent": "Unknown Survival event",
+      "survivalFeaturedCharacter": "Featured hero in team",
+      "survivalTooManyCharacters": "Over {{max}} characters",
+      "survivalTooManyCharacters_unknown": "Too many characters",
       "tooFewCharacters_one": "{{count}} character (min {{min}})",
       "tooFewCharacters_other": "{{count}} characters (min {{min}})"
     }

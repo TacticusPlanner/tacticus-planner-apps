@@ -13,7 +13,7 @@ import {
   portraitVariationOf,
 } from "@/entities/npc"
 import { unitDisplayName } from "@/entities/raid-boss"
-import { useCatalogDataset } from "@/shared/local-data"
+import { useCatalogDataset, firstRecord } from "@/shared/local-data"
 
 import type { SearchEntity } from "./entity-search"
 
@@ -26,8 +26,6 @@ const NAME_NAMESPACES = [
   "raidBosses",
   "unitSearchNames",
 ] as const
-
-const firstRecord = <T>(records: T[]): T | null => records[0] ?? null
 
 /**
  * Every game entity navigation search can open, built from the synced catalog: characters,

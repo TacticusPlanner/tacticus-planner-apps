@@ -7,6 +7,7 @@ import {
   coreCount,
   coreMowCount,
   underCap,
+  useSurvivalRuleCap,
   useTeamRuleText,
 } from "@/entities/team"
 import type { Team, TeamRoster, TeamRuleCode } from "@/entities/team"
@@ -44,6 +45,7 @@ export function useTeamStatus(
   const { t } = useTranslation(["teams", "progression"])
   const unitName = useUnitName()
   const ruleText = useTeamRuleText()
+  const survivalCap = useSurvivalRuleCap()
 
   return useCallback(
     (team: Team): TeamStatusItem[] => {
@@ -76,6 +78,13 @@ export function useTeamStatus(
             max: TEAM_LIMITS.maxWarCoreMows,
           })
         }
+        if (code === "survivalTooManyCharacters") {
+          const max = survivalCap(code, team.survivalEventKey)
+          return t(`chips.rules.${code}`, {
+            max,
+            context: max === undefined ? "unknown" : undefined,
+          })
+        }
         return t(`chips.rules.${code}`)
       }
       for (const code of team.issues) {
@@ -105,6 +114,6 @@ export function useTeamStatus(
       }
       return items
     },
-    [t, ruleText, shared, roster, unitName]
+    [t, survivalCap, ruleText, shared, roster, unitName]
   )
 }

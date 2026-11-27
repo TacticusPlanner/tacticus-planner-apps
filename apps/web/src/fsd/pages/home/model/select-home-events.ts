@@ -7,6 +7,7 @@ import type { LegendaryEventProgress } from "@/entities/legendary-event"
 
 import type { CalendarWindow } from "./calendar-window"
 import type { GuildWarPhase } from "./guild-war-phases"
+import { DAY_MS } from "@/shared/lib"
 
 /** The fields the rows read from a Home Screen Event calendar entry. */
 export interface HomeScreenEventEntry {
@@ -105,8 +106,6 @@ export type HomeEventRow =
       /** 1 for a season's first war. */
       war: number
     })
-
-const DAY_MS = 86_400_000
 
 export interface HomeEvents {
   /** Running now, soonest end first (see `compareLive`), so events that start and end together sit

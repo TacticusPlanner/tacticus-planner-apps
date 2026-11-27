@@ -82,6 +82,23 @@ describe("GuildWarLayout", () => {
     expect(screen.queryByRole("button", { name: "Settings" })).toBeNull()
   })
 
+  it("says attacks are logged by hand until the note is dismissed on this device", async () => {
+    const user = userEvent.setup()
+    api.current.mockResolvedValue({ war: null })
+    const { unmount } = renderAt("/guild/war/offense")
+
+    expect(await screen.findByTestId("guild-war-api-notice")).toHaveTextContent(
+      "The Tacticus API doesn't return Guild War data, so attacks are logged by hand here."
+    )
+    await user.click(screen.getByRole("button", { name: "Dismiss" }))
+    expect(screen.queryByTestId("guild-war-api-notice")).toBeNull()
+
+    unmount()
+    renderAt("/guild/war/history")
+    await screen.findByTestId("guild-war-page")
+    expect(screen.queryByTestId("guild-war-api-notice")).toBeNull()
+  })
+
   it("names the season the calendar says is running", async () => {
     api.current.mockResolvedValue({ war: null })
     await seedGameCatalog({

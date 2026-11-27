@@ -6,7 +6,9 @@
     "loadError": "Dein Krieg konnte nicht geladen werden.",
     "retry": "Erneut versuchen",
     "noSeasons": "Gildenkriegsdaten sind noch nicht verfügbar.",
-    "seasonNotListed": "Der Ereigniskalender führt die laufende Gildenkrieg-Saison nicht, daher nutzt dieser Krieg {{season}}."
+    "seasonNotListed": "Der Ereigniskalender führt die laufende Gildenkrieg-Saison nicht, daher nutzt dieser Krieg {{season}}.",
+    "apiNotice": "Die Tacticus-API liefert keine Gildenkriegsdaten, daher werden Angriffe hier von Hand erfasst.",
+    "apiNoticeDismiss": "Ausblenden"
   },
   "target": {
     "zone": "Zone",

@@ -180,6 +180,7 @@ const savedTeam = (overrides: Partial<Team> = {}): Team => ({
   incursionMowIds: [],
   notes: null,
   rarityCap: null,
+  survivalEventKey: null,
   issues: [],
   ...overrides,
 })
@@ -807,6 +808,7 @@ describe("TeamEditorDialog", () => {
         "name",
         "notes",
         "rarityCap",
+        "survivalEventKey",
       ])
       expect(body.rarityCap).toBe("Epic")
     })

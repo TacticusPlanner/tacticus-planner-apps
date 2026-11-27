@@ -1,4 +1,9 @@
-export { toById, useCatalogDataset, usePlayerChunk } from "./use-local-data"
+export {
+  firstRecord,
+  toById,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "./use-local-data"
 export {
   clearLocalDataCache,
   listenForLocalDataRefresh,

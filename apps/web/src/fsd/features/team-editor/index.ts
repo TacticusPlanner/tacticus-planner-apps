@@ -26,4 +26,5 @@ export const TEAM_EDITOR_NAMESPACES = [
   "characters",
   "mows",
   "unitSearchNames",
+  "survival",
 ] as const

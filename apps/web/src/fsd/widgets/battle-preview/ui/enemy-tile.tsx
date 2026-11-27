@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import {
   Popover,
@@ -20,9 +21,12 @@ import { useEnemyLabels } from "./enemy-label"
 export function EnemyTile({
   tile,
   isMobile,
+  extra,
 }: {
   tile: EnemyTileViewModel
   isMobile: boolean
+  /** Shown under the enemy detail. */
+  extra?: ReactNode
 }) {
   const { t } = useTranslation("legendaryEvents")
   const { enemyName, tileLabel } = useEnemyLabels()
@@ -70,6 +74,7 @@ export function EnemyTile({
         trigger={trigger}
       >
         <EnemyDetail tile={tile} />
+        {extra}
       </DetailsSheet>
     )
   }
@@ -82,6 +87,7 @@ export function EnemyTile({
         data-testid="battle-enemy-popover"
       >
         <EnemyDetail tile={tile} />
+        {extra}
       </PopoverContent>
     </Popover>
   )

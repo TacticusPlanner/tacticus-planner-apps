@@ -10,12 +10,15 @@ import { useTeamDisplayName } from "@/entities/legendary-event"
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import { useGoalLabels } from "@/features/legendary-event-goals"
 
-import type { PlanWrites } from "./plan-create"
-import { runAssumptions } from "./target-step.model"
-import type { CreateItem, usePlanCreate } from "./use-plan-create"
-import { NEW_PROJECT } from "./use-plan-destination"
-import type { PlanDestinationState } from "./use-plan-destination"
-import type { PlanDraft } from "./use-plan-draft"
+import type { PlanWrites } from "../../model/plan-wizard/plan-create"
+import { runAssumptions } from "../../model/plan-wizard/target-step.model"
+import type {
+  CreateItem,
+  usePlanCreate,
+} from "../../model/plan-wizard/use-plan-create"
+import { NEW_PROJECT } from "../../model/plan-wizard/use-plan-destination"
+import type { PlanDestinationState } from "../../model/plan-wizard/use-plan-destination"
+import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
 
 const STATUS_ICON = { pending: CircleDashed, done: Check, failed: X } as const
 

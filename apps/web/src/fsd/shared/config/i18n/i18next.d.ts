@@ -17,6 +17,7 @@ import type enIncursions from "../../../../../public/locales/en/incursions.json"
 import type enEventShops from "../../../../../public/locales/en/eventShops.json"
 import type enTeams from "../../../../../public/locales/en/teams.json"
 import type enGuildWar from "../../../../../public/locales/en/guildWar.json"
+import type enSurvival from "../../../../../public/locales/en/survival.json"
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -42,6 +43,7 @@ declare module "i18next" {
       eventShops: typeof enEventShops
       teams: typeof enTeams
       guildWar: typeof enGuildWar
+      survival: typeof enSurvival
       // Dynamic game-data namespaces (character/upgrade/faction/trait/etc ids as keys).
       characters: Record<string, string>
       mows: Record<string, string>
