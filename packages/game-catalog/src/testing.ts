@@ -28,3 +28,7 @@ export { incursionsFixture } from "./incursions.fixtures"
 
 // Served `guild-war` records (Seasons A and D, trimmed buff values), parsed through the catalog schema.
 export { guildWarFixture } from "./guild-war.fixtures"
+
+// Served `survival-events` records (Crescendo A and December 2026, every wave, trimmed ladders),
+// parsed through the catalog schema.
+export { survivalEventsFixture } from "./survival-events.fixtures"

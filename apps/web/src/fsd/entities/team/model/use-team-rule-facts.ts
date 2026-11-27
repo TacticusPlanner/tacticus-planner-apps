@@ -14,28 +14,49 @@ export function useTeamRuleFacts(): ReadState<TeamRuleFacts> {
   const campaignDefinitions = useCatalogDataset("campaign-definitions")
   const campaignBattles = useCatalogDataset("campaign-battles")
   const incursions = useCatalogDataset("incursions")
+  const survivalEvents = useCatalogDataset("survival-events")
   const combined = combineReadStates(
     characters,
     mows,
     campaignDefinitions,
     campaignBattles,
-    incursions
+    incursions,
+    survivalEvents
   )
   const data = combined.status === "ready" ? combined.data : undefined
-  const [characterData, mowData, definitionData, battleData, incursionData] =
-    data ?? []
+  const [
+    characterData,
+    mowData,
+    definitionData,
+    battleData,
+    incursionData,
+    survivalData,
+  ] = data ?? []
   const facts = useMemo(
     () =>
-      characterData && mowData && definitionData && battleData && incursionData
+      characterData &&
+      mowData &&
+      definitionData &&
+      battleData &&
+      incursionData &&
+      survivalData
         ? buildTeamRuleFacts({
             characters: characterData,
             mows: mowData,
             campaignDefinitions: definitionData,
             campaignBattles: battleData,
             incursions: incursionData,
+            survivalEvents: survivalData,
           })
         : undefined,
-    [characterData, mowData, definitionData, battleData, incursionData]
+    [
+      characterData,
+      mowData,
+      definitionData,
+      battleData,
+      incursionData,
+      survivalData,
+    ]
   )
   if (combined.status !== "ready" || !facts) {
     return combined.status === "error"

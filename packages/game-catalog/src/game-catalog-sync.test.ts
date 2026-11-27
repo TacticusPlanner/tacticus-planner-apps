@@ -25,6 +25,7 @@ import progressionRulesPayload from "./schemas/progression-rules.fixture.json"
 import hrePayload from "./schemas/hre.fixture.json"
 import incursionsPayload from "./schemas/incursions.fixture.json"
 import guildWarPayload from "./schemas/guild-war.fixture.json"
+import survivalEventsPayload from "./schemas/survival-events.fixture.json"
 import npcEncountersPayload from "./schemas/npc-encounters.fixture.json"
 
 // The fake client bypasses zod (the real GameCatalogHttpClient validates); these records only need the shape
@@ -194,6 +195,7 @@ const datasetData: Record<string, unknown> = {
   incursions: incursionsPayload,
   "npc-encounters": npcEncountersPayload,
   "guild-war": guildWarPayload,
+  "survival-events": survivalEventsPayload,
   "event-shops": [
     {
       id: "june-2026",

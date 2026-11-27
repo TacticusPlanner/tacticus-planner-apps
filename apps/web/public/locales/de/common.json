@@ -1271,6 +1271,8 @@
       "insightsDescription": "Empfehlungen für Verbesserungen und Kampagnen für deine Ziele.",
       "schedule": "Zeitplan",
       "scheduleDescription": "Tag-für-Tag-Raids für deine aktiven Ziele, bis sie erreicht sind.",
+      "survival": "Überleben",
+      "survivalDescription": "Plane dein Team und deine Belohnungen für jedes Überlebensevent.",
       "all": "Alle Status",
       "toReach": "Unerfüllt",
       "reached": "Erreicht",

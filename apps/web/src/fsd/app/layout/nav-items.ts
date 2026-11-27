@@ -16,7 +16,11 @@ import {
   Users,
 } from "lucide-react"
 
-import { eventIcon, gameMenuIcon } from "@workspace/game-catalog"
+import {
+  eventIcon,
+  gameMenuIcon,
+  gameModeTokenIcon,
+} from "@workspace/game-catalog"
 
 import { isUiKitEnabled } from "@/shared/config"
 import type { FeatureFlag } from "@/shared/feature-flags"
@@ -39,6 +43,7 @@ type NavLabelKey =
   | "goals.tabs.projects"
   | "goals.tabs.insights"
   | "goals.tabs.schedule"
+  | "goals.tabs.survival"
   | "myGame.tabs.collection"
   | "myGame.tabs.onslaught"
   | "myGame.tabs.campaigns"
@@ -284,6 +289,12 @@ export const navItems: NavItem[] = [
         artSrc: gameMenuIcon("shop"),
         labelKey: "dailies:tabs.eventShop",
         descriptionKey: "dailies:tabs.eventShopDescription",
+      },
+      {
+        path: "/plan/survival",
+        artSrc: gameModeTokenIcon("survival"),
+        labelKey: "goals.tabs.survival",
+        descriptionKey: "goals.tabs.survivalDescription",
       },
     ],
   },

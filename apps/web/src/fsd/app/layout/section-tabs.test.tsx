@@ -155,7 +155,7 @@ describe("SectionTabs", () => {
     )
   })
 
-  it("shows Event shop as the last Plan tab, active on an event's page", () => {
+  it("shows Event shop then Survival as the last Plan tabs, Event shop active on an event's page", () => {
     renderTabs(section("/plan"), "/plan/event-shop/november-2026")
 
     expect(
@@ -166,6 +166,7 @@ describe("SectionTabs", () => {
       "section-tab-plan-insights",
       "section-tab-plan-schedule",
       "section-tab-plan-event-shop",
+      "section-tab-plan-survival",
     ])
     expect(screen.getByTestId("section-tab-plan-event-shop")).toHaveAttribute(
       "data-state",

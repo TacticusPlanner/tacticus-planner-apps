@@ -1271,6 +1271,8 @@
       "insightsDescription": "Recomendaciones de mejoras y campañas para tus objetivos.",
       "schedule": "Calendario",
       "scheduleDescription": "Incursiones día a día para tus objetivos activos hasta completarlos.",
+      "survival": "Supervivencia",
+      "survivalDescription": "Planifica tu equipo y tus recompensas para cada evento de Supervivencia.",
       "all": "Todos los estados",
       "toReach": "No cumplidos",
       "reached": "Alcanzados",

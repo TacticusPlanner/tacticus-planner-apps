@@ -30,6 +30,7 @@ const team = (id: string, overrides: Partial<Team> = {}): Team => ({
   incursionMowIds: [],
   notes: null,
   rarityCap: null,
+  survivalEventKey: null,
   issues: [],
   ...overrides,
 })

@@ -1271,6 +1271,8 @@
       "insightsDescription": "Recommandations d'améliorations et de campagnes pour vos objectifs.",
       "schedule": "Calendrier",
       "scheduleDescription": "Raids jour par jour pour vos objectifs actifs jusqu'à leur achèvement.",
+      "survival": "Survie",
+      "survivalDescription": "Planifie ton équipe et tes récompenses pour chaque événement de Survie.",
       "all": "Tous les statuts",
       "toReach": "Non atteints",
       "reached": "Atteints",

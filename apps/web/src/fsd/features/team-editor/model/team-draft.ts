@@ -25,11 +25,23 @@ export interface TeamDraft {
   incursionMowIds: string[]
   /** The rarity the team is prepared for, saved with it; null when it has none. */
   rarityCap: Rarity | null
+  /** The Survival event the team is for (a Horde team); null when none. */
+  survivalEventKey: string | null
 }
 
-export function emptyDraft(modes: readonly TeamMode[] = []): TeamDraft {
+/** A new team: with `survivalEventKey`, a Horde team for that Survival event. */
+export function emptyDraft(
+  modes: readonly TeamMode[] = [],
+  {
+    name = "",
+    survivalEventKey = null,
+  }: {
+    name?: string
+    survivalEventKey?: string | null
+  } = {}
+): TeamDraft {
   return {
-    name: "",
+    name,
     notes: "",
     modes: [...modes],
     characterIds: [],
@@ -39,6 +51,7 @@ export function emptyDraft(modes: readonly TeamMode[] = []): TeamDraft {
     campaignGroupId: null,
     incursionMowIds: [],
     rarityCap: null,
+    survivalEventKey,
   }
 }
 
@@ -55,6 +68,8 @@ export function draftFromTeam(team: Team): TeamDraft {
     campaignGroupId: team.campaignGroupId,
     incursionMowIds: [...team.incursionMowIds],
     rarityCap: team.rarityCap,
+    // An API that predates Survival teams leaves the field out.
+    survivalEventKey: team.survivalEventKey ?? null,
   }
 }
 
@@ -72,6 +87,7 @@ export function draftToFields(draft: TeamDraft): TeamFields {
     campaignGroupId: draft.campaignGroupId,
     incursionMowIds: [...draft.incursionMowIds],
     rarityCap: draft.rarityCap,
+    survivalEventKey: draft.survivalEventKey,
   }
 }
 
@@ -374,9 +390,19 @@ export function modeBlock(draft: TeamDraft, mode: TeamMode): ModeBlock | null {
   return null
 }
 
-/** Whether the team takes MoWs at all: Campaign and Incursion teams have none. */
-export function takesMows(draft: Pick<TeamDraft, "modes">) {
-  return draft.modes.every((mode) => !EXCLUSIVE_MODES.includes(mode))
+/** Whether the team takes MoWs at all: Campaign and Incursion teams have none, nor a Survival team
+ *  whose event bars them. */
+export function takesMows(
+  draft: Pick<TeamDraft, "modes" | "survivalEventKey">,
+  facts?: TeamRuleFacts
+) {
+  const survival = draft.survivalEventKey
+    ? facts?.survivalEvents.get(draft.survivalEventKey)
+    : undefined
+  return (
+    draft.modes.every((mode) => !EXCLUSIVE_MODES.includes(mode)) &&
+    survival?.mowsAllowed !== false
+  )
 }
 
 /** The id of the divider between core and flex in the lineup band's sortable order. */

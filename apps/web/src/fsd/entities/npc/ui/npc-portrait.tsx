@@ -5,6 +5,7 @@ import { entityIconClassName } from "@/shared/ui"
 import type { EntityIconSize } from "@/shared/ui"
 
 import { npcPortraitSrc } from "../lib/portrait-variation"
+import { useNpcPortraitSource } from "../model/use-npc-portrait-source"
 
 /** Initials for the text-badge fallback (up to two words). */
 function initials(name: string): string {
@@ -17,8 +18,9 @@ function initials(name: string): string {
 }
 
 /**
- * An NPC variation's portrait, resolved from its id through the ported override map, else the portrait
- * of the playable character it is a version of (`characterId`). When neither exists, or the file fails
+ * An NPC variation's portrait, resolved from its id through the ported override map, else another
+ * variation of the same NPC that has one, else the portrait of the playable character it is a version
+ * of (`characterId`, or the one the served NPC names) — the NPC library's resolution, everywhere. When neither exists, or the file fails
  * to load, a readable initials badge is rendered instead so list rows
  * and the detail header keep a consistent, fixed-size slot. `size` is a step on the style guide's
  * scale (`portrait-sm` … for a portrait, `icon` next to text).
@@ -38,7 +40,13 @@ export function NpcPortrait({
   className?: string
   rounded?: "full" | "lg"
 }) {
-  const src = npcPortraitSrc(variationId, characterId)
+  const source = useNpcPortraitSource(variationId)
+  const src =
+    npcPortraitSrc(variationId) ??
+    npcPortraitSrc(
+      source?.variationId ?? variationId,
+      characterId ?? source?.characterId
+    )
   // Track which src failed so a new variation id is retried for free.
   const [erroredSrc, setErroredSrc] = useState<string | null>(null)
   const showImage = src !== undefined && erroredSrc !== src

@@ -51,6 +51,7 @@
     "mows": "Máquinas de Guerra",
     "campaign": "Campaña: {{name}}",
     "incursions": "Incursiones: {{names}}",
+    "survival": "Supervivencia: {{name}}",
     "locked": "{{name}} (bloqueada)",
     "editTeam": "Editar {{name}}",
     "drag": "Arrastra {{name}} para reordenar",
@@ -149,6 +150,14 @@
     "noShared": "Estas Incursiones no tienen ninguna facción en común.",
     "clears": "Cambiar las Incursiones vacía la alineación."
   },
+  "survival": {
+    "label": "Evento de Supervivencia",
+    "featured": "{{hero}} siempre lucha y no forma parte del equipo.",
+    "caps": "Hasta {{characters}} personajes, Máquinas de Guerra permitidas.",
+    "capsNoMows": "Hasta {{characters}} personajes, sin Máquinas de Guerra.",
+    "allowed": "Facciones permitidas",
+    "unknown": "Este evento de Supervivencia no está en los datos del juego."
+  },
   "picker": {
     "label": "Añadir unidades",
     "search": "Buscar unidades",
@@ -226,7 +235,7 @@
       "fix_other": "Haz flexibles {{count}} Máquinas de Guerra."
     },
     "mowsNotAllowed": {
-      "reason": "Los equipos de Campaña e Incursión no tienen Máquina de Guerra.",
+      "reason": "Este equipo no puede tener Máquinas de Guerra.",
       "fix": "Quita las Máquinas de Guerra."
     },
     "campaignRequired": {
@@ -256,6 +265,24 @@
     "noSharedIncursionFaction": {
       "reason": "Estas Incursiones no tienen ninguna facción en común.",
       "fix": "Quita una Incursión."
+    },
+    "survivalModeRequired": {
+      "reason": "Un equipo de Supervivencia solo juega el modo Horda.",
+      "fix": "Deja solo el modo Horda."
+    },
+    "unknownSurvivalEvent": {
+      "reason": "Este evento de Supervivencia no está en los datos del juego.",
+      "fix": "Vuelve a crear el equipo desde la página de Supervivencia."
+    },
+    "survivalFeaturedCharacter": {
+      "reason": "El héroe destacado del evento siempre lucha, así que no forma parte del equipo.",
+      "fix": "Quita el héroe destacado."
+    },
+    "survivalTooManyCharacters": {
+      "reason": "Un equipo de Supervivencia puede tener como máximo {{max}} personajes además del héroe destacado.",
+      "reason_unknown": "Este equipo de Supervivencia tiene más personajes de los que permite su evento.",
+      "fix": "Quita personajes hasta que queden {{max}}.",
+      "fix_unknown": "Quita personajes."
     }
   },
   "tour": {
@@ -314,6 +341,11 @@
       "incursionRequired": "Falta la Incursión",
       "unknownIncursion": "Incursión desconocida",
       "noSharedIncursionFaction": "Sin facción común",
+      "survivalModeRequired": "Solo Horda",
+      "unknownSurvivalEvent": "Evento de Supervivencia desconocido",
+      "survivalFeaturedCharacter": "Héroe destacado en el equipo",
+      "survivalTooManyCharacters": "Más de {{max}} personajes",
+      "survivalTooManyCharacters_unknown": "Demasiados personajes",
       "tooFewCharacters_one": "{{count}} personaje (mín. {{min}})",
       "tooFewCharacters_other": "{{count}} personajes (mín. {{min}})"
     }

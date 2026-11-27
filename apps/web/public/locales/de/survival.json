@@ -1,0 +1,194 @@
+{
+  "page": {
+    "loading": "Überlebensevents werden geladen…",
+    "noEvents": "Noch keine Überlebensevents.",
+    "noEventsDescription": "Sie erscheinen hier, sobald die Spieldaten sie enthalten."
+  },
+  "switcher": {
+    "label": "Überlebensevent",
+    "placeholder": "Event wählen",
+    "empty": "Keine Events",
+    "previous": "Vorheriges Event",
+    "next": "Nächstes Event",
+    "groups": {
+      "running": "Läuft",
+      "upcoming": "Demnächst",
+      "past": "Vergangen"
+    },
+    "option": "{{name}} · {{hero}}"
+  },
+  "line": {
+    "featured": "Vorgestellter Held: {{hero}}",
+    "tba": "Termine folgen",
+    "running": "Läuft gerade",
+    "factions": "Erlaubte Fraktionen",
+    "mows": "Kriegsmaschinen erlaubt",
+    "noMows": "Keine Kriegsmaschinen"
+  },
+  "howItWorks": {
+    "summary": "So funktioniert das Event",
+    "team_one": "Bis zu {{count}} Charakter neben {{hero}}, der immer mitkämpft.",
+    "team_other": "Bis zu {{count}} Charaktere neben {{hero}}, der immer mitkämpft.",
+    "stamina": "{{start}} Ausdauer zu Beginn, höchstens {{max}}, {{amount}} zurück alle {{hours}} Std.",
+    "statBoost": "Jeder Werteschub gibt +{{pct}} % {{stats}} im Überleben.",
+    "lastStand": "Letztes Gefecht: {{buff}}, mit ×{{multiplier}} strategischem Multiplikator.",
+    "summon": "Du kannst in jedem Kampf einen {{unit}} beschwören, mit Fähigkeitsstufe {{min}} bis {{max}} je nach Seltenheitsgrenze.",
+    "rarityUp": "Ab Welle {{wave}} bleiben die Gegner für den Rest des Laufs {{rarity}}."
+  },
+  "stats": {
+    "hp": "Lebenspunkte",
+    "dmg": "Schaden"
+  },
+  "buffs": {
+    "RepairField": "Reparaturfeld",
+    "Killzone": "Todeszone",
+    "PowerMatrix": "Energiematrix"
+  },
+  "summons": {
+    "astraSmnGuardsman": "Cadianischer Gardist"
+  },
+  "events": {
+    "crescendo-a": "Crescendo A",
+    "crescendo-b": "Crescendo B"
+  },
+  "medals": {
+    "iron": "Eisen",
+    "bronze": "Bronze",
+    "silver": "Silber",
+    "gold": "Gold",
+    "platinum": "Platin",
+    "diamond": "Diamant",
+    "adamantine": "Adamantium"
+  },
+  "tabs": {
+    "label": "Überleben",
+    "team": "Team",
+    "enemies": "Gegner",
+    "rewards": "Belohnungen",
+    "missions": "Missionen",
+    "offers": "Angebote"
+  },
+  "team": {
+    "count_one": "{{count}} / {{max}} Charakter",
+    "count_other": "{{count}} / {{max}} Charaktere",
+    "featured": "Vorgestellt",
+    "edit": "Team bearbeiten",
+    "create": "Team erstellen",
+    "none": "Noch kein Team für dieses Event.",
+    "loadError": "Deine Teams konnten nicht geladen werden. Versuche es später erneut.",
+    "newName": "Überleben · {{name}}",
+    "goals": "Ziele für dieses Team",
+    "goalsFailed": "Deine Ziele konnten nicht geladen werden.",
+    "noGoals": "Keine Ziele",
+    "createGoal": "Ziel erstellen",
+    "createGoalFor": "Ziel für {{name}} erstellen"
+  },
+  "enemies": {
+    "intro": "Eine abgeschlossene Welle und jeder Abschuss bringen Punkte; jeder übersprungene Zug bringt {{skipped}}.",
+    "introClone": "Eine abgeschlossene Welle und jeder Abschuss bringen Punkte; eine Klonwelle bringt {{clone}} und jeder übersprungene Zug {{skipped}}.",
+    "wave": "Welle {{wave}}",
+    "round": "Runde {{round}}",
+    "power": "Macht {{power}}",
+    "score": "{{score}} Punkte",
+    "final": "Letzte Welle",
+    "finalHint": "Welle {{wave}}. Ihre Macht ist so hoch, dass kein Team sie schlagen kann: Sammle so viele Punkte wie möglich, bevor dein Team fällt.",
+    "clone": "Dein Team, geklont mit {{pct}} % Lebenspunkten.",
+    "afterWave": "Nach dieser Welle:",
+    "rarityUp": "Seltenheitsgrenze steigt auf {{rarity}}",
+    "killPoints": "{{points}} Punkte pro Abschuss",
+    "rarityCap": "Seltenheitsgrenze: {{rarity}}",
+    "waves": "Wellen {{from}}–{{to}}",
+    "expandAll": "Alle ausklappen",
+    "collapseAll": "Alle einklappen",
+    "summary": {
+      "enemies": "Gegner",
+      "rewards": "Belohnungen",
+      "buffs": "Verstärkungen"
+    },
+    "enemyCount": "{{name}} ×{{count}}"
+  },
+  "rewards": {
+    "none": "Keine",
+    "milestones": "Event-Meilensteine",
+    "chests": "Fortschrittstruhen",
+    "noChests": "Keine Fortschrittstruhen in diesem Event.",
+    "chest": "Truhe {{level}}",
+    "cost": "Kostet {{amount}} Eventwährung",
+    "rarityMilestones": "Seltenheitsbelohnungen des vorgestellten Helden",
+    "points": {
+      "summary": "Woher die Punkte kommen",
+      "freeMissions": "Kostenlose Missionen",
+      "premiumMissions": "Premium-Missionen",
+      "survivalFree": "Überlebenskämpfe",
+      "survivalPremium": "Überlebenskämpfe mit dem Saisonpass",
+      "max": "Höchstpunktzahl im Event"
+    }
+  },
+  "missions": {
+    "none": "Keine täglichen Missionen",
+    "premiumNote": "Benötigt den Saisonpass.",
+    "statBoostNote": "Jeder Werteschub: +{{pct}} % {{stats}} im Überleben."
+  },
+  "offers": {
+    "none": "Keine Angebote für dieses Event.",
+    "kinds": {
+      "pass": "Saisonpass",
+      "playmore": "Mehr-spielen-Paket"
+    },
+    "purchases_one": "Einmal kaufbar",
+    "purchases_other": "{{count}}-mal kaufbar",
+    "passUnlocks": "Schaltet die Premium-Missionen frei: {{points}} Eventpunkte und {{currency}} Eventwährung.",
+    "seeMissions": "Missionen ansehen",
+    "currencyBonus": "+{{pct}} % Bonus auf Eventwährung"
+  },
+  "tour": {
+    "event": {
+      "title": "Event wählen",
+      "content": "Das laufende Event wird zuerst gezeigt. Blättere zu früheren oder späteren oder wähle eines aus der Liste."
+    },
+    "line": {
+      "title": "Das Event auf einen Blick",
+      "content": "Sein vorgestellter Held, die Termine, die erlaubten Fraktionen und ob Kriegsmaschinen mitkämpfen dürfen."
+    },
+    "howItWorks": {
+      "title": "So funktioniert das Event",
+      "content": "Ausdauer, Werteschub, Letztes Gefecht und wie die Gegner stärker werden."
+    },
+    "tabs": {
+      "title": "Fünf Tabs",
+      "content": "Dein Team, die Gegnerwellen, die Belohnungen, die Missionen und die Angebote."
+    },
+    "lineup": {
+      "title": "Dein Team",
+      "content": "Der vorgestellte Held kämpft immer mit. Erstelle oder bearbeite das Team; es erscheint auch unter Mein Spiel, Teams."
+    },
+    "goals": {
+      "title": "Ziele für dieses Team",
+      "content": "Erstelle direkt hier ein Ziel für eine Einheit."
+    },
+    "waves": {
+      "title": "Die Wellen",
+      "content": "Gegner, Macht, Punkte und Medaille jeder Welle. Tippe auf einen Gegner für seine Karte und Punkte pro Abschuss."
+    },
+    "milestones": {
+      "title": "Event-Meilensteine",
+      "content": "Was Eventpunkte freischalten."
+    },
+    "chests": {
+      "title": "Fortschrittstruhen",
+      "content": "Was jede Truhe in Eventwährung kostet und was sie enthält."
+    },
+    "points": {
+      "title": "Woher die Punkte kommen",
+      "content": "Die meisten Punkte, die jede Quelle bringt."
+    },
+    "missions": {
+      "title": "Missionen",
+      "content": "Tägliche Missionen und die kostenlosen und Premium-Ketten."
+    },
+    "offers": {
+      "title": "Angebote",
+      "content": "Die Echtgeld-Angebote des Events und ihr Inhalt."
+    }
+  }
+}

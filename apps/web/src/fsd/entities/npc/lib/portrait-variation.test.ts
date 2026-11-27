@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { npcPortraitSrc, portraitVariationOf } from "./portrait-variation"
+import {
+  buildNpcPortraitIndex,
+  npcPortraitSrc,
+  portraitVariationOf,
+} from "./portrait-variation"
 
 const group = (defaultVariationId: string, ...ids: string[]) => ({
   defaultVariationId,
@@ -40,5 +44,38 @@ describe("npcPortraitSrc", () => {
     )
     expect(npcPortraitSrc("noSuchNpc", null)).toBeUndefined()
     expect(npcPortraitSrc("noSuchNpc")).toBeUndefined()
+  })
+})
+
+const record = (id: string, name: string, characterId: string | null = null) =>
+  ({
+    id,
+    name,
+    kind: "unit",
+    characterId,
+    stats: [{ health: 1, armour: 0, damage: 1 }],
+  }) as never
+
+describe("buildNpcPortraitIndex", () => {
+  it("lends a Survival-only boss the portrait of its NPC's other variation", () => {
+    const index = buildNpcPortraitIndex([
+      record("tyranBossTyrantGuard", "Tyrant Guard"),
+      record("tyranBossTyrantGuardSurv", "Tyrant Guard"),
+    ])
+
+    expect(index.get("tyranBossTyrantGuardSurv")?.variationId).toBe(
+      "tyranBossTyrantGuard"
+    )
+  })
+
+  it("carries the playable character an NPC is a version of", () => {
+    const index = buildNpcPortraitIndex([
+      record("noPortraitDante", "Dante", "bloodDante"),
+    ])
+
+    expect(index.get("noPortraitDante")).toEqual({
+      variationId: "noPortraitDante",
+      characterId: "bloodDante",
+    })
   })
 })

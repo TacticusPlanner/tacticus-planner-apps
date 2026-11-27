@@ -48,6 +48,8 @@ export {
 } from "./lib/rarity-cap"
 export { teamModeIcon } from "./lib/team-mode-icon"
 export { useTeamRuleFacts } from "./model/use-team-rule-facts"
+export { useSurvivalRuleCap } from "./model/use-survival-caps"
+export { useSurvivalEventName } from "./model/use-survival-event-name"
 export { useTeamModeLabel, useTeamRuleText } from "./model/use-team-copy"
 export {
   teamUnitView,

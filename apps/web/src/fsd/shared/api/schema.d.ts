@@ -1270,6 +1270,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/v1/game-catalog/survival-events": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Survival events. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogSurvivalEventsEndpoint1"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/v1/game-catalog/survival-events/{envelopeHash}": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Gets the Survival events. */
+    get: operations["TacticusPlannerApiFeaturesGameCatalogGetGameCatalogSurvivalEventsEndpoint2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/v1/game-catalog/unit-power": {
     parameters: {
       query?: never
@@ -2484,6 +2518,8 @@ export interface components {
       notes: null | string
       /** @constant */
       rarityCap: null | components["schemas"]["TeamRarityCap"]
+      /** @constant */
+      survivalEventKey?: null | string
     }
     CurrentGuildWarResponse: {
       war: null | components["schemas"]["GuildWarResponse"]
@@ -3063,6 +3099,16 @@ export interface components {
       datasetHash: string
       /** @constant */
       data: null | components["schemas"]["GameCatalogShopView"][]
+    }
+    GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogSurvivalEvent: {
+      version: string
+      schemaHash: string
+      gameVersion: string
+      sourceHash: string
+      datasetKey: string
+      datasetHash: string
+      /** @constant */
+      data: null | components["schemas"]["GameCatalogSurvivalEvent"][]
     }
     GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogUnitPower: {
       version: string
@@ -4161,6 +4207,167 @@ export interface components {
       /** Format: int32 */
       gems: number
     }
+    GameCatalogSurvivalChest: {
+      /** Format: int32 */
+      level: number
+      cost: components["schemas"]["GameCatalogSurvivalCost"]
+      rewards: components["schemas"]["IReadOnlyListOfGameCatalogRewardRangeView"]
+    }
+    GameCatalogSurvivalCost: {
+      type: string
+      /** Format: int32 */
+      amount: number
+    }
+    GameCatalogSurvivalEvent: {
+      id: string
+      eventKey: string
+      definitionId: null | string
+      /** Format: date-time */
+      startUtc: null | string
+      /** Format: date-time */
+      endUtc: null | string
+      featuredCharacterId: string
+      currency: string
+      rules: components["schemas"]["GameCatalogSurvivalRules"]
+      waves: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalWave"]
+      scoring: components["schemas"]["GameCatalogSurvivalScoring"]
+      points: components["schemas"]["GameCatalogSurvivalPoints"]
+      milestones: components["schemas"]["IReadOnlyListOfGameCatalogRewardTierView"]
+      chests: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalChest"]
+      missions: components["schemas"]["GameCatalogEventShopMissionsView"]
+      offers: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalOffer"]
+    }
+    GameCatalogSurvivalKillScore: {
+      npcId: string
+      /** Format: int32 */
+      statsIndex: number
+      /** Format: int32 */
+      score: number
+    }
+    GameCatalogSurvivalLastStand: {
+      buffId: string
+      /** Format: int32 */
+      strategicMultiplier: number
+    }
+    GameCatalogSurvivalMedal: {
+      medal: string
+      /** Format: int32 */
+      wave: number
+      rewards: components["schemas"]["IReadOnlyListOfGameCatalogRewardRangeView"]
+    }
+    GameCatalogSurvivalOffer: {
+      id: string
+      kind: string
+      /** Format: int32 */
+      priceCents: number
+      /** Format: int32 */
+      maxPurchases: null | number
+      rewards: components["schemas"]["IReadOnlyListOfGameCatalogRewardRangeView"]
+    }
+    GameCatalogSurvivalPoints: {
+      /** Format: int32 */
+      max: number
+      /** Format: int32 */
+      freeMissions: number
+      /** Format: int32 */
+      premiumMissions: number
+      /** Format: int32 */
+      survivalFree: number
+      /** Format: int32 */
+      survivalPremium: number
+    }
+    GameCatalogSurvivalPowerUp: {
+      id: string
+      npcId: null | string
+      /** Format: int32 */
+      statsIndex: null | number
+      /** Format: int32 */
+      count: number
+    }
+    GameCatalogSurvivalRarityMilestone: {
+      rarity: string
+      rewards: components["schemas"]["IReadOnlyListOfGameCatalogRewardRangeView"]
+    }
+    GameCatalogSurvivalRarityWave: {
+      rarity: string
+      /** Format: int32 */
+      wave: number
+    }
+    GameCatalogSurvivalRules: {
+      allowedFactionIds: components["schemas"]["IReadOnlyListOfString"]
+      mowsAllowed: boolean
+      /** Format: int32 */
+      maxCharacters: number
+      stamina: components["schemas"]["GameCatalogSurvivalStamina"]
+      /** Format: int32 */
+      statBoostPct: number
+      statBoostStats: components["schemas"]["IReadOnlyListOfString"]
+      lastStand: null | components["schemas"]["GameCatalogSurvivalLastStand"]
+      summon: null | components["schemas"]["GameCatalogSurvivalSummon"]
+      persistentRarityUps: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalRarityWave"]
+      featuredHeroStats: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalStatOverride"]
+    }
+    GameCatalogSurvivalScoring: {
+      medals: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalMedal"]
+      killScores: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalKillScore"]
+      /** Format: int32 */
+      cloneWaveScore: null | number
+      /** Format: int32 */
+      skippedTurnScore: number
+      rarityMilestones: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalRarityMilestone"]
+    }
+    GameCatalogSurvivalStamina: {
+      /** Format: int32 */
+      start: number
+      /** Format: int32 */
+      max: number
+      /** Format: int32 */
+      regenSeconds: number
+      /** Format: int32 */
+      regenAmount: number
+    }
+    GameCatalogSurvivalStatOverride: {
+      rarity: string
+      /** Format: int32 */
+      critChance: number
+      /** Format: int32 */
+      critDamage: number
+      /** Format: int32 */
+      blockChance: number
+      /** Format: int32 */
+      blockDamage: number
+    }
+    GameCatalogSurvivalSummon: {
+      unitId: string
+      levels: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalSummonLevel"]
+    }
+    GameCatalogSurvivalSummonLevel: {
+      rarityCap: string
+      /** Format: int32 */
+      abilityLevel: number
+    }
+    GameCatalogSurvivalUnitCount: {
+      npcId: string
+      /** Format: int32 */
+      statsIndex: number
+      /** Format: int32 */
+      count: number
+    }
+    GameCatalogSurvivalWave: {
+      /** Format: int32 */
+      wave: number
+      /** Format: int32 */
+      round: number
+      /** Format: int64 */
+      power: number
+      /** Format: int32 */
+      score: number
+      /** Format: int32 */
+      cloneHealthPct: null | number
+      enemies: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalUnitCount"]
+      enemyRarityOnClear: null | string
+      powerUpsOnClear: components["schemas"]["IReadOnlyListOfGameCatalogSurvivalPowerUp"]
+    }
     GameCatalogTraitPowerModifier: {
       traitId: string
       /** Format: int32 */
@@ -4654,6 +4861,17 @@ export interface components {
     IReadOnlyListOfGameCatalogShopSlotView: components["schemas"]["GameCatalogShopSlotView"][]
     IReadOnlyListOfGameCatalogShopVariantView: components["schemas"]["GameCatalogShopVariantView"][]
     IReadOnlyListOfGameCatalogStaminaShopTier: components["schemas"]["GameCatalogStaminaShopTier"][]
+    IReadOnlyListOfGameCatalogSurvivalChest: components["schemas"]["GameCatalogSurvivalChest"][]
+    IReadOnlyListOfGameCatalogSurvivalKillScore: components["schemas"]["GameCatalogSurvivalKillScore"][]
+    IReadOnlyListOfGameCatalogSurvivalMedal: components["schemas"]["GameCatalogSurvivalMedal"][]
+    IReadOnlyListOfGameCatalogSurvivalOffer: components["schemas"]["GameCatalogSurvivalOffer"][]
+    IReadOnlyListOfGameCatalogSurvivalPowerUp: components["schemas"]["GameCatalogSurvivalPowerUp"][]
+    IReadOnlyListOfGameCatalogSurvivalRarityMilestone: components["schemas"]["GameCatalogSurvivalRarityMilestone"][]
+    IReadOnlyListOfGameCatalogSurvivalRarityWave: components["schemas"]["GameCatalogSurvivalRarityWave"][]
+    IReadOnlyListOfGameCatalogSurvivalStatOverride: components["schemas"]["GameCatalogSurvivalStatOverride"][]
+    IReadOnlyListOfGameCatalogSurvivalSummonLevel: components["schemas"]["GameCatalogSurvivalSummonLevel"][]
+    IReadOnlyListOfGameCatalogSurvivalUnitCount: components["schemas"]["GameCatalogSurvivalUnitCount"][]
+    IReadOnlyListOfGameCatalogSurvivalWave: components["schemas"]["GameCatalogSurvivalWave"][]
     IReadOnlyListOfGameCatalogTraitPowerModifier: components["schemas"]["GameCatalogTraitPowerModifier"][]
     IReadOnlyListOfGameCatalogUnitAbility: components["schemas"]["GameCatalogUnitAbility"][]
     IReadOnlyListOfGameCatalogUnitPowerUnit: components["schemas"]["GameCatalogUnitPowerUnit"][]
@@ -5157,6 +5375,7 @@ export interface components {
       incursionMowIds: components["schemas"]["IReadOnlyListOfString"]
       notes: null | string
       rarityCap: null | components["schemas"]["TeamRarityCap"]
+      survivalEventKey: null | string
       issues: components["schemas"]["IReadOnlyListOfTeamRuleCode"]
     }
     /** @enum {string} */
@@ -5176,6 +5395,10 @@ export interface components {
       | "incursionRequired"
       | "unknownIncursion"
       | "noSharedIncursionFaction"
+      | "survivalModeRequired"
+      | "unknownSurvivalEvent"
+      | "survivalFeaturedCharacter"
+      | "survivalTooManyCharacters"
     UnitId: string
     /** @enum {string} */
     UnitProgression:
@@ -5526,6 +5749,8 @@ export interface components {
        * @constant
        */
       revision: number
+      /** @constant */
+      survivalEventKey?: null | string
     }
     /** @constant */
     UpdateUserSettingsRequest: {
@@ -9191,6 +9416,98 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogShopView"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogSurvivalEventsEndpoint1: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per seasonal event with Survival, ordered by id (december-2026, crescendo-a, ...): the featured hero, the team rules (allowed factions, character and MoW caps, stamina, stat boost, Last Stand, global summon), the waves with grouped enemies, clone waves and what each wave grants, scoring (medals, points per kill), the points each source pays, milestones, progress chests, missions and offers with their US price. Dates come from the calendar's survival occurrences and are null while undated. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogSurvivalEvent"]
+        }
+      }
+      /** @description The dataset has not changed. */
+      304: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+      /** @description The envelope hash is not the current release's. */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/problem+json": components["schemas"]["ApiProblem"]
+        }
+      }
+    }
+  }
+  TacticusPlannerApiFeaturesGameCatalogGetGameCatalogSurvivalEventsEndpoint2: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        envelopeHash: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description One record per seasonal event with Survival, ordered by id (december-2026, crescendo-a, ...): the featured hero, the team rules (allowed factions, character and MoW caps, stamina, stat boost, Last Stand, global summon), the waves with grouped enemies, clone waves and what each wave grants, scoring (medals, points per kill), the points each source pays, milestones, progress chests, missions and offers with their US price. Dates come from the calendar's survival occurrences and are null while undated. */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["GameCatalogDatasetEnvelopeOfIReadOnlyListOfGameCatalogSurvivalEvent"]
         }
       }
       /** @description The dataset has not changed. */

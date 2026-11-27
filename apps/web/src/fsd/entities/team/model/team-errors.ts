@@ -49,6 +49,7 @@ function isTeam(value: unknown): value is Team {
     isNullableNumber(value.mowFlexStartIndex) &&
     isNullableString(value.campaignGroupId) &&
     isStringList(value.incursionMowIds) &&
+    isNullableString(value.survivalEventKey) &&
     isNullableString(value.notes) &&
     isNullableString(value.rarityCap) &&
     isStringList(value.issues)

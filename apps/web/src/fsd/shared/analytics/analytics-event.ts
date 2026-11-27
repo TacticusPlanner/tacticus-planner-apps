@@ -320,6 +320,19 @@ type HreTabViewedEvent = {
   mission: number | null
 }
 
+/** A Survival tab of Plan > Survival. */
+type SurvivalTab = "team" | "enemies" | "rewards" | "missions" | "offers"
+
+/** A Survival event's state at the time: running, upcoming, past, or not dated yet. */
+type SurvivalEventState = "running" | "upcoming" | "past" | "undated"
+
+/** Plan > Survival tab shown (once per visit, tab and event). */
+type SurvivalTabViewedEvent = {
+  type: "survival_tab_viewed"
+  tab: SurvivalTab
+  eventState: SurvivalEventState
+}
+
 /** Another HRE was picked in the event switcher. */
 type HreEventSwitchedEvent = {
   type: "hre_event_switched"
@@ -546,6 +559,7 @@ export type AnalyticsEvent =
   | LegendaryEventTierListViewedEvent
   | LegendaryEventTierListUnitOpenedEvent
   | HreTabViewedEvent
+  | SurvivalTabViewedEvent
   | HreEventSwitchedEvent
   | HreObjectiveProgressChangedEvent
   | HreFoldOpenedEvent

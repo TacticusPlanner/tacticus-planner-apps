@@ -196,6 +196,7 @@ export {
   type HreStorageModel,
   type IncursionStorageModel,
   type GuildWarSeasonStorageModel,
+  type SurvivalEventStorageModel,
   type NpcEncounterStorageModel,
 } from "./game-catalog.storage"
 

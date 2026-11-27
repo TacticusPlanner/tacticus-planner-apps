@@ -51,6 +51,7 @@
     "mows": "Kriegsmaschinen",
     "campaign": "Kampagne: {{name}}",
     "incursions": "Incursions: {{names}}",
+    "survival": "Überleben: {{name}}",
     "locked": "{{name}} (gesperrt)",
     "editTeam": "{{name}} bearbeiten",
     "drag": "{{name}} zum Sortieren ziehen",
@@ -149,6 +150,14 @@
     "noShared": "Diese Incursions haben keine gemeinsame Fraktion.",
     "clears": "Eine Änderung der Incursions leert die Aufstellung."
   },
+  "survival": {
+    "label": "Überlebensevent",
+    "featured": "{{hero}} kämpft immer mit und gehört nicht zum Team.",
+    "caps": "Bis zu {{characters}} Charaktere, Kriegsmaschinen erlaubt.",
+    "capsNoMows": "Bis zu {{characters}} Charaktere, keine Kriegsmaschinen.",
+    "allowed": "Erlaubte Fraktionen",
+    "unknown": "Dieses Überlebensevent ist nicht in den Spieldaten."
+  },
   "picker": {
     "label": "Einheiten hinzufügen",
     "search": "Einheiten suchen",
@@ -226,7 +235,7 @@
       "fix_other": "Mache {{count}} Kriegsmaschinen zu Flex."
     },
     "mowsNotAllowed": {
-      "reason": "Kampagnen- und Incursion-Teams haben keine Kriegsmaschine.",
+      "reason": "Dieses Team kann keine Kriegsmaschinen haben.",
       "fix": "Entferne die Kriegsmaschinen."
     },
     "campaignRequired": {
@@ -256,6 +265,24 @@
     "noSharedIncursionFaction": {
       "reason": "Diese Incursions haben keine gemeinsame Fraktion.",
       "fix": "Entferne eine Incursion."
+    },
+    "survivalModeRequired": {
+      "reason": "Ein Überlebensteam spielt nur den Horde-Modus.",
+      "fix": "Behalte nur den Horde-Modus."
+    },
+    "unknownSurvivalEvent": {
+      "reason": "Dieses Überlebensevent ist nicht in den Spieldaten.",
+      "fix": "Erstelle das Team erneut auf der Überlebensseite."
+    },
+    "survivalFeaturedCharacter": {
+      "reason": "Der vorgestellte Held des Events kämpft immer mit und gehört daher nicht zum Team.",
+      "fix": "Entferne den vorgestellten Helden."
+    },
+    "survivalTooManyCharacters": {
+      "reason": "Ein Überlebensteam kann neben dem vorgestellten Helden höchstens {{max}} Charaktere haben.",
+      "reason_unknown": "Dieses Überlebensteam hat mehr Charaktere, als sein Event erlaubt.",
+      "fix": "Entferne Charaktere, bis {{max}} übrig sind.",
+      "fix_unknown": "Entferne Charaktere."
     }
   },
   "tour": {
@@ -314,6 +341,11 @@
       "incursionRequired": "Incursion fehlt",
       "unknownIncursion": "Unbekannte Incursion",
       "noSharedIncursionFaction": "Keine gemeinsame Fraktion",
+      "survivalModeRequired": "Nur Horde",
+      "unknownSurvivalEvent": "Unbekanntes Überlebensevent",
+      "survivalFeaturedCharacter": "Vorgestellter Held im Team",
+      "survivalTooManyCharacters": "Über {{max}} Charaktere",
+      "survivalTooManyCharacters_unknown": "Zu viele Charaktere",
       "tooFewCharacters_one": "{{count}} Charakter (min. {{min}})",
       "tooFewCharacters_other": "{{count}} Charaktere (min. {{min}})"
     }

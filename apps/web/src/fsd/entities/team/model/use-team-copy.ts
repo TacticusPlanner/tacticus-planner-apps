@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { coreCount, coreMowCount } from "../lib/team-rules"
 import type { TeamRuleInput } from "../lib/team-rules"
 import { TEAM_LIMITS } from "./team-modes"
+import { useSurvivalRuleCap } from "./use-survival-caps"
 import type { TeamMode, TeamRuleCode } from "./types"
 
 /** A rule's copy keys under `teams:rules`: every code the contract defines must have one, so a
@@ -25,6 +26,10 @@ const RULE_COPY = {
   incursionRequired: { counted: false },
   unknownIncursion: { counted: false },
   noSharedIncursionFaction: { counted: false },
+  survivalModeRequired: { counted: false },
+  unknownSurvivalEvent: { counted: false },
+  survivalFeaturedCharacter: { counted: false },
+  survivalTooManyCharacters: { counted: false },
 } as const satisfies Record<TeamRuleCode, { counted: boolean }>
 
 /** How many units a counted fix asks the player to change, for this team. */
@@ -52,15 +57,23 @@ export interface TeamRuleText {
   fix: string
 }
 
-/** A rule code's translated reason and fix, never the raw code. `team` sizes counted fixes. */
+/**
+ * A rule code's translated reason and fix, never the raw code. `team` sizes counted fixes, and its
+ * Survival event gives the caps the Survival rules name (a generic line while that is unknown).
+ */
 export function useTeamRuleText() {
   const { t } = useTranslation("teams")
+  const survivalCap = useSurvivalRuleCap()
   return useCallback(
     (
       code: TeamRuleCode,
       team?: Pick<
         TeamRuleInput,
-        "characterIds" | "flexStartIndex" | "mowIds" | "mowFlexStartIndex"
+        | "characterIds"
+        | "flexStartIndex"
+        | "mowIds"
+        | "mowFlexStartIndex"
+        | "survivalEventKey"
       >
     ): TeamRuleText => {
       // `issues` are filtered to known codes when read (`withKnownIssues`); this guard keeps an
@@ -68,6 +81,15 @@ export function useTeamRuleText() {
       const counted =
         (RULE_COPY as Partial<Record<string, { counted: boolean }>>)[code]
           ?.counted ?? false
+      const max = survivalCap(code, team?.survivalEventKey)
+      const capped = { max, context: max === undefined ? "unknown" : undefined }
+      if (code === "survivalTooManyCharacters") {
+        return {
+          code,
+          reason: t(`rules.${code}.reason`, capped),
+          fix: t(`rules.${code}.fix`, capped),
+        }
+      }
       return {
         code,
         reason: t(`rules.${code}.reason`),
@@ -78,7 +100,7 @@ export function useTeamRuleText() {
           : t(`rules.${code as "noMode"}.fix`),
       }
     },
-    [t]
+    [t, survivalCap]
   )
 }
 

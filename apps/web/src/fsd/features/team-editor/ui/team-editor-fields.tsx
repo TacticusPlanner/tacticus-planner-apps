@@ -1,7 +1,12 @@
 import { useId, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { NotebookPen, TriangleAlert, X } from "lucide-react"
-import { factionIcon, mowIcon, rarityIcon } from "@workspace/game-catalog"
+import {
+  characterIcon,
+  factionIcon,
+  mowIcon,
+  rarityIcon,
+} from "@workspace/game-catalog"
 import { rarityOrder } from "@workspace/game-domain"
 import type { Rarity, UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
@@ -27,6 +32,7 @@ import {
   allowedFactions,
   sharedIncursionFactions,
   teamModeIcon,
+  useSurvivalEventName,
   useTeamModeLabel,
 } from "@/entities/team"
 import type { TeamMode, TeamRuleFacts } from "@/entities/team"
@@ -55,7 +61,7 @@ function FactionNote({
   labelKey,
 }: {
   factions: ReadonlySet<string> | undefined
-  labelKey: "campaign.allowed" | "incursion.allowed"
+  labelKey: "campaign.allowed" | "incursion.allowed" | "survival.allowed"
 }) {
   const { t } = useTranslation(["teams", "factions"])
   const labelId = useId()
@@ -381,7 +387,62 @@ export function TeamRarityCapField({
   )
 }
 
-/** A Campaign team's campaign, or an Incursion team's Incursions; nothing for other modes. */
+/**
+ * A Survival team's event, fixed for the team: its featured hero (always fights, never stored), its
+ * caps and its allowed factions.
+ */
+function TeamSurvivalField({
+  survivalEventKey,
+  facts,
+}: {
+  survivalEventKey: string
+  facts: TeamRuleFacts
+}) {
+  const { t } = useTranslation("teams")
+  const unitName = useUnitName()
+  const eventName = useSurvivalEventName()
+  const survival = facts.survivalEvents.get(survivalEventKey)
+  return (
+    <div className="flex flex-col gap-1.5" data-testid="team-survival">
+      <span className="text-sm font-medium">{t("survival.label")}</span>
+      <p className="flex items-center gap-2 text-sm">
+        {survival ? (
+          <EntityIcon
+            alt=""
+            size="portrait-sm"
+            src={characterIcon(survival.featuredCharacterId as UnitId)}
+          />
+        ) : null}
+        <span className="font-medium">{eventName(survivalEventKey)}</span>
+      </p>
+      {survival ? (
+        <>
+          <p className="text-xs text-muted-foreground">
+            {t("survival.featured", {
+              hero: unitName("Character", survival.featuredCharacterId),
+            })}{" "}
+            {survival.mowsAllowed
+              ? t("survival.caps", {
+                  characters: survival.maxCharacters,
+                })
+              : t("survival.capsNoMows", {
+                  characters: survival.maxCharacters,
+                })}
+          </p>
+          <FactionNote
+            factions={survival.allowedFactions}
+            labelKey="survival.allowed"
+          />
+        </>
+      ) : (
+        <p className="text-sm text-destructive">{t("survival.unknown")}</p>
+      )}
+    </div>
+  )
+}
+
+/** A Campaign team's campaign, an Incursion team's Incursions or a Survival team's event; nothing
+ *  for other teams. */
 export function TeamContextFields({
   draft,
   facts,
@@ -421,6 +482,14 @@ export function TeamContextFields({
     container: incursionContainer,
     onOpenChange: incursionOpenChange,
   } = useOverlayPortal()
+  if (draft.survivalEventKey) {
+    return (
+      <TeamSurvivalField
+        facts={facts}
+        survivalEventKey={draft.survivalEventKey}
+      />
+    )
+  }
   if (!campaignSelected && !incursionSelected) return null
   return (
     <div className="flex min-w-0 flex-col gap-4">
