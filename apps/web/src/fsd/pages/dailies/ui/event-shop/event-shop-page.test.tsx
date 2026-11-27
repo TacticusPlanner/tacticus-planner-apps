@@ -23,7 +23,7 @@ import {
   upcomingEvent,
 } from "./event-shop.test-fixture"
 import { EventShopPage } from "./event-shop-page"
-import { localResetTime } from "./event-shop-name"
+import { localResetTime } from "../../model/event-shop/event-shop-name"
 
 const MISSION_TEXT: Record<string, string> = {
   "tasks.TraverseHexes":

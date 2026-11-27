@@ -44,7 +44,7 @@ vi.mock("../shared/goal-resource-chips", () => ({
   },
 }))
 
-vi.mock("../shared/use-goal-resource-chips", () => ({
+vi.mock("../../model/shared/use-goal-resource-chips", () => ({
   useGoalResourceChips: () => [],
 }))
 

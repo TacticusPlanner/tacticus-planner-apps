@@ -33,7 +33,7 @@ import {
   selectedTier,
   tierAfterCompleteToggle,
   tierAfterSectorChange,
-} from "./tier-after-sector-change"
+} from "../model/tier-after-sector-change"
 
 /** One alliance's position editor: sector, farmable tier (1-3), the separate "Sector complete"
  *  checkbox (stored as tier 4), and the shards one run yields at that position. */

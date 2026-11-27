@@ -3,7 +3,7 @@ import type { TFunction } from "i18next"
 import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "@/features/goal-planning"
 import type { GoalOverviewMetrics, GoalRow } from "@/features/goal-planning"
 import { formatGoalRemainingText } from "../shared/goal-remaining-text"
-import type { XpBookFigure } from "../shared/level-requirement-display"
+import type { XpBookFigure } from "../../ui/shared/level-requirement-display"
 import {
   estimateEnergy,
   estimateOnslaughtTokens,

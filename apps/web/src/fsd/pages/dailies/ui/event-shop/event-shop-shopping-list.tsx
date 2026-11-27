@@ -30,8 +30,8 @@ import { EntityIcon, SegmentedControl } from "@/shared/ui"
 
 import { DESTRUCTIVE_TEXT, TOUCH_ICON, TOUCH_SM } from "./day-state-style"
 import { Cost } from "./event-shop-slots"
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 import { hasNode } from "@/shared/lib"
 
 type View = "upcoming" | "all"

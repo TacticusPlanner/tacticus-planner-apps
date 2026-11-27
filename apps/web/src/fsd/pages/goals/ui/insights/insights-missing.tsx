@@ -46,10 +46,10 @@ import {
   isMaterialsShow,
   MATERIALS_SHOW,
   upgradeRowsByRarity,
-} from "./insights-materials-view"
-import type { MaterialsShow } from "./insights-materials-view"
+} from "../../model/insights/insights-materials-view"
+import type { MaterialsShow } from "../../model/insights/insights-materials-view"
 import { InsightsUpgradeList } from "./insights-upgrade-list"
-import type { InsightsGoalInfo } from "./insights-view"
+import type { InsightsGoalInfo } from "../../model/insights/insights-view"
 
 const MATERIALS_SHOW_PREFERENCE = storedPreference("goals", "insightsMaterials")
 

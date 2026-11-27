@@ -6,7 +6,7 @@ import type { ShopRecommendationsViewModel } from "@/features/shops/recommendati
 import type { DailiesOutletContext } from "./dailies-layout"
 import { ShopList } from "./shops/shop-list"
 import { ShopsState } from "./shops/shops-state"
-import { TODAY_SHOPS_ID } from "./today-shop-recommendations"
+import { TODAY_SHOPS_ID } from "../model/today-shop-recommendations"
 import { TodayCard } from "./today/today-card"
 
 /**

@@ -6,7 +6,7 @@ import { Button } from "@workspace/ui/components/button"
 import type { CascadeTarget, GoalRow } from "@/features/goal-planning"
 import { CountBadge } from "@/shared/ui"
 
-import { isReachedRow } from "./goal-row-utils"
+import { isReachedRow } from "../../model/goals-board/goal-row-utils"
 import { canRemoveFromProject } from "./project-removal-flow"
 import type { ProjectRemoval } from "./project-removal-flow"
 

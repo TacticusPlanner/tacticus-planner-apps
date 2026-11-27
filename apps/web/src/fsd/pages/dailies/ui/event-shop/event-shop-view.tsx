@@ -32,8 +32,8 @@ import { ShoppingList } from "./event-shop-shopping-list"
 import { SlotSheet } from "./event-shop-slot-sheet"
 import { SlotGrid, SlotTiles } from "./event-shop-slots"
 import { useEventShopTutorial } from "./event-shop-page.tutorial"
-import type { EventShopController } from "./use-event-shop-controller"
-import { useEventShopFormat } from "./use-event-shop-format"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import { useEventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 export interface EventShopViewProps {
   controller: EventShopController

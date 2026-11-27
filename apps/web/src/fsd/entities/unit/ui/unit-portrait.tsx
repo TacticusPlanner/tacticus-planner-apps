@@ -5,7 +5,7 @@ import { EntityIcon, portraitClassName } from "@/shared/ui"
 import type { PortraitSize } from "@/shared/ui"
 
 import { rarityColor } from "./unit-styles"
-import { portraitRingClassName } from "./unit-portrait.model"
+import { portraitRingClassName } from "../model/unit-portrait.model"
 
 /**
  * A unit's round portrait at one of the style guide's portrait sizes (`portrait-sm` 40px,

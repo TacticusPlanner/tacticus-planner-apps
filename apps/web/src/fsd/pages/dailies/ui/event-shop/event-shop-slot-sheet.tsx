@@ -13,10 +13,10 @@ import {
 import { EntityIcon } from "@/shared/ui"
 
 import { CartControls, Cost, PacksSlider } from "./event-shop-slots"
-import { slotViews, useSlotLabelText } from "./slot-view"
-import type { SlotView } from "./slot-view"
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+import { slotViews, useSlotLabelText } from "../../model/event-shop/slot-view"
+import type { SlotView } from "../../model/event-shop/slot-view"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 /** The other days, from today on, on which the event sells `rewardType`. */
 function useAlsoDays(

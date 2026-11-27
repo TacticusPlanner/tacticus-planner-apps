@@ -31,7 +31,7 @@ vi.mock("@/features/daily-raids", async (importOriginal) => {
 vi.mock("./campaign-event-status", () => ({
   CampaignEventTile: () => null,
 }))
-vi.mock("./today-shop-recommendations", () => ({
+vi.mock("../model/today-shop-recommendations", () => ({
   TODAY_SHOPS_ID: "today-shops",
   useTodayShopRecommendations: () => ({ status: "no-goals" }),
 }))

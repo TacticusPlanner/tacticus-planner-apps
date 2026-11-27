@@ -12,8 +12,8 @@ import { formatEstimateDate, useDateLocale, numberFormat } from "@/shared/lib"
 import { RankBadge } from "@/shared/ui"
 
 import type { EstimateOutcome } from "@/entities/goal-farming"
-import { goalCheckpointsView } from "./goal-checkpoints-view"
-import type { CheckpointRow } from "./goal-checkpoints-view"
+import { goalCheckpointsView } from "../../model/shared/goal-checkpoints-view"
+import type { CheckpointRow } from "../../model/shared/goal-checkpoints-view"
 
 function CheckpointLabel({ row }: { row: CheckpointRow }) {
   const { t } = useTranslation()

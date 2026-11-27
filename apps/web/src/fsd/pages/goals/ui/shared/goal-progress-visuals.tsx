@@ -30,12 +30,12 @@ import type { ResourceNeed } from "@/entities/goal-farming"
 import type { GoalProgress, GoalTargetPreview } from "@/features/goal-planning"
 import { numberFormat } from "@/shared/lib"
 import { reachableCeilingLabel } from "./ceiling-marker"
-import type { GoalAbilityIds } from "./goal-ability-ids"
+import type { GoalAbilityIds } from "../../model/shared/goal-ability-ids"
 import {
   formatGenericRemainingText,
   formatGoalRemainingText,
   formatProgressTooltipText,
-} from "./goal-remaining-text"
+} from "../../model/shared/goal-remaining-text"
 import { StackedProgressBar } from "./stacked-progress-bar"
 import { UpgradeTargetMaterials } from "./upgrade-target-materials"
 

@@ -25,7 +25,7 @@ import type {
 } from "../model/types"
 import { EquipmentSlot, UnownedDetails } from "./unit-parts"
 import { outlinedText, rarityColor } from "./unit-styles"
-import { usesMythicShards, useUnitTileLabel } from "./unit-tile-label"
+import { usesMythicShards, useUnitTileLabel } from "../model/unit-tile-label"
 
 /**
  * One unit of the player's collection as a game-style card: a round portrait ringed in its rarity

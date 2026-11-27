@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
 
-import type { GuildRaidResourcesView } from "../guild-raid-status-view-model"
+import type { GuildRaidResourcesView } from "../../../model/guild-raids/guild-raid-status-view-model"
 import { GuildRaidResourcesCard } from "./guild-raid-resources-card"
 
 vi.mock("react-i18next", () => ({

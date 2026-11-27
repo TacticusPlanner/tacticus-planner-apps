@@ -5,7 +5,7 @@ import { formatEventCountdown } from "@/shared/lib"
 import { CountdownChip, EntityIcon } from "@/shared/ui"
 
 import { GlanceTile } from "./today/glance-tile"
-import { useCampaignEventStatus } from "./use-campaign-event-status"
+import { useCampaignEventStatus } from "../model/use-campaign-event-status"
 
 /**
  * Which campaign event Today detected and when it ends: one localized line, then for a confirmed end

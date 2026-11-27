@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { render, screen, within } from "@/test/render"
 import { TeamStatusChips } from "./team-status-chips"
-import type { TeamStatusItem } from "./use-team-status"
+import type { TeamStatusItem } from "../../model/teams/use-team-status"
 
 const items: TeamStatusItem[] = [
   { key: "cap", kind: "cap", text: "Legendary cap" },

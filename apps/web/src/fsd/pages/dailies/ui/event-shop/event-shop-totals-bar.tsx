@@ -4,8 +4,8 @@ import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, FLOATING_BAR_SURFACE } from "@/shared/ui"
 
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 /**
  * The sticky bottom control: on tablet the "Shopping list" button that opens the drawer, on phone the

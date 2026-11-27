@@ -36,7 +36,7 @@ export {
   homeScreenEventRaidRule,
 } from "./model/home-screen-event-raid-rule"
 export { EventSwitcher } from "./ui/home-screen-event/event-switcher"
-export { useHomeScreenEventName } from "./ui/home-screen-event/use-home-screen-event-name"
+export { useHomeScreenEventName } from "./model/home-screen-event/use-home-screen-event-name"
 export { EventPreviewBanner } from "./ui/home-screen-event/event-preview-banner"
 export { EventStatusLine } from "./ui/home-screen-event/event-status-line"
 export { EventFarmSection } from "./ui/home-screen-event/event-farm-section"
@@ -97,7 +97,7 @@ export { HreCampaignOutlook } from "./ui/hre-missions/hre-raids-extras"
 export {
   type HreRaidsRequest,
   useHreRaids,
-} from "./ui/hre-missions/use-hre-raids"
+} from "./model/hre-missions/use-hre-raids"
 export { BattleProgressDialog } from "./ui/battle-progress-dialog"
 export { EventTrackMedals } from "./ui/event-track-medals"
 export { useSavedBattleProgress } from "./model/use-saved-battle-progress"

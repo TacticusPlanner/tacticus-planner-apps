@@ -13,14 +13,18 @@ import {
   useCampaignBattleDialog,
 } from "@/widgets/battle-preview"
 
-import { useTodayShopRecommendations } from "../today-shop-recommendations"
+import { useTodayShopRecommendations } from "../../model/today-shop-recommendations"
 import { TodayShops } from "../today-shops"
-import { shopsGlanceOf } from "./shops-glance"
+import { shopsGlanceOf } from "../../model/today/shops-glance"
 import { TodayBonusCard } from "./today-bonus-card"
 import { TodayGlance } from "./today-glance"
 import { TodayOnslaughtCard } from "./today-onslaught-card"
 import { TodayPlanCard } from "./today-plan-card"
-import { BONUS_LIMIT, BONUS_STEP, buildTodayView } from "./today-view-model"
+import {
+  BONUS_LIMIT,
+  BONUS_STEP,
+  buildTodayView,
+} from "../../model/today/today-view-model"
 import { TodaysAttemptsCard } from "./todays-attempts-card"
 
 /**

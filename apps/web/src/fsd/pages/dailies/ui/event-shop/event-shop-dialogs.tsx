@@ -19,8 +19,8 @@ import {
 import type {
   EventShopController,
   EventShopDialog,
-} from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+} from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 /** The page's one open dialog: draft alliance, replace option, Bought some (Needs review) or Clear week. */
 export function EventShopDialogs({

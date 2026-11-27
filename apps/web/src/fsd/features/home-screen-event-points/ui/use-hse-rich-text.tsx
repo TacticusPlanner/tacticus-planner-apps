@@ -5,7 +5,7 @@ import type { HseText } from "@/entities/home-screen-event"
 import { EntityIcon } from "@/shared/ui"
 
 import { hseTextIcon } from "../lib/hse-text-icon"
-import { renderHseText, useHseTranslate } from "./use-hse-text"
+import { renderHseText, useHseTranslate } from "../model/use-hse-text"
 
 // Private-use characters around a label's index mark where an icon-led label goes.
 const OPEN = ""

@@ -5,14 +5,14 @@ import type { UpgradeId } from "@workspace/game-domain"
 
 import type { GoalDetail } from "@/entities/goal"
 import { estimateGoal } from "@/entities/goal-farming"
-import type { useGoalCatalog } from "../../model/shared/use-goal-catalog"
+import type { useGoalCatalog } from "../shared/use-goal-catalog"
 
-import { goalEditMaterialNeeds } from "../../model/goal-edit/goal-edit-material-needs"
-import type { GoalEditLiveProgress } from "../../model/goal-edit/goal-edit-material-needs"
-import type { useGoalEditAcquisition } from "../../model/goal-edit/use-goal-edit-acquisition"
-import { useProgressionPreview } from "../../model/goal-creation-form/use-progression-preview"
-import type { GoalTargetDraft } from "../../model/target-edit/goal-target-edit"
-import type { ResourcePreview } from "../goal-card/card-parts"
+import { goalEditMaterialNeeds } from "./goal-edit-material-needs"
+import type { GoalEditLiveProgress } from "./goal-edit-material-needs"
+import type { useGoalEditAcquisition } from "./use-goal-edit-acquisition"
+import { useProgressionPreview } from "../goal-creation-form/use-progression-preview"
+import type { GoalTargetDraft } from "../target-edit/goal-target-edit"
+import type { ResourcePreview } from "../../ui/goal-card/card-parts"
 
 /**
  * The previews of the goal's card, from its start to the draft target, computed as the create preview

@@ -24,7 +24,7 @@ import { InsightsHoldingBack } from "./insights-holding-back"
 import { InsightsMissing } from "./insights-missing"
 import { InsightsOutlook } from "./insights-outlook"
 import { useInsightsTutorial } from "./insights-page.tutorial"
-import type { InsightsGoalInfo } from "./insights-view"
+import type { InsightsGoalInfo } from "../../model/insights/insights-view"
 
 /** Which nodes "Best campaigns/events to farm" rank over. */
 const INSIGHTS_LOCATIONS = ["reached", "all"] as const

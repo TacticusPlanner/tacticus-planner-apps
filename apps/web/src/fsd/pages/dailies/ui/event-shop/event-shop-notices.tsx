@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
 
-import type { EventShopController } from "./use-event-shop-controller"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
 
 /** The cart's state notices: loading, load failure, save failure, reload after a conflict, removed
  *  entries; and the sync notice without player data. */

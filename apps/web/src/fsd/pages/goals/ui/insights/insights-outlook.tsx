@@ -16,8 +16,12 @@ import type {
 } from "@/features/goal-planning"
 
 import { GoalLink } from "./insights-goal-link"
-import { criticalGoals, daysUntil, useGoalLabel } from "./insights-view"
-import type { InsightsGoalInfo } from "./insights-view"
+import {
+  criticalGoals,
+  daysUntil,
+  useGoalLabel,
+} from "../../model/insights/insights-view"
+import type { InsightsGoalInfo } from "../../model/insights/insights-view"
 
 /** The Insights headline: when the plan is done, at what energy, which goals set that date, and
  *  which goals the date leaves out and why. */

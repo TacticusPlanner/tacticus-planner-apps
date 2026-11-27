@@ -4,7 +4,7 @@ import { render, screen, within } from "@/test/render"
 import { ready } from "@/test/fixtures/daily-raids"
 
 import { TodayGlance } from "./today-glance"
-import { buildTodayView } from "./today-view-model"
+import { buildTodayView } from "../../model/today/today-view-model"
 
 // The campaign event tile reads its own data; its behaviour has its own tests.
 vi.mock("../campaign-event-status", () => ({

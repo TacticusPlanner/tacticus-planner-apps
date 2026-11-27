@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@/test/render"
 
 import type { DailiesOutletContext } from "./dailies-layout"
-import { useTodayShopRecommendations } from "./today-shop-recommendations"
+import { useTodayShopRecommendations } from "../model/today-shop-recommendations"
 import { TodayShops } from "./today-shops"
 import type {
   ShopRecommendationSectionView,

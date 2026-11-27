@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import type { GuildRaidPrimeView } from "../guild-raid-status-view-model"
+import type { GuildRaidPrimeView } from "../../../model/guild-raids/guild-raid-status-view-model"
 import { GuildRaidPrimeCard } from "./guild-raid-prime-card"
 
 vi.mock("react-i18next", () => ({

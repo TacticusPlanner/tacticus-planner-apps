@@ -12,7 +12,7 @@ import type {
 } from "@/features/daily-raids"
 
 import { TodayCard } from "./today-card"
-import type { TodayView } from "./today-view-model"
+import type { TodayView } from "../../model/today/today-view-model"
 
 // Resource cards inside a card read as items one step darker than the card around them.
 export const INSET_CARDS_CLASS_NAME = "**:data-[slot=card]:bg-background"

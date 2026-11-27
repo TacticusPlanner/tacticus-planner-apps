@@ -9,8 +9,11 @@ import type { Rarity } from "@workspace/game-domain"
 
 import { useEventShopCoverage } from "../../model/use-event-shop-coverage"
 import type { DailiesOutletContext } from "../dailies-layout"
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat, RewardText } from "./use-event-shop-format"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type {
+  EventShopFormat,
+  RewardText,
+} from "../../model/event-shop/use-event-shop-format"
 
 /** A coverage resource's label and icon, through the reward that sells it. */
 function useResourceText(format: EventShopFormat) {

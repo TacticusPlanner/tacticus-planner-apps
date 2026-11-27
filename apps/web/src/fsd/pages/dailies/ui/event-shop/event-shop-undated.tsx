@@ -7,7 +7,7 @@ import { EntityIcon, PageToolbar } from "@/shared/ui"
 
 import { EventShopPicker } from "./event-shop-picker"
 import type { EventShopForm } from "../../model/event-shop-route"
-import { useEventShopFormat } from "./use-event-shop-format"
+import { useEventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 /**
  * An event shop the game data already has but whose start date is not announced yet: the picker in

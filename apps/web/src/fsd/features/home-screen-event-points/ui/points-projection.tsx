@@ -27,7 +27,7 @@ import {
   TokensCell,
 } from "./points-projection-inputs"
 import { hseModeIcon } from "../lib/hse-mode-icon"
-import { useModeName } from "./use-mode-name"
+import { useModeName } from "../model/use-mode-name"
 
 type ReadyProjection = Extract<HseProjectionView, { status: "ready" }>
 

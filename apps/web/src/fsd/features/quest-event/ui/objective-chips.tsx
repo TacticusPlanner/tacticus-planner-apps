@@ -9,8 +9,8 @@ import {
   objectiveIcon,
 } from "../model/quest-objectives"
 import type { QuestObjectiveBadge } from "../model/quest-team"
-import { useObjectiveWording } from "./use-objective-wording"
-import type { Objective } from "./use-objective-wording"
+import { useObjectiveWording } from "../model/use-objective-wording"
+import type { Objective } from "../model/use-objective-wording"
 
 /**
  * A battle's bonus objectives as chips with their score, each with the objective's icon as Legendary

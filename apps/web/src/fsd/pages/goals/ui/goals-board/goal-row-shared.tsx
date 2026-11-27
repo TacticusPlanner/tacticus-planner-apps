@@ -16,7 +16,7 @@ import { goalRaidDuration } from "@/entities/goal-farming"
 import type { EstimateOutcome } from "@/entities/goal-farming"
 import type { GoalRow } from "@/features/goal-planning"
 import { useGoalCatalog } from "@/features/goal-planning"
-import { isInFlightStatus } from "./goal-row-utils"
+import { isInFlightStatus } from "../../model/goals-board/goal-row-utils"
 
 /** A goal's days of raids once it starts getting energy (`goalRaidDuration`): the table's Duration
  *  column, and an hourglass on the card's date line, whose tooltip says what the figure means. A goal

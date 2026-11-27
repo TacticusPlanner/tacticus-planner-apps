@@ -13,9 +13,12 @@ import {
   drawsPotentialBar,
   isReachedRow,
   REACHED_ROW_CLASS,
-} from "./goal-row-utils"
-import type { GoalsListProps } from "./goal-row-utils"
-import { goalFitOffset, SEASON_FIT_CARD_ACCENT } from "./season-fit-copy"
+} from "../../model/goals-board/goal-row-utils"
+import type { GoalsListProps } from "../../model/goals-board/goal-row-utils"
+import {
+  goalFitOffset,
+  SEASON_FIT_CARD_ACCENT,
+} from "../../model/goals-board/season-fit-copy"
 import { SeasonCutoffItem } from "./season-fit-ui"
 
 const EMPTY_SELECTION: ReadonlySet<string> = new Set()

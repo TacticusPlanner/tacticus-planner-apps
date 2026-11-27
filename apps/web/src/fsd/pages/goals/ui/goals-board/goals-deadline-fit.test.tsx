@@ -18,7 +18,7 @@ import type {
 } from "@/features/goal-planning"
 import { DeadlineFitHeader } from "./deadline-fit-header"
 import { GoalsList } from "./goals-list"
-import type { DeadlineFitView } from "./season-fit-copy"
+import type { DeadlineFitView } from "../../model/goals-board/season-fit-copy"
 
 const stubActions = {
   setStatus: vi.fn(),

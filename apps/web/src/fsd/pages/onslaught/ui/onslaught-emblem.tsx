@@ -13,7 +13,7 @@ import {
   formatReward,
   rewardProgression,
   useOnslaughtPositionLabel,
-} from "./onslaught-position"
+} from "../model/onslaught-position"
 
 export function OnslaughtEmblem({
   sector,

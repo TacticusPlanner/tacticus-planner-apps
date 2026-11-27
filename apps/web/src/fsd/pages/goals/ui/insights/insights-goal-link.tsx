@@ -8,8 +8,8 @@ import { goalTypeIcon } from "@/entities/goal"
 import type { GoalKind } from "@/entities/goal"
 import { EntityIcon } from "@/shared/ui"
 
-import { goalHref } from "./insights-view"
-import type { InsightsGoalInfo } from "./insights-view"
+import { goalHref } from "../../model/insights/insights-view"
+import type { InsightsGoalInfo } from "../../model/insights/insights-view"
 
 /** A goal shown as its unit's portrait, its priority ("#3"), the unit's name and the goal type's icon (the type is
  *  spelled out for screen readers), opening its edit dialog on the Goals list. `row` sizes the

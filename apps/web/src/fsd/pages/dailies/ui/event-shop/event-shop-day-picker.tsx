@@ -14,8 +14,8 @@ import {
 import { EntityIcon } from "@/shared/ui"
 
 import { STATE_DOT, STATE_RING } from "./day-state-style"
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 function useWeek(
   controller: EventShopController,

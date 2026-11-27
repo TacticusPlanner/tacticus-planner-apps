@@ -15,7 +15,7 @@ import type { HreShardSource } from "@/entities/hre-mission"
 import { formatDateRange, formatShortDate } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
-import { hreSourceCopy } from "./hre-source-copy"
+import { hreSourceCopy } from "../../model/shared/hre-source-copy"
 
 /**
  * Shown beside a goal's status instead of "Blocked" when the shards it can't farm come from the

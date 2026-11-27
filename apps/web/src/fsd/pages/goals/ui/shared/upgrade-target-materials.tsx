@@ -4,7 +4,7 @@ import { Link2 } from "lucide-react"
 import { HintLines, HintTrigger, UpgradeIcon } from "@/shared/ui"
 
 import type { GoalProgress } from "@/features/goal-planning"
-import { upgradeMaterialLabel } from "./upgrade-target-material-label"
+import { upgradeMaterialLabel } from "../../model/shared/upgrade-target-material-label"
 
 /** Desktop rows are a fixed height, so a long material list (a whole rank range) is cut here and
  *  the rest folded into a "+N" chip. */

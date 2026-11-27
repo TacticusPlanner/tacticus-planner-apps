@@ -13,16 +13,16 @@ import type { GoalMenuMoves } from "@/features/goal-planning"
 import { HintTrigger } from "@/shared/ui"
 import type { SortableRenderProps } from "@/shared/ui"
 import { GoalResourceChipList } from "../shared/goal-resource-chips"
-import { useGoalResourceChips } from "../shared/use-goal-resource-chips"
+import { useGoalResourceChips } from "../../model/shared/use-goal-resource-chips"
 import type {
   GoalResourceChip,
   GoalResourceChipKind,
-} from "../shared/use-goal-resource-chips"
+} from "../../model/shared/use-goal-resource-chips"
 import {
   GoalProgressDisplay,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
-import { goalAbilityIds } from "../shared/goal-ability-ids"
+import { goalAbilityIds } from "../../model/shared/goal-ability-ids"
 import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
@@ -31,7 +31,7 @@ import { BlockedIndicator, StatusBadge } from "../shared/status-badge"
 import { HreSourceIndicator } from "../shared/hre-source-indicator"
 import { GoalDragHandle } from "./goal-drag-handle"
 import { GoalRowActions } from "./goal-row-actions"
-import { deriveGoalRowData } from "./goal-row-data"
+import { deriveGoalRowData } from "../../model/goals-board/goal-row-data"
 import {
   EstimateCell,
   GoalNameLink,
@@ -43,8 +43,8 @@ import {
   sameRowSlice,
   stopRowNavigation,
   toggleGoalStatus,
-} from "./goal-row-utils"
-import type { GoalsListProps } from "./goal-row-utils"
+} from "../../model/goals-board/goal-row-utils"
+import type { GoalsListProps } from "../../model/goals-board/goal-row-utils"
 import { SeasonFitLabel } from "./season-fit-ui"
 
 /** Chips shown at the right end of the target row, as V1's estimate chips were. */

@@ -11,11 +11,11 @@ import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, HintLines, HintTrigger } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
-import { useGoalResourceChips } from "./use-goal-resource-chips"
+import { useGoalResourceChips } from "../../model/shared/use-goal-resource-chips"
 import type {
   GoalResourceChip,
   GoalResourceChipsInput,
-} from "./use-goal-resource-chips"
+} from "../../model/shared/use-goal-resource-chips"
 
 /** Icon chips for what a goal still needs (`goal-remaining-resources`). A goal card that splits them
  *  across rows calls `useGoalResourceChips` itself and renders each row with `GoalResourceChipList`. */

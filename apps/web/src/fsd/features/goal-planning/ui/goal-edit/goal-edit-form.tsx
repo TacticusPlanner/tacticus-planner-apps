@@ -39,7 +39,7 @@ import { MythicMaterialSourceField } from "../create-goal/mythic-material-source
 import { GoalEditTarget } from "./goal-edit-target"
 import { GoalEditCard } from "./goal-edit-card"
 import { GoalLinksField } from "../shared/goal-links-field"
-import { useGoalEditEstimate } from "./use-goal-edit-estimate"
+import { useGoalEditEstimate } from "../../model/goal-edit/use-goal-edit-estimate"
 import { usePlayerChunk } from "@/shared/local-data"
 import { chunkOrUndefined, readyData } from "../../model/shared/read-data"
 import { abilityCapForProgression, isProgression } from "@workspace/game-domain"

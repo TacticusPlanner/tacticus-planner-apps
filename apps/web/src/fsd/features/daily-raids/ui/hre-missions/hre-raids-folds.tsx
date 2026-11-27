@@ -17,7 +17,10 @@ import { RaidState } from "../raid-state"
 import { HreHandBattles } from "./hre-hand-battles"
 import { HreNoDropRaids, RaidRows, RowDrop } from "./hre-raids-extras"
 import type { RaidRowsView } from "./hre-raids-extras"
-import type { HreRaids, HreRaidsRequest } from "./use-hre-raids"
+import type {
+  HreRaids,
+  HreRaidsRequest,
+} from "../../model/hre-missions/use-hre-raids"
 
 type Row = MissionRaidPlan["rows"][number]
 

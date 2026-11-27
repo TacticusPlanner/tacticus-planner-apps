@@ -37,7 +37,7 @@ import {
   formatReward,
   rewardProgression,
   useOnslaughtPositionLabel,
-} from "./onslaught-position"
+} from "../model/onslaught-position"
 
 type Message = { tone: "success" | "info" | "error"; key: MessageKey }
 type MessageKey =

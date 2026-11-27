@@ -17,11 +17,11 @@ import { DetailsOverlay } from "@/shared/ui"
 import {
   countActivatedModifiers,
   nextModifierToActivate,
-} from "../guild-raid-modifier-selection"
+} from "../../../model/guild-raids/guild-raid-modifier-selection"
 import type {
   GuildRaidModifierView,
   GuildRaidPrimeView,
-} from "../guild-raid-status-view-model"
+} from "../../../model/guild-raids/guild-raid-status-view-model"
 
 function ModifierRow({ modifier }: { modifier: GuildRaidModifierView }) {
   const { t } = useTranslation("dailies")

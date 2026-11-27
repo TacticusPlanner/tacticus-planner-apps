@@ -15,7 +15,7 @@ import {
   GoalProgressDisplay,
   GoalTargetDisplay,
 } from "../shared/goal-progress-visuals"
-import { goalAbilityIds } from "../shared/goal-ability-ids"
+import { goalAbilityIds } from "../../model/shared/goal-ability-ids"
 import { CoveredByNote } from "../shared/covered-by-note"
 import { GoalCheckpoints } from "../shared/goal-checkpoints"
 import { LevelRequirementLine } from "../shared/level-requirement-display"
@@ -32,14 +32,14 @@ import {
   GoalSelectCheckbox,
   ReachedDash,
 } from "./goal-row-shared"
-import { deriveGoalRowData } from "./goal-row-data"
+import { deriveGoalRowData } from "../../model/goals-board/goal-row-data"
 import {
   isInFlightStatus,
   sameRowSlice,
   stopRowNavigation,
   toggleGoalStatus,
-} from "./goal-row-utils"
-import type { GoalsListProps } from "./goal-row-utils"
+} from "../../model/goals-board/goal-row-utils"
+import type { GoalsListProps } from "../../model/goals-board/goal-row-utils"
 
 type GoalRowCellsProps = Pick<
   GoalsListProps,

@@ -71,8 +71,8 @@ import { TeamsTable } from "./teams-table"
 import { TeamsToolbar } from "./teams-toolbar"
 import type { TeamsQuickFilters } from "./teams-toolbar"
 import { useTeamsTutorial } from "./teams-page.tutorial"
-import { useTeamStatus } from "./use-team-status"
-import type { TeamStatusItem } from "./use-team-status"
+import { useTeamStatus } from "../../model/teams/use-team-status"
+import type { TeamStatusItem } from "../../model/teams/use-team-status"
 
 /** Per device, like the app's other quick filters (#638). */
 const TEAMS_MODE_STORAGE_KEY = storedPreference("teams", "mode")

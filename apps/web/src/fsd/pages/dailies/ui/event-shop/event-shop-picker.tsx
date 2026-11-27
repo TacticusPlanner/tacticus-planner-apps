@@ -10,8 +10,11 @@ import type { GameCatalogEventShopRecord } from "@workspace/game-catalog"
 
 import { EventInstanceSwitcher } from "@/shared/ui"
 
-import { eventShopStatusLabel, useEventShopName } from "./event-shop-name"
-import type { EventShopFormat } from "./use-event-shop-format"
+import {
+  eventShopStatusLabel,
+  useEventShopName,
+} from "../../model/event-shop/event-shop-name"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 type EventShopInstance = {
   key: string

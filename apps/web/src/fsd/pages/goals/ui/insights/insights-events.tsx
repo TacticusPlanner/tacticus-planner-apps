@@ -21,8 +21,8 @@ import { energyIconUrl, EntityIcon } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
 
 import { GoalLink } from "./insights-goal-link"
-import { useGoalLabel } from "./insights-view"
-import type { InsightsGoalInfo } from "./insights-view"
+import { useGoalLabel } from "../../model/insights/insights-view"
+import type { InsightsGoalInfo } from "../../model/insights/insights-view"
 
 /** Energy to farm one of the needed items there, at the campaign's cheapest node for each. */
 const energyPerItem = (spot: PlanFarmingSpot) =>

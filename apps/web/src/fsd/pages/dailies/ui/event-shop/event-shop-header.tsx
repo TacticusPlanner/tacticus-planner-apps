@@ -9,11 +9,14 @@ import { Badge } from "@workspace/ui/components/badge"
 import { formatRelativeTime } from "@/shared/lib"
 import { EntityIcon, PageToolbar } from "@/shared/ui"
 
-import { eventShopStatusLabel, localResetTime } from "./event-shop-name"
+import {
+  eventShopStatusLabel,
+  localResetTime,
+} from "../../model/event-shop/event-shop-name"
 import { EventShopPicker } from "./event-shop-picker"
 import { EventShopSearchField } from "./event-shop-search"
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 /**
  * The Event shop's page toolbar (ui-style-guide rule 2). Find: the event picker, then the shop

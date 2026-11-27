@@ -2,7 +2,7 @@ import { render, screen } from "@/test/render"
 import { MemoryRouter } from "react-router"
 import { describe, expect, it, vi } from "vitest"
 
-import type { GuildRaidsViewModel } from "../guild-raid-status-view-model"
+import type { GuildRaidsViewModel } from "../../../model/guild-raids/guild-raid-status-view-model"
 import { GuildRaidStatusRegion } from "./guild-raid-status-region"
 
 vi.mock("react-i18next", () => ({

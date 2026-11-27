@@ -29,12 +29,15 @@ import {
   drawsPotentialBar,
   isReachedRow,
   REACHED_ROW_CLASS,
-} from "./goal-row-utils"
-import type { GoalsListProps } from "./goal-row-utils"
+} from "../../model/goals-board/goal-row-utils"
+import type { GoalsListProps } from "../../model/goals-board/goal-row-utils"
 import { GoalsReorderCards } from "./goals-reorder-cards"
-import { goalFitOffset, SEASON_FIT_ROW_ACCENT } from "./season-fit-copy"
+import {
+  goalFitOffset,
+  SEASON_FIT_ROW_ACCENT,
+} from "../../model/goals-board/season-fit-copy"
 import { SeasonCutoffRow } from "./season-fit-ui"
-import type { GoalsView } from "./use-goals-view"
+import type { GoalsView } from "../../model/goals-board/use-goals-view"
 
 /** A tab's goal rows as the goal cards or the table (goal-list-layout), by this device's stored Goals
  * view. Mobile reorder mode always shows its collapsed cards. The row itself opens nothing;

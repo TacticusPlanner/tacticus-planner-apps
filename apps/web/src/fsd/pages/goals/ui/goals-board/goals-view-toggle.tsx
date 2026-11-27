@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { afterNextPaint } from "@/shared/lib"
 import { SegmentedControl } from "@/shared/ui"
 
-import type { GoalsView } from "./use-goals-view"
+import type { GoalsView } from "../../model/goals-board/use-goals-view"
 
 const viewOptions: {
   value: GoalsView
