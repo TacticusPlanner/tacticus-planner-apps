@@ -27,7 +27,7 @@ export function ProjectColorPicker({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <SelectionGroup
-        aria-label={t("goals.project.color")}
+        aria-label={t("goals.project.presetColors")}
         className="flex flex-wrap items-center gap-2"
         // "" is the picked swatch pressed again: it stays picked.
         onValueChange={(preset) => {
