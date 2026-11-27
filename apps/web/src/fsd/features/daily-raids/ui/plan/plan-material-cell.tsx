@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next"
 import type { BattleId } from "@workspace/game-domain"
 import { Badge } from "@workspace/ui/components/badge"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { DetailsOverlay } from "@/shared/ui"
 
@@ -50,19 +51,18 @@ export function PlanMaterialCell({
       title={label}
       tooltip={label}
       trigger={
-        <button
+        <Pressable
           aria-label={t("plan.cell.label", {
             material: label,
             owned: cell.owned,
             target: cell.target,
           })}
           className={cn(
-            "flex min-w-0 flex-col items-center gap-1 rounded-lg border bg-card p-1.5 text-center transition-opacity focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+            "flex min-w-0 flex-col items-center gap-1 rounded-lg border bg-card p-1.5 text-center transition-opacity",
             dimmed && "opacity-30"
           )}
           data-dimmed={dimmed || undefined}
           data-testid={testId}
-          type="button"
         >
           <ResourceIcon label={label} visual={visual} />
           <Badge
@@ -86,7 +86,7 @@ export function PlanMaterialCell({
               </span>
             ) : null}
           </span>
-        </button>
+        </Pressable>
       }
     >
       <WithLockedNodes resourceId={cell.resourceId} source={source}>

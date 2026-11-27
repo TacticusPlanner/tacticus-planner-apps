@@ -9,6 +9,8 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
+import { Button } from "@workspace/ui/components/button"
 
 import { EntityIcon, RankBadge } from "@/shared/ui"
 import { resolveGuildRaidLineupFocus } from "@/entities/guild-raid-meta"
@@ -135,14 +137,13 @@ function SlotTile({
   const note = <SlotNote slot={slot} />
 
   return (
-    <button
-      type="button"
+    <Pressable
       data-testid={`guild-raid-exact-meta-slot-${index}`}
       aria-expanded={expanded}
       aria-controls={panelId}
       onClick={onToggle}
       className={cn(
-        "rounded-xl border bg-card interactive-surface text-left",
+        "rounded-xl border bg-card text-left",
         expanded && "border-primary ring-1 ring-primary",
         empty && "border-dashed",
         isMobile
@@ -171,7 +172,7 @@ function SlotTile({
       ) : (
         <ReadinessBar readiness={slot.readiness} />
       )}
-    </button>
+    </Pressable>
   )
 }
 
@@ -325,13 +326,13 @@ function FocusCallout({
       <ul className="flex flex-col gap-1">
         {lines.map((line) => (
           <li key={line.index}>
-            <button
-              type="button"
+            <Button
+              variant="link"
               onClick={() => onSelect(line.index)}
-              className="text-left text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+              className="h-auto rounded-sm p-0 text-left text-xs font-normal whitespace-normal text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
             >
               {line.text}
-            </button>
+            </Button>
           </li>
         ))}
       </ul>

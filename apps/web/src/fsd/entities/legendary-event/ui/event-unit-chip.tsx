@@ -17,6 +17,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { useLongPress } from "@workspace/ui/hooks/use-long-press"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, portraitClassName } from "@/shared/ui"
 
@@ -313,11 +314,12 @@ export function EventUnitChip({
   // callout over ours.
   const pressStyle = { WebkitTouchCallout: "none" } as CSSProperties
   const trigger = action ? (
-    <button
+    <Pressable
+      variant="art"
       {...longPress}
       aria-describedby={hintId}
       className={cn(
-        "group relative block rounded-md select-none hover:brightness-110 focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
+        "group relative block rounded-md select-none hover:brightness-110",
         fill ? "w-full" : "w-auto"
       )}
       data-testid={action.testId}
@@ -325,7 +327,6 @@ export function EventUnitChip({
       ref={anchorRef as RefObject<HTMLButtonElement>}
       style={pressStyle}
       tabIndex={action.tabIndex}
-      type="button"
     >
       {sized}
       {/* What a click does, shown where a pointer or keyboard focus can see it. */}
@@ -339,15 +340,15 @@ export function EventUnitChip({
       <span hidden id={hintId}>
         {action.hint}
       </span>
-    </button>
+    </Pressable>
   ) : focusable ? (
     // Its only action is the details: a click or Enter opens the panel a long-press opens.
-    <button
+    <Pressable
       {...longPress}
       aria-expanded={detailsOpen}
       aria-haspopup="dialog"
       className={cn(
-        "relative flex min-w-0 rounded-md select-none focus-visible:ring-3 focus-visible:ring-ring focus-visible:outline-none",
+        "relative flex min-w-0 rounded-md select-none",
         // A 48px hit area for touch on the ~48px chip, reaching into the gap between rows.
         "pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-1",
         fill && "w-full"
@@ -355,10 +356,9 @@ export function EventUnitChip({
       onClick={() => setDetailsOpen(true)}
       ref={anchorRef as RefObject<HTMLButtonElement>}
       style={pressStyle}
-      type="button"
     >
       {sized}
-    </button>
+    </Pressable>
   ) : (
     <span
       {...longPress}

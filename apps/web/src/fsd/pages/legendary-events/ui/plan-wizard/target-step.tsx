@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type {
   AscensionStep,
@@ -207,18 +208,16 @@ export function TargetStep({
             {runs.map((run, at) => {
               const checked = run === horizon
               return (
-                <button
+                <Pressable
                   aria-checked={checked}
                   ref={(element) => {
                     if (element) runButtons.current.set(run, element)
                     else runButtons.current.delete(run)
                   }}
                   className={cn(
-                    "flex min-h-11 flex-col items-start rounded-xl border px-3 py-2 text-left transition-colors",
-                    "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-                    checked
-                      ? "border-primary bg-primary/10"
-                      : "interactive-surface"
+                    "flex min-h-11 flex-col items-start rounded-xl border px-3 py-2 text-left",
+                    "",
+                    checked ? "border-primary bg-primary/10" : ""
                   )}
                   data-testid={`plan-wizard-horizon-${run}`}
                   key={run}
@@ -226,7 +225,6 @@ export function TargetStep({
                   onKeyDown={(event) => onRunKey(event, at)}
                   role="radio"
                   tabIndex={checked ? 0 : -1}
-                  type="button"
                 >
                   <span className="font-medium">
                     {t("planWizard.target.horizonRun", { run })}
@@ -234,7 +232,7 @@ export function TargetStep({
                   <span className="text-xs text-muted-foreground">
                     {runLabel(run)}
                   </span>
-                </button>
+                </Pressable>
               )
             })}
           </div>
@@ -375,13 +373,12 @@ function Disclosure({
   }
   return (
     <div className="flex flex-col rounded-xl border" data-testid={testId}>
-      <button
+      <Pressable
         aria-controls={regionId}
         aria-expanded={open}
         className="flex min-h-11 w-full items-center gap-3 p-3 text-left"
         data-testid={`${testId}-toggle`}
         onClick={toggle}
-        type="button"
       >
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="font-semibold">{title}</span>
@@ -401,7 +398,7 @@ function Disclosure({
             open && "rotate-180"
           )}
         />
-      </button>
+      </Pressable>
       {open ? (
         <div className="flex flex-col gap-3 px-3 pb-3" id={regionId}>
           {children}

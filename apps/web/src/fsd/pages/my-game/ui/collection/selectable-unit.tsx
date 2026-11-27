@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { Check } from "lucide-react"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { UnitTileUnit } from "@/entities/unit"
 
@@ -45,16 +46,16 @@ export function SelectableUnit({
   return (
     <div className="relative">
       <div inert>{children}</div>
-      <button
+      <Pressable
+        variant="art"
         aria-label={t("myGame.collection.select.unit", { name: unit.name })}
         aria-pressed={selected}
         className={cn(
-          "absolute inset-0 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "absolute inset-0 rounded-md",
           selected && "bg-primary/10 ring-2 ring-primary"
         )}
         data-testid="collection-select-unit"
         onClick={() => selection.toggle(unit)}
-        type="button"
       >
         <span
           aria-hidden
@@ -65,7 +66,7 @@ export function SelectableUnit({
         >
           {selected ? <Check className="size-icon-xs" /> : null}
         </span>
-      </button>
+      </Pressable>
     </div>
   )
 }

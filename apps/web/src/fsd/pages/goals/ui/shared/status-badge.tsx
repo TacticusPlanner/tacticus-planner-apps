@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { GoalStatus } from "@/entities/goal"
 import { afterNextPaint, hasNode } from "@/shared/lib"
@@ -98,12 +99,11 @@ export function StatusBadge({
             data-testid="goal-status-badge"
             variant={VARIANT_BY_STATUS[shown]}
           >
-            <button
+            <Pressable
               aria-label={`${t(`goals.status.${shown}`)} — ${label}`}
-              className="cursor-pointer hover:opacity-80 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:cursor-default"
+              className="cursor-pointer hover:opacity-80 disabled:cursor-default"
               disabled={disabled || requested !== null}
               onClick={toggle}
-              type="button"
             >
               {shown === "Active" ? (
                 <Pause
@@ -117,7 +117,7 @@ export function StatusBadge({
                 />
               )}
               {t(`goals.status.${shown}`)}
-            </button>
+            </Pressable>
           </Badge>
         </TooltipTrigger>
         <TooltipContent>{label}</TooltipContent>
@@ -204,10 +204,9 @@ export function BlockedIndicator({
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <button
+          <Pressable
             className={indicatorTriggerClassName}
             data-testid="goal-restricted-indicator"
-            type="button"
           >
             <Badge
               className={cn(
@@ -219,7 +218,7 @@ export function BlockedIndicator({
               <Link2 className="size-icon-xs" />
               {t("goals.blocked.restrictedLabel")}
             </Badge>
-          </button>
+          </Pressable>
         </PopoverTrigger>
         <PopoverContent
           className="max-h-(--radix-popover-content-available-height) w-80 overflow-y-auto"
@@ -235,10 +234,9 @@ export function BlockedIndicator({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
+        <Pressable
           className={indicatorTriggerClassName}
           data-testid="goal-blocked-indicator"
-          type="button"
         >
           <Badge
             className={cn("gap-1 text-warning-foreground", className)}
@@ -247,7 +245,7 @@ export function BlockedIndicator({
             <LockKeyhole className="size-icon-xs" />
             {t("goals.blocked.label")}
           </Badge>
-        </button>
+        </Pressable>
       </PopoverTrigger>
       <PopoverContent
         className="max-h-(--radix-popover-content-available-height) w-80 overflow-y-auto"

@@ -3,6 +3,7 @@ import { ArrowDown } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type {
   MasterTableRow,
@@ -63,17 +64,16 @@ export function MasterTableTable({
       colSpan={2}
       scope="colgroup"
     >
-      <button
+      <Pressable
         className="inline-flex items-center gap-2 rounded-md hover:text-foreground"
         data-testid={testId}
         onClick={() => onSortChange(key)}
-        type="button"
       >
         {label}
         {sort === key ? (
           <ArrowDown aria-hidden="true" className="size-icon-sm" />
         ) : null}
-      </button>
+      </Pressable>
     </th>
   )
 

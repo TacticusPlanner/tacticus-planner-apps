@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   BUY_ME_A_COFFEE_URL,
@@ -166,12 +167,11 @@ export function MenuRow({
 }) {
   const descriptionId = useId()
   return (
-    <button
+    <Pressable
       aria-describedby={description ? descriptionId : undefined}
       aria-label={label}
       data-slot="menu-row"
       className={cn(menuRowClass, className)}
-      type="button"
       {...props}
     >
       {Icon ? <Icon className="size-icon shrink-0" /> : null}
@@ -196,7 +196,7 @@ export function MenuRow({
           className="size-icon-sm shrink-0 text-muted-foreground"
         />
       ) : null}
-    </button>
+    </Pressable>
   )
 }
 

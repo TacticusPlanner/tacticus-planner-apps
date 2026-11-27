@@ -14,6 +14,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldLabel } from "@workspace/ui/components/field"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { goalTypeIcon } from "@/entities/goal"
 import type { GoalKind } from "@/entities/goal"
@@ -188,14 +189,13 @@ export function GoalTypeCard({
       >
         <CardTitle className="flex items-center gap-2">
           {onExpandedChange ? (
-            <button
+            <Pressable
               aria-controls={bodyId}
               aria-expanded={expanded}
               className="flex min-h-8 w-full flex-wrap items-center gap-2 text-left"
               data-testid={`create-goal-type-card-${kind}-header`}
               id={headerId}
               onClick={() => onExpandedChange(!expanded)}
-              type="button"
             >
               {title}
               <ChevronDownIcon
@@ -205,7 +205,7 @@ export function GoalTypeCard({
                   expanded && "rotate-180"
                 )}
               />
-            </button>
+            </Pressable>
           ) : (
             title
           )}

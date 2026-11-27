@@ -5,6 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { NpcLevelBadge, NpcPortrait } from "@/entities/npc"
 import { DetailsSheet } from "@/shared/ui"
@@ -32,13 +33,12 @@ export function EnemyTile({
   const { enemyName, tileLabel } = useEnemyLabels()
   const name = enemyName(tile)
   const trigger = (
-    <button
+    <Pressable
       aria-label={tileLabel(tile)}
-      className="flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg border bg-card interactive-surface p-2 text-left"
+      className="flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg border bg-card p-2 text-left"
       data-level={tile.level}
       data-npc={tile.npcId}
       data-testid="battle-enemy-tile"
-      type="button"
     >
       <NpcPortrait size="portrait-sm" name={name} variationId={tile.npcId} />
       <span className="flex min-w-0 flex-col gap-0.5">
@@ -61,7 +61,7 @@ export function EnemyTile({
           </span>
         ) : null}
       </span>
-    </button>
+    </Pressable>
   )
 
   if (isMobile) {

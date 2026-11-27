@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { Pressable } from "@workspace/ui/components/pressable"
 import { ProjectColorDot } from "@/entities/project"
 import type { ProjectSummary } from "@/entities/project"
 import type { PortraitUnit } from "../model/project-unit-portraits"
@@ -134,13 +135,12 @@ export function ProjectRow({
     >
       <div className="min-w-0 flex-1">
         {onSelect ? (
-          <button
-            className="flex w-full min-w-0 cursor-pointer items-start gap-3 rounded-xl text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          <Pressable
+            className="flex w-full min-w-0 cursor-pointer items-start gap-3 rounded-xl text-left"
             onClick={onSelect}
-            type="button"
           >
             {projectContent}
-          </button>
+          </Pressable>
         ) : (
           <div className="flex min-w-0 items-start gap-3">{projectContent}</div>
         )}
@@ -158,13 +158,13 @@ export function ProjectRow({
           </div>
         ) : null}
         {summary?.status === "error" ? (
-          <button
-            className="mt-2 ml-7 text-sm text-destructive underline"
+          <Button
+            variant="link"
+            className="mt-2 ml-7 h-auto rounded-sm p-0 text-sm font-normal whitespace-normal text-destructive underline"
             onClick={summary.retry}
-            type="button"
           >
             {t("goals.project.summaryUnavailable")}
-          </button>
+          </Button>
         ) : null}
       </div>
 

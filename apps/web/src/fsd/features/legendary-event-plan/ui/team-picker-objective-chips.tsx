@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { useObjectiveLabel } from "@/entities/legendary-event"
 import { ObjectiveIcon } from "@/shared/ui"
@@ -39,24 +40,23 @@ export function TeamPickerObjectiveChips({
         const isSelected = selected.includes(objective.index)
         const count = counts.get(objective.index) ?? 0
         return (
-          <button
+          <Pressable
             aria-label={t("teams.picker.objectiveChip", {
               objective: label,
               count,
             })}
             aria-pressed={isSelected}
             className={cn(
-              "flex min-h-8 items-center gap-1.5 rounded-full border py-1 pr-2.5 pl-1.5 text-xs transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "flex min-h-8 items-center gap-1.5 rounded-full border py-1 pr-2.5 pl-1.5 text-xs",
               isSelected
                 ? "border-primary bg-primary/20 text-foreground ring-1 ring-primary"
-                : "bg-transparent interactive-surface text-muted-foreground hover:text-foreground"
+                : "bg-transparent text-muted-foreground hover:text-foreground"
             )}
             data-count={count}
             data-index={objective.index}
             data-testid="team-picker-objective-chip"
             key={objective.index}
             onClick={() => onToggle(objective.index)}
-            type="button"
           >
             <ObjectiveIcon icon={icon} />
             <span>{label}</span>
@@ -75,7 +75,7 @@ export function TeamPickerObjectiveChips({
             >
               {number.format(count)}
             </span>
-          </button>
+          </Pressable>
         )
       })}
     </div>

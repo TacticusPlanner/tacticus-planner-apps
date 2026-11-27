@@ -6,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { radarAxisIcon } from "../../model/stat-radar"
 import type { RadarAxisResult } from "../../model/stat-radar"
@@ -188,14 +189,14 @@ export function StatRadarCard({
                 {radarAxisIcon(entry.axis) === "ranged" ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button
-                        type="button"
+                      <Pressable
+                        variant="art"
                         className="-m-1 shrink-0 rounded-sm p-1"
                         aria-label={t("characterUnit.compare.rangedOnlyLabel")}
                         data-testid={`unit-radar-${entry.axis}-info`}
                       >
                         <Info className="size-icon-sm" aria-hidden="true" />
-                      </button>
+                      </Pressable>
                     </TooltipTrigger>
                     <TooltipContent>
                       {t("characterUnit.compare.rangedOnly")}

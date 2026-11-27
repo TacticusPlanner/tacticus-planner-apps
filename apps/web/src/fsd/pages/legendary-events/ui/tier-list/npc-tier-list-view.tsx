@@ -15,6 +15,7 @@ import {
 } from "@workspace/ui/components/popover"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   buildNpcTierList,
@@ -253,12 +254,11 @@ function NpcTile({
   const { t, i18n } = useTranslation("legendaryEvents")
   const multiplier = formatMultiplier(tile.multiplier, i18n.language)
   const trigger = (
-    <button
+    <Pressable
       aria-label={t("npcTierList.tileLabel", { name, multiplier })}
-      className="flex w-full min-w-0 flex-col items-center gap-1 rounded-lg interactive-surface p-1 text-center"
+      className="flex w-full min-w-0 flex-col items-center gap-1 rounded-lg p-1 text-center"
       data-npc={tile.npcId}
       data-testid="npc-tier-tile"
-      type="button"
     >
       <NpcPortrait size="portrait-md" name={name} variationId={tile.npcId} />
       <span className="line-clamp-2 w-16 text-xs/tight">{name}</span>
@@ -266,7 +266,7 @@ function NpcTile({
         {multiplier}
         {tile.overridden ? "*" : ""}
       </span>
-    </button>
+    </Pressable>
   )
   const details = (
     <NpcTileDetails multiplier={multiplier} npcId={tile.npcId} tier={tier} />

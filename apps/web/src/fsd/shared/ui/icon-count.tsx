@@ -5,6 +5,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon } from "./entity-icon"
 
@@ -37,14 +38,11 @@ export function IconCount({
       <Tooltip>
         {/* A button, so a keyboard user can reach the tooltip: the chip's only visible name. */}
         <TooltipTrigger asChild>
-          <button
-            type="button"
-            className="inline-flex h-full items-center gap-1 rounded-full px-2 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-          >
+          <Pressable className="inline-flex h-full items-center gap-1 rounded-full px-2">
             <EntityIcon size="icon" src={icon} alt="" />
             <span className="sr-only">{`${name} ×${count}`}</span>
             <span aria-hidden="true">×{count}</span>
-          </button>
+          </Pressable>
         </TooltipTrigger>
         <TooltipContent>{name}</TooltipContent>
       </Tooltip>

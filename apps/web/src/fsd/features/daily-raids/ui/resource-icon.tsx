@@ -5,6 +5,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   DetailsOverlay,
@@ -76,13 +77,12 @@ export function ResourceIconWithTooltip({
 }) {
   const source = useMaterialDetailsSource()
   const button = (
-    <button
+    <Pressable
       aria-label={label}
-      className="shrink-0 rounded-sm border-0 bg-transparent p-0 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-      type="button"
+      className="shrink-0 rounded-sm border-0 bg-transparent p-0"
     >
       <ResourceIcon size={size} label={label} visual={visual} />
-    </button>
+    </Pressable>
   )
   if (source && resourceId !== undefined) {
     return (

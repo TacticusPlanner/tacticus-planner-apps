@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { GoalKind } from "@/entities/goal"
 import type { GoalFormIssueView } from "../../model/goal-creation-form/use-goal-validation-state"
@@ -82,21 +83,20 @@ export function GoalFormIssueSummary({
         <ul className="grid gap-0.5">
           {issues.map((issue, index) => (
             <li key={index}>
-              <button
-                className="w-full rounded-xl interactive-surface px-2 py-1.5 text-left text-sm"
+              <Pressable
+                className="w-full rounded-xl px-2 py-1.5 text-left text-sm"
                 data-testid="create-goal-issue-summary-item"
                 onClick={() => {
                   setOpen(false)
                   onFollow(issue)
                 }}
-                type="button"
               >
                 <span className="font-medium">
                   {t(`goals.create.goalTypes.${issue.kind}`)}
                 </span>
                 {": "}
                 {issue.message}
-              </button>
+              </Pressable>
             </li>
           ))}
         </ul>

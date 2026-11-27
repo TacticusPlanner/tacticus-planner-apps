@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { rarityClass, statIcon } from "@workspace/game-catalog"
 import type { StatIconKind } from "@workspace/game-catalog"
@@ -84,14 +85,13 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
-          type="button"
+        <Pressable
           aria-label={
             upgrade.owned
               ? `${upgrade.label} (${t("unitLookup.alreadyApplied")})`
               : upgrade.label
           }
-          className="relative rounded-sm interactive-surface"
+          className="relative rounded-sm"
         >
           <UpgradeIcon
             id={upgrade.id}
@@ -106,7 +106,7 @@ function UpgradeCell({ upgrade }: { upgrade: UpgradeViewModel }) {
               className="absolute -right-1 -bottom-1 size-icon rounded-full bg-background text-primary"
             />
           ) : null}
-        </button>
+        </Pressable>
       </PopoverTrigger>
       <PopoverContent>
         <div className={cn("flex items-center gap-2", hasRecipe && "pb-2")}>

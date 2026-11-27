@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { rosterDiffMetrics } from "@/entities/roster-snapshot"
 import type {
@@ -45,15 +46,14 @@ export function CompareSummary({
       metric === "power" ? summary.power > 0 : summary[metric] !== 0
     const active = selected === metric
     return (
-      <button
+      <Pressable
         key={metric}
-        type="button"
         // A selection that no longer matches stays clickable so it can be cleared.
         disabled={!enabled && !active}
         aria-pressed={active}
         onClick={() => onSelect(active ? null : metric)}
         className={cn(
-          "flex shrink-0 flex-col items-start rounded-lg border interactive-surface px-3 py-1.5 text-left disabled:opacity-50",
+          "flex shrink-0 flex-col items-start rounded-lg border px-3 py-1.5 text-left disabled:opacity-50",
           active && "border-primary bg-primary/10"
         )}
         data-testid="compare-metric"
@@ -65,7 +65,7 @@ export function CompareSummary({
         <span className="text-xs whitespace-nowrap text-muted-foreground">
           {t(`myGame.collection.compare.metrics.${metric}`)}
         </span>
-      </button>
+      </Pressable>
     )
   })
 

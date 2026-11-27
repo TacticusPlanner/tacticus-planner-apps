@@ -11,6 +11,7 @@ import {
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   CompactProgression,
@@ -89,14 +90,13 @@ export function IncursionEligibleDialog({
             const selected = picked.includes(unit.id)
             return (
               <li key={unit.id}>
-                <button
-                  type="button"
+                <Pressable
                   aria-pressed={selected}
                   onClick={() =>
                     setPicked((current) => toggleTeamMember(current, unit.id))
                   }
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md border interactive-surface px-2 py-1.5 text-left text-sm",
+                    "flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-sm",
                     selected && "border-primary/60 bg-primary/10"
                   )}
                   data-testid={`incursion-eligible-${unit.id}`}
@@ -158,7 +158,7 @@ export function IncursionEligibleDialog({
                     <EntityIcon size="icon" src={powerIcon()} alt="" />
                     {number.format(Math.round(unit.power))}
                   </span>
-                </button>
+                </Pressable>
               </li>
             )
           })}

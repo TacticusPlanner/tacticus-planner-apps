@@ -18,6 +18,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   LEGENDARY_EVENT_LANE_IDS,
@@ -641,17 +642,16 @@ function ObjectiveHeading({
         return (
           <Tooltip key={entry.objective.index}>
             <TooltipTrigger asChild disableTouchToggle>
-              <button
+              <Pressable
                 aria-pressed={isSelected}
                 className={cn(
-                  "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent interactive-surface px-0.5 py-1 text-center",
+                  "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent px-0.5 py-1 text-center",
                   uncovered && "border-dashed border-muted-foreground/60",
                   isSelected && "bg-primary/15"
                 )}
                 data-testid="event-board-objective"
                 data-uncovered={uncovered ? "true" : undefined}
                 onClick={() => onToggle(entry.objective.index)}
-                type="button"
               >
                 {isSelected ? (
                   <Check
@@ -679,7 +679,7 @@ function ObjectiveHeading({
                     {t("eventBoard.noTeam")}
                   </span>
                 ) : null}
-              </button>
+              </Pressable>
             </TooltipTrigger>
             <TooltipContent>
               {[label, cleared, uncovered ? t("eventBoard.noTeam") : ""]

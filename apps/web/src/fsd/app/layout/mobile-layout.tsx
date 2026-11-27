@@ -25,6 +25,7 @@ import {
 } from "@workspace/ui/components/drawer"
 import { cn } from "@workspace/ui/lib/utils"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   AutoSyncFill,
@@ -142,8 +143,7 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
 
   return (
     <>
-      <button
-        type="button"
+      <Pressable
         aria-label={t("nav.createGoal")}
         className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-semibold text-primary"
         data-testid="mobile-create-goal-button"
@@ -153,9 +153,8 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
           <PlusCircle className="size-icon-md" aria-hidden="true" />
         </span>
         <span>{t("nav.createGoal")}</span>
-      </button>
-      <button
-        type="button"
+      </Pressable>
+      <Pressable
         aria-label={syncLabel}
         className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50"
         data-testid="mobile-sync-button"
@@ -197,7 +196,7 @@ function MobileNavActions({ onCreateGoal }: { onCreateGoal: () => void }) {
             ? t("nav.sync")
             : t("nav.syncCooldown", { minutes: cooldownMinutes })}
         </span>
-      </button>
+      </Pressable>
     </>
   )
 }
@@ -209,8 +208,7 @@ function MobileGuestNavAction() {
   const { disabled, signUp } = useSignInRedirect()
 
   return (
-    <button
-      type="button"
+    <Pressable
       className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-semibold text-primary disabled:cursor-not-allowed disabled:opacity-50"
       data-testid="mobile-sign-up-button"
       disabled={disabled}
@@ -220,7 +218,7 @@ function MobileGuestNavAction() {
         <UserPlus aria-hidden="true" className="size-icon-md" />
       </span>
       <span>{t("auth.signUp")}</span>
-    </button>
+    </Pressable>
   )
 }
 
@@ -294,11 +292,10 @@ function MobileBottomNav({
       )}
       <Drawer direction="bottom" onOpenChange={setMenuOpen} open={menuOpen}>
         <DrawerTrigger asChild>
-          <button
-            type="button"
+          <Pressable
             aria-label={t("nav.menu")}
             className={cn(
-              "flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors",
+              "flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium",
               menuOpen || isMenuItemActive
                 ? "text-primary"
                 : "text-muted-foreground hover:text-foreground"
@@ -310,7 +307,7 @@ function MobileBottomNav({
           >
             <Menu className="size-icon" />
             <span>{t("nav.menu")}</span>
-          </button>
+          </Pressable>
         </DrawerTrigger>
         <DrawerContent
           className="h-dvh max-h-dvh p-0 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] before:inset-0 before:rounded-none"

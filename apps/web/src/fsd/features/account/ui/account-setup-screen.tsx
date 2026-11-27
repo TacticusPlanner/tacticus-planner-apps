@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { Spinner } from "@workspace/ui/components/spinner"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { useCurrentUser } from "@/entities/account"
 
@@ -285,11 +286,10 @@ function PathCard({
 }) {
   return (
     <Card className="p-0">
-      <button
-        className="flex w-full items-start gap-3 interactive-surface p-4 text-left"
+      <Pressable
+        className="flex w-full items-start gap-3 p-4 text-left"
         data-testid={testId}
         onClick={onSelect}
-        type="button"
       >
         <span className="flex flex-1 flex-col gap-1">
           <span className="flex items-center gap-2">
@@ -303,7 +303,7 @@ function PathCard({
           <span className="text-sm text-muted-foreground">{description}</span>
         </span>
         <ChevronRight className="mt-0.5 size-icon-sm shrink-0 text-muted-foreground" />
-      </button>
+      </Pressable>
     </Card>
   )
 }

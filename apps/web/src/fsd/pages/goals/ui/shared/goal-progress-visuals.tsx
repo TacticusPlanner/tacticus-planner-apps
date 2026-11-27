@@ -14,6 +14,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { abilityIcon } from "@workspace/game-catalog"
 
@@ -603,13 +604,12 @@ export function GoalProgressDisplay({
   const percentWithTooltip = tooltipText ? (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button
+        <Pressable
           className="cursor-default"
           data-testid="goal-progress-percent"
-          type="button"
         >
           {percentLabel}
-        </button>
+        </Pressable>
       </TooltipTrigger>
       <TooltipContent data-testid="goal-remaining-text">
         {tooltipText}
@@ -659,16 +659,15 @@ export function GoalProgressDisplay({
   // The level line is one compact row, so its potential-only bar carries no footer text.
   const mobileFooter = showPotentialOnly ? null : hasExplanation ? (
     <div className="grid gap-1">
-      <button
+      <Pressable
         aria-expanded={mobileExpanded}
         className="flex items-center gap-1 text-left text-xs text-muted-foreground"
         data-testid="goal-progress-mobile-footer"
         onClick={() => setMobileExpanded((value) => !value)}
-        type="button"
       >
         {remainingText ?? t("goals.overview.progressDetails")}
         <Info className="size-icon-sm shrink-0" />
-      </button>
+      </Pressable>
       {mobileExpanded ? (
         <div data-testid="goal-progress-mobile-explanation">{explanation}</div>
       ) : null}

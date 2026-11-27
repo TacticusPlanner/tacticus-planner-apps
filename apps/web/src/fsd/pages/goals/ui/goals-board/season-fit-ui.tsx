@@ -7,6 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Button } from "@workspace/ui/components/button"
 
 import {
   goalFitCopy,
@@ -38,18 +39,18 @@ export function SeasonFitLabel({
     <Tooltip>
       {/* Focusable so the deadline stays reachable by keyboard. */}
       <TooltipTrigger asChild>
-        <button
-          className="text-xs font-medium text-muted-foreground underline decoration-dotted underline-offset-2"
+        <Button
+          variant="link"
+          className="h-auto rounded-sm p-0 text-xs font-medium whitespace-normal text-muted-foreground underline decoration-dotted underline-offset-2"
           data-offset={offset}
           data-testid={
             seasonFit && isDeadlineFitView(seasonFit)
               ? "goal-deadline-fit"
               : "goal-season-fit"
           }
-          type="button"
         >
           {label}
-        </button>
+        </Button>
       </TooltipTrigger>
       <TooltipContent>{tooltip}</TooltipContent>
     </Tooltip>

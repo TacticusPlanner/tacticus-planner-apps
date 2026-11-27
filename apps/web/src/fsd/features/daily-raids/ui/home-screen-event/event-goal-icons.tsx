@@ -4,6 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { DailyRaidGoalViewModel } from "../../model/daily-raids.domain"
 import { UnitIcon } from "../resource-card"
@@ -28,11 +29,10 @@ export function EventGoalIcons({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button
+        <Pressable
           aria-label={label}
           className="flex shrink-0 items-center -space-x-1.5 border-0 bg-transparent p-0"
           data-testid={testId}
-          type="button"
         >
           {goals.slice(0, MAX_VISIBLE).map((goal) => (
             <UnitIcon
@@ -50,7 +50,7 @@ export function EventGoalIcons({
               {t("hse.raids.moreGoals", { count: hidden })}
             </span>
           ) : null}
-        </button>
+        </Pressable>
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>

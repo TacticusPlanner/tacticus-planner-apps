@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
+import { Pressable } from "@workspace/ui/components/pressable"
 import { chanceIcon } from "@workspace/game-catalog"
 
 import { shopCurrencyIcon } from "@/entities/shops/reward"
@@ -79,9 +80,8 @@ export function ShopSlotCard({
   const overflow = slot.rewards.length - preview.length
 
   const trigger = (
-    <button
-      type="button"
-      className="flex w-full flex-col gap-2 rounded-lg border bg-card interactive-surface p-3 text-left text-card-foreground shadow-sm"
+    <Pressable
+      className="flex w-full flex-col gap-2 rounded-lg border bg-card p-3 text-left text-card-foreground shadow-sm"
       data-testid={`shop-slot-${index}`}
       data-random="true"
     >
@@ -128,7 +128,7 @@ export function ShopSlotCard({
           t("shops.costVaries")
         )}
       </span>
-    </button>
+    </Pressable>
   )
 
   return (

@@ -11,6 +11,7 @@ import type {
 import { rarityIcon } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   NPC_ENCOUNTER_SOURCES,
@@ -486,9 +487,8 @@ function DisclosureRow({
 
   return (
     <li className={cn("rounded-md", open && "bg-muted/50")}>
-      <button
-        type="button"
-        className="flex w-full items-center justify-between gap-2 rounded-md interactive-surface px-2 py-1 text-left"
+      <Pressable
+        className="flex w-full items-center justify-between gap-2 rounded-md px-2 py-1 text-left"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
         data-testid={testId}
@@ -505,7 +505,7 @@ function DisclosureRow({
           ) : null}
         </span>
         <Chevron open={open} />
-      </button>
+      </Pressable>
       {open ? <div className="px-2 pt-1 pb-2">{children}</div> : null}
     </li>
   )
@@ -637,8 +637,7 @@ function EncounterRow({
             <span className="min-w-0 font-medium wrap-break-word">{name}</span>
           )}
         </span>
-        <button
-          type="button"
+        <Pressable
           className="relative flex min-w-0 flex-1 flex-col gap-0.5 pr-6 text-left md:flex-row md:items-baseline md:gap-3"
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
@@ -664,7 +663,7 @@ function EncounterRow({
             open={open}
             className="absolute top-1/2 right-0 -translate-y-1/2"
           />
-        </button>
+        </Pressable>
       </div>
       {open ? (
         <div className="border-t px-3 py-2">

@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { HreShardSource } from "@/entities/hre-mission"
 import { formatDateRange, formatShortDate } from "@/shared/lib"
@@ -50,10 +51,9 @@ export function HreSourceIndicator({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button
+        <Pressable
           aria-label={`${label}: ${text}`}
-          className="relative inline-flex cursor-pointer rounded-2xl after:absolute after:-inset-x-1 after:-inset-y-2 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none pointer-coarse:after:-inset-y-3.5"
-          type="button"
+          className="relative inline-flex cursor-pointer rounded-2xl after:absolute after:-inset-x-1 after:-inset-y-2 pointer-coarse:after:-inset-y-3.5"
         >
           <Badge
             className={cn(
@@ -72,7 +72,7 @@ export function HreSourceIndicator({
             />
             {label}
           </Badge>
-        </button>
+        </Pressable>
       </PopoverTrigger>
       <PopoverContent className="grid w-72 gap-2 text-sm" collisionPadding={16}>
         <p>{text}</p>

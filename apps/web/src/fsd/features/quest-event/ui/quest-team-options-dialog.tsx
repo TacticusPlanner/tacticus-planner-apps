@@ -6,6 +6,7 @@ import { characterIcon, powerIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   EntityIcon,
@@ -187,15 +188,14 @@ function OptionRow({
     )
   }
   return (
-    <button
+    <Pressable
       aria-pressed={selected}
-      className={cn(className, "interactive-surface")}
+      className={className}
       data-testid="quest-team-option"
       data-unit={unitId}
       onClick={onPress}
-      type="button"
     >
       {body}
-    </button>
+    </Pressable>
   )
 }

@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import {
   DailyMissions,
@@ -202,7 +203,7 @@ export function EventShopRewardsPhone({
         role="group"
       >
         {(["milestones", "missions"] as const).map((option) => (
-          <button
+          <Pressable
             key={option}
             aria-pressed={view === option}
             className={cn(
@@ -211,10 +212,9 @@ export function EventShopRewardsPhone({
             )}
             data-testid={`event-shop-rewards-${option}`}
             onClick={() => setView(option)}
-            type="button"
           >
             {t(`tabs.${option}`)}
-          </button>
+          </Pressable>
         ))}
       </div>
       {view === "milestones" ? (

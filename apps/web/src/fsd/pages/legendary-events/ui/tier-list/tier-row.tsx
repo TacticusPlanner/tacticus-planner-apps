@@ -3,6 +3,7 @@ import type { KeyboardEvent, ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { tierToneClass } from "@/entities/legendary-event"
 import { numberFormat } from "@/shared/lib"
@@ -213,16 +214,15 @@ export function UntieredRow({
   return (
     <TierRow
       header={(label) => (
-        <button
+        <Pressable
           aria-controls={expanded ? contentId : undefined}
           aria-expanded={expanded}
           className={cn(
-            "flex min-h-11 w-full items-center gap-1 rounded-md text-left focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none",
+            "flex min-h-11 w-full items-center gap-1 rounded-md text-left",
             !isMobile && "flex-col justify-center text-center"
           )}
           data-testid="tier-list-untiered-toggle"
           onClick={() => onExpandedChange(!expanded)}
-          type="button"
         >
           <span className={isMobile ? "contents" : "flex flex-col"}>
             {label}
@@ -246,7 +246,7 @@ export function UntieredRow({
               expanded && "rotate-180"
             )}
           />
-        </button>
+        </Pressable>
       )}
       isEmpty={count === 0}
       isMobile={isMobile}

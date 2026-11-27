@@ -12,6 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 import { campaignDescriptor, campaignIcon } from "@workspace/game-catalog"
 import { rarityRank } from "@workspace/game-domain"
 import type { Rarity, UpgradeId } from "@workspace/game-domain"
@@ -58,13 +59,13 @@ export function CampaignInsightList<TId extends string>({
         <span className="text-xs text-muted-foreground">{label}</span>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button
-              type="button"
+            <Pressable
+              variant="art"
               aria-label={hint ?? t("unitLookup.usefulnessScoreHint")}
               className="text-muted-foreground hover:text-foreground"
             >
               <Info className="size-icon-sm" />
-            </button>
+            </Pressable>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
             {hint ?? t("unitLookup.usefulnessScoreHint")}

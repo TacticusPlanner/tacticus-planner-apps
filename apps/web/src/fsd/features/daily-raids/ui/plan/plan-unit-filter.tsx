@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type { PlanUnitRange } from "../../model/plan-day-cells"
 import { UnitIcon } from "../resource-card"
@@ -31,20 +32,19 @@ export function PlanUnitFilter({
         {ranges.map(({ unit }) => {
           const pressed = unit.unitId === selectedUnitId
           return (
-            <button
+            <Pressable
               key={unit.unitId}
               aria-label={unit.unitLabel}
               aria-pressed={pressed}
               className={cn(
-                "rounded-full p-0.5 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                "rounded-full p-0.5",
                 pressed && "ring-2 ring-primary"
               )}
               data-testid={`plan-filter-${unit.unitId}`}
               onClick={() => onSelect(pressed ? undefined : unit.unitId)}
-              type="button"
             >
               <UnitIcon className="rounded-full" goal={unit} />
-            </button>
+            </Pressable>
           )
         })}
         {selected ? (

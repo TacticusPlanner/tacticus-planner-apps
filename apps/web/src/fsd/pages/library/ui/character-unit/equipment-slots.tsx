@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { itemLibraryPath } from "@/shared/equipment"
 import { EntityIcon } from "@/shared/ui"
@@ -136,13 +137,12 @@ export function EquipmentSlots({
                 className="inline-flex items-stretch overflow-hidden rounded-full border"
                 data-testid={`unit-glance-slot-${slot}`}
               >
-                <button
-                  type="button"
+                <Pressable
                   aria-expanded={open}
                   aria-controls={itemsId}
                   onClick={() => setOpenSlot(open ? undefined : slot)}
                   className={cn(
-                    "inline-flex items-center gap-1 interactive-surface py-0.5 pr-2 pl-1 pointer-coarse:min-h-11",
+                    "inline-flex items-center gap-1 py-0.5 pr-2 pl-1 pointer-coarse:min-h-11",
                     open && "bg-muted"
                   )}
                   data-testid={`unit-glance-slot-${slot}-toggle`}
@@ -158,16 +158,15 @@ export function EquipmentSlots({
                       count: slotItems.get(slot)?.length ?? 0,
                     })}
                   </span>
-                </button>
+                </Pressable>
                 {relic ? (
-                  <button
-                    type="button"
+                  <Pressable
                     onClick={onRelicClick}
-                    className="border-l-2 border-[color-mix(in_oklab,var(--chart-1)_55%,transparent)] interactive-surface px-2 font-semibold"
+                    className="border-l-2 border-[color-mix(in_oklab,var(--chart-1)_55%,transparent)] px-2 font-semibold"
                     data-testid={`unit-glance-slot-${slot}-relic`}
                   >
                     {t("characterUnit.glance.relicSlot", { name: relic.name })}
-                  </button>
+                  </Pressable>
                 ) : null}
               </span>
             )

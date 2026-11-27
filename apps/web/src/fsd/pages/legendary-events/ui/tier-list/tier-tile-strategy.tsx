@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react"
 import { characterIcon } from "@workspace/game-catalog"
 import type { UnitId } from "@workspace/game-domain"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { useHordeModeTiers } from "@/entities/legendary-event"
 import { hordeStrategy, hordeSynergies } from "../../lib/horde-strategy"
@@ -47,13 +48,12 @@ export function TierTileStrategy({ unitId }: { unitId: string }) {
   if (!strategy) return null
   return (
     <div className="flex flex-col gap-2 text-sm" data-testid="tier-strategy">
-      <button
+      <Pressable
         aria-controls={open ? contentId : undefined}
         aria-expanded={open}
         className="flex min-h-11 w-fit items-center gap-1 font-medium text-primary md:min-h-0"
         data-testid="tier-strategy-toggle"
         onClick={() => setOpen(!open)}
-        type="button"
       >
         {t("tierList.strategy.title")}
         <ChevronDown
@@ -63,7 +63,7 @@ export function TierTileStrategy({ unitId }: { unitId: string }) {
             open && "rotate-180"
           )}
         />
-      </button>
+      </Pressable>
       {open ? (
         <div
           className="flex flex-col gap-3 md:max-h-72 md:overflow-y-auto"

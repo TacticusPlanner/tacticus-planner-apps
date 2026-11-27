@@ -1,6 +1,7 @@
 import { useRef } from "react"
 import type { KeyboardEvent } from "react"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 /**
  * The unit page's tab bar: a `tablist` with roving focus (arrow keys, Home, End move between tabs
@@ -57,12 +58,11 @@ export function UnitTabs<Tab extends string>({
       {tabs.map((tab, index) => {
         const selected = tab.id === active
         return (
-          <button
+          <Pressable
             key={tab.id}
             ref={(element) => {
               refs.current[index] = element
             }}
-            type="button"
             role="tab"
             id={`${panelId}-tab-${tab.id}`}
             aria-selected={selected}
@@ -71,7 +71,7 @@ export function UnitTabs<Tab extends string>({
             onClick={() => onSelect(tab.id)}
             onKeyDown={(event) => onKeyDown(event, index)}
             className={cn(
-              "-mb-px border-b-3 text-base font-semibold outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "-mb-px border-b-3 text-base font-semibold",
               isMobile ? "h-12 px-2" : "h-11 px-1",
               selected
                 ? "border-ring text-foreground"
@@ -80,7 +80,7 @@ export function UnitTabs<Tab extends string>({
             data-testid={`unit-tab-${tab.id}`}
           >
             {tab.label}
-          </button>
+          </Pressable>
         )
       })}
     </div>

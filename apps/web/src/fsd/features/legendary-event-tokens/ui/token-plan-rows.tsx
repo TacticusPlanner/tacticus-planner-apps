@@ -16,6 +16,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
+import { Button } from "@workspace/ui/components/button"
 
 import { gainsFromSteps } from "../lib/mission-gains"
 import type { TokenMissionStep } from "../lib/mission-order"
@@ -230,19 +232,19 @@ function TeamName({
   const { t } = useTranslation("legendaryEvents")
   if (!onOpenTeam || !laneId) return <>{teamName}</>
   return (
-    <button
+    <Button
+      variant="link"
       aria-label={t("tokenPlan.plan.openTeam", { team: teamName })}
-      className="group inline-flex max-w-full items-center gap-1 rounded-sm text-left hover:underline focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="group inline-flex h-auto max-w-full items-center gap-1 rounded-sm p-0 text-left text-[length:inherit] font-normal whitespace-normal text-current hover:underline"
       data-testid="token-plan-team"
       onClick={() => onOpenTeam(laneId, teamId)}
-      type="button"
     >
       <span className="truncate">{teamName}</span>
       <Pencil
         aria-hidden="true"
         className="size-icon-sm shrink-0 text-muted-foreground group-hover:text-foreground"
       />
-    </button>
+    </Button>
   )
 }
 
@@ -375,23 +377,22 @@ function TokenBattleRunRow({
   const sum = tokens.reduce((total, token) => total + token.points, 0)
   const runMarkers = markers.slice(start, end + 1)
   const toggle = (
-    <button
+    <Pressable
       aria-controls={regionId}
       aria-expanded={expanded}
       aria-label={t(
         expanded ? "tokenPlan.plan.collapseRun" : "tokenPlan.plan.expandRun",
         { count: tokens.length }
       )}
-      className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm interactive-surface"
+      className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm"
       data-testid="token-plan-run-toggle"
       onClick={() => setExpanded(!expanded)}
-      type="button"
     >
       <ChevronRight
         aria-hidden="true"
         className={expanded ? "size-icon-sm rotate-90" : "size-icon-sm"}
       />
-    </button>
+    </Pressable>
   )
   const count = <TokenCount count={tokens.length} />
   const battle = (

@@ -5,6 +5,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Label } from "@workspace/ui/components/label"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
+import { Pressable } from "@workspace/ui/components/pressable"
 import type { ShopRewardOffer, ShopShardOffer } from "@workspace/game-catalog"
 import type { BattleId, UpgradeId } from "@workspace/game-domain"
 
@@ -277,18 +278,17 @@ function SourceGroup({
         <Label className="min-h-11 flex-1 md:min-h-0" htmlFor={checkboxId}>
           {label}
         </Label>
-        <button
+        <Pressable
           aria-expanded={expanded}
           aria-label={t("goals.create.acquisitionSources.toggleGroup", {
             group: label,
           })}
-          className="relative rounded-full interactive-surface p-1 text-muted-foreground after:absolute after:-inset-1"
+          className="relative rounded-full p-1 text-muted-foreground after:absolute after:-inset-1"
           data-testid={`create-goal-acquisition-group-${testId}-header`}
           onClick={() => setExpanded((current) => !current)}
-          type="button"
         >
           <Chevron className="size-icon-sm shrink-0" />
-        </button>
+        </Pressable>
       </div>
       {hasNode(headerNote) ? (
         <div className="pl-6 text-xs text-muted-foreground">{headerNote}</div>

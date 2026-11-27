@@ -3,6 +3,7 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 /**
  * One Group by section of the Goals list. The heading is a toggle that folds the section away, so a
@@ -28,17 +29,16 @@ export function GoalGroupSection({
   return (
     <section className="grid grid-cols-1 gap-2" data-testid="goal-group">
       <h2 className="text-lg font-semibold">
-        <button
+        <Pressable
           aria-controls={contentId}
           aria-expanded={!shownCollapsed}
-          className="flex w-full items-center gap-2 rounded-md text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className="flex w-full items-center gap-2 rounded-md text-left"
           onClick={() => {
             startTransition(() => {
               showCollapsed(!collapsed)
               onToggle()
             })
           }}
-          type="button"
         >
           <ChevronDown
             aria-hidden="true"
@@ -51,7 +51,7 @@ export function GoalGroupSection({
           <span className="text-sm font-normal text-muted-foreground tabular-nums">
             {t("goals.filters.groupCount", { count })}
           </span>
-        </button>
+        </Pressable>
       </h2>
       {/* Hidden as soon as it is tapped (the optimistic state), so the goals below move up in the
           tap's own frame, which the browser does not count as a layout shift; unmounting the

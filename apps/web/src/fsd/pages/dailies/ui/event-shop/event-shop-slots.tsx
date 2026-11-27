@@ -6,6 +6,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Slider } from "@workspace/ui/components/slider"
 import { cn } from "@workspace/ui/lib/utils"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import { EntityIcon, HintTrigger } from "@/shared/ui"
 
@@ -150,14 +151,14 @@ export function PacksSlider({
       {large ? (
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>1</span>
-          <button
-            className="underline-offset-2 hover:underline disabled:no-underline"
+          <Button
+            variant="link"
+            className="h-auto rounded-sm p-0 text-[length:inherit] font-normal whitespace-normal text-current underline-offset-2 disabled:no-underline"
             disabled={disabled || atMax}
             onClick={max}
-            type="button"
           >
             {t("slot.maxValue", { count: cap })}
-          </button>
+          </Button>
         </div>
       ) : null}
     </div>
@@ -177,7 +178,8 @@ function BoughtTick({
   label: string
 }) {
   return (
-    <button
+    <Pressable
+      variant="art"
       aria-label={label}
       aria-pressed={bought}
       className={cn(
@@ -187,10 +189,9 @@ function BoughtTick({
       )}
       disabled={disabled}
       onClick={onToggle}
-      type="button"
     >
       <Check aria-hidden="true" className="size-icon" strokeWidth={2.5} />
-    </button>
+    </Pressable>
   )
 }
 
@@ -667,11 +668,10 @@ function SlotTile({
       data-purchase={purchase}
       data-testid={`event-shop-tile-${view.ref.slotIndex}`}
     >
-      <button
+      <Pressable
         aria-label={t("slot.open", { reward: reward.label })}
         className="flex w-full flex-col items-center gap-1 p-2 pt-3 text-center"
         onClick={onOpen}
-        type="button"
       >
         <span className="relative">
           <EntityIcon
@@ -728,10 +728,11 @@ function SlotTile({
                 : t("slot.planned", { count: entry.entry.quantity })}
           </span>
         ) : null}
-      </button>
+      </Pressable>
       {entry ? (
         // A 48 px hit area apart from the tile, so a tap on the tile still opens the sheet.
-        <button
+        <Pressable
+          variant="art"
           aria-checked={allBought}
           aria-label={allBought ? t("slot.untick") : t("slot.tick")}
           className="absolute top-0 right-0 flex size-12 items-start justify-end p-1.5"
@@ -743,7 +744,6 @@ function SlotTile({
               : controller.markBought(view.ref)
           }
           role="checkbox"
-          type="button"
         >
           <span
             className={cn(
@@ -756,7 +756,7 @@ function SlotTile({
               <Check aria-hidden="true" className="size-icon-xs" />
             ) : null}
           </span>
-        </button>
+        </Pressable>
       ) : null}
     </div>
   )

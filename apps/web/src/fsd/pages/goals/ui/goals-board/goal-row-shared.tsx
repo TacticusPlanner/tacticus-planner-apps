@@ -9,6 +9,7 @@ import {
 
 import { formatEstimateDate, useDateLocale } from "@/shared/lib"
 import { Checkbox } from "@workspace/ui/components/checkbox"
+import { Pressable } from "@workspace/ui/components/pressable"
 import { HintTrigger } from "@/shared/ui"
 
 import { goalRaidDuration } from "@/entities/goal-farming"
@@ -55,15 +56,14 @@ export function GoalDuration({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button
+        <Pressable
           aria-label={t("goals.estimate.durationLabel", { count: duration })}
-          className="inline-flex cursor-default items-center gap-1 rounded-sm whitespace-nowrap tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className="inline-flex cursor-default items-center gap-1 rounded-sm whitespace-nowrap tabular-nums"
           data-testid="goal-duration"
-          type="button"
         >
           <Hourglass aria-hidden="true" className="size-icon shrink-0" />
           {text}
-        </button>
+        </Pressable>
       </TooltipTrigger>
       <TooltipContent>{t("goals.columns.durationHelp")}</TooltipContent>
     </Tooltip>
@@ -187,9 +187,7 @@ export function GoalNameLink({
     <Tooltip>
       {/* Focusable so the tooltip stays reachable by keyboard now the name is not a button. */}
       <TooltipTrigger asChild>
-        <button className="font-medium" type="button">
-          {name}
-        </button>
+        <Pressable className="font-medium">{name}</Pressable>
       </TooltipTrigger>
       <TooltipContent>{tooltipText}</TooltipContent>
     </Tooltip>

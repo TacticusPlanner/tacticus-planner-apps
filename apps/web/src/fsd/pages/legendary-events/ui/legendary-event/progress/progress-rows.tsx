@@ -5,6 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 import type {
   BattleProgressView,
@@ -62,16 +63,16 @@ export function ProgressRows({
           onChange={(status) => marks.onMarkBattle(battle, status)}
           touch
           trigger={
-            <button
+            <Pressable
+              variant="art"
               aria-label={t("annotations.rowAction", {
                 battle: battle.index + 1,
               })}
               className="inline-flex size-10 items-center justify-center rounded-md border text-sm font-medium tabular-nums"
               data-testid="progress-row-action"
-              type="button"
             >
               {battle.index + 1}
-            </button>
+            </Pressable>
           }
         />
       ) : (

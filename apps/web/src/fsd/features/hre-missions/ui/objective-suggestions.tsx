@@ -4,6 +4,7 @@ import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 
 import { objectiveDetailId } from "./objective-detail-id"
+import { Pressable } from "@workspace/ui/components/pressable"
 
 /** What an objective's suggestion points at: its raids, its battles by hand, or a token mode's team. */
 type HreSuggestionKind =
@@ -75,21 +76,20 @@ export function ObjectiveSuggestionRows({
           >
             {items.map((item) => (
               <li key={item.id} data-testid={`${testId}-suggestion-${item.id}`}>
-                <button
-                  className="flex min-h-12 w-full items-center gap-2 rounded-lg interactive-surface px-3 py-2 text-left text-sm md:min-h-8"
+                <Pressable
+                  className="flex min-h-12 w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm md:min-h-8"
                   data-testid={`${testId}-suggestion-${item.id}-trigger`}
                   onClick={() => {
                     scrollToDetail(objectiveDetailId(index, item.id))
                     onOpen?.(item)
                   }}
-                  type="button"
                 >
                   {item.summary}
                   <ArrowDown
                     aria-hidden="true"
                     className="size-icon-sm shrink-0 text-muted-foreground"
                   />
-                </button>
+                </Pressable>
               </li>
             ))}
           </ul>
