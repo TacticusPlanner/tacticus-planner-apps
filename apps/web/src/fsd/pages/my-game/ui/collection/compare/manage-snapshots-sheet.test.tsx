@@ -4,7 +4,7 @@ import type {
   PersonalRosterSnapshot,
   PersonalRosterSnapshotList,
 } from "@/entities/roster-snapshot"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 
 import { fireEvent, render, screen, within } from "@/test/render"
 
@@ -25,7 +25,7 @@ vi.mock("react-i18next", () => ({
 
 const keep = vi.hoisted(() => ({ mutate: vi.fn() }))
 
-vi.mock("sonner", () => ({ toast: { error: vi.fn() } }))
+vi.mock("@workspace/ui/lib/toast", () => ({ toast: { error: vi.fn() } }))
 
 vi.mock("@/entities/roster-snapshot", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/roster-snapshot")>()),

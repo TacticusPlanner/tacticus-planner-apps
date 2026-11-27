@@ -1,6 +1,6 @@
 import { CheckCircle2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { Button } from "@workspace/ui/components/button"
 import {
   Card,

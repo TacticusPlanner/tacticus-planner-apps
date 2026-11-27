@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 
 import type { IPublicClientApplication } from "@azure/msal-browser"
 import { MsalProvider } from "@azure/msal-react"

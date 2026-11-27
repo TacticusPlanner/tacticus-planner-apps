@@ -1,13 +1,15 @@
 import userEvent from "@testing-library/user-event"
 import { createMemoryRouter, RouterProvider } from "react-router"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { incursionsFixture } from "@workspace/game-catalog/testing"
 
 import { render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog, seedPlayerData } from "@/test/seed"
 
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+vi.mock("@workspace/ui/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
 
 const getProgress = vi.fn()
 const saveProgress = vi.fn()

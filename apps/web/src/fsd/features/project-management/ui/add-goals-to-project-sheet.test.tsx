@@ -2,7 +2,7 @@ import { useState } from "react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen, within } from "@/test/render"
 import userEvent from "@testing-library/user-event"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { ApiError } from "@/shared/api"
 
 vi.mock("react-i18next", () => ({
@@ -23,7 +23,7 @@ vi.mock("@azure/msal-react", () => ({
   useIsAuthenticated: () => true,
 }))
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 

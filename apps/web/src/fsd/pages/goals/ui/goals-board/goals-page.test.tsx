@@ -110,7 +110,7 @@ vi.mock("@/entities/planning-setting", async (importOriginal) => {
   }
 })
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 

@@ -16,7 +16,7 @@ const api = vi.hoisted(() => ({
   toast: vi.fn(),
 }))
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: Object.assign(
     (message: string, options?: unknown) => api.toast(message, options),
     {

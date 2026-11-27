@@ -54,7 +54,6 @@
     "react-i18next": "^18.0.1",
     "react-joyride": "^3.2.0",
     "react-router": "^8.5.2",
-    "sonner": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

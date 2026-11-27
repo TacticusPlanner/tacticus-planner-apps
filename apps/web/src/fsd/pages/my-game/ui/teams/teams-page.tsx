@@ -8,7 +8,7 @@ import {
 } from "react"
 import { Link, useLocation } from "react-router"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { Plus, RefreshCw } from "lucide-react"
 import {
   Alert,

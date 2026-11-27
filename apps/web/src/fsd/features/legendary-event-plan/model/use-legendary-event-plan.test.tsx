@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import {
@@ -30,7 +30,7 @@ const api = vi.hoisted(() => ({
   capture: vi.fn(),
 }))
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: Object.assign(vi.fn(), { error: vi.fn(), success: vi.fn() }),
 }))
 vi.mock("@/shared/analytics", () => ({

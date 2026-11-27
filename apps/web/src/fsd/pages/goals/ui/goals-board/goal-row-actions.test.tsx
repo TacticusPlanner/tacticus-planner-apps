@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { act, render, screen, within } from "@/test/render"
 import { useQuery } from "@tanstack/react-query"
 import userEvent from "@testing-library/user-event"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 
 import { setTestAuth } from "@/test/auth"
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 

@@ -10,7 +10,7 @@ import type { LegendaryEventPlan } from "./plan.types"
 import { usePlanWriteQueue } from "./use-plan-write-queue"
 
 beforeEach(() => setTestAuth({ authenticated: true }))
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: Object.assign(vi.fn(), { error: vi.fn(), success: vi.fn() }),
 }))
 

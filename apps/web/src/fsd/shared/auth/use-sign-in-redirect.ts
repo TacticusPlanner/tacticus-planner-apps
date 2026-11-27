@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 
 import { AuthError, InteractionStatus, PromptValue } from "@azure/msal-browser"
 import type { RedirectRequest } from "@azure/msal-browser"

@@ -40,7 +40,7 @@ vi.mock("@/shared/ui", async (importOriginal) => {
   }
 })
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: {
     error: (message: string) => api.toastError(message),
     success: (message: string) => api.toastSuccess(message),

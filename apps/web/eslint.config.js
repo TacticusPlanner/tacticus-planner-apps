@@ -264,12 +264,20 @@ export default defineConfig([
     },
   },
   {
-    // FSD allows `@x` cross-import surfaces only on the entities layer.
+    // FSD allows `@x` cross-import surfaces only on the entities layer, and toasts come from
+    // `@workspace/ui`, not `sonner` directly.
     files: ["src/fsd/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-imports": [
         "error",
         {
+          paths: [
+            {
+              name: "sonner",
+              message:
+                "Import `toast` from `@workspace/ui/lib/toast`; the app's one `<Toaster />` is `@workspace/ui/components/sonner`.",
+            },
+          ],
           patterns: [
             {
               regex: String.raw`^@/(?:features|widgets|pages)/[^/]+/@x(?:/|$)`,
