@@ -158,7 +158,7 @@ function SuggestionRow({
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
           <EntityIcon
             alt=""
-            size="icon-sm"
+            size="icon"
             src={equipmentSlotIcon(suggestion.slotType)}
           />
           <span className="min-w-0">

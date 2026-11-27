@@ -93,7 +93,7 @@ describe("ItemsReclaimTab", () => {
   it("shows the kept stacks too once 'Safe only' is off", async () => {
     const user = userEvent.setup()
     renderTab()
-    await user.click(await screen.findByTestId("items-reclaim-safe-chip"))
+    await user.click(await screen.findByRole("button", { name: "Safe only" }))
     const stacks = screen.getAllByTestId("item-reclaim-stack")
     expect(stacks.map((stack) => stack.dataset.itemId)).toEqual([
       "X_Relic",

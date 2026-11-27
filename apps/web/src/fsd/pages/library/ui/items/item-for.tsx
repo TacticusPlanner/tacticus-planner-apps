@@ -12,7 +12,8 @@ import { useUnitName } from "@/shared/unit-name"
 /**
  * Who can use an item: a relic's characters (each linking to its Library page) or the item's
  * factions. `compact` shows icons only, up to three, for a list card; nothing when the item is for
- * every faction.
+ * every faction or for no one. An item with no factions and no characters can't be worn by anyone
+ * (the catalog gives a character an item only through one of the two lists).
  */
 export function ItemFor({
   item,
@@ -21,6 +22,7 @@ export function ItemFor({
   factionCount,
   compact = false,
   everyoneLabel,
+  nobodyLabel,
 }: {
   item: EquipmentStorageModel
   charactersById: ReadonlyMap<string, CharacterStorageModel>
@@ -28,6 +30,7 @@ export function ItemFor({
   factionCount: number
   compact?: boolean
   everyoneLabel?: string
+  nobodyLabel?: string
 }) {
   const unitName = useUnitName()
   const limit = compact ? 3 : Infinity
@@ -72,10 +75,12 @@ export function ItemFor({
       </ul>
     )
   }
-  if (
-    item.allowedFactions.length === 0 ||
-    item.allowedFactions.length >= factionCount
-  ) {
+  if (item.allowedFactions.length === 0) {
+    return nobodyLabel ? (
+      <p className="text-sm text-muted-foreground">{nobodyLabel}</p>
+    ) : null
+  }
+  if (item.allowedFactions.length >= factionCount) {
     return everyoneLabel ? (
       <p className="text-sm text-muted-foreground">{everyoneLabel}</p>
     ) : null

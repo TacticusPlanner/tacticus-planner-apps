@@ -23,8 +23,8 @@ type ToolbarProps = {
 }
 
 /**
- * The Reclaim tab's toolbar (ui-style-guide rule 2): an item search, then "Safe only" (on by
- * default) and "Upgraded items" in the chip row.
+ * The Reclaim tab's toolbar (ui-style-guide rule 2): an item search (with Clear search while one is
+ * typed), then "Safe only" (on by default) and "Upgraded only" in the Quick filters row.
  */
 export function ReclaimToolbar({ query, update }: ToolbarProps) {
   const { t } = useTranslation("myItems")
@@ -55,7 +55,6 @@ export function ReclaimToolbar({ query, update }: ToolbarProps) {
             {CHIPS.map((chip) => (
               <HintedToggleGroupItem
                 className={FILTER_CHIP_CLASS_NAME}
-                data-testid={`items-reclaim-${chip}-chip`}
                 key={chip}
                 value={chip}
               >
@@ -81,7 +80,7 @@ export function ReclaimToolbar({ query, update }: ToolbarProps) {
           {query.q.trim() === "" ? null : (
             <Button onClick={() => update({ q: "" })} variant="ghost">
               <X aria-hidden />
-              {t("reclaim.toolbar.clearFilters")}
+              {t("reclaim.noMatch.clearSearch")}
             </Button>
           )}
         </div>

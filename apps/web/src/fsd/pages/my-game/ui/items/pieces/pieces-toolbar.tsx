@@ -1,4 +1,4 @@
-import { useCallback, useId } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { LayoutGrid, Table2, X } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
@@ -9,16 +9,14 @@ import {
 } from "@workspace/game-catalog"
 import { rarityOrder } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
-import { ToggleGroup } from "@workspace/ui/components/toggle-group"
+import { Switch } from "@workspace/ui/components/switch"
 
 import { ITEM_SLOT_TYPES } from "@/shared/equipment"
 import {
   EntityIcon,
-  FILTER_CHIP_CLASS_NAME,
   FilterField,
   FiltersControl,
   GroupByControl,
-  HintedToggleGroupItem,
   MultiSelect,
   PageToolbar,
   SearchField,
@@ -69,9 +67,9 @@ const optionIcon = (src: string | undefined) => (
 )
 
 /**
- * The Pieces tab's toolbar (ui-style-guide rule 2). Find: search, Filters (Rarity, Slot, Faction and
- * Character in a popover; a sheet on phones) and, while anything narrows the list, Clear filters.
- * The chip row holds "Spares only" and "Relics only". View: Layout (Cards / Table) and Group by
+ * The Pieces tab's toolbar (ui-style-guide rule 2). Find: search, Filters ("Spares only" and
+ * "Relics only" switches, then Rarity, Slot, Faction and Character, in a popover; a sheet on phones)
+ * and, while anything narrows the list, Clear filters. View: Layout (Cards / Table) and Group by
  * (None / Slot / Rarity).
  */
 export function PiecesToolbar({ query, update, options }: ToolbarProps) {
@@ -80,7 +78,6 @@ export function PiecesToolbar({ query, update, options }: ToolbarProps) {
 
   return (
     <PageToolbar
-      chips={<PiecesChips query={query} update={update} />}
       find={
         <div
           aria-label={t("pieces.toolbar.label")}
@@ -151,11 +148,35 @@ export function PiecesToolbar({ query, update, options }: ToolbarProps) {
   )
 }
 
-/** Rarity, Slot, Faction and Character, several of each at once. */
+const SWITCHES = ["spares", "relic"] as const
+
+/** "Spares only" and "Relics only" switches, then Rarity, Slot, Faction and Character, several of
+ *  each at once. */
 function PiecesFilterFields({ query, update, options }: ToolbarProps) {
   const { t } = useTranslation(["myItems", "progression", "gameUi"])
   return (
     <div className="grid gap-3" data-testid="items-pieces-filter-fields">
+      {SWITCHES.map((key) => (
+        <FilterField
+          inline
+          key={key}
+          label={t(
+            key === "spares" ? "pieces.toolbar.spares" : "pieces.toolbar.relics"
+          )}
+        >
+          {({ id }) => (
+            <Switch
+              checked={query[key]}
+              id={id}
+              onCheckedChange={(checked) =>
+                update(
+                  key === "spares" ? { spares: checked } : { relic: checked }
+                )
+              }
+            />
+          )}
+        </FilterField>
+      ))}
       <FilterField icon="rarity" label={t("pieces.toolbar.rarity")}>
         <MultiSelect
           clearLabel={t("pieces.toolbar.clearRarities")}
@@ -219,51 +240,6 @@ function PiecesFilterFields({ query, update, options }: ToolbarProps) {
           value={query.character}
         />
       </FilterField>
-    </div>
-  )
-}
-
-const CHIPS = ["spares", "relic"] as const
-
-/** "Spares only" and "Relics only", each on or off. */
-function PiecesChips({ query, update }: Omit<ToolbarProps, "options">) {
-  const { t } = useTranslation("myItems")
-  const labelId = useId()
-  return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-xs text-muted-foreground" id={labelId}>
-        {t("pieces.toolbar.chipsLabel")}
-      </span>
-      <ToggleGroup
-        aria-labelledby={labelId}
-        className="shrink-0"
-        onValueChange={(values) =>
-          update({
-            spares: values.includes("spares"),
-            relic: values.includes("relic"),
-          })
-        }
-        size="sm"
-        spacing={1}
-        type="multiple"
-        value={CHIPS.filter((chip) => query[chip])}
-        variant="outline"
-      >
-        {CHIPS.map((chip) => (
-          <HintedToggleGroupItem
-            className={FILTER_CHIP_CLASS_NAME}
-            data-testid={`items-pieces-${chip}-chip`}
-            key={chip}
-            value={chip}
-          >
-            {t(
-              chip === "spares"
-                ? "pieces.toolbar.spares"
-                : "pieces.toolbar.relics"
-            )}
-          </HintedToggleGroupItem>
-        ))}
-      </ToggleGroup>
     </div>
   )
 }

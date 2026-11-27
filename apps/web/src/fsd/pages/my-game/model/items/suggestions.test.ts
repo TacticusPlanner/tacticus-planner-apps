@@ -119,6 +119,13 @@ describe("suggestItems", () => {
     ])
   })
 
+  it("leaves a slot alone while it holds an item the catalog doesn't know", () => {
+    const character = hero("titus", {
+      worn: [{ slotIndex: 0, itemId: "newCrit", level: 1, unknown: true }],
+    })
+    expect(run([character], [[epicCrit, 1, 1]]).characters).toEqual([])
+  })
+
   it("swaps in a higher rarity, a higher level, or a higher chance, and says why", () => {
     expect(reason(worn("rareCrit", 5), [[epicCrit, 1, 1]])).toEqual({
       kind: "rarity",

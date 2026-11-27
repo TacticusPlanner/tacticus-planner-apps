@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { equipmentSlotIcon, factionIcon } from "@workspace/game-catalog"
 import type { EquipmentStorageModel } from "@workspace/game-catalog"
@@ -10,6 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 
 import { ItemIcon } from "@/shared/equipment"
 import { UnitPortrait } from "@/entities/unit"
@@ -40,6 +46,7 @@ export type PiecesListContext = {
   itemName: (item: Item) => string
   slotName: (type: string) => string
   unitName: (id: string) => string
+  factionName: (id: string) => string
   /** An owned character's rarity, for its portrait ring. */
   rarityOf: (id: string) => Rarity | undefined
   /** How many factions the game has: an item for all of them needs no "For" line. */
@@ -137,7 +144,33 @@ function More({ count }: { count: number }) {
   )
 }
 
-/** Who an item is for, when it isn't for everyone: a relic's characters, or its factions. */
+/** Who an item is for, when it isn't for everyone or no one: a relic's characters, or its
+ *  factions. Empty for an item every faction can wear, and for one nobody can. */
+function itemForIds(
+  item: Item,
+  context: PiecesListContext
+): { kind: "unit" | "faction"; ids: readonly string[] } {
+  if (item.allowedUnits.length > 0)
+    return { kind: "unit", ids: item.allowedUnits }
+  if (item.allowedFactions.length >= context.factionCount)
+    return { kind: "faction", ids: [] }
+  return { kind: "faction", ids: item.allowedFactions }
+}
+
+/** A game icon shown without its name: the name is its tooltip (the card's button carries it for
+ *  screen readers, so the icon itself takes no focus). */
+function Named({ name, children }: { name: string; children: ReactNode }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="inline-flex">{children}</span>
+      </TooltipTrigger>
+      <TooltipContent>{name}</TooltipContent>
+    </Tooltip>
+  )
+}
+
+/** Who an item is for, as faces or faction icons, each named in a tooltip. */
 function ItemFor({
   item,
   context,
@@ -147,33 +180,31 @@ function ItemFor({
   context: PiecesListContext
   limit?: number
 }) {
-  if (item.allowedUnits.length > 0) {
-    return (
-      <span className="flex items-center gap-1">
-        {item.allowedUnits.slice(0, limit).map((id) => (
-          <UnitPortrait
-            alt={context.unitName(id)}
-            key={id}
-            rarity={context.rarityOf(id)}
-            size="portrait-sm"
-            src={portraitSrc(id)}
-          />
-        ))}
-        <More count={item.allowedUnits.length - limit} />
-      </span>
-    )
-  }
-  if (
-    item.allowedFactions.length === 0 ||
-    item.allowedFactions.length >= context.factionCount
-  )
-    return null
+  const { kind, ids } = itemForIds(item, context)
+  if (ids.length === 0) return null
   return (
     <span className="flex items-center gap-1">
-      {item.allowedFactions.slice(0, limit).map((id) => (
-        <EntityIcon alt="" key={id} size="icon" src={factionIcon(id)} />
-      ))}
-      <More count={item.allowedFactions.length - limit} />
+      {ids.slice(0, limit).map((id) =>
+        kind === "unit" ? (
+          <Named key={id} name={context.unitName(id)}>
+            <UnitPortrait
+              alt={context.unitName(id)}
+              rarity={context.rarityOf(id)}
+              size="portrait-sm"
+              src={portraitSrc(id)}
+            />
+          </Named>
+        ) : (
+          <Named key={id} name={context.factionName(id)}>
+            <EntityIcon
+              alt={context.factionName(id)}
+              size="icon"
+              src={factionIcon(id)}
+            />
+          </Named>
+        )
+      )}
+      <More count={ids.length - limit} />
     </span>
   )
 }
@@ -189,13 +220,14 @@ function Wearers({
   return (
     <span className="flex items-center gap-1">
       {ids.slice(0, MAX_FACES).map((id, index) => (
-        <UnitPortrait
-          alt={context.unitName(id)}
-          key={`${id}-${index}`}
-          rarity={context.rarityOf(id)}
-          size="portrait-sm"
-          src={portraitSrc(id)}
-        />
+        <Named key={`${id}-${index}`} name={context.unitName(id)}>
+          <UnitPortrait
+            alt={context.unitName(id)}
+            rarity={context.rarityOf(id)}
+            size="portrait-sm"
+            src={portraitSrc(id)}
+          />
+        </Named>
       ))}
       <More count={ids.length - MAX_FACES} />
     </span>
@@ -212,17 +244,28 @@ function PieceCard({
   context: PiecesListContext
   onOpen: (piece: OwnedPiece<Item>) => void
 }) {
-  const { t } = useTranslation(["myItems", "progression"])
+  const { t, i18n } = useTranslation(["myItems", "progression"])
   const { item } = piece
   const name = context.itemName(item)
+  const forIds = itemForIds(item, context)
+  const forNames = forIds.ids.map(
+    forIds.kind === "unit" ? context.unitName : context.factionName
+  )
+  const label = t("pieces.cardLabel", {
+    name,
+    spare: t("pieces.spare", { count: piece.spare }),
+    worn: t("pieces.worn", { count: piece.worn }),
+  })
   return (
     <button
       aria-haspopup="dialog"
-      aria-label={t("pieces.cardLabel", {
-        name,
-        spare: t("pieces.spare", { count: piece.spare }),
-        worn: t("pieces.worn", { count: piece.worn }),
-      })}
+      aria-label={
+        forNames.length > 0
+          ? `${label}. ${t("pieces.cardFor", {
+              names: new Intl.ListFormat(i18n.language).format(forNames),
+            })}`
+          : label
+      }
       className="flex size-full flex-col gap-3 rounded-lg border bg-card interactive-surface p-3 text-left"
       data-item-id={item.id}
       data-testid="item-piece"
@@ -236,11 +279,7 @@ function PieceCard({
             {name}
           </TruncatedText>
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <EntityIcon
-              alt=""
-              size="icon-sm"
-              src={equipmentSlotIcon(item.type)}
-            />
+            <EntityIcon alt="" size="icon" src={equipmentSlotIcon(item.type)} />
             {context.slotName(item.type)} ·{" "}
             {t(`progression:rarities.${item.rarity}`, {
               defaultValue: item.rarity,

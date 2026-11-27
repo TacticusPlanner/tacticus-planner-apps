@@ -7,9 +7,10 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 
 import type { ItemCost } from "@/shared/equipment"
-import { EntityIcon } from "@/shared/ui"
+import { EntityIcon, HintTrigger } from "@/shared/ui"
 
-/** Coins, salvage and Mythic salvage, each with its game icon, leaving out what is zero. */
+/** Coins, salvage and Mythic salvage, each with its game icon (named in a hint), leaving out what
+ *  is zero. */
 export function CostAmounts({
   cost,
   className,
@@ -43,7 +44,9 @@ export function CostAmounts({
     >
       {parts.map((part) => (
         <span className="flex items-center gap-1" key={part.key}>
-          <EntityIcon alt={part.name} size="icon" src={part.icon} />
+          <HintTrigger label={part.name}>
+            <EntityIcon alt="" size="icon" src={part.icon} />
+          </HintTrigger>
           {format(part.amount)}
         </span>
       ))}

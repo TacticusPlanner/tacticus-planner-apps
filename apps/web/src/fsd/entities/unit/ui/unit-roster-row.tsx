@@ -320,7 +320,6 @@ function ItemLink({ item }: { item: UnitTileEquipment }) {
     <Link
       aria-label={`${t(`equipmentItems:${item.equipmentId}`, { defaultValue: item.equipmentId })}: ${t("library:items.openInLibrary")}`}
       className="grid rounded-sm hover:brightness-110"
-      data-testid="unit-row-item-link"
       to={itemLibraryPath(item.equipmentId)}
     >
       <EquipmentSlot item={item} />

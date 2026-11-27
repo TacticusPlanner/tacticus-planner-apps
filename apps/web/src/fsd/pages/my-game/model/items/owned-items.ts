@@ -45,8 +45,14 @@ export type SyncedCharacter = {
 /** One synced inventory stack: `amount` spare copies of an item at a level. */
 export type SyncedItemStack = { itemId: string; level: number; amount: number }
 
-/** One item a character wears, in a slot of its `equipmentSlots`. */
-export type WornItem = { slotIndex: number; itemId: string; level: number }
+/** One item a character wears, in a slot of its `equipmentSlots`. `unknown` marks an item the
+ *  catalog doesn't know: the slot is taken, but nothing can be compared with it. */
+export type WornItem = {
+  slotIndex: number
+  itemId: string
+  level: number
+  unknown?: true
+}
 
 /** An owned character as the Items pages see it. */
 export type OwnedCharacter = {
@@ -135,17 +141,18 @@ function ownCharacter(
   const worn: WornItem[] = []
   let unknownCopies = 0
   for (const equipped of synced.equippedItems) {
-    if (!knows(equipped.equipmentId)) {
-      unknownCopies += 1
-      continue
-    }
-    tally.at(equipped.equipmentId, equipped.level).wearers.push(synced.unitId)
+    const known = knows(equipped.equipmentId)
+    if (known)
+      tally.at(equipped.equipmentId, equipped.level).wearers.push(synced.unitId)
+    else unknownCopies += 1
+    // An unknown item still fills its slot, so nothing is suggested or kept for it.
     const slotIndex = slotIndexOf(equipped.slotId)
     if (slotIndex !== undefined) {
       worn.push({
         slotIndex,
         itemId: equipped.equipmentId,
         level: equipped.level,
+        ...(known ? {} : { unknown: true as const }),
       })
     }
   }
@@ -164,18 +171,24 @@ function ownCharacter(
   }
 }
 
-/** Slot type, then highest rarity, then name: the order the Pieces tab lists items in. */
-function comparePieces(a: OwnedPiece, b: OwnedPiece): number {
-  return firstDifference(
-    itemSlotRank(a.item.type) - itemSlotRank(b.item.type),
-    rarityRank(b.item.rarity) - rarityRank(a.item.rarity),
-    a.item.name.localeCompare(b.item.name)
-  )
+/** Slot type, then highest rarity, then `nameOf` (the displayed name): the order the Pieces tab
+ *  lists items in. */
+export function comparePieces<Item extends CatalogItem>(
+  nameOf: (item: Item) => string,
+  locale: string
+): (a: OwnedPiece<Item>, b: OwnedPiece<Item>) => number {
+  return (a, b) =>
+    firstDifference(
+      itemSlotRank(a.item.type) - itemSlotRank(b.item.type),
+      rarityRank(b.item.rarity) - rarityRank(a.item.rarity),
+      nameOf(a.item).localeCompare(nameOf(b.item), locale)
+    )
 }
 
 /**
  * Joins the synced inventory stacks with every owned character's worn items into one entry per item:
- * spare copies and wearers per level (highest level first), sorted by slot type, then rarity and name.
+ * spare copies and wearers per level (highest level first), sorted by slot type, then rarity and the
+ * catalog name (the tabs sort again by the displayed name).
  * Ids the catalog doesn't know are only counted.
  */
 export function buildOwnedItems<Item extends CatalogItem>({
@@ -224,6 +237,6 @@ export function buildOwnedItems<Item extends CatalogItem>({
       worn: ordered.reduce((sum, entry) => sum + entry.wearers.length, 0),
     })
   }
-  pieces.sort(comparePieces)
+  pieces.sort(comparePieces((item) => item.name, "en"))
   return { pieces, characters, unknownCopies }
 }

@@ -65,7 +65,6 @@
       "allCharacters": "Alle Charaktere",
       "clearCharacters": "Charaktere löschen",
       "searchCharacters": "Charaktere suchen",
-      "chipsLabel": "Anzeigen",
       "spares": "Nur Ersatzstücke",
       "relics": "Nur Relikte",
       "clearFilters": "Filter löschen",
@@ -86,6 +85,7 @@
     "worn_other": "{{count}} getragen",
     "more": "+{{count}}",
     "cardLabel": "{{name}}: {{spare}}, {{worn}}",
+    "cardFor": "Für {{names}}",
     "table": {
       "label": "Gegenstände",
       "item": "Gegenstand",
@@ -117,6 +117,7 @@
       "maxed": "Dein höchstes Exemplar hat schon die höchste Stufe.",
       "close": "Schließen",
       "everyone": "Jede Fraktion",
+      "nobody": "Noch kann kein Charakter ihn tragen",
       "ownedSummary": "{{spare}}, {{worn}}",
       "openInLibrary": "In der Bibliothek öffnen"
     },
@@ -132,8 +133,7 @@
       "faction": "Fraktion",
       "allFactions": "Alle Fraktionen",
       "clearFactions": "Fraktionen löschen",
-      "chipsLabel": "Anzeigen",
-      "unlocked": "Nur freie Plätze",
+      "locked": "Gesperrte Plätze zeigen",
       "clearFilters": "Filter löschen"
     },
     "slot": "Platz: {{slot}}",
@@ -170,9 +170,9 @@
     "toolbar": {
       "label": "Gegenstände finden",
       "search": "Gegenstände suchen",
-      "chipsLabel": "Anzeigen",
+      "chipsLabel": "Schnellfilter",
       "safe": "Nur sichere",
-      "upgraded": "Verbesserte Gegenstände",
+      "upgraded": "Nur verbesserte",
       "clearFilters": "Filter löschen"
     },
     "summary": {
@@ -197,6 +197,10 @@
       "title": "Nichts sicher wiederverwertbar",
       "description": "Jedes Ersatzstück könnte noch an einen Charakter gehen.",
       "showAll": "Alle Ersatzstücke zeigen"
+    },
+    "empty": {
+      "title": "Noch keine Ersatzstücke",
+      "description": "Weitere Exemplare eines Gegenstands erscheinen hier nach deiner nächsten Synchronisierung."
     },
     "noMatch": {
       "title": "Keine passenden Gegenstände",

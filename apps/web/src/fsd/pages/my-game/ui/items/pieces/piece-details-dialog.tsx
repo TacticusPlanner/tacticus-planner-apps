@@ -41,7 +41,6 @@ type Item = EquipmentStorageModel
 type DetailsProps = {
   piece: OwnedPiece<Item> | undefined
   context: PiecesListContext
-  factionName: (id: string) => string
   onOpenChange: (open: boolean) => void
 }
 
@@ -67,7 +66,6 @@ export function PieceDetailsDialog(props: DetailsProps) {
 function DetailsContent({
   piece,
   context,
-  factionName,
   onOpenChange,
 }: DetailsProps & { piece: OwnedPiece<Item> }) {
   const { t } = useTranslation(["myItems", "progression"])
@@ -96,19 +94,19 @@ function DetailsContent({
         </div>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody className="gap-5">
-        <WhoCanWear context={context} factionName={factionName} item={item} />
+        <WhoCanWear context={context} item={item} />
         <OwnedCopies context={context} piece={piece} />
         <StatsTable piece={piece} />
         <UpgradeCosts piece={piece} />
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
-        <Button asChild variant="outline">
-          <Link data-testid="items-piece-library" to={itemLibraryPath(item.id)}>
-            {t("pieces.details.openInLibrary")}
-          </Link>
-        </Button>
         <Button onClick={() => onOpenChange(false)} variant="outline">
           {t("pieces.details.close")}
+        </Button>
+        <Button asChild>
+          <Link to={itemLibraryPath(item.id)}>
+            {t("pieces.details.openInLibrary")}
+          </Link>
         </Button>
       </ResponsiveDialogFooter>
     </>
@@ -126,32 +124,31 @@ function Section({
 }) {
   return (
     <section className="flex flex-col gap-2" data-testid={testId}>
-      <h3 className="text-sm font-semibold">{title}</h3>
+      <h3 className="text-sm font-medium">{title}</h3>
       {children}
     </section>
   )
 }
 
-/** A relic's characters, or the item's factions ("Every faction" when it fits them all). */
+/** A relic's characters, or the item's factions ("Every faction" when it fits them all; no one can
+ *  wear an item with neither). */
 function WhoCanWear({
   item,
   context,
-  factionName,
 }: {
   item: Item
   context: PiecesListContext
-  factionName: (id: string) => string
 }) {
   const { t } = useTranslation("myItems")
+  const forFactions = item.allowedUnits.length === 0
+  const nobody = forFactions && item.allowedFactions.length === 0
   const everyone =
-    item.allowedUnits.length === 0 &&
-    (item.allowedFactions.length === 0 ||
-      item.allowedFactions.length >= context.factionCount)
+    forFactions && item.allowedFactions.length >= context.factionCount
   return (
     <Section testId="items-piece-for" title={t("pieces.details.for")}>
-      {everyone ? (
+      {nobody || everyone ? (
         <p className="text-sm text-muted-foreground">
-          {t("pieces.details.everyone")}
+          {t(nobody ? "pieces.details.nobody" : "pieces.details.everyone")}
         </p>
       ) : item.allowedUnits.length > 0 ? (
         <ul className="flex flex-wrap gap-x-4 gap-y-2">
@@ -171,7 +168,7 @@ function WhoCanWear({
           {item.allowedFactions.map((id) => (
             <li className="flex items-center gap-1.5 text-sm" key={id}>
               <EntityIcon alt="" size="icon" src={factionIcon(id)} />
-              {factionName(id)}
+              {context.factionName(id)}
             </li>
           ))}
         </ul>

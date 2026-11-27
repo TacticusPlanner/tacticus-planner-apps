@@ -5,6 +5,8 @@ import {
   costLadder,
   filterLibraryItems,
   groupLibraryItems,
+  itemsOriginState,
+  readItemsListSearch,
   readLibraryItemsQuery,
   sortLibraryItems,
   writeLibraryItemsQuery,
@@ -109,5 +111,14 @@ describe("costLadder", () => {
       totalSalvage: 360,
       totalMythicSalvage: 0,
     })
+  })
+})
+
+describe("readItemsListSearch", () => {
+  it("reads the list's search back, and ignores state it didn't write", () => {
+    expect(readItemsListSearch(itemsOriginState("?relic=1"))).toBe("?relic=1")
+    expect(readItemsListSearch(itemsOriginState(""))).toBe("")
+    expect(readItemsListSearch(null)).toBe("")
+    expect(readItemsListSearch({ itemsListSearch: "//evil" })).toBe("")
   })
 })

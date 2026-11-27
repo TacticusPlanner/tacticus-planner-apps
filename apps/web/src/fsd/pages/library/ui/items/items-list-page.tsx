@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
-import { Link } from "react-router"
+import { Link, useLocation } from "react-router"
 import { X } from "lucide-react"
 import {
   equipmentSlotIcon,
@@ -14,7 +14,7 @@ import type {
 import type { Rarity } from "@workspace/game-domain"
 import { rarityOrder } from "@workspace/game-domain"
 import { Button } from "@workspace/ui/components/button"
-import { ToggleGroup } from "@workspace/ui/components/toggle-group"
+import { Switch } from "@workspace/ui/components/switch"
 
 import {
   ITEM_SLOT_TYPES,
@@ -28,11 +28,9 @@ import {
   CountBadge,
   EmptyState,
   EntityIcon,
-  FILTER_CHIP_CLASS_NAME,
   FilterField,
   FiltersControl,
   GroupByControl,
-  HintedToggleGroupItem,
   ListDivider,
   LocalReadFailure,
   MultiSelect,
@@ -49,6 +47,7 @@ import {
   allFactionCount,
   filterLibraryItems,
   groupLibraryItems,
+  itemsOriginState,
   libraryItemsQueryNarrows,
   readLibraryItemsQuery,
   writeLibraryItemsQuery,
@@ -106,6 +105,7 @@ function ItemsList({
 }) {
   const { t, i18n } = useTranslation(["library", "progression", "gameUi"])
   const slotName = useItemSlotName()
+  const origin = itemsOriginState(useLocation().search)
   const { query, update } = useUrlQuery(
     readLibraryItemsQuery,
     writeLibraryItemsQuery
@@ -135,28 +135,6 @@ function ItemsList({
   return (
     <div className="flex flex-col gap-4" data-testid="library-items-page">
       <PageToolbar
-        chips={
-          <ToggleGroup
-            aria-label={t("items.list.relic")}
-            className="shrink-0"
-            onValueChange={(values) =>
-              update({ relic: values.includes("relic") })
-            }
-            size="sm"
-            spacing={1}
-            type="multiple"
-            value={query.relic ? ["relic"] : []}
-            variant="outline"
-          >
-            <HintedToggleGroupItem
-              className={FILTER_CHIP_CLASS_NAME}
-              data-testid="library-items-relic-chip"
-              value="relic"
-            >
-              {t("items.list.relic")}
-            </HintedToggleGroupItem>
-          </ToggleGroup>
-        }
         find={
           <div
             aria-label={t("items.list.label")}
@@ -173,7 +151,9 @@ function ItemsList({
             />
             <FiltersControl
               count={activeLibraryItemFilterCount(query)}
-              onClear={() => update({ rarity: [], slot: [], faction: [] })}
+              onClear={() =>
+                update({ relic: false, rarity: [], slot: [], faction: [] })
+              }
               size="compact"
               testId="library-items-filters"
             >
@@ -262,6 +242,7 @@ function ItemsList({
                         className="flex size-full items-start gap-3 rounded-lg border bg-card interactive-surface p-3"
                         data-item-id={item.id}
                         data-testid="library-item-card"
+                        state={origin}
                         to={libraryItemPath(item.id)}
                       >
                         <ItemIcon item={item} size="icon-2xl" />
@@ -319,6 +300,15 @@ function LibraryItemFilterFields({
   const { t } = useTranslation(["library", "progression"])
   return (
     <div className="grid gap-3" data-testid="library-items-filter-fields">
+      <FilterField inline label={t("items.list.relic")}>
+        {({ id }) => (
+          <Switch
+            checked={query.relic}
+            id={id}
+            onCheckedChange={(relic) => update({ relic })}
+          />
+        )}
+      </FilterField>
       <FilterField icon="rarity" label={t("items.list.rarity")}>
         <MultiSelect
           clearLabel={t("items.list.clearRarities")}

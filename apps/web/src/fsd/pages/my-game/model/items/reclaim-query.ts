@@ -1,4 +1,5 @@
 import type { CatalogItem } from "./owned-items"
+import { compareStacks } from "./reclaim"
 import type { ReclaimStack } from "./reclaim"
 import { readFlag, writeUrlQuery } from "@/shared/lib"
 
@@ -28,20 +29,23 @@ export const writeReclaimQuery = (
   patch: Partial<ReclaimQuery>
 ): URLSearchParams => writeUrlQuery(params, patch, DEFAULT_RECLAIM_QUERY)
 
-/** The stacks the query keeps; `nameOf` is the item's displayed name, which the search matches. */
+/** The stacks the query keeps, in slot, rarity, name and level order; `nameOf` is the item's
+ *  displayed name, which the search matches and the order uses. */
 export function filterReclaimStacks<Item extends CatalogItem>(
   stacks: readonly ReclaimStack<Item>[],
   query: ReclaimQuery,
   { nameOf, locale }: { nameOf: (item: Item) => string; locale: string }
 ): ReclaimStack<Item>[] {
   const search = query.q.trim().toLocaleLowerCase(locale)
-  return stacks.filter(
-    (stack) =>
-      (!query.safe || stack.safe > 0) &&
-      (!query.upgraded || stack.level > 1) &&
-      (search === "" ||
-        nameOf(stack.item).toLocaleLowerCase(locale).includes(search))
-  )
+  return stacks
+    .filter(
+      (stack) =>
+        (!query.safe || stack.safe > 0) &&
+        (!query.upgraded || stack.level > 1) &&
+        (search === "" ||
+          nameOf(stack.item).toLocaleLowerCase(locale).includes(search))
+    )
+    .toSorted(compareStacks(nameOf, locale))
 }
 
 /** Stacks in groups by slot type, keeping their order. */

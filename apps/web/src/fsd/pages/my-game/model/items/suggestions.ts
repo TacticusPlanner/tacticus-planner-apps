@@ -225,8 +225,13 @@ class CharacterPlan {
     const type = this.character.slots[index]
     if (!slot || type === undefined || slot.suggestion) return
     const current = slot.worn
-    // A worn Mythic item can't be taken off, and relics stay where the player put them.
-    if (current && this.itemOf(current.itemId)?.rarity === "Mythic") return
+    // A worn Mythic item can't be taken off, and relics stay where the player put them. An item
+    // the catalog doesn't know can't be compared, so its slot is left alone.
+    if (
+      current &&
+      (current.unknown || this.itemOf(current.itemId)?.rarity === "Mythic")
+    )
+      return
     const base = this.base(type)
     const locked = !slot.open || base.locked
     if (!base.filled || (locked && !lockedPass)) return

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { Navigate, useParams } from "react-router"
+import { Navigate, useLocation, useParams } from "react-router"
 import { Info } from "lucide-react"
 import type {
   CharacterStorageModel,
@@ -24,7 +24,12 @@ import {
 } from "@/shared/equipment"
 import { HintTrigger, LocalReadFailure } from "@/shared/ui"
 
-import { allFactionCount, costLadder } from "../../model/items/library-items"
+import {
+  allFactionCount,
+  costLadder,
+  itemsOriginState,
+  readItemsListSearch,
+} from "../../model/items/library-items"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { ItemFor } from "./item-for"
 import {
@@ -75,6 +80,8 @@ function ItemDetail({
   const isMobile = useIsMobile()
   const slotName = useItemSlotName()
   const name = itemName(item)
+  // Back returns to the list as it was left; Previous / Next carry that along.
+  const listSearch = readItemsListSearch(useLocation().state)
   const neighbours = unitNeighbours(
     items.map((entry) => entry.id),
     item.id
@@ -82,7 +89,11 @@ function ItemDetail({
   const navTarget = (id: string | undefined) => {
     const target = id ? items.find((entry) => entry.id === id) : undefined
     return target
-      ? { to: libraryItemPath(target.id), name: itemName(target), state: null }
+      ? {
+          to: libraryItemPath(target.id),
+          name: itemName(target),
+          state: itemsOriginState(listSearch),
+        }
       : undefined
   }
   const flags = [
@@ -103,7 +114,10 @@ function ItemDetail({
     <div className="flex flex-col gap-6" data-testid="library-item-page">
       <div className="-mx-4 md:-mx-6">
         <UnitNavBar
-          back={{ to: LIBRARY_ITEMS_PATH, label: t("items.detail.back") }}
+          back={{
+            to: `${LIBRARY_ITEMS_PATH}${listSearch}`,
+            label: t("items.detail.back"),
+          }}
           breadcrumb={[
             t("characterUnit.breadcrumbLibrary"),
             t("gameUi:items.title"),
@@ -134,6 +148,7 @@ function ItemDetail({
         <ItemFor
           charactersById={charactersById}
           everyoneLabel={t("items.detail.everyone")}
+          nobodyLabel={t("items.detail.nobody")}
           factionCount={allFactionCount(items)}
           factionName={factionName}
           item={item}

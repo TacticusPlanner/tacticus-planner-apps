@@ -20,6 +20,7 @@ import { PiecesList } from "./pieces/pieces-list"
 import type { PiecesListContext } from "./pieces/pieces-list"
 import { PiecesToolbar } from "./pieces/pieces-toolbar"
 import type { PiecesFilterOptions } from "./pieces/pieces-toolbar"
+import { SyncNowButton } from "./sync-now-button"
 
 /**
  * My game > Items > Pieces: every item the player holds or a character wears, one card (or table
@@ -66,10 +67,11 @@ export function ItemsPiecesTab() {
       itemName,
       slotName,
       unitName,
+      factionName,
       rarityOf: (id) => rarities.get(id),
       factionCount: factions.size,
     }
-  }, [owned.characters, itemsById, itemName, slotName, unitName])
+  }, [owned.characters, itemsById, itemName, slotName, unitName, factionName])
 
   const options: PiecesFilterOptions = useMemo(() => {
     const byName = (a: { name: string }, b: { name: string }) =>
@@ -103,6 +105,7 @@ export function ItemsPiecesTab() {
   if (owned.pieces.length === 0) {
     return (
       <EmptyState
+        actions={<SyncNowButton />}
         description={t("pieces.none.description")}
         testId="items-pieces-none"
         title={t("pieces.none.title")}
@@ -152,7 +155,6 @@ export function ItemsPiecesTab() {
       ) : null}
       <PieceDetailsDialog
         context={context}
-        factionName={factionName}
         onOpenChange={(open) => {
           if (!open) update({ piece: null })
         }}

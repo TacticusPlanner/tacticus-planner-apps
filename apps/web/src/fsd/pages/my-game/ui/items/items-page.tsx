@@ -1,11 +1,8 @@
 import { Outlet, useLocation, useNavigate } from "react-router"
 import { useTranslation } from "react-i18next"
-import { RefreshCw } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Tabs } from "@workspace/ui/components/tabs"
 
-import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import { formatRelativeTime, useNow } from "@/shared/lib"
 import { usePlayerDataStatus } from "@/shared/player-data-status"
 import {
@@ -19,6 +16,7 @@ import { useMyItemsData } from "../../model/items/use-my-items-data"
 import { ITEMS_PATH, ITEMS_TABS, isItemsTab } from "./items-outlet"
 import type { ItemsOutlet } from "./items-outlet"
 import { useItemsTutorial } from "./my-items.tutorial"
+import { SyncNowButton } from "./sync-now-button"
 
 /** "Synced 12 min ago", under the tabs: everything on the page comes from the last sync. */
 function SyncNote() {
@@ -40,22 +38,9 @@ function SyncNote() {
 /** Before the first sync: nothing to show, and the one action that fills the page. */
 function NotSyncedState() {
   const { t } = useTranslation("myItems")
-  const { isSyncing, syncDisabled, syncNow } = usePlayerDataSyncStatus()
   return (
     <EmptyState
-      actions={
-        <Button
-          disabled={syncDisabled}
-          onClick={() => syncNow()}
-          variant="outline"
-        >
-          <RefreshCw
-            aria-hidden="true"
-            className={isSyncing ? "motion-safe:animate-spin" : undefined}
-          />
-          {t("empty.sync")}
-        </Button>
-      }
+      actions={<SyncNowButton />}
       description={t("empty.description")}
       testId="items-not-synced"
       title={t("empty.title")}

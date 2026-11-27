@@ -3,6 +3,7 @@ import { rarityOrder, rarityRank } from "@workspace/game-domain"
 
 import { ITEM_SLOT_TYPES, itemSlotRank } from "@/shared/equipment"
 
+import { comparePieces } from "./owned-items"
 import type { CatalogItem, OwnedPiece } from "./owned-items"
 import { readFlag, readList, readOneOf, writeUrlQuery } from "@/shared/lib"
 
@@ -12,14 +13,14 @@ export type PiecesLayout = (typeof PIECES_LAYOUTS)[number]
 const PIECES_GROUPS = ["slot", "rarity", "none"] as const
 export type PiecesGroup = (typeof PIECES_GROUPS)[number]
 
-/** The Pieces tab's search, filters, chips and view, all carried in the URL. */
+/** The Pieces tab's search, filters and view, all carried in the URL. */
 export type PiecesQuery = {
   q: string
   rarity: Rarity[]
   slot: string[]
   faction: string[]
   character: string[]
-  /** Relics only (a chip that narrows the list; it never touches the rarity filter). */
+  /** Relics only (a switch that narrows the list; it never touches the rarity filter). */
   relic: boolean
   /** Items with at least one spare copy. */
   spares: boolean
@@ -53,12 +54,14 @@ export const CLEARED_PIECES_FILTERS: Partial<PiecesQuery> = {
   spares: false,
 }
 
-/** The Filters panel's fields, cleared (search and chips stay). */
+/** The Filters panel's fields, cleared (the search stays). */
 export const CLEARED_PIECES_PANEL: Partial<PiecesQuery> = {
   rarity: [],
   slot: [],
   faction: [],
   character: [],
+  relic: false,
+  spares: false,
 }
 
 /** Reads the query from the URL; unknown values are dropped. */
@@ -87,22 +90,21 @@ export const writePiecesQuery = (
   patch: Partial<PiecesQuery>
 ): URLSearchParams => writeUrlQuery(params, patch, DEFAULT_PIECES_QUERY)
 
-/** How many filters are set inside the Filters panel (search and chips are counted apart). */
+/** How many filters are set inside the Filters panel: each switch that is on, and each field
+ *  with a value (the search is counted apart). */
 export function activePiecesFilterCount(query: PiecesQuery): number {
-  return [query.rarity, query.slot, query.faction, query.character].filter(
-    (values) => values.length > 0
-  ).length
+  return [
+    query.spares,
+    query.relic,
+    ...[query.rarity, query.slot, query.faction, query.character].map(
+      (values) => values.length > 0
+    ),
+  ].filter(Boolean).length
 }
 
-/** Whether any filter, chip or search narrows the list. */
-export function piecesQueryNarrows(query: PiecesQuery): boolean {
-  return (
-    query.q.trim() !== "" ||
-    activePiecesFilterCount(query) > 0 ||
-    query.relic ||
-    query.spares
-  )
-}
+/** Whether any filter or the search narrows the list. */
+export const piecesQueryNarrows = (query: PiecesQuery): boolean =>
+  query.q.trim() !== "" || activePiecesFilterCount(query) > 0
 
 /** What the filters need to know about characters: each one's faction and eligible item ids. */
 export type PiecesCharacterIndex = ReadonlyMap<
@@ -126,7 +128,8 @@ export function itemFactions(
   ]
 }
 
-/** The pieces the query keeps. `nameOf` is the item's displayed name, which the search matches. */
+/** The pieces the query keeps, in slot, rarity and name order. `nameOf` is the item's displayed
+ *  name, which the search matches and the order uses. */
 export function filterPieces<Item extends CatalogItem>(
   pieces: readonly OwnedPiece<Item>[],
   query: PiecesQuery,
@@ -141,23 +144,25 @@ export function filterPieces<Item extends CatalogItem>(
   }
 ): OwnedPiece<Item>[] {
   const search = query.q.trim().toLocaleLowerCase(locale)
-  return pieces.filter(
-    ({ item, spare }) =>
-      (search === "" ||
-        nameOf(item).toLocaleLowerCase(locale).includes(search)) &&
-      (!query.relic || item.isRelic) &&
-      (!query.spares || spare > 0) &&
-      (query.rarity.length === 0 || query.rarity.includes(item.rarity)) &&
-      (query.slot.length === 0 || query.slot.includes(item.type)) &&
-      (query.faction.length === 0 ||
-        itemFactions(item, characters).some((faction) =>
-          query.faction.includes(faction)
-        )) &&
-      (query.character.length === 0 ||
-        query.character.some(
-          (id) => characters.get(id)?.eligible.has(item.id) === true
-        ))
-  )
+  return pieces
+    .filter(
+      ({ item, spare }) =>
+        (search === "" ||
+          nameOf(item).toLocaleLowerCase(locale).includes(search)) &&
+        (!query.relic || item.isRelic) &&
+        (!query.spares || spare > 0) &&
+        (query.rarity.length === 0 || query.rarity.includes(item.rarity)) &&
+        (query.slot.length === 0 || query.slot.includes(item.type)) &&
+        (query.faction.length === 0 ||
+          itemFactions(item, characters).some((faction) =>
+            query.faction.includes(faction)
+          )) &&
+        (query.character.length === 0 ||
+          query.character.some(
+            (id) => characters.get(id)?.eligible.has(item.id) === true
+          ))
+    )
+    .toSorted(comparePieces(nameOf, locale))
 }
 
 export type PiecesGroupEntry<Item extends CatalogItem> = {

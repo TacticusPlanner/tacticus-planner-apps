@@ -78,7 +78,8 @@ function slotIndex(
 
 /**
  * How many slots could still use the item: every slot that may take it, on a character the player
- * owns or not, unless an owned character already wears an item of this rarity or better there.
+ * owns or not, unless an owned character already wears an item of this rarity or better there (or
+ * one the catalog doesn't know).
  * Slots that aren't open yet count, and so do characters not owned yet (row 10 B), so the count
  * leans towards keeping.
  */
@@ -93,8 +94,10 @@ function potentialUsers(
     const worn = ownedById
       .get(characterId)
       ?.worn.find((entry) => entry.slotIndex === slotIndex)
-    const wornItem = worn ? itemOf(worn.itemId) : undefined
-    return !wornItem || rarityRank(wornItem.rarity) < rank
+    if (!worn) return true
+    // A slot holding an item the catalog doesn't know is filled and can't be compared.
+    const wornItem = itemOf(worn.itemId)
+    return wornItem !== undefined && rarityRank(wornItem.rarity) < rank
   }).length
 }
 
@@ -136,6 +139,20 @@ const sumTotal = (
     { copies: 0, value: NO_COST }
   )
 
+/** Slot type, highest rarity, `nameOf` (the displayed name), then highest level. */
+export function compareStacks<Item extends CatalogItem>(
+  nameOf: (item: Item) => string,
+  locale: string
+): (a: ReclaimStack<Item>, b: ReclaimStack<Item>) => number {
+  return (a, b) =>
+    firstDifference(
+      itemSlotRank(a.item.type) - itemSlotRank(b.item.type),
+      rarityRank(b.item.rarity) - rarityRank(a.item.rarity),
+      nameOf(a.item).localeCompare(nameOf(b.item), locale),
+      b.level - a.level
+    )
+}
+
 /**
  * Which spare copies are safe to reclaim (row 10 B). A copy is safe when the player holds more spare
  * copies of the item than slots that could still use one (see `potentialUsers`), or when no slot
@@ -171,9 +188,14 @@ export function planReclaim<Item extends CatalogItem>({
       }))
     if (levels.length === 0) continue
     const never = piece.item.isRelic || piece.item.rarity === "Mythic"
+    // Each copy Suggestions hands out fills one of those slots, so it needs no free copy too.
+    const totalReserved = levels.reduce((sum, l) => sum + l.reserved, 0)
     const users = never
       ? 0
-      : potentialUsers(piece.item, slots, ownedById, itemOf)
+      : Math.max(
+          0,
+          potentialUsers(piece.item, slots, ownedById, itemOf) - totalReserved
+        )
     const held = levels.reduce((sum, l) => sum + l.spare - l.reserved, 0)
     const safe = never ? levels.map(() => 0) : splitLevels(levels, users)
     const reason = reasonFor(piece.item, users, held)
@@ -190,14 +212,7 @@ export function planReclaim<Item extends CatalogItem>({
     })
   }
 
-  stacks.sort((a, b) =>
-    firstDifference(
-      itemSlotRank(a.item.type) - itemSlotRank(b.item.type),
-      rarityRank(b.item.rarity) - rarityRank(a.item.rarity),
-      a.item.name.localeCompare(b.item.name),
-      b.level - a.level
-    )
-  )
+  stacks.sort(compareStacks((item) => item.name, "en"))
   return {
     stacks,
     safe: sumTotal(stacks, (stack) => stack.safe),

@@ -7,7 +7,7 @@ import {
 
 import type { CharacterSuggestions } from "./suggestions"
 
-/** The Suggestions tab's search, filter and chip, carried in the URL. */
+/** The Suggestions tab's search and filters, carried in the URL. */
 export type SuggestionsQuery = {
   /** Matches a character's name. */
   q: string
@@ -37,13 +37,13 @@ export const writeSuggestionsQuery = (
   patch: Partial<SuggestionsQuery>
 ): URLSearchParams => writeUrlQuery(params, patch, DEFAULT_SUGGESTIONS_QUERY)
 
-/** Whether the search or the faction filter narrows the list (the chip is a view choice). */
+/** Whether the search or the faction filter narrows the list ("Show locked slots" only widens it). */
 export const suggestionsQueryNarrows = (query: SuggestionsQuery): boolean =>
   query.q.trim() !== "" || query.faction.length > 0
 
 /**
  * The characters the query keeps, each with only the suggestions it shows (no slot that isn't open
- * yet while "Unlocked slots only" is on), the ones gaining most first, then by name.
+ * yet unless "Show locked slots" is on), the ones gaining most first, then by name.
  */
 export function visibleSuggestions(
   characters: readonly CharacterSuggestions[],

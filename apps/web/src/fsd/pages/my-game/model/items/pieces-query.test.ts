@@ -102,13 +102,16 @@ describe("readPiecesQuery / writePiecesQuery", () => {
 })
 
 describe("filter counts", () => {
-  it("counts the panel's filters, and narrows on search and chips too", () => {
+  it("counts the panel's fields and switches, and narrows on the search too", () => {
     const query = {
       ...DEFAULT_PIECES_QUERY,
       rarity: ["Epic" as const],
       faction: ["Orks"],
     }
     expect(activePiecesFilterCount(query)).toBe(2)
+    expect(
+      activePiecesFilterCount({ ...query, spares: true, relic: true })
+    ).toBe(4)
     expect(piecesQueryNarrows(DEFAULT_PIECES_QUERY)).toBe(false)
     expect(piecesQueryNarrows({ ...DEFAULT_PIECES_QUERY, spares: true })).toBe(
       true
@@ -130,18 +133,35 @@ describe("filterPieces", () => {
   })
 
   it("keeps spares only and relics only", () => {
-    expect(filter({ spares: true })).toEqual(["crit", "relic"])
+    expect(filter({ spares: true })).toEqual(["relic", "crit"])
     expect(filter({ relic: true })).toEqual(["relic"])
   })
 
   it("filters by rarity, slot, faction and character", () => {
     expect(filter({ rarity: ["Legendary", "Mythic"] })).toEqual([
-      "block",
       "relic",
+      "block",
     ])
     expect(filter({ slot: ["I_Block"] })).toEqual(["block"])
-    expect(filter({ faction: ["Ultramarines"] })).toEqual(["crit", "relic"])
+    expect(filter({ faction: ["Ultramarines"] })).toEqual(["relic", "crit"])
     expect(filter({ character: ["orksWarboss"] })).toEqual(["block"])
+  })
+})
+
+describe("filterPieces order", () => {
+  it("orders by the displayed name within a slot and rarity", () => {
+    const alpha = testItem("alpha", { name: "Alpha" })
+    const beta = testItem("beta", { name: "Beta" })
+    const shown = filterPieces(
+      [piece(alpha), piece(beta)],
+      DEFAULT_PIECES_QUERY,
+      {
+        nameOf: (item) => (item.id === "alpha" ? "Zeta" : "Beta"),
+        characters,
+        locale: "en",
+      }
+    )
+    expect(shown.map(({ item }) => item.id)).toEqual(["beta", "alpha"])
   })
 })
 

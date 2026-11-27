@@ -1,16 +1,14 @@
-import { useCallback, useId } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { X } from "lucide-react"
 import { factionIcon } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
-import { ToggleGroup } from "@workspace/ui/components/toggle-group"
+import { Switch } from "@workspace/ui/components/switch"
 
 import {
   EntityIcon,
-  FILTER_CHIP_CLASS_NAME,
   FilterField,
   FiltersControl,
-  HintedToggleGroupItem,
   MultiSelect,
   PageToolbar,
   SearchField,
@@ -33,43 +31,15 @@ type ToolbarProps = {
 
 /**
  * The Suggestions tab's toolbar (ui-style-guide rule 2). Find: a character search and Filters
- * (Faction), then Clear filters while either narrows the list. The chip row holds "Unlocked slots
- * only", on by default. Nothing to switch in View.
+ * (a "Show locked slots" switch, off by default, then Faction), then Clear filters while anything
+ * differs from the defaults. Nothing to switch in View.
  */
 export function SuggestionsToolbar({ query, update, factions }: ToolbarProps) {
   const { t } = useTranslation("myItems")
   const setSearch = useCallback((q: string) => update({ q }), [update])
-  const labelId = useId()
 
   return (
     <PageToolbar
-      chips={
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-muted-foreground" id={labelId}>
-            {t("suggestions.toolbar.chipsLabel")}
-          </span>
-          <ToggleGroup
-            aria-labelledby={labelId}
-            className="shrink-0"
-            onValueChange={(values) =>
-              update({ unlocked: values.includes("unlocked") })
-            }
-            size="sm"
-            spacing={1}
-            type="multiple"
-            value={query.unlocked ? ["unlocked"] : []}
-            variant="outline"
-          >
-            <HintedToggleGroupItem
-              className={FILTER_CHIP_CLASS_NAME}
-              data-testid="items-suggestions-unlocked-chip"
-              value="unlocked"
-            >
-              {t("suggestions.toolbar.unlocked")}
-            </HintedToggleGroupItem>
-          </ToggleGroup>
-        </div>
-      }
       find={
         <div
           aria-label={t("suggestions.toolbar.label")}
@@ -85,11 +55,27 @@ export function SuggestionsToolbar({ query, update, factions }: ToolbarProps) {
             value={query.q}
           />
           <FiltersControl
-            count={query.faction.length > 0 ? 1 : 0}
-            onClear={() => update({ faction: [] })}
+            count={
+              (query.unlocked ? 0 : 1) + (query.faction.length > 0 ? 1 : 0)
+            }
+            onClear={() =>
+              update({
+                unlocked: DEFAULT_SUGGESTIONS_QUERY.unlocked,
+                faction: DEFAULT_SUGGESTIONS_QUERY.faction,
+              })
+            }
             size="compact"
             testId="items-suggestions-filters"
           >
+            <FilterField inline label={t("suggestions.toolbar.locked")}>
+              {({ id }) => (
+                <Switch
+                  checked={!query.unlocked}
+                  id={id}
+                  onCheckedChange={(locked) => update({ unlocked: !locked })}
+                />
+              )}
+            </FilterField>
             <FilterField
               icon="faction"
               label={t("suggestions.toolbar.faction")}
@@ -116,11 +102,12 @@ export function SuggestionsToolbar({ query, update, factions }: ToolbarProps) {
               />
             </FilterField>
           </FiltersControl>
-          {suggestionsQueryNarrows(query) ? (
+          {suggestionsQueryNarrows(query) || !query.unlocked ? (
             <Button
               onClick={() =>
                 update({
                   q: DEFAULT_SUGGESTIONS_QUERY.q,
+                  unlocked: DEFAULT_SUGGESTIONS_QUERY.unlocked,
                   faction: DEFAULT_SUGGESTIONS_QUERY.faction,
                 })
               }

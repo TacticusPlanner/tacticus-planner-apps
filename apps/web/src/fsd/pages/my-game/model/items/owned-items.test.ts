@@ -54,6 +54,28 @@ describe("buildOwnedItems", () => {
     })
   })
 
+  it("keeps the slot of a worn item the catalog doesn't know taken", () => {
+    const owned = buildOwnedItems({
+      catalogItems,
+      catalogCharacters,
+      syncedCharacters: [
+        {
+          unitId: "ultraTitus",
+          progressionIndex: "Epic:RedOneStar",
+          equippedItems: [
+            { slotId: "Slot1", equipmentId: "I_Crit_New", level: 2 },
+          ],
+        },
+      ],
+      inventory: [],
+    })
+    expect(owned.pieces).toEqual([])
+    expect(owned.unknownCopies).toBe(1)
+    expect(owned.characters[0]?.worn).toEqual([
+      { slotIndex: 0, itemId: "I_Crit_New", level: 2, unknown: true },
+    ])
+  })
+
   it("sorts by slot type, then rarity", () => {
     const owned = buildOwnedItems({
       catalogItems,

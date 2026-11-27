@@ -94,7 +94,10 @@ describe("ItemsSuggestionsTab", () => {
     expect(card).toHaveTextContent("Swap Knife Lv 3 for Sword Lv 1")
     expect(card).toHaveTextContent("Epic beats Rare")
 
-    await user.click(screen.getByTestId("items-suggestions-unlocked-chip"))
+    await user.click(screen.getByRole("button", { name: "Filters" }))
+    await user.click(
+      await screen.findByRole("switch", { name: "Show locked slots" })
+    )
     const rows = within(
       screen.getByTestId("item-suggestion-character")
     ).getAllByTestId("item-suggestion")

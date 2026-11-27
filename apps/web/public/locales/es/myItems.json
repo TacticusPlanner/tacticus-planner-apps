@@ -65,7 +65,6 @@
       "allCharacters": "Todos los personajes",
       "clearCharacters": "Borrar personajes",
       "searchCharacters": "Buscar personajes",
-      "chipsLabel": "Mostrar",
       "spares": "Solo repuestos",
       "relics": "Solo reliquias",
       "clearFilters": "Borrar filtros",
@@ -86,6 +85,7 @@
     "worn_other": "{{count}} equipados",
     "more": "+{{count}}",
     "cardLabel": "{{name}}: {{spare}}, {{worn}}",
+    "cardFor": "Para {{names}}",
     "table": {
       "label": "Objetos",
       "item": "Objeto",
@@ -117,6 +117,7 @@
       "maxed": "Tu copia más alta ya está al nivel máximo.",
       "close": "Cerrar",
       "everyone": "Todas las facciones",
+      "nobody": "Ningún personaje puede llevarlo aún",
       "ownedSummary": "{{spare}}, {{worn}}",
       "openInLibrary": "Abrir en la Biblioteca"
     },
@@ -132,8 +133,7 @@
       "faction": "Facción",
       "allFactions": "Todas las facciones",
       "clearFactions": "Borrar facciones",
-      "chipsLabel": "Mostrar",
-      "unlocked": "Solo ranuras desbloqueadas",
+      "locked": "Mostrar ranuras bloqueadas",
       "clearFilters": "Borrar filtros"
     },
     "slot": "Ranura: {{slot}}",
@@ -170,9 +170,9 @@
     "toolbar": {
       "label": "Buscar objetos",
       "search": "Buscar objetos",
-      "chipsLabel": "Mostrar",
+      "chipsLabel": "Filtros rápidos",
       "safe": "Solo seguros",
-      "upgraded": "Objetos mejorados",
+      "upgraded": "Solo mejorados",
       "clearFilters": "Borrar filtros"
     },
     "summary": {
@@ -197,6 +197,10 @@
       "title": "Nada seguro para reclamar",
       "description": "Cada repuesto aún podría ir a un personaje.",
       "showAll": "Mostrar todos los repuestos"
+    },
+    "empty": {
+      "title": "Aún no hay repuestos",
+      "description": "Las copias extra de un objeto aparecen aquí tras tu próxima sincronización."
     },
     "noMatch": {
       "title": "Ningún objeto coincide",

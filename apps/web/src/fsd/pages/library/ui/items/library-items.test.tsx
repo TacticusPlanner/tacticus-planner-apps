@@ -6,6 +6,7 @@ import { render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
 import { ItemPage } from "./item-page"
+import { itemsOriginState } from "../../model/items/library-items"
 import { ItemsListPage } from "./items-list-page"
 
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: () => {} }))
@@ -98,12 +99,29 @@ describe("Library Items", () => {
         .getAllByTestId("library-item-card")
         .map((card) => card.dataset.itemId)
     ).toEqual(["X_Relic", "X_Crit_E001", "X_Block_E001"])
-    await user.click(screen.getByTestId("library-items-relic-chip"))
+    await user.click(screen.getByRole("button", { name: "Filters" }))
+    await user.click(await screen.findByRole("switch", { name: "Relics only" }))
     expect(screen.getAllByTestId("library-item-card")).toHaveLength(1)
     expect(screen.getByTestId("library-item-card")).toHaveAttribute(
       "href",
       "/library/items/X_Relic"
     )
+  })
+
+  it("goes back to the list with the filters it was opened from", async () => {
+    await seedGameCatalog({ equipment, characters })
+    render(<ItemRoute />, {
+      route: "/library/items/:entityId?",
+      initialEntries: [
+        {
+          pathname: "/library/items/X_Relic",
+          state: itemsOriginState("?relic=1&group=rarity"),
+        },
+      ],
+    })
+    expect(
+      await screen.findByRole("link", { name: /All items/ })
+    ).toHaveAttribute("href", "/library/items?relic=1&group=rarity")
   })
 
   it("shows an item's stats and its cost ladder with the reclaim value", async () => {

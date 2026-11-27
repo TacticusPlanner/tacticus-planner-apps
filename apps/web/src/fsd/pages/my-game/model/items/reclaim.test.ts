@@ -112,6 +112,22 @@ describe("planReclaim", () => {
     expect(summary(result)).toEqual([["rareCrit", 1, 2, "covered"]])
   })
 
+  it("counts a slot holding an item the catalog doesn't know as filled", () => {
+    const result = plan({
+      stacks: [[rareCrit, 1, 2]],
+      catalog: [critHero("a"), critHero("b")],
+      owned: [
+        testOwnedCharacter("a", ["I_Crit"], CRITS, {
+          worn: [{ slotIndex: 0, itemId: "newCrit", level: 1, unknown: true }],
+        }),
+      ],
+    })
+    expect(result.stacks[0]).toMatchObject({
+      safe: 1,
+      reason: { kind: "surplus", held: 2, users: 1 },
+    })
+  })
+
   it("keeps the highest-level copies", () => {
     const result = plan({
       stacks: [
@@ -132,10 +148,11 @@ describe("planReclaim", () => {
       catalog: [critHero("a")],
       reserved: new Map([["rareCrit", new Map([[2, 1]])]]),
     })
+    // The reserved copy fills the one slot, so both free copies are safe.
     expect(result.stacks[0]).toMatchObject({
-      safe: 1,
+      safe: 2,
       reserved: 1,
-      reason: { kind: "surplus", held: 2, users: 1 },
+      reason: { kind: "covered", rarity: "Rare" },
     })
   })
 

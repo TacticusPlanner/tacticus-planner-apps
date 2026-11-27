@@ -74,16 +74,18 @@ export const writeLibraryItemsQuery = (
   patch: Partial<LibraryItemsQuery>
 ): URLSearchParams => writeUrlQuery(params, patch, DEFAULT_LIBRARY_ITEMS_QUERY)
 
-/** How many of the Filters panel's fields are set (search and the chip are counted apart). */
+/** How many of the Filters panel's fields are set: the Relics only switch, and each field with a
+ *  value (the search is counted apart). */
 export const activeLibraryItemFilterCount = (query: LibraryItemsQuery) =>
-  [query.rarity, query.slot, query.faction].filter(
-    (values) => values.length > 0
-  ).length
+  [
+    query.relic,
+    ...[query.rarity, query.slot, query.faction].map(
+      (values) => values.length > 0
+    ),
+  ].filter(Boolean).length
 
 export const libraryItemsQueryNarrows = (query: LibraryItemsQuery) =>
-  query.q.trim() !== "" ||
-  query.relic ||
-  activeLibraryItemFilterCount(query) > 0
+  query.q.trim() !== "" || activeLibraryItemFilterCount(query) > 0
 
 /** The factions an item is for: its own list, or the factions of the characters it is unique to. */
 function libraryItemFactions(
@@ -207,3 +209,19 @@ export function costLadder(item: {
 export const allFactionCount = (
   items: readonly { allowedFactions: readonly string[] }[]
 ): number => new Set(items.flatMap((item) => item.allowedFactions)).size
+
+/** The list's search and filters, carried to an item page in router history state so its Back
+ *  button returns to the same list (and never shows in a shared URL). */
+type ItemsOriginState = { itemsListSearch: string }
+
+export const itemsOriginState = (search: string): ItemsOriginState => ({
+  itemsListSearch: search,
+})
+
+/** The list's `?…` search from an item page's history state; "" when there is none. History state
+ *  is untrusted: another page or an older build may have written it. */
+export function readItemsListSearch(state: unknown): string {
+  const search = (state as { itemsListSearch?: unknown } | null | undefined)
+    ?.itemsListSearch
+  return typeof search === "string" && search.startsWith("?") ? search : ""
+}

@@ -65,7 +65,6 @@
       "allCharacters": "All characters",
       "clearCharacters": "Clear characters",
       "searchCharacters": "Search characters",
-      "chipsLabel": "Show",
       "spares": "Spares only",
       "relics": "Relics only",
       "clearFilters": "Clear filters",
@@ -86,6 +85,7 @@
     "worn_other": "{{count}} worn",
     "more": "+{{count}}",
     "cardLabel": "{{name}}: {{spare}}, {{worn}}",
+    "cardFor": "For {{names}}",
     "table": {
       "label": "Items",
       "item": "Item",
@@ -117,6 +117,7 @@
       "maxed": "Your highest copy is already at the top level.",
       "close": "Close",
       "everyone": "Every faction",
+      "nobody": "No character can wear it yet",
       "ownedSummary": "{{spare}}, {{worn}}",
       "openInLibrary": "Open in Library"
     },
@@ -132,8 +133,7 @@
       "faction": "Faction",
       "allFactions": "All factions",
       "clearFactions": "Clear factions",
-      "chipsLabel": "Show",
-      "unlocked": "Unlocked slots only",
+      "locked": "Show locked slots",
       "clearFilters": "Clear filters"
     },
     "slot": "{{slot}} slot",
@@ -170,9 +170,9 @@
     "toolbar": {
       "label": "Find items",
       "search": "Search items",
-      "chipsLabel": "Show",
+      "chipsLabel": "Quick filters",
       "safe": "Safe only",
-      "upgraded": "Upgraded items",
+      "upgraded": "Upgraded only",
       "clearFilters": "Clear filters"
     },
     "summary": {
@@ -197,6 +197,10 @@
       "title": "Nothing safe to reclaim",
       "description": "Every spare could still go to a character.",
       "showAll": "Show all spares"
+    },
+    "empty": {
+      "title": "No spares yet",
+      "description": "Extra copies of an item show up here after your next sync."
     },
     "noMatch": {
       "title": "No items match",

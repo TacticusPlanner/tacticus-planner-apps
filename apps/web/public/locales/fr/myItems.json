@@ -65,7 +65,6 @@
       "allCharacters": "Tous les personnages",
       "clearCharacters": "Effacer les personnages",
       "searchCharacters": "Chercher des personnages",
-      "chipsLabel": "Afficher",
       "spares": "Doublons seulement",
       "relics": "Reliques seulement",
       "clearFilters": "Effacer les filtres",
@@ -86,6 +85,7 @@
     "worn_other": "{{count}} portés",
     "more": "+{{count}}",
     "cardLabel": "{{name}} : {{spare}}, {{worn}}",
+    "cardFor": "Pour {{names}}",
     "table": {
       "label": "Objets",
       "item": "Objet",
@@ -117,6 +117,7 @@
       "maxed": "Votre meilleur exemplaire est déjà au niveau maximum.",
       "close": "Fermer",
       "everyone": "Toutes les factions",
+      "nobody": "Aucun personnage ne peut encore le porter",
       "ownedSummary": "{{spare}}, {{worn}}",
       "openInLibrary": "Ouvrir dans la Bibliothèque"
     },
@@ -132,8 +133,7 @@
       "faction": "Faction",
       "allFactions": "Toutes les factions",
       "clearFactions": "Effacer les factions",
-      "chipsLabel": "Afficher",
-      "unlocked": "Emplacements débloqués seulement",
+      "locked": "Afficher les emplacements verrouillés",
       "clearFilters": "Effacer les filtres"
     },
     "slot": "Emplacement : {{slot}}",
@@ -170,9 +170,9 @@
     "toolbar": {
       "label": "Trouver des objets",
       "search": "Chercher des objets",
-      "chipsLabel": "Afficher",
+      "chipsLabel": "Filtres rapides",
       "safe": "Sûrs seulement",
-      "upgraded": "Objets améliorés",
+      "upgraded": "Améliorés seulement",
       "clearFilters": "Effacer les filtres"
     },
     "summary": {
@@ -197,6 +197,10 @@
       "title": "Rien à recycler sans risque",
       "description": "Chaque doublon pourrait encore servir à un personnage.",
       "showAll": "Afficher tous les doublons"
+    },
+    "empty": {
+      "title": "Pas encore de doublons",
+      "description": "Les exemplaires en trop d'un objet apparaissent ici après votre prochaine synchronisation."
     },
     "noMatch": {
       "title": "Aucun objet ne correspond",
