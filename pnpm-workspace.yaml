@@ -33,6 +33,10 @@ catalog:
   typescript-eslint: ^8.72.2
   jsdom: ^31.0.0
   vitest: ^5.1.1
+  dexie: ^4.4.7
+  fake-indexeddb: ^6.2.8
+  sonner: ^2.0.8
+  zod: ^4.6.7
 
 allowBuilds:
   "@posthog/cli": false
@@ -40,9 +44,3 @@ allowBuilds:
   esbuild: true
   lefthook: true
   msw: false
-
-minimumReleaseAgeExclude:
-  - lucide-react@1.22.0
-  - "@posthog/core@1.54.2"
-  - "@posthog/types@1.412.1"
-  - posthog-js@1.433.5

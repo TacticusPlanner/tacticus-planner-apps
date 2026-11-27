@@ -34,7 +34,7 @@
     "react-colorful": "^5.8.1",
     "react-dom": "catalog:",
     "shadcn": "catalog:",
-    "sonner": "^2.0.8",
+    "sonner": "catalog:",
     "tailwind-merge": "catalog:",
     "tw-animate-css": "catalog:",
     "vaul": "^1.1.2"

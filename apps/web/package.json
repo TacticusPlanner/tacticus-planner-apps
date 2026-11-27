@@ -54,8 +54,8 @@
     "react-i18next": "^18.0.1",
     "react-joyride": "^3.2.0",
     "react-router": "^8.5.2",
-    "sonner": "^2.0.8",
-    "zod": "^4.6.7"
+    "sonner": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@babel/core": "^7.29.13",
@@ -92,7 +92,7 @@
     "eslint-plugin-sonarjs": "^4.2.2",
     "eslint-plugin-testing-library": "^7.16.2",
     "eslint-plugin-unicorn": "^79.0.0",
-    "fake-indexeddb": "^6.2.8",
+    "fake-indexeddb": "catalog:",
     "globals": "catalog:",
     "jsdom": "catalog:",
     "knip": "catalog:",

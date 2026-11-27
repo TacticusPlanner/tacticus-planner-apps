@@ -1,12 +1,12 @@
 ---
 name: ui-style-guide
-description: Style guide for the V2 web app — page header, page toolbar slots, which control to use for which option, tabs, density and touch sizes, game icon sizes, UI copy, and overlays (dialogs, sheets, popovers, tooltips, confirms). Use when adding or changing a page, a toolbar, a filter, a group-by/sort/view control, a game icon (unit portrait, upgrade, equipment, faction, trait…), a dialog, sheet, popover or confirm, or any user-facing string in apps/web or packages/ui.
+description: Style guide for the V2 web app — page header, page toolbar slots, which control to use for which option, tabs, density and touch sizes, game icon sizes, UI copy, and overlays (dialogs, sheets, popovers, tooltips, confirms). Use when adding or changing a page, a toolbar, a filter, a group-by/sort/view control, a game icon (unit portrait, upgrade, equipment, faction, trait…), a dialog, sheet, popover or confirm, a table (Table vs DataTable), or any user-facing string in apps/web or packages/ui.
 ---
 
 # UI style guide
 
 The same job looks the same and sits in the same place on every page. This
-guide covers layout, controls, game icons, copy, overlays and hover; the `ui-sizing` skill is
+guide covers layout, controls, game icons, copy, overlays, hover and tables; the `ui-sizing` skill is
 its sizing chapter (type, icon, control and spacing scale, and the lint rule
 that bans hardcoded px) and still applies in full.
 
@@ -398,6 +398,38 @@ over the surface, never a fill that replaces it.
   filter chip), and a selected item still gets the hover tint on top.
 - App chrome (side and top navigation, account menu) keeps its own nav hover.
 
+## 10. Tables
+
+Two ways to build a table. Pick by what the user does with the rows, not by
+row count alone.
+
+| The table                                                                                         | Use                                                                                          |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Rows in a fixed order (backend order, game order, a model's default) or one the user drags        | `Table` primitives from `@workspace/ui/components/table` (`Table`, `TableRow`, `TableHead`…) |
+| Small and read-only: stats, costs, a short breakdown                                              | `Table` primitives                                                                           |
+| The user sorts by column headers, filters, pages, or hides/resizes columns, or it is a large grid | A shared `DataTable` on `@tanstack/react-table`, in `packages/ui`                            |
+
+- The `Table` primitives are styled `table` / `thead` / `tr` / `td` with no
+  logic. Keep them semantic: a header row of `TableHead`, one `TableRow` per
+  item. Content read by column, under column headers, is a semantic table,
+  not a `div` grid.
+- `DataTable` does not exist yet. Build it once in `packages/ui`, together
+  with the first page that needs it, and reuse it; never call
+  `useReactTable` directly from a page. Until then
+  `@tanstack/react-table` is only used by the ui-kit showcase
+  (`pages/ui-kit/ui/data-table-showcase.tsx`).
+- Existing hand-sorted tables (LE master table, cross-lane leaderboard) stay
+  as they are; move them to `DataTable` only when they are being changed
+  anyway.
+- Sort keys and comparators live in a `.ts` model next to the page (for
+  `DataTable`, the column definitions' `sortingFn`), never inline in the
+  `.tsx`. A sortable header is a button inside `TableHead` and the header
+  sets `aria-sort` (`ascending`, `descending` or `none`).
+- A table that also has a Cards view offers it through the Layout control
+  in the View slot (rule 2). Below the mobile breakpoint the table scrolls
+  sideways inside its container; the page never does.
+- Hover follows rule 9: `TableRow` brings its own; add nothing.
+
 ## Review checklist
 
 - [ ] Page has the standard header; settings (if any) is the labelled button at its right.
@@ -411,6 +443,7 @@ over the surface, never a fill that replaces it.
 - [ ] Clickable cards, tiles and rows use `interactive-surface` (rule 9); no solid or page-specific hover.
 - [ ] Other icons are 20px (`size-icon`) unless they fall under an exception in `ui-sizing`.
 - [ ] Every game entity with an icon shows it; no raw ids reach the screen.
+- [ ] Tables follow rule 10: `Table` primitives for fixed-order or small tables, the shared `DataTable` for column sort, filter or paging; sortable headers set `aria-sort`.
 - [ ] Each overlay is the one rule 8 names for its job, with a title, a rule 8 footer and one of the three widths.
 - [ ] New or changed strings pass the copy rules.
 - [ ] PR has desktop and mobile before/after screenshots (to host them without adding them to the diff, see "Screenshots in a pull request" in `AGENTS.md`).
