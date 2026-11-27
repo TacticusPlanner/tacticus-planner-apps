@@ -49,7 +49,9 @@ export function SelectableUnit({
       <Pressable
         variant="art"
         aria-label={t("myGame.collection.select.unit", { name: unit.name })}
-        aria-pressed={selected}
+        // Picking several, so each item is a checkbox (ui-style-guide rule 3).
+        role="checkbox"
+        aria-checked={selected}
         className={cn(
           "absolute inset-0 rounded-md",
           selected && "bg-primary/10 ring-2 ring-primary"

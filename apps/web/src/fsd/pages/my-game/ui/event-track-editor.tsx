@@ -215,7 +215,9 @@ export function EventTrackEditor({
                       <Button
                         size="sm"
                         variant={selected ? "default" : "outline"}
-                        aria-pressed={selected}
+                        // Picking several, so each item is a checkbox (ui-style-guide rule 3).
+                        role="checkbox"
+                        aria-checked={selected}
                         aria-describedby={nodeLabelId}
                         onClick={() => toggleChallenge(battle.id)}
                       >

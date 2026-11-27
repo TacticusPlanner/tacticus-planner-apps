@@ -58,7 +58,7 @@ describe("IncursionTeam", () => {
     expect(screen.getAllByTestId("incursion-eligible-selected")).toHaveLength(2)
     expect(
       screen.getByTestId("incursion-eligible-ultraTigurius")
-    ).toHaveAttribute("aria-pressed", "false")
+    ).toHaveAttribute("aria-checked", "false")
   })
 
   it("says when the roster has too few allowed heroes", () => {

@@ -189,7 +189,9 @@ function OptionRow({
   }
   return (
     <Pressable
-      aria-pressed={selected}
+      // Picking several, so each item is a checkbox (ui-style-guide rule 3).
+      role="checkbox"
+      aria-checked={selected}
       className={className}
       data-testid="quest-team-option"
       data-unit={unitId}

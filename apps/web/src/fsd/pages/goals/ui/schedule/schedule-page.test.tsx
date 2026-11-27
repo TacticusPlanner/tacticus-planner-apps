@@ -567,7 +567,7 @@ describe("Schedule page", () => {
       expect(screen.queryByTestId("plan-day-5")).not.toBeInTheDocument()
 
       try {
-        await user.click(screen.getByRole("button", { name: "Aleph-Null" }))
+        await user.click(screen.getByRole("radio", { name: "Aleph-Null" }))
         expect(scrolled.at(-1)).toBe(screen.getByTestId("plan-day-5"))
       } finally {
         spy.mockRestore()
@@ -584,11 +584,11 @@ describe("Schedule page", () => {
       useDailyRaids.mockReturnValue(raidedPlan([]))
       render(<SchedulePage />)
 
-      const bellator = screen.getByRole("button", { name: "Bellator" })
-      expect(bellator).toHaveAttribute("aria-pressed", "false")
+      const bellator = screen.getByRole("radio", { name: "Bellator" })
+      expect(bellator).toHaveAttribute("aria-checked", "false")
       await user.click(bellator)
 
-      expect(bellator).toHaveAttribute("aria-pressed", "true")
+      expect(bellator).toHaveAttribute("aria-checked", "true")
       // Day 1's B1 cell serves Aleph-Null only; the U cells serve Bellator.
       expect(screen.getByTestId("plan-cell-1-B1")).toHaveAttribute(
         "data-dimmed",
@@ -602,7 +602,7 @@ describe("Schedule page", () => {
       )
 
       await user.click(bellator)
-      expect(bellator).toHaveAttribute("aria-pressed", "false")
+      expect(bellator).toHaveAttribute("aria-checked", "false")
       expect(screen.getByTestId("plan-cell-1-B1")).not.toHaveAttribute(
         "data-dimmed"
       )
@@ -621,7 +621,7 @@ describe("Schedule page", () => {
         render(<SchedulePage />)
         expect(screen.queryByTestId("plan-day-5")).not.toBeInTheDocument()
 
-        await user.click(screen.getByRole("button", { name: "Aleph-Null" }))
+        await user.click(screen.getByRole("radio", { name: "Aleph-Null" }))
         // Aleph-Null is only scheduled on Day 5, so the two jumps collapse into one.
         await user.click(screen.getByRole("button", { name: "Day 5" }))
 
@@ -637,7 +637,7 @@ describe("Schedule page", () => {
       useDailyRaids.mockReturnValue(planWithLateSecondUnit())
       render(<SchedulePage />)
 
-      await user.click(screen.getByRole("button", { name: "Bellator" }))
+      await user.click(screen.getByRole("radio", { name: "Bellator" }))
       expect(
         screen.getByRole("button", { name: "← Day 1" })
       ).toBeInTheDocument()

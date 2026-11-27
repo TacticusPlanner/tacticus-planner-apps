@@ -10,6 +10,10 @@ import {
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
 import { Pressable } from "@workspace/ui/components/pressable"
+import {
+  SelectionGroup,
+  SelectionItem,
+} from "@workspace/ui/components/selection-group"
 
 import type { TierStars } from "../../model/incursion-progress.model"
 import { enhancementSubject, nodeName } from "../../model/incursions.model"
@@ -107,65 +111,75 @@ export function IncursionRunMap({
     <section className="flex flex-col gap-4" aria-label={t("map.title")}>
       <div className="min-w-0">
         <h3 className="mb-2 text-sm font-semibold">{t("map.title")}</h3>
-        <ol
-          className="flex items-stretch gap-1 overflow-x-auto rounded-lg border bg-muted/30 p-2"
-          data-testid="incursion-map"
+        {/* One radio group over every node: one tab stop, arrow keys between nodes. */}
+        <SelectionGroup
+          aria-label={t("map.title")}
+          // "" is the selected node pressed again: it stays selected.
+          onValueChange={(index) => {
+            if (index !== "") setPickedIndex(Number(index))
+          }}
+          value={String(selected.index)}
         >
-          {steps.map((step, index) => (
-            <li
-              key={step.depth}
-              className="flex shrink-0 flex-col items-center gap-1 border-l border-border/50 px-1 first:border-l-0"
-              data-testid={`incursion-step-${step.depth}`}
-            >
-              <span className="text-xs text-muted-foreground tabular-nums">
-                {index + 1}
-              </span>
-              <div className="flex flex-1 flex-col items-center justify-center gap-1">
-                {step.nodes.map((node, position) => {
-                  const battle = node.battleId
-                    ? battlesById.get(node.battleId)
-                    : undefined
-                  return (
-                    <Fragment key={node.index}>
-                      {position > 0 && step.choice ? (
-                        <span
-                          className="text-xs text-muted-foreground"
-                          data-testid="incursion-step-choice"
-                        >
-                          {t("map.or")}
-                        </span>
-                      ) : null}
-                      <Tooltip>
-                        <TooltipTrigger asChild disableTouchToggle>
-                          <Pressable
-                            aria-pressed={node === selected}
-                            aria-label={nodeLabel(node)}
-                            onClick={() => onSelect(node)}
-                            className={cn(
-                              "rounded-md p-0.5",
-                              node === selected &&
-                                "bg-primary/10 ring-2 ring-primary"
-                            )}
-                            data-testid={`incursion-map-node-${node.index}`}
+          <ol
+            className="flex items-stretch gap-1 overflow-x-auto rounded-lg border bg-muted/30 p-2"
+            data-testid="incursion-map"
+          >
+            {steps.map((step, index) => (
+              <li
+                key={step.depth}
+                className="flex shrink-0 flex-col items-center gap-1 border-l border-border/50 px-1 first:border-l-0"
+                data-testid={`incursion-step-${step.depth}`}
+              >
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {index + 1}
+                </span>
+                <div className="flex flex-1 flex-col items-center justify-center gap-1">
+                  {step.nodes.map((node, position) => {
+                    const battle = node.battleId
+                      ? battlesById.get(node.battleId)
+                      : undefined
+                    return (
+                      <Fragment key={node.index}>
+                        {position > 0 && step.choice ? (
+                          <span
+                            className="text-xs text-muted-foreground"
+                            data-testid="incursion-step-choice"
                           >
-                            <IncursionNodeMarker
-                              node={node}
-                              incursion={incursion}
-                              challenge={battle?.challenge ?? false}
-                              stars={starsOf(node)}
-                              size="sm"
-                            />
-                          </Pressable>
-                        </TooltipTrigger>
-                        <TooltipContent>{nodeLabel(node)}</TooltipContent>
-                      </Tooltip>
-                    </Fragment>
-                  )
-                })}
-              </div>
-            </li>
-          ))}
-        </ol>
+                            {t("map.or")}
+                          </span>
+                        ) : null}
+                        <Tooltip>
+                          <TooltipTrigger asChild disableTouchToggle>
+                            <SelectionItem asChild value={String(node.index)}>
+                              <Pressable
+                                aria-label={nodeLabel(node)}
+                                className={cn(
+                                  "rounded-md p-0.5",
+                                  node === selected &&
+                                    "bg-primary/10 ring-2 ring-primary"
+                                )}
+                                data-testid={`incursion-map-node-${node.index}`}
+                              >
+                                <IncursionNodeMarker
+                                  node={node}
+                                  incursion={incursion}
+                                  challenge={battle?.challenge ?? false}
+                                  stars={starsOf(node)}
+                                  size="sm"
+                                />
+                              </Pressable>
+                            </SelectionItem>
+                          </TooltipTrigger>
+                          <TooltipContent>{nodeLabel(node)}</TooltipContent>
+                        </Tooltip>
+                      </Fragment>
+                    )
+                  })}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </SelectionGroup>
       </div>
 
       <div className="min-w-0 space-y-2">

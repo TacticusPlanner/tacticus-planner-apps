@@ -218,7 +218,7 @@ describe("routes and page states", () => {
       "header.status.ended"
     )
     expect(screen.getByTestId("event-shop-day-13")).toHaveAttribute(
-      "aria-pressed",
+      "aria-checked",
       "true"
     )
     expect(screen.getByTestId("event-shop-add-2")).toBeEnabled()
@@ -299,7 +299,7 @@ describe("desktop", () => {
     expect(screen.getByTestId("event-shop-week-calendar")).toBeInTheDocument()
     expect(screen.getByTestId("event-shop-side-column")).toBeInTheDocument()
     expect(screen.getByTestId("event-shop-day-3")).toHaveAttribute(
-      "aria-pressed",
+      "aria-checked",
       "true"
     )
   })
@@ -399,9 +399,9 @@ describe("desktop", () => {
       within(card).queryByRole("button", { name: "slot.increase" })
     ).toBeNull()
 
-    const tick = within(card).getByRole("button", { name: "slot.tick" })
+    const tick = within(card).getByRole("checkbox", { name: "slot.tick" })
     await userEvent.click(tick)
-    expect(tick).toHaveAttribute("aria-pressed", "true")
+    expect(tick).toHaveAttribute("aria-checked", "true")
     expect(card).toHaveAttribute("data-purchase", "bought")
     await waitFor(() => expect(mutateAsync).toHaveBeenCalled())
     expect(mutateAsync).toHaveBeenLastCalledWith({
@@ -532,7 +532,7 @@ describe("desktop", () => {
   it("keeps the day in the URL and hides the calendar on Milestones", async () => {
     renderPage("/plan/event-shop/october-2026?day=8")
     expect(screen.getByTestId("event-shop-day-8")).toHaveAttribute(
-      "aria-pressed",
+      "aria-checked",
       "true"
     )
     await userEvent.click(screen.getByTestId("event-shop-day-9"))

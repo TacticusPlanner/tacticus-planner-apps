@@ -181,7 +181,9 @@ function BoughtTick({
     <Pressable
       variant="art"
       aria-label={label}
-      aria-pressed={bought}
+      // A tick box, so a checkbox (ui-style-guide rule 3).
+      role="checkbox"
+      aria-checked={bought}
       className={cn(
         "flex size-7 shrink-0 items-center justify-center rounded-md border border-input bg-transparent text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground disabled:pointer-events-none disabled:opacity-50",
         bought &&

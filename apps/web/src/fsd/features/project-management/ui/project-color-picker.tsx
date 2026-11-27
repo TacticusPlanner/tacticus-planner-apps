@@ -2,6 +2,10 @@ import { useTranslation } from "react-i18next"
 import { ColorPicker } from "@workspace/ui/components/color-picker"
 import { cn } from "@workspace/ui/lib/utils"
 import { Pressable } from "@workspace/ui/components/pressable"
+import {
+  SelectionGroup,
+  SelectionItem,
+} from "@workspace/ui/components/selection-group"
 
 import { PROJECT_PRESET_COLORS as PRESET_COLORS } from "@/entities/project"
 
@@ -22,20 +26,29 @@ export function ProjectColorPicker({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {PRESET_COLORS.map((preset) => (
-        <Pressable
-          variant="art"
-          aria-label={preset}
-          aria-pressed={normalized === preset}
-          className={cn(
-            "size-6 rounded-full ring-offset-2 ring-offset-background transition-shadow",
-            normalized === preset ? "ring-2 ring-ring" : ""
-          )}
-          key={preset}
-          onClick={() => onChange(preset)}
-          style={{ backgroundColor: preset }}
-        />
-      ))}
+      <SelectionGroup
+        aria-label={t("goals.project.color")}
+        className="flex flex-wrap items-center gap-2"
+        // "" is the picked swatch pressed again: it stays picked.
+        onValueChange={(preset) => {
+          if (preset !== "") onChange(preset)
+        }}
+        value={normalized}
+      >
+        {PRESET_COLORS.map((preset) => (
+          <SelectionItem asChild key={preset} value={preset}>
+            <Pressable
+              variant="art"
+              aria-label={preset}
+              className={cn(
+                "size-6 rounded-full ring-offset-2 ring-offset-background transition-shadow",
+                normalized === preset ? "ring-2 ring-ring" : ""
+              )}
+              style={{ backgroundColor: preset }}
+            />
+          </SelectionItem>
+        ))}
+      </SelectionGroup>
       <ColorPicker
         aria-label={t("goals.project.customColor")}
         className={cn(

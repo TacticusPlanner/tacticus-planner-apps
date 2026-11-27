@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { eventDays } from "@workspace/game-catalog"
@@ -5,6 +6,10 @@ import type { EventShopDay } from "@workspace/game-catalog"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { Pressable } from "@workspace/ui/components/pressable"
+import {
+  SelectionGroup,
+  SelectionItem,
+} from "@workspace/ui/components/selection-group"
 
 import { EntityIcon } from "@/shared/ui"
 
@@ -118,18 +123,43 @@ export function WeekCalendar({
         )}
         <Legend />
       </div>
-      <div className="grid grid-cols-7 gap-1">
+      <DayGroup controller={controller} onSelectDay={onSelectDay}>
         {weekDays.map((day) => (
           <CalendarDay
             key={day.index}
             controller={controller}
             day={day}
             format={format}
-            onSelect={() => onSelectDay(day.index)}
           />
         ))}
-      </div>
+      </DayGroup>
     </section>
+  )
+}
+
+/** The week's seven days as one radio group: one tab stop, arrow keys between days. */
+function DayGroup({
+  controller,
+  onSelectDay,
+  children,
+}: {
+  controller: EventShopController
+  onSelectDay: (day: number) => void
+  children: ReactNode
+}) {
+  const { t } = useTranslation("eventShops")
+  return (
+    <SelectionGroup
+      aria-label={t("days.label")}
+      className="grid grid-cols-7 gap-1"
+      // "" is the selected day pressed again: it stays selected.
+      onValueChange={(day) => {
+        if (day !== "") onSelectDay(Number(day))
+      }}
+      value={String(controller.selectedDay.index)}
+    >
+      {children}
+    </SelectionGroup>
   )
 }
 
@@ -137,12 +167,10 @@ function CalendarDay({
   controller,
   day,
   format,
-  onSelect,
 }: {
   controller: EventShopController
   day: EventShopDay
   format: EventShopFormat
-  onSelect: () => void
 }) {
   const { t } = useTranslation("eventShops")
   const state = controller.dayStates[day.index]
@@ -152,44 +180,44 @@ function CalendarDay({
   const past = day.index < controller.todayIndex
 
   return (
-    <Pressable
-      aria-current={today ? "date" : undefined}
-      aria-label={`${format.date(day.date)}${today ? ` · ${t("days.today")}` : ""}, ${items.length > 0 ? t("days.planned", { count: items.length }) : t("days.nothingPlanned")}`}
-      aria-pressed={selected}
-      className={cn(
-        "flex min-h-24 flex-col items-stretch gap-1 rounded-md border p-1.5 text-left",
-        selected && "border-primary bg-muted",
-        past && !selected && "opacity-60"
-      )}
-      data-testid={`event-shop-day-${day.index}`}
-      onClick={onSelect}
-    >
-      <span className="flex items-baseline justify-between gap-1 text-xs">
-        <span className="font-medium">{format.weekday(day.date)}</span>
-        <span className="text-muted-foreground">
-          {format.dayOfMonth(day.date)}
+    <SelectionItem asChild value={String(day.index)}>
+      <Pressable
+        aria-current={today ? "date" : undefined}
+        aria-label={`${format.date(day.date)}${today ? ` · ${t("days.today")}` : ""}, ${items.length > 0 ? t("days.planned", { count: items.length }) : t("days.nothingPlanned")}`}
+        className={cn(
+          "flex min-h-24 flex-col items-stretch gap-1 rounded-md border p-1.5 text-left",
+          selected && "border-primary bg-muted",
+          past && !selected && "opacity-60"
+        )}
+        data-testid={`event-shop-day-${day.index}`}
+      >
+        <span className="flex items-baseline justify-between gap-1 text-xs">
+          <span className="font-medium">{format.weekday(day.date)}</span>
+          <span className="text-muted-foreground">
+            {format.dayOfMonth(day.date)}
+          </span>
         </span>
-      </span>
-      {today ? (
-        <span className="text-xs font-semibold text-primary">
-          {t("days.today")}
+        {today ? (
+          <span className="text-xs font-semibold text-primary">
+            {t("days.today")}
+          </span>
+        ) : null}
+        <span className="flex flex-wrap gap-1">
+          {items.map((item) => {
+            const reward = format.reward(item.rewardType)
+            return (
+              <EntityIcon
+                size="icon"
+                key={`${item.slotIndex}-${item.rewardType}`}
+                alt={reward.label}
+                className={cn("rounded-sm ring-2", STATE_RING[item.state])}
+                src={reward.iconUrl}
+              />
+            )
+          })}
         </span>
-      ) : null}
-      <span className="flex flex-wrap gap-1">
-        {items.map((item) => {
-          const reward = format.reward(item.rewardType)
-          return (
-            <EntityIcon
-              size="icon"
-              key={`${item.slotIndex}-${item.rewardType}`}
-              alt={reward.label}
-              className={cn("rounded-sm ring-2", STATE_RING[item.state])}
-              src={reward.iconUrl}
-            />
-          )
-        })}
-      </span>
-    </Pressable>
+      </Pressable>
+    </SelectionItem>
   )
 }
 
@@ -220,35 +248,34 @@ export function DayChips({
       {multiWeek ? (
         <WeekStepper next={next} previous={previous} week={week} />
       ) : null}
-      <div className="grid grid-cols-7 gap-1">
+      <DayGroup controller={controller} onSelectDay={onSelectDay}>
         {weekDays.map((day) => {
           const selected = day.index === selectedDay.index
           const dot = controller.dayStates[day.index]?.dot ?? "none"
           return (
-            <Pressable
-              key={day.index}
-              aria-current={day.index === todayIndex ? "date" : undefined}
-              aria-label={format.date(day.date)}
-              aria-pressed={selected}
-              className={cn(
-                "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-md border text-xs",
-                selected && "border-primary bg-muted font-semibold",
-                day.index < todayIndex && !selected && "opacity-60"
-              )}
-              data-testid={`event-shop-chip-${day.index}`}
-              onClick={() => onSelectDay(day.index)}
-            >
-              <span>{format.weekday(day.date)}</span>
-              <span>{format.dayOfMonth(day.date)}</span>
-              <span
-                aria-hidden="true"
-                className={cn("size-1.5 rounded-full", STATE_DOT[dot])}
-                data-state={dot}
-              />
-            </Pressable>
+            <SelectionItem asChild key={day.index} value={String(day.index)}>
+              <Pressable
+                aria-current={day.index === todayIndex ? "date" : undefined}
+                aria-label={format.date(day.date)}
+                className={cn(
+                  "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-md border text-xs",
+                  selected && "border-primary bg-muted font-semibold",
+                  day.index < todayIndex && !selected && "opacity-60"
+                )}
+                data-testid={`event-shop-chip-${day.index}`}
+              >
+                <span>{format.weekday(day.date)}</span>
+                <span>{format.dayOfMonth(day.date)}</span>
+                <span
+                  aria-hidden="true"
+                  className={cn("size-1.5 rounded-full", STATE_DOT[dot])}
+                  data-state={dot}
+                />
+              </Pressable>
+            </SelectionItem>
           )
         })}
-      </div>
+      </DayGroup>
       <p className="text-sm font-medium" data-testid="event-shop-selected-day">
         {selectedDay.index === todayIndex
           ? t("days.selectedToday", { day: selectedLabel })

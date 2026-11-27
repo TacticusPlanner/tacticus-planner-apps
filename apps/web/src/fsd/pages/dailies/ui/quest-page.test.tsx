@@ -350,7 +350,7 @@ describe("QuestPage", () => {
     expect(
       within(options).getByTestId("quest-team-options-power")
     ).toHaveTextContent("1 of 4 picked")
-    await user.click(within(options).getByRole("button", { pressed: true }))
+    await user.click(within(options).getByRole("checkbox", { checked: true }))
     expect(
       within(options).getByTestId("quest-team-options-power")
     ).toHaveTextContent("0 of 4 picked")

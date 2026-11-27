@@ -184,7 +184,7 @@ export function TeamList({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    aria-pressed={member.locked}
+                    // The label says the state ("Unlock"/"Lock"), so no aria-pressed as well.
                     aria-label={
                       member.locked ? t("lock.unlock") : t("lock.lock")
                     }

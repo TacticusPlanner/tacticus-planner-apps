@@ -316,7 +316,7 @@ describe("EventBoard", () => {
     expect(
       alpha
         .getAllByTestId("event-board-objective")
-        .filter((entry) => entry.getAttribute("aria-pressed") === "true")
+        .filter((entry) => entry.getAttribute("aria-checked") === "true")
     ).toHaveLength(2)
     fireEvent.click(alpha.getByRole("button", { name: "Clear selection" }))
     expect(alpha.getAllByTestId("event-board-column")).toHaveLength(count)

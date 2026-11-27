@@ -2,6 +2,10 @@ import { useTranslation } from "react-i18next"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
 import { Pressable } from "@workspace/ui/components/pressable"
+import {
+  SelectionGroup,
+  SelectionItem,
+} from "@workspace/ui/components/selection-group"
 
 import { rosterDiffMetrics } from "@/entities/roster-snapshot"
 import type {
@@ -46,28 +50,46 @@ export function CompareSummary({
       metric === "power" ? summary.power > 0 : summary[metric] !== 0
     const active = selected === metric
     return (
-      <Pressable
+      <SelectionItem
+        asChild
         key={metric}
         // A selection that no longer matches stays clickable so it can be cleared.
         disabled={!enabled && !active}
-        aria-pressed={active}
-        onClick={() => onSelect(active ? null : metric)}
-        className={cn(
-          "flex shrink-0 flex-col items-start rounded-lg border px-3 py-1.5 text-left disabled:opacity-50",
-          active && "border-primary bg-primary/10"
-        )}
-        data-testid="compare-metric"
-        data-metric={metric}
+        value={metric}
       >
-        <span className="text-base font-semibold tabular-nums">
-          {value(metric)}
-        </span>
-        <span className="text-xs whitespace-nowrap text-muted-foreground">
-          {t(`myGame.collection.compare.metrics.${metric}`)}
-        </span>
-      </Pressable>
+        <Pressable
+          className={cn(
+            "flex shrink-0 flex-col items-start rounded-lg border px-3 py-1.5 text-left disabled:opacity-50",
+            active && "border-primary bg-primary/10"
+          )}
+          data-testid="compare-metric"
+          data-metric={metric}
+        >
+          <span className="text-base font-semibold tabular-nums">
+            {value(metric)}
+          </span>
+          <span className="text-xs whitespace-nowrap text-muted-foreground">
+            {t(`myGame.collection.compare.metrics.${metric}`)}
+          </span>
+        </Pressable>
+      </SelectionItem>
     )
   })
+  // Pressing the selected number again clears it ("").
+  const metricGroup = (className: string) => (
+    <SelectionGroup
+      aria-label={title}
+      className={className}
+      onValueChange={(metric) =>
+        onSelect(
+          rosterDiffMetrics.find((candidate) => candidate === metric) ?? null
+        )
+      }
+      value={selected ?? ""}
+    >
+      {chips}
+    </SelectionGroup>
+  )
 
   const caption = filtered
     ? t("myGame.collection.compare.summaryFor", { count: matching })
@@ -83,7 +105,7 @@ export function CompareSummary({
         {caption ? (
           <p className="text-xs text-muted-foreground">{caption}</p>
         ) : null}
-        <div className="flex gap-2 overflow-x-auto pb-1">{chips}</div>
+        {metricGroup("flex gap-2 overflow-x-auto pb-1")}
       </section>
     )
   }
@@ -99,7 +121,7 @@ export function CompareSummary({
           <span className="text-xs text-muted-foreground">{caption}</span>
         ) : null}
       </div>
-      <div className="flex flex-wrap gap-2">{chips}</div>
+      {metricGroup("flex flex-wrap gap-2")}
       <p className="text-sm text-muted-foreground">
         {t("myGame.collection.compare.metricHint")}
       </p>

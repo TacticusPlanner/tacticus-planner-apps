@@ -643,7 +643,9 @@ function ObjectiveHeading({
           <Tooltip key={entry.objective.index}>
             <TooltipTrigger asChild disableTouchToggle>
               <Pressable
-                aria-pressed={isSelected}
+                // Picking several, so each item is a checkbox (ui-style-guide rule 3).
+                role="checkbox"
+                aria-checked={isSelected}
                 className={cn(
                   "relative flex min-w-0 flex-col items-center gap-0.5 rounded-md border border-transparent px-0.5 py-1 text-center",
                   uncovered && "border-dashed border-muted-foreground/60",

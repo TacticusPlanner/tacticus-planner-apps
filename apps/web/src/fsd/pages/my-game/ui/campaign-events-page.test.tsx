@@ -416,13 +416,13 @@ describe("CampaignEventsPage", () => {
       const user = userEvent.setup()
       await renderPage()
       await screen.findByTestId("current-event")
-      const first = current().getByRole("button", { name: "Challenge 1" })
-      const second = current().getByRole("button", { name: "Challenge 2" })
+      const first = current().getByRole("checkbox", { name: "Challenge 1" })
+      const second = current().getByRole("checkbox", { name: "Challenge 2" })
       expect(first).toHaveAccessibleDescription("Node AMSC2")
-      expect(first).toHaveAttribute("aria-pressed", "true")
+      expect(first).toHaveAttribute("aria-checked", "true")
       expect(second).toHaveAccessibleDescription("Node AMSC1")
       await user.click(second)
-      expect(second).toHaveAttribute("aria-pressed", "true")
+      expect(second).toHaveAttribute("aria-checked", "true")
       expect(
         screen.getByTestId("current-event-Standard-challenge-source")
       ).toHaveAttribute("data-source", "manual")
@@ -551,7 +551,7 @@ describe("CampaignEventsPage", () => {
       await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
-      await user.click(current().getByRole("button", { name: "Challenge 2" }))
+      await user.click(current().getByRole("checkbox", { name: "Challenge 2" }))
       await user.click(screen.getByTestId("unsaved-changes-save"))
 
       await waitFor(() =>
@@ -584,12 +584,12 @@ describe("CampaignEventsPage", () => {
       await renderPage()
       await screen.findByTestId("current-event")
       await increaseStandard(user)
-      await user.click(current().getByRole("button", { name: "Challenge 2" }))
+      await user.click(current().getByRole("checkbox", { name: "Challenge 2" }))
       await user.click(screen.getByTestId("unsaved-changes-discard"))
       expect(count("current-event", "Standard")).toHaveTextContent("2/5")
       expect(
-        current().getByRole("button", { name: "Challenge 2" })
-      ).toHaveAttribute("aria-pressed", "false")
+        current().getByRole("checkbox", { name: "Challenge 2" })
+      ).toHaveAttribute("aria-checked", "false")
       expect(screen.queryByTestId("unsaved-changes-bar")).toBeNull()
     })
 
