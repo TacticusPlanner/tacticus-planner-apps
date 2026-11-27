@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useLegendaryEvents } from "@/entities/legendary-event"
 import { useProjectDeadline } from "@/entities/project"
 import type { ProjectDeadline, ProjectSummary } from "@/entities/project"
-import { formatEventCountdown } from "@/shared/lib"
+import { dateTimeFormat, formatEventCountdown } from "@/shared/lib"
 
 import { useEventTargetName } from "./event-target-options"
 
@@ -65,7 +65,7 @@ export function useDeadlineChipText(model: DeadlineChipModel): {
   if (!timing) return { label: name, shortLabel: name, hint: null }
   const locale = i18n.resolvedLanguage ?? "en"
   const date = (ms: number) =>
-    new Intl.DateTimeFormat(locale, {
+    dateTimeFormat(locale, {
       month: "short",
       day: "numeric",
     }).format(ms)

@@ -4,6 +4,8 @@ import type {
   GameCatalogEventShopRecord,
 } from "@workspace/game-catalog"
 
+import { dateTimeFormat } from "@/shared/lib"
+
 import { eventKeyMonthUtc } from "./event-shop-name.model"
 
 /** "Armageddon Shop · October 2026": the calendar definition's name and the start month ("Oct 2026"
@@ -12,7 +14,7 @@ import { eventKeyMonthUtc } from "./event-shop-name.model"
  *  December 2026"). */
 export function useEventShopName({ short = false }: { short?: boolean } = {}) {
   const { t, i18n } = useTranslation(["eventShops", "events", "eventMissions"])
-  const month = new Intl.DateTimeFormat(i18n.language, {
+  const month = dateTimeFormat(i18n.language, {
     month: short ? "short" : "long",
     year: "numeric",
     timeZone: "UTC",
@@ -65,7 +67,7 @@ export function localResetTime(
     today.getUTCMonth(),
     today.getUTCDate()
   )
-  return new Intl.DateTimeFormat(language, {
+  return dateTimeFormat(language, {
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",

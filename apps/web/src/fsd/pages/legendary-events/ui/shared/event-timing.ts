@@ -1,5 +1,9 @@
 import type { LegendaryEventLifecycle } from "@/entities/legendary-event"
-import { formatEventCountdown, formatShortDate } from "@/shared/lib"
+import {
+  dateTimeFormat,
+  formatEventCountdown,
+  formatShortDate,
+} from "@/shared/lib"
 
 export interface EventTimingText {
   /** The local date, with the time of day unless the caller drops it. */
@@ -12,10 +16,10 @@ export interface EventTimingText {
 
 /** The local date and time of an instant in the device timezone (event windows stay UTC). */
 function formatLocalDateTime(epochMs: number, dateLocale: string): string {
-  return new Date(epochMs).toLocaleString(dateLocale, {
+  return dateTimeFormat(dateLocale, {
     dateStyle: "medium",
     timeStyle: "short",
-  })
+  }).format(epochMs)
 }
 
 /** The timing lines for an event: run end for an active one, next run start for an upcoming one,

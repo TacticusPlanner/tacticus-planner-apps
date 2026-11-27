@@ -18,6 +18,7 @@ export {
   formatEventCountdown,
   formatRelativeTime,
   getDeviceFirstDayOfWeek,
+  dateTimeFormat,
   numberFormat,
   useDateLocale,
   useNumberFormat,

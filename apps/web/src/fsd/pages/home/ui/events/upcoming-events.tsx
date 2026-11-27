@@ -11,7 +11,11 @@ import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 
-import { formatEventCountdown, useDateLocale } from "@/shared/lib"
+import {
+  dateTimeFormat,
+  formatEventCountdown,
+  useDateLocale,
+} from "@/shared/lib"
 import { CountdownChip } from "@/shared/ui"
 
 import { homeCardLimit } from "../../model/home-card-limit"
@@ -183,12 +187,12 @@ function UpcomingEventRow({
           <span className="whitespace-nowrap" data-testid="home-events-start">
             {dateTba
               ? t("home.events.startDateTba")
-              : new Date(row.startMs).toLocaleString(dateLocale, {
+              : dateTimeFormat(dateLocale, {
                   month: "short",
                   day: "numeric",
                   hour: "numeric",
                   minute: "2-digit",
-                })}
+                }).format(row.startMs)}
           </span>
           {dateTba ? null : (
             <CountdownChip

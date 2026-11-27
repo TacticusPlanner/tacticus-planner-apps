@@ -13,6 +13,7 @@ import type {
 import { RunInputsForm } from "@/features/legendary-event-plan"
 import { useAnalyticsActions } from "@/shared/analytics"
 import {
+  dateTimeFormat,
   formatDateRangeParts,
   formatShortDate,
   useDateLocale,
@@ -53,7 +54,7 @@ export function TargetStep({
   const { t, i18n } = useTranslation("legendaryEvents")
   const dateLocale = useDateLocale()
   const number = numberFormat(i18n.language)
-  const month = new Intl.DateTimeFormat(dateLocale, {
+  const month = dateTimeFormat(dateLocale, {
     month: "short",
     year: "numeric",
   })

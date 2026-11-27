@@ -1,8 +1,10 @@
 import type { RosterSnapshotSource } from "./types"
 
+import { dateTimeFormat } from "@/shared/lib"
+
 /** A snapshot's date with the year, e.g. "Nov 3, 2026". */
 export function formatSnapshotDate(takenAt: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(
+  return dateTimeFormat(locale, { dateStyle: "medium" }).format(
     new Date(takenAt)
   )
 }

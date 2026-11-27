@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next"
 
 import { survivalEventMonthUtc } from "../lib/survival-event-name"
 
+import { dateTimeFormat } from "@/shared/lib"
+
 /**
  * A Survival event's name: its month and year in the UI language ("December 2026") for a monthly
  * event, else the `survival:events.<id>` name ("Crescendo A"), else the id.
@@ -14,7 +16,7 @@ export function useSurvivalEventName() {
     (id: string) => {
       const month = survivalEventMonthUtc(id)
       if (month !== null) {
-        return new Intl.DateTimeFormat(language, {
+        return dateTimeFormat(language, {
           month: "long",
           year: "numeric",
           timeZone: "UTC",

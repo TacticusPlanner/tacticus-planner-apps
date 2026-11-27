@@ -2,7 +2,11 @@ import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
 import { useMinuteNow } from "@/entities/legendary-event"
-import { formatEventCountdown, useDateLocale } from "@/shared/lib"
+import {
+  dateTimeFormat,
+  formatEventCountdown,
+  useDateLocale,
+} from "@/shared/lib"
 
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type { EventsAgenda } from "../../../model/events-calendar.types"
@@ -16,7 +20,7 @@ export function EventsCalendarMobile({ agenda }: { agenda: EventsAgenda }) {
   const dateLocale = useDateLocale()
   const dayHeaderFormatter = useMemo(
     () =>
-      new Intl.DateTimeFormat(dateLocale, {
+      dateTimeFormat(dateLocale, {
         weekday: "long",
         month: "short",
         day: "numeric",

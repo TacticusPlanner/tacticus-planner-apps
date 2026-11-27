@@ -1,3 +1,5 @@
+import { dateTimeFormat } from "./format-date-time"
+
 /**
  * The app's one calendar-date format (style guide rule 7.11): short month and day, with the year
  * only when the date is not in the current year, e.g. "Nov 22" or "Jan 3, 2027".
@@ -28,7 +30,7 @@ export function formatShortDate(
   const date = toDate(value)
   const thisYear = new Date(nowMs).getFullYear()
   return formatOrEmpty(
-    new Intl.DateTimeFormat(locale, options(date.getFullYear() !== thisYear)),
+    dateTimeFormat(locale, options(date.getFullYear() !== thisYear)),
     date
   )
 }
@@ -45,10 +47,7 @@ export function formatDateRangeParts(
   const thisYear = new Date(nowMs).getFullYear()
   const outside = (date: Date) =>
     isValid(date) && date.getFullYear() !== thisYear
-  const format = new Intl.DateTimeFormat(
-    locale,
-    options(outside(from) || outside(to))
-  )
+  const format = dateTimeFormat(locale, options(outside(from) || outside(to)))
   return { start: formatOrEmpty(format, from), end: formatOrEmpty(format, to) }
 }
 

@@ -73,18 +73,25 @@ const RAW_NUMBER_FORMAT = {
   message:
     "Build number formats with `useNumberFormat()` (or `numberFormat(locale)`) from `@/shared/lib` (ui-style-guide copy rule 11), so they follow the app language and are cached.",
 }
-const BARE_TO_LOCALE_STRING = {
+const RAW_DATE_FORMAT = {
   selector:
-    "CallExpression[callee.property.name='toLocaleString'][arguments.length=0]",
+    "NewExpression[callee.object.name='Intl'][callee.property.name='DateTimeFormat']",
   message:
-    "`toLocaleString()` with no locale uses the browser's language, not the app's (ui-style-guide copy rule 11). Use `useNumberFormat().format(value)` from `@/shared/lib` for a number, or a shared date helper (`formatShortDate`…) for a date.",
+    "Build date formats with `dateTimeFormat(locale, options)` from `@/shared/lib` (ui-style-guide copy rule 11), or use a shared date helper (`formatShortDate`, `formatDateRange`…), so they are cached and stay consistent.",
+}
+const TO_LOCALE_STRING = {
+  selector:
+    "CallExpression[callee.property.name=/^toLocale(Date|Time)?String$/]",
+  message:
+    "Format through the shared helpers, not `toLocaleString` (ui-style-guide copy rule 11): `useNumberFormat().format(value)` or `numberFormat(locale)` for a number, `dateTimeFormat(locale, options).format(date)` or a shared date helper (`formatShortDate`…) for a date. Both are in `@/shared/lib`.",
 }
 
 // Selectors that apply to logic files too, not only components.
 const STYLE_GUIDE_LOGIC = [
   HOME_MADE_SPINNER_ICON,
   RAW_NUMBER_FORMAT,
-  BARE_TO_LOCALE_STRING,
+  RAW_DATE_FORMAT,
+  TO_LOCALE_STRING,
 ]
 
 // Prefix for a Tailwind class: any variants (`md:`, `dark:`, `[&_svg]:`) and a leading `!`.
@@ -419,8 +426,13 @@ export default defineConfig([
     },
   },
   {
-    // The shared number formatter is the one place that builds `Intl.NumberFormat`.
-    files: ["src/fsd/shared/lib/format/format-number.ts"],
+    // The shared formatters are the one place that builds `Intl.NumberFormat` and
+    // `Intl.DateTimeFormat`; `date-locale.ts` reads the device's own format settings.
+    files: [
+      "src/fsd/shared/lib/format/format-number.ts",
+      "src/fsd/shared/lib/format/format-date-time.ts",
+      "src/fsd/shared/lib/format/date-locale.ts",
+    ],
     rules: { "no-restricted-syntax": "off" },
   },
   tailwindSizingConfig,

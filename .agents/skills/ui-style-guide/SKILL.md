@@ -26,7 +26,7 @@ anything below.
 Lint enforces these rules in `apps/web`: a hand-written `aria-pressed` (rule 3),
 an `<h1>` outside the app shell's layout (rule 1), a native `title` (rule 8), a
 home-made spinner (rule 11), a raw status colour (rule 12), a raw `<button>`
-(rule 14) and a hand-built number format (copy rule 11).
+(rule 14) and a hand-built number or date format (copy rule 11).
 Hits that predate the rule are counted in `apps/web/eslint-suppressions.json`.
 When you fix one, run `pnpm --filter web lint:eslint --prune-suppressions` so
 it can't come back. A screen outside the app shell (landing, account setup,
@@ -257,8 +257,11 @@ Short, true right now, written for players — not developers.
 
 Copy rule 11 in code: numbers use `useNumberFormat()` (or `numberFormat(locale)` outside a
 component) from `@/shared/lib`, which formats in the app language and caches the format; dates,
-durations and countdowns use the `@/shared/lib` date helpers (`formatShortDate`, `formatDateRange`, `formatEventCountdown`, `formatRelativeTime`). Lint rejects `new Intl.NumberFormat` and a
-bare `toLocaleString()` in `apps/web`.
+durations and countdowns use the `@/shared/lib` date helpers (`formatShortDate`, `formatDateRange`, `formatEventCountdown`, `formatRelativeTime`). A date format those helpers don't cover
+(a weekday, "October 2026", a clock time) goes through `dateTimeFormat(locale, options)`, cached the
+same way, with `useDateLocale()` for calendar dates and clock times. Lint rejects
+`new Intl.NumberFormat`, `new Intl.DateTimeFormat` and any `toLocaleString`, `toLocaleDateString` or
+`toLocaleTimeString` call in `apps/web`.
 
 Game terms follow the repo glossary (shards, orbs, promote, ascend, D3, A2…).
 Strings live in `apps/web/public/locales/en`; see the `react-i18next` skill.

@@ -18,7 +18,12 @@ import type {
   HubCardRunStatus,
   HubCardViewModel,
 } from "./legendary-events-hub.view-model"
-import { formatShortDate, useDateLocale, numberFormat } from "@/shared/lib"
+import {
+  dateTimeFormat,
+  formatShortDate,
+  useDateLocale,
+  numberFormat,
+} from "@/shared/lib"
 
 /** The icon and text style that set each run's status apart; past runs are struck through. */
 const RUN_STATUS_STYLE: Record<
@@ -48,7 +53,7 @@ export function LegendaryEventCard({
   const number = numberFormat(i18n.language)
   const portrait = characterIcon(card.eventId as UnitId)
   const { synced } = card
-  const month = new Intl.DateTimeFormat(dateLocale, {
+  const month = dateTimeFormat(dateLocale, {
     month: "short",
     year: "numeric",
   })

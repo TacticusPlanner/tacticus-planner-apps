@@ -3,7 +3,7 @@ import { useMemo, useState } from "react"
 import { parseLocalDate, toIsoDate } from "../../../model/events-calendar-calc"
 import type { EventsCalendarWeek } from "../../../model/events-calendar.types"
 import { EventLaneRow } from "./event-lane-row"
-import { useDateLocale } from "@/shared/lib"
+import { dateTimeFormat, useDateLocale } from "@/shared/lib"
 
 // The month as whole weeks (starting on the device's first day of the week), each row the week view's Gantt lanes in compact form: an
 // event running across a week boundary continues as a new bar on the next row. Days outside the month
@@ -18,11 +18,11 @@ export function EventsCalendarMonth({
 }) {
   const dateLocale = useDateLocale()
   const weekdayFormatter = useMemo(
-    () => new Intl.DateTimeFormat(dateLocale, { weekday: "short" }),
+    () => dateTimeFormat(dateLocale, { weekday: "short" }),
     [dateLocale]
   )
   const dayFormatter = useMemo(
-    () => new Intl.DateTimeFormat(dateLocale, { day: "numeric" }),
+    () => dateTimeFormat(dateLocale, { day: "numeric" }),
     [dateLocale]
   )
   // The day the calendar was opened: render stays pure, and a reload picks up a new day.

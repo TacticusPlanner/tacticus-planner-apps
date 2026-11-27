@@ -5,6 +5,7 @@ export {
   formatDateRangeParts,
   formatShortDate,
 } from "./format-date"
+export { dateTimeFormat } from "./format-date-time"
 export { formatEstimateDate, localIsoDate } from "./format-estimate-date"
 export { formatEventCountdown } from "./format-event-countdown"
 export { formatRelativeTime } from "./format-relative-time"

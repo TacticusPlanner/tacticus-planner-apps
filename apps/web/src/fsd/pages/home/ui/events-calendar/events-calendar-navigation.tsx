@@ -7,7 +7,7 @@ import type {
   EventsCalendarView,
   EventsCalendarViewModel,
 } from "../../model/events-calendar.types"
-import { useDateLocale } from "@/shared/lib"
+import { dateTimeFormat, useDateLocale } from "@/shared/lib"
 import { SegmentedControl } from "@/shared/ui"
 
 const VIEWS: readonly EventsCalendarView[] = ["week", "month"]
@@ -30,7 +30,7 @@ export function EventsCalendarNavigation({
   const dateLocale = useDateLocale()
   const rangeFormatter = useMemo(
     () =>
-      new Intl.DateTimeFormat(dateLocale, {
+      dateTimeFormat(dateLocale, {
         month: "short",
         day: "numeric",
       }),
@@ -38,7 +38,7 @@ export function EventsCalendarNavigation({
   )
   const monthFormatter = useMemo(
     () =>
-      new Intl.DateTimeFormat(dateLocale, {
+      dateTimeFormat(dateLocale, {
         month: "long",
         year: "numeric",
       }),

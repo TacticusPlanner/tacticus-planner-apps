@@ -6,7 +6,7 @@ import type {
   EventsCalendarDay,
 } from "../../../model/events-calendar.types"
 import { EventLaneRow } from "./event-lane-row"
-import { useDateLocale } from "@/shared/lib"
+import { dateTimeFormat, useDateLocale } from "@/shared/lib"
 
 // A Gantt-style grid, not a day-column grid: a header row of day labels, then one row per lane, each
 // entry positioned as a bar spanning the day-columns it covers (one horizontal bar per event, stacked
@@ -20,11 +20,11 @@ export function EventsCalendarDesktop({
 }) {
   const dateLocale = useDateLocale()
   const weekdayFormatter = useMemo(
-    () => new Intl.DateTimeFormat(dateLocale, { weekday: "short" }),
+    () => dateTimeFormat(dateLocale, { weekday: "short" }),
     [dateLocale]
   )
   const dayFormatter = useMemo(
-    () => new Intl.DateTimeFormat(dateLocale, { day: "numeric" }),
+    () => dateTimeFormat(dateLocale, { day: "numeric" }),
     [dateLocale]
   )
   // The day the calendar was opened: render stays pure, and a reload picks up a new day.
