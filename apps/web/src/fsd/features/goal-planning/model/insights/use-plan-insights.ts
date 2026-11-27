@@ -35,6 +35,8 @@ import {
 
 type FetchState =
   | { status: "idle" }
+  /** The run for `key` threw (e.g. a local read failed); `retry` starts it again. */
+  | { status: "error"; key: string }
   | {
       status: "success"
       key: string
@@ -117,6 +119,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
     .join(",")
 
   const [fetchState, setFetchState] = useState<FetchState>({ status: "idle" })
+  const [runAttempt, setRunAttempt] = useState(0)
 
   const activeMembers = globalPlan.entries
   const scopeIds = scopeGoalIds ? new Set(scopeGoalIds) : undefined
@@ -196,10 +199,17 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
   const serverDataReady =
     !globalPlan.loading && onslaughtProgressQuery.isSuccess
   // A failed goals/progress or catalog read would otherwise leave `loading` true forever.
+  // So does a run that threw: without this it would sit on "loading" with nothing to retry.
+  const runFailed =
+    fetchState.status === "error" && fetchState.key === calculationKey
   const isError =
     hasQuery &&
-    (globalPlan.isError || onslaughtProgressQuery.isError || catalogReadError)
+    (globalPlan.isError ||
+      onslaughtProgressQuery.isError ||
+      catalogReadError ||
+      runFailed)
   const retry = () => {
+    if (runFailed) setRunAttempt((attempt) => attempt + 1)
     if (globalPlan.isError) globalPlan.retry()
     if (onslaughtProgressQuery.isError) void onslaughtProgressQuery.refetch()
     if (catalogReadError) retryCatalogReads()
@@ -346,7 +356,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
       )
       .catch(() => {
         if (!active) return
-        setFetchState({ status: "idle" })
+        setFetchState({ status: "error", key: calculationKey })
       })
 
     return () => {
@@ -364,6 +374,7 @@ export function usePlanInsights(scopeGoalIds?: readonly string[] | null) {
       characterAbilityCostsByLevel,
       isAuthenticated,
       calculationKey,
+      runAttempt,
       planningSettings.dailyEnergy,
       currentOnslaughtTokens,
       levelRules,

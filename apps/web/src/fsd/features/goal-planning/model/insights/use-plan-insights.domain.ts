@@ -38,6 +38,38 @@ export interface PlanMissingResources {
   gold: number
 }
 
+/** One item's gross need over the plan's goals beside what is still short once the account's stock
+ *  is spent in priority order (`short` <= `need`). */
+export interface ItemNeed {
+  need: number
+  short: number
+}
+
+/** The resources' have / need entries (Inventory's Ascension tab), from the same pass as
+ *  `PlanMissingResources`: its numbers are the `short` here. Alliance keys are `Imperial`/`Xenos`/
+ *  `Chaos`; an item no goal needs has no entry. */
+export interface PlanResourceNeeds {
+  abilityBadges: Partial<Record<string, Partial<Record<Rarity, ItemNeed>>>>
+  orbs: Partial<Record<string, Partial<Record<Rarity, ItemNeed>>>>
+  forgeBadges: Partial<Record<Rarity, ItemNeed>>
+  components: Partial<Record<string, ItemNeed>>
+  /** Raw level XP, whatever the book rarity. */
+  xp: ItemNeed
+}
+
+/** An upgrade material's need, with the goals that ask for it. Base materials: the goals' need before
+ *  base stock is spent (owned crafted items already count) and what is still to farm after stock and
+ *  shop/Onslaught supply (Insights' Required and Missing). Crafted materials: how many the goals ask for
+ *  once higher-tier stock is used, and how many of those the owned stock doesn't cover. */
+export interface PlanUpgradeNeed extends ItemNeed {
+  goalIds: string[]
+}
+
+/** Every item's have / need over the scoped goals, keyed for a page that lists items one by one. */
+export interface PlanItemNeeds extends PlanResourceNeeds {
+  upgrades: ReadonlyMap<UpgradeId, PlanUpgradeNeed>
+}
+
 /** A resource the plan still farms, ranked by the energy to clear it. */
 export interface PlanInsightsBottleneck {
   id: EstimateResourceId
@@ -179,6 +211,8 @@ export interface PlanNetResources {
 export interface PlanInsightsResult {
   totals: PlanInsightsTotals
   missing: PlanMissingResources
+  /** Each item's gross need beside its shortfall (Inventory), from the same pass as `missing`. */
+  itemNeeds: PlanItemNeeds
   energyTotal: number
   onslaughtTokens: number
   onslaughtDays: number
@@ -258,6 +292,14 @@ export const EMPTY_PLAN_INSIGHTS_RESULT: PlanInsightsResult = {
     xp: 0,
     xpBooks: null,
     gold: 0,
+  },
+  itemNeeds: {
+    abilityBadges: {},
+    orbs: {},
+    forgeBadges: {},
+    components: {},
+    xp: { need: 0, short: 0 },
+    upgrades: new Map(),
   },
   energyTotal: 0,
   onslaughtTokens: 0,

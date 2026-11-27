@@ -49,7 +49,12 @@ export {
 } from "./model/blockers/goal-blockers"
 export { computePlanInsights } from "./model/insights/plan-insights-calc"
 export { usePlanInsights } from "./model/insights/use-plan-insights"
+export { usePlanItemNeeds } from "./model/insights/use-plan-item-needs"
 export {
+  type ItemNeed,
+  type PlanItemNeeds,
+  type PlanResourceNeeds,
+  type PlanUpgradeNeed,
   type PlanCampaignLockReason,
   type PlanCampaignProgression,
   type PlanInsightsBlocker,

@@ -1,0 +1,9 @@
+{
+  "inventory": {
+    "title": "Inventar",
+    "tabs": {
+      "upgrades": "Verbesserungen",
+      "ascension": "Aufwertung"
+    }
+  }
+}

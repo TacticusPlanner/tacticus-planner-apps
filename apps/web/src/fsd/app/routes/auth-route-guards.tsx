@@ -100,7 +100,7 @@ function LandingContent({ next }: { next: string | null }) {
 /** A `next` on "/" means a sign-in-only address sent the visitor here; the landing page says so and
  *  names that page when the navigation knows it (spec: landing-page). */
 function useSignInRequired(next: string | null): SignInRequired | undefined {
-  const { t } = useTranslation(["common", "dailies", "library"])
+  const { t } = useTranslation(["common", "dailies", "library", "gameUi"])
   if (next === null) return undefined
 
   const destination = resolveNextPath(next, { allowSetupDestination: true })

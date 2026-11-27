@@ -533,6 +533,10 @@ describe("computePlanInsights", () => {
       expect(result.missing.abilityBadges).toEqual({
         Xenos: { Epic: 2 },
       })
+      // Inventory's have / need: the gross 32 beside the same 2 short.
+      expect(result.itemNeeds.abilityBadges).toEqual({
+        Xenos: { Epic: { need: 32, short: 2 } },
+      })
     })
 
     it("leaves the full need when nothing is held", () => {
@@ -610,6 +614,18 @@ describe("computePlanInsights", () => {
     expect(result.estimates.get("second")).toMatchObject({
       status: "Estimated",
       energyTotal: 20,
+    })
+    // Two crafted items asked for, the one owned covers the first goal; the second goal's base
+    // materials show as the base need.
+    expect(result.itemNeeds.upgrades.get(craftedId)).toEqual({
+      need: 2,
+      short: 1,
+      goalIds: ["first", "second"],
+    })
+    expect(result.itemNeeds.upgrades.get(baseId)).toMatchObject({
+      need: 2,
+      short: 2,
+      goalIds: ["second"],
     })
   })
 

@@ -53,7 +53,7 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 export function AppShell() {
   // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
-  const { t } = useTranslation(["common", "dailies", "library"])
+  const { t } = useTranslation(["common", "dailies", "library", "gameUi"])
   const isMobile = useIsMobile()
   const isAuthenticated = useIsAuthenticated()
   const { pathname } = useLocation()

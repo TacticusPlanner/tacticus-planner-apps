@@ -146,4 +146,24 @@ describe("base-upgrade aggregation", () => {
     expect(pool.get(a.id)).toBe(2)
     expect(pool.has(c.id)).toBe(false)
   })
+
+  it("counts each crafted item the goals ask for when the pool tracks demand", () => {
+    const pool = createCraftedInventoryPool(
+      [{ upgradeId: a.id, amount: 1 }],
+      upgrades,
+      { trackDemand: true }
+    )
+
+    aggregateBaseUpgradesWithCraftedInventory(
+      [a.id, a.id, a.id],
+      upgrades,
+      pool
+    )
+
+    // Three As asked for, one owned: the two still missing ask for three Bs each.
+    expect(pool.demand?.get(a.id)).toBe(3)
+    expect(pool.demand?.get(b.id)).toBe(6)
+    expect(pool.demand?.has(c.id)).toBe(false)
+    expect(createCraftedInventoryPool([], upgrades).demand).toBeUndefined()
+  })
 })

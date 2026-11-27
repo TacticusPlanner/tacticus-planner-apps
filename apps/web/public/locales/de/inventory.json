@@ -1,0 +1,157 @@
+{
+  "page": {
+    "tabsLabel": "Inventaransichten",
+    "empty": {
+      "title": "Noch kein Inventar",
+      "description": "Synchronisiere mit Tacticus, um zu sehen, was du besitzt.",
+      "action": "Jetzt synchronisieren"
+    }
+  },
+  "count": {
+    "haveNeed": "{{have}} / {{need}}",
+    "short": "{{amount}} fehlen"
+  },
+  "tour": {
+    "steps": {
+      "tabs": {
+        "title": "Verbesserungen und Aufwertung",
+        "content": "Verbesserungen listet alle Verbesserungsmaterialien. Aufwertung zeigt EP-Bücher, Abzeichen, Kugeln und die übrigen Ressourcen."
+      },
+      "sync": {
+        "title": "Aus deiner letzten Synchronisierung",
+        "content": "Die Zahlen kommen aus dem Spiel. Synchronisiere nach Raids oder Herstellen erneut, um sie zu aktualisieren."
+      },
+      "upgradesToolbar": {
+        "title": "Material finden",
+        "content": "Suche nach Namen, filtere nach Seltenheit, Wert oder Art und zeige nur, was deine Ziele brauchen oder was du besitzt."
+      },
+      "upgradesList": {
+        "title": "Vorhanden und benötigt",
+        "content": "Jedes Material zeigt, was du besitzt und was deine aktiven Ziele noch brauchen. Tippe darauf für Rezept, Farmorte und die Ziele, die es brauchen."
+      },
+      "ascensionXp": {
+        "title": "EP-Bücher",
+        "content": "Die EP deiner Bücher neben den EP, die deine aktiven Ziele noch brauchen."
+      },
+      "ascensionResources": {
+        "title": "Abzeichen, Kugeln und mehr",
+        "content": "Jede Ressource zeigt, was du besitzt und was deine Ziele brauchen, nach Allianz und Seltenheit."
+      }
+    }
+  },
+  "upgrades": {
+    "toolbar": {
+      "label": "Verbesserungen finden",
+      "search": "Verbesserungen suchen",
+      "rarity": "Seltenheit",
+      "allRarities": "Alle Seltenheiten",
+      "clearRarities": "Seltenheiten zurücksetzen",
+      "stat": "Wert",
+      "allStats": "Alle Werte",
+      "clearStats": "Werte zurücksetzen",
+      "kind": "Art",
+      "allKinds": "Einfach und hergestellt",
+      "kinds": {
+        "basic": "Einfach",
+        "crafted": "Hergestellt"
+      },
+      "needed": "Für Ziele benötigt",
+      "owned": "Nur vorhandene",
+      "clearFilters": "Filter zurücksetzen",
+      "layouts": {
+        "grid": "Raster",
+        "table": "Tabelle"
+      },
+      "groups": {
+        "none": "Keine",
+        "rarity": "Seltenheit",
+        "stat": "Wert"
+      },
+      "sort": "Sortieren",
+      "sorts": {
+        "rarity": "Seltenheit",
+        "name": "Name",
+        "have": "Vorhanden",
+        "need": "Benötigt",
+        "short": "Fehlt"
+      }
+    },
+    "stats": {
+      "Health": "Gesundheit",
+      "Damage": "Schaden",
+      "Armour": "Rüstung"
+    },
+    "tileLabel": "{{name}}, {{have}} vorhanden",
+    "tileLabelNeed": "{{name}}, {{have}} von {{need}} benötigten vorhanden",
+    "table": {
+      "label": "Verbesserungsmaterialien",
+      "material": "Material",
+      "rarity": "Seltenheit",
+      "stat": "Wert",
+      "have": "Vorhanden",
+      "need": "Benötigt",
+      "short": "Fehlt",
+      "canCraft": "Herstellbar"
+    },
+    "needsLoading": "Ermittle, was deine Ziele benötigen …",
+    "needsFailed": "Konnte nicht ermitteln, was deine Ziele benötigen.",
+    "retry": "Erneut versuchen",
+    "noMatch": {
+      "title": "Keine passenden Verbesserungen",
+      "description": "Versuche andere Filter oder eine andere Suche.",
+      "clearSearch": "Suche zurücksetzen"
+    },
+    "details": {
+      "description": "{{rarity}} · {{stat}} · {{kind}}",
+      "have": "Vorhanden",
+      "need": "Benötigt",
+      "short": "Fehlt",
+      "recipe": "Rezept",
+      "partHave": "{{have}} vorhanden",
+      "canCraft": "Du kannst jetzt {{amount}} herstellen.",
+      "cannotCraft": "Du kannst noch keins herstellen.",
+      "farm": "Wo farmen",
+      "energyPerItem": "{{energy}} Energie pro Stück",
+      "energyHint": "Energie, die ein Drop im Schnitt kostet.",
+      "farmLoading": "Lade, wo es fällt …",
+      "farmFailed": "Konnte nicht laden, wo es fällt.",
+      "unknownBattle": "Unbekannte Schlacht",
+      "noFarm": "Keine Kampagnenschlacht lässt es fallen.",
+      "goals": "Benötigt von",
+      "goalLabel": "{{name}} · {{goalType}}",
+      "unknownGoal": "Unbekanntes Ziel",
+      "noGoals": "Kein aktives Ziel benötigt es.",
+      "close": "Schließen"
+    }
+  },
+  "ascension": {
+    "sections": {
+      "xpBooks": "EP-Bücher",
+      "abilityBadges": "Fähigkeitsabzeichen",
+      "orbs": "Kugeln",
+      "forgeBadges": "Schmiedeabzeichen",
+      "components": "Kriegsmaschinen-Komponenten",
+      "other": "Requisitionsbefehle und Rücksetzsteine"
+    },
+    "xp": {
+      "total": "EP gesamt",
+      "need": "Ziele benötigen",
+      "short": "Fehlt",
+      "booksShort": "Es fehlen etwa {{books}} {{rarity}}-Bücher.",
+      "covered": "Deine Bücher decken, was deine Ziele brauchen.",
+      "bookRarity": "EP werden mit {{rarity}}-Büchern geplant.",
+      "change": "Buchseltenheit ändern"
+    },
+    "alliance": "Allianz",
+    "items": {
+      "xpBook": "{{rarity}}-EP-Buch",
+      "abilityBadge": "{{rarity}} {{alliance}}-Fähigkeitsabzeichen",
+      "orb": "{{rarity}} {{alliance}}-Kugel",
+      "forgeBadge": "{{rarity}}-Schmiedeabzeichen",
+      "component": "{{alliance}}-Komponente",
+      "regular": "Requisitionsbefehle",
+      "blessed": "Gesegnete Requisitionsbefehle",
+      "resetStones": "Rücksetzsteine"
+    }
+  }
+}

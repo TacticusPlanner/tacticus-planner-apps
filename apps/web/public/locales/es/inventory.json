@@ -1,0 +1,157 @@
+{
+  "page": {
+    "tabsLabel": "Vistas del inventario",
+    "empty": {
+      "title": "Aún no hay inventario",
+      "description": "Sincroniza con Tacticus para ver lo que tienes.",
+      "action": "Sincronizar ahora"
+    }
+  },
+  "count": {
+    "haveNeed": "{{have}} / {{need}}",
+    "short": "Faltan {{amount}}"
+  },
+  "tour": {
+    "steps": {
+      "tabs": {
+        "title": "Mejoras y Ascensión",
+        "content": "Mejoras muestra todos los materiales de mejora. Ascensión tiene libros de PE, insignias, orbes y los demás recursos."
+      },
+      "sync": {
+        "title": "De tu última sincronización",
+        "content": "Las cantidades vienen del juego. Vuelve a sincronizar tras hacer incursiones o fabricar para actualizarlas."
+      },
+      "upgradesToolbar": {
+        "title": "Busca un material",
+        "content": "Busca por nombre, filtra por rareza, atributo o tipo y muestra solo lo que necesitan tus objetivos o lo que tienes."
+      },
+      "upgradesList": {
+        "title": "Tienes y necesitas",
+        "content": "Cada material muestra lo que tienes y lo que aún necesitan tus objetivos activos. Tócalo para ver su receta, dónde conseguirlo y los objetivos que lo necesitan."
+      },
+      "ascensionXp": {
+        "title": "Libros de XP",
+        "content": "La XP que suman tus libros, junto a la XP que aún necesitan tus objetivos activos."
+      },
+      "ascensionResources": {
+        "title": "Insignias, orbes y más",
+        "content": "Cada recurso muestra lo que tienes y lo que necesitan tus objetivos, por alianza y rareza."
+      }
+    }
+  },
+  "upgrades": {
+    "toolbar": {
+      "label": "Buscar mejoras",
+      "search": "Buscar mejoras",
+      "rarity": "Rareza",
+      "allRarities": "Todas las rarezas",
+      "clearRarities": "Borrar rarezas",
+      "stat": "Atributo",
+      "allStats": "Todos los atributos",
+      "clearStats": "Borrar atributos",
+      "kind": "Tipo",
+      "allKinds": "Básicas y fabricadas",
+      "kinds": {
+        "basic": "Básica",
+        "crafted": "Fabricada"
+      },
+      "needed": "Necesarias para objetivos",
+      "owned": "Solo en posesión",
+      "clearFilters": "Borrar filtros",
+      "layouts": {
+        "grid": "Cuadrícula",
+        "table": "Tabla"
+      },
+      "groups": {
+        "none": "Ninguno",
+        "rarity": "Rareza",
+        "stat": "Atributo"
+      },
+      "sort": "Ordenar",
+      "sorts": {
+        "rarity": "Rareza",
+        "name": "Nombre",
+        "have": "Tienes",
+        "need": "Necesitas",
+        "short": "Faltan"
+      }
+    },
+    "stats": {
+      "Health": "Salud",
+      "Damage": "Daño",
+      "Armour": "Armadura"
+    },
+    "tileLabel": "{{name}}, tienes {{have}}",
+    "tileLabelNeed": "{{name}}, tienes {{have}} de {{need}} necesarias",
+    "table": {
+      "label": "Materiales de mejora",
+      "material": "Material",
+      "rarity": "Rareza",
+      "stat": "Atributo",
+      "have": "Tienes",
+      "need": "Necesitas",
+      "short": "Faltan",
+      "canCraft": "Puedes fabricar"
+    },
+    "needsLoading": "Calculando lo que necesitan tus objetivos…",
+    "needsFailed": "No se pudo calcular lo que necesitan tus objetivos.",
+    "retry": "Reintentar",
+    "noMatch": {
+      "title": "Ninguna mejora coincide",
+      "description": "Prueba otros filtros u otra búsqueda.",
+      "clearSearch": "Borrar búsqueda"
+    },
+    "details": {
+      "description": "{{rarity}} · {{stat}} · {{kind}}",
+      "have": "Tienes",
+      "need": "Necesitas",
+      "short": "Faltan",
+      "recipe": "Receta",
+      "partHave": "tienes {{have}}",
+      "canCraft": "Puedes fabricar {{amount}} ahora.",
+      "cannotCraft": "Aún no puedes fabricar ninguna.",
+      "farm": "Dónde conseguirla",
+      "energyPerItem": "{{energy}} de energía cada una",
+      "energyHint": "Energía que cuesta de media cada botín.",
+      "farmLoading": "Cargando dónde se consigue…",
+      "farmFailed": "No se pudo cargar dónde se consigue.",
+      "unknownBattle": "Batalla desconocida",
+      "noFarm": "Ninguna batalla de campaña la da.",
+      "goals": "La necesitan",
+      "goalLabel": "{{name}} · {{goalType}}",
+      "unknownGoal": "Objetivo desconocido",
+      "noGoals": "Ningún objetivo activo la necesita.",
+      "close": "Cerrar"
+    }
+  },
+  "ascension": {
+    "sections": {
+      "xpBooks": "Libros de XP",
+      "abilityBadges": "Insignias de habilidad",
+      "orbs": "Orbes",
+      "forgeBadges": "Insignias de forja",
+      "components": "Componentes de Máquinas de Guerra",
+      "other": "Órdenes de requisición y piedras de reinicio"
+    },
+    "xp": {
+      "total": "XP total",
+      "need": "Objetivos necesitan",
+      "short": "Faltan",
+      "booksShort": "Faltan unos {{books}} libros {{rarity}}.",
+      "covered": "Tus libros cubren lo que necesitan tus objetivos.",
+      "bookRarity": "La XP se planifica con libros {{rarity}}.",
+      "change": "Cambiar rareza de libro"
+    },
+    "alliance": "Alianza",
+    "items": {
+      "xpBook": "Libro de XP {{rarity}}",
+      "abilityBadge": "Insignia de habilidad {{alliance}} {{rarity}}",
+      "orb": "Orbe {{alliance}} {{rarity}}",
+      "forgeBadge": "Insignia de forja {{rarity}}",
+      "component": "Componente {{alliance}}",
+      "regular": "Órdenes de requisición",
+      "blessed": "Órdenes de requisición benditas",
+      "resetStones": "Piedras de reinicio"
+    }
+  }
+}

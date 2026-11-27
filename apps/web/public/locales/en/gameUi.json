@@ -1,0 +1,9 @@
+{
+  "inventory": {
+    "title": "Inventory",
+    "tabs": {
+      "upgrades": "Upgrades",
+      "ascension": "Ascension"
+    }
+  }
+}

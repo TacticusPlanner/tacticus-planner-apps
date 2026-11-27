@@ -102,7 +102,7 @@ export function NavigationPalette({
 }) {
   // Also declares the `dailies` namespace: Dailies' child labels/descriptions live there instead
   // of `common.json` (see nav-items.ts), and `t()` needs it declared to type-check the union key.
-  const { t } = useTranslation(["common", "dailies", "library"])
+  const { t } = useTranslation(["common", "dailies", "library", "gameUi"])
   const navigate = useNavigate()
   const { pathname } = useLocation()
   // The surface mounts this on each opening, so every opening starts with an empty field, and the
@@ -306,7 +306,7 @@ function PaletteGroup({
   /** A row was chosen (reported before it runs). */
   onPick: (entry: NavigationEntry) => void
 }) {
-  const { t } = useTranslation(["common", "library"])
+  const { t } = useTranslation(["common", "library", "gameUi"])
   const heading = {
     recent: t("nav.quickActions.recentHeading"),
     actions: t("nav.quickActions.heading"),
@@ -398,7 +398,7 @@ function PaletteRow({
   showCrumb: boolean
 }) {
   // Also declares the `dailies` namespace (see NavigationPalette).
-  const { t } = useTranslation(["common", "dailies", "library"])
+  const { t } = useTranslation(["common", "dailies", "library", "gameUi"])
   const { pathname } = useLocation()
 
   if (entry.kind === "unitGoal") {

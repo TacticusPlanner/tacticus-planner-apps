@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { renderHook, waitFor } from "@/test/render"
+import { act, renderHook, waitFor } from "@/test/render"
 
 // What `useGoalCatalog` reports, switched per test: upgrades and the eligible battle list load on
 // their own and start out as empty maps.
@@ -159,5 +159,21 @@ describe("usePlanInsights", () => {
 
     result.current.retry()
     expect(retryCatalogReads).toHaveBeenCalledTimes(1)
+  })
+
+  it("reports a plan run that throws instead of loading forever, and runs it again on retry", async () => {
+    catalog.upgradesReady = true
+    catalog.battlesReady = true
+    compute.mockImplementationOnce(() => {
+      throw new Error("local read failed")
+    })
+    const { result } = renderHook(() => usePlanInsights())
+    await waitFor(() => expect(result.current.isError).toBe(true))
+    expect(result.current.loading).toBe(false)
+
+    act(() => result.current.retry())
+    await waitFor(() => expect(result.current.isError).toBe(false))
+    expect(result.current.loading).toBe(false)
+    expect(compute).toHaveBeenCalledTimes(2)
   })
 })

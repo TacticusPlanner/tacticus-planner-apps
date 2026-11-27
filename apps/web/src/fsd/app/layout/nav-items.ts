@@ -45,6 +45,8 @@ type NavLabelKey =
   | "goals.tabs.schedule"
   | "goals.tabs.survival"
   | "myGame.tabs.collection"
+  // The game's own name for its Inventory screen (generated `gameUi` namespace, preloaded).
+  | "gameUi:inventory.title"
   | "myGame.tabs.onslaught"
   | "myGame.tabs.campaigns"
   | "myGame.tabs.campaign-events"
@@ -82,7 +84,9 @@ type NavDescriptionKey =
       | "library:collections.npcs.label"
       | "library:collections.raidBosses.label"
       | "library:collections.shops.label"
+      | "gameUi:inventory.title"
     >}Description`
+  | "myGame.tabs.inventoryDescription"
   | "library:section.description"
   | "library:collections.characters.description"
   | "library:collections.machinesOfWar.description"
@@ -204,6 +208,14 @@ export const navItems: NavItem[] = [
         artSrc: gameMenuIcon("heroes"),
         labelKey: "myGame.tabs.collection",
         descriptionKey: "myGame.tabs.collectionDescription",
+      },
+      {
+        path: "/my-game/inventory",
+        keywords: ["resources", "materials", "upgrades", "xp books", "orbs"],
+        artSrc: gameMenuIcon("inventory"),
+        labelKey: "gameUi:inventory.title",
+        descriptionKey: "myGame.tabs.inventoryDescription",
+        anonymousAllowed: false,
       },
       {
         path: "/my-game/onslaught",

@@ -1,0 +1,157 @@
+{
+  "page": {
+    "tabsLabel": "Inventory views",
+    "empty": {
+      "title": "No inventory yet",
+      "description": "Sync with Tacticus to see what you hold.",
+      "action": "Sync now"
+    }
+  },
+  "count": {
+    "haveNeed": "{{have}} / {{need}}",
+    "short": "{{amount}} short"
+  },
+  "tour": {
+    "steps": {
+      "tabs": {
+        "title": "Upgrades and Ascension",
+        "content": "Upgrades lists every upgrade material. Ascension has XP books, badges, orbs and the other resources."
+      },
+      "sync": {
+        "title": "From your last sync",
+        "content": "Counts come from the game. Sync again after raiding or crafting to update them."
+      },
+      "upgradesToolbar": {
+        "title": "Find a material",
+        "content": "Search by name, filter by rarity, stat or kind, and show only what your goals need or what you own."
+      },
+      "upgradesList": {
+        "title": "Have and need",
+        "content": "Each material shows what you hold and what your active goals still need. Tap one for its recipe, where to farm it and the goals that need it."
+      },
+      "ascensionXp": {
+        "title": "XP books",
+        "content": "The XP your books add up to, beside the XP your active goals still need."
+      },
+      "ascensionResources": {
+        "title": "Badges, orbs and more",
+        "content": "Each resource shows what you hold and what your goals need, by alliance and rarity."
+      }
+    }
+  },
+  "upgrades": {
+    "toolbar": {
+      "label": "Find upgrades",
+      "search": "Search upgrades",
+      "rarity": "Rarity",
+      "allRarities": "All rarities",
+      "clearRarities": "Clear rarities",
+      "stat": "Stat",
+      "allStats": "All stats",
+      "clearStats": "Clear stats",
+      "kind": "Kind",
+      "allKinds": "Basic and crafted",
+      "kinds": {
+        "basic": "Basic",
+        "crafted": "Crafted"
+      },
+      "needed": "Needed for goals",
+      "owned": "Owned only",
+      "clearFilters": "Clear filters",
+      "layouts": {
+        "grid": "Grid",
+        "table": "Table"
+      },
+      "groups": {
+        "none": "None",
+        "rarity": "Rarity",
+        "stat": "Stat"
+      },
+      "sort": "Sort",
+      "sorts": {
+        "rarity": "Rarity",
+        "name": "Name",
+        "have": "Have",
+        "need": "Need",
+        "short": "Short"
+      }
+    },
+    "stats": {
+      "Health": "Health",
+      "Damage": "Damage",
+      "Armour": "Armour"
+    },
+    "tileLabel": "{{name}}, have {{have}}",
+    "tileLabelNeed": "{{name}}, have {{have}} of {{need}} needed",
+    "table": {
+      "label": "Upgrade materials",
+      "material": "Material",
+      "rarity": "Rarity",
+      "stat": "Stat",
+      "have": "Have",
+      "need": "Need",
+      "short": "Short",
+      "canCraft": "Can craft"
+    },
+    "needsLoading": "Working out what your goals need…",
+    "needsFailed": "Couldn't work out what your goals need.",
+    "retry": "Try again",
+    "noMatch": {
+      "title": "No upgrades match",
+      "description": "Try other filters or a different search.",
+      "clearSearch": "Clear search"
+    },
+    "details": {
+      "description": "{{rarity}} · {{stat}} · {{kind}}",
+      "have": "Have",
+      "need": "Need",
+      "short": "Short",
+      "recipe": "Recipe",
+      "partHave": "have {{have}}",
+      "canCraft": "You can craft {{amount}} now.",
+      "cannotCraft": "You can't craft one yet.",
+      "farm": "Where to farm",
+      "energyPerItem": "{{energy}} energy each",
+      "energyHint": "Energy one drop takes on average.",
+      "farmLoading": "Loading where it drops…",
+      "farmFailed": "Couldn't load where it drops.",
+      "unknownBattle": "Unknown battle",
+      "noFarm": "No campaign battle drops it.",
+      "goals": "Needed by",
+      "goalLabel": "{{name}} · {{goalType}}",
+      "unknownGoal": "Unknown goal",
+      "noGoals": "No active goal needs it.",
+      "close": "Close"
+    }
+  },
+  "ascension": {
+    "sections": {
+      "xpBooks": "XP books",
+      "abilityBadges": "Ability badges",
+      "orbs": "Orbs",
+      "forgeBadges": "Forge badges",
+      "components": "Machine of War components",
+      "other": "Requisition orders and reset stones"
+    },
+    "xp": {
+      "total": "Total XP",
+      "need": "Goals need",
+      "short": "Short",
+      "booksShort": "About {{books}} {{rarity}} books short.",
+      "covered": "Your books cover what your goals need.",
+      "bookRarity": "XP is planned in {{rarity}} books.",
+      "change": "Change book rarity"
+    },
+    "alliance": "Alliance",
+    "items": {
+      "xpBook": "{{rarity}} XP book",
+      "abilityBadge": "{{rarity}} {{alliance}} ability badge",
+      "orb": "{{rarity}} {{alliance}} orb",
+      "forgeBadge": "{{rarity}} forge badge",
+      "component": "{{alliance}} component",
+      "regular": "Requisition orders",
+      "blessed": "Blessed requisition orders",
+      "resetStones": "Reset stones"
+    }
+  }
+}
