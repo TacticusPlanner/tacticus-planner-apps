@@ -17,6 +17,7 @@ import type { PlayerDataChunkDto } from "@workspace/player-data"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { numberFormat } from "@/shared/lib"
 import { useLevelRules } from "@/entities/goal-farming"
 import {
   PlanningSettingsDialog,
@@ -186,7 +187,7 @@ function Section({
 
 function useFormat() {
   const { i18n } = useTranslation()
-  return (value: number) => value.toLocaleString(i18n.language)
+  return (value: number) => numberFormat(i18n.language).format(value)
 }
 
 /**

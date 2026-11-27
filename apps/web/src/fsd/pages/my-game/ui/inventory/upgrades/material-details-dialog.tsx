@@ -16,7 +16,7 @@ import { Button } from "@workspace/ui/components/button"
 
 import { goalTypeIcon, useGlobalGoalPlan } from "@/entities/goal"
 import type { GoalDetail } from "@/entities/goal"
-import { useCampaignDisplay } from "@/shared/lib"
+import { useCampaignDisplay, numberFormat } from "@/shared/lib"
 import type { Battle } from "@/shared/lib"
 import {
   CampaignLocationName,
@@ -85,7 +85,7 @@ function DetailsContent({
   needsReady,
 }: DetailsProps & { row: InventoryUpgradeRow }) {
   const { t, i18n } = useTranslation(["inventory", "progression"])
-  const format = (value: number) => value.toLocaleString(i18n.language)
+  const format = (value: number) => numberFormat(i18n.language).format(value)
   const upgrade = upgradesById.get(row.id)
   const recipe = recipeTree(row.id, held, upgradesById)
 
@@ -234,9 +234,9 @@ function FarmSpots({
               <span className="flex items-center gap-1 text-muted-foreground tabular-nums">
                 <EntityIcon alt="" size="icon" src={energyIconUrl} />
                 {t("upgrades.details.energyPerItem", {
-                  energy: spot.energyPerItem.toLocaleString(i18n.language, {
+                  energy: numberFormat(i18n.language, {
                     maximumFractionDigits: 1,
-                  }),
+                  }).format(spot.energyPerItem),
                 })}
               </span>
             </li>

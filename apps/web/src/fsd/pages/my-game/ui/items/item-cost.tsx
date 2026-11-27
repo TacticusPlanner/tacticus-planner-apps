@@ -6,6 +6,7 @@ import {
 } from "@workspace/game-catalog"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { numberFormat } from "@/shared/lib"
 import type { ItemCost } from "@/shared/equipment"
 import { EntityIcon, HintTrigger } from "@/shared/ui"
 
@@ -19,7 +20,7 @@ export function CostAmounts({
   className?: string
 }) {
   const { t, i18n } = useTranslation("gameUi")
-  const format = (value: number) => value.toLocaleString(i18n.language)
+  const format = (value: number) => numberFormat(i18n.language).format(value)
   const parts = [
     {
       key: "salvage",

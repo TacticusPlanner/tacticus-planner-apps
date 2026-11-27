@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import { numberFormat } from "@/shared/lib"
 import { hreMission } from "@/entities/hre-mission"
 import type {
   HreMission,
@@ -173,7 +174,9 @@ export function CurrentMissionCard({
                   />
                   <span className="text-sm whitespace-nowrap text-muted-foreground tabular-nums">
                     {t("tracker.ofTarget", {
-                      target: objective.target.toLocaleString(i18n.language),
+                      target: numberFormat(i18n.language).format(
+                        objective.target
+                      ),
                     })}
                   </span>
                   {done ? null : (

@@ -19,6 +19,7 @@ import {
 import { Pressable } from "@workspace/ui/components/pressable"
 import { Button } from "@workspace/ui/components/button"
 
+import { numberFormat } from "@/shared/lib"
 import { ItemIcon } from "@/shared/equipment"
 import { UnitPortrait } from "@/entities/unit"
 import {
@@ -320,7 +321,7 @@ function PiecesTable({
   onOpen: (piece: OwnedPiece<Item>) => void
 }) {
   const { t, i18n } = useTranslation("myItems")
-  const format = (value: number) => value.toLocaleString(i18n.language)
+  const format = (value: number) => numberFormat(i18n.language).format(value)
   return (
     <div className="max-w-full min-w-0 overflow-x-auto rounded-xl border">
       <Table aria-label={t("pieces.table.label")}>

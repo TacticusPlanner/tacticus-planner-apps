@@ -12,6 +12,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { Pressable } from "@workspace/ui/components/pressable"
 import { Button } from "@workspace/ui/components/button"
 
+import { numberFormat } from "@/shared/lib"
 import {
   CountBadge,
   EntityIcon,
@@ -103,7 +104,7 @@ function GroupDivider({ group }: { group: UpgradeRowGroup }) {
 
 function useCounts() {
   const { t, i18n } = useTranslation("inventory")
-  const format = (value: number) => value.toLocaleString(i18n.language)
+  const format = (value: number) => numberFormat(i18n.language).format(value)
   return {
     format,
     /** "12 / 30" while the goals need it, else just what is held. */

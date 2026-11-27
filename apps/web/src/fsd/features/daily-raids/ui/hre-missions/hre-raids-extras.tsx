@@ -7,6 +7,7 @@ import {
   raidTicketIcon,
 } from "@workspace/game-catalog"
 
+import { numberFormat } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 
 import { campaignOutlook } from "../../model/campaign-outlook"
@@ -254,7 +255,7 @@ export function HreCampaignOutlook({
   daysLeft: number
 }) {
   const { t, i18n } = useTranslation("hre")
-  const n = (value: number) => value.toLocaleString(i18n.language)
+  const n = (value: number) => numberFormat(i18n.language).format(value)
   const outlook = campaignOutlook(
     plan?.outlookNodes ?? [],
     plan?.dailyEnergy ?? 0,

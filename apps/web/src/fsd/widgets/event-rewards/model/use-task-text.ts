@@ -3,6 +3,8 @@ import type { GameCatalogEventShopTask } from "@workspace/game-catalog"
 
 import { fillGameText } from "../lib/event-mission-text"
 
+import { numberFormat } from "@/shared/lib"
+
 /** A task's game text with its target and parameters filled in, or with the target left out. */
 export function useTaskText() {
   const { i18n } = useTranslation("eventMissions")
@@ -38,7 +40,7 @@ export function useTaskText() {
         template(task),
         {
           ...values(task),
-          TARGET_AMOUNT: task.target.toLocaleString(i18n.language),
+          TARGET_AMOUNT: numberFormat(i18n.language).format(task.target),
         },
         task.target
       ),

@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 
+import { numberFormat } from "@/shared/lib"
 import { CompactProgression, EntityIcon } from "@/shared/ui"
 
 import {
@@ -73,7 +74,7 @@ export function PaceCard({
   factionId?: string | null
 }) {
   const { t, i18n } = useTranslation("hre")
-  const n = (value: number) => value.toLocaleString(i18n.language)
+  const n = (value: number) => numberFormat(i18n.language).format(value)
   const stepName = (id: HreRarityStepId) => t(`pace.steps.${id}`)
   const range = pace ? bracketRange(rules, pace.bracket) : null
   const owned = state.owned

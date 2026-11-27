@@ -205,7 +205,7 @@ function StatsTable({ item }: { item: EquipmentStorageModel }) {
 /** Each level's cost to reach, and what a copy at that level returns when reclaimed. */
 function CostLadder({ item }: { item: EquipmentStorageModel }) {
   const { t, i18n } = useTranslation(["library", "gameUi"])
-  const format = (value: number) => value.toLocaleString(i18n.language)
+  const format = (value: number) => numberFormat(i18n.language).format(value)
   const ladder = costLadder(item)
   const mythic = ladder.some((row) => row.mythicSalvage > 0)
   const salvageLabel = mythic
