@@ -722,7 +722,7 @@
       "back": "All items",
       "relic": "Relic",
       "uniqueRelic": "Unique relic",
-      "for": "Who can use it",
+      "for": "Who can wear it",
       "everyone": "Every faction",
       "stats": "Stats by level",
       "level": "Level",
@@ -738,7 +738,7 @@
       },
       "item": {
         "title": "Open an item",
-        "content": "Its stats at every level, who can use it and what each level costs."
+        "content": "Its stats at every level, who can wear it and what each level costs."
       }
     },
     "openInLibrary": "Open in Library"

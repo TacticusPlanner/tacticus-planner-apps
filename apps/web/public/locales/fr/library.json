@@ -724,7 +724,7 @@
       "back": "Tous les objets",
       "relic": "Relique",
       "uniqueRelic": "Relique unique",
-      "for": "Qui peut l'utiliser",
+      "for": "Qui peut le porter",
       "everyone": "Toutes les factions",
       "stats": "Statistiques par niveau",
       "level": "Niveau",
@@ -740,7 +740,7 @@
       },
       "item": {
         "title": "Ouvrir un objet",
-        "content": "Ses statistiques à chaque niveau, qui peut l'utiliser et le coût de chaque niveau."
+        "content": "Ses statistiques à chaque niveau, qui peut le porter et le coût de chaque niveau."
       }
     },
     "openInLibrary": "Ouvrir dans la Bibliothèque"

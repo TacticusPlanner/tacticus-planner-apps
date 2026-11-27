@@ -722,7 +722,7 @@
       "back": "Alle Gegenstände",
       "relic": "Relikt",
       "uniqueRelic": "Einzigartiges Relikt",
-      "for": "Wer ihn nutzen kann",
+      "for": "Wer ihn tragen kann",
       "everyone": "Jede Fraktion",
       "stats": "Werte pro Stufe",
       "level": "Stufe",
@@ -738,7 +738,7 @@
       },
       "item": {
         "title": "Gegenstand öffnen",
-        "content": "Seine Werte auf jeder Stufe, wer ihn nutzen kann und was jede Stufe kostet."
+        "content": "Seine Werte auf jeder Stufe, wer ihn tragen kann und was jede Stufe kostet."
       }
     },
     "openInLibrary": "In der Bibliothek öffnen"

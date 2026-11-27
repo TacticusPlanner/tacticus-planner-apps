@@ -155,16 +155,18 @@ function SuggestionRow({
       </span>
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="text-sm font-medium">{title}</span>
-        <span className="flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1 text-xs text-muted-foreground">
           <EntityIcon
             alt=""
             size="icon-sm"
             src={equipmentSlotIcon(suggestion.slotType)}
           />
-          {t("suggestions.slot", {
-            slot: context.slotName(suggestion.slotType),
-          })}{" "}
-          · {reasonText(suggestion.reason)}
+          <span className="min-w-0">
+            {t("suggestions.slot", {
+              slot: context.slotName(suggestion.slotType),
+            })}{" "}
+            · {reasonText(suggestion.reason)}
+          </span>
         </span>
         {suggestion.locked ? (
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
