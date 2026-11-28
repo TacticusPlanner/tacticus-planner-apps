@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import type { UnitId } from "@workspace/game-domain"
 
-import { usePlayerChunk } from "@/shared/local-data"
+import { toByUnitId, usePlayerChunk } from "@/shared/local-data"
 
 import { computeGoalBlockers } from "../blockers/goal-blockers"
 import type {
@@ -30,12 +30,7 @@ import type { UpgradeMaterialHolder, GoalProgress } from "./goal-progress"
 import { withStandaloneAvailable } from "../insights/plan-ability-materials"
 import type { PlanNetResources } from "../insights/use-plan-insights.domain"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
-import {
-  chunkOrUndefined,
-  readyData,
-  toAbilityMaterials,
-  toByUnitId,
-} from "../shared/read-data"
+import { chunkOrUndefined, toAbilityMaterials } from "../shared/read-data"
 import {
   computeGoalAttainment,
   isPlayerDataUnavailable,
@@ -44,6 +39,7 @@ import { NO_BLOCKERS, UNKNOWN_PROGRESS } from "./goal-overview-metrics-defaults"
 import { computeGoalProgress } from "./goal-progress"
 import { milestoneSiblings, withMilestoneStart } from "./milestone-siblings"
 import type { GoalDetail } from "@/entities/goal"
+import { readyData } from "@/shared/lib"
 import { computeLevelRequirementProgress } from "./level-requirement-progress"
 import type { LevelRequirementProgress } from "./level-requirement-progress"
 

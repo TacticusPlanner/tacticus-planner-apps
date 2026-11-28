@@ -1,13 +1,17 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { mapUpgradeStorageToDomain } from "@/entities/rank-lookup"
+import { useUpgradesById } from "@/entities/rank-lookup"
+import type { UpgradesById } from "@/entities/rank-lookup"
+import { readyData } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { unitOwnership } from "../unit/unit-ownership"
 
 /** The inventory's Ability upgrade materials, or undefined before the chunk has synced. */
+const NO_UPGRADES: UpgradesById = new Map()
+
 function abilityMaterials(inventory: PlayerDataChunkDto<"inventory"> | null) {
   if (!inventory) return undefined
   const { abilityBadges, forgeBadges, components } = inventory
@@ -36,16 +40,7 @@ export function useMowPlayerData(unitId: UnitId, isAuthenticated: boolean) {
   const inventoryRead = usePlayerChunk("inventory", abilityMaterials)
   const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
   const unlockCostsRead = useCatalogDataset("unlock-shard-costs", toById)
-  const upgradesRead = useCatalogDataset("upgrades")
-  const upgrades =
-    upgradesRead.status === "ready" ? upgradesRead.data : undefined
-  const upgradesById = useMemo(
-    () =>
-      new Map(
-        (upgrades ?? []).map((u) => [u.id, mapUpgradeStorageToDomain(u)])
-      ),
-    [upgrades]
-  )
+  const upgradesById = readyData(useUpgradesById()) ?? NO_UPGRADES
 
   // Signed out, the player reads are ignored (sign-out deletes the player database anyway).
   const playerData = <T>(read: { status: string; data?: T }) =>

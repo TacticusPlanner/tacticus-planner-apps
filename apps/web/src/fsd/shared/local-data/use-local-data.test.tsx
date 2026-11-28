@@ -12,7 +12,13 @@ import {
   refreshLocalDataAfterSync,
   writtenKeys,
 } from "./refresh-after-sync"
-import { toById, useCatalogDataset, usePlayerChunk } from "./use-local-data"
+import {
+  orEmpty,
+  toById,
+  toByUnitId,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "./use-local-data"
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -34,6 +40,25 @@ const characters = [
 afterEach(() => {
   vi.restoreAllMocks()
   vi.useRealTimers()
+})
+
+describe("player chunk selectors", () => {
+  it("indexes records by unit id, empty before the chunk has synced", () => {
+    const a = { unitId: "a", rank: 1 }
+    const b = { unitId: "b", rank: 2 }
+    expect(toByUnitId([a, b])).toEqual(
+      new Map([
+        ["a", a],
+        ["b", b],
+      ])
+    )
+    expect(toByUnitId(null).size).toBe(0)
+  })
+
+  it("lists a chunk's records, empty before it has synced", () => {
+    expect(orEmpty([1, 2])).toEqual([1, 2])
+    expect(orEmpty(null)).toEqual([])
+  })
 })
 
 describe("useCatalogDataset", () => {

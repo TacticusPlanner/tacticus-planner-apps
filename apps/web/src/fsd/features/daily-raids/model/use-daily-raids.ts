@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { unitIdSchema } from "@workspace/game-domain"
 import type { UnitId } from "@workspace/game-domain"
-import type { UpgradeStorageModel } from "@workspace/game-catalog"
 
 import { activeProjectMembers } from "@/entities/goal"
 import type { GoalDetail } from "@/entities/goal"
@@ -17,16 +16,20 @@ import { usePlanningSettings } from "@/entities/planning-setting"
 import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
-  mapUpgradeStorageToDomain,
+  useUpgradesById,
 } from "@/entities/rank-lookup"
 import {
   hreShardReasons as toHreShardReasons,
   toOnslaughtRunsPerDay,
 } from "@/entities/goal-farming"
 import { useHreShardSources } from "@/entities/hre-mission"
-import { useCampaignDisplay } from "@/shared/lib"
-import type { ReadState } from "@/shared/lib"
-import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import { readyData, useCampaignDisplay } from "@/shared/lib"
+import {
+  toById,
+  toByUnitId,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "@/shared/local-data"
 
 import { buildResourceByBattle } from "./daily-raid-battle-resources"
 import type { EventFarmOrder } from "./home-screen-event-farm"
@@ -104,7 +107,7 @@ export function useDailyRaids(
 
   const charactersRead = useCatalogDataset("characters", toById)
   const mowsRead = useCatalogDataset("mows", toById)
-  const upgradesRead = useCatalogDataset("upgrades", toUpgradesById)
+  const upgradesRead = useUpgradesById()
   const battlesRead = useCatalogDataset("campaign-battles")
   const campaignDefinitionsRead = useCatalogDataset("campaign-definitions")
   const ascensionCostsRead = useCatalogDataset("ascension-costs", toById)
@@ -122,11 +125,11 @@ export function useDailyRaids(
   const playerCharactersRead = usePlayerChunk("characters", toByUnitId)
   const playerMowsRead = usePlayerChunk("mows", toByUnitId)
   const inventoryShardsRead = usePlayerChunk("inventory-shards", toByUnitId)
-  const charactersById = dataOf(charactersRead)
-  const mowsById = dataOf(mowsRead)
-  const upgradesById = dataOf(upgradesRead)
-  const battles = dataOf(battlesRead)
-  const campaignDefinitions = dataOf(campaignDefinitionsRead)
+  const charactersById = readyData(charactersRead)
+  const mowsById = readyData(mowsRead)
+  const upgradesById = readyData(upgradesRead)
+  const battles = readyData(battlesRead)
+  const campaignDefinitions = readyData(campaignDefinitionsRead)
   const {
     availableBattles,
     manualBattleIds,
@@ -134,20 +137,20 @@ export function useDailyRaids(
     ready: eligibilityReady,
     isError: eligibilityError,
   } = useEligibleCampaignBattles(battles, campaignDefinitions)
-  const ascensionCostsById = dataOf(ascensionCostsRead)
-  const unlockShardCostsById = dataOf(unlockShardCostsRead)
-  const onslaughtRewards = dataOf(onslaughtRewardsRead)
-  const onslaughtRunsPerDay = dataOf(onslaughtRunsPerDayRead)
-  const shops = dataOf(shopsRead)
-  const npcsById = dataOf(npcsRead)
+  const ascensionCostsById = readyData(ascensionCostsRead)
+  const unlockShardCostsById = readyData(unlockShardCostsRead)
+  const onslaughtRewards = readyData(onslaughtRewardsRead)
+  const onslaughtRunsPerDay = readyData(onslaughtRunsPerDayRead)
+  const shops = readyData(shopsRead)
+  const npcsById = readyData(npcsRead)
   const onslaughtProgressQuery = useQuery({
     ...onslaughtProgressQueries.current(),
     enabled: isAuthenticated,
   })
-  const inventoryUpgrades = dataOf(inventoryUpgradesRead)
-  const playerCharacterById = dataOf(playerCharactersRead)
-  const playerMowById = dataOf(playerMowsRead)
-  const inventoryShardById = dataOf(inventoryShardsRead)
+  const inventoryUpgrades = readyData(inventoryUpgradesRead)
+  const playerCharacterById = readyData(playerCharactersRead)
+  const playerMowById = readyData(playerMowsRead)
+  const inventoryShardById = readyData(inventoryShardsRead)
   const localReadFailed = [
     charactersRead,
     mowsRead,
@@ -562,19 +565,6 @@ export function useDailyRaids(
 
 const ERROR_STATE: DailyRaidsViewModel = { status: "error" }
 const LOADING_STATE: DailyRaidsViewModel = { status: "loading" }
-
-function dataOf<T>(read: ReadState<T>): T | undefined {
-  return read.status === "ready" ? read.data : undefined
-}
-
-const toUpgradesById = (records: UpgradeStorageModel[]) =>
-  new Map(records.map((item) => [item.id, mapUpgradeStorageToDomain(item)]))
-
-function toByUnitId<T extends { unitId: string }>(
-  chunk: readonly T[] | null
-): ReadonlyMap<string, T> {
-  return new Map((chunk ?? []).map((record) => [record.unitId, record]))
-}
 
 export function playerUnitIds(
   details: readonly Pick<GoalDetail, "entityId" | "entityType">[]

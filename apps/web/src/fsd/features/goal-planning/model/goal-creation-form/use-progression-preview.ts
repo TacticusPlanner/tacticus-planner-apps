@@ -10,7 +10,12 @@ import type { Progression, UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
-import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import {
+  toById,
+  toByUnitId,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "@/shared/local-data"
 
 import {
   estimateGoal,
@@ -26,13 +31,13 @@ import {
   shopOfferPerDay,
   toOnslaughtRunsPerDay,
 } from "@/entities/goal-farming"
+import { readyData } from "@/shared/lib"
 import type { FlatSupplier } from "@/entities/goal-farming"
 import type { GoalAcquisitionPlan } from "./acquisition-plan"
 import {
   isOnslaughtProgressSaved,
   onslaughtShardsPerRun as onslaughtShardsPerRunFor,
 } from "./onslaught-yield"
-import { readyData, toByUnitId } from "../shared/read-data"
 
 type PlayerUnit =
   PlayerDataChunkDto<"characters">[number] | PlayerDataChunkDto<"mows">[number]

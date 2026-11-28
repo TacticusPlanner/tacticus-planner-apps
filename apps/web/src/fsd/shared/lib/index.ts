@@ -28,6 +28,7 @@ export {
   hasNode,
   localReadQueryOptions,
   localReadTimeoutMs,
+  readyData,
   useCampaignDisplay,
   useDebouncedCommit,
   useReadState,

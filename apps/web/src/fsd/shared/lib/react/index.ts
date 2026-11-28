@@ -4,6 +4,7 @@ export {
   combineReadStates,
   localReadQueryOptions,
   localReadTimeoutMs,
+  readyData,
   useReadState,
   withReadTimeout,
   useQueryReadState,

@@ -1,20 +1,15 @@
 import type {
   CampaignBattleStorageModel,
   CampaignDefinitionStorageModel,
-  UpgradeStorageModel,
 } from "@workspace/game-catalog"
 
 import {
   mapCampaignBattleStorageToDomain,
-  mapUpgradeStorageToDomain,
+  useUpgradesById,
 } from "@/entities/rank-lookup"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
 const EMPTY = new Map<never, never>()
-
-function upgradesToDomainById(upgrades: UpgradeStorageModel[]) {
-  return new Map(upgrades.map((u) => [u.id, mapUpgradeStorageToDomain(u)]))
-}
 
 function battlesToDomainById(battles: CampaignBattleStorageModel[]) {
   return new Map(
@@ -35,7 +30,7 @@ function releaseTypesByGroupId(definitions: CampaignDefinitionStorageModel[]) {
  */
 export function useCharacterLookupCatalog() {
   const characters = useCatalogDataset("characters", toById)
-  const upgrades = useCatalogDataset("upgrades", upgradesToDomainById)
+  const upgrades = useUpgradesById()
   const battles = useCatalogDataset("campaign-battles", battlesToDomainById)
   const releaseTypes = useCatalogDataset(
     "campaign-definitions",

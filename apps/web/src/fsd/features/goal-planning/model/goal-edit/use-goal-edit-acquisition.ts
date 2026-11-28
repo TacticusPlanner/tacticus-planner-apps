@@ -4,13 +4,18 @@ import { useIsAuthenticated } from "@azure/msal-react"
 
 import type { AcquisitionSource, GoalDetail } from "@/entities/goal"
 import { onslaughtProgressQueries } from "@/entities/player-data-override"
-import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import {
+  toByUnitId,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "@/shared/local-data"
 import type { estimateGoal } from "@/entities/goal-farming"
 import {
   isMythicProgression,
   toOnslaughtRunsPerDay,
   useUnitShopShardSupply,
 } from "@/entities/goal-farming"
+import { readyData } from "@/shared/lib"
 
 import {
   acquisitionSourceSeed,
@@ -22,7 +27,6 @@ import {
 } from "../goal-creation-form/onslaught-yield"
 import { useAcquisitionSourceSelection } from "../goal-creation-form/use-acquisition-source-selection"
 import type { useGoalCatalog } from "../shared/use-goal-catalog"
-import { readyData, toByUnitId } from "../shared/read-data"
 
 type CharactersById = ReturnType<typeof useGoalCatalog>["charactersById"]
 type MowsById = ReturnType<typeof useGoalCatalog>["mowsById"]

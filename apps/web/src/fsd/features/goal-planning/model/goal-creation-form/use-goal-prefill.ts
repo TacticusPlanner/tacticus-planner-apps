@@ -2,9 +2,8 @@ import { useIsAuthenticated } from "@azure/msal-react"
 import type { UnitId } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
-import { usePlayerChunk } from "@/shared/local-data"
-
-import { readyData, toByUnitId } from "../shared/read-data"
+import { toByUnitId, usePlayerChunk } from "@/shared/local-data"
+import { readyData } from "@/shared/lib"
 
 /**
  * The caller's synced record for `entityId` (rank/progressionIndex/abilities/appliedUpgradeSlots for

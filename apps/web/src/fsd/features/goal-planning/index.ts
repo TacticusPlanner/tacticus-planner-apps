@@ -143,12 +143,7 @@ export {
   isAtMaxProgression,
   isAtMaxRank,
 } from "./model/shared/goal-validation"
-export {
-  chunkOrUndefined,
-  readyData,
-  toByUnitId,
-  toXpBooks,
-} from "./model/shared/read-data"
+export { chunkOrUndefined, toXpBooks } from "./model/shared/read-data"
 export { type GoalProject } from "./model/shared/types"
 // Goal creation and edit: the create-goal sheet and its app-wide launcher, plus the goal edit
 // dialog that reuses the same form family.

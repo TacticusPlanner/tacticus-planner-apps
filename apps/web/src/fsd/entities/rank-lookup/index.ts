@@ -16,3 +16,8 @@ export {
   mapCharacterStorageToDomain,
   type UpgradeWithFarmLocations,
 } from "./lib/rank-lookup.mapper"
+export {
+  useDomainUpgrades,
+  useUpgradesById,
+  type UpgradesById,
+} from "./model/use-upgrades"

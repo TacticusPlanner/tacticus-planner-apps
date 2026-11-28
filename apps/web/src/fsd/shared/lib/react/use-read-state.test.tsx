@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { act, render, screen } from "@/test/render"
 
-import { combineReadStates, useReadState } from "./use-read-state"
+import { combineReadStates, readyData, useReadState } from "./use-read-state"
 import type { ReadState } from "./use-read-state"
 
 // The prop is a hook, so it is named like one: React Compiler would otherwise cache the call.
@@ -44,6 +44,16 @@ describe("useReadState", () => {
     act(() => screen.getByRole("button", { name: "retry" }).click())
 
     expect(await screen.findByText("recovered")).toBeInTheDocument()
+  })
+})
+
+const noRetry = () => undefined
+
+describe("readyData", () => {
+  it("gives the data once ready and undefined while loading or failed", () => {
+    expect(readyData({ status: "ready", data: 3, retry: noRetry })).toBe(3)
+    expect(readyData({ status: "loading", retry: noRetry })).toBeUndefined()
+    expect(readyData({ status: "error", retry: noRetry })).toBeUndefined()
   })
 })
 

@@ -1,11 +1,10 @@
 import { useMemo } from "react"
-import type { UpgradeStorageModel } from "@workspace/game-catalog"
 import type { BattleId } from "@workspace/game-domain"
 
 import { shardResourceId } from "@/entities/goal-farming"
 import {
   mapCampaignBattleStorageToDomain,
-  mapUpgradeStorageToDomain,
+  useDomainUpgrades,
 } from "@/entities/rank-lookup"
 import { useCampaignDisplay } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
@@ -76,7 +75,7 @@ export function useHomeScreenEventLocations(
   const battlesRead = useCatalogDataset("campaign-battles")
   const campaignDefinitionsRead = useCatalogDataset("campaign-definitions")
   const npcsRead = useCatalogDataset("npcs", toById)
-  const upgradesRead = useCatalogDataset("upgrades", toDomainUpgrades)
+  const upgradesRead = useDomainUpgrades()
   const charactersRead = useCatalogDataset("characters")
   const upgrades =
     upgradesRead.status === "ready" ? upgradesRead.data : undefined
@@ -260,6 +259,3 @@ export function useHomeScreenEventLocations(
     resourceByBattleId,
   }
 }
-
-const toDomainUpgrades = (records: UpgradeStorageModel[]) =>
-  records.map(mapUpgradeStorageToDomain)

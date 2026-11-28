@@ -1,11 +1,15 @@
 import { useMemo } from "react"
 import type { EquipmentStorageModel } from "@workspace/game-catalog"
-import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import { useNpcsById } from "@/entities/npc"
 import { forcedSummonerIds } from "@/entities/unit"
 import { combineReadStates } from "@/shared/lib"
-import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import {
+  orEmpty,
+  toById,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "@/shared/local-data"
 import {
   characterPowerAt,
   npcPowerAt,
@@ -19,9 +23,6 @@ import type { QuestScoring } from "./quest-score"
 import { capUnitState, featuredHeroState, selectQuestTeam } from "./quest-team"
 import type { QuestTeam, QuestTeamCandidate } from "./quest-team"
 import { questTierCap } from "./quest-tier-cap"
-
-const toRoster = (roster: PlayerDataChunkDto<"characters"> | null) =>
-  roster ?? []
 
 type QuestBattlePlan = {
   team: QuestTeam
@@ -73,7 +74,7 @@ export function useQuestPlan(input: {
   /** The served quest's scoring; estimates wait for it. */
   scoring: QuestScoring | null
 }): QuestPlanViewModel {
-  const roster = usePlayerChunk("characters", toRoster)
+  const roster = usePlayerChunk("characters", orEmpty)
   const catalog = useCatalogDataset("characters", toById)
   const unitPower = useUnitPowerContext()
   const npcs = useNpcsById()

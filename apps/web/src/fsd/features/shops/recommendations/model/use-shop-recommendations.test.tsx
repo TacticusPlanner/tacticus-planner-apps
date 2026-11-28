@@ -29,9 +29,9 @@ vi.mock("@/entities/goal", () => ({
     return state.active
   },
 }))
-vi.mock("@/entities/rank-lookup", () => ({
+vi.mock("@/entities/rank-lookup", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/entities/rank-lookup")>()),
   mapCharacterStorageToDomain: (record: unknown) => record,
-  mapUpgradeStorageToDomain: (record: unknown) => record,
 }))
 vi.mock("./shop-needs", () => ({ aggregateShopNeeds: () => ({}) }))
 vi.mock("./shop-recommendations", () => ({

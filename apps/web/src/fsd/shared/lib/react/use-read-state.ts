@@ -8,6 +8,11 @@ export type ReadState<T> =
   | { status: "error"; retry: () => void }
   | { status: "ready"; data: T; retry: () => void }
 
+/** A read's value once it is ready; `undefined` while it loads or after it failed. */
+export function readyData<T>(state: ReadState<T>): T | undefined {
+  return state.status === "ready" ? state.data : undefined
+}
+
 type QueryReadInput<T> = Pick<
   UseQueryResult<T>,
   "data" | "isError" | "isFetching" | "isSuccess"
