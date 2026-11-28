@@ -490,7 +490,8 @@ describe("OffensePage", () => {
       "href",
       "/game_catalog/curated/guild_war_boards/C1_37.webp"
     )
-    expect(within(board).getAllByTestId("guild-war-board-hex")).toHaveLength(63)
+    // A tile marks only C1_37's 5 attacker, 20 defender and 5 blocked hexes.
+    expect(within(board).getAllByTestId("guild-war-board-hex")).toHaveLength(30)
     await user.click(board)
     expect(board).toHaveAttribute("data-state", "on")
     // A board's magnifier opens it large; Next and Pick this map pick another from there.

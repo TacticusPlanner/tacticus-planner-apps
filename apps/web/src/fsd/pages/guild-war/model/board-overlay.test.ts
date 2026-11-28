@@ -3,7 +3,7 @@ import { guildWarFixture } from "@workspace/game-catalog/testing"
 
 import { required } from "@/shared/lib"
 
-import { boardOverlay } from "./board-overlay"
+import { boardOverlay, squareViewBox } from "./board-overlay"
 import type { GuildWarBoard } from "./board-overlay"
 
 const seasonA = required(guildWarFixture[0], "season A")
@@ -124,5 +124,20 @@ describe("guild war board overlay", () => {
     expect(boardOverlay(board({ visualColumns: 15, visualRows: 15 }))).toBe(
       undefined
     )
+  })
+
+  it("squares a crop around its centre, kept on the art", () => {
+    expect(squareViewBox({ x: 100, y: 50, width: 300, height: 400 })).toEqual({
+      x: 50,
+      y: 50,
+      width: 400,
+      height: 400,
+    })
+    expect(squareViewBox({ x: 10, y: 0, width: 200, height: 500 })).toEqual({
+      x: 0,
+      y: 0,
+      width: 500,
+      height: 500,
+    })
   })
 })

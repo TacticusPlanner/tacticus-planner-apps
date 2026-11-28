@@ -121,3 +121,22 @@ export function boardOverlay(board: GuildWarBoard): BoardOverlay | undefined {
     })),
   }
 }
+
+/**
+ * A square part of the art around a crop, for a square tile: as tall or wide as the crop and
+ * centred on it, so the whole grid shows with the art around it filling the sides (no letterbox),
+ * kept on the art.
+ */
+export function squareViewBox(
+  viewBox: BoardOverlay["viewBox"]
+): BoardOverlay["viewBox"] {
+  const side = Math.min(BOARD_ART_SIZE, Math.max(viewBox.width, viewBox.height))
+  const clamp = (start: number) =>
+    Math.min(BOARD_ART_SIZE - side, Math.max(0, start))
+  return {
+    x: round(clamp(viewBox.x + (viewBox.width - side) / 2)),
+    y: round(clamp(viewBox.y + (viewBox.height - side) / 2)),
+    width: round(side),
+    height: round(side),
+  }
+}

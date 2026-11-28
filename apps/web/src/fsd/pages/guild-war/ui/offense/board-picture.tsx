@@ -1,21 +1,44 @@
 import { useId, useMemo } from "react"
 import { cn } from "@workspace/ui/lib/utils"
 
-import { BOARD_ART_SIZE, boardOverlay } from "../../model/board-overlay"
+import {
+  BOARD_ART_SIZE,
+  boardOverlay,
+  squareViewBox,
+} from "../../model/board-overlay"
 import type { BoardHexKind, GuildWarBoard } from "../../model/board-overlay"
 
-const hexClasses: Record<BoardHexKind, string> = {
-  attacker: "fill-(--guild-war-attacker)/45",
-  defender: "fill-(--guild-war-defender)/45",
-  blocked: "fill-(--guild-war-blocked)/55",
-  open: "fill-transparent",
+// Kept light, as the game's own deploy screen is: a faint grid, the attacker's deployment hexes
+// outlined in the game's blue, the defender's in a thinner red and blocked hexes only shaded, so
+// the board art stays readable underneath.
+const hexStyles: Record<BoardHexKind, { className: string; width: number }> = {
+  open: {
+    className: "fill-transparent stroke-(--guild-war-grid)/35",
+    width: 1,
+  },
+  blocked: {
+    className: "fill-(--guild-war-blocked)/30 stroke-(--guild-war-grid)/20",
+    width: 1,
+  },
+  defender: {
+    className:
+      "fill-(--guild-war-defender)/10 stroke-(--guild-war-defender)/80",
+    width: 1.5,
+  },
+  attacker: {
+    className: "fill-(--guild-war-attacker)/20 stroke-(--guild-war-attacker)",
+    width: 2.5,
+  },
 }
 
+// Coloured outlines are drawn last, so a neighbour's grid line never covers them.
+const drawOrder: BoardHexKind[] = ["open", "blocked", "defender", "attacker"]
+
 /**
- * A map-pool board's art cropped to its battle grid, with each hex outlined and the attacker's and
- * defender's deployment hexes and the blocked hexes filled, so it reads like the game's deploy
- * screen. `fit` "cover" fills a square tile (the picker), "contain" shows the whole grid (the zoomed
- * view). Without a board grid (or one whose art size has no fit), the plain art.
+ * A map-pool board's art cropped to its battle grid, with a faint hex grid, the attacker's and
+ * defender's deployment hexes outlined and the blocked hexes shaded, so it reads like the game's
+ * deploy screen. `fit` "cover" fills a square tile (the picker) with the grid and the art around it,
+ * marking only the deployment and blocked hexes; "contain" shows the whole grid (the zoomed view). Without a board grid (or one whose art size has no fit), the plain art.
  */
 export function BoardPicture({
   src,
@@ -51,14 +74,22 @@ export function BoardPicture({
       />
     )
   }
-  const { x, y, width, height } = overlay.viewBox
+  // A tile is too small for the whole grid: it shows only the marked hexes, with thinner lines,
+  // on a square around the grid.
+  const tile = fit === "cover"
+  const { x, y, width, height } = tile
+    ? squareViewBox(overlay.viewBox)
+    : overlay.viewBox
+  const hexes = overlay.hexes
+    .filter((hex) => !tile || hex.kind !== "open")
+    .toSorted((a, b) => drawOrder.indexOf(a.kind) - drawOrder.indexOf(b.kind))
   return (
     <svg
       aria-label={alt || undefined}
       aria-hidden={alt ? undefined : true}
       className={className}
       data-testid="guild-war-board-grid"
-      preserveAspectRatio={fit === "cover" ? "xMidYMid slice" : "xMidYMid meet"}
+      preserveAspectRatio="xMidYMid meet"
       role={alt ? "img" : undefined}
       viewBox={`${x} ${y} ${width} ${height}`}
     >
@@ -81,15 +112,15 @@ export function BoardPicture({
           preserveAspectRatio="none"
           width={BOARD_ART_SIZE}
         />
-        {overlay.hexes.map((hex) => (
+        {hexes.map((hex) => (
           <polygon
-            className={cn("stroke-(--guild-war-grid)/75", hexClasses[hex.kind])}
+            className={hexStyles[hex.kind].className}
             data-hex={hex.kind}
             data-testid="guild-war-board-hex"
             key={`${hex.column}:${hex.row}`}
             points={hex.points}
             strokeLinejoin="round"
-            strokeWidth={1}
+            strokeWidth={hexStyles[hex.kind].width * (tile ? 0.6 : 1)}
             vectorEffect="non-scaling-stroke"
           />
         ))}
@@ -102,12 +133,23 @@ const legendSwatches: {
   kind: Exclude<BoardHexKind, "open">
   className: string
 }[] = [
-  { kind: "attacker", className: "bg-(--guild-war-attacker)/45" },
-  { kind: "defender", className: "bg-(--guild-war-defender)/45" },
-  { kind: "blocked", className: "bg-(--guild-war-blocked)/55" },
+  {
+    kind: "attacker",
+    className:
+      "border-2 border-(--guild-war-attacker) bg-(--guild-war-attacker)/20",
+  },
+  {
+    kind: "defender",
+    className:
+      "border border-(--guild-war-defender)/80 bg-(--guild-war-defender)/10",
+  },
+  {
+    kind: "blocked",
+    className: "border border-border bg-(--guild-war-blocked)/30",
+  },
 ]
 
-/** What the filled hexes of `BoardPicture` mean. */
+/** What the marked hexes of `BoardPicture` mean. */
 export function BoardLegend({
   labels,
 }: {
@@ -120,10 +162,7 @@ export function BoardLegend({
     >
       {legendSwatches.map(({ kind, className }) => (
         <li className="flex items-center gap-1.5" key={kind}>
-          <span
-            aria-hidden
-            className={cn("size-3 rounded-sm ring-1 ring-border", className)}
-          />
+          <span aria-hidden className={cn("size-3 rounded-sm", className)} />
           {labels[kind]}
         </li>
       ))}

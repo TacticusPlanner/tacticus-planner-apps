@@ -4,8 +4,8 @@ Players can't match the Guild War map pictures to the game: the picker shows eac
 
 ## What Changes
 
-- Each map-pool board picture (the picker tiles and the large viewer) is cropped to its battle grid and drawn with the hex grid on top, as the game's deploy screen shows it: the attacker's deployment hexes in blue, the defender's in red and the blocked hexes dark. A raised hex is drawn higher, as the game's angled camera shows it, and the art's transparent water gets a water colour behind it.
-- The large viewer explains the fills with a legend (Your deployment, Enemy deployment, Blocked).
+- Each map-pool board picture (the picker tiles and the large viewer) is cropped to its battle grid and drawn with a light overlay, as the game's deploy screen shows it: a faint hex grid, the attacker's deployment hexes outlined in blue, the defender's in a thinner red and the blocked hexes lightly shaded, so the art stays readable. A picker tile is squared around the whole grid and marks only the deployment and blocked hexes. A raised hex is drawn higher, as the game's angled camera shows it, and the art's transparent water gets a water colour behind it.
+- The large viewer explains the marked hexes with a legend (Your deployment, Enemy deployment, Blocked).
 - A map served without a board grid, or a board whose art size has no fitted placement, keeps the plain picture.
 
 ## Capabilities
