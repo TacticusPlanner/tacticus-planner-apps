@@ -1,6 +1,7 @@
 import { levelCapForProgression } from "@workspace/game-domain"
 import type { Progression } from "@workspace/game-domain"
 
+import { clampRatio } from "@/shared/lib"
 import type { GoalDetail } from "@/entities/goal"
 import {
   requiredLevelForGoal,
@@ -17,11 +18,6 @@ export type LevelRequirementProgress = Extract<
 
 /** Every character starts at level 1, so the requirement's bar runs from there to the required level. */
 const LEVEL_FLOOR = 1
-
-function clampRatio(done: number, total: number): number {
-  if (total <= 0) return 1
-  return Math.min(1, Math.max(0, done / total))
-}
 
 /** Where `level` sits on the requirement's bar (level 1 → the required level). */
 function levelRequirementRatio(level: number, requiredLevel: number): number {

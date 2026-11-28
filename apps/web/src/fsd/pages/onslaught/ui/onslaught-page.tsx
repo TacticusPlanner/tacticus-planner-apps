@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { onslaughtAllianceIcon } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
-import { Spinner } from "@workspace/ui/components/spinner"
 
 import {
   onslaughtAlliances,
@@ -28,6 +27,7 @@ import {
   LocalReadFailure,
   UnsavedChangesBar,
   UnsavedChangesGuard,
+  PageLoading,
 } from "@/shared/ui"
 
 import { OnslaughtAllianceCard } from "./onslaught-alliance-card"
@@ -104,11 +104,7 @@ export function OnslaughtPage() {
     return <LocalReadFailure retry={rewardsRead.retry} />
   }
   if (progressQuery.isPending || rewardsRead.status === "loading") {
-    return (
-      <div className="flex min-h-64 items-center justify-center">
-        <Spinner className="size-icon-lg" />
-      </div>
-    )
+    return <PageLoading />
   }
   const rewards = rewardsRead.data
   if (!progress) {

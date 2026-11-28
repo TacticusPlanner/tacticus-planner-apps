@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next"
 import { Accordion } from "@workspace/ui/components/accordion"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"
-import { Spinner } from "@workspace/ui/components/spinner"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -28,6 +27,7 @@ import {
   PageToolbar,
   UnsavedChangesBar,
   UnsavedChangesGuard,
+  PageLoading,
 } from "@/shared/ui"
 
 import {
@@ -129,7 +129,7 @@ export function CampaignEventsPage() {
   const overridesUnavailable =
     overrides.query.isError && overrides.query.data === undefined
   if (overridesUnavailable || loaded.status === "error") return <LoadError />
-  if (!catalogData || overrides.draft === undefined) return <Loading />
+  if (!catalogData || overrides.draft === undefined) return <PageLoading />
 
   const patch: PatchTrack = (groupId, type, value) => {
     overrides.update((draft) => applyOverridePatch(draft, groupId, type, value))
@@ -309,9 +309,3 @@ function LoadError() {
     </Alert>
   )
 }
-
-const Loading = () => (
-  <div className="flex min-h-64 items-center justify-center">
-    <Spinner className="size-icon-lg" />
-  </div>
-)

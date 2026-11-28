@@ -10,3 +10,4 @@ export {
   type ReadState,
 } from "./use-read-state"
 export { hasNode } from "./has-node"
+export { useStableByKey } from "./use-stable-by-key"

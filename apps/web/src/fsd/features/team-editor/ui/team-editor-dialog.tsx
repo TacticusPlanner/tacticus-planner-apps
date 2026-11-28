@@ -33,6 +33,7 @@ import {
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
+  PageLoading,
 } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 
@@ -426,13 +427,7 @@ function EditorLoadState({
   const { t } = useTranslation("teams")
   if (status === "loading") {
     return (
-      <div
-        className="flex min-h-64 items-center justify-center gap-2 text-sm text-muted-foreground"
-        data-testid="team-editor-loading"
-      >
-        <Spinner />
-        {t("editor.loading")}
-      </div>
+      <PageLoading label={t("editor.loading")} testId="team-editor-loading" />
     )
   }
   return (

@@ -2,6 +2,8 @@
 // `Quests/<task>_description` templates with `{[TARGET_AMOUNT]}`-style placeholders, the game's
 // `[i2p_Plural]…[i2p_One]…` plural forms and `<style=…>` markup.
 
+import { sumRanges } from "@/shared/lib"
+
 /**
  * Fills a game text template: picks the `[i2p_One]` form for a count of 1 and `[i2p_Plural]`
  * otherwise, replaces `{[NAME]}` placeholders and drops `<style=…>` tags. A placeholder without a
@@ -46,19 +48,10 @@ interface RewardRange {
 export function sumRewards(
   missions: readonly { rewards: readonly RewardRange[] }[]
 ): RewardRange[] {
-  const totals = new Map<string, RewardRange>()
-  for (const mission of missions) {
-    for (const reward of mission.rewards) {
-      const total = totals.get(reward.type)
-      if (total) {
-        total.min += reward.min
-        total.max += reward.max
-      } else {
-        totals.set(reward.type, { ...reward })
-      }
-    }
-  }
-  return [...totals.values()]
+  return sumRanges(
+    missions.flatMap((mission) => mission.rewards),
+    (reward) => reward.type
+  )
 }
 
 export interface LadderTile {

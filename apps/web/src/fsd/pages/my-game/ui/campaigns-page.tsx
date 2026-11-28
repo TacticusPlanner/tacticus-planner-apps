@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card"
 import { Progress } from "@workspace/ui/components/progress"
-import { Spinner } from "@workspace/ui/components/spinner"
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -37,6 +36,7 @@ import {
   FILTER_CHIP_CLASS_NAME,
   LocalReadFailure,
   PageToolbar,
+  PageLoading,
 } from "@/shared/ui"
 
 import {
@@ -130,7 +130,7 @@ export function CampaignsPage() {
         : null,
     [definitions, battles, progress, characters, overrides]
   )
-  if (read.status === "loading") return <Loading />
+  if (read.status === "loading") return <PageLoading />
   if (read.status === "error") return <LocalReadFailure retry={read.retry} />
   if (!model) {
     return (
@@ -325,13 +325,5 @@ function StoryCard({
         </div>
       </CardContent>
     </Card>
-  )
-}
-
-function Loading() {
-  return (
-    <div className="flex min-h-64 items-center justify-center">
-      <Spinner className="size-icon-lg" />
-    </div>
   )
 }

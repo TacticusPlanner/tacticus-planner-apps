@@ -1,7 +1,6 @@
 import type { ReactNode } from "react"
 import { useTranslation } from "react-i18next"
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
 import {
   battleGlyphIcon,
   energyIcon,
@@ -13,8 +12,7 @@ import { EntityIcon } from "@/shared/ui"
 import type { MissionRaidPlan } from "../../model/mission-raids"
 import { missionDeployGroups } from "../../model/mission-deploy-groups"
 import type { MissionDeployGroup } from "../../model/mission-deploy-groups"
-import { emptyRaidsFilters } from "../../model/raids-filters/raids-filters.domain"
-import { useRaidsFilters } from "../../model/raids-filters/use-raids-filters"
+import { RaidsEmptyNote } from "../raids-empty-note"
 import { RaidState } from "../raid-state"
 import { HreHandBattles } from "./hre-hand-battles"
 import { HreNoDropRaids, RaidRows, RowDrop } from "./hre-raids-extras"
@@ -191,7 +189,7 @@ export function HreRaidsDetails({
           </div>
         </>
       ) : (
-        <EmptyState battlesToGo={plan.battlesLeft} plan={plan} />
+        <RaidsEmpty battlesToGo={plan.battlesLeft} plan={plan} />
       )}
       {plan.noDropRows.length > 0 ? (
         <HreNoDropRaids rows={plan.noDropRows} view={raids.rowsView} />
@@ -246,40 +244,29 @@ export function HreBattlesDetails({
   )
 }
 
-function EmptyState({
+function RaidsEmpty({
   plan,
   battlesToGo,
 }: {
   plan: MissionRaidPlan
   battlesToGo: number
 }) {
-  const { t } = useTranslation(["hre", "dailies"])
-  const [, setFilters] = useRaidsFilters()
+  const { t } = useTranslation(["hre"])
   const reason = plan.empty ?? "no-candidates"
   return (
-    <div
-      className="space-y-2 text-sm text-muted-foreground"
-      data-testid={`hre-raids-empty-${reason}`}
-    >
-      <p>
-        {reason === "no-energy"
+    <RaidsEmptyNote
+      filtered={reason === "filtered"}
+      message={
+        reason === "no-energy"
           ? t("hre:raids.empty.noEnergy")
           : reason === "no-attempts"
             ? t("hre:raids.empty.noAttempts")
             : reason === "no-event"
               ? t("hre:raids.empty.noEvent", { count: battlesToGo })
-              : t("hre:raids.empty.noCandidates")}
-      </p>
-      {reason === "filtered" ? (
-        <Button
-          data-testid="hre-raids-reset"
-          onClick={() => setFilters(emptyRaidsFilters)}
-          size="sm"
-          variant="outline"
-        >
-          {t("dailies:raidsFilters.filteredOut.reset")}
-        </Button>
-      ) : null}
-    </div>
+              : t("hre:raids.empty.noCandidates")
+      }
+      resetTestId="hre-raids-reset"
+      testId={`hre-raids-empty-${reason}`}
+    />
   )
 }
