@@ -25,7 +25,10 @@ import { usePlayerDataSyncStatus } from "@/features/player-data-sync"
 import {
   TEAM_EDITOR_NAMESPACES,
   TeamEditorDialog,
+  useOpenTeamEditor,
+  useTeamEditorLauncher,
 } from "@/features/team-editor"
+import type { TeamEditorLauncher } from "@/features/team-editor"
 import { v1ImportReturnState } from "@/features/v1-import"
 import {
   TEAM_LIMITS,
@@ -62,11 +65,6 @@ import type {
 } from "../../model/teams-view"
 import type { TeamActions } from "./team-actions"
 import { TeamCard } from "./team-card"
-import {
-  useOpenTeamEditor,
-  useTeamEditorLauncher,
-} from "./team-editor-launcher"
-import type { TeamEditorLauncher } from "./team-editor-launcher"
 import { TeamListRow } from "./team-list-row"
 import { TeamsModeSection } from "./teams-sections"
 import { TeamsTable } from "./teams-table"
@@ -115,7 +113,7 @@ function TeamEditorHost({
   launcher,
   teams,
 }: {
-  launcher: TeamEditorLauncher
+  launcher: TeamEditorLauncher<{ team: Team | null }>
   teams: readonly Team[]
 }) {
   const editor = useOpenTeamEditor(launcher)
@@ -135,7 +133,7 @@ function TeamEditorHost({
       <TeamEditorDialog
         deleted={deleted}
         key={editor.key}
-        onClose={launcher.close}
+        onClose={launcher.closeTeamEditor}
         team={current ?? opened}
         teams={teams}
       />
@@ -268,7 +266,7 @@ export function TeamsPage() {
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
   const [quick, setQuick] = useState<TeamsQuickFilters>(NO_QUICK_FILTERS)
-  const launcher = useTeamEditorLauncher()
+  const launcher = useTeamEditorLauncher<{ team: Team | null }>()
   const reorder = useReorderTeams()
   const remove = useDeleteTeam()
   const [deleting, setDeleting] = useState<Team | null>(null)
@@ -314,7 +312,7 @@ export function TeamsPage() {
   )
   const actions = useMemo<TeamActions>(
     () => ({
-      onEdit: (team) => launcher.open(team),
+      onEdit: (team) => launcher.openTeamEditor({ team }),
       onDelete: (team) => setDeleting(team),
     }),
     [launcher]
@@ -345,7 +343,7 @@ export function TeamsPage() {
       layout={layout}
       mode={mode}
       needsFixesCount={needsFixesCount}
-      onCreate={() => launcher.open(null)}
+      onCreate={() => launcher.openTeamEditor({ team: null })}
       onGroupBy={setGroupBy}
       onLayout={setLayout}
       onMode={setMode}
@@ -404,7 +402,10 @@ export function TeamsPage() {
     content = (
       <EmptyState
         actions={
-          <Button onClick={() => launcher.open(null)} variant="outline">
+          <Button
+            onClick={() => launcher.openTeamEditor({ team: null })}
+            variant="outline"
+          >
             <Plus data-icon="inline-start" />
             {t("page.create")}
           </Button>
