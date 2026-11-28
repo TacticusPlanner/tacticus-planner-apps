@@ -11,11 +11,11 @@ import {
 import { EntityIcon } from "@/shared/ui"
 
 import { CampaignEventTile } from "../campaign-event-status"
-import { TODAY_SHOPS_ID } from "../today-shop-recommendations"
+import { TODAY_SHOPS_ID } from "../../model/today-shop-recommendations"
 import { GlanceTile } from "./glance-tile"
-import type { ShopsGlance } from "./shops-glance"
+import type { ShopsGlance } from "../../model/today/shops-glance"
 import { TODAY_ONSLAUGHT_ID } from "./today-onslaught-card"
-import type { TodayView } from "./today-view-model"
+import type { TodayView } from "../../model/today/today-view-model"
 
 /**
  * Today at a glance: daily energy used (used / daily energy), today's Onslaught tokens, today's shop

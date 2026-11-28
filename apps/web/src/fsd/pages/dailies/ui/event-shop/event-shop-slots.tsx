@@ -11,10 +11,10 @@ import { Pressable } from "@workspace/ui/components/pressable"
 import { EntityIcon, HintTrigger } from "@/shared/ui"
 
 import { DESTRUCTIVE_TEXT } from "./day-state-style"
-import { slotViews, useSlotLabelText } from "./slot-view"
-import type { SlotView } from "./slot-view"
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+import { slotViews, useSlotLabelText } from "../../model/event-shop/slot-view"
+import type { SlotView } from "../../model/event-shop/slot-view"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 type Purchase = "none" | "planned" | "partial" | "bought"
 

@@ -4,8 +4,8 @@ import type {
   QuestBattleEstimate,
   QuestTeamEstimate,
 } from "../model/quest-estimates"
-import { useObjectiveWording } from "./use-objective-wording"
-import type { Objective } from "./use-objective-wording"
+import { useObjectiveWording } from "../model/use-objective-wording"
+import type { Objective } from "../model/use-objective-wording"
 import { numberFormat } from "@/shared/lib"
 
 /**

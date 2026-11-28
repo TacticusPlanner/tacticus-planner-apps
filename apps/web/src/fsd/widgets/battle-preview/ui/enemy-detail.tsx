@@ -5,7 +5,7 @@ import { Button } from "@workspace/ui/components/button"
 import { NpcPortrait, NpcStatSummary } from "@/entities/npc"
 
 import type { EnemyTileViewModel } from "../model/enemy-tile"
-import { useEnemyLabels } from "./enemy-label"
+import { useEnemyLabels } from "../model/enemy-label"
 
 /**
  * The body shared by the desktop popover and the mobile sheet: the NPC's stat summary at the

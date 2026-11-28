@@ -10,7 +10,7 @@ import { TodayDashboard } from "./today-dashboard"
 import { storedPreference, writePreference } from "@/shared/lib"
 
 // The shop card and the campaign event tile read their own data; their behaviour has its own tests.
-vi.mock("../today-shop-recommendations", () => ({
+vi.mock("../../model/today-shop-recommendations", () => ({
   TODAY_SHOPS_ID: "today-shops",
   useTodayShopRecommendations: () => ({ status: "no-goals" }),
 }))

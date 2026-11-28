@@ -6,7 +6,7 @@ import type { ProjectDeadlineFit } from "@/features/goal-planning"
 import { ProjectTargetChip } from "@/features/project-management"
 import { useDateLocale } from "@/shared/lib"
 
-import { formatDeadline } from "./season-fit-copy"
+import { formatDeadline } from "../../model/goals-board/season-fit-copy"
 
 /**
  * The targeted scope's deadline header (project-deadline-fit): "Deadline: LE · Uthar starts Nov 27 ·

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { GuildRaidExactReadinessQuery } from "@/entities/guild-raid-meta"
 
-import type { GuildRaidsViewModel } from "./guild-raid-status-view-model"
+import type { GuildRaidsViewModel } from "../../model/guild-raids/guild-raid-status-view-model"
 
 const register = vi.fn()
 const useIsMobile = vi.fn(() => false)
@@ -37,7 +37,7 @@ const loadingViewModel: GuildRaidsViewModel = {
   isKeyRejected: false,
 }
 let viewModel: GuildRaidsViewModel = loadingViewModel
-vi.mock("./use-guild-raids-view-model", () => ({
+vi.mock("../../model/guild-raids/use-guild-raids-view-model", () => ({
   useGuildRaidsViewModel: () => viewModel,
 }))
 
@@ -55,9 +55,12 @@ vi.mock("@/entities/guild-raid-meta", async (importOriginal) => ({
 // scope for this page-shell test, which only exercises section placement. Its own composition/fallback
 // logic is covered directly in use-guild-raid-investment-readiness's own tests.
 const useGuildRaidReadinessThreshold = vi.fn((): unknown => null)
-vi.mock("./exact-meta/use-guild-raid-readiness-threshold", () => ({
-  useGuildRaidReadinessThreshold: () => useGuildRaidReadinessThreshold(),
-}))
+vi.mock(
+  "../../model/guild-raids/exact-meta/use-guild-raid-readiness-threshold",
+  () => ({
+    useGuildRaidReadinessThreshold: () => useGuildRaidReadinessThreshold(),
+  })
+)
 
 import { GuildRaidsPage } from "./guild-raids-page"
 

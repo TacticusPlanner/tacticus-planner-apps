@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { formatEventWindow } from "@/shared/ui"
 
-import type { HomeScreenEventEntry } from "../../model/select-active-home-screen-event"
+import type { HomeScreenEventEntry } from "../select-active-home-screen-event"
 
 /**
  * Resolves a Home Screen Event's display name from its definition id, with the localized target for

@@ -9,7 +9,7 @@ import {
 import { dateTimeFormat, formatRelativeTime, useDateLocale } from "@/shared/lib"
 
 import type { HomeScreenEventEntry } from "../../model/select-active-home-screen-event"
-import { useHomeScreenEventName } from "./use-home-screen-event-name"
+import { useHomeScreenEventName } from "../../model/home-screen-event/use-home-screen-event-name"
 
 /** Labels the HSE lists as a preview of an upcoming event (the next one, or any later one the player
  * selected): not live, computed with its rules and the

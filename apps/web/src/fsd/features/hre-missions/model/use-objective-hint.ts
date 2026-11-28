@@ -3,12 +3,8 @@ import { useTranslation } from "react-i18next"
 
 import { numberFormat } from "@/shared/lib"
 import type { HreObjective } from "@/entities/hre-mission"
-import {
-  hintGameMode,
-  hintLookup,
-  objectiveHint,
-} from "../model/hre-objective-hint"
-import type { HreFeaturedHero } from "../model/use-hre-instance"
+import { hintGameMode, hintLookup, objectiveHint } from "./hre-objective-hint"
+import type { HreFeaturedHero } from "./use-hre-instance"
 
 /**
  * The game's own hint for an objective (`hreTaskHints`, generated from the datamine), in the UI

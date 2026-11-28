@@ -9,8 +9,8 @@ import { LockedNodesOf } from "@/features/goal-planning"
 import { EntityIcon } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
 
-import type { UpgradeRow } from "./insights-materials-view"
-import type { InsightsGoalInfo } from "./insights-view"
+import type { UpgradeRow } from "../../model/insights/insights-materials-view"
+import type { InsightsGoalInfo } from "../../model/insights/insights-view"
 
 /** Rows a rarity group shows before its "Show N more". */
 const ROW_LIMIT = 10

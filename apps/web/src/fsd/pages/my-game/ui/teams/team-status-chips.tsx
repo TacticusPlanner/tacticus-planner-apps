@@ -5,7 +5,7 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
 
-import type { TeamStatusItem } from "./use-team-status"
+import type { TeamStatusItem } from "../../model/teams/use-team-status"
 
 const KIND_CLASS: Record<TeamStatusItem["kind"], string> = {
   cap: "text-muted-foreground",

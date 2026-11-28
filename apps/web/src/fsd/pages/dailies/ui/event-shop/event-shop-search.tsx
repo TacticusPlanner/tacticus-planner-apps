@@ -19,8 +19,8 @@ import {
 import { EntityIcon } from "@/shared/ui"
 import { useUnitSearchNames } from "@/shared/unit-name"
 
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 /** At most this many rewards are listed; typing more narrows them. */
 const MAX_RESULTS = 12

@@ -16,8 +16,8 @@ import type { QuestProgressActions } from "../model/use-quest-progress"
 import { EMPTY_BATTLE_ENTRY, MAX_MEDALS } from "../model/quest-score"
 import type { QuestBattleEntry, QuestScoring } from "../model/quest-score"
 import { objectiveIcon } from "../model/quest-objectives"
-import { useObjectiveWording } from "./use-objective-wording"
-import type { Objective } from "./use-objective-wording"
+import { useObjectiveWording } from "../model/use-objective-wording"
+import type { Objective } from "../model/use-objective-wording"
 
 const MEDAL_VALUES = Array.from({ length: MAX_MEDALS + 1 }, (_, value) => value)
 

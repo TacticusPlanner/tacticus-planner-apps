@@ -13,7 +13,7 @@ import { EntityIcon } from "@/shared/ui"
 import type { HseTeam, HseTeamMode } from "@/features/team-recommendations"
 import { TeamList } from "../team-recs/team-list"
 import { TrackShortfall } from "../team-recs/track-shortfall"
-import { useEnemyLabelNames } from "./use-enemy-label-names"
+import { useEnemyLabelNames } from "../../model/hse-teams/use-enemy-label-names"
 import { hseTeamTestId } from "./hse-team-test-id"
 
 /**

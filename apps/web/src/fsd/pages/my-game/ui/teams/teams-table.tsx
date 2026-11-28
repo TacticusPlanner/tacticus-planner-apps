@@ -10,8 +10,8 @@ import { TeamActionButtons } from "./team-actions"
 import type { TeamActions } from "./team-actions"
 import { TeamOrderHandle, TeamUnitGroup } from "./team-card"
 import { TeamStatusChips } from "./team-status-chips"
-import { useTeamContext } from "./use-team-context"
-import type { TeamStatusItem } from "./use-team-status"
+import { useTeamContext } from "../../model/teams/use-team-context"
+import type { TeamStatusItem } from "../../model/teams/use-team-status"
 
 /** An empty core slot: a dashed 40px outline, decorative (the core count is read from the row). */
 function EmptySlot() {

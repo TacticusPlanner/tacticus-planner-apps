@@ -9,7 +9,7 @@ import type {
 } from "@/entities/home-screen-event"
 import { isHseManualTokenMode } from "@/entities/home-screen-event"
 import { numberFormat } from "@/shared/lib"
-import { useModeName } from "./use-mode-name"
+import { useModeName } from "../model/use-mode-name"
 
 /** An input's text as an average: empty clears it (null), anything else a non-negative number. */
 function parseAverage(raw: string): number | null {

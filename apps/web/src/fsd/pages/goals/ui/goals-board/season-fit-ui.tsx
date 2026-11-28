@@ -14,8 +14,11 @@ import {
   goalFitOffset,
   isDeadlineFitView,
   seasonCutoffText,
-} from "./season-fit-copy"
-import type { CutoffEdge, GoalFitView } from "./season-fit-copy"
+} from "../../model/goals-board/season-fit-copy"
+import type {
+  CutoffEdge,
+  GoalFitView,
+} from "../../model/goals-board/season-fit-copy"
 import type { SeasonFitOffset } from "@/features/goal-planning"
 import { useDateLocale } from "@/shared/lib"
 import { ListDivider } from "@/shared/ui"

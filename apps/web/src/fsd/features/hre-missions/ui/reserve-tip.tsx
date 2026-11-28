@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 
 import { nextOnslaughtMission, nextTokenReserve } from "@/entities/hre-mission"
 import type { HreMission } from "@/entities/hre-mission"
-import { missionName } from "./mission-name"
+import { missionName } from "../model/mission-name"
 
 function Tip({ text, testId }: { text: string; testId: string }) {
   return (

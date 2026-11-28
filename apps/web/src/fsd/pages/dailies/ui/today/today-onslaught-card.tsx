@@ -6,7 +6,7 @@ import { OnslaughtRunList } from "@/features/daily-raids"
 import { EntityIcon } from "@/shared/ui"
 
 import { TodayCard } from "./today-card"
-import type { TodayView } from "./today-view-model"
+import type { TodayView } from "../../model/today/today-view-model"
 
 /** In-page anchor of the Onslaught card, the Onslaught glance tile's target. */
 export const TODAY_ONSLAUGHT_ID = "today-onslaught"

@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next"
 
 import { numberFormat } from "@/shared/lib"
 import type { HreObjective } from "@/entities/hre-mission"
-import { objectiveTextKey } from "../model/hre-objective-text"
-import type { HreFeaturedHero } from "../model/use-hre-instance"
+import { objectiveTextKey } from "./hre-objective-text"
+import type { HreFeaturedHero } from "./use-hre-instance"
 
 /** Words an objective for the shown event's hero: alliance, faction and damage type localized. */
 export function useObjectiveText(

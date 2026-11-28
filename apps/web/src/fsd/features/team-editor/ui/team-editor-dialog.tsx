@@ -74,7 +74,7 @@ import {
   TeamRarityCapField,
 } from "./team-editor-fields"
 import { TeamLineupBand } from "./team-lineup-band"
-import type { LineupUnitProps } from "./lineup-unit"
+import type { LineupUnitProps } from "../model/lineup-unit"
 import { TeamUnitPicker } from "./team-unit-picker"
 
 /** Why the last save did not go through; a successful save closes the editor with a toast. */

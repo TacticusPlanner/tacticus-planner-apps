@@ -27,8 +27,8 @@ import {
 } from "../model/team-draft"
 import type { TeamDraft } from "../model/team-draft"
 import { useUnderCapText } from "../model/use-under-cap-text"
-import { useLineupMarks } from "./lineup-unit"
-import type { LineupUnitProps } from "./lineup-unit"
+import { useLineupMarks } from "../model/lineup-unit"
+import type { LineupUnitProps } from "../model/lineup-unit"
 import { RoleSwitch } from "./role-switch"
 import { UnitAbilities } from "./unit-abilities"
 

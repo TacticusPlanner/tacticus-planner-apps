@@ -31,7 +31,7 @@ import type {
 } from "../model/types"
 import { EquipmentSlot, UnownedDetails } from "./unit-parts"
 import { rarityColor } from "./unit-styles"
-import { usesMythicShards, useUnitTileLabel } from "./unit-tile-label"
+import { usesMythicShards, useUnitTileLabel } from "../model/unit-tile-label"
 
 // Fixed columns so every row of a list lines up: portrait, name (the only flexible column), rank,
 // stars, XP level, the two ability levels, then three equipment squares.

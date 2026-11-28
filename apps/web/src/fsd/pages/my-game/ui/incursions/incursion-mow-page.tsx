@@ -46,7 +46,7 @@ import {
   useIncursionsOutlet,
 } from "./incursions-outlet"
 import type { IncursionProgress } from "./incursions-outlet"
-import { useTierLabel } from "./use-tier-name"
+import { useTierLabel } from "../../model/incursions/use-tier-name"
 
 const NO_STARS: TierStars = () => 0
 

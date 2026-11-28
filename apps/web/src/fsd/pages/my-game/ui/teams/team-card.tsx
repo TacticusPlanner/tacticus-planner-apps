@@ -23,8 +23,8 @@ import type { TeamLineupUnit } from "../../model/teams-view"
 import { TeamActionButtons } from "./team-actions"
 import type { TeamActions } from "./team-actions"
 import { TeamStatusChips } from "./team-status-chips"
-import { useTeamContext } from "./use-team-context"
-import type { TeamStatusItem } from "./use-team-status"
+import { useTeamContext } from "../../model/teams/use-team-context"
+import type { TeamStatusItem } from "../../model/teams/use-team-status"
 
 /** A group of lineup portraits at the 40px size, each named for screen readers. */
 export function TeamUnitGroup({

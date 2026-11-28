@@ -15,7 +15,7 @@ import { formatRelativeTime } from "@/shared/lib"
 import { EntityIcon } from "@/shared/ui"
 import type { GuildRaidDifficulty } from "@/entities/guild-raid-status"
 
-import type { GuildRaidSeasonView } from "../guild-raid-status-view-model"
+import type { GuildRaidSeasonView } from "../../../model/guild-raids/guild-raid-status-view-model"
 
 // `season.difficulty.toLowerCase()` would widen to plain `string`, which the strictly-typed `dailies`
 // i18next namespace rejects as a template-literal key — this keeps the lookup exhaustive and literal.

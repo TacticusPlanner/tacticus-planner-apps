@@ -6,15 +6,15 @@ import type {
   MissionBattlesRequest,
   MissionRaidPlan,
   MissionRaidsRequest,
-} from "../../model/mission-raids"
-import { useActiveHomeScreenEvent } from "../../model/use-active-home-screen-event"
-import { useResourceByBattleId } from "../../model/use-resource-by-battle-id"
+} from "../mission-raids"
+import { useActiveHomeScreenEvent } from "../use-active-home-screen-event"
+import { useResourceByBattleId } from "../use-resource-by-battle-id"
 import { usePlayerChunk } from "@/shared/local-data"
-import type { TodayQuickFilterOptions } from "../../model/today-quick-filters/today-quick-filters"
-import { useDailyRaids } from "../../model/use-daily-raids"
+import type { TodayQuickFilterOptions } from "../today-quick-filters/today-quick-filters"
+import { useDailyRaids } from "../use-daily-raids"
 import { useHomeScreenEventName } from "../home-screen-event/use-home-screen-event-name"
-import type { RaidLocationTarget } from "../raid-location-name"
-import type { RaidRowsView } from "./hre-raids-extras"
+import type { RaidLocationTarget } from "../../ui/raid-location-name"
+import type { RaidRowsView } from "../../ui/hre-missions/hre-raids-extras"
 
 /** With no open objective the plan still runs, for the outlook nodes and daily energy only. */
 const SUMMARY_ONLY: MissionRaidsRequest = { battlesToGo: 0, eventOnly: false }

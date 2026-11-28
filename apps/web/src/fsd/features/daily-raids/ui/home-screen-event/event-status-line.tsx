@@ -13,7 +13,7 @@ import type {
   HomeScreenEventInstance,
 } from "../../model/select-active-home-screen-event"
 import type { ActiveHomeScreenEventState } from "../../model/use-active-home-screen-event"
-import { useHomeScreenEventName } from "./use-home-screen-event-name"
+import { useHomeScreenEventName } from "../../model/home-screen-event/use-home-screen-event-name"
 
 /**
  * What the HSE tab says about the shown instance: a running one (name, remaining time, whether it

@@ -29,7 +29,7 @@ import type { HreProgressActions } from "../model/use-hre-progress"
 import { useAnalyticsActions } from "@/shared/analytics"
 import { EntityIcon } from "@/shared/ui"
 
-import { missionName } from "./mission-name"
+import { missionName } from "../model/mission-name"
 import { ObjectiveSuggestionRows } from "./objective-suggestions"
 import type { ObjectiveSuggestions } from "./objective-suggestions"
 import { ObjectiveInfo } from "./objective-guidance"

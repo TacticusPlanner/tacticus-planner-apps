@@ -6,7 +6,7 @@ import { TruncatedText } from "@/shared/ui"
 
 import type { HomeEventRow } from "../../model/select-home-events"
 import { HomeEventVisual } from "./home-event-visual"
-import { useHomeEventName } from "./use-home-event-name"
+import { useHomeEventName } from "../../model/events/use-home-event-name"
 
 /**
  * One Home event as a two-line tile: its picture, its name, and a line of details under it (a

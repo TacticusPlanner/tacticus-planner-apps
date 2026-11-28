@@ -31,7 +31,7 @@ import {
   tierByNumber,
   useIncursionsOutlet,
 } from "./incursions-outlet"
-import { useTierName } from "./use-tier-name"
+import { useTierName } from "../../model/incursions/use-tier-name"
 
 /**
  * One tier's page: prev/next between the MoW's tiers, the stars earned with whole-tier mark and

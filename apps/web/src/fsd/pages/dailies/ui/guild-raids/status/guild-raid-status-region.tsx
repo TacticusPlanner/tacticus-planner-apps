@@ -1,4 +1,4 @@
-import type { GuildRaidsViewModel } from "../guild-raid-status-view-model"
+import type { GuildRaidsViewModel } from "../../../model/guild-raids/guild-raid-status-view-model"
 import { GuildRaidPrimeCompCard } from "../exact-meta/guild-raid-prime-comp-card"
 import { GuildRaidBossCard } from "./guild-raid-boss-card"
 import { GuildRaidPrimeCard } from "./guild-raid-prime-card"

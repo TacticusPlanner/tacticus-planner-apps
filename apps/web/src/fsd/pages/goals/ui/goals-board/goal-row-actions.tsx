@@ -34,8 +34,8 @@ import type {
 } from "@/features/goal-planning"
 import { DeleteGoalDialog } from "./delete-goal-dialog"
 import { MoveToPriorityDialog } from "./move-to-priority-dialog"
-import { toggleGoalStatus } from "./goal-row-utils"
-import type { CascadeContext } from "./goal-row-utils"
+import { toggleGoalStatus } from "../../model/goals-board/goal-row-utils"
+import type { CascadeContext } from "../../model/goals-board/goal-row-utils"
 import { canRemoveFromProject, removalMovesRow } from "./project-removal-flow"
 import type { ProjectRemoval } from "./project-removal-flow"
 

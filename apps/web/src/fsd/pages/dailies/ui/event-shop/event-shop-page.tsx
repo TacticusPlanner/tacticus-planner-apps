@@ -32,7 +32,7 @@ import type { EventShopTab } from "../../model/event-shop-route"
 import type { DailiesOutletContext } from "../dailies-layout"
 import { EventShopUndated } from "./event-shop-undated"
 import { EventShopView } from "./event-shop-view"
-import { useEventShopController } from "./use-event-shop-controller"
+import { useEventShopController } from "../../model/event-shop/use-event-shop-controller"
 import { useEventShopForm } from "./use-event-shop-form"
 import { DAY_MS } from "@/shared/lib"
 

@@ -8,7 +8,7 @@ import type { RaidLocationTarget } from "@/features/daily-raids"
 
 import { TodayCard } from "./today-card"
 import { INSET_CARDS_CLASS_NAME } from "./today-plan-card"
-import type { TodayView } from "./today-view-model"
+import type { TodayView } from "../../model/today/today-view-model"
 
 /**
  * Bonus raids. Below the daily energy limit it sits next to the plan with the top 3 entries: Show

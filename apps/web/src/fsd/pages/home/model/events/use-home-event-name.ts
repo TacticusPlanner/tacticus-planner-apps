@@ -5,7 +5,7 @@ import type { CampaignId } from "@workspace/game-domain"
 import { useCampaignDisplay } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
 
-import type { HomeEventRow } from "../../model/select-home-events"
+import type { HomeEventRow } from "../select-home-events"
 
 /** A Home event's display name: the featured hero for a Legendary Event, the running campaign (else
  *  "Campaign Event") for a Campaign Event, Incursion, "Quest: <hero>" for a Quest Event, "New

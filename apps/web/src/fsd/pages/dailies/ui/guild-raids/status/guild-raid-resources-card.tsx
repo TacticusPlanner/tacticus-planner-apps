@@ -13,7 +13,7 @@ import { EntityIcon } from "@/shared/ui"
 import type {
   GuildRaidResourceView,
   GuildRaidResourcesView,
-} from "../guild-raid-status-view-model"
+} from "../../../model/guild-raids/guild-raid-status-view-model"
 
 function ResourceRow({
   testId,

@@ -2,7 +2,7 @@ import { useOutletContext } from "react-router"
 
 import { useShopRecommendations } from "@/features/shops/recommendations"
 import type { ShopRecommendationsViewModel } from "@/features/shops/recommendations"
-import type { DailiesOutletContext } from "./dailies-layout"
+import type { DailiesOutletContext } from "../ui/dailies-layout"
 
 /** In-page anchor of the Shop recommendations card, the Shops glance tile's target. */
 export const TODAY_SHOPS_ID = "today-shops"

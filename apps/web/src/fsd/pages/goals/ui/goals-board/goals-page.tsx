@@ -66,15 +66,15 @@ import { GoalsCreateButton } from "./goals-create-button"
 import { GoalsToolbar } from "./goals-toolbar"
 import { GoalsViewToggle } from "./goals-view-toggle"
 import { GoalsCollapseAllToggle } from "./goals-collapse-all-toggle"
-import { useGoalsView } from "./use-goals-view"
+import { useGoalsView } from "../../model/goals-board/use-goals-view"
 import { SeasonFitSelect } from "./season-fit-select"
 import {
   TARGETED_FIT,
   effectiveSeasonFitMode,
   isTargetedFitChoice,
-} from "./targeted-fit-choice"
+} from "../../model/goals-board/targeted-fit-choice"
 import { DeadlineFitHeader } from "./deadline-fit-header"
-import type { GoalFitView } from "./season-fit-copy"
+import type { GoalFitView } from "../../model/goals-board/season-fit-copy"
 import {
   orderDefaultFirst,
   useEventTargetName,
@@ -86,8 +86,8 @@ import { useEscapeToClear } from "./use-escape-to-clear"
 import { SortBlocksReorderNotice } from "./sort-blocks-reorder-notice"
 import { GoalsMoveProjectGoalsButton } from "./goals-move-project-goals-button"
 import { goalRaidDuration, useLevelRules } from "@/entities/goal-farming"
-import { buildCascadeContext } from "./goal-row-utils"
-import type { SelectedXpBook } from "./goal-row-utils"
+import { buildCascadeContext } from "../../model/goals-board/goal-row-utils"
+import type { SelectedXpBook } from "../../model/goals-board/goal-row-utils"
 import { PageTourButton } from "@/shared/tour"
 import { PageSettingsButton } from "@/shared/ui"
 import { useGoalsOverviewTutorial } from "./goals-page.tutorial"

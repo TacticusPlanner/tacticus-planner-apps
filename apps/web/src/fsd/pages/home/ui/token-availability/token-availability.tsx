@@ -16,14 +16,14 @@ import {
   rememberCount,
   rememberedCount,
 } from "../../model/remembered-count"
-import { formatExactCountdown } from "./format-exact-countdown"
+import { formatExactCountdown } from "../../model/token-availability/format-exact-countdown"
 import {
   cappedFirst,
   tokenCountdown,
   tokenFillPercent,
   tokenFullAtMs,
-} from "./token-countdown"
-import type { TokenBucketData } from "./token-countdown"
+} from "../../model/token-availability/token-countdown"
+import type { TokenBucketData } from "../../model/token-availability/token-countdown"
 
 const NOW_TICK_MS = 1000
 

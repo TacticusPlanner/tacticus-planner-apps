@@ -17,8 +17,8 @@ import {
 } from "@/widgets/event-rewards"
 import { SegmentedControl } from "@/shared/ui"
 
-import type { EventShopController } from "./use-event-shop-controller"
-import type { EventShopFormat } from "./use-event-shop-format"
+import type { EventShopController } from "../../model/event-shop/use-event-shop-controller"
+import type { EventShopFormat } from "../../model/event-shop/use-event-shop-format"
 
 /**
  * The reference notice and, for an event longer than a week, the week the tab shows (the Shop tab's day

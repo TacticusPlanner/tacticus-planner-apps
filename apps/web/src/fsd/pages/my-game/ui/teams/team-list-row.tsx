@@ -12,8 +12,8 @@ import { TeamActionButtons } from "./team-actions"
 import type { TeamActions } from "./team-actions"
 import { TeamOrderHandle, TeamUnitGroup } from "./team-card"
 import { TeamStatusChips } from "./team-status-chips"
-import { useTeamContext } from "./use-team-context"
-import type { TeamStatusItem } from "./use-team-status"
+import { useTeamContext } from "../../model/teams/use-team-context"
+import type { TeamStatusItem } from "../../model/teams/use-team-status"
 
 /**
  * One team as a compact phone row (handoff 5.9, the List layout): position and name, its modes,

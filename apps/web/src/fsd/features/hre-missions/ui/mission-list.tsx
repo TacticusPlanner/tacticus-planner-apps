@@ -7,7 +7,7 @@ import { EntityIcon } from "@/shared/ui"
 
 import type { HreMission, HreObjective } from "@/entities/hre-mission"
 import { missionStatus } from "@/entities/hre-mission"
-import { missionName } from "./mission-name"
+import { missionName } from "../model/mission-name"
 import { ObjectiveGuidance } from "./objective-guidance"
 import { ReserveTip } from "./reserve-tip"
 

@@ -14,10 +14,10 @@ import type {
 import { CampaignLocationName, EntityIcon } from "@/shared/ui"
 
 import { TodayCard } from "./today-card"
-import { todaysAttemptProgress } from "./today-view-model"
-import type { TodayView } from "./today-view-model"
-import { groupTodaysAttempts } from "./todays-attempts-groups"
-import type { TodaysAttemptRow } from "./todays-attempts-groups"
+import { todaysAttemptProgress } from "../../model/today/today-view-model"
+import type { TodayView } from "../../model/today/today-view-model"
+import { groupTodaysAttempts } from "../../model/today/todays-attempts-groups"
+import type { TodaysAttemptRow } from "../../model/today/todays-attempts-groups"
 
 /** How a row sits: alone (named in full), under its upgrade's header, or under its campaign's. */
 type RowPlacement = "alone" | "underUpgrade" | "underCampaign"

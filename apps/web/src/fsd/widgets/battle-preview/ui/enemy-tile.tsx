@@ -12,7 +12,7 @@ import { DetailsSheet } from "@/shared/ui"
 
 import type { EnemyTileViewModel } from "../model/enemy-tile"
 import { EnemyDetail } from "./enemy-detail"
-import { useEnemyLabels } from "./enemy-label"
+import { useEnemyLabels } from "../model/enemy-label"
 
 /**
  * One served enemy entry of a wave (design D5): portrait, localized name, a "×N" badge when the

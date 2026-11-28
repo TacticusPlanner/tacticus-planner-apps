@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 
 import type { HseEnemyHint, HseTeamMode } from "@/features/team-recommendations"
 
-import { useEnemyLabelNames } from "./use-enemy-label-names"
+import { useEnemyLabelNames } from "../../model/hse-teams/use-enemy-label-names"
 
 /** The enemy-side rules of one mode's scoring (For the Emperor: only non-Imperial enemies count;
  * Squig Smash: only Large Squigs), one line each. Nothing when every enemy counts. */

@@ -10,7 +10,7 @@ import type {
 import {
   formatHomeScreenEventDates,
   useHomeScreenEventName,
-} from "./use-home-screen-event-name"
+} from "../../model/home-screen-event/use-home-screen-event-name"
 
 /**
  * Picks which Home Screen Event instance the HSE tab shows: the shared event switcher (a select

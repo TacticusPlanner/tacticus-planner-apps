@@ -4,7 +4,7 @@ import type { Progression } from "@workspace/game-domain"
 
 import { progressionText } from "@/shared/ui"
 
-import type { UnitFaction, UnitTileUnit } from "../model/types"
+import type { UnitFaction, UnitTileUnit } from "./types"
 
 /**
  * From the first blue star on, every further ascension costs mythic shards, so an owned unit's tile

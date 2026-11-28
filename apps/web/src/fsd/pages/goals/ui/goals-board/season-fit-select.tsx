@@ -13,7 +13,7 @@ import { SEASON_FIT_MODES } from "@/features/goal-planning"
 import { ToolbarField, useViewPlacement } from "@/shared/ui"
 import type { SeasonFitState } from "@/features/goal-planning"
 
-import type { TargetedFitChoice } from "./targeted-fit-choice"
+import type { TargetedFitChoice } from "../../model/goals-board/targeted-fit-choice"
 
 /**
  * The Goals toolbar's Season fit select (goal-season-fit spec), in the View slot: labelled "Season

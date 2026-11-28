@@ -1,10 +1,7 @@
 import type { TFunction } from "i18next"
 import { useTranslation } from "react-i18next"
 
-import {
-  isKnownObjectiveType,
-  objectiveTraitId,
-} from "../model/quest-objectives"
+import { isKnownObjectiveType, objectiveTraitId } from "./quest-objectives"
 
 export type Objective = { type: string; target?: string | null; score: number }
 
