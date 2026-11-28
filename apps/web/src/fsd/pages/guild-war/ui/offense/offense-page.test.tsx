@@ -26,7 +26,9 @@ const api = vi.hoisted(() => ({
 }))
 
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+vi.mock("@workspace/ui/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
 vi.mock("@/features/player-data-sync", () => ({
   usePlayerDataSyncStatus: () => ({
     isSyncing: false,

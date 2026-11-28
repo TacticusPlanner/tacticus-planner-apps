@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { renderHook, act } from "@/test/render"
@@ -7,7 +7,9 @@ import { renderHook, act } from "@/test/render"
 import { ApiError } from "@/shared/api"
 import { setTestAuth } from "@/test/auth"
 
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+vi.mock("@workspace/ui/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
 
 const api = vi.hoisted(() => ({
   updateGoalsStatus: vi.fn(),

@@ -26,7 +26,7 @@ const { mocks } = vi.hoisted(() => ({
   },
 }))
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: Object.assign(
     (message: string, options: { action: { onClick: () => void } }) => {
       mocks.toasts.push([message, options])

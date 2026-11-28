@@ -1,7 +1,7 @@
 import { Suspense, useMemo, useState } from "react"
 import { Outlet } from "react-router"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { useIsAuthenticated } from "@azure/msal-react"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Button } from "@workspace/ui/components/button"

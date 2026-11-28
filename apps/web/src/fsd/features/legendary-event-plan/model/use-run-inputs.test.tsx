@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook } from "@testing-library/react"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { legendaryEventPlanQueries } from "@/entities/legendary-event"
@@ -24,7 +24,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: Object.assign(vi.fn(), { error: vi.fn(), success: vi.fn() }),
 }))
 vi.mock("@/shared/analytics", () => ({

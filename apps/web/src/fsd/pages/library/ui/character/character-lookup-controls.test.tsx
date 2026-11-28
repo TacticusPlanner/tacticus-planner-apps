@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@/test/render"
 
 const toastSuccess = vi.fn()
 const toastError = vi.fn()
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: {
     success: (...args: unknown[]) => toastSuccess(...args),
     error: (...args: unknown[]) => toastError(...args),

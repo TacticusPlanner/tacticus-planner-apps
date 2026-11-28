@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 
 import { safeSessionStorage, sessionStorageKeys } from "@/shared/lib"
 

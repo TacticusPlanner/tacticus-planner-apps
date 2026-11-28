@@ -21,7 +21,7 @@ import {
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { Pressable } from "@workspace/ui/components/pressable"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 
 import { AuthError, InteractionStatus } from "@azure/msal-browser"
 import { useIsAuthenticated, useMsal } from "@azure/msal-react"

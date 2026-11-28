@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 
 import { goalQueries } from "@/entities/goal"
 import type { GoalDetail, GoalListResponse } from "@/entities/goal"
@@ -23,7 +23,9 @@ vi.mock("react-i18next", () => ({
   }),
   initReactI18next: { type: "3rdParty", init: vi.fn() },
 }))
-vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
+vi.mock("@workspace/ui/lib/toast", () => ({
+  toast: { error: vi.fn(), success: vi.fn() },
+}))
 vi.mock("@/entities/goal", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/entities/goal")>()),
   updateGoalOrder: updateGoalOrderMock,

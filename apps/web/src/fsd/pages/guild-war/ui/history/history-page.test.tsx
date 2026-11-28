@@ -13,7 +13,9 @@ import type { GuildWar, GuildWarAttack } from "../../model/types"
 const api = vi.hoisted(() => ({ past: vi.fn(), updateAttack: vi.fn() }))
 
 vi.mock("@/shared/tour", () => ({ useTourPageSteps: vi.fn() }))
-vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
+vi.mock("@workspace/ui/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}))
 vi.mock("@/shared/api", async (importOriginal) => {
   const { fakeApiClient } = await import("@/test/fake-api-client")
   return {

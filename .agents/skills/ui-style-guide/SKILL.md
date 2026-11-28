@@ -485,11 +485,11 @@ rejects them in `apps/web`.
 
 ## 13. Messages: toast, alert or read failure
 
-| What happened                                                      | Use                                        |
-| ------------------------------------------------------------------ | ------------------------------------------ |
-| The result of the user's own action (saved, copied, deleted, undo) | `toast.success` / `toast.error` (`sonner`) |
-| A state that stays until something changes (offline, not synced)   | An inline `Alert` where it applies         |
-| A local read failed                                                | `LocalReadFailure` with its Retry button   |
+| What happened                                                      | Use                                                                                          |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| The result of the user's own action (saved, copied, deleted, undo) | `toast.success` / `toast.error` (`@workspace/ui/lib/toast`; lint rejects importing `sonner`) |
+| A state that stays until something changes (offline, not synced)   | An inline `Alert` where it applies                                                           |
+| A local read failed                                                | `LocalReadFailure` with its Retry button                                                     |
 
 - A toast never carries the only copy of something the user must act on: it
   disappears. Errors from a user's action are a toast; a page that cannot work

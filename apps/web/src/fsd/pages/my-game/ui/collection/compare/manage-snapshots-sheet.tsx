@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { BookmarkPlus, Pencil, Trash2 } from "lucide-react"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"

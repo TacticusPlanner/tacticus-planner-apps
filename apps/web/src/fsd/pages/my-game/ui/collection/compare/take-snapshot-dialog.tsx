@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { AlertTriangle } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const toastError = vi.fn()
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: { error: (...args: unknown[]) => toastError(...args) },
 }))
 

@@ -10,7 +10,7 @@ vi.mock("@/shared/tour", () => ({
   useTourPageSteps: () => undefined,
 }))
 
-vi.mock("sonner", () => ({
+vi.mock("@workspace/ui/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
 }))
 

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
+import { toast } from "@workspace/ui/lib/toast"
 import { useQueryClient } from "@tanstack/react-query"
 
 import {
