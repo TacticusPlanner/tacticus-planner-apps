@@ -29,7 +29,7 @@ import type {
   RewardOutlookViewModel,
   RunInputsViewModel,
   RunStatusViewModel,
-} from "./legendary-event-page.view-model"
+} from "../../model/legendary-event/legendary-event-page.view-model"
 import { RewardOutlook } from "./reward-outlook"
 
 /** The event's run status from the last sync, the Inputs drawer (signed in) and the Reward

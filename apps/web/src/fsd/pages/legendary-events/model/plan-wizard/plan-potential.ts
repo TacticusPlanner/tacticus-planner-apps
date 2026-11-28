@@ -9,7 +9,7 @@ import type {
   LegendaryEventRun,
 } from "@/entities/legendary-event"
 
-import type { LanePotentialsViewModel } from "../../ui/legendary-event/lane-potential.view-model"
+import type { LanePotentialsViewModel } from "../legendary-event/lane-potential.view-model"
 import type { PlanEvaluation } from "./plan-evaluator"
 import type { PlanInputs } from "./plan-inputs"
 

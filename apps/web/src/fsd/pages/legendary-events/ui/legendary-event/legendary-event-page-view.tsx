@@ -23,7 +23,7 @@ import { storedPreference } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
 
 import { BattleInfoHost } from "./battles/battle-info-host"
-import { firstOpenBattleIndex } from "./battles/battle-info-target"
+import { firstOpenBattleIndex } from "../../model/legendary-event/battles/battle-info-target"
 import { BattlesLaneSelect } from "./battles/battles-lane-select"
 import { BattlesSection } from "./battles/battles-section"
 import { EstimatesDisclaimer } from "./estimates-disclaimer"
@@ -33,7 +33,7 @@ import { LegendaryEventHeader } from "./legendary-event-header"
 import type {
   LegendaryEventPageViewModel,
   LegendaryEventTab,
-} from "./legendary-event-page.view-model"
+} from "../../model/legendary-event/legendary-event-page.view-model"
 import { LegendaryEventPlanEntry } from "./legendary-event-plan-entry"
 import { LaneSelector, LegendaryEventTabs } from "./legendary-event-tabs"
 import { CrossLaneLeaderboard } from "./overview/cross-lane-leaderboard"
@@ -46,7 +46,7 @@ import { RewardOutlook } from "./reward-outlook"
 import { RunStatusCard } from "./run-status-card"
 import { TeamEditorHost } from "./teams/team-editor-host"
 import { TeamsSection } from "./teams/teams-section"
-import { rosterMap } from "./teams/teams.view-model"
+import { rosterMap } from "../../model/legendary-event/teams/teams.view-model"
 
 /** Plan's Token plan opens by default and remembers its own open state. */
 const PLAN_TOKEN_PLAN_OPEN = storedPreference(

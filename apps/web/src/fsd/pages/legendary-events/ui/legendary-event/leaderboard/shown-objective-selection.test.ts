@@ -6,7 +6,7 @@ import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import {
   mergeShownObjectiveSelection,
   shownObjectiveSelection,
-} from "./leaderboard.view-model"
+} from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
 
 const keyOf = (lane: "alpha" | "beta" | "gamma", position: number) =>
   objectiveFilterKey(lysanderEvent[lane].unitsRestrictions[position]!.filter)

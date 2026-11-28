@@ -24,8 +24,8 @@ import {
   TruncatedText,
 } from "@/shared/ui"
 
-import { filterUnits, searchUnits } from "./unit-list.model"
-import type { UnitListItem } from "./unit-list.model"
+import { filterUnits, searchUnits } from "../../model/unit/unit-list.model"
+import type { UnitListItem } from "../../model/unit/unit-list.model"
 
 /**
  * A Library unit list (characters, Machines of War): name search and the unit filters (catalog

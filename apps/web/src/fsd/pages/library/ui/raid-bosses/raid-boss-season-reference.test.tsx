@@ -2,7 +2,7 @@ import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import type { RaidBossSeasonReferenceViewModel } from "./raid-boss-season-reference.view-model"
+import type { RaidBossSeasonReferenceViewModel } from "../../model/raid-bosses/raid-boss-season-reference.view-model"
 
 import { RaidBossSeasonReference } from "./raid-boss-season-reference"
 

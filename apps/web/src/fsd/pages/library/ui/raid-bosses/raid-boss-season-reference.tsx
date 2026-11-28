@@ -15,7 +15,7 @@ import { RaidBossPortrait } from "@/entities/raid-boss"
 import { EntityIcon } from "@/shared/ui"
 import type { ResolvedRaidBossEncounterLocation } from "@/entities/raid-boss"
 
-import type { RaidBossSeasonReferenceViewModel } from "./raid-boss-season-reference.view-model"
+import type { RaidBossSeasonReferenceViewModel } from "../../model/raid-bosses/raid-boss-season-reference.view-model"
 
 export function RaidBossSeasonReference({
   viewModel,

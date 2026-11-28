@@ -10,7 +10,7 @@ vi.mock("react-i18next", () => ({
   }),
 }))
 
-import { ManageProjectsSheet } from ".//manage-projects-sheet"
+import { ManageProjectsSheet } from "./manage-projects-sheet"
 
 const activeProject = {
   projectId: "active",

@@ -12,11 +12,11 @@ import type {
 } from "@/entities/legendary-event"
 import { HowToRead } from "@/shared/ui"
 
-import type { ProgressGridViewModel } from "../legendary-event-page.view-model"
+import type { ProgressGridViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
 import { ProgressGrid } from "./progress-grid"
-import { useProgressColumns } from "./progress-columns"
-import { laneMarks } from "./progress-marks"
-import type { ProgressMarksViewModel } from "./progress-marks"
+import { useProgressColumns } from "../../../model/legendary-event/progress/progress-columns"
+import { laneMarks } from "../../../model/legendary-event/progress/progress-marks"
+import type { ProgressMarksViewModel } from "../../../model/legendary-event/progress/progress-marks"
 import { LaneProgressHeader, MarksLegend } from "./progress-parts"
 import { ProgressRows } from "./progress-rows"
 

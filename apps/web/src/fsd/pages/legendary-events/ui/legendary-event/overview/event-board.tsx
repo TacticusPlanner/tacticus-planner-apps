@@ -41,22 +41,22 @@ import { numberFormat } from "@/shared/lib"
 import type {
   ProgressGridViewModel,
   ReadValue,
-} from "../legendary-event-page.view-model"
-import { rosterMap } from "../teams/teams.view-model"
+} from "../../../model/legendary-event/legendary-event-page.view-model"
+import { rosterMap } from "../../../model/legendary-event/teams/teams.view-model"
 import type {
   TeamPowerSource,
   TeamsSectionState,
-} from "../teams/teams.view-model"
+} from "../../../model/legendary-event/teams/teams.view-model"
 
 import {
   buildEventBoardLane,
   buildEventBoardTable,
-} from "./event-board.view-model"
+} from "../../../model/legendary-event/overview/event-board.view-model"
 import type {
   EventBoardLane,
   EventBoardObjective,
   EventBoardTableColumn,
-} from "./event-board.view-model"
+} from "../../../model/legendary-event/overview/event-board.view-model"
 
 /** The best-five line: V1 drew a dashed rule under the fifth unit of every column. */
 const TEAM_LINE = 5

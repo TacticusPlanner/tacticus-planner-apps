@@ -16,10 +16,10 @@ import {
   ResponsiveDialogTitle,
 } from "@/shared/ui"
 
-import { adjacentBattle } from "./battle-info-target"
-import type { BattleInfoTarget } from "./battle-info-target"
+import { adjacentBattle } from "../../../model/legendary-event/battles/battle-info-target"
+import type { BattleInfoTarget } from "../../../model/legendary-event/battles/battle-info-target"
 import { BattlePreview } from "./battles-section"
-import type { BattlesViewModel } from "./battles.view-model"
+import type { BattlesViewModel } from "../../../model/legendary-event/battles/battles.view-model"
 
 /**
  * The battle info dialog, opened from a Token plan row, the Next token card or its next tokens:

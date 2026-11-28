@@ -20,9 +20,9 @@ import { EntityIcon } from "@/shared/ui"
 import { useUnitName } from "@/shared/unit-name"
 import { numberFormat } from "@/shared/lib"
 
-import { RUN_COUNT } from "./last-run.view-model"
+import { RUN_COUNT } from "../../../model/legendary-event/overview/last-run.view-model"
 import { RunHistoryDeltas } from "./run-history-deltas"
-import { useRunDate } from "./use-run-date"
+import { useRunDate } from "../../../model/legendary-event/overview/use-run-date"
 
 /** One record's history (the Last run card and each Earlier runs entry): run, date and event
  *  points, the lanes with their teams, then the roster changes since. */

@@ -8,7 +8,7 @@ import { HowPointsDisclosure, LaneOverviewFigures } from "./lane-overview"
 import type {
   LanePotentialViewModel,
   LanePotentialsViewModel,
-} from "./lane-potential.view-model"
+} from "../../model/legendary-event/lane-potential.view-model"
 
 type Cell = "cleared" | "teams" | "roster" | "out"
 

@@ -13,7 +13,7 @@ import { useSignInRedirect } from "@/shared/auth"
 import { UnitPortrait } from "@/entities/unit"
 import { EntityIcon } from "@/shared/ui"
 
-import type { UnitOwnership } from "./unit-ownership"
+import type { UnitOwnership } from "../../model/unit/unit-ownership"
 import { hasNode } from "@/shared/lib"
 
 export type ValuesMode = "base" | "custom"

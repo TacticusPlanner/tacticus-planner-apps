@@ -61,7 +61,7 @@ const statusResponse = { goals: [], orderRevision: 0 }
 import { useGoalActions } from "@/features/goal-planning"
 import type { GoalMenuMoves, GoalRow } from "@/features/goal-planning"
 import type { CascadeContext } from "./goal-row-utils"
-import { GoalRowActions } from ".//goal-row-actions"
+import { GoalRowActions } from "./goal-row-actions"
 
 function row(overrides: Partial<GoalRow> = {}): GoalRow {
   return {

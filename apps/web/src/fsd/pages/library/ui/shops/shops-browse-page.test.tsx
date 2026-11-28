@@ -5,7 +5,7 @@ import { render, screen } from "@/test/render"
 
 import { ShopsBrowsePage } from "./shops-browse-page"
 import type { LibraryShopsViewModel } from "../../model/shops/use-library-shops"
-import type { LibraryShopSlotView } from "./library-shops.view-model"
+import type { LibraryShopSlotView } from "../../model/shops/library-shops.view-model"
 
 const useLibraryShops = vi.fn<() => LibraryShopsViewModel>()
 const { useIsMobileMock } = vi.hoisted(() => ({

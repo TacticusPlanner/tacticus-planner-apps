@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@workspace/ui/components/accordion"
 
-import type { MowAbility } from "./mow-upgrades.model"
+import type { MowAbility } from "../../model/mow-unit/mow-upgrades.model"
 
 type MowPanel = MowAbility | "mythic"
 

@@ -11,7 +11,7 @@ import { BattleHeader, BattleWaves } from "./battle-waves"
 import type {
   BattlePreviewViewModel,
   BattlesViewModel,
-} from "./battles.view-model"
+} from "../../../model/legendary-event/battles/battles.view-model"
 import { hasNode } from "@/shared/lib"
 
 /**

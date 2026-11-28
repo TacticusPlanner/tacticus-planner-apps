@@ -11,7 +11,7 @@ import { eventUnitChipData } from "@/entities/legendary-event"
 import type { LegendaryEventLaneId } from "@/entities/legendary-event"
 import { storedPreference } from "@/shared/lib"
 
-import { rosterMap } from "../legendary-event/teams/teams.view-model"
+import { rosterMap } from "../../model/legendary-event/teams/teams.view-model"
 
 import type { PlanDraft } from "../../model/plan-wizard/use-plan-draft"
 import type { PlanSource } from "../../model/plan-wizard/use-plan-source"

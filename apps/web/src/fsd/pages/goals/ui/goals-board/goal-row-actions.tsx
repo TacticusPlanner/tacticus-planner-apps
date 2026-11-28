@@ -32,7 +32,7 @@ import type {
   GoalRow,
   useGoalActions,
 } from "@/features/goal-planning"
-import { DeleteGoalDialog } from ".//delete-goal-dialog"
+import { DeleteGoalDialog } from "./delete-goal-dialog"
 import { MoveToPriorityDialog } from "./move-to-priority-dialog"
 import { toggleGoalStatus } from "./goal-row-utils"
 import type { CascadeContext } from "./goal-row-utils"

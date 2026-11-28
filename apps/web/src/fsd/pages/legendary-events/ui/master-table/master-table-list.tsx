@@ -7,7 +7,7 @@ import type {
 import { numberFormat } from "@/shared/lib"
 
 import { MasterTableUnit } from "./master-table-parts"
-import { useCellLanes } from "./use-cell-lanes"
+import { useCellLanes } from "../../model/master-table/use-cell-lanes"
 
 /**
  * The mobile card list (design D5): per unit its portrait, name, rarity and rank and total, then

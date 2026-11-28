@@ -22,7 +22,7 @@ import type {
 } from "@/entities/legendary-event"
 import { numberFormat } from "@/shared/lib"
 
-import type { LeaderboardGoalsViewModel } from "../legendary-event-page.view-model"
+import type { LeaderboardGoalsViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
 import {
   LeaderboardRank,
   LeaderboardRarity,
@@ -30,8 +30,11 @@ import {
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "./leaderboard-parts"
-import { useClearsText } from "./leaderboard.view-model"
-import type { LeaderboardClears, ObjectiveChip } from "./leaderboard.view-model"
+import { useClearsText } from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
+import type {
+  LeaderboardClears,
+  ObjectiveChip,
+} from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
 
 /** Desktop: one lane's leaderboard as a table, in the fixed default order (no sortable headers),
  *  with one icon-headed column per objective, the shown points figure, the objectives count,

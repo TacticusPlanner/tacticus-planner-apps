@@ -18,7 +18,7 @@ import type {
   RankGroupViewModel,
   RecipeViewModel,
   UpgradeViewModel,
-} from "./character-lookup-results.view-model"
+} from "../../model/character/character-lookup-results.view-model"
 
 export function RankGroupHeader({
   group,

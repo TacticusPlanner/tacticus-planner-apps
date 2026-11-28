@@ -6,7 +6,7 @@ import { render, screen, within } from "@/test/render"
 
 import { BattleHeader, BattleWaves } from "./battle-waves"
 import { lysanderLane } from "./battles.test-utils"
-import type { BattlePreviewViewModel } from "./battles.view-model"
+import type { BattlePreviewViewModel } from "../../../model/legendary-event/battles/battles.view-model"
 
 let i18n: I18n
 const alpha = lysanderLane("alpha")

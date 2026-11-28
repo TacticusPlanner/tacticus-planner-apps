@@ -8,7 +8,7 @@ import type {
 import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { unitPowerContextFixture } from "@/test/fixtures/unit-power"
 
-import { buildClearEstimates } from "./legendary-event-page.view-model"
+import { buildClearEstimates } from "../../model/legendary-event/legendary-event-page.view-model"
 
 const config: ClearEstimateConfigState = {
   status: "ready",

@@ -14,11 +14,11 @@ import { useUnitName } from "@/shared/unit-name"
 
 import { LegendaryEventCard } from "./legendary-event-card"
 import { useLegendaryEventsHubTutorial } from "./legendary-events-hub.tutorial"
-import { buildHubViewModel } from "./legendary-events-hub.view-model"
+import { buildHubViewModel } from "../../model/legendary-events-hub/legendary-events-hub.view-model"
 import type {
   HubCardViewModel,
   HubViewModel,
-} from "./legendary-events-hub.view-model"
+} from "../../model/legendary-events-hub/legendary-events-hub.view-model"
 
 const GROUPS = ["active", "upNext", "notAnnounced", "archived"] as const
 /** The groups of events that have not started yet; the tour points at their first card. */

@@ -11,9 +11,9 @@ import type {
   LaneProgressView,
 } from "@/entities/legendary-event"
 
-import type { ProgressColumn } from "./progress-columns"
-import type { LaneMarks } from "./progress-marks"
-import { splitClearedBattles } from "./progress-order"
+import type { ProgressColumn } from "../../../model/legendary-event/progress/progress-columns"
+import type { LaneMarks } from "../../../model/legendary-event/progress/progress-marks"
+import { splitClearedBattles } from "../../../model/legendary-event/progress/progress-order"
 import {
   BattleRowAction,
   ProgressCell,

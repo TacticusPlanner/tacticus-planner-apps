@@ -4,7 +4,7 @@ import type { Step } from "react-joyride"
 
 import type { TourPageSteps } from "@/shared/tour"
 
-import type { LegendaryEventTab } from "./legendary-event-page.view-model"
+import type { LegendaryEventTab } from "../../model/legendary-event/legendary-event-page.view-model"
 
 const EVENT_TOUR_TARGETS = {
   tabs: '[data-testid="legendary-event-tabs"]',

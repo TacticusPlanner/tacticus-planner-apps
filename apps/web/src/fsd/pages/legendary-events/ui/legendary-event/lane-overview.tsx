@@ -8,7 +8,7 @@ import type {
 import { HowToRead } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"
 
-import type { LanePotentialViewModel } from "./lane-potential.view-model"
+import type { LanePotentialViewModel } from "../../model/legendary-event/lane-potential.view-model"
 import { RosterPotentialMap } from "./roster-potential-map"
 
 /** A lane's overview figures, in its Event board column header: kill points per battle, the

@@ -26,22 +26,22 @@ import { ProgressionSummary } from "@/shared/ui"
 import { buildRadarPopulation, buildStatRadar } from "../../model/stat-radar"
 import { usePierceRatios } from "../../model/use-pierce-ratios"
 import { CharacterRankUpTab } from "../character/character-rank-up-tab"
-import { useCharacterListItems } from "../characters/use-character-list-items"
-import { useCharactersCatalog } from "../characters/use-characters-catalog"
+import { useCharacterListItems } from "../../model/characters/use-character-list-items"
+import { useCharactersCatalog } from "../../model/characters/use-characters-catalog"
 import { AbilityPanel } from "../unit/ability-panel"
 import { UnitCreateGoalButton } from "../unit/unit-create-goal-button"
 import { UnitNavBar } from "../unit/unit-nav-bar"
 import { UnitPowerValue } from "../unit/unit-power-value"
 import { UnitTabs } from "../unit/unit-tabs"
-import { useUnitTab } from "../unit/use-unit-tab"
+import { useUnitTab } from "../../model/unit/use-unit-tab"
 import { useCharacterUnitTutorial } from "./character-unit.tutorial"
 import { CharacterUnitDetails } from "./character-unit-details"
 import { CharacterUnitHeader } from "./character-unit-header"
 import type { ValuesMode } from "./character-unit-header"
 import { MythicQuestsList } from "./mythic-quests-card"
 import { RelicPanel } from "./relic-panel"
-import { useCharacterPowerView } from "./use-character-power-view"
-import { useMythicQuests } from "./use-mythic-quests"
+import { useCharacterPowerView } from "../../model/character-unit/use-character-power-view"
+import { useMythicQuests } from "../../model/character-unit/use-mythic-quests"
 import {
   playerAbilityLevels,
   playerValues,
@@ -49,8 +49,8 @@ import {
   relicFor,
   startingValues,
   unitOwnership,
-} from "./character-unit.view-model"
-import type { ShownValues } from "./character-unit.view-model"
+} from "../../model/character-unit/character-unit.view-model"
+import type { ShownValues } from "../../model/character-unit/character-unit.view-model"
 
 const CHARACTERS_PATH = "/library/characters"
 const TABS = ["details", "rankup"] as const

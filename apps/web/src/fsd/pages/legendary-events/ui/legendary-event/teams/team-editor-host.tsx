@@ -8,8 +8,8 @@ import type {
 import { TeamEditorDialog, laneTeams } from "@/features/legendary-event-plan"
 import type { PickerEstimates } from "@/features/legendary-event-plan"
 
-import { useOpenTeamEditor } from "./team-editor-launcher"
-import type { TeamEditorLauncher } from "./team-editor-launcher"
+import { useOpenTeamEditor } from "../../../model/legendary-event/teams/team-editor-launcher"
+import type { TeamEditorLauncher } from "../../../model/legendary-event/teams/team-editor-launcher"
 import type { TeamsViewModel } from "./teams-section"
 
 /**

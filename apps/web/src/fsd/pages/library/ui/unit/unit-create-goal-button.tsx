@@ -6,9 +6,9 @@ import { Button } from "@workspace/ui/components/button"
 import { useCreateGoalLauncher } from "@/entities/goal"
 import { useAnalyticsActions } from "@/shared/analytics"
 
-import { unitCreateGoalPrefill } from "./unit-create-goal"
-import type { UnitEntityType } from "./unit-create-goal"
-import type { UnitOwnership } from "./unit-ownership"
+import { unitCreateGoalPrefill } from "../../model/unit/unit-create-goal"
+import type { UnitEntityType } from "../../model/unit/unit-create-goal"
+import type { UnitOwnership } from "../../model/unit/unit-ownership"
 
 /**
  * The unit header's Create goal: opens the app's goal-creation sheet with this unit prefilled.

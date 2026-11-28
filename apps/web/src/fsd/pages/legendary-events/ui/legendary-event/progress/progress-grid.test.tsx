@@ -13,10 +13,10 @@ import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { render, screen, within } from "@/test/render"
 
-import { buildProgressGridViewModel } from "../legendary-event-page.view-model"
-import type { ReadValue } from "../legendary-event-page.view-model"
-import { buildMarksByLane } from "./progress-marks"
-import type { ProgressMarksViewModel } from "./progress-marks"
+import { buildProgressGridViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
+import type { ReadValue } from "../../../model/legendary-event/legendary-event-page.view-model"
+import { buildMarksByLane } from "../../../model/legendary-event/progress/progress-marks"
+import type { ProgressMarksViewModel } from "../../../model/legendary-event/progress/progress-marks"
 import { ProgressSection } from "./progress-section"
 
 let i18n: I18n

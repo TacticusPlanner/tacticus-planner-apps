@@ -2,7 +2,7 @@ import { render, screen } from "@/test/render"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 
-import { ConfirmationDialog } from ".//confirmation-dialog"
+import { ConfirmationDialog } from "./confirmation-dialog"
 
 describe("ConfirmationDialog", () => {
   it("uses caller content and invokes both callbacks", async () => {

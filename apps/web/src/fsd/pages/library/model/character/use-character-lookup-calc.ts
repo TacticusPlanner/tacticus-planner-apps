@@ -40,8 +40,8 @@ import type {
   RankGroupViewModel,
   RecipeViewModel,
   UpgradeViewModel,
-} from "../../ui/character/character-lookup-results.view-model"
-import type { UnitProfileViewModel } from "../../ui/character/unit-profile.view-model"
+} from "./character-lookup-results.view-model"
+import type { UnitProfileViewModel } from "./unit-profile.view-model"
 
 type PlayerCharacter = PlayerDataChunkDto<"characters">[number]
 

@@ -11,7 +11,7 @@ import type { Progression, Rank } from "@workspace/game-domain"
 
 import { ProgressionSelect, RankBadge, RankSelect } from "@/shared/ui"
 
-import { shareCurrentLookupUrl } from "./character-lookup-share"
+import { shareCurrentLookupUrl } from "../../model/character/character-lookup-share"
 
 // lastRank is currently Adamantine2 — Adamantine3 is planned but not yet in the ladder at all (see
 // lastRank's own comment in @workspace/game-catalog).

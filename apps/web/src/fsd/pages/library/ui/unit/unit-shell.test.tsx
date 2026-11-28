@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router"
 import { describe, expect, it } from "vitest"
 
 import { UnitTabs } from "./unit-tabs"
-import { useUnitTab } from "./use-unit-tab"
+import { useUnitTab } from "../../model/unit/use-unit-tab"
 
 function TabsHarness() {
   const [tab, select] = useUnitTab(["details", "rankup"] as const)

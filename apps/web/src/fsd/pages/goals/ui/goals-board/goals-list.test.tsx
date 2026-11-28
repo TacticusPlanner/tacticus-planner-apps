@@ -24,7 +24,7 @@ beforeEach(async () => {
 })
 
 import type { GoalRow, useGoalActions } from "@/features/goal-planning"
-import { GoalsList } from ".//goals-list"
+import { GoalsList } from "./goals-list"
 
 const stubActions = {
   setStatus: vi.fn(),

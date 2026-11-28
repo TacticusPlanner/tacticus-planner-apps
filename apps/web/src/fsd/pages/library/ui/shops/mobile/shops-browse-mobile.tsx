@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 import type { ShopDayOfWeek } from "@workspace/game-catalog"
 
 import type { LibraryShopId } from "../../../model/shops/use-library-shops"
-import type { LibraryShopSlotView } from "../library-shops.view-model"
+import type { LibraryShopSlotView } from "../../../model/shops/library-shops.view-model"
 import { ShopSlotCard } from "../shop-slot-card"
 import { ShopsBrowseState } from "../shops-browse-state"
 

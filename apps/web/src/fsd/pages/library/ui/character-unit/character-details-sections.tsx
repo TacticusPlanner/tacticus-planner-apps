@@ -30,8 +30,8 @@ import { describeSeries, EntityIcon, LevelChart } from "@/shared/ui"
 
 import { usePierceRatios } from "../../model/use-pierce-ratios"
 import { RulesTextNote } from "../unit/rules-text-note"
-import { ladderRanks } from "./character-unit.view-model"
-import type { StatsFigure } from "./character-unit.view-model"
+import { ladderRanks } from "../../model/character-unit/character-unit.view-model"
+import type { StatsFigure } from "../../model/character-unit/character-unit.view-model"
 import { EquipmentSlots } from "./equipment-slots"
 import { hasNode, numberFormat } from "@/shared/lib"
 

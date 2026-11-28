@@ -17,7 +17,7 @@ import {
   UpgradeIcon,
 } from "@/shared/ui"
 
-import type { BaseUpgradeViewModel } from "./character-lookup-results.view-model"
+import type { BaseUpgradeViewModel } from "../../model/character/character-lookup-results.view-model"
 
 export function BaseUpgradesTable({
   baseUpgrades,

@@ -15,8 +15,8 @@ import {
 } from "@/shared/ui"
 
 import { TierListSearchField } from "./tier-list-search-field"
-import { TIER_LIST_ALLIANCES } from "./tier-list.view-model"
-import type { TierListUrlFilters } from "./tier-list.view-model"
+import { TIER_LIST_ALLIANCES } from "../../model/tier-list/tier-list.view-model"
+import type { TierListUrlFilters } from "../../model/tier-list/tier-list.view-model"
 
 export interface TierListFiltersProps {
   filters: TierListUrlFilters

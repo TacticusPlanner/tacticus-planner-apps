@@ -6,7 +6,7 @@ import { lysanderEvent } from "@/test/fixtures/legendary-events"
 import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { fireEvent, render, screen, within } from "@/test/render"
 
-import { buildProgressGridViewModel } from "../legendary-event-page.view-model"
+import { buildProgressGridViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
 import { LaneSummary } from "./lane-summary"
 
 let i18n: I18n

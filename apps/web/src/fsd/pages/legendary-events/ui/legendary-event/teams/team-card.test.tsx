@@ -23,8 +23,11 @@ import { act, fireEvent, render, screen, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
 import { TeamCard } from "./team-card"
-import { buildTeamCardViewModel, moveTargets } from "./teams.view-model"
-import type { TeamCardViewModel } from "./teams.view-model"
+import {
+  buildTeamCardViewModel,
+  moveTargets,
+} from "../../../model/legendary-event/teams/teams.view-model"
+import type { TeamCardViewModel } from "../../../model/legendary-event/teams/teams.view-model"
 
 beforeEach(async () => {
   await seedGameCatalog({ characters: Object.values(teamUnits) })

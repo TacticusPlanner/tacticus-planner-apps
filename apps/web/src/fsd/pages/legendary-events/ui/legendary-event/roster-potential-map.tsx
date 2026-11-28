@@ -21,8 +21,8 @@ import type {
 } from "@/entities/legendary-event"
 import { numberFormat } from "@/shared/lib"
 
-import type { LanePotentialViewModel } from "./lane-potential.view-model"
-import { useProgressColumns } from "./progress/progress-columns"
+import type { LanePotentialViewModel } from "../../model/legendary-event/lane-potential.view-model"
+import { useProgressColumns } from "../../model/legendary-event/progress/progress-columns"
 
 const STATES: readonly PotentialCellState[] = [
   "cleared",

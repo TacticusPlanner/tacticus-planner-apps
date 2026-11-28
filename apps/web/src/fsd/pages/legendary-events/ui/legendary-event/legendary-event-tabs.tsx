@@ -14,9 +14,9 @@ import type {
 } from "@/entities/legendary-event"
 import { PageTabsList, PageTabsTrigger } from "@/shared/ui"
 
-import { LEGENDARY_EVENT_TABS } from "./legendary-event-page.view-model"
-import type { LegendaryEventTab } from "./legendary-event-page.view-model"
-import type { LaneSelection } from "./use-lane-selection"
+import { LEGENDARY_EVENT_TABS } from "../../model/legendary-event/legendary-event-page.view-model"
+import type { LegendaryEventTab } from "../../model/legendary-event/legendary-event-page.view-model"
+import type { LaneSelection } from "../../model/legendary-event/use-lane-selection"
 
 /** The run tab's name: Current run while the event is active, Next run before it, Last run once
  *  it is archived. */

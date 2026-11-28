@@ -11,12 +11,12 @@ import type { AscensionStep } from "@/entities/legendary-event"
 import { formatEventCountdown, numberFormat } from "@/shared/lib"
 import { EntityIcon, IconLine } from "@/shared/ui"
 
-import { buildCurrentRunStatusModel } from "./current-run-status.view-model"
+import { buildCurrentRunStatusModel } from "../../model/legendary-event/current-run-status.view-model"
 import type {
   RunStatusGoal,
   RunStatusRow,
-} from "./current-run-status.view-model"
-import type { RunStatusViewModel } from "./legendary-event-page.view-model"
+} from "../../model/legendary-event/current-run-status.view-model"
+import type { RunStatusViewModel } from "../../model/legendary-event/legendary-event-page.view-model"
 
 const ROW_ICON: Record<RunStatusRow["key"], LegendaryEventResource | null> = {
   points: "points",

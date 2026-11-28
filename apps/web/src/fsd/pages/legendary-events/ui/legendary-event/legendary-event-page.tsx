@@ -42,7 +42,7 @@ import { useTourPageSteps } from "@/shared/tour"
 import { useUnitName } from "@/shared/unit-name"
 import { useUnitPowerContext } from "@/shared/unit-power"
 
-import { useBattlesSection } from "./battles/use-battles-section"
+import { useBattlesSection } from "../../model/legendary-event/battles/use-battles-section"
 import { LegendaryEventPageView } from "./legendary-event-page-view"
 import {
   buildClearEstimates,
@@ -51,38 +51,41 @@ import {
   buildRewardOutlookViewModel,
   buildRunStatusViewModel,
   readValue,
-} from "./legendary-event-page.view-model"
+} from "../../model/legendary-event/legendary-event-page.view-model"
 import type {
   LegendaryEventPageViewModel,
   LegendaryEventTab,
-} from "./legendary-event-page.view-model"
+} from "../../model/legendary-event/legendary-event-page.view-model"
 import { useLegendaryEventTutorial } from "./legendary-event.tutorial"
-import { useLastRun } from "./overview/use-last-run"
+import { useLastRun } from "../../model/legendary-event/overview/use-last-run"
 import {
   mergeShownObjectiveSelection,
   shownObjectiveSelection,
-} from "./leaderboard/leaderboard.view-model"
-import { useBattlesLane } from "./use-battles-lane"
+} from "../../model/legendary-event/leaderboard/leaderboard.view-model"
+import { useBattlesLane } from "../../model/legendary-event/use-battles-lane"
 import { useLaneJump } from "./use-lane-jump"
-import { useLaneSelection } from "./use-lane-selection"
-import { useLanePotentials } from "./use-lane-potentials"
-import { useCreateGoalFromRow } from "./use-create-goal-from-row"
+import { useLaneSelection } from "../../model/legendary-event/use-lane-selection"
+import { useLanePotentials } from "../../model/legendary-event/use-lane-potentials"
+import { useCreateGoalFromRow } from "../../model/legendary-event/use-create-goal-from-row"
 import {
   tokenActionEstimateContext,
   tokenBattleSnapshot,
   tokenResultEvent,
-} from "./token-result-analytics"
-import { useShownTokens } from "./use-shown-tokens"
-import { useEventGoals } from "./use-event-goals"
-import { useEventRuns } from "./use-event-runs"
-import { useImpactTeamName, useUpgradeImpact } from "./use-upgrade-impact"
-import { buildMarksByLane } from "./progress/progress-marks"
-import type { ProgressMarksViewModel } from "./progress/progress-marks"
-import { useTeamEditorLauncher } from "./teams/team-editor-launcher"
+} from "../../model/legendary-event/token-result-analytics"
+import { useShownTokens } from "../../model/legendary-event/use-shown-tokens"
+import { useEventGoals } from "../../model/legendary-event/use-event-goals"
+import { useEventRuns } from "../../model/legendary-event/use-event-runs"
+import {
+  useImpactTeamName,
+  useUpgradeImpact,
+} from "../../model/legendary-event/use-upgrade-impact"
+import { buildMarksByLane } from "../../model/legendary-event/progress/progress-marks"
+import type { ProgressMarksViewModel } from "../../model/legendary-event/progress/progress-marks"
+import { useTeamEditorLauncher } from "../../model/legendary-event/teams/team-editor-launcher"
 import {
   buildTeamsSectionState,
   pickerGoalsPreview,
-} from "./teams/teams.view-model"
+} from "../../model/legendary-event/teams/teams.view-model"
 
 /** `/legendary-events/:eventId`: computes the page's view model once and renders the tab-strip
  *  page (design D3). An unknown id replaces the route with the hub. The selected tab and lane are the

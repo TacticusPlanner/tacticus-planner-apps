@@ -4,7 +4,7 @@ import type { LegendaryEventLifecycle } from "@/entities/legendary-event"
 
 import { useDateLocale } from "@/shared/lib"
 
-import { eventTiming } from "./event-timing"
+import { eventTiming } from "../../model/shared/event-timing"
 
 /** "Starts Dec 13 · in 25 days" on one line; nothing for an archived event.
  *  `dateOnly` drops the time of day, for a hub card.

@@ -9,7 +9,7 @@ import { itemLibraryPath, useItemName } from "@/shared/equipment"
 import { combineReadStates } from "@/shared/lib"
 import { toById, useCatalogDataset } from "@/shared/local-data"
 
-import { sortLibraryItems } from "../../model/items/library-items"
+import { sortLibraryItems } from "./library-items"
 
 export const LIBRARY_ITEMS_PATH = "/library/items"
 

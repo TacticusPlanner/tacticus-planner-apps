@@ -15,7 +15,7 @@ import { NpcDetailHeader } from "./npc-detail-header"
 import { NpcEncounters } from "./npc-encounters"
 import { NpcStatCards } from "./npc-stat-cards"
 import { NpcTraits } from "./npc-traits"
-import type { NpcsPageViewProps } from "./npcs-page.view-model"
+import type { NpcsPageViewProps } from "../../model/npcs/npcs-page.view-model"
 
 type NpcDetailProps = Pick<
   NpcsPageViewProps,

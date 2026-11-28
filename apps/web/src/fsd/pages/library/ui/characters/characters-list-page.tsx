@@ -11,9 +11,9 @@ import { useCharactersListTutorial } from "./characters-list.tutorial"
 import {
   useCharacterListItems,
   useFilterableCharacters,
-} from "./use-character-list-items"
-import { useCharactersCatalog } from "./use-characters-catalog"
-import { withoutForeignParams } from "./characters-list-params"
+} from "../../model/characters/use-character-list-items"
+import { useCharactersCatalog } from "../../model/characters/use-characters-catalog"
+import { withoutForeignParams } from "../../model/characters/characters-list-params"
 
 const COLLECTION_PATH = "/library/characters"
 

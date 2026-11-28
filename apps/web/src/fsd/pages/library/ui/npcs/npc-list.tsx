@@ -6,8 +6,8 @@ import { Button } from "@workspace/ui/components/button"
 import { NpcPortrait } from "@/entities/npc"
 import { EmptyState, EntityIcon, TruncatedText } from "@/shared/ui"
 
-import { npcListSections } from "./npcs-page.view-model"
-import type { NpcListItem } from "./npcs-page.view-model"
+import { npcListSections } from "../../model/npcs/npcs-page.view-model"
+import type { NpcListItem } from "../../model/npcs/npcs-page.view-model"
 
 /** The listed NPCs in two sections, Enemies then Playable characters; each tile opens that NPC's page. */
 export function NpcList({

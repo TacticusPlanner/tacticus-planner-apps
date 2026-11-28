@@ -35,11 +35,11 @@ import {
   npcTierListSearchParams,
   parseNpcTierListFilters,
   rotationEventIds,
-} from "./npc-tier-list.view-model"
-import type { NpcTierListUrlFilters } from "./npc-tier-list.view-model"
+} from "../../model/tier-list/npc-tier-list.view-model"
+import type { NpcTierListUrlFilters } from "../../model/tier-list/npc-tier-list.view-model"
 import { TierListSearchField } from "./tier-list-search-field"
 import { useNpcTierListTutorial } from "./tier-list.tutorial"
-import { formatMultiplier } from "./tier-list.view-model"
+import { formatMultiplier } from "../../model/tier-list/tier-list.view-model"
 import { TierRow } from "./tier-row"
 
 /**

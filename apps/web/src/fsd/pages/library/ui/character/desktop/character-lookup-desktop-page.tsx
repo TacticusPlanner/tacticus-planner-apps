@@ -9,9 +9,9 @@ import { CharacterLookupResults } from "../character-lookup-results"
 import type {
   BaseUpgradeViewModel,
   RankGroupViewModel,
-} from "../character-lookup-results.view-model"
+} from "../../../model/character/character-lookup-results.view-model"
 import { UnitProfile } from "../unit-profile"
-import type { UnitProfileViewModel } from "../unit-profile.view-model"
+import type { UnitProfileViewModel } from "../../../model/character/unit-profile.view-model"
 
 interface CharacterLookupDesktopPageProps {
   rankStart: Rank

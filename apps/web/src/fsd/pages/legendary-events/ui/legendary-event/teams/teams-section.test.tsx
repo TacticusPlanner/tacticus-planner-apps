@@ -20,13 +20,13 @@ import { createTestI18n, i18nWrapper } from "@/test/i18n"
 import { cleanup, render, screen, waitFor, within } from "@/test/render"
 import { seedGameCatalog } from "@/test/seed"
 
-import type { ClearEstimatesViewModel } from "../legendary-event-page.view-model"
+import type { ClearEstimatesViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
 
 import { TeamEditorHost } from "./team-editor-host"
-import { useTeamEditorLauncher } from "./team-editor-launcher"
+import { useTeamEditorLauncher } from "../../../model/legendary-event/teams/team-editor-launcher"
 import { TeamsSection } from "./teams-section"
 import type { TeamsViewModel } from "./teams-section"
-import type { TeamsSectionState } from "./teams.view-model"
+import type { TeamsSectionState } from "../../../model/legendary-event/teams/teams.view-model"
 import { compareCodeUnits } from "@/shared/lib"
 
 beforeEach(async () => {

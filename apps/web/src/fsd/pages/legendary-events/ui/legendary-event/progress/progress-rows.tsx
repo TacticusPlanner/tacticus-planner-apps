@@ -14,9 +14,9 @@ import type {
 
 import { BattleAnnotationMenu } from "@/features/legendary-event-plan"
 
-import type { ProgressColumn } from "./progress-columns"
-import type { LaneMarks } from "./progress-marks"
-import { splitClearedBattles } from "./progress-order"
+import type { ProgressColumn } from "../../../model/legendary-event/progress/progress-columns"
+import type { LaneMarks } from "../../../model/legendary-event/progress/progress-marks"
+import { splitClearedBattles } from "../../../model/legendary-event/progress/progress-order"
 import { ProgressCell, ProgressColumnIcon } from "./progress-parts"
 import { ListDivider } from "@/shared/ui"
 import { numberFormat } from "@/shared/lib"

@@ -17,7 +17,7 @@ import { EventTimingLines } from "../shared/event-timing-lines"
 import type {
   HubCardRunStatus,
   HubCardViewModel,
-} from "./legendary-events-hub.view-model"
+} from "../../model/legendary-events-hub/legendary-events-hub.view-model"
 import {
   dateTimeFormat,
   formatShortDate,

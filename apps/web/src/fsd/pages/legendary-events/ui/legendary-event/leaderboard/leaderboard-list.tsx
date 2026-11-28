@@ -8,7 +8,7 @@ import type {
 } from "@/entities/legendary-event"
 import { numberFormat } from "@/shared/lib"
 
-import type { LeaderboardGoalsViewModel } from "../legendary-event-page.view-model"
+import type { LeaderboardGoalsViewModel } from "../../../model/legendary-event/legendary-event-page.view-model"
 import {
   LeaderboardRank,
   LeaderboardRarity,
@@ -16,8 +16,11 @@ import {
   LeaderboardUnit,
   ObjectiveIndicator,
 } from "./leaderboard-parts"
-import { useClearsText } from "./leaderboard.view-model"
-import type { LeaderboardClears, ObjectiveChip } from "./leaderboard.view-model"
+import { useClearsText } from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
+import type {
+  LeaderboardClears,
+  ObjectiveChip,
+} from "../../../model/legendary-event/leaderboard/leaderboard.view-model"
 
 /** Mobile: one lane's leaderboard as row cards (portrait, name, rarity and rank, the actions menu
  *  in the corner, the objective icon indicators, the shown points figure and "Objectives: N ·
