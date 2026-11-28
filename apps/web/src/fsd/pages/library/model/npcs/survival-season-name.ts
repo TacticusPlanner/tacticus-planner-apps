@@ -1,3 +1,5 @@
+import { dateTimeFormat } from "@/shared/lib"
+
 const MONTHS = [
   "january",
   "february",
@@ -25,7 +27,7 @@ export function survivalSeasonName(
   if (!match) return undefined
   const month = MONTHS.indexOf(match[1]?.toLowerCase() ?? "")
   if (month === -1) return undefined
-  return new Intl.DateTimeFormat(language, {
+  return dateTimeFormat(language, {
     month: "long",
     year: "numeric",
     timeZone: "UTC",

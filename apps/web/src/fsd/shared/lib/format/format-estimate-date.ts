@@ -1,3 +1,5 @@
+import { dateTimeFormat } from "./format-date-time"
+
 /**
  * Formats a farming estimate's completion date (an ISO `yyyy-mm-dd` string produced in UTC by
  * `estimate.ts`'s `formatDate`) as a locale-aware short date, e.g. "Oct 11".
@@ -37,7 +39,7 @@ export function formatEstimateDate(
   if (Number.isNaN(date.getTime())) return null
 
   // `full` ("Tuesday, October 11, 2026") is the short date's tooltip, where the year and weekday fit.
-  return new Intl.DateTimeFormat(
+  return dateTimeFormat(
     locale,
     style === "full"
       ? { dateStyle: "full", timeZone: "UTC" }

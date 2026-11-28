@@ -14,7 +14,7 @@ import { UnitIcon } from "../resource-card"
 import { PlanMaterialCell } from "./plan-material-cell"
 import { PlanOnslaughtRuns } from "./plan-onslaught-runs"
 import { PlanShopPurchases } from "./plan-shop-purchases"
-import { useDateLocale } from "@/shared/lib"
+import { dateTimeFormat, useDateLocale } from "@/shared/lib"
 
 const NO_BATTLES: ReadonlySet<BattleId> = new Set()
 
@@ -77,7 +77,7 @@ export function PlanDayCard({
             {day.day === 1 ? t("plan.today") : t("plan.day", { day: day.day })}
           </h2>
           <span className="text-xs text-muted-foreground">
-            {new Intl.DateTimeFormat(dateLocale, {
+            {dateTimeFormat(dateLocale, {
               day: "numeric",
               month: "long",
             }).format(date)}

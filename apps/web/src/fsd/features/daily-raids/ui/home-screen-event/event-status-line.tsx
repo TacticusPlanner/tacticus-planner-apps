@@ -4,7 +4,7 @@ import { gameMenuIcon } from "@workspace/game-catalog"
 import { Alert, AlertDescription } from "@workspace/ui/components/alert"
 import { Spinner } from "@workspace/ui/components/spinner"
 
-import { formatRelativeTime, useDateLocale } from "@/shared/lib"
+import { dateTimeFormat, formatRelativeTime, useDateLocale } from "@/shared/lib"
 import { EntityIcon, EventIcon } from "@/shared/ui"
 
 import { homeScreenEventInstanceKey } from "../../model/select-active-home-screen-event"
@@ -32,10 +32,10 @@ export function EventStatusLine({
   const dateLocale = useDateLocale()
   const eventName = useHomeScreenEventName()
   const formatDate = (ms: number) =>
-    new Date(ms).toLocaleString(dateLocale, {
+    dateTimeFormat(dateLocale, {
       dateStyle: "medium",
       timeStyle: "short",
-    })
+    }).format(ms)
 
   if (state.status === "loading") {
     return (

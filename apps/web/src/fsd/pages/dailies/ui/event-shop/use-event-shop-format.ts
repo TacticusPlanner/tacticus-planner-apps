@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 
+import { dateTimeFormat } from "@/shared/lib"
 import { useEventRewardFormat } from "@/widgets/event-rewards"
 import type { EventRewardFormat, RewardDisplay } from "@/widgets/event-rewards"
 
@@ -25,17 +26,17 @@ export function useEventShopFormat(): EventShopFormat {
   const language = i18n.language
 
   return useMemo(() => {
-    const dateFormat = new Intl.DateTimeFormat(language, {
+    const dateFormat = dateTimeFormat(language, {
       weekday: "short",
       day: "numeric",
       month: "short",
       timeZone: "UTC",
     })
-    const weekdayFormat = new Intl.DateTimeFormat(language, {
+    const weekdayFormat = dateTimeFormat(language, {
       weekday: "short",
       timeZone: "UTC",
     })
-    const dayFormat = new Intl.DateTimeFormat(language, {
+    const dayFormat = dateTimeFormat(language, {
       day: "numeric",
       timeZone: "UTC",
     })

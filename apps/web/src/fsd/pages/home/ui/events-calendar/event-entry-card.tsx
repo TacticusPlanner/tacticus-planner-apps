@@ -22,6 +22,7 @@ import { Pressable } from "@workspace/ui/components/pressable"
 import { eventIcon } from "@workspace/game-catalog"
 
 import {
+  dateTimeFormat,
   eventFamilyStripeClass,
   eventFamilySurfaceClass,
   useDateLocale,
@@ -151,7 +152,7 @@ function EventDetailsPopover({
   const dateLocale = useDateLocale()
   const displayName = useEventDisplayName(entry)
   const wikiUrl = resolveEventWikiUrl(entry.definitionId)
-  const range = new Intl.DateTimeFormat(dateLocale, {
+  const range = dateTimeFormat(dateLocale, {
     dateStyle: "medium",
     timeStyle: "short",
   }).formatRange(new Date(entry.startUtc), new Date(entry.endUtc))
@@ -210,7 +211,7 @@ function EventDetailsPopover({
 function PhaseList({ phases }: { phases: EventPhase[] }) {
   const { t } = useTranslation("events")
   const dateLocale = useDateLocale()
-  const formatter = new Intl.DateTimeFormat(dateLocale, {
+  const formatter = dateTimeFormat(dateLocale, {
     month: "short",
     day: "numeric",
     hour: "numeric",
