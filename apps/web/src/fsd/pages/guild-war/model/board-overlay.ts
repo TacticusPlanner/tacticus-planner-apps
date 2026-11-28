@@ -33,7 +33,7 @@ const MARGIN_HEXES = 0.5
 /** What a hex shows: where each side deploys, a hex no unit can stand on, or an open hex. */
 export type BoardHexKind = "attacker" | "defender" | "blocked" | "open"
 
-export interface BoardHex {
+interface BoardHex {
   column: number
   row: number
   kind: BoardHexKind
