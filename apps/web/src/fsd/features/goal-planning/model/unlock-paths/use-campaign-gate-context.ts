@@ -3,8 +3,9 @@ import { campaignDescriptor } from "@workspace/game-catalog"
 import type { CampaignId } from "@workspace/game-domain"
 
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import { readyData } from "@/shared/lib"
 
-import { chunkOrUndefined, readyData } from "../shared/read-data"
+import { chunkOrUndefined } from "../shared/read-data"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { lastIndexByTrack } from "./campaign-track-gate"
 import type {

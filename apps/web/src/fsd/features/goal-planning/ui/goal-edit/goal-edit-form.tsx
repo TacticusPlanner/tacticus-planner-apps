@@ -41,7 +41,8 @@ import { GoalEditCard } from "./goal-edit-card"
 import { GoalLinksField } from "../shared/goal-links-field"
 import { useGoalEditEstimate } from "../../model/goal-edit/use-goal-edit-estimate"
 import { usePlayerChunk } from "@/shared/local-data"
-import { chunkOrUndefined, readyData } from "../../model/shared/read-data"
+import { readyData } from "@/shared/lib"
+import { chunkOrUndefined } from "../../model/shared/read-data"
 import { abilityCapForProgression, isProgression } from "@workspace/game-domain"
 
 /**

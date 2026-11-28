@@ -4,7 +4,6 @@ import type {
   NpcStorageModel,
 } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
-import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import {
   capUnitState,
@@ -12,7 +11,12 @@ import {
   questTierCap,
 } from "@/features/quest-event"
 import { combineReadStates } from "@/shared/lib"
-import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import {
+  orEmpty,
+  toById,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "@/shared/local-data"
 import {
   characterPowerAt,
   npcPowerAt,
@@ -79,9 +83,6 @@ export type IncursionPlans =
   /** By MoW id. */
   | { status: "ready"; plans: ReadonlyMap<string, IncursionPlan> }
 
-const toRoster = (roster: PlayerDataChunkDto<"characters"> | null) =>
-  roster ?? []
-
 /**
  * Per MoW, every battle's enemy power (enemies taken at their battle levels) and the suggested team
  * from the synced roster. Recomputed live and never stored.
@@ -90,7 +91,7 @@ export function useIncursionPlans(
   incursions: readonly Incursion[],
   npcsById: ReadonlyMap<string, NpcStorageModel> | undefined
 ): IncursionPlans {
-  const roster = usePlayerChunk("characters", toRoster)
+  const roster = usePlayerChunk("characters", orEmpty)
   const characters = useCatalogDataset("characters", toById)
   const equipment = useCatalogDataset("equipment")
   const unitPower = useUnitPowerContext()

@@ -1,18 +1,19 @@
 import { useMemo } from "react"
 import type { GameCatalogHseTracker } from "@workspace/game-catalog"
-import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import type { HreTeamPlan } from "@/entities/hre-mission"
 import { combineReadStates } from "@/shared/lib"
-import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import {
+  orEmpty,
+  toById,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "@/shared/local-data"
 
 import { forcedSummonerIds } from "@/entities/unit"
 import { buildHreTeam } from "./hre-team-recommendations"
 import type { HreTeam } from "./hre-team-recommendations"
 import { useTeamUnitPower } from "./use-team-unit-power"
-
-const toRoster = (roster: PlayerDataChunkDto<"characters"> | null) =>
-  roster ?? []
 
 export type HreTeamViewModel =
   | { status: "hidden" }
@@ -34,7 +35,7 @@ export function useHreTeamRecommendations(input: {
     mode: HreTeamPlan["mode"]
   ) => readonly GameCatalogHseTracker[] | null
 }): HreTeamViewModel[] {
-  const roster = usePlayerChunk("characters", toRoster)
+  const roster = usePlayerChunk("characters", orEmpty)
   const catalog = useCatalogDataset("characters", toById)
   const read = useMemo(
     () => combineReadStates(roster, catalog),

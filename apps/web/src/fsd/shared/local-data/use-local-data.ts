@@ -69,3 +69,16 @@ export function toById<T extends { id: string }>(records: T[]): Map<string, T> {
 export function firstRecord<T>(records: T[]): T | null {
   return records[0] ?? null
 }
+
+/** A split player chunk's records by unit id (`characters`, `mows`, `inventory-shards`); a chunk
+ *  that has never synced gives an empty map. A module-level selector, like `toById`. */
+export function toByUnitId<T extends { unitId: string }>(
+  records: readonly T[] | null
+): Map<string, T> {
+  return new Map((records ?? []).map((record) => [record.unitId, record]))
+}
+
+/** A list chunk, empty until it has synced once; a module-level selector, like `toById`. */
+export function orEmpty<T>(records: T[] | null): T[] {
+  return records ?? []
+}

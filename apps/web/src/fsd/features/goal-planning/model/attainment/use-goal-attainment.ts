@@ -2,6 +2,7 @@ import { useMemo } from "react"
 import type { UnitId } from "@workspace/game-domain"
 
 import { usePlayerChunk } from "@/shared/local-data"
+import { readyData } from "@/shared/lib"
 
 import { computeGoalAttainment, UNKNOWN } from "./goal-attainment"
 import type { GoalAttainment } from "./goal-attainment"
@@ -9,7 +10,7 @@ import { useGoalsFor } from "./use-goals-for"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { allocateUpgradeGoalStock } from "./upgrade-goal-stock"
 import { useStableIds } from "../shared/use-stable-ids"
-import { chunkOrUndefined, readyData } from "../shared/read-data"
+import { chunkOrUndefined } from "../shared/read-data"
 
 export type GoalAttainmentState = {
   byGoalId: ReadonlyMap<string, GoalAttainment>

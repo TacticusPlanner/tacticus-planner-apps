@@ -6,23 +6,26 @@ import type {
   EquipmentStorageModel,
   MowStorageModel,
   ShopLockContext,
-  UpgradeStorageModel,
 } from "@workspace/game-catalog"
 
 import { useGlobalGoalPlan, activeProjectMembers } from "@/entities/goal"
 import type { GoalDetail } from "@/entities/goal"
 import {
   mapCharacterStorageToDomain,
-  mapUpgradeStorageToDomain,
+  useUpgradesById,
 } from "@/entities/rank-lookup"
+import type { UpgradesById } from "@/entities/rank-lookup"
 
 import { combineReadStates } from "@/shared/lib"
-import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
+import {
+  orEmpty,
+  toById,
+  toByUnitId,
+  useCatalogDataset,
+  usePlayerChunk,
+} from "@/shared/local-data"
 import { aggregateShopNeeds } from "./shop-needs"
 import type { ShopNeedAggregate } from "./shop-needs"
-
-const toUpgradesById = (records: UpgradeStorageModel[]) =>
-  new Map(records.map((item) => [item.id, mapUpgradeStorageToDomain(item)]))
 
 // undefined until the inventory has synced once, which keeps the needs loading.
 const toAmountById = (
@@ -32,14 +35,6 @@ const toAmountById = (
     ? new Map(inventory.map((entry) => [entry.upgradeId, entry.amount]))
     : undefined
 
-const toList = <T>(chunk: readonly T[] | null): readonly T[] => chunk ?? []
-
-function toByUnitId<T extends { unitId: string }>(
-  chunk: readonly T[] | null
-): ReadonlyMap<string, T> {
-  return new Map((chunk ?? []).map((record) => [record.unitId, record]))
-}
-
 interface ShopNeedsReady {
   status: "ready"
   needs: ShopNeedAggregate
@@ -48,7 +43,7 @@ interface ShopNeedsReady {
   /** The roster's shop lock context (tier, unit stars) and power level, as shops resolve them. */
   lockContext: ShopLockContext
   powerLevel: number
-  upgradesById: ReturnType<typeof toUpgradesById>
+  upgradesById: UpgradesById
   charactersById: ReadonlyMap<string, CharacterStorageModel>
   mowsById: ReadonlyMap<string, MowStorageModel>
   equipmentById: ReadonlyMap<string, EquipmentStorageModel>
@@ -100,13 +95,13 @@ export function useShopNeeds(projectId: string | undefined): ShopNeedsState {
   const charactersRead = useCatalogDataset("characters", toById)
   const mowsRead = useCatalogDataset("mows", toById)
   const equipmentRead = useCatalogDataset("equipment", toById)
-  const upgradesRead = useCatalogDataset("upgrades", toUpgradesById)
+  const upgradesRead = useUpgradesById()
   const ascensionCostsRead = useCatalogDataset("ascension-costs", toById)
   const unlockShardCostsRead = useCatalogDataset("unlock-shard-costs", toById)
   const inventoryRead = usePlayerChunk("inventory-upgrades", toAmountById)
   const playerDetailsRead = usePlayerChunk("player-details")
-  const rosterCharactersRead = usePlayerChunk("characters", toList)
-  const rosterMowsRead = usePlayerChunk("mows", toList)
+  const rosterCharactersRead = usePlayerChunk("characters", orEmpty)
+  const rosterMowsRead = usePlayerChunk("mows", orEmpty)
   const playerCharactersRead = usePlayerChunk("characters", toByUnitId)
   const playerMowsRead = usePlayerChunk("mows", toByUnitId)
   const inventoryShardsRead = usePlayerChunk("inventory-shards", toByUnitId)

@@ -17,7 +17,7 @@ import {
   useLevelRules,
 } from "@/entities/goal-farming"
 import { useHreShardSources } from "@/entities/hre-mission"
-import { useCampaignDisplay, compareCodeUnits } from "@/shared/lib"
+import { compareCodeUnits, readyData, useCampaignDisplay } from "@/shared/lib"
 import { useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
 
 import { computePlanInsights } from "./plan-insights-calc"
@@ -27,7 +27,6 @@ import { useGoalCatalog } from "../shared/use-goal-catalog"
 import { useCampaignGateContext } from "../unlock-paths/use-campaign-gate-context"
 import {
   chunkOrUndefined,
-  readyData,
   toAbilityMaterials,
   toOrbs,
   toXpBooks,

@@ -3,9 +3,8 @@ import type { ShopShardOffer } from "@workspace/game-catalog"
 
 import type { EntityType } from "./use-create-goal-form"
 import { isMythicProgression } from "@/entities/goal-farming"
-import { usePlayerChunk } from "@/shared/local-data"
-
-import { readyData, toByUnitId } from "../shared/read-data"
+import { readyData } from "@/shared/lib"
+import { toByUnitId, usePlayerChunk } from "@/shared/local-data"
 
 /**
  * Whether the Unlock goal type is offered. A Character needs some way to farm regular shards: a

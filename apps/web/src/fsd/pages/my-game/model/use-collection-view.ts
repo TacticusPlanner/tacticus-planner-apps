@@ -1,19 +1,17 @@
 import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useIsAuthenticated } from "@azure/msal-react"
-import type {
-  CharacterStorageModel,
-  UpgradeStorageModel,
-} from "@workspace/game-catalog"
+import type { CharacterStorageModel } from "@workspace/game-catalog"
 import { maxRankForProgression } from "@workspace/game-domain"
 import type { PlayerDataChunkDto } from "@workspace/player-data"
 
 import {
   inventoryBaseUpgrades,
   mapCharacterStorageToDomain,
-  mapUpgradeStorageToDomain,
   rankUpReadiness,
+  useUpgradesById,
 } from "@/entities/rank-lookup"
+import type { UpgradesById } from "@/entities/rank-lookup"
 import { combineReadStates } from "@/shared/lib"
 import type { ReadState } from "@/shared/lib"
 import { toById, useCatalogDataset, usePlayerChunk } from "@/shared/local-data"
@@ -80,11 +78,6 @@ export interface CollectionRosterOverride {
 const ANONYMOUS: CollectionRoster = { state: "anonymous" }
 const ROSTER_ERROR: CollectionRoster = { state: "error" }
 
-const toUpgradesById = (records: UpgradeStorageModel[]) =>
-  new Map(
-    records.map((record) => [record.id, mapUpgradeStorageToDomain(record)])
-  )
-
 /**
  * The Collection page's data: the catalog plus, for a signed-in user, their synced roster and
  * unowned-unit shard inventory, listed through `query`. A sync that lands while the page is open
@@ -114,7 +107,7 @@ export function useCollectionView(
     usePlayerChunk("inventory-shards")
   )
   const ladderRead = useCatalogDataset("ascension-costs", ascensionLadder)
-  const upgradesRead = useCatalogDataset("upgrades", toUpgradesById)
+  const upgradesRead = useUpgradesById()
   const inventoryRead = usePlayerChunk("inventory")
   const inventoryUpgradesRead = usePlayerChunk("inventory-upgrades")
   const unitPowerRead = useUnitPowerContext()
@@ -315,7 +308,7 @@ function readyToRankUp(
   characters: readonly CharacterStorageModel[],
   playerCharacters: PlayerDataChunkDto<"characters">,
   inventoryUpgrades: PlayerDataChunkDto<"inventory-upgrades">,
-  upgradesById: ReturnType<typeof toUpgradesById>
+  upgradesById: UpgradesById
 ): ReadonlySet<string> {
   const catalogById = new Map(characters.map((unit) => [unit.id, unit]))
   const ownedBase = inventoryBaseUpgrades(

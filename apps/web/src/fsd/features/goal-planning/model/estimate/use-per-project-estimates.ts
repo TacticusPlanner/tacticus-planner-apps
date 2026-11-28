@@ -17,8 +17,7 @@ import { estimateNewGoalsForProject } from "./per-project-estimate"
 import { toOnslaughtRunsPerDay } from "@/entities/goal-farming"
 import type { EstimateOutcome } from "@/entities/goal-farming"
 import { useGoalCatalog } from "../shared/use-goal-catalog"
-import { readyData } from "../shared/read-data"
-import { compareCodeUnits } from "@/shared/lib"
+import { compareCodeUnits, readyData } from "@/shared/lib"
 
 export type PerProjectEstimate =
   | { status: "loading" }

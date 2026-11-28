@@ -2,21 +2,18 @@ import { useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { factionRank, groupByFaction } from "@workspace/game-domain"
 import type { FactionGroup, UnitId } from "@workspace/game-domain"
-import type {
-  CampaignDefinitionStorageModel,
-  UpgradeStorageModel,
-} from "@workspace/game-catalog"
+import type { CampaignDefinitionStorageModel } from "@workspace/game-catalog"
 
 import { useEligibleCampaignBattles } from "@/entities/player-data-override"
 import {
   mapCampaignBattleStorageToDomain,
   mapCharacterStorageToDomain,
-  mapUpgradeStorageToDomain,
+  useUpgradesById,
 } from "@/entities/rank-lookup"
+import type { UpgradesById } from "@/entities/rank-lookup"
 import { toById, useCatalogDataset } from "@/shared/local-data"
+import { readyData } from "@/shared/lib"
 import { useUnitName } from "@/shared/unit-name"
-
-import { readyData } from "./read-data"
 
 /**
  * The static-catalog reads the goal-creation Sheet needs (character picker + upgrade requirements
@@ -35,7 +32,7 @@ export function useGoalCatalog() {
 
   const charactersById = readyData(useCatalogDataset("characters", toById))
 
-  const upgradesRead = useCatalogDataset("upgrades", toUpgradesById)
+  const upgradesRead = useUpgradesById()
   const upgradesById = readyData(upgradesRead) ?? emptyUpgradesById
 
   // Battle economics (energy cost) for the estimation engine (plan §16 phase 4) — mirrors
@@ -223,9 +220,7 @@ export function useGoalCatalog() {
   }
 }
 
-const toUpgradesById = (upgrades: UpgradeStorageModel[]) =>
-  new Map(upgrades.map((u) => [u.id, mapUpgradeStorageToDomain(u)]))
-const emptyUpgradesById: ReturnType<typeof toUpgradesById> = new Map()
+const emptyUpgradesById: UpgradesById = new Map()
 
 const toReleaseTypeByGroupId = (
   definitions: CampaignDefinitionStorageModel[]
