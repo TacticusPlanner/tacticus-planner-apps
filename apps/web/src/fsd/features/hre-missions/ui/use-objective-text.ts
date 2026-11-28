@@ -1,6 +1,7 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
+import { numberFormat } from "@/shared/lib"
 import type { HreObjective } from "@/entities/hre-mission"
 import { objectiveTextKey } from "../model/hre-objective-text"
 import type { HreFeaturedHero } from "../model/use-hre-instance"
@@ -29,7 +30,7 @@ export function useObjectiveText(
             })
           : null,
         hero: heroName,
-        formatNumber: (value) => value.toLocaleString(i18n.language),
+        formatNumber: (value) => numberFormat(i18n.language).format(value),
       })
       const qualifier =
         objective.kind === "killFaction"

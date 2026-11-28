@@ -1,6 +1,7 @@
 import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
+import { numberFormat } from "@/shared/lib"
 import type { HreObjective } from "@/entities/hre-mission"
 import {
   hintGameMode,
@@ -34,7 +35,7 @@ export function useObjectiveHint(
       const mode = hintGameMode(objective)
       const qualifier = objective.qualifier ?? ""
       return objectiveHint(objective, lookup, {
-        TARGET_AMOUNT: objective.target.toLocaleString(i18n.language),
+        TARGET_AMOUNT: numberFormat(i18n.language).format(objective.target),
         FACTION_TRAIT: hero
           ? t(`common:alliances.${hero.alliance}` as never, {
               defaultValue: hero.alliance,

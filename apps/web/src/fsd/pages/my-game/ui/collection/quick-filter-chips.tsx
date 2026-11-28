@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "@workspace/ui/components/button"
 import { ToggleGroup } from "@workspace/ui/components/toggle-group"
 
+import { numberFormat } from "@/shared/lib"
 import {
   FILTER_CHIP_CLASS_NAME,
   HintedToggleGroupItem,
@@ -164,7 +165,7 @@ export function QuickFilterChips({
                       className="tabular-nums opacity-70"
                       data-testid={`quick-count-${quick}`}
                     >
-                      {counts[quick].toLocaleString(i18n.language)}
+                      {numberFormat(i18n.language).format(counts[quick])}
                     </span>
                   ) : null}
                 </HintedToggleGroupItem>

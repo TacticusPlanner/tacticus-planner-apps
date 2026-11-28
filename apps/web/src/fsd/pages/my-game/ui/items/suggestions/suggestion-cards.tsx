@@ -4,6 +4,7 @@ import { equipmentSlotIcon } from "@workspace/game-catalog"
 import type { EquipmentStorageModel } from "@workspace/game-catalog"
 import type { Rarity } from "@workspace/game-domain"
 
+import { numberFormat } from "@/shared/lib"
 import { UnitPortrait } from "@/entities/unit"
 import { ItemIcon } from "@/shared/equipment"
 import { CountBadge, EntityIcon, ListDivider, TruncatedText } from "@/shared/ui"
@@ -71,7 +72,9 @@ function useReasonText() {
   const rarity = (value: Rarity) =>
     t(`progression:rarities.${value}`, { defaultValue: value })
   const percent = (value: number) =>
-    value.toLocaleString(i18n.language, { maximumFractionDigits: 1 })
+    numberFormat(i18n.language, {
+      maximumFractionDigits: 1,
+    }).format(value)
   return (reason: SuggestionReason): string => {
     switch (reason.kind) {
       case "empty": {
