@@ -3340,6 +3340,23 @@ export interface components {
       bosses: components["schemas"]["IReadOnlyListOfGameCatalogGuildRaidMetaBossView"]
       primes: components["schemas"]["IReadOnlyListOfGameCatalogGuildRaidMetaPrimeView"]
     }
+    GameCatalogGuildWarBoard: {
+      /** Format: int32 */
+      columns: number
+      /** Format: int32 */
+      rows: number
+      /** Format: int32 */
+      visualColumns: number
+      /** Format: int32 */
+      visualRows: number
+      /** Format: int32 */
+      visualFirstColumn: number
+      /** Format: int32 */
+      visualFirstRow: number
+      tiles: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarTile"]
+      attackerSpawns: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarCell"]
+      defenderSpawns: components["schemas"]["IReadOnlyListOfGameCatalogGuildWarCell"]
+    }
     GameCatalogGuildWarBuff: {
       id: string
       scope: string
@@ -3349,6 +3366,12 @@ export interface components {
       abilityId: string
       rarity: null | string
       variables: components["schemas"]["IReadOnlyDictionaryOfStringAndIReadOnlyListOfInt32"]
+    }
+    GameCatalogGuildWarCell: {
+      /** Format: int32 */
+      column: number
+      /** Format: int32 */
+      row: number
     }
     GameCatalogGuildWarLevel: {
       /** Format: int32 */
@@ -3375,6 +3398,7 @@ export interface components {
       boardId: string
       /** Format: int32 */
       spawnPointsSet: number
+      board: components["schemas"]["GameCatalogGuildWarBoard"]
     }
     GameCatalogGuildWarPowerCap: {
       rarity: string
@@ -3402,6 +3426,16 @@ export interface components {
     GameCatalogGuildWarTier: {
       id: string
       rarityCaps: components["schemas"]["IReadOnlyListOfString"]
+    }
+    GameCatalogGuildWarTile: {
+      /** Format: int32 */
+      column: number
+      /** Format: int32 */
+      row: number
+      terrain: string
+      /** Format: int32 */
+      elevation: number
+      blocked: boolean
     }
     GameCatalogGuildWarZone: {
       id: string
@@ -4806,12 +4840,14 @@ export interface components {
     IReadOnlyListOfGameCatalogGuildRaidMetaRecommendationView: components["schemas"]["GameCatalogGuildRaidMetaRecommendationView"][]
     IReadOnlyListOfGameCatalogGuildWarBuff: components["schemas"]["GameCatalogGuildWarBuff"][]
     IReadOnlyListOfGameCatalogGuildWarBuffAbility: components["schemas"]["GameCatalogGuildWarBuffAbility"][]
+    IReadOnlyListOfGameCatalogGuildWarCell: components["schemas"]["GameCatalogGuildWarCell"][]
     IReadOnlyListOfGameCatalogGuildWarLevel: components["schemas"]["GameCatalogGuildWarLevel"][]
     IReadOnlyListOfGameCatalogGuildWarLevelZone: components["schemas"]["GameCatalogGuildWarLevelZone"][]
     IReadOnlyListOfGameCatalogGuildWarLineupScore: components["schemas"]["GameCatalogGuildWarLineupScore"][]
     IReadOnlyListOfGameCatalogGuildWarMap: components["schemas"]["GameCatalogGuildWarMap"][]
     IReadOnlyListOfGameCatalogGuildWarPowerCap: components["schemas"]["GameCatalogGuildWarPowerCap"][]
     IReadOnlyListOfGameCatalogGuildWarTier: components["schemas"]["GameCatalogGuildWarTier"][]
+    IReadOnlyListOfGameCatalogGuildWarTile: components["schemas"]["GameCatalogGuildWarTile"][]
     IReadOnlyListOfGameCatalogGuildWarZone: components["schemas"]["GameCatalogGuildWarZone"][]
     IReadOnlyListOfGameCatalogHeroPowerStep: components["schemas"]["GameCatalogHeroPowerStep"][]
     IReadOnlyListOfGameCatalogHeroProgressionRule: components["schemas"]["GameCatalogHeroProgressionRule"][]

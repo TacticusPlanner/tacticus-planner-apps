@@ -483,13 +483,15 @@ describe("OffensePage", () => {
       within(dialog).getByRole("button", { name: "Enemy details (optional)" })
     )
     const maps = within(dialog).getByTestId("guild-war-enemy-map")
-    // The season's pool, each board by its picture.
+    // The season's pool, each board by its picture cropped to its battle grid.
     expect(within(maps).getAllByRole("radio")).toHaveLength(4)
     const board = within(maps).getByRole("radio", { name: "Map 2" })
-    expect(within(board).getByRole("presentation")).toHaveAttribute(
-      "src",
+    expect(within(board).getByTestId("guild-war-board-art")).toHaveAttribute(
+      "href",
       "/game_catalog/curated/guild_war_boards/C1_37.webp"
     )
+    // A tile marks only C1_37's 5 attacker, 20 defender and 5 blocked hexes.
+    expect(within(board).getAllByTestId("guild-war-board-hex")).toHaveLength(30)
     await user.click(board)
     expect(board).toHaveAttribute("data-state", "on")
     // A board's magnifier opens it large; Next and Pick this map pick another from there.
@@ -497,10 +499,20 @@ describe("OffensePage", () => {
       within(dialog).getByRole("button", { name: "Zoom in on map 1" })
     )
     const viewer = await screen.findByTestId("guild-war-map-viewer")
-    expect(within(viewer).getByRole("img", { name: "Map 1" })).toHaveAttribute(
-      "src",
+    const large = within(viewer).getByRole("img", { name: "Map 1" })
+    expect(within(large).getByTestId("guild-war-board-art")).toHaveAttribute(
+      "href",
       "/game_catalog/curated/guild_war_boards_large/EC1_09.webp"
     )
+    // EC1_09's spawn set 2: five attacker hexes, with a legend for what the fills mean.
+    expect(
+      within(large)
+        .getAllByTestId("guild-war-board-hex")
+        .filter((hex) => hex.getAttribute("data-hex") === "attacker")
+    ).toHaveLength(5)
+    expect(
+      within(viewer).getByTestId("guild-war-board-legend")
+    ).toHaveTextContent("Your deployment")
     await user.click(within(viewer).getByRole("button", { name: "Next map" }))
     expect(
       within(viewer).getByRole("button", { name: "Picked" })

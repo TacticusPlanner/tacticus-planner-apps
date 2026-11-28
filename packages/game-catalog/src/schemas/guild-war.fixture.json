@@ -734,19 +734,2239 @@
     "maps": [
       {
         "boardId": "EC1_09",
-        "spawnPointsSet": 2
+        "spawnPointsSet": 2,
+        "board": {
+          "columns": 7,
+          "rows": 9,
+          "visualColumns": 13,
+          "visualRows": 14,
+          "visualFirstColumn": 3,
+          "visualFirstRow": 2,
+          "tiles": [
+            {
+              "column": 0,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 0,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 6,
+              "row": 0,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 0,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 1,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 2,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 4,
+              "row": 2,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 3,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 4,
+              "row": 3,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 5,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 4,
+              "row": 5,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 6,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 4,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            }
+          ],
+          "attackerSpawns": [
+            {
+              "column": 1,
+              "row": 0
+            },
+            {
+              "column": 2,
+              "row": 0
+            },
+            {
+              "column": 3,
+              "row": 0
+            },
+            {
+              "column": 4,
+              "row": 0
+            },
+            {
+              "column": 5,
+              "row": 1
+            }
+          ],
+          "defenderSpawns": [
+            {
+              "column": 1,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 8
+            },
+            {
+              "column": 4,
+              "row": 7
+            },
+            {
+              "column": 5,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 7
+            },
+            {
+              "column": 1,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 8
+            },
+            {
+              "column": 0,
+              "row": 8
+            },
+            {
+              "column": 0,
+              "row": 6
+            },
+            {
+              "column": 4,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 8
+            },
+            {
+              "column": 5,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 7
+            },
+            {
+              "column": 2,
+              "row": 6
+            },
+            {
+              "column": 4,
+              "row": 8
+            },
+            {
+              "column": 1,
+              "row": 6
+            }
+          ]
+        }
       },
       {
         "boardId": "C1_37",
-        "spawnPointsSet": 5
+        "spawnPointsSet": 5,
+        "board": {
+          "columns": 7,
+          "rows": 9,
+          "visualColumns": 13,
+          "visualRows": 14,
+          "visualFirstColumn": 3,
+          "visualFirstRow": 2,
+          "tiles": [
+            {
+              "column": 0,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 1,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 1,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 1,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 2,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 3,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 3,
+              "terrain": "Block",
+              "elevation": 3,
+              "blocked": true
+            },
+            {
+              "column": 3,
+              "row": 3,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 3,
+              "terrain": "Block",
+              "elevation": 4,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 3,
+              "terrain": "Swamp",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 5,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 5,
+              "terrain": "Block",
+              "elevation": 4,
+              "blocked": true
+            },
+            {
+              "column": 3,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 5,
+              "terrain": "Block",
+              "elevation": 4,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 5,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 6,
+              "terrain": "DryBush",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 8,
+              "terrain": "Block",
+              "elevation": 2,
+              "blocked": true
+            }
+          ],
+          "attackerSpawns": [
+            {
+              "column": 0,
+              "row": 0
+            },
+            {
+              "column": 1,
+              "row": 0
+            },
+            {
+              "column": 2,
+              "row": 0
+            },
+            {
+              "column": 5,
+              "row": 0
+            },
+            {
+              "column": 6,
+              "row": 0
+            }
+          ],
+          "defenderSpawns": [
+            {
+              "column": 0,
+              "row": 6
+            },
+            {
+              "column": 1,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 7
+            },
+            {
+              "column": 4,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 6
+            },
+            {
+              "column": 1,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 8
+            },
+            {
+              "column": 1,
+              "row": 8
+            },
+            {
+              "column": 3,
+              "row": 8
+            },
+            {
+              "column": 4,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 7
+            },
+            {
+              "column": 4,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 6
+            }
+          ]
+        }
       },
       {
         "boardId": "EMC1_06",
-        "spawnPointsSet": 2
+        "spawnPointsSet": 2,
+        "board": {
+          "columns": 7,
+          "rows": 9,
+          "visualColumns": 13,
+          "visualRows": 14,
+          "visualFirstColumn": 3,
+          "visualFirstRow": 2,
+          "tiles": [
+            {
+              "column": 0,
+              "row": 0,
+              "terrain": "Block",
+              "elevation": 3,
+              "blocked": true
+            },
+            {
+              "column": 1,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 2,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 2,
+              "terrain": "Swamp",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 2,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 2,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 3,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 3,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 4,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 4,
+              "terrain": "Block",
+              "elevation": 3,
+              "blocked": true
+            },
+            {
+              "column": 6,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 5,
+              "terrain": "Swamp",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 6,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 6,
+              "terrain": "Block",
+              "elevation": 2,
+              "blocked": true
+            },
+            {
+              "column": 2,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 6,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 6,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 6,
+              "row": 6,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 7,
+              "terrain": "Block",
+              "elevation": 3,
+              "blocked": true
+            },
+            {
+              "column": 3,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 7,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            }
+          ],
+          "attackerSpawns": [
+            {
+              "column": 0,
+              "row": 1
+            },
+            {
+              "column": 1,
+              "row": 2
+            },
+            {
+              "column": 3,
+              "row": 1
+            },
+            {
+              "column": 4,
+              "row": 0
+            },
+            {
+              "column": 6,
+              "row": 0
+            }
+          ],
+          "defenderSpawns": [
+            {
+              "column": 1,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 8
+            },
+            {
+              "column": 4,
+              "row": 8
+            },
+            {
+              "column": 5,
+              "row": 8
+            },
+            {
+              "column": 3,
+              "row": 8
+            },
+            {
+              "column": 1,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 8
+            },
+            {
+              "column": 4,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 8
+            },
+            {
+              "column": 0,
+              "row": 7
+            },
+            {
+              "column": 5,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 6
+            },
+            {
+              "column": 2,
+              "row": 6
+            },
+            {
+              "column": 4,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 6
+            },
+            {
+              "column": 2,
+              "row": 5
+            },
+            {
+              "column": 3,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 5
+            }
+          ]
+        }
       },
       {
         "boardId": "MC1_11",
-        "spawnPointsSet": 3
+        "spawnPointsSet": 3,
+        "board": {
+          "columns": 7,
+          "rows": 9,
+          "visualColumns": 13,
+          "visualRows": 14,
+          "visualFirstColumn": 3,
+          "visualFirstRow": 2,
+          "tiles": [
+            {
+              "column": 0,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 1,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 1,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 2,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 3,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 3,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 3,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 4,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 4,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 4,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 4,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 5,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 5,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 6,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 7,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 7,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 8,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            }
+          ],
+          "attackerSpawns": [
+            {
+              "column": 0,
+              "row": 0
+            },
+            {
+              "column": 0,
+              "row": 1
+            },
+            {
+              "column": 0,
+              "row": 4
+            },
+            {
+              "column": 0,
+              "row": 8
+            },
+            {
+              "column": 0,
+              "row": 7
+            }
+          ],
+          "defenderSpawns": [
+            {
+              "column": 6,
+              "row": 8
+            },
+            {
+              "column": 6,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 0
+            },
+            {
+              "column": 6,
+              "row": 1
+            },
+            {
+              "column": 6,
+              "row": 5
+            },
+            {
+              "column": 6,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 3
+            },
+            {
+              "column": 5,
+              "row": 8
+            },
+            {
+              "column": 5,
+              "row": 0
+            },
+            {
+              "column": 6,
+              "row": 4
+            },
+            {
+              "column": 4,
+              "row": 8
+            },
+            {
+              "column": 5,
+              "row": 2
+            },
+            {
+              "column": 5,
+              "row": 7
+            },
+            {
+              "column": 5,
+              "row": 4
+            },
+            {
+              "column": 5,
+              "row": 1
+            },
+            {
+              "column": 4,
+              "row": 7
+            },
+            {
+              "column": 5,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 5
+            },
+            {
+              "column": 4,
+              "row": 6
+            },
+            {
+              "column": 4,
+              "row": 5
+            }
+          ]
+        }
       }
     ],
     "scoring": {
@@ -1542,19 +3762,2239 @@
     "maps": [
       {
         "boardId": "EC1_09",
-        "spawnPointsSet": 2
+        "spawnPointsSet": 2,
+        "board": {
+          "columns": 7,
+          "rows": 9,
+          "visualColumns": 13,
+          "visualRows": 14,
+          "visualFirstColumn": 3,
+          "visualFirstRow": 2,
+          "tiles": [
+            {
+              "column": 0,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 0,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 6,
+              "row": 0,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 0,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 1,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 2,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 4,
+              "row": 2,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 3,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 4,
+              "row": 3,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 5,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 4,
+              "row": 5,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 6,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 4,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            }
+          ],
+          "attackerSpawns": [
+            {
+              "column": 1,
+              "row": 0
+            },
+            {
+              "column": 2,
+              "row": 0
+            },
+            {
+              "column": 3,
+              "row": 0
+            },
+            {
+              "column": 4,
+              "row": 0
+            },
+            {
+              "column": 5,
+              "row": 1
+            }
+          ],
+          "defenderSpawns": [
+            {
+              "column": 1,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 8
+            },
+            {
+              "column": 4,
+              "row": 7
+            },
+            {
+              "column": 5,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 7
+            },
+            {
+              "column": 1,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 8
+            },
+            {
+              "column": 0,
+              "row": 8
+            },
+            {
+              "column": 0,
+              "row": 6
+            },
+            {
+              "column": 4,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 8
+            },
+            {
+              "column": 5,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 7
+            },
+            {
+              "column": 2,
+              "row": 6
+            },
+            {
+              "column": 4,
+              "row": 8
+            },
+            {
+              "column": 1,
+              "row": 6
+            }
+          ]
+        }
       },
       {
         "boardId": "C1_37",
-        "spawnPointsSet": 5
+        "spawnPointsSet": 5,
+        "board": {
+          "columns": 7,
+          "rows": 9,
+          "visualColumns": 13,
+          "visualRows": 14,
+          "visualFirstColumn": 3,
+          "visualFirstRow": 2,
+          "tiles": [
+            {
+              "column": 0,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 1,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 1,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 1,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 2,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 3,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 3,
+              "terrain": "Block",
+              "elevation": 3,
+              "blocked": true
+            },
+            {
+              "column": 3,
+              "row": 3,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 3,
+              "terrain": "Block",
+              "elevation": 4,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 3,
+              "terrain": "Swamp",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 5,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 5,
+              "terrain": "Block",
+              "elevation": 4,
+              "blocked": true
+            },
+            {
+              "column": 3,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 5,
+              "terrain": "Block",
+              "elevation": 4,
+              "blocked": true
+            },
+            {
+              "column": 5,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 5,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 6,
+              "terrain": "DryBush",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 8,
+              "terrain": "Block",
+              "elevation": 2,
+              "blocked": true
+            }
+          ],
+          "attackerSpawns": [
+            {
+              "column": 0,
+              "row": 0
+            },
+            {
+              "column": 1,
+              "row": 0
+            },
+            {
+              "column": 2,
+              "row": 0
+            },
+            {
+              "column": 5,
+              "row": 0
+            },
+            {
+              "column": 6,
+              "row": 0
+            }
+          ],
+          "defenderSpawns": [
+            {
+              "column": 0,
+              "row": 6
+            },
+            {
+              "column": 1,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 7
+            },
+            {
+              "column": 4,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 6
+            },
+            {
+              "column": 1,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 8
+            },
+            {
+              "column": 1,
+              "row": 8
+            },
+            {
+              "column": 3,
+              "row": 8
+            },
+            {
+              "column": 4,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 7
+            },
+            {
+              "column": 4,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 6
+            }
+          ]
+        }
       },
       {
         "boardId": "EMC1_06",
-        "spawnPointsSet": 2
+        "spawnPointsSet": 2,
+        "board": {
+          "columns": 7,
+          "rows": 9,
+          "visualColumns": 13,
+          "visualRows": 14,
+          "visualFirstColumn": 3,
+          "visualFirstRow": 2,
+          "tiles": [
+            {
+              "column": 0,
+              "row": 0,
+              "terrain": "Block",
+              "elevation": 3,
+              "blocked": true
+            },
+            {
+              "column": 1,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 2,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 2,
+              "terrain": "Swamp",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 2,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 2,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 3,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 3,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 4,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 4,
+              "terrain": "Block",
+              "elevation": 3,
+              "blocked": true
+            },
+            {
+              "column": 6,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 5,
+              "terrain": "Swamp",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 6,
+              "terrain": "DryBush",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 6,
+              "terrain": "Block",
+              "elevation": 2,
+              "blocked": true
+            },
+            {
+              "column": 2,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 6,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 6,
+              "terrain": "Block",
+              "elevation": 1,
+              "blocked": true
+            },
+            {
+              "column": 6,
+              "row": 6,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 7,
+              "terrain": "Block",
+              "elevation": 3,
+              "blocked": true
+            },
+            {
+              "column": 3,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 7,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            }
+          ],
+          "attackerSpawns": [
+            {
+              "column": 0,
+              "row": 1
+            },
+            {
+              "column": 1,
+              "row": 2
+            },
+            {
+              "column": 3,
+              "row": 1
+            },
+            {
+              "column": 4,
+              "row": 0
+            },
+            {
+              "column": 6,
+              "row": 0
+            }
+          ],
+          "defenderSpawns": [
+            {
+              "column": 1,
+              "row": 8
+            },
+            {
+              "column": 2,
+              "row": 8
+            },
+            {
+              "column": 4,
+              "row": 8
+            },
+            {
+              "column": 5,
+              "row": 8
+            },
+            {
+              "column": 3,
+              "row": 8
+            },
+            {
+              "column": 1,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 8
+            },
+            {
+              "column": 4,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 8
+            },
+            {
+              "column": 0,
+              "row": 7
+            },
+            {
+              "column": 5,
+              "row": 7
+            },
+            {
+              "column": 3,
+              "row": 7
+            },
+            {
+              "column": 0,
+              "row": 6
+            },
+            {
+              "column": 2,
+              "row": 6
+            },
+            {
+              "column": 4,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 6
+            },
+            {
+              "column": 2,
+              "row": 5
+            },
+            {
+              "column": 3,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 5
+            }
+          ]
+        }
       },
       {
         "boardId": "MC1_11",
-        "spawnPointsSet": 3
+        "spawnPointsSet": 3,
+        "board": {
+          "columns": 7,
+          "rows": 9,
+          "visualColumns": 13,
+          "visualRows": 14,
+          "visualFirstColumn": 3,
+          "visualFirstRow": 2,
+          "tiles": [
+            {
+              "column": 0,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 0,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 0,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 1,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 1,
+              "terrain": "DryBush",
+              "elevation": 1,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 1,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 2,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 2,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 2,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 3,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 3,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 3,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 3,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 4,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 4,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 4,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 4,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 4,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 5,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 5,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 4,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 5,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 6,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 6,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 7,
+              "terrain": "Swamp",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 7,
+              "terrain": "Bridge",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 7,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 0,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 1,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 2,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 3,
+              "row": 8,
+              "terrain": "Water",
+              "elevation": 0,
+              "blocked": false
+            },
+            {
+              "column": 4,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 3,
+              "blocked": false
+            },
+            {
+              "column": 5,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 2,
+              "blocked": false
+            },
+            {
+              "column": 6,
+              "row": 8,
+              "terrain": "Grass",
+              "elevation": 1,
+              "blocked": false
+            }
+          ],
+          "attackerSpawns": [
+            {
+              "column": 0,
+              "row": 0
+            },
+            {
+              "column": 0,
+              "row": 1
+            },
+            {
+              "column": 0,
+              "row": 4
+            },
+            {
+              "column": 0,
+              "row": 8
+            },
+            {
+              "column": 0,
+              "row": 7
+            }
+          ],
+          "defenderSpawns": [
+            {
+              "column": 6,
+              "row": 8
+            },
+            {
+              "column": 6,
+              "row": 7
+            },
+            {
+              "column": 6,
+              "row": 0
+            },
+            {
+              "column": 6,
+              "row": 1
+            },
+            {
+              "column": 6,
+              "row": 5
+            },
+            {
+              "column": 6,
+              "row": 6
+            },
+            {
+              "column": 6,
+              "row": 3
+            },
+            {
+              "column": 5,
+              "row": 8
+            },
+            {
+              "column": 5,
+              "row": 0
+            },
+            {
+              "column": 6,
+              "row": 4
+            },
+            {
+              "column": 4,
+              "row": 8
+            },
+            {
+              "column": 5,
+              "row": 2
+            },
+            {
+              "column": 5,
+              "row": 7
+            },
+            {
+              "column": 5,
+              "row": 4
+            },
+            {
+              "column": 5,
+              "row": 1
+            },
+            {
+              "column": 4,
+              "row": 7
+            },
+            {
+              "column": 5,
+              "row": 6
+            },
+            {
+              "column": 5,
+              "row": 5
+            },
+            {
+              "column": 4,
+              "row": 6
+            },
+            {
+              "column": 4,
+              "row": 5
+            }
+          ]
+        }
       }
     ],
     "scoring": {

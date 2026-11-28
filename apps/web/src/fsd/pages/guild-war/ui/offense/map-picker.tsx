@@ -21,9 +21,12 @@ import {
 } from "@/shared/ui"
 
 import type { GuildWarSeason } from "../../lib/season"
+import { boardOverlay } from "../../model/board-overlay"
+import { BoardLegend, BoardPicture } from "./board-picture"
 
 /**
- * One board at full dialog width (a full-screen sheet on phones), from the 1080 px art, with the
+ * One board at full dialog width (a full-screen sheet on phones), from the 1080 px art cropped to
+ * its battle grid with the deployment and blocked hexes marked (and what they mean), with the
  * previous and next board of the pool and Pick this map (Picked once it is the attack's).
  */
 function MapViewer({
@@ -44,7 +47,8 @@ function MapViewer({
   const { t } = useTranslation("guildWar")
   const count = season.maps.length
   const map = season.maps[index]
-  if (!map) return null
+  const large = map ? guildWarBoardImageLarge(map.boardId) : undefined
+  if (!map || !large) return null
   const picked = map.boardId === value
   const step = (by: number) => onIndexChange((index + by + count) % count)
   return (
@@ -62,12 +66,22 @@ function MapViewer({
         </ResponsiveDialogTitle>
       </ResponsiveDialogHeader>
       <ResponsiveDialogBody>
-        <img
+        <BoardPicture
           alt={t("enemy.mapOption", { number: index + 1 })}
-          className="aspect-square w-full rounded-lg object-contain"
-          decoding="async"
-          src={guildWarBoardImageLarge(map.boardId)}
+          board={map.board}
+          className="aspect-square w-full rounded-lg"
+          fit="contain"
+          src={large}
         />
+        {map.board && boardOverlay(map.board) ? (
+          <BoardLegend
+            labels={{
+              attacker: t("enemy.mapHexes.attacker"),
+              defender: t("enemy.mapHexes.defender"),
+              blocked: t("enemy.mapHexes.blocked"),
+            }}
+          />
+        ) : null}
       </ResponsiveDialogBody>
       <ResponsiveDialogFooter>
         <IconButton
@@ -103,8 +117,9 @@ function MapViewer({
 /**
  * The map of an attack, picked from the season's map pool by its board picture (any lineup can be
  * on any pool board: maps are not tied to a zone). Optional: tapping the picked board again clears
- * it. Each board's magnifier opens it large (`MapViewer`), where it can be picked too. A board with
- * no picture shipped yet shows its number.
+ * it. Each board shows its art cropped to the battle grid with the deployment hexes marked, as the
+ * game's deploy screen does. Its magnifier opens it large (`MapViewer`), where it can be picked too.
+ * A board with no picture shipped yet shows its number.
  */
 export function MapPicker({
   season,
@@ -141,11 +156,12 @@ export function MapPicker({
                 value={map.boardId}
               >
                 {image ? (
-                  <img
+                  <BoardPicture
                     alt=""
-                    className="size-full object-cover"
-                    decoding="async"
-                    loading="lazy"
+                    board={map.board}
+                    className="size-full"
+                    fit="cover"
+                    lazy
                     src={image}
                   />
                 ) : (

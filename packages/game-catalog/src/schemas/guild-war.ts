@@ -44,6 +44,34 @@ const guildWarBuffSchema = z.looseObject({
   ),
 })
 
+// A hex of a board's logical grid: column and row (row 0 on the attacker's side).
+const guildWarCellSchema = z.looseObject({
+  column: countSchema,
+  row: countSchema,
+})
+
+// A map-pool board's battle grid: the logical grid (`columns` × `rows`, every hex playable unless
+// `blocked`) placed on the game's visual board (`visualColumns` × `visualRows`, the art's grid) at
+// `visualFirstColumn`/`visualFirstRow`, the terrain and elevation of each hex, and the hexes each
+// side deploys on for this map's spawn set.
+const guildWarBoardSchema = z.looseObject({
+  columns: z.number().int().positive(),
+  rows: z.number().int().positive(),
+  visualColumns: z.number().int().positive(),
+  visualRows: z.number().int().positive(),
+  visualFirstColumn: countSchema,
+  visualFirstRow: countSchema,
+  tiles: z.array(
+    guildWarCellSchema.extend({
+      terrain: z.string(),
+      elevation: z.number().int(),
+      blocked: z.boolean(),
+    })
+  ),
+  attackerSpawns: z.array(guildWarCellSchema),
+  defenderSpawns: z.array(guildWarCellSchema),
+})
+
 // One Guild War season (`guildWarSeasonA` …) as the `guild-war` dataset serves it.
 export const guildWarSeasonSchema = z.looseObject({
   id: z.string(),
@@ -54,7 +82,12 @@ export const guildWarSeasonSchema = z.looseObject({
   levels: z.array(guildWarLevelSchema),
   buffs: z.array(guildWarBuffSchema),
   maps: z.array(
-    z.looseObject({ boardId: z.string(), spawnPointsSet: countSchema })
+    z.looseObject({
+      boardId: z.string(),
+      spawnPointsSet: countSchema,
+      // Optional so a client that ships before the API serves it still reads the season.
+      board: guildWarBoardSchema.optional(),
+    })
   ),
   scoring: z.looseObject({
     unitKilled: countSchema,

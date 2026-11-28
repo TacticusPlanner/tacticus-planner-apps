@@ -213,7 +213,12 @@
     "previousMap": "Mapa anterior",
     "nextMap": "Mapa siguiente",
     "pickMap": "Elegir este mapa",
-    "mapPicked": "Elegido"
+    "mapPicked": "Elegido",
+    "mapHexes": {
+      "attacker": "Tu despliegue",
+      "defender": "Despliegue enemigo",
+      "blocked": "Bloqueado"
+    }
   },
   "attackLog": {
     "heading": "Registro de ataques",

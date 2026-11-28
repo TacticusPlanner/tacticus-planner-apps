@@ -1269,6 +1269,21 @@ describe("guild-war schema", () => {
     ).toEqual(["Legendary", "Legendary", "Epic", "Epic", "Epic"])
   })
 
+  it("parses each pool map's board grid, and a map served without one", () => {
+    const seasons = datasetPayloadSchemas["guild-war"].parse(guildWar)
+    const board = seasons[0]?.maps.find(
+      (map) => map.boardId === "EC1_09"
+    )?.board
+    expect(board?.tiles).toHaveLength(63)
+    expect(board?.attackerSpawns).toHaveLength(5)
+    const [season] = guildWar
+    expect(
+      datasetPayloadSchemas["guild-war"].safeParse([
+        { ...season, maps: [{ boardId: "EC1_09", spawnPointsSet: 2 }] },
+      ]).success
+    ).toBe(true)
+  })
+
   it("rejects a tier without five slot caps", () => {
     const [season] = guildWar
     expect(
