@@ -210,6 +210,15 @@
   --season-fit-caution: oklch(0.6 0.14 65);
   --season-fit-urgent: oklch(0.52 0.17 35);
 
+  /* Guild War board overlay: drawn on the game's board art, which does not change with the theme,
+     so these are set once here. Deployment hexes in the game's own blue and red. */
+  --guild-war-attacker: #3b9bff;
+  --guild-war-defender: #e5413a;
+  --guild-war-blocked: #000000;
+  --guild-war-grid: #ffffff;
+  /* Behind the art: the board art leaves its water transparent (the game draws water live). */
+  --guild-war-water: #1f4a66;
+
   /* Collection unit tiles: overlays on portraits (star pill, lock badge, shard counts), the
      portrait backdrop while art loads, unlock bars and the sign-in/sync banner. */
   --overlay: #080a0ec7;
