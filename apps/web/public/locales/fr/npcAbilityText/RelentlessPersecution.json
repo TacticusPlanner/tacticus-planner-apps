@@ -27,7 +27,7 @@
     "constants": {
       "nrOfHits": "1",
       "damageProfile": "Las",
-      "initialCooldownTurns": "0"
+      "initialCooldownTurns": "1"
     },
     "scaled": ["minDmg", "maxDmg", "extraDmg"]
   }
